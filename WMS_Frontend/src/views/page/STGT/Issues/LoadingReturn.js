@@ -151,16 +151,16 @@ const LoadingReturn = (props) => {
                     }
                 }
             }
-            let qryStrOpt = reqValue["rootOptions"] && reqValue["rootOptions"].length > 0 ? queryString.parse(reqValue["rootOptions"]) : {};
+            // let qryStrOpt = reqValue["rootOptions"] && reqValue["rootOptions"].length > 0 ? queryString.parse(reqValue["rootOptions"]) : {};
              
-            if(PARENT_DOCUMENT_ID){
-                qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] = PARENT_DOCUMENT_ID;
-            }
-            let qryStr = queryString.stringify(qryStrOpt)
-            let uri_opt = decodeURIComponent(qryStr) || null;
+            // if(PARENT_DOCUMENT_ID){
+            //     qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] = PARENT_DOCUMENT_ID;
+            // }
+            // let qryStr = queryString.stringify(qryStrOpt)
+            // let uri_opt = decodeURIComponent(qryStr) || null;
             dataScan = {
                 allowSubmit: true,
-                rootOptions: uri_opt,
+                // rootOptions: uri_opt,
                 scanCode: scanCode
             }
             if(reqValue.action != 2){ //ไม่ใช่เคสลบ
