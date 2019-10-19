@@ -7,6 +7,8 @@ using System.IO;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using AMWUtil.DataAccess;
+using AWMSModel.Entity;
+using AWMSEngine.ADO;
 
 namespace ProjectSTGT.Engine.WM
 {
@@ -37,11 +39,30 @@ namespace ProjectSTGT.Engine.WM
         {
             var directoryPath = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "DIRECTORY_PATH").DataValue;
             var resList = new List<TRes>();
-            //var getFile = new DirectoryInfo(directoryPath).GetFiles();
-            //foreach (var file in getFile)
-            //{
-            //    var resxx = FilesAccess.ExcelAccess<TRes>(file.FullName);
-            //}
-        }  
+            var getFile = new DirectoryInfo(directoryPath).GetFiles();
+            foreach (var file in getFile)
+            {
+                try
+                {
+                    var res = FilesTypeAccess.ExcelAccess(file);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private amt_Document CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
+        {
+            var doc = new amt_Document();
+            //doc.
+
+
+
+
+
+            //DocumentADO.GetInstant().Create();
+            return null;
+        }
     }
 }
