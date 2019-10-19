@@ -595,6 +595,8 @@ const AmMappingPallet2 = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
+                            }else{
+                                checkMVT = true;
                             }
                         }
 
@@ -836,7 +838,8 @@ const AmMappingPallet2 = (props) => {
                             } : {}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
 
                         />
                     </div>
@@ -854,7 +857,8 @@ const AmMappingPallet2 = (props) => {
                             type="number"
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         /></div>
                 </FormInline>
             )
@@ -875,7 +879,7 @@ const AmMappingPallet2 = (props) => {
                     returnDefaultValue={true}
                     defaultValue={valueInput && valueInput[field] != undefined ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInputBlur(value, dataObject, field, fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
                 /></FormInline>
         } else if (type === "datepicker") {
@@ -982,8 +986,12 @@ const AmMappingPallet2 = (props) => {
             inputCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
-                    valueInput[x.field] = x.defaultValue ? x.defaultValue : "";
-                    ele.value = x.defaultValue ? x.defaultValue : "";
+                    if (x.clearInput) {
+                        valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                        ele.value = x.defaultValue ? x.defaultValue : "";
+                    } else {
+                        ele.value = valueInput[x.field] ? valueInput[x.field] : ""
+                    }
                     if (x.isFocus === true) {
                         ele.focus();
                     }

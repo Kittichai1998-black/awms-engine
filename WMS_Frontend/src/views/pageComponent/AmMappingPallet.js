@@ -373,7 +373,6 @@ const AmMappingPallet = (props) => {
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         setCurInput(field);
-
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
@@ -415,12 +414,12 @@ const AmMappingPallet = (props) => {
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        // console.log(dataScan)
+                        console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
                         }
                     } else {
-                        inputClearAll();
+                        inputClear();
                     }
                 } else {
                     dataScan = {
@@ -447,7 +446,7 @@ const AmMappingPallet = (props) => {
                             resValuePosts = { ...dataScan }
                         }
                     } else {
-                        inputClearAll();
+                        inputClear();
                     }
                 } else {
                     dataScan = {
@@ -460,7 +459,7 @@ const AmMappingPallet = (props) => {
             }
 
         }
-        // console.log(resValuePosts)
+        console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -586,6 +585,8 @@ const AmMappingPallet = (props) => {
                                     } else {
                                         alertDialogRenderer("Moment Type isn't match.", "error", true);
                                     }
+                                } else {
+                                    checkMVT = true;
                                 }
                             }
                         }
@@ -646,7 +647,7 @@ const AmMappingPallet = (props) => {
 
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } 
+                                }
                                 // else {
                                 //     alertDialogRenderer("Remove Pallet Success", "success", true);
                                 //     onHandleClear();
@@ -656,7 +657,7 @@ const AmMappingPallet = (props) => {
                     } else {
                         if (checkDataNull) {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
-                        } 
+                        }
                         onHandleClear();
                     }
                 } else {
@@ -807,7 +808,7 @@ const AmMappingPallet = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput, x.validate, x.regExp)}
                         </div>
                     }
                 }
@@ -816,7 +817,7 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput, validate, regExp) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
@@ -832,10 +833,14 @@ const AmMappingPallet = (props) => {
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
+                            // validate={validate}
+                            // regExp={regExp}
+                            // msgError={"Error"}
+                            // styleValidate={{display: 'block'}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                        //onChangeV2={(value, obj, element, event) => onHandleOnChange(value, null, field, null, event)}
+                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -852,7 +857,8 @@ const AmMappingPallet = (props) => {
                             type="number"
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -978,7 +984,7 @@ const AmMappingPallet = (props) => {
                     valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                     ele.value = x.defaultValue ? x.defaultValue : "";
                 } else {
-
+                    ele.value = valueInput[x.field] ? valueInput[x.field] : ""
                 }
                 if (x.isFocus === true) {
                     ele.focus();

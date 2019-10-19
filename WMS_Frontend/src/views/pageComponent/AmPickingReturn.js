@@ -579,6 +579,8 @@ const AmPickingReturn = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
+                            } else {
+                                checkMVT = true;
                             }
                         }
                         if (showOldValue && checkMVT) {
@@ -725,7 +727,8 @@ const AmPickingReturn = (props) => {
                             } : {}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -742,7 +745,8 @@ const AmPickingReturn = (props) => {
                             type="number"
                             style={{ width: "330px" }} defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -834,7 +838,7 @@ const AmPickingReturn = (props) => {
                     valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                     ele.value = x.defaultValue ? x.defaultValue : "";
                 } else {
-
+                    ele.value = valueInput[x.field] ? valueInput[x.field] : ""
                 }
                 if (x.isFocus === true) {
                     ele.focus();
