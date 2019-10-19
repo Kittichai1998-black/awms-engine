@@ -6,12 +6,12 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     root: {
-        minWidth: '1.85em',
+        minWidth: '2em',
         height: '1.725em',
     }
 });
 const StorageObjectEventStatus = [
-    { status: "NEW", code: 10, label: 'N' },
+    { status: "NEW", code: 10, label: 'NW' },
     { status: "RECEIVING", code: 11, label: 'RC' },
     { status: "RECEIVED", code: 12, label: 'RC' },
     { status: "AUDITING", code: 13, label: 'AD' },
@@ -38,7 +38,7 @@ const StorageObjectEventStatus = [
     // {status: "TRANSFERED",code: 116, label: 'T'}
     { status: "HOLD", code: 99, label: 'HD' },
     { status: "QUALITY_CONTROL", code: 98, label: 'QC' },
-    { status: "PARTIAL", code: 97, label: 'PT' },
+    { status: "PARTIAL", code: 97, label: 'PR' },
     { status: "RETURN", code: 96, label: 'RT' }
 ]
 
