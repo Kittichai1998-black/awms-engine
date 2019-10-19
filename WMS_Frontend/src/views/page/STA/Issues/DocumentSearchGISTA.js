@@ -96,7 +96,7 @@ const DocumentSearchGISTA = props => {
     {
       Header: "",
       accessor: "EventStatus",
-      width: 50,
+      width: 40,
       fixed: "left",
       Cell: dataRow => getStatusCode(dataRow.value)
     },
