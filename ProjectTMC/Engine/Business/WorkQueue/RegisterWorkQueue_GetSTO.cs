@@ -46,12 +46,12 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                 
             }, buVO);
 
-            var sum = distoDoc.Sum(x => x.Quantity);
-            var sumQty = sum + reqVO.mappingPallets[0].qty;
-            if (sumQty > docGR.Quantity)
-            {
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Qty more then Good Received Document");
-            }
+            //var sum = distoDoc.Sum(x => x.Quantity);
+            //var sumQty = sum + reqVO.mappingPallets[0].qty;
+            //if (sumQty > docGR.Quantity)
+            //{
+            //    throw new AMWException(logger, AMWExceptionCode.V1001, "Qty more then Good Received Document");
+            //}
             
      
             if (baseMasterData.Count <= 0)
@@ -151,7 +151,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                             {
                                
                                 code = docGR.Code,
-                                qty = row.qty,
+                                qty = docGR.Quantity,
                                 unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docGR.UnitType_ID).Code, 
                                 orderNo = null,
                                 batch = null,

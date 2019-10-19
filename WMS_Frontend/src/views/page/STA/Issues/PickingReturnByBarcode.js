@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/RangeNumUtill';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
@@ -22,15 +22,14 @@ const PickingReturnByBarcode = (props) => {
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }
-        }
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -70,8 +69,11 @@ const PickingReturnByBarcode = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             },{
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            },{
+                field: "scanCode",
+                value: ""
             }]
  
         }
@@ -110,7 +112,7 @@ const PickingReturnByBarcode = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -144,7 +146,7 @@ const PickingReturnByBarcode = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }
@@ -174,6 +176,7 @@ const PickingReturnByBarcode = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if(storageObj.code === reqValue.scanCode){
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
@@ -34,15 +34,14 @@ const ReceiveWIPSup = (props) => {
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '12', label: "RECEIVED" }
             ],
             "defaultValue": { value: '12', disabled: true }
-        }
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -80,9 +79,12 @@ const ReceiveWIPSup = (props) => {
             {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            },{
+            }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "scanCode",
+                value: ""
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -91,9 +93,9 @@ const ReceiveWIPSup = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_WAREHOUSE_ID,
-                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID])
                 });
-            }  
+            }
         }
         return oldValue;
     }
@@ -118,7 +120,7 @@ const ReceiveWIPSup = (props) => {
                 }
 
                 if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].length === 26) {
+                    if (reqValue['scanCode'].trim().length === 26) {
                         orderNo = reqValue['scanCode'].substr(0, 7);
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
                         if (skuCode1.includes('@')) {
@@ -139,7 +141,7 @@ const ReceiveWIPSup = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -173,7 +175,7 @@ const ReceiveWIPSup = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }
@@ -199,6 +201,11 @@ const ReceiveWIPSup = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["WIP"]
                             };
+                            if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                                if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
+                                    dataScan.allowSubmit = false;
+                                }
+                            }
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {
@@ -207,6 +214,7 @@ const ReceiveWIPSup = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

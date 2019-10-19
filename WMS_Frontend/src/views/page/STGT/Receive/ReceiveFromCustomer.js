@@ -5,25 +5,41 @@ import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+
 // const Axios = new apicall()
 
-const ReceivePallet = (props) => {
+const CustomerQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "Customer",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+}
+const ReceiveFromCustomer = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '13'}" };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
+
+    const inputSource = [
+        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true },
+    ]
 
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
-        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 20, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '97', label: "PARTIAL" }
+                { value: '96', label: "RETURN" },
             ],
-            "defaultValue": { value: '97', disabled: true }
+            "defaultValue": { value: '96', disabled: true }
         }
     ]
 
@@ -31,14 +47,13 @@ const ReceivePallet = (props) => {
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '97', label: "PARTIAL" }
+                { value: '96', label: "RETURN" }
             ],
-            "defaultValue": { value: '97', disabled: true }
+            "defaultValue": { value: '96', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true }
+        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet",  "required": true, "clearInput": true }
 
     ]
-
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
@@ -51,16 +66,8 @@ const ReceivePallet = (props) => {
             value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
         }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
         return res;
     }
-
     function onOldValue(storageObj) {
         let oldValue = [];
         if (storageObj) {
@@ -92,6 +99,9 @@ const ReceivePallet = (props) => {
                 let qryStrOpt = queryString.parse(dataMapstos.options);
 
                 oldValue.push({
+                    field: SC.OPT_SOU_CUSTOMER_ID,
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
+                }, {
                     field: "orderNo",
                     value: dataMapstos.orderNo
                 }, {
@@ -114,12 +124,21 @@ const ReceivePallet = (props) => {
             let orderNo = null;
             let skuCode = null;
             let cartonNo = null;
+            let SOU_CUSTOMER_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
 
             let cartonNoList = [];
             let newQty = 0;
             if (storageObj) {
+                if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
+                    SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
+                } else {
+                    if (reqValue.action != 2) {
+                        alertDialogRenderer("Please select source customer before.", "error", true);
+                    }
+                }
+
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].trim().length !== 0) {
                         skuCode = reqValue['scanCode'].trim();
@@ -136,7 +155,6 @@ const ReceivePallet = (props) => {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                    console.log("scan pallet")
                                 } else {
                                     alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
 
@@ -152,7 +170,6 @@ const ReceivePallet = (props) => {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
                             if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                console.log("scan pallet")
                             } else {
                                 alertDialogRenderer("Carton No. must be value.", "error", true);
                             }
@@ -299,9 +316,12 @@ const ReceivePallet = (props) => {
                 }
 
                 if (cartonNo && rootID && skuCode && orderNo) {
+                    if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
+                        qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                    }
 
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
-                    // qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
+                    // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
                     let uri_opt = decodeURIComponent(qryStr1);
 
@@ -312,6 +332,11 @@ const ReceivePallet = (props) => {
                         options: cartonNo === "0" ? null : uri_opt,
                         validateSKUTypeCodes: ["FG"]
                     };
+                    if(reqValue.action != 2){ //ไม่ใช่เคสลบ
+                        if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                            dataScan.allowSubmit = false;
+                        }
+                    } 
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
@@ -335,7 +360,6 @@ const ReceivePallet = (props) => {
         }
         return resValuePost;
     }
-
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
         setTypeDialog(type);
@@ -354,21 +378,23 @@ const ReceivePallet = (props) => {
             <AmMappingPallet2
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
+                sourceCreate={inputSource}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 FirstScans={inputFirst}
-                // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
-                onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
-                // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
+                // apiCreate={apiCreate} // api ���ҧ sto default => "/v2/ScanMapStoAPI"
+                onBeforePost={onBeforePost} //�ѧ����������������ͧ ��͹��� api
+                // //�ѧ�����������������ʴ��� options �ͧ
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
+                setMovementType={"1012"}
+                autoDoc={true}
                 autoPost={false}
-                setMovementType={"1111"}
                 showOldValue={onOldValue}
             />
         </div>
     );
 
 }
-export default ReceivePallet;
+export default ReceiveFromCustomer;

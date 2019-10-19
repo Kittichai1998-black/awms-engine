@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
@@ -30,15 +30,14 @@ const CustomerReturnPalletByBarcode = (props) => {
     ]
 
     const inputItem = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '96', label: "RETURN" },
             ],
             "defaultValue": { value: '96', disabled: true }
-        }
-    ]
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }    ]
 
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -77,8 +76,11 @@ const CustomerReturnPalletByBarcode = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             },{
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            },{
+                field: "scanCode",
+                value: ""
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -87,7 +89,7 @@ const CustomerReturnPalletByBarcode = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 });
             }  
         }
@@ -114,7 +116,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                 }
 
                 if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].length === 26) {
+                    if (reqValue['scanCode'].trim().length === 26) {
                         orderNo = reqValue['scanCode'].substr(0, 7);
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
                         if (skuCode1.includes('@')) {
@@ -135,7 +137,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -169,7 +171,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }
@@ -195,6 +197,12 @@ const CustomerReturnPalletByBarcode = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["FG"]
                             };
+                            if(reqValue.action != 2){ //ไม่ใช่เคสลบ
+                                if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                                    dataScan.allowSubmit = false;
+                                }
+                            } 
+
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {
@@ -203,6 +211,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

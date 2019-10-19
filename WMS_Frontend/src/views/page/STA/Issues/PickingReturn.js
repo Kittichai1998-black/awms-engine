@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
 import AmPickingReturn2 from '../../../pageComponent/AmpickingReturn2';
 import AmDialogs from '../../../../components/AmDialogs'
@@ -19,7 +19,7 @@ const PickingReturn = (props) => {
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
-        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No.", "clearInput": true, "required": true },
+        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
@@ -31,15 +31,14 @@ const PickingReturn = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }
-        }
-
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -79,8 +78,14 @@ const PickingReturn = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -143,7 +148,7 @@ const PickingReturn = (props) => {
                     }
 
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {
                         if (curInput === 'cartonNo') {
@@ -169,7 +174,7 @@ const PickingReturn = (props) => {
                     }
 
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {
                         if (curInput === 'cartonNo') {
@@ -197,7 +202,7 @@ const PickingReturn = (props) => {
                         }
                     }
                     let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                    let resCartonNo = ConvertRangeNumToString(oldOptions);
+                    let resCartonNo = ExplodeRangeNum(oldOptions);
                     let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
 
                     if (reqValue.action === 2) {
@@ -220,7 +225,7 @@ const PickingReturn = (props) => {
                                 }
                                 if (numCarton === lenDiffCarton) {
                                     if (noHasCartonList.length > 0) {
-                                        let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
+                                        let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : MergeRangeNum(noHasCartonList.join());
                                         if (noHascarNoMatch.length > 0) {
                                             alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
                                         }
@@ -244,7 +249,7 @@ const PickingReturn = (props) => {
                             newQty = lenNewCarton;
 
                         } else {
-                            let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
+                            let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : MergeRangeNum(cartonNoList.join());
                             if (carNoMatch.length > 0) {
                                 alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
                             }
@@ -258,7 +263,7 @@ const PickingReturn = (props) => {
                     } else {
                         let diffCarton = match(splitCartonNo, cartonNoList);
                         if (diffCarton.length > 0) {
-                            let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : ConvertStringToRangeNum(diffCarton.join());
+                            let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : MergeRangeNum(diffCarton.join());
                             alertDialogRenderer("Pallet No. " + storageObj.code + " had Carton No. " + carNoMatch + " already", "error", true);
                             cartonNo = null;
                             let eleCartonNo = document.getElementById('cartonNo');
@@ -267,14 +272,14 @@ const PickingReturn = (props) => {
                                 reqValue['cartonNo'] = "";
                             }
                         } else {
-                            cartonNo = cartonNoList.length > 0 ? ConvertStringToRangeNum(resCartonNo + "," + cartonNoList.join()) : null;
+                            cartonNo = cartonNoList.length > 0 ? MergeRangeNum(resCartonNo + "," + cartonNoList.join()) : null;
                             newQty = cartonNoList.length;
                         }
 
                     }
 
                 } else {
-                    cartonNo = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
+                    cartonNo = cartonNoList.length === 1 ? cartonNoList.join() : MergeRangeNum(cartonNoList.join());
                     newQty = cartonNoList.length;
                 }
                 if (curInput === 'amount') {
@@ -313,6 +318,7 @@ const PickingReturn = (props) => {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {
@@ -324,15 +330,7 @@ const PickingReturn = (props) => {
                     }
                 }
             } else {
-                if (reqValue.action === 2) {
-                    if (storageObj.code === reqValue.scanCode) {
-                        resValuePost = { ...reqValue, allowSubmit: true }
-                    } else {
-                        resValuePost = { ...reqValue, allowSubmit: false }
-                    }
-                } else {
-                    resValuePost = { ...reqValue, allowSubmit: false }
-                }
+                resValuePost = { ...reqValue, allowSubmit: false }
             }
         }
         return resValuePost;

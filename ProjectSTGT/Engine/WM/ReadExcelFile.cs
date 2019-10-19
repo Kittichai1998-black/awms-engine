@@ -37,11 +37,11 @@ namespace ProjectSTGT.Engine.WM
         {
             var directoryPath = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "DIRECTORY_PATH").DataValue;
             var resList = new List<TRes>();
-            var getFile = new DirectoryInfo(directoryPath).GetFiles();
-            foreach (var file in getFile)
-            {
-                //var resxx = FilesAccess.ExcelAccess<TRes>(file.FullName);
-            }
+            //var getFile = new DirectoryInfo(directoryPath).GetFiles();
+            //foreach (var file in getFile)
+            //{
+            //    var resxx = FilesAccess.ExcelAccess<TRes>(file.FullName);
+            //}
         }  
     }
 }

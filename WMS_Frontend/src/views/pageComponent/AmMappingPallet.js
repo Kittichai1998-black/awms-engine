@@ -217,9 +217,11 @@ const AmMappingPallet = (props) => {
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
         autoPost = true,
+        autoDoc,
         setMovementType,
         showOldValue,
-        modeSelectOnly
+        modeSelectOnly,
+        onBeforeBasePost
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -387,21 +389,10 @@ const AmMappingPallet = (props) => {
             setKeyEnter(true);
         }
     };
-    const onHandleOnChange = (value, dataObject, field, fieldDataKey, event) => {
-        // console.log(value)
-        valueInput[field] = value;
-        onHandleBeforePost2(field);
-    };
-    async function onHandleBeforePost2(curInput) {
-        getValueInput();
-        if (valueInput) {
-            console.log(curInput)
-            console.log(valueInput)
-        }
-    }
+
     async function onHandleBeforePost() {
         setKeyEnter(false);
-        getValueInput();
+        // getValueInput();
         //default
         var resValuePosts = null;
         var dataScan = {};
@@ -443,13 +434,29 @@ const AmMappingPallet = (props) => {
 
             } else {
                 //select / add pallet 
-                dataScan = {
-                    // rootID: null,
-                    mode: 0,
-                    amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                    action: actionValue,
+                if (onBeforeBasePost) {
+                    var resInput = {
+                        ...valueInput,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
+                        action: actionValue,
+                    };
+                    dataScan = await onBeforeBasePost(resInput, curInput);
+                    if (dataScan) {
+                        if (dataScan.allowSubmit === true) {
+                            resValuePosts = { ...dataScan }
+                        }
+                    } else {
+                        inputClearAll();
+                    }
+                } else {
+                    dataScan = {
+                        mode: 0,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        action: actionValue,
+                    }
+                    resValuePosts = { ...valueInput, ...dataScan }
                 }
-                resValuePosts = { ...valueInput, ...dataScan }
             }
 
         }
@@ -497,11 +504,14 @@ const AmMappingPallet = (props) => {
             if (setMovementType !== undefined || null) {
                 qryStrOpt[SC.OPT_MVT] = setMovementType;
             }
+            if (autoDoc) {
+                qryStrOpt[SC.OPT_AUTO_DOC] = "true"
+            }
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
             // console.log(resValuePosts);
-            if (resValuePosts.scanCode.length === 0) {
+            if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
                 if (modeEmptyPallet === false) {
@@ -560,33 +570,44 @@ const AmMappingPallet = (props) => {
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
-                    let qryStr = queryString.parse(res.data.options);
-                    let OPT_MVT = qryStr[SC.OPT_MVT];
-                    if (modeSelectOnly) {
-                        checkMVT = true;
-                    } else {
-                        if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                    let checkDataNull = false;
+                    if (res.data.code) {
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
+                        if (modeSelectOnly) {
                             checkMVT = true;
                         } else {
-                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                            if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                                 checkMVT = true;
+                            } else {
+                                if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT && setMovementType) {
+                                    if (OPT_MVT === setMovementType) {
+                                        checkMVT = true;
+                                    } else {
+                                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                                    }
+                                }
                             }
                         }
-                    }
-                    if (showOldValue && checkMVT) {
-                        let getOldValue = showOldValue(res.data);
-                        let val = { ...valueInput };
-                        getOldValue.map((x, i) => {
-                            val[x.field] = x.value;
-                        });
-                        setValueInput(val);
+
+                        if (showOldValue && checkMVT) {
+                            let getOldValue = showOldValue(res.data);
+                            let val = { ...valueInput };
+                            getOldValue.map((x, i) => {
+                                val[x.field] = x.value;
+                            });
+                            setValueInput(val);
+                        } else {
+                            let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
+                            setValueInput(val);
+                        }
                     } else {
-                        let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
-                        console.log(val);
-                        setValueInput(val);
+                        if (actionValue === 2) {
+                            checkDataNull = true;
+                        }
                     }
-                    inputClearAll();
                     if (checkMVT) {
+                        inputClearAll();
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
                         }
@@ -625,29 +646,17 @@ const AmMappingPallet = (props) => {
 
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } else {
-                                    alertDialogRenderer("Remove Pallet Success", "success", true);
-                                    onHandleClear();
-                                }
+                                } 
+                                // else {
+                                //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                                //     onHandleClear();
+                                // }
                             }
                         }
-                        // if (itemCreate !== undefined) {
-                        //     let qryStr2 = queryString.parse(res.data.options);
-                        //     itemCreate.map((x, i) => {
-                        //         let ele = document.getElementById(x.field);
-                        //         if (ele) {
-                        //             if (x.clearInput) {
-                        //             } else {
-                        //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                        //                     valueInput[x.field] = qryStr2[x.field];
-                        //                     ele.value = qryStr2[x.field];
-                        //                 }
-                        //             }
-                        //         }
-                        //     });
-                        // }
                     } else {
-                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                        if (checkDataNull) {
+                            alertDialogRenderer("Remove Pallet Success", "success", true);
+                        } 
                         onHandleClear();
                     }
                 } else {
@@ -1027,7 +1036,9 @@ const AmMappingPallet = (props) => {
                     {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
-
+                                <Typography className={classes.title} gutterBottom>
+                                    Source Information
+                                </Typography>
                                 {inputSource.map((row, idx) => {
                                     return row.component(row, idx)
                                 })}
@@ -1037,7 +1048,7 @@ const AmMappingPallet = (props) => {
                         : null}
                     <CardContent className={classes.cardContent}>
                         <Typography className={classes.title} gutterBottom>
-                            Pallet Information
+                            Location Information
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
@@ -1047,6 +1058,9 @@ const AmMappingPallet = (props) => {
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {inputItem ? inputItem.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
@@ -1106,6 +1120,7 @@ AmMappingPallet.propTypes = {
     sourceCreate: PropTypes.array,
     itemCreate: PropTypes.array,
     onBeforePost: PropTypes.func,
+    onBeforeBasePost: PropTypes.func,
     apiCreate: PropTypes.string,
     apiConfirm: PropTypes.string,
     customOptions: PropTypes.func,
@@ -1118,7 +1133,8 @@ AmMappingPallet.propTypes = {
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
     showOldValue: PropTypes.func,
-    modeSelectOnly: PropTypes.bool
+    modeSelectOnly: PropTypes.bool,
+    autoDoc: PropTypes.bool
 };
 
 AmMappingPallet.defaultProps = {

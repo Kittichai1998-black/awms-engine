@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import * as SC from '../../../../constant/StringConst'
@@ -21,15 +21,14 @@ const ReceiveEmptyPallet = (props) => {
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
     const inputItem = [
-        // { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1 },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {    //  "visible": false, 
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '12', label: "RECEIVED" },
             ],
             "defaultValue": { value: '12', disabled: true }
-        }
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true, "clearInput": true }
     ]
 
 

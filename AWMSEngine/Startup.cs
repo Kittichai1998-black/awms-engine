@@ -13,13 +13,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Quartz;
+using Microsoft.AspNetCore.Routing;
 
 namespace AWMSEngine
 {
@@ -48,21 +50,19 @@ namespace AWMSEngine
                     //.WithMethods("GET", "PUT", "POST", "DELETE")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
+                    //.AllowCredentials()
                     .WithExposedHeaders("x-custom-header");
                 });
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-             .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
+            services.AddRazorPages();
+
+            services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.AddSignalR();
-
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
 
@@ -72,7 +72,6 @@ namespace AWMSEngine
             ADO.StaticValue.StaticValueManager.GetInstant();
 
             this.SetUpScheduler(appProperty);
-            this.SetUpHub(appProperty,app);
 
 
             if (env.IsDevelopment())
@@ -84,12 +83,17 @@ namespace AWMSEngine
                 app.UseHsts();
             }
 
+            app.UseRouting();
             app.UseCors("AllowCors");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseMvc();
+            this.SetUpHub(appProperty, app);
 
+            app.UseEndpoints(endpoint =>
+            {
+                endpoint.MapControllers();
+            });
 
         }
 
@@ -105,8 +109,15 @@ namespace AWMSEngine
                 {
                     string workerClassname = appProperty[string.Format(PropertyConst.APP_KEY_WORKER_CLASSNAME, n)];
                     var t = AMWUtil.Common.ClassType.GetClassType(workerClassname);
-                    var m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService",
-                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    MethodInfo m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService", new Type[] { typeof(IServiceCollection) });
+                    //foreach (var _m1 in typeof(ServiceCollectionHostedServiceExtensions).GetMethods())
+                    //{
+                    //    if(_m1.Name == "AddHostedService" && _m1.GetParameters().Length == 1 && _m1.GetParameters()[0].ParameterType.Name == "IServiceCollection")
+                    //    {
+                    //        m1 = _m1;
+                    //        break;
+                    //    }
+                    //}
                     var m2 = m1.MakeGenericMethod(t);
                     IServiceCollection w = (IServiceCollection)m2.Invoke(null, new object[] { services });
                     //var st = w.Where(x => x.ServiceType.GetType() == t).ToList();
@@ -140,17 +151,19 @@ namespace AWMSEngine
             string hubNames = appProperty.ContainsKey(PropertyConst.APP_KEY_HUB_NAMES) ? appProperty[PropertyConst.APP_KEY_HUB_NAMES] : string.Empty;
             if (!string.IsNullOrWhiteSpace(hubNames))
             {
-                app.UseSignalR(routes =>
+                app.UseEndpoints(routes =>
                 {
                     foreach (string n in hubNames.Split(','))
                     {
                         string hubURL = appProperty[string.Format(PropertyConst.APP_KEY_HUB_URL, n)];
                         string hubClassname = appProperty[string.Format(PropertyConst.APP_KEY_HUB_CLASSNAME, n)];
                         var t = AMWUtil.Common.ClassType.GetClassType(hubClassname);
-                        var t2 = routes.GetType();
-                        var m1 = t2.GetMethod("MapHub", new Type[] { typeof(PathString) });
+                        //var t2 = routes.GetType();
+
+                        var m1 = typeof(HubEndpointRouteBuilderExtensions).GetMethod("MapHub", new Type[] { typeof(IEndpointRouteBuilder), typeof(string) });
+                        //var m1 = t2.GetMethod("MapHub", new Type[] { typeof(IEndpointRouteBuilder) ,typeof(string) });
                         var m2 = m1.MakeGenericMethod(t);
-                        m2.Invoke(routes, new object[] { new PathString(hubURL) });
+                        m2.Invoke(routes, new object[] { routes, new string(hubURL) });
                         //routes.MapHub<CommonMessageHub>("/clockhub");
                     }
                 });

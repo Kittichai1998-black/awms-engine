@@ -51,6 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public amt_DocumentItem docItem;
             public MovementType mvt;
+            public long? parentDocID;
         }
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
@@ -397,16 +398,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
 
                 var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-
+                var skutypeg = sto_skuType.GroupType.GetValueInt();
                 if (mvt == null || mvt.Length == 0)
                 {
-                    var movementtype = sto_skuType.GroupType + "011";
+                    var movementtype = sto_skuType.GroupType.GetValueInt().ToString() + "011";
                     mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), movementtype);
                     if(mvtDoc.Equals(null))
                     {
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Movement Type isn't match.");
                     }
                 }
+                var parentDocID_opt = ObjectUtil.QryStrGetValue(psto.options, OptionVOConst.OPT_PARENT_DOCUMENT_ID);
+
                 var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitByPack(packMaster.ID.Value, psto.qty, packMaster.UnitType_ID);
                 decimal? baseQuantity = null;
                 if (psto.qty >= 0)
@@ -415,13 +418,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 tempDocItems.Add(new TempMVTDocItems()
                 {
                     mvt = mvtDoc,
+                    parentDocID = string.IsNullOrWhiteSpace(parentDocID_opt) ? 0 : long.Parse(parentDocID_opt),
                     docItem = new amt_DocumentItem()
                     {
                         ID = null,
                         Code = psto.code,
                         SKUMaster_ID = psto.skuID.Value,
                         PackMaster_ID = packMaster.ID.Value,
-
+                        
                         Quantity = psto.qty,
                         UnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                         BaseQuantity = baseQuantity,
@@ -432,7 +436,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         Lot = psto.lot,
 
                         Options = null,
-                        ExpireDate = null,
+                        ExpireDate = psto.expiryDate,
                         ProductionDate = psto.productDate,
                         Ref1 = null,
                         Ref2 = null,
@@ -446,14 +450,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
 
             var res_DI = tempDocItems.GroupBy(
-                p => p.mvt, (key, g) => new { MVTCode = key, DocItems = g.Select(y=> y.docItem).ToList() });
+                p => new { p.mvt, p.parentDocID }, (key, g) => new { MVTCode = key.mvt, ParentDocID = key.parentDocID, DocItems = g.Select(y=> y.docItem).ToList() });
             foreach (var di in res_DI)
             {
                 amt_Document doc = new amt_Document()
                 {
                     ID = null,
                     Code = null,
-                    ParentDocument_ID = null,
+                    ParentDocument_ID = di.ParentDocID == 0 ? null : di.ParentDocID,
                     Lot = null,
                     Batch = null,
                     For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
