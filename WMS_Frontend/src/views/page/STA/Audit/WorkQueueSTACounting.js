@@ -139,7 +139,7 @@ const WorkQueueSTACounting = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValue: 8 },
 
     ];
 
@@ -167,6 +167,7 @@ const WorkQueueSTACounting = (props) => {
             status={true}
             random={true}
             docType={"audit"}
+            StatusHold={false}
             dataSort={false}
             apiResConfirm={"/counting/managequeue"}
             apidetail={"/counting/detail?docID="}
