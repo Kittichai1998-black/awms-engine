@@ -1,4 +1,31 @@
-.HoverTable:hover {
-    background-color: yellow!important;
-    cursor: pointer;
-  }
+.HoverTable:not(:first-child):hover {
+  background-color: yellow!important;
+  cursor: pointer;
+}
+#divTableTopView tr td:first-child{
+  position: absolute;
+  margin-left:-42px;
+  width:40px;
+  text-align:right !important;
+}
+#divTableSideView tr td:first-child{
+  position: absolute;
+  margin-left:-42px;
+  width:40px;
+  text-align:right !important;
+  padding-top:4px;
+}
+#divTableTopView,#divTableSideView{
+  overflow: auto;
+  margin-left: 42px;
+}
+#divTableTopView tr.active{
+  background-color: red;
+}
+#divTableTopView tr.active td:first-child{
+  background-color: red;
+}
+/* #divTableTopView>tr>td,#divTableSideView{
+  font-size: 8px;
+  margin-left: 42px;
+} */

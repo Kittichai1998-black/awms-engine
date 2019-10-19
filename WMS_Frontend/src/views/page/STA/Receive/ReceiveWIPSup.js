@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
@@ -33,7 +33,7 @@ const ReceiveWIPSup = (props) => {
     const inputSource = [
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
-    const inputItem = [ 
+    const inputItem = [
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -79,9 +79,12 @@ const ReceiveWIPSup = (props) => {
             {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            },{
+            }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "scanCode",
+                value: ""
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -90,9 +93,9 @@ const ReceiveWIPSup = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_WAREHOUSE_ID,
-                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID])
                 });
-            }  
+            }
         }
         return oldValue;
     }
@@ -138,7 +141,7 @@ const ReceiveWIPSup = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -172,7 +175,7 @@ const ReceiveWIPSup = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }
@@ -198,11 +201,11 @@ const ReceiveWIPSup = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["WIP"]
                             };
-                            if(reqValue.action != 2){ //ไม่ใช่เคสลบ
-                                if(SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0){
+                            if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                                if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
                                     dataScan.allowSubmit = false;
                                 }
-                            } 
+                            }
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {

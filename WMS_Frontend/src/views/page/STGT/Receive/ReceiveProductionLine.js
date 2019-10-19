@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  ConvertRangeNumToString,
-  ConvertStringToRangeNum,
+  ExplodeRangeNum,
+  MergeRangeNum,
   ToRanges,
   match
-} from "../../../../components/function/Convert";
+} from "../../../../components/function/RangeNumUtill";
 import AmMappingPallet from "../../../pageComponent/AmMappingPallet";
 import AmMappingPallet2 from "../../../pageComponent/AmMappingPallet2";
 import AmDialogs from "../../../../components/AmDialogs";
@@ -85,8 +85,8 @@ const ReceiveProductionLine = props => {
       field: SC.OPT_DONE_DES_EVENT_STATUS,
       type: "radiogroup",
       name: "Status",
-      fieldLabel: [{ value: "96", label: "RETURN" }],
-      defaultValue: { value: "96", disabled: true }
+      fieldLabel: [{ value: "12", label: "RECEIVED" }],
+      defaultValue: { value: "12", disabled: true }
     }
   ];
 
@@ -208,7 +208,7 @@ const ReceiveProductionLine = props => {
               }
               if (rootID && skuCode && orderNo) {
                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                let resCartonNo = ExplodeRangeNum(oldOptions);
                 let splitCartonNo = resCartonNo.split(",").map((x, i) => {
                   return (x = parseInt(x));
                 });
@@ -259,7 +259,7 @@ const ReceiveProductionLine = props => {
                       break;
                     } else {
                       if (numCarton === lenSplitCartonNo) {
-                        cartonNo = ConvertStringToRangeNum(
+                        cartonNo = MergeRangeNum(
                           resCartonNo + "," + cartonNo.toString()
                         );
                       } else {
@@ -351,9 +351,10 @@ const ReceiveProductionLine = props => {
         customOptions={customOptions}
         showOptions={true}
         setVisibleTabMenu={[null, "Add", "Remove"]}
-        setMovementType={"1012"}
+        //setMovementType={"1012"}
         autoPost={true}
         showOldValue={onOldValue}
+        apiCreate={"/v2/ScanReceivedProductionLineAPI"}
       />
     </div>
   );

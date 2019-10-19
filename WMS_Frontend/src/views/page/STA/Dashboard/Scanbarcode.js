@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
 import AmDropdown from "../../../../components/AmDropdown"
 import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -377,7 +377,7 @@ const Scanbarcode = (props) => {
                     });
 
                     let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
-                    let resCarton = ConvertStringToRangeNum(disCarton.join(','));
+                    let resCarton = MergeRangeNum(disCarton.join(','));
 
                     mapSto.rootID = leftGate.baseID;
                     mapSto.scanCode = manualAddLeft.code;
@@ -417,7 +417,7 @@ const Scanbarcode = (props) => {
                     });
 
                     let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
-                    let resCarton = ConvertStringToRangeNum(disCarton.join(','));
+                    let resCarton = MergeRangeNum(disCarton.join(','));
 
                     mapSto.rootID = rightGate.baseID;
                     mapSto.scanCode = manualAddRight.code;

@@ -220,7 +220,8 @@ const AmMappingPallet = (props) => {
         autoDoc,
         setMovementType,
         showOldValue,
-        modeSelectOnly
+        modeSelectOnly,
+        onBeforeBasePost
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -388,21 +389,10 @@ const AmMappingPallet = (props) => {
             setKeyEnter(true);
         }
     };
-    const onHandleOnChange = (value, dataObject, field, fieldDataKey, event) => {
-        // console.log(value)
-        valueInput[field] = value;
-        onHandleBeforePost2(field);
-    };
-    async function onHandleBeforePost2(curInput) {
-        getValueInput();
-        if (valueInput) {
-            console.log(curInput)
-            console.log(valueInput)
-        }
-    }
+
     async function onHandleBeforePost() {
         setKeyEnter(false);
-        getValueInput();
+        // getValueInput();
         //default
         var resValuePosts = null;
         var dataScan = {};
@@ -444,17 +434,33 @@ const AmMappingPallet = (props) => {
 
             } else {
                 //select / add pallet 
-                dataScan = {
-                    // rootID: null,
-                    mode: 0,
-                    amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                    action: actionValue,
+                if (onBeforeBasePost) {
+                    var resInput = {
+                        ...valueInput,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
+                        action: actionValue,
+                    };
+                    dataScan = await onBeforeBasePost(resInput, curInput);
+                    if (dataScan) {
+                        if (dataScan.allowSubmit === true) {
+                            resValuePosts = { ...dataScan }
+                        }
+                    } else {
+                        inputClearAll();
+                    }
+                } else {
+                    dataScan = {
+                        mode: 0,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        action: actionValue,
+                    }
+                    resValuePosts = { ...valueInput, ...dataScan }
                 }
-                resValuePosts = { ...valueInput, ...dataScan }
             }
 
         }
-        console.log(resValuePosts)
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -504,8 +510,8 @@ const AmMappingPallet = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            console.log(resValuePosts);
-            if (resValuePosts.scanCode.length === 0) {
+            // console.log(resValuePosts);
+            if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
                 if (modeEmptyPallet === false) {
@@ -564,6 +570,7 @@ const AmMappingPallet = (props) => {
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
+                    let checkDataNull = false;
                     if (res.data.code) {
                         let qryStr = queryString.parse(res.data.options);
                         let OPT_MVT = qryStr[SC.OPT_MVT];
@@ -573,11 +580,16 @@ const AmMappingPallet = (props) => {
                             if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                                 checkMVT = true;
                             } else {
-                                if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
-                                    checkMVT = true;
+                                if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT && setMovementType) {
+                                    if (OPT_MVT === setMovementType) {
+                                        checkMVT = true;
+                                    } else {
+                                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                                    }
                                 }
                             }
                         }
+
                         if (showOldValue && checkMVT) {
                             let getOldValue = showOldValue(res.data);
                             let val = { ...valueInput };
@@ -587,12 +599,15 @@ const AmMappingPallet = (props) => {
                             setValueInput(val);
                         } else {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
-                            console.log(val);
                             setValueInput(val);
                         }
+                    } else {
+                        if (actionValue === 2) {
+                            checkDataNull = true;
+                        }
                     }
-                    inputClearAll();
                     if (checkMVT) {
+                        inputClearAll();
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
                         }
@@ -631,14 +646,17 @@ const AmMappingPallet = (props) => {
 
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } else {
-                                    alertDialogRenderer("Remove Pallet Success", "success", true);
-                                    onHandleClear();
-                                }
+                                } 
+                                // else {
+                                //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                                //     onHandleClear();
+                                // }
                             }
                         }
                     } else {
-                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                        if (checkDataNull) {
+                            alertDialogRenderer("Remove Pallet Success", "success", true);
+                        } 
                         onHandleClear();
                     }
                 } else {
@@ -1102,6 +1120,7 @@ AmMappingPallet.propTypes = {
     sourceCreate: PropTypes.array,
     itemCreate: PropTypes.array,
     onBeforePost: PropTypes.func,
+    onBeforeBasePost: PropTypes.func,
     apiCreate: PropTypes.string,
     apiConfirm: PropTypes.string,
     customOptions: PropTypes.func,

@@ -213,9 +213,9 @@ namespace AMWUtil.Common
             foreach (KeyValuePair<string, string> p in param)
             {
                 if (res.Length > 0) res.Append("&");
-                res.Append(HttpUtility.UrlEncode(p.Key));
+                res.Append(p.Key);
                 res.Append("=");
-                res.Append(HttpUtility.UrlEncode(p.Value));
+                res.Append(p.Value);
             }
             return res.ToString();
         }

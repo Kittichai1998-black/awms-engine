@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
@@ -76,8 +76,11 @@ const CustomerReturnPalletByBarcode = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             },{
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            },{
+                field: "scanCode",
+                value: ""
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -86,7 +89,7 @@ const CustomerReturnPalletByBarcode = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 });
             }  
         }
@@ -134,7 +137,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -168,7 +171,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }

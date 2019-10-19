@@ -5,6 +5,7 @@ import {
     createQueryString
 } from "../../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../../components/AmEntityStatus";
+import AmButton from "../../../../components/AmButton";
 const Axios = new apicall();
 
 //======================================================================
@@ -291,12 +292,21 @@ const SKUMaster = props => {
     } else {
       return null;
     }
-  };
+    };
+
+    const BtnexportCSV = () => {
+        return <div>
+            <AmButton styleType="default_clear">{"Export Data"}</AmButton>
+
+        </div>
+
+    }
 
   return (
     <div>
       <MasterData
-        columnsFilter={columnsFilter}
+              columnsFilter={columnsFilter}
+              customButton={<AmButton styleType="default_clear">{"Export Data"}</AmButton>}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}
         dataAdd={columns}

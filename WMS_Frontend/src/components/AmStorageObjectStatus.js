@@ -6,24 +6,24 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     root: {
-        width: '1.725em',
+        minWidth: '1.85em',
         height: '1.725em',
     }
 });
 const StorageObjectEventStatus = [
     { status: "NEW", code: 10, label: 'N' },
-    { status: "RECEIVING", code: 11, label: 'R' },
-    { status: "RECEIVED", code: 12, label: 'R' },
-    { status: "AUDITING", code: 13, label: 'A' },
-    { status: "AUDITED", code: 14, label: 'A' },
+    { status: "RECEIVING", code: 11, label: 'RC' },
+    { status: "RECEIVED", code: 12, label: 'RC' },
+    { status: "AUDITING", code: 13, label: 'AD' },
+    { status: "AUDITED", code: 14, label: 'AD' },
     // {status: "ISSUING",code: 15},
     // {status: "ISSUED",code: 16},
-    { status: "PICKING", code: 17, label: 'P' },
-    { status: "PICKED", code: 18, label: 'P' },
-    { status: "REMOVING", code: 21, label: 'R' },
-    { status: "REMOVED", code: 22, label: 'R' },
-    { status: "REJECTING", code: 23, label: 'R' },
-    { status: "REJECTED", code: 24, label: 'R' },
+    { status: "PICKING", code: 17, label: 'PK' },
+    { status: "PICKED", code: 18, label: 'PK' },
+    { status: "REMOVING", code: 21, label: 'RM' },
+    { status: "REMOVED", code: 22, label: 'RM' },
+    { status: "REJECTING", code: 23, label: 'RJ' },
+    { status: "REJECTED", code: 24, label: 'RJ' },
     // {status: "CORRECTING",code: 25, label: 'C'},
     // {status: "CORRECTED",code: 26, label: 'C'},
     // {status: "LOADING",code: 31, label: 'L'},
@@ -36,10 +36,10 @@ const StorageObjectEventStatus = [
     // {status: "MOVED",code: 114, label: 'M'},
     // {status: "TRANSFERING",code: 115, label: 'T'},
     // {status: "TRANSFERED",code: 116, label: 'T'}
-    { status: "HOLD", code: 99, label: 'H' },
-    { status: "QUALITY_CONTROL", code: 98, label: 'Q' },
-    { status: "PARTIAL", code: 97, label: 'P' },
-    { status: "RETURN", code: 96, label: 'R' }
+    { status: "HOLD", code: 99, label: 'HD' },
+    { status: "QUALITY_CONTROL", code: 98, label: 'QC' },
+    { status: "PARTIAL", code: 97, label: 'PT' },
+    { status: "RETURN", code: 96, label: 'RT' }
 ]
 
 const StorageObjectStatus = props => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
@@ -85,7 +85,13 @@ const ReceiveFromCustomer = (props) => {
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -94,7 +100,7 @@ const ReceiveFromCustomer = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 }, {
                     field: "orderNo",
                     value: dataMapstos.orderNo
@@ -149,7 +155,6 @@ const ReceiveFromCustomer = (props) => {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                    console.log("scan pallet")
                                 } else {
                                     alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
 
@@ -159,13 +164,12 @@ const ReceiveFromCustomer = (props) => {
                     }
 
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
                             if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                console.log("scan pallet")
                             } else {
                                 alertDialogRenderer("Carton No. must be value.", "error", true);
                             }
@@ -185,7 +189,7 @@ const ReceiveFromCustomer = (props) => {
                     }
 
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {
                         if (curInput === 'cartonNo') {
@@ -214,7 +218,7 @@ const ReceiveFromCustomer = (props) => {
                         }
                     }
                     let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                    let resCartonNo = ConvertRangeNumToString(oldOptions);
+                    let resCartonNo = ExplodeRangeNum(oldOptions);
                     let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
 
                     if (reqValue.action === 2) {
@@ -237,7 +241,7 @@ const ReceiveFromCustomer = (props) => {
                                 }
                                 if (numCarton === lenDiffCarton) {
                                     if (noHasCartonList.length > 0) {
-                                        let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
+                                        let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : MergeRangeNum(noHasCartonList.join());
                                         if (noHascarNoMatch.length > 0) {
                                             alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
                                         }
@@ -261,7 +265,7 @@ const ReceiveFromCustomer = (props) => {
                             newQty = lenNewCarton;
 
                         } else {
-                            let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
+                            let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : MergeRangeNum(cartonNoList.join());
                             if (carNoMatch.length > 0) {
                                 alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
                             }
@@ -275,7 +279,7 @@ const ReceiveFromCustomer = (props) => {
                     } else {
                         let diffCarton = match(splitCartonNo, cartonNoList);
                         if (diffCarton.length > 0) {
-                            let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : ConvertStringToRangeNum(diffCarton.join());
+                            let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : MergeRangeNum(diffCarton.join());
                             alertDialogRenderer("Pallet No. " + storageObj.code + " had Carton No. " + carNoMatch + " already", "error", true);
                             cartonNo = null;
                             let eleCartonNo = document.getElementById('cartonNo');
@@ -284,14 +288,14 @@ const ReceiveFromCustomer = (props) => {
                                 reqValue['cartonNo'] = "";
                             }
                         } else {
-                            cartonNo = cartonNoList.length > 0 ? ConvertStringToRangeNum(resCartonNo + "," + cartonNoList.join()) : null;
+                            cartonNo = cartonNoList.length > 0 ? MergeRangeNum(resCartonNo + "," + cartonNoList.join()) : null;
                             newQty = cartonNoList.length;
                         }
 
                     }
 
                 } else {
-                    cartonNo = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
+                    cartonNo = cartonNoList.length === 1 ? cartonNoList.join() : MergeRangeNum(cartonNoList.join());
                     newQty = cartonNoList.length;
                 }
                 if (curInput === 'amount') {
