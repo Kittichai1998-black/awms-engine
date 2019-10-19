@@ -1117,7 +1117,8 @@ const AmProcessQueue = props => {
                         row.field,
                         row.dataDDL,
                         row.Label,
-                        row.defaultValue
+                        row.defaultValue,
+                        row.defaultValues
                     )}
                 </div>
             );
@@ -1133,7 +1134,7 @@ const AmProcessQueue = props => {
         field,
         dataDDL,
         Label,
-        defaultValue
+        defaultValue, defaultValues
     ) => {
         if (type === "dropdown") {
             return (
@@ -1181,7 +1182,7 @@ const AmProcessQueue = props => {
                             valueData={valueText[idddls]} //��� value ������͡
                             queryApi={queryApi}
                             returnDefaultValue={true}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
                             disabled={defaultValue ? true : false}
                             //defaultValue={data ? data : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -2441,7 +2442,7 @@ const AmProcessQueue = props => {
 
                                                                                             </AmCheckBox>
 
-                                                                                            <AmCheckBox
+                                                                                            {props.StatusHold === true? <AmCheckBox
                                                                                                 value="Hold"
                                                                                                 label="Hold"
                                                                                                 defaultChecked={true}
@@ -2451,7 +2452,7 @@ const AmProcessQueue = props => {
                                                                                                 }
                                                                                             >
 
-                                                                                            </AmCheckBox>
+                                                                                            </AmCheckBox> : null}
 
 
                                                                                             <AmCheckBox

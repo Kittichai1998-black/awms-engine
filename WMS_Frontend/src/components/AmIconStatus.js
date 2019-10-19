@@ -126,9 +126,12 @@ const styles = theme => ({
         color: '#fff',
     },
     RETURN: {
+       /* background: '#ffc107',
+        border: '2px solid #ffc107',
+        color: '#fff',*/
         background: '#ffc107',
         border: '2px solid #ffc107',
-        color: '#fff',
+        color: '#2f353a',
     },
     WARNING: {
         background: '#ffc107',
@@ -166,14 +169,20 @@ const styles = theme => ({
         color: '#000',
     },
     QUALITY_CONTROL:{
-        background: '#fffbf1',
+        /*background: '#fffbf1',
         border: '2px solid #212121',
-        color: '#212121',
+        color: '#212121',*/
+        background: '#ffc107',
+        border: '2px solid #ffc107',
+        color: '#2f353a',
     },
     PARTIAL:{
-        background: '#fffbf1',
+       /* background: '#fffbf1',
         border: '2px solid #ffc107',
-        color: '#ffc107',
+        color: '#ffc107',*/
+        background: '#ffc107',
+        border: '2px solid #ffc107',
+        color: '#2f353a',
     }
 });
 

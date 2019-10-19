@@ -5,18 +5,18 @@ import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
     root: {
-        minWidth: '1.85em',
+        minWidth: '2.2em',
         height: '1.725em',
     }
 });
 const EventsStatus = [
-    { status: 'NEW', code: 10, label: 'N' },
+    { status: 'NEW', code: 10, label: 'NW' },
     { status: 'WORKING', code: 11, label: 'WK' },
     { status: 'WORKED', code: 12, label: 'WK' },
     { status: 'REMOVING', code: 21, label: 'RM' },
     { status: 'REMOVED', code: 22, label: 'RM' },
-    { status: 'CLOSING', code: 31, label: 'CL' },
-    { status: 'CLOSED', code: 32, label: 'CL' },
+    { status: 'CLOSING', code: 31, label: 'CS' },
+    { status: 'CLOSED', code: 32, label: 'CS' },
     { status: 'WARNING', code: 90, label: 'WN' },
 ]
 

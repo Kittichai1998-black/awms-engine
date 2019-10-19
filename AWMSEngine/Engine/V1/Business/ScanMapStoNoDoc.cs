@@ -286,35 +286,35 @@ namespace AWMSEngine.Engine.Business
             else if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
                 throw new Exception("ปิด Module Transfer");
-                var countStoFree = ADO.StorageObjectADO.GetInstant()
-                                    .GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, this.BuVO);
+                //var countStoFree = ADO.StorageObjectADO.GetInstant()
+                //                    .GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, this.BuVO);
 
-                if (reqVO.amount > countStoFree)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนที่ต้องการโอนย้าย '" + reqVO.amount + "' มีมากกว่าจำนวนที่อยู่ในระบบ '" + countStoFree + "' ");
+                //if (reqVO.amount > countStoFree)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนที่ต้องการโอนย้าย '" + reqVO.amount + "' มีมากกว่าจำนวนที่อยู่ในระบบ '" + countStoFree + "' ");
 
-                for (int i = 0; i < reqVO.amount; i++)
-                {
-                    var transferMapSto = ADO.StorageObjectADO.GetInstant()
-                                    .GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, true, this.BuVO);
+                //for (int i = 0; i < reqVO.amount; i++)
+                //{
+                //    var transferMapSto = ADO.StorageObjectADO.GetInstant()
+                //                    .GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, true, this.BuVO);
 
-                    transferMapSto.parentID = firstMapSto.id;
-                    transferMapSto.parentType = firstMapSto.type;
-                    transferMapSto.areaID = firstMapSto.areaID;
-                    transferMapSto.warehouseID = firstMapSto.warehouseID;
-                    this.ADOSto.PutV2(transferMapSto, this.BuVO);
+                //    transferMapSto.parentID = firstMapSto.id;
+                //    transferMapSto.parentType = firstMapSto.type;
+                //    transferMapSto.areaID = firstMapSto.areaID;
+                //    transferMapSto.warehouseID = firstMapSto.warehouseID;
+                //    this.ADOSto.PutV2(transferMapSto, this.BuVO);
 
-                    foreach (var sto in transferMapSto.ToTreeList())
-                    {
-                        if (sto.areaID != firstMapSto.areaID || sto.warehouseID != firstMapSto.warehouseID)
-                        {
-                            transferMapSto.areaID = firstMapSto.areaID;
-                            transferMapSto.warehouseID = firstMapSto.warehouseID;
-                            this.ADOSto.PutV2(transferMapSto, this.BuVO);
-                        }
-                    }
+                //    foreach (var sto in transferMapSto.ToTreeList())
+                //    {
+                //        if (sto.areaID != firstMapSto.areaID || sto.warehouseID != firstMapSto.warehouseID)
+                //        {
+                //            transferMapSto.areaID = firstMapSto.areaID;
+                //            transferMapSto.warehouseID = firstMapSto.warehouseID;
+                //            this.ADOSto.PutV2(transferMapSto, this.BuVO);
+                //        }
+                //    }
 
-                    firstMapSto.mapstos.Add(transferMapSto);
-                }
+                //    firstMapSto.mapstos.Add(transferMapSto);
+                //}
             }
         }
         private void ActionRemove(

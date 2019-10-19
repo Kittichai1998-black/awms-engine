@@ -166,7 +166,7 @@ const CreateDocGICus = props => {
 
 
     const columnEdit = [{ Header: 'Pallet Code', accessor: 'palletcode', type: "input" },
-        { Header: "Part NO.", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
+        { Header: "SKU Item", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
         { Header: 'Orderno', accessor: 'orderNo', type: "input" },
     { Header: "Quantity", accessor: 'quantity', type: "inputNum" },
     { Header: "Unit", accessor: 'unitType', type: "unitType", width: 70 },
@@ -176,7 +176,7 @@ const CreateDocGICus = props => {
 
 
     const columns = [{ Header: 'Pallet Code', accessor: 'palletcode', width: 100 },
-    { Header: "Part NO.", accessor: 'SKUItems' },
+    { Header: "SKU Item", accessor: 'SKUItems' },
         { Header: 'Orderno', accessor: 'orderNo', width: 100 },
     { Header: "Quantity", accessor: 'quantity', width: 70 },
     { Header: "Unit", accessor: 'unitType', width: 70 },
