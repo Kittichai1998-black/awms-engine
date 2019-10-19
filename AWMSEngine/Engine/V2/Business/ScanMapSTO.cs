@@ -40,8 +40,7 @@ namespace AWMSEngine.Engine.V2.Business
                 mapsto = this.ExecNextScan(reqVO);
             }
 
-            this.SetWeiAndQty(mapsto);
-
+            this.SetWeiAndQty(mapsto);          
             return mapsto;
         }
 

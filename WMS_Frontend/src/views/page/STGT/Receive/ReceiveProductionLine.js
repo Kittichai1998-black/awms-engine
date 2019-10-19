@@ -85,8 +85,8 @@ const ReceiveProductionLine = props => {
       field: SC.OPT_DONE_DES_EVENT_STATUS,
       type: "radiogroup",
       name: "Status",
-      fieldLabel: [{ value: "96", label: "RETURN" }],
-      defaultValue: { value: "96", disabled: true }
+      fieldLabel: [{ value: "12", label: "RECEIVED" }],
+      defaultValue: { value: "12", disabled: true }
     }
   ];
 
@@ -351,9 +351,10 @@ const ReceiveProductionLine = props => {
         customOptions={customOptions}
         showOptions={true}
         setVisibleTabMenu={[null, "Add", "Remove"]}
-        setMovementType={"1012"}
+        //setMovementType={"1012"}
         autoPost={true}
         showOldValue={onOldValue}
+        apiCreate={"/v2/ScanReceivedProductionLineAPI"}
       />
     </div>
   );
