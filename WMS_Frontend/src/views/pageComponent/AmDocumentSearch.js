@@ -215,6 +215,7 @@ const AmDocumentSearch = props => {
 
   useEffect(() => {
     if (sort) {
+      onHandleFilterConfirm();
       const queryEdit = JSON.parse(JSON.stringify(query));
       queryEdit.s = '[{"f":"' + sort.field + '", "od":"' + sort.order + '"}]';
       getData(queryEdit);
