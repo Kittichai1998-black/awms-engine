@@ -903,10 +903,10 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     const [excelDataSrouce, setExcelDataSource] = useState([]);
 //===========================================================
 
-const onHandleEditConfirm = (status, rowdata) => {
+const onHandleEditConfirm = (status, rowdata,type) => {
  
   if(status){
-    UpdateData()
+    UpdateData(rowdata,type)
   }
   setValueText1([])
   setEditData()
@@ -1040,8 +1040,20 @@ useEffect(()=>{
 }, [dataSource, editRow])
 
 //===========================================================
-const UpdateData =() =>{
+const UpdateData =(rowdata,type) =>{
+  
   if(props.tableQuery === "User"){
+    if(type === "edit"){
+console.log(rowdata)
+    dataSentToAPI.forEach( row =>{
+    
+      delete row["Password"]
+      delete row["ModifyBy"]
+      delete row["ModifyTime"]
+    })    
+
+    }else{
+       
     dataSentToAPI.forEach( row =>{
       var guidstr = guid.raw().toUpperCase()
       var i = 0, strLength = guidstr.length;
@@ -1057,6 +1069,7 @@ const UpdateData =() =>{
       delete row["ModifyBy"]
       delete row["ModifyTime"]
     })    
+  }
   }else{
     dataSentToAPI.forEach( row =>{
       delete row["ModifyBy"]
@@ -1107,7 +1120,7 @@ const Clear=()=>{
         <AmEditorTable renderOptionalText={<span style={{color:"red"}}>* required field  </span>} 
         //style={{width:"600",height:"300px"}} 
         open={dialog} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTest()}/>
-        <AmEditorTable open={dialogEdit} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTestEdit()}/>
+        <AmEditorTable open={dialogEdit} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata,"edit")} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTestEdit()}/>
         <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit Password '} data={editData} columns={FuncTestEditPassWord()}/>
         <AmEditorTable open={dialogDelete} onAccept={(status)=>onHandleDeleteConfirm(status)} titleText={'Confirm Delete'}  columns={[]}/>
         <AmEditorTable open={dialogRole} onAccept={(status, rowdata)=>onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()}/>

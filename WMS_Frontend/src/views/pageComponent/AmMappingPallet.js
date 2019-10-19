@@ -586,6 +586,8 @@ const AmMappingPallet = (props) => {
                                     } else {
                                         alertDialogRenderer("Moment Type isn't match.", "error", true);
                                     }
+                                }else{
+                                    checkMVT = true;
                                 }
                             }
                         }

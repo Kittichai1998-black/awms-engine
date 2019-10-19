@@ -24,7 +24,7 @@ const CustomerQuery = {
   l: 100,
   all: ""
 };
-const ReceiveProductionLine = props => {
+const CustomerReturnPalletByBarcode = props => {
   const {} = props;
 
   const inputWarehouse = {
@@ -66,20 +66,11 @@ const ReceiveProductionLine = props => {
 
   const inputItem = [
     {
-      field: "scanCode",
-      type: "input",
-      name: "Scan Code",
-      placeholder: "Scan Code",
-      isFocus: true,
-      maxLength: 31,
-      required: true,
-      clearInput: true
-    },
-    {
       field: SC.OPT_REMARK,
       type: "input",
       name: "Remark",
-      placeholder: "Remark"
+      placeholder: "Remark",
+      isFocus: true
     },
     {
       field: SC.OPT_DONE_DES_EVENT_STATUS,
@@ -87,6 +78,15 @@ const ReceiveProductionLine = props => {
       name: "Status",
       fieldLabel: [{ value: "12", label: "RECEIVED" }],
       defaultValue: { value: "12", disabled: true }
+    },
+    {
+      field: "scanCode",
+      type: "input",
+      name: "Scan Code",
+      placeholder: "Scan Code",
+      maxLength: 31,
+      required: true,
+      clearInput: true
     }
   ];
 
@@ -133,6 +133,12 @@ const ReceiveProductionLine = props => {
         {
           field: SC.OPT_REMARK,
           value: qryStrOpt_root[SC.OPT_REMARK]
+            ? qryStrOpt_root[SC.OPT_REMARK]
+            : ""
+        },
+        {
+          field: "scanCode",
+          value: ""
         }
       ];
 
@@ -142,7 +148,7 @@ const ReceiveProductionLine = props => {
 
         oldValue.push({
           field: SC.OPT_SOU_CUSTOMER_ID,
-          value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+          value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
         });
       }
     }
@@ -160,26 +166,10 @@ const ReceiveProductionLine = props => {
       let qryStrOpt = {};
 
       if (storageObj) {
-        // if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
-        //   SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
-        // } else {
-        //   if (reqValue.action != 2) {
-        //     alertDialogRenderer(
-        //       "Please select source customer before.",
-        //       "error",
-        //       true
-        //     );
-        //   }
-        // }
-
         if (reqValue["scanCode"]) {
-          if (reqValue["scanCode"].length === 31) {
+          if (reqValue["scanCode"].trim().length === 31) {
             orderNo = reqValue["scanCode"].substr(0, 7);
-            console.log(reqValue["scanCode"]);
-            console.log(reqValue["scanCode"].length);
             let skuCode1 = reqValue["scanCode"].substr(7, 20);
-
-            console.log(skuCode1);
             if (skuCode1.includes("@")) {
               skuCode = skuCode1.replace(/\@/g, " ");
             } else {
@@ -188,9 +178,6 @@ const ReceiveProductionLine = props => {
             skuCode = skuCode.trim();
             cartonNo = parseInt(reqValue["scanCode"].substr(27, 4));
 
-            console.log(skuCode);
-            console.log(cartonNo);
-            console.log(orderNo);
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
               let dataMapstos = storageObj.mapstos[0];
               qryStrOpt = queryString.parse(dataMapstos.options);
@@ -272,9 +259,6 @@ const ReceiveProductionLine = props => {
             }
 
             if (cartonNo && rootID && skuCode && orderNo) {
-              if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
-                qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
-              }
               qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
               let qryStr1 = queryString.stringify(qryStrOpt);
               let uri_opt = decodeURIComponent(qryStr1);
@@ -286,6 +270,7 @@ const ReceiveProductionLine = props => {
                 options: cartonNo === "0" ? null : uri_opt,
                 validateSKUTypeCodes: ["FG"]
               };
+
               resValuePost = { ...reqValue, ...dataScan };
             } else {
               if (rootID === null) {
@@ -298,6 +283,7 @@ const ReceiveProductionLine = props => {
             }
           } else {
             if (reqValue.action === 2) {
+              reqValue.scanCode = reqValue.scanCode.trim();
               if (storageObj.code === reqValue.scanCode) {
                 resValuePost = { ...reqValue, allowSubmit: true };
               }
@@ -353,10 +339,10 @@ const ReceiveProductionLine = props => {
         setVisibleTabMenu={[null, "Add", "Remove"]}
         //setMovementType={"1012"}
         autoPost={true}
+        piCreate={"/v2/ScanReceivedProductionLineAPI"}
         showOldValue={onOldValue}
-        apiCreate={"/v2/ScanReceivedProductionLineAPI"}
       />
     </div>
   );
 };
-export default ReceiveProductionLine;
+export default CustomerReturnPalletByBarcode;
