@@ -132,7 +132,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, stoPack.id.Value, null, null, EntityStatus.ACTIVE, this.BuVO);
                         }
                         //update STO Event = Received เลย
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
                     }
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
@@ -362,12 +362,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var done_sou_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
             if (done_sou_event_status == null || done_sou_event_status.Length == 0)
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, buVO);
             }
             else
             {
                 StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_sou_event_status);
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, null, eventStatus, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, EntityStatus.ACTIVE, eventStatus, buVO);
             }
 
 

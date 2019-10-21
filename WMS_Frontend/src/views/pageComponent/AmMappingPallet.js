@@ -417,7 +417,7 @@ const AmMappingPallet = (props) => {
                         console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
-                        }
+                        }  
                     } else {
                         inputClear();
                     }
@@ -444,7 +444,7 @@ const AmMappingPallet = (props) => {
                     if (dataScan) {
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
-                        }
+                        }  
                     } else {
                         inputClear();
                     }
@@ -479,11 +479,12 @@ const AmMappingPallet = (props) => {
                     }
                 }
             }
-        } else {
-            if (preAutoPost) {
-                alertDialogRenderer("Please fill your information completely.", "error", true);
-            }
         }
+        // else {
+        //     if (preAutoPost) {
+        //         alertDialogRenderer("Please check and fill your information completely.", "error", true);
+        //     }
+        // }
         setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
@@ -685,6 +686,7 @@ const AmMappingPallet = (props) => {
         });
     }
     const scanBarcodeEmptyPalletApi = (req) => {
+        req.scanCode = req.scanCode.trim();
         if (actionValue === 0) {
             //select จะแสดงค่าก็ต่อเมื่อเคยสร้าง sto ของทั้ง pallet และ sku empty pallet
             Axios.post(window.apipath + apiCreate, req).then((res) => {

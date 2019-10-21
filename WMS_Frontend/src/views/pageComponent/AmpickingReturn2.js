@@ -507,12 +507,8 @@ const AmPickingReturn2 = (props) => {
                         }
                     }
                 }
-            } else {
-                if (preAutoPost) {
-                    alertDialogRenderer("Please fill your information completely.", "error", true);
-                    setPreAutoPost(false);
-                }
-            }
+            }  
+            setPreAutoPost(false);
         }
     }
     const onPreSubmitToAPI = () => {

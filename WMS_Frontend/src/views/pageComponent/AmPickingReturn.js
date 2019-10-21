@@ -487,11 +487,12 @@ const AmPickingReturn = (props) => {
                         }
                     }
                 }
-            } else {
-                if (preAutoPost) {
-                    alertDialogRenderer("Please fill your information completely.", "error", true);
-                }
-            }
+            } 
+            // else {
+            //     if (preAutoPost) {
+            //         alertDialogRenderer("Please check and fill your information completely.", "error", true);
+            //     }
+            // }
         }
         setPreAutoPost(false);
     }
