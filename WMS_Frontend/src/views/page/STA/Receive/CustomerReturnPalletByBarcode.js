@@ -96,7 +96,6 @@ const CustomerReturnPalletByBarcode = (props) => {
         return oldValue;
     }
     async function onBeforePost(reqValue, storageObj, curInput) {
-        console.log(reqValue)
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -110,18 +109,17 @@ const CustomerReturnPalletByBarcode = (props) => {
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
-                } else {
-                    if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
-                    }
                 }
 
                 if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].trim().length === 26) {
+                    reqValue.scanCode = reqValue.scanCode.trim();
+                    if (reqValue['scanCode'].length === 26) {
                         let orderNoStr = reqValue['scanCode'].substr(0, 7);
                         if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
                             orderNo = orderNoStr;
-                        } 
+                        } else {
+                            alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
+                        }
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
 
                         if (skuCode1.includes('@')) {
@@ -133,17 +131,23 @@ const CustomerReturnPalletByBarcode = (props) => {
                         let cartonStr = reqValue['scanCode'].substr(22, 4);
                         if (cartonStr.match(/^\d{4}$/)) {
                             cartonNo = parseInt(cartonStr);
-                        } 
+                        } else {
+                            alertDialogRenderer("Carton No. must be equal to 4-digits in number format.", "error", true);
+                        }
 
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
                             qryStrOpt = queryString.parse(dataMapstos.options);
-                            if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
-                                alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                          
+                            if (skuCode !== null && skuCode !== dataMapstos.code) {
+                                alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
                                 skuCode = null;
+                            }
+                            if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
+                                alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
                                 orderNo = null;
                             }
-                            if (rootID && skuCode && orderNo) {
+                            if (rootID && skuCode && orderNo && cartonNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
                                 let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
@@ -207,6 +211,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                             };
                             if (reqValue.action != 2) { //ไม่ใช่เคสลบ
                                 if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
+                                    alertDialogRenderer("Please select source customer before.", "error", true);
                                     dataScan.allowSubmit = false;
                                 }
                             }
@@ -219,7 +224,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
-                            reqValue.scanCode = reqValue.scanCode.trim();
+
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

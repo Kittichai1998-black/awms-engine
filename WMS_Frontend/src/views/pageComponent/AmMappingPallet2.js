@@ -492,11 +492,7 @@ const AmMappingPallet2 = (props) => {
                     }
                 }
             }
-        } else {
-            if (preAutoPost) {
-                alertDialogRenderer("Please fill your information completely.", "error", true);
-            }
-        }
+        } 
         setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
