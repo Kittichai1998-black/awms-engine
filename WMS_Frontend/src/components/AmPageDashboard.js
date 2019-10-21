@@ -62,8 +62,9 @@ const useClock = (propsTime, t) => {
     }, [localStorage.getItem("Lang")])
 
     const runningCurrentDate = () => {
-        let currentDateTime = new Date(date.dateServer.getTime() + (new Date().getTime() - date.dateClient.getTime()));
-        setTime(t(propsTime.label) + " : " + Moment(currentDateTime).format(propsTime.format))
+        let currentDateTime = new Date(date.dateServer.getTime() + (new Date().getTime() - date.dateClient.getTime())),
+            label = propsTime.label ? t(propsTime.label) + " : " : ""
+        setTime(label + Moment(currentDateTime).format(propsTime.format))
     }
     return time
 }
@@ -87,7 +88,7 @@ const useClock = (propsTime, t) => {
 const AmPageDashboard = props => {
     const { t } = useTranslation()
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [calHeight, setCalHeight] = useState(0.65);
+    const [calHeight, setCalHeight] = useState(0.35);
     const clock = useClock(props.time, t)
 
     const [width_height, set_width_height] = useState({
@@ -109,25 +110,24 @@ const AmPageDashboard = props => {
 
     const goFull = () => {
         setIsFullScreen(true);
-        setCalHeight(0.6);
+        setCalHeight(0.4);
     }
     const goMin = () => {
         setIsFullScreen(false);
-        setCalHeight(0.65);
+        setCalHeight(0.35);
     }
 
-    const formatTime = (headerCol) => {
+    const formatDatas = (headerCol) => {
         const result = headerCol.map(data => {
             if (data.type) {
-                if (data.type === "time" || data.type === "datelog" || data.type === "datetime") {
-                    return (
-                        { ...data, Cell: (e) => e.value ? datetimeBody(e.value, data.type) : "" }
-                    )
-                }
+                let newData = { ...data }
+                if (data.type === "time" || data.type === "datelog" || data.type === "datetime")
+                    newData = { ...newData, Cell: (e) => e.value ? datetimeBody(e.value, data.type) : "" }
+                if (data.type === "priority")
+                    newData = { ...newData, Cell: (e) => e.value ? priorityFormat(e.value) : "" }
+                return newData
             } else {
-                return (
-                    { ...data }
-                )
+                return { ...data }
             }
         });
         return result;
@@ -142,6 +142,25 @@ const AmPageDashboard = props => {
             } else if (format === "datetime") {
                 return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
             }
+        }
+    }
+
+    const priorityFormat = (val) => {
+        switch (val) {
+            case 0:
+                return "Very Low";
+            case 1:
+                return "Low";
+            case 2:
+                return "Normal";
+            case 3:
+                return "High";
+            case 4:
+                return "Very High";
+            case 5:
+                return "Critical";
+            default:
+                return "";
         }
     }
 
@@ -165,11 +184,12 @@ const AmPageDashboard = props => {
         if (x.length === 1) {
             return (
                 <Grid container key={xi}>
+                    <b>{x[0].table[0].title ? x[0].table[0].title : null}</b>
                     <Grid item md={12}>
                         <AmTable
                             // primaryKey="ID"
                             data={x[0].table[0].data}
-                            columns={formatTime(x[0].table[0].headercol)}
+                            columns={formatDatas(x[0].table[0].headercol)}
                             pageSize={20}
                             minRows={6}
                             currentPage={0}
@@ -177,7 +197,7 @@ const AmPageDashboard = props => {
                             style={{
                                 background: 'white',
                                 fontSize: isFullScreen ? 'calc(0.5em + 1vw)' : "",
-                                maxHeight: props.coltable.length === 1 ? (width_height.height - (width_height.height * calHeight)) * 2 : width_height.height - (width_height.height * calHeight),
+                                maxHeight: props.coltable.length === 1 ? (width_height.height * calHeight) * 2 : width_height.height * calHeight,
                                 // fontWeight: '700', 
                                 zIndex: 0
                             }}
@@ -195,7 +215,7 @@ const AmPageDashboard = props => {
                                     <AmTable
                                         // primaryKey="ID"
                                         data={y.table[0].data}
-                                        columns={formatTime(y.table[0].headercol)}
+                                        columns={formatDatas(y.table[0].headercol)}
                                         pageSize={20}
                                         minRows={6}
                                         currentPage={0}
@@ -203,7 +223,7 @@ const AmPageDashboard = props => {
                                         style={{
                                             background: 'white',
                                             fontSize: isFullScreen ? 'calc(0.5em + 1vw)' : "",
-                                            maxHeight: props.coltable.length === 1 || (x.length === 2 && y.type === "row") ? (width_height.height - (width_height.height * calHeight)) * 2 : width_height.height - (width_height.height * calHeight),
+                                            maxHeight: props.coltable.length === 1 || (x.length === 2 && y.type === "row") ? (width_height.height * calHeight) * 2 : width_height.height * calHeight,
                                             // fontWeight: '700', 
                                             zIndex: 0
                                         }}
@@ -221,7 +241,7 @@ const AmPageDashboard = props => {
                                                         key={zi}
                                                         // primaryKey="ID"
                                                         data={z.data}
-                                                        columns={formatTime(z.headercol)}
+                                                        columns={formatDatas(z.headercol)}
                                                         pageSize={20}
                                                         minRows={6}
                                                         currentPage={0}
@@ -229,7 +249,7 @@ const AmPageDashboard = props => {
                                                         style={{
                                                             background: 'white',
                                                             fontSize: isFullScreen ? 'calc(0.5em + 1vw)' : "",
-                                                            maxHeight: y.type === "col" && props.coltable.length === 1 ? (width_height.height - (width_height.height * calHeight)) * 2 : width_height.height - (width_height.height * calHeight),
+                                                            maxHeight: y.type === "col" && props.coltable.length === 1 ? (width_height.height * calHeight) * 2 : width_height.height * calHeight,
                                                             // fontWeight: '700', 
                                                             zIndex: 0
                                                         }}
@@ -248,7 +268,7 @@ const AmPageDashboard = props => {
                                                     key={zi}
                                                     // primaryKey="ID"
                                                     data={z.data}
-                                                    columns={formatTime(z.headercol)}
+                                                    columns={formatDatas(z.headercol)}
                                                     pageSize={20}
                                                     minRows={6}
                                                     currentPage={0}
@@ -256,7 +276,7 @@ const AmPageDashboard = props => {
                                                     style={{
                                                         background: 'white',
                                                         fontSize: isFullScreen ? 'calc(0.5em + 1vw)' : "",
-                                                        maxHeight: width_height.height - (width_height.height * calHeight),
+                                                        maxHeight: width_height.height * calHeight,
                                                         // fontWeight: '700', 
                                                         zIndex: 0
                                                     }}

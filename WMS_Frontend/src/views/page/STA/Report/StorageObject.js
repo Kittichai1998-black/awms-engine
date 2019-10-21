@@ -79,18 +79,15 @@ const StorageObject = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-       width: 40,
+      width: 50,
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Pallet", accessor: "Pallet", width: 110 },
-    { Header: "Carton_No", accessor: "Carton_No", width: 120 },
-    { Header: "SKU_Code", accessor: "SKU_Code", width: 200 },
-    { Header: "SKU_Name", accessor: "SKU_Name", width: 300 },
-    { Header: "Warehouse", accessor: "Warehouse", width: 120 },
-    { Header: "Area", accessor: "Area", width: 130 },
-    { Header: "Location", accessor: "Location", width: 120 },
-    { Header: "OrderNo", accessor: "OrderNo", width: 120 },
+    { Header: "Pallet Code", accessor: "Pallet", width: 110 },
+    { Header: "SKU Code", accessor: "SKU_Code", width: 200 },
+    { Header: "SKU Name", accessor: "SKU_Name", width: 300 },
+    { Header: "Order No", accessor: "OrderNo", width: 120 },
+    { Header: "Carton No", accessor: "Carton_No", width: 120 },
     {
       Header: "Qty",
       accessor: "Qty",
@@ -99,20 +96,10 @@ const StorageObject = props => {
       Cell: e => getNumberQty(e.original)
     },
     { Header: "Base_Unit", accessor: "Base_Unit", width: 100 },
-    {
-      Header: "Weigth PalletPack",
-      accessor: "Wei_PalletPack",
-      width: 150,
-      type: "number"
-    },
-    { Header: "Weigth Pack", accessor: "Wei_Pack", width: 120, type: "number" },
-    {
-      Header: "Weigth PackStd",
-      accessor: "Wei_PackStd",
-      width: 150,
-      type: "number"
-    },
     { Header: "Remark", accessor: "Remark", width: 150 },
+    { Header: "Warehouse", accessor: "Warehouse", width: 120 },
+    { Header: "Area", accessor: "Area", width: 130 },
+    { Header: "Location", accessor: "Location", width: 120 },
     {
       Header: "Received Date",
       accessor: "Receive_Time",
@@ -139,13 +126,9 @@ const StorageObject = props => {
     "Area",
     "Location",
     "Batch",
-    "Lot",
     "OrderNo",
     "Qty",
-    "Base_Unit",
-    "Wei_PalletPack",
-    "Wei_Pack",
-    "Wei_PackStd"
+    "Base_Unit"
   ];
   const getNumberQty = value => {
     return parseInt(value.Qty);
@@ -248,19 +231,13 @@ const StorageObject = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Name"
     },
-    {
-      label: "Location",
-      field: "Location",
-      searchType: "input",
-      placeholder: "Location"
-    },
+
     {
       label: "Batch",
       field: "Batch",
       searchType: "input",
       placeholder: "Batch"
     },
-    { label: "Lot", field: "Lot", searchType: "input", placeholder: "Lot" },
     {
       label: "OrderNo",
       field: "OrderNo",
@@ -278,24 +255,6 @@ const StorageObject = props => {
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
-    },
-    {
-      label: "Wei PalletPack",
-      field: "Wei_PalletPack",
-      searchType: "input",
-      placeholder: "Weigth PalletPack"
-    },
-    {
-      label: "Weigth Pack",
-      field: "Wei_Pack",
-      searchType: "input",
-      placeholder: "Weigth Pack"
-    },
-    {
-      label: "Weigth PackStd",
-      field: "Wei_PackStd",
-      searchType: "input",
-      placeholder: "Weigth PackStd"
     },
     {
       label: "Remark",

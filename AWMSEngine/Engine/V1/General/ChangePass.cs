@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.General
                 new KeyValuePair<string, object>("SaltPassword", newSalt));
 
             ADO.TokenADO.GetInstant().Remove(token.Token, token.ClientSecret_SecretKey, this.BuVO.ActionBy, this.BuVO);
-            var resToken = ADO.TokenADO.GetInstant().Register(user.Code, reqVO.NewPass, token.ClientSecret_SecretKey, this.BuVO.ActionBy, this.BuVO);
+            var resToken = ADO.TokenADO.GetInstant().Register(user.Code, reqVO.NewPass, token.ClientSecret_SecretKey, this.BuVO.ActionBy, true, this.BuVO);
             return new TRes { token = resToken.Token, extendKey = token.ExtendKey, expireTime = token.ExpireTime };
         }
     }

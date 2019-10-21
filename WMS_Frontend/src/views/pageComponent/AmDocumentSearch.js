@@ -682,7 +682,10 @@ const AmDocumentSearch = props => {
         }}
         primarySearch={createComponent(props.primarySearch)}
         extensionSearch={createComponent(props.expensionSearch)}
-        onAccept={(status, obj) => {onHandleFilterConfirm(true); getData(query);}}
+        onAccept={(status, obj) => {
+          onHandleFilterConfirm(true);
+          getData(query);
+        }}
       />
       <br />
       <br />
