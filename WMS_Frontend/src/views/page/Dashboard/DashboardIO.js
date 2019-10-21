@@ -38,15 +38,15 @@ export default props => {
     const headercol1 = [
         {
             accessor: "ActualTime", Header: "Time", className: 'center', width: 100,
-            type: "time", sortable: false
+            type: "time", sortable: false, style: { textAlign: "center" }
         },
-        { accessor: "Priority", Header: "Priority", width: 80, className: 'center', sortable: false },
-        { accessor: "PalletCode", Header: "Pallet", width: 185, sortable: false },
-        { accessor: "PackName", Header: "Product", sortable: false, },
-        { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
-        { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
-        { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-        { accessor: "DocumentCode", Header: "Doc No.", width: 170, sortable: false },
+        { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+        { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+        { accessor: "PackName", Header: "Product", sortable: false },
+        // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
+        // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
+        // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+        { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
     ]
 
     const [data, setData] = useState([
@@ -79,7 +79,7 @@ export default props => {
                 .then(() => {
                     connection.on(dashboard, res => {
                         console.log(JSON.parse(res));
-                        
+
                         data[0][0].table[0].headercol = headercol1
                         data[0][0].table[0].data = JSON.parse(res)
                         setData([...data])
@@ -113,8 +113,7 @@ export default props => {
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
-        label: "Date/Time"
-        // label: "Date/Time : "
+        // label: "Date/Time"
     }
 
     return (
