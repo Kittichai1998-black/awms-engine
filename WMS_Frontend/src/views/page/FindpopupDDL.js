@@ -575,7 +575,7 @@ function Test6(props) {
                         id="txtEmail"
                         name="email"
                         required={true}
-                        defaultValue={111}
+                        // defaultValue={111}
                         //value={valueText.txtEmail.value}
                         placeholder="Email"
                         onChange={onHandleInputChange}

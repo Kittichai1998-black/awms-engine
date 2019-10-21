@@ -92,15 +92,22 @@ const PickingReturnByBarcode = (props) => {
             if (storageObj) {
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].length === 26) {
-                        orderNo = reqValue['scanCode'].substr(0, 7);
+                        let orderNoStr = reqValue['scanCode'].substr(0, 7);
+                        if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
+                            orderNo = orderNoStr;
+                        } 
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                        if(skuCode1.includes('@')){
+
+                        if (skuCode1.includes('@')) {
                             skuCode = skuCode1.replace(/\@/g, " ");
-                        }else{
+                        } else {
                             skuCode = skuCode1;
                         }
                         skuCode = skuCode.trim();
-                        cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
+                        let cartonStr = reqValue['scanCode'].substr(22, 4);
+                        if (cartonStr.match(/^\d{4}$/)) {
+                            cartonNo = parseInt(cartonStr);
+                        } 
                         
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
@@ -185,6 +192,7 @@ const PickingReturnByBarcode = (props) => {
                         }
                     }
                 } else {
+                    alertDialogRenderer("Please scan code of product.", "error", true);
                     resValuePost = { ...reqValue, allowSubmit: false }
                 }
 

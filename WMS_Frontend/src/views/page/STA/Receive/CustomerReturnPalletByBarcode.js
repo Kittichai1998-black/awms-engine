@@ -37,7 +37,7 @@ const CustomerReturnPalletByBarcode = (props) => {
             ],
             "defaultValue": { value: '96', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }    ]
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true, "validate": true, "regExp": /^[A-Za-z0-9]{7}.{15}\d{4}$|^[A-Za-z0-9]{10}$/ }]
 
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -75,10 +75,10 @@ const CustomerReturnPalletByBarcode = (props) => {
             {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            },{
-                field: SC.OPT_REMARK, 
+            }, {
+                field: SC.OPT_REMARK,
                 value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
-            },{
+            }, {
                 field: "scanCode",
                 value: ""
             }]
@@ -91,11 +91,12 @@ const CustomerReturnPalletByBarcode = (props) => {
                     field: SC.OPT_SOU_CUSTOMER_ID,
                     value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 });
-            }  
+            }
         }
         return oldValue;
     }
     async function onBeforePost(reqValue, storageObj, curInput) {
+        console.log(reqValue)
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -117,15 +118,22 @@ const CustomerReturnPalletByBarcode = (props) => {
 
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].trim().length === 26) {
-                        orderNo = reqValue['scanCode'].substr(0, 7);
+                        let orderNoStr = reqValue['scanCode'].substr(0, 7);
+                        if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
+                            orderNo = orderNoStr;
+                        } 
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
+
                         if (skuCode1.includes('@')) {
                             skuCode = skuCode1.replace(/\@/g, " ");
                         } else {
                             skuCode = skuCode1;
                         }
                         skuCode = skuCode.trim();
-                        cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
+                        let cartonStr = reqValue['scanCode'].substr(22, 4);
+                        if (cartonStr.match(/^\d{4}$/)) {
+                            cartonNo = parseInt(cartonStr);
+                        } 
 
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
@@ -197,11 +205,11 @@ const CustomerReturnPalletByBarcode = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["FG"]
                             };
-                            if(reqValue.action != 2){ //ไม่ใช่เคสลบ
-                                if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                            if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                                if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
                                     dataScan.allowSubmit = false;
                                 }
-                            } 
+                            }
 
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
@@ -220,6 +228,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                         }
                     }
                 } else {
+                    alertDialogRenderer("Please scan code of product.", "error", true);
                     resValuePost = { ...reqValue, allowSubmit: false }
                 }
 
