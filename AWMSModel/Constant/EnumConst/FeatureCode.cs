@@ -93,6 +93,8 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "PQU01")]
         EXEWM_CheckSAP_BeforeProcessQueue,
 
+        [EnumValueAttribute(ValueString = "AUTHEN_LDAP")]
+        AUTHENLDAP,
 
     }
 }

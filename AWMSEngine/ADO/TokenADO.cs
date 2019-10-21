@@ -12,7 +12,7 @@ namespace AWMSEngine.ADO
 {
     public class TokenADO : BaseMSSQLAccess<TokenADO>
     {
-        public amt_Token Register(string username, string password, string secretKey, int actionBy,
+        public amt_Token Register(string username, string password, string secretKey, int actionBy, bool requirePass,
             VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
@@ -20,6 +20,7 @@ namespace AWMSEngine.ADO
             param.Add("@password", password);
             param.Add("@secretKey", secretKey);
             param.Add("@actionBy", actionBy);
+            param.Add("@requirePass", requirePass);
             var res = this.Query<amt_Token>(
                                 "SP_TOKEN_REGISTER",
                                 CommandType.StoredProcedure,param, buVO.Logger, buVO.SqlTransaction)

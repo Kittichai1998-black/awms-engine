@@ -8,7 +8,8 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using AMWUtil.DataAccess;
 using AWMSModel.Entity;
-using AWMSEngine.ADO;
+using AWMSEngine.Engine.V2.Business.Received;
+using AWMSModel.Constant.EnumConst;
 
 namespace ProjectSTGT.Engine.WM
 {
@@ -39,30 +40,46 @@ namespace ProjectSTGT.Engine.WM
         {
             var directoryPath = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "DIRECTORY_PATH").DataValue;
             var resList = new List<TRes>();
-            //var getFile = new DirectoryInfo(directoryPath).GetFiles();
-            //foreach (var file in getFile)
-            //{
-            //    try
-            //    {
-            //        var res = FilesTypeAccess.ExcelAccess(file);
-            //    }
-            //    catch
-            //    {
-            //    }
-            //}
+            var getFile = new DirectoryInfo(directoryPath).GetFiles();
+            foreach (var file in getFile)
+            {
+                try
+                {
+                    var res = FilesTypeAccess.ExcelAccess(file);
+                    CreateDocument(res);
+                }
+                catch
+                {
+                }
+            }
         }
 
-        private amt_Document CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
+        private void CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
         {
-            var doc = new amt_Document();
-            //doc.
+            excelData.worksheet.ForEach(data =>
+            {
+                var xx = data.rows.GroupBy(row => row.cells.Select(cell => cell[0])).Select(x => new { x.Key }).ToList();
 
 
 
 
 
-            //DocumentADO.GetInstant().Create();
-            return null;
+
+
+
+                var doc = new CreateGRDocument.TReq();
+
+                doc.documentDate = DateTime.Now;
+                doc.eventStatus = DocumentEventStatus.NEW;
+                doc.movementTypeID = MovementType.FG_TRANSFER_WM;
+                doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+
+                var listItem = new List<CreateGRDocument.TReq.ReceiveItem>();
+
+
+                var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
+                var res = createGRDoc.Execute(doc);
+            });
         }
     }
 }
