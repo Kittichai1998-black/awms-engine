@@ -242,7 +242,9 @@ const AmStorageObjectMulti = props => {
   //===========================================================
   async function getData(qryString) {
     setTable([]);
-    const res = await Axios.get(qryString).then(res => res);
+
+    const res = await Axios.get(qryString.replace("#", "%23")).then(res => res);
+
     var groupPallet = _.groupBy(res.data.datas, "Pallet");
     var dataGroup = [];
 
@@ -271,7 +273,6 @@ const AmStorageObjectMulti = props => {
       });
     }
 
-    console.log(res.data.datas);
 
     // for( var data in groupPallet){
     //   if(groupPallet[data].length > 1){
@@ -698,6 +699,7 @@ const AmStorageObjectMulti = props => {
         }
       }
     }
+
     setFilterData(obj);
   };
   //===========================================================

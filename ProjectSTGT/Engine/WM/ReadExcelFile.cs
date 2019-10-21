@@ -39,17 +39,17 @@ namespace ProjectSTGT.Engine.WM
         {
             var directoryPath = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "DIRECTORY_PATH").DataValue;
             var resList = new List<TRes>();
-            var getFile = new DirectoryInfo(directoryPath).GetFiles();
-            foreach (var file in getFile)
-            {
-                try
-                {
-                    var res = FilesTypeAccess.ExcelAccess(file);
-                }
-                catch
-                {
-                }
-            }
+            //var getFile = new DirectoryInfo(directoryPath).GetFiles();
+            //foreach (var file in getFile)
+            //{
+            //    try
+            //    {
+            //        var res = FilesTypeAccess.ExcelAccess(file);
+            //    }
+            //    catch
+            //    {
+            //    }
+            //}
         }
 
         private amt_Document CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)

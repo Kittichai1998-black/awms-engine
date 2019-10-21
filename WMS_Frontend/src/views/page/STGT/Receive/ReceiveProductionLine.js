@@ -141,16 +141,6 @@ const CustomerReturnPalletByBarcode = props => {
           value: ""
         }
       ];
-
-      if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-        let dataMapstos = storageObj.mapstos[0];
-        let qryStrOpt = queryString.parse(dataMapstos.options);
-
-        oldValue.push({
-          field: SC.OPT_SOU_CUSTOMER_ID,
-          value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
-        });
-      }
     }
     return oldValue;
   }
@@ -293,6 +283,7 @@ const CustomerReturnPalletByBarcode = props => {
                 "error",
                 true
               );
+              resValuePost = { ...reqValue, allowSubmit: false };
             }
           }
         } else {
