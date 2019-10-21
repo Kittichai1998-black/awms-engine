@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.General
             {
                 var serverName = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_SERVER").DataValue;
                 var ldapDNFormat = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_FORMAT").DataValue;
-                var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser("users", "guest1password", serverName, ldapDNFormat);
+                var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser(reqVO.Username, reqVO.Password, serverName, ldapDNFormat);
                 if (!ldapRes)
                     throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login False");
                 else
