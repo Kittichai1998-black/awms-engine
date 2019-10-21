@@ -296,18 +296,7 @@ namespace AWMSEngine.APIService
                 return;
             this.Logger.LogInfo("AuthenAuthorize!");
 
-            if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature(FeatureCode.AUTHENLDAP))
-                ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
-            else
-            {
-                var serverName = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_SERVER").DataValue;
-                var ldapDNFormat = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_FORMAT").DataValue;
-                var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser("users", "guest1password", serverName, ldapDNFormat);
-                if(!ldapRes)
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login False");
-            }
-                //ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
-
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
