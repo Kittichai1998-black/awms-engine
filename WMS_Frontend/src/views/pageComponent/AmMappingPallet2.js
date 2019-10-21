@@ -834,7 +834,7 @@ const AmMappingPallet2 = (props) => {
                             } : {}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                             onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
 
                         />
@@ -854,7 +854,7 @@ const AmMappingPallet2 = (props) => {
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         /></div>
                 </FormInline>
             )

@@ -133,15 +133,16 @@ const ReceiveFromCustomer = (props) => {
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
-                } else {
-                    if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
-                    }
-                }
-
-                if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].trim().length !== 0) {
-                        skuCode = reqValue['scanCode'].trim();
+                } 
+                if (reqValue.scanCode) {
+                    reqValue.scanCode = reqValue.scanCode.trim();
+                    if (reqValue.scanCode.length !== 0) {
+                        if (reqValue.scanCode.includes('@')) {
+                            skuCode = reqValue.scanCode.replace(/\@/g, " ");
+                        } else {
+                            skuCode = reqValue.scanCode;
+                        }
+                        skuCode = skuCode.trim();
                     } else {
                         if (curInput === 'scanCode') {
                             skuCode = null;
@@ -149,14 +150,15 @@ const ReceiveFromCustomer = (props) => {
                         }
                     }
                     if (reqValue['orderNo']) {
-                        if (reqValue['orderNo'].trim().length === 7) {
-                            orderNo = reqValue['orderNo'].trim();
+                        reqValue.orderNo = reqValue.orderNo.trim();
+                        if (reqValue.orderNo.length !== 0 && reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
+                            orderNo = reqValue['orderNo'];
                         } else {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
                                 } else {
-                                    alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+                                    alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
 
                                 }
                             }
@@ -164,8 +166,12 @@ const ReceiveFromCustomer = (props) => {
                     }
 
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        if(reqValue['cartonNo'].match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)){
+                            let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
+                            cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        }else{
+                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
+                        }
                     } else {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
@@ -177,20 +183,27 @@ const ReceiveFromCustomer = (props) => {
                     }
                 } else {
                     if (reqValue['orderNo']) {
-                        if (reqValue['orderNo'].trim().length === 7) {
-                            orderNo = reqValue['orderNo'].trim();
+                        reqValue.orderNo = reqValue.orderNo.trim();
+                        if (reqValue.orderNo.length !== 0 && reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
+                            orderNo = reqValue['orderNo'];
                         } else {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
-                                alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
+                                } else {
+                                    alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
 
+                                }
                             }
                         }
                     }
-
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        if(reqValue['cartonNo'].match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)){
+                            let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
+                            cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        }else{
+                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
+                        }
                     } else {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
@@ -334,6 +347,7 @@ const ReceiveFromCustomer = (props) => {
                     };
                     if(reqValue.action != 2){ //ไม่ใช่เคสลบ
                         if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                            alertDialogRenderer("Please select source customer before.", "error", true);
                             dataScan.allowSubmit = false;
                         }
                     } 
