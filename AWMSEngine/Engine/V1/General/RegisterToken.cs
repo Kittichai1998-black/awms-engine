@@ -36,6 +36,7 @@ namespace AWMSEngine.Engine.General
                         null,
                         reqVO.SecretKey,
                         0,
+                        false,
                          this.BuVO);
                     return tokenModel;
                 }
@@ -48,6 +49,7 @@ namespace AWMSEngine.Engine.General
                         reqVO.Password,
                         reqVO.SecretKey,
                         0,
+                        true,
                          this.BuVO);
                 return tokenModel;
             }

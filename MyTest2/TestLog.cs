@@ -81,7 +81,7 @@ namespace MyTest2
         [Fact]
         public void TestLDAP()
         {
-            var res = new AMWUtil.DataAccess.LDAPAuthenticate().ValidateUser("www.zflexldap.com", "guest1", "guest1password", "uid=,ou=users,ou=guests,dc=zflexsoftware,dc=com");
+            //var res = new AMWUtil.DataAccess.LDAPAuthenticate().ValidateUser("www.zflexldap.com", "guest1", "guest1password", "uid=,ou=users,ou=guests,dc=zflexsoftware,dc=com");
 
         }
     }
