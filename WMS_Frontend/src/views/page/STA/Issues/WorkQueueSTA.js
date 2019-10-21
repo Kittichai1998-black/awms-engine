@@ -20,7 +20,7 @@ const WorkQueueSTA = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -107,7 +107,7 @@ const WorkQueueSTA = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:11 },
 
     ];
 
