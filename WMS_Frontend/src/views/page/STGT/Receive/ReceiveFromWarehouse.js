@@ -115,6 +115,9 @@ const ReceiveFromWarehouse = (props) => {
                 oldValue.push({
                     field: "scanCode",
                     value: ""
+                },{
+                    field: "orderNo",
+                    value: ""
                 });
             }
         }
