@@ -745,7 +745,7 @@ const AmPickingReturn2 = (props) => {
                             defaultValue={defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -763,7 +763,7 @@ const AmPickingReturn2 = (props) => {
                             style={{ width: "330px" }}
                             defaultValue={defaultValue ? defaultValue : ""}
                             onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>

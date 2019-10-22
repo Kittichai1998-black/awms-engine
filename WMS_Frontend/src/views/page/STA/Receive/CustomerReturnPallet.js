@@ -140,12 +140,7 @@ const CustomerReturnPallet = (props) => {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                 }
-                // else {
-                //     if (reqValue.action != 2) {
-                //         alertDialogRenderer("Please select source customer before.", "error", true);
-                //     }
-                // }
-
+                 
                 if (reqValue.scanCode) {
                     reqValue.scanCode = reqValue.scanCode.trim();
                     if (reqValue.scanCode.length !== 0) {
@@ -210,8 +205,12 @@ const CustomerReturnPallet = (props) => {
                         }
                     }
                     if (reqValue['cartonNo']) {
-                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        if(reqValue['cartonNo'].match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)){
+                            let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
+                            cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                        }else{
+                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
+                        }
                     } else {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
