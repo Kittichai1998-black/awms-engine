@@ -9,7 +9,7 @@ using AWMSEngine.HubService;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
 
-namespace ProjectSTA.APIService.ASRS
+namespace AWMSEngine.APIService.V2.ASRS
 {
     public class WCSStatusAPI : BaseAPIService
     {

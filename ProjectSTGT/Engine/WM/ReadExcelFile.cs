@@ -48,7 +48,7 @@ namespace ProjectSTGT.Engine.WM
                     var res = FilesTypeAccess.ExcelAccess(file);
                     CreateDocument(res);
                 }
-                catch
+                catch (Exception ex)
                 {
                 }
             }
@@ -58,27 +58,34 @@ namespace ProjectSTGT.Engine.WM
         {
             excelData.worksheet.ForEach(data =>
             {
-                var xx = data.rows.GroupBy(row => row.cells.Select(cell => cell[0])).Select(x => new { x.Key }).ToList();
+                var docItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+                data.rows.Skip(1).ToList().ForEach(row =>
+                {
+                    docItems.Add(new CreateGRDocument.TReq.ReceiveItem()
+                    {
+                        skuCode = row.cells[0],
+                        orderNo = row.cells[1],
+                        options = $"carton_no={row.cells[5]}&saleorder={row.cells[2]}",
+                        quantity = Convert.ToDecimal(row.cells[3]),
+                        unitType = row.cells[4]
+                    });
+                });
 
+                var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => key.ToList()).ToList();
 
+                gDocItems.ForEach(x =>
+                {
+                    var doc = new CreateGRDocument.TReq();
 
+                    doc.documentDate = DateTime.Now;
+                    doc.eventStatus = DocumentEventStatus.NEW;
+                    doc.movementTypeID = MovementType.FG_TRANSFER_WM;
+                    doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+                    doc.receiveItems = x;
 
-
-
-
-
-                var doc = new CreateGRDocument.TReq();
-
-                doc.documentDate = DateTime.Now;
-                doc.eventStatus = DocumentEventStatus.NEW;
-                doc.movementTypeID = MovementType.FG_TRANSFER_WM;
-                doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-
-                var listItem = new List<CreateGRDocument.TReq.ReceiveItem>();
-
-
-                var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
-                var res = createGRDoc.Execute(doc);
+                    var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
+                    var res = createGRDoc.Execute(doc);
+                });
             });
         }
     }

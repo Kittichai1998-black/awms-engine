@@ -13,7 +13,7 @@ namespace AWMSEngine.Engine.V2.General
             public List<MachineDetail> MachineStatus;
             public class MachineDetail
             {
-                public string MachineType;
+                public string MachineCode;
                 public string AreaCode;
                 public string Status;
                 public string Description;
