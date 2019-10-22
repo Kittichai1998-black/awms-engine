@@ -15,7 +15,7 @@ namespace AWMSEngine.Engine.V2.General
             {
                 public string MachineCode;
                 public string AreaCode;
-                public string Status;
+                public int Status;
                 public string Description;
                 public DateTime DateTime;
                 public bool ErrorFlag;
