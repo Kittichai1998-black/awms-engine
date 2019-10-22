@@ -259,7 +259,6 @@ const AmMappingPallet2 = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-     
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -303,7 +302,7 @@ const AmMappingPallet2 = (props) => {
     }, [inputSource]);
     useEffect(() => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
-        GetWarehouseDDL();
+            GetWarehouseDDL();
         }
     }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
@@ -473,6 +472,7 @@ const AmMappingPallet2 = (props) => {
                 }
             }
         }
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -492,7 +492,7 @@ const AmMappingPallet2 = (props) => {
                     }
                 }
             }
-        } 
+        }
         setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
@@ -576,7 +576,7 @@ const AmMappingPallet2 = (props) => {
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     let checkMVT = false;
                     let checkDataNull = false;
                     if (res.data.code) {
@@ -591,7 +591,7 @@ const AmMappingPallet2 = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
-                            }else{
+                            } else {
                                 checkMVT = true;
                             }
                         }
@@ -607,7 +607,7 @@ const AmMappingPallet2 = (props) => {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
-                    } 
+                    }
                     else {
                         if (actionValue === 2) {
                             checkDataNull = true;
@@ -645,7 +645,7 @@ const AmMappingPallet2 = (props) => {
                                     setStorageObj(res.data);
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } 
+                                }
                                 // else {
                                 //     alertDialogRenderer("Remove Pallet Success", "success", true);
                                 //     onHandleClear();
@@ -655,7 +655,7 @@ const AmMappingPallet2 = (props) => {
                     } else {
                         if (checkDataNull) {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
-                        }                          
+                        }
                         onHandleClear();
                     }
                 } else {
@@ -673,7 +673,7 @@ const AmMappingPallet2 = (props) => {
     const addEmptyPallet = (dataEmptyPallet) => {
 
         Axios.post(window.apipath + apiCreate, dataEmptyPallet).then((res) => {
-            if (res.data._result.message === "Success") {
+            if (res.data._result.status === 1) {
                 setStorageObj(res.data);
                 alertDialogRenderer("Add & Mapping Pallet Success", "success", true);
             } else {
@@ -687,7 +687,7 @@ const AmMappingPallet2 = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClearAll();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         setStorageObj(res.data);
                         alertDialogRenderer("Select Pallet Success", "success", true);
                     } else {
@@ -730,7 +730,7 @@ const AmMappingPallet2 = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClearAll();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
@@ -974,8 +974,11 @@ const AmMappingPallet2 = (props) => {
         setDDLArea(null);
     }
     const inputClear = () => {
-        // setReqPost({});
-        onClearInput(itemCreate);
+        if (scanFirstbarcode === false) {
+            onClearInput(FirstScans);
+        } else {
+            onClearInput(itemCreate);
+        }
     }
     const onClearInput = (inputCreate) => {
         if (inputCreate !== undefined) {

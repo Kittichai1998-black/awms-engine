@@ -122,84 +122,62 @@ const PickingReturn = (props) => {
             let newQty = 0;
             if (storageObj) {
 
-                if (reqValue.scanCode) {
+                
+                if (reqValue.scanCode && reqValue.scanCode.trim().length !== 0) {
                     reqValue.scanCode = reqValue.scanCode.trim();
-                    if (reqValue.scanCode.length !== 0) {
-                        if (reqValue.scanCode.includes('@')) {
-                            skuCode = reqValue.scanCode.replace(/\@/g, " ");
-                        } else {
-                            skuCode = reqValue.scanCode;
-                        }
-                        skuCode = skuCode.trim();
+                    if (reqValue.scanCode.includes('@')) {
+                        skuCode = reqValue.scanCode.replace(/\@/g, " ");
                     } else {
-                        if (curInput === 'scanCode') {
-                            skuCode = null;
-                            alertDialogRenderer("Reorder No. must be value.", "error", true);
-                        }
+                        skuCode = reqValue.scanCode;
                     }
-                    if (reqValue['orderNo']) {
-                        reqValue.orderNo = reqValue.orderNo.trim();
-                        if (reqValue.orderNo.length !== 0 && reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
-                            orderNo = reqValue['orderNo'];
-                        } else {
-                            if (curInput === 'orderNo') {
-                                orderNo = null;
-                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                } else {
-                                    alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
-
-                                }
-                            }
-                        }
-                    }
-
-                    if (reqValue['cartonNo']) {
-                        if(reqValue['cartonNo'].match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)){
-                            let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                            cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                        }else{
-                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
-                        }
-                    } else {
-                        if (curInput === 'cartonNo') {
-                            cartonNo = null;
-                            if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                            } else {
-                                alertDialogRenderer("Carton No. must be value.", "error", true);
-                            }
-                        }
-                    }
+                    skuCode = skuCode.trim();
+                    console.log(skuCode)
                 } else {
-                    if (reqValue['orderNo']) {
-                        reqValue.orderNo = reqValue.orderNo.trim();
-                        if (reqValue.orderNo.length !== 0 && reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
-                            orderNo = reqValue['orderNo'];
-                        } else {
-                            if (curInput === 'orderNo') {
-                                orderNo = null;
-                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                } else {
-                                    alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
-
-                                }
-                            }
-                        }
-                    }
-                    if (reqValue['cartonNo']) {
-                        if(reqValue['cartonNo'].match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)){
-                            let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                            cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                        }else{
-                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
-                        }
-                    } else {
-                        if (curInput === 'cartonNo') {
-                            cartonNo = null;
-                            alertDialogRenderer("Carton No. must be value.", "error", true);
-                        }
+                    if (curInput === 'scanCode') {
+                        skuCode = null;
+                        console.log("skuCode null")
+                        alertDialogRenderer("Reorder No. must be value.", "error", true);
                     }
                 }
 
+                if (reqValue.orderNo && reqValue.orderNo.trim().length !== 0) {
+                    reqValue.orderNo = reqValue.orderNo.trim();
+                    if (reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
+                        orderNo = reqValue['orderNo'];
+                    } else {
+                        if (curInput === 'orderNo') {
+                            orderNo = null;
+                            console.log("orderNo not match")
+                            alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
+                        }
+                    }
+                } else {
+                    if (curInput === 'orderNo') {
+                        orderNo = null;
+                        console.log("orderNo null")
+                        alertDialogRenderer("SI (Order No.) must be value.", "error", true);
+                    }
+                }
+                if (reqValue.cartonNo && reqValue.cartonNo.trim().length !== 0) {
+                    reqValue.cartonNo = reqValue.cartonNo.trim();
+                    if (reqValue.cartonNo.match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)) {
+                        let resCartonNo = ExplodeRangeNum(reqValue.cartonNo);
+                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    } else {
+                        if (curInput === 'cartonNo') {
+                            cartonNo = null;
+                            console.log("cartonNo not match")
+                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
+                        }
+                    }
+                } else {
+                    if (curInput === 'cartonNo') {
+                        cartonNo = null;
+                        console.log("cartonNo null")
+                        alertDialogRenderer("Carton No. must be value.", "error", true);
+                    }
+                } 
+ 
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
                     qryStrOpt = queryString.parse(dataMapstos.options);
@@ -334,10 +312,16 @@ const PickingReturn = (props) => {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
-                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {
+                                if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                                    if (storageObj.mapstos[0].code !== reqValue.scanCode) {
+                                     alertDialogRenderer("Pallet Code doesn't match.", "error", true);
+                                    }
+                                }else{
+                                    alertDialogRenderer("Pallet Code doesn't match.", "error", true);
+                                }
                                 resValuePost = { ...reqValue, allowSubmit: false }
                             }
                         } else {
