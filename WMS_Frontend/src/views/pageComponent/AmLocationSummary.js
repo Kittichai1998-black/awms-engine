@@ -16,6 +16,8 @@ const AmLocationSummary = props => {
     const [dataSide, setDataSide] = useState()
     const [dataDetail, setDataDetail] = useState([])
     const [dataAll, setDataAll] = useState()
+    const [titleBank, setTitleBank] = useState()
+    const [btnClear, setBtnClear] = useState()
     // const refDetail = useRef();
     const locationSummary = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -63,7 +65,7 @@ const AmLocationSummary = props => {
                 padding = "5px",
                 dataT = bank.map((x, xi) => {
                     return (
-                        <tr className={"HoverTable"} onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
+                        <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
                             bay.map((y, yi) => {
                                 let dataFil = dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code })
                                 if (xi === 0 && yi && yi % bayPercen_10 === 0 && bayPercen_10 % 1 === 0) { // header แกน x
@@ -75,12 +77,12 @@ const AmLocationSummary = props => {
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
                                 } else if (yi && xi) {
-                                    let color = dataFil.length ? dataFil.length * 0.1 : 0,
+                                    let color = dataFil.length ? dataFil.length : 0,
                                         cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td key={yi} style={{
                                             padding: padding,
-                                            backgroundColor: cssBg,
+                                            backgroundColor: bgColor(color),
                                             border: "1px solid black"
                                         }}></td>
                                     )
@@ -128,16 +130,16 @@ const AmLocationSummary = props => {
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Level\Bay</td>
                                 } else {
-                                    let color = dataFil.length ? (dataFil.length + 1) * 0.1 : 0,
+                                    let color = dataFil.length ? dataFil.length : 0,
                                         cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td
-                                            className={"HoverTable"}
+                                            className="HoverTable"
                                             key={yi}
                                             onClick={(e) => clickData(rowBank, y.Bay, x.Level, e)}
                                             style={{
                                                 padding: padding,
-                                                backgroundColor: cssBg,
+                                                backgroundColor: bgColor(color),
                                                 border: "1px solid black"
                                             }}></td>
                                     )
@@ -146,13 +148,15 @@ const AmLocationSummary = props => {
                         }</tr>
                     )
                 })
+            setTitleBank("Bank " + parseInt(rowBank))
             setDataSide(dataS)
         }
     }
 
     const clickData = (selBank, selBay, selLevel, e) => {
         let chk
-        if (e.currentTarget.style.border.search("black") !== -1 && parseFloat(e.currentTarget.style.backgroundColor.split(',')[3])) {
+
+        if (e.currentTarget.style.border.search("black") !== -1 && e.currentTarget.style.backgroundColor) {
             e.currentTarget.style.border = "2px solid red"
             sideTd.push(e.currentTarget)
             chk = true
@@ -201,7 +205,50 @@ const AmLocationSummary = props => {
                     // </Grid>
                 )
         })
+
+        if (dataD.length) {
+            setBtnClear(<button className="btn btn-danger" style={{ padding: "1px", marginLeft: "3px" }} onClick={clickClear}>Clear</button>)
+        } else {
+            setBtnClear()
+        }
         setDataDetail(dataD)
+    }
+
+    const bgColor = (num) => {
+        switch (num) {
+            case 0:
+                return;
+            case 1:
+                return "rgb(255, 195, 120)"
+            case 2:
+                return "rgb(250, 185, 110)"
+            case 3:
+                return "rgb(245, 175, 100)"
+            case 4:
+                return "rgb(240, 165, 90)"
+            case 5:
+                return "rgb(235, 155, 80)"
+            case 6:
+                return "rgb(230, 145, 70)"
+            case 7:
+                return "rgb(225, 135, 60)"
+            case 8:
+                return "rgb(220, 125, 50)"
+            case 9:
+                return "rgb(215, 115, 40)"
+            default:
+                return "rgb(210, 105, 30)"
+        }
+    }
+
+    const clickClear = () => {
+        sideTd.forEach(x => {
+            x.style.border = "1px solid black"
+        })
+        sideTd.length = 0
+        setDataDetail([])
+        mergeDatas.length = 0
+        setBtnClear()
     }
 
     return (
@@ -221,20 +268,21 @@ const AmLocationSummary = props => {
                     </div>
                 </Grid>
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <b style={{ fontSize: "20px" }}>Top View</b>
                         <div id={"divTableTopView"} style={{ height: (window.innerHeight - 200) / 2 }}>
-                            <table align={"center"}>
+                            <table>
                                 <tbody>
                                     {dataTop}
                                 </tbody>
                             </table>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
-                        <b style={{ fontSize: "20px" }}>Side View</b>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <b style={{ fontSize: "20px" }}>{titleBank} Side View</b>
+                        {btnClear}
                         <div id={"divTableSideView"} style={{ height: (window.innerHeight - 200) / 2 }}>
-                            <table align={"center"}>
+                            <table>
                                 <tbody>
                                     {dataSide}
                                 </tbody>
