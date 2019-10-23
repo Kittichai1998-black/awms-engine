@@ -69,8 +69,7 @@ const AmTable = props => {
               <Radio
                 type="radio"
                 checked={checked}
-                className={classNames("selection")}
-                style={{ padding: 0 }}
+                style={{ padding: 0, display:"inline" }}
                 name="selection"
                 onChange={ele =>
                   onHandleSelection(e, "radio", ele.target.checked)
@@ -107,8 +106,7 @@ const AmTable = props => {
             return (
               <Checkbox
                 checked={checked}
-                className={classNames("selection")}
-                style={{ padding: 0 }}
+                style={{ padding: 0, display:"inline" }}
                 onChange={ele =>
                   onHandleSelection(e, "checkbox", ele.target.checked)
                 }

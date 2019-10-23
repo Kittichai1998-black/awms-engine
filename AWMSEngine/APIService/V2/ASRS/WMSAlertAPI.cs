@@ -11,20 +11,18 @@ using AWMSEngine.Engine.V2.General;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class WCSStatusAPI : BaseAPIService
+    public class WMSAlertAPI : BaseAPIService
     {
-        public WCSStatusAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WMSAlertAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
-            WCSStatus.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<WCSStatus.TReq>(this.RequestVO);
-            var res = new WCSStatus().Execute(this.Logger, this.BuVO, req);
+            WMSAlert.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<WMSAlert.TReq>(this.RequestVO);
+            var res = new WMSAlert().Execute(this.Logger, this.BuVO, req);
             var hub = (BaseV2Controller)this.ControllerAPI;
             hub.HubService.Clients.All.SendAsync("alert", res);
-            //var hub2 = this.BuVO.Hub;
-            //hub2.Clients.All.SendAsync("alert", "test=xyz");
             return null;
 
         }

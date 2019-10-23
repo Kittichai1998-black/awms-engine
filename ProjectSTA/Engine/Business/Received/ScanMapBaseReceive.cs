@@ -35,13 +35,14 @@ namespace ProjectSTA.Engine.Business.Received
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Not received value for AreaID");
             }
+
             string scanCode = reqVO.scanCode == null ? throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Not received value for ScanCode") : reqVO.scanCode;
             if (scanCode.Length != 26)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ScanCode must be equal 26-digits");
             }
             string orderNo = scanCode.Substring(0, 7);
-            string skuCode1 = scanCode.Substring(7, 15); 
+            string skuCode1 = scanCode.Substring(7, 15).Replace('@', ' ');
             string skuCode = skuCode1.Trim(); //ทดสอบ .Trim() ต้องตัดค่าว่างท้ายทิ้ง
             int cartonNo = int.Parse(scanCode.Substring(22, 4));
 
