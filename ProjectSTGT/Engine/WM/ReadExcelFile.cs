@@ -31,7 +31,19 @@ namespace ProjectSTGT.Engine.WM
         {
             var tsk = Task.Run(() =>
             {
-                ReadFileFromDirectory();
+                while (true)
+                {
+                    try
+                    {
+                        ReadFileFromDirectory();
+                    }
+                    catch { 
+                    }
+                    finally
+                    {
+                        Thread.Sleep(3000);
+                    }
+                }
             });
             return tsk;
         }
@@ -47,8 +59,9 @@ namespace ProjectSTGT.Engine.WM
                 {
                     var res = FilesTypeAccess.ExcelAccess(file);
                     CreateDocument(res);
+                    file.MoveTo($"{directoryPath}\\Archive\\{file.Name}");
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }
@@ -75,16 +88,22 @@ namespace ProjectSTGT.Engine.WM
 
                 gDocItems.ForEach(x =>
                 {
-                    var doc = new CreateGRDocument.TReq();
+                    try
+                    {
+                        var doc = new CreateGRDocument.TReq();
 
-                    doc.documentDate = DateTime.Now;
-                    doc.eventStatus = DocumentEventStatus.NEW;
-                    doc.movementTypeID = MovementType.FG_TRANSFER_WM;
-                    doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-                    doc.receiveItems = x;
+                        doc.documentDate = DateTime.Now;
+                        doc.eventStatus = DocumentEventStatus.NEW;
+                        doc.movementTypeID = MovementType.FG_TRANSFER_WM;
+                        doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+                        doc.receiveItems = x;
 
-                    var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
-                    var res = createGRDoc.Execute(doc);
+                        var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
+                        var res = createGRDoc.Execute(doc);
+                    }
+                    catch
+                    {
+                    }
                 });
             });
         }
