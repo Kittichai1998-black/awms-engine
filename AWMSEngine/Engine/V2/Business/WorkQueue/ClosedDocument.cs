@@ -161,7 +161,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(updSto.Done_Eventsto);
                 var upSTO = ADO.DataADO.GetInstant().UpdateBy<amt_StorageObject>(new SQLConditionCriteria[] {
-                                            new SQLConditionCriteria("ID", string.Join(",", updSto.IDs.Select(x=>x.id).ToArray()), SQLOperatorType.IN )
+                                            new SQLConditionCriteria("ID", string.Join(",", updSto.IDs.Select(x=>x.id).ToArray()), SQLOperatorType.IN ),
+                                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS )
                                             }, new KeyValuePair<string, object>[]{
                                             new KeyValuePair<string, object>("EventStatus", updSto.Done_Eventsto),
                                             new KeyValuePair<string, object>("Status", toStatus)

@@ -1,8 +1,8 @@
-import CardActions from '@material-ui/core/CardActions';
+// import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { apicall, createQueryString } from "../../components/function/CoreFunction2"
 import Aux from '../../components/AmAux'
@@ -35,12 +35,6 @@ const AmLocationSummary = props => {
         topTr,
         sideTd = [],
         mergeDatas = []
-
-
-    // useEffect(() => {
-    //     if (dataDetail.length)
-    //         refDetail.current.scrollIntoView()
-    // }, [dataDetail])
 
     useEffect(() => {
         Axios.get(createQueryString(locationSummary)).then((row) => {
@@ -184,19 +178,18 @@ const AmLocationSummary = props => {
                     // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
                     <Card key={xi} style={{ margin: "5px" }}>
                         <CardContent style={{ padding: "5px" }}>
-                            {/* <div style={{ textAlign: "center" }}> */}
-                            <b>Location : {x[0].Code}</b>
-                            {/* </div> */}
-
+                            <div style={{ textAlign: "center" }}>
+                                <b style={{ color: "red" }}>Location : {x[0].Code}</b>
+                            </div>
                             {
                                 x.map((y, yi) => {
                                     return (
                                         <Aux key={yi}>
-                                            {yi > 0 ? <hr /> : null}
-                                            <p style={{ margin: "0px" }}>Pallet : {y.bsto_Code}</p>
-                                            <p style={{ margin: "0px" }}>Pack Code : {y.psto_Code}</p>
-                                            <p style={{ margin: "0px" }}>Pack Name : {y.psto_Name}</p>
-                                            <p style={{ margin: "0px" }}>Quantity : {y.Quantity} {y.ut_Code}</p>
+                                            {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
+                                            <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
+                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             {/* <p style={{ margin: "0px" }}>Unit : {y.ut_Code}</p> */}
 
                                         </Aux>
@@ -215,7 +208,7 @@ const AmLocationSummary = props => {
         <Aux>
             <Grid
                 container
-                // spacing={3}
+                spacing={1}
                 direction="row"
                 justify="center"
                 alignItems="flex-start">
