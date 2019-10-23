@@ -86,7 +86,7 @@ const AmSetOjectSize = (props) => {
   //===========================================================
   const [selection, setSelection] = useState();
   useEffect(() => {
-    //console.log(selection)
+    
   }, [selection])
 
   const FuncSetTable = () => {
@@ -132,8 +132,8 @@ const AmSetOjectSize = (props) => {
     // console.log(datax)
     // console.log(objectSize)
     const iniCols = [
-      { Header: 'Code', accessor: 'code', fixed: 'left', width: 250 },
-      { Header: 'Name', accessor: 'name', width: 250 },
+      { Header: 'Code', accessor: 'Code', fixed: 'left', width: 250 },
+      { Header: 'Name', accessor: 'Name', width: 250 },
       {
         Header: 'MinQuantity',
         width: 120,
@@ -162,6 +162,7 @@ const AmSetOjectSize = (props) => {
         sortable: false,
       }
     ];
+
     return [{
       "field": "Code",
       "component": (data, cols, key) => {
@@ -170,7 +171,7 @@ const AmSetOjectSize = (props) => {
           <Table
             primaryKey="ID"
             sortable={false}
-            defaultSelection={datax}
+            //defaultSelection={datax}
             //primaryKey="ID"
             data={objectSize}
             columns={iniCols}
@@ -195,6 +196,7 @@ const AmSetOjectSize = (props) => {
   const [dataRow, setDataRow] = useState();
 
   async function onSetSelection(dataSel) {
+
     setSelection(dataSel)
   }
 
@@ -240,20 +242,19 @@ const AmSetOjectSize = (props) => {
     // await Axios.get(createQueryString(ObjectSizeQuery)).then(res => {
     //   setObjectSize(res.data.datas);
     // });
-    await Axios.get(window.apipath + "/v2/GetObjectSizeMapAPI?apikey=FREE01"
-      + "&ID=" + data.original.ID
+    await Axios.get(window.apipath + "/v2/GetObjectSizeMapAPI?"
+      + "ID=" + data.original.ID
     ).then((rowselect1) => {
       //console.log(rowselect1)
       if (rowselect1) {
         if (rowselect1.data._result.status !== 0) {
           //console.log(rowselect1.data.datas)
           rowselect1.data.datas.forEach(x => {
-            x.ID = x.id
-            x.MaxQuantity = x.maxQuantity
-            x.MinQuantity = x.minQuantity
-            delete x["id"]
-            delete x["maxQuantity"]
-            delete x["minQuantity"]
+
+            x.ID = x.ID
+            x.MaxQuantity = x.MaxQuantity
+            x.MinQuantity = x.MinQuantity
+        
           })
           setObjectSize(rowselect1.data.datas);
         }
@@ -1153,7 +1154,7 @@ const AmSetOjectSize = (props) => {
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
-    console.log(updjson)
+  
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
