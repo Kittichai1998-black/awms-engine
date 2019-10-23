@@ -287,10 +287,6 @@ const Scanbarcode = (props) => {
     }, t)
    const time = clock 
 
-   useEffect(() => {
-    console.log(wcsAlert)
-    }, [wcsAlert])
-
     useEffect(() => {
         setTimeout(() => {
             set_width_height({
@@ -709,15 +705,17 @@ const Scanbarcode = (props) => {
     }
 
     const WCSStatusText = () => {
-        let res = wcsAlert.find(x=> x.AreaCode === localStorage.getItem("areaCode"))
-        if(res !== null && res !== undefined){
-            if(res.ErrorFlag === true)
-                return res.Status + ' : ' + res.Description;
+        if(wcsAlert.length > 0){
+            let res = wcsAlert.find(x=> x.code === localStorage.getItem("areaCode"))
+            if(res !== null && res !== undefined){
+                if(res.alertType === "error")
+                    return res.title + ' : ' + res.message;
+                else
+                    return null;
+            }
             else
                 return null;
         }
-        else
-            return null;
     }
 
     return (
