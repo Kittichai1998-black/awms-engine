@@ -566,7 +566,7 @@ const AmPickingReturn = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
                 // inputClear();
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     if (res.data.bsto) {
                         let checkMVT = false;
                         let qryStr = queryString.parse(res.data.bsto.options);

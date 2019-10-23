@@ -581,7 +581,7 @@ const AmPickingReturn2 = (props) => {
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     if (res.data.bsto) {
                         let checkMVT = false;
                         let qryStr = queryString.parse(res.data.bsto.options);
@@ -848,13 +848,14 @@ const AmPickingReturn2 = (props) => {
         setDDLArea(null);
     }
     const inputClear = () => {
-        // setReqPost({});
-        onClearInput(itemCreate);
+        if (scanFirstbarcode === false) {
+            onClearInput(FirstScans);
+        } else {
+            onClearInput(itemCreate);
+        }
     }
     const onClearInput = (inputCreate) => {
         inputCreate.map((x, i) => {
-            // setValueInput({
-            // });
             let ele = document.getElementById(x.field);
             if (ele) {
                 if (x.clearInput) {

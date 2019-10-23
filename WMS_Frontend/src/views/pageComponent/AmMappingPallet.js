@@ -568,7 +568,7 @@ const AmMappingPallet = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             //inputClear();
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     let checkMVT = false;
                     let checkDataNull = false;
                     if (res.data.code) {
@@ -676,7 +676,7 @@ const AmMappingPallet = (props) => {
     const addEmptyPallet = (dataEmptyPallet) => {
 
         Axios.post(window.apipath + apiCreate, dataEmptyPallet).then((res) => {
-            if (res.data._result.message === "Success") {
+            if (res.data._result.status === 1) {
                 setStorageObj(res.data);
                 //inputClear();
                 alertDialogRenderer("Add & Mapping Pallet Success", "success", true);
@@ -692,7 +692,7 @@ const AmMappingPallet = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         setStorageObj(res.data);
                         alertDialogRenderer("Select Pallet Success", "success", true);
                     } else {
@@ -735,7 +735,7 @@ const AmMappingPallet = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
@@ -975,7 +975,6 @@ const AmMappingPallet = (props) => {
         setDDLArea(null);
     }
     const inputClear = () => {
-        // setReqPost({});
         onClearInput(itemCreate);
     }
     const onClearInput = (inputCreate) => {
