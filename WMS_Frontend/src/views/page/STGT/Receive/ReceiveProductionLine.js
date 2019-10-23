@@ -330,7 +330,7 @@ const CustomerReturnPalletByBarcode = props => {
         setVisibleTabMenu={[null, "Add", "Remove"]}
         //setMovementType={"1012"}
         autoPost={true}
-        piCreate={"/v2/ScanReceivedProductionLineAPI"}
+        apiCreate={"/v2/ScanReceivedProductionLineAPI"}
         showOldValue={onOldValue}
       />
     </div>
