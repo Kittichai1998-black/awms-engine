@@ -15,7 +15,7 @@ namespace AWMSEngine.Engine.V2.General
             {
                 public string code;
                 public string title;
-                public int message;
+                public string message;
                 public string alertType;
                 public DateTime actionTime;
             }
@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override string ExecuteEngine(TReq reqVO)
         {
-            var res = JsonConvert.SerializeObject(reqVO);
+            var res = JsonConvert.SerializeObject(reqVO.messages);
             return res;
         }
     }

@@ -287,10 +287,6 @@ const Scanbarcode = (props) => {
     }, t)
    const time = clock 
 
-   useEffect(() => {
-    console.log(wcsAlert)
-    }, [wcsAlert])
-
     useEffect(() => {
         setTimeout(() => {
             set_width_height({
@@ -709,15 +705,17 @@ const Scanbarcode = (props) => {
     }
 
     const WCSStatusText = () => {
-        let res = wcsAlert.find(x=> x.AreaCode === localStorage.getItem("areaCode"))
-        if(res !== null && res !== undefined){
-            if(res.ErrorFlag === true)
-                return res.Status + ' : ' + res.Description;
+        if(wcsAlert.length > 0){
+            let res = wcsAlert.find(x=> x.code === localStorage.getItem("areaCode"))
+            if(res !== null && res !== undefined){
+                if(res.alertType === "error")
+                    return res.title + ' : ' + res.message;
+                else
+                    return null;
+            }
             else
                 return null;
         }
-        else
-            return null;
     }
 
     return (
@@ -885,7 +883,7 @@ const Scanbarcode = (props) => {
                                                     }}>Manual</AmButton>}
 
                                                 <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={()=> {
-                                                    RemovePackSto(pallet2, areaIDs)
+                                                    RemovePackSto(pallet, areaIDs)
                                                 }}>Remove</AmButton></div>
                                             </Card>
                                         </Flash> : 
@@ -946,6 +944,7 @@ const Scanbarcode = (props) => {
                                                             
                                                     <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                         MapStoNoDoc(areaGate, "left")
+                                                        UnlockGate(areaGate, "left")
                                                         setManualAddLeft({});
                                                     }}>Save</AmButton>
                                                     <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
@@ -1073,6 +1072,7 @@ const Scanbarcode = (props) => {
                                                         <div style={{textAlign:"center"}}>
                                                             <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                                 MapStoNoDoc(areaGate2, "right");
+                                                                UnlockGate(areaGate2, "right");
                                                                 setManualAddRight({});
                                                                 }}>Save</AmButton>
                                                             <AmButton style={{marginTop:"10px", width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
