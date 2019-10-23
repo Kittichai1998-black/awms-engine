@@ -20,10 +20,10 @@
   margin-left: 42px;
 }
 #divTableTopView tr.active{
-  background-color: red;
+  background-color: #FFC8C8;
 }
 #divTableTopView tr.active td:first-child{
-  background-color: red;
+  background-color: #FFC8C8;
 }
 /* #divTableTopView>tr>td,#divTableSideView{
   font-size: 8px;
