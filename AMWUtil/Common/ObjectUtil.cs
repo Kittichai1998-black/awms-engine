@@ -215,7 +215,7 @@ namespace AMWUtil.Common
                 if (res.Length > 0) res.Append("&");
                 res.Append(p.Key);
                 res.Append("=");
-                res.Append(p.Value);
+                res.Append(p.Value.Replace("&", "%26").Replace("=", "%3D"));
             }
             return res.ToString();
         }

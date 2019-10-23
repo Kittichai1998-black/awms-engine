@@ -504,7 +504,7 @@ const AmPickingReturn = (props) => {
         if (resValuePosts) {
             let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+                qryStrOpt[SC.OPT_REMARK] = encodeURIComponent(valueInput[SC.OPT_REMARK]);
             }
             if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
                 qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
