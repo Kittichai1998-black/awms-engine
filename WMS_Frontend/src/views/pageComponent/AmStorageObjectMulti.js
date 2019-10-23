@@ -235,7 +235,7 @@ const AmStorageObjectMulti = props => {
       setOpenWarning(true);
     } else {
       let cloneData = selection;
-      setRemark(value);
+      setRemark(encodeURIComponent(value));
       setDataSentToAPI(cloneData);
     }
   };
