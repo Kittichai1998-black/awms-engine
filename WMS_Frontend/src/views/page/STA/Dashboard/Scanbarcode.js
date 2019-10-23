@@ -885,7 +885,7 @@ const Scanbarcode = (props) => {
                                                     }}>Manual</AmButton>}
 
                                                 <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={()=> {
-                                                    RemovePackSto(pallet2, areaIDs)
+                                                    RemovePackSto(pallet, areaIDs)
                                                 }}>Remove</AmButton></div>
                                             </Card>
                                         </Flash> : 
@@ -946,6 +946,7 @@ const Scanbarcode = (props) => {
                                                             
                                                     <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                         MapStoNoDoc(areaGate, "left")
+                                                        UnlockGate(areaGate, "left")
                                                         setManualAddLeft({});
                                                     }}>Save</AmButton>
                                                     <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
@@ -1073,6 +1074,7 @@ const Scanbarcode = (props) => {
                                                         <div style={{textAlign:"center"}}>
                                                             <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                                 MapStoNoDoc(areaGate2, "right");
+                                                                UnlockGate(areaGate2, "right");
                                                                 setManualAddRight({});
                                                                 }}>Save</AmButton>
                                                             <AmButton style={{marginTop:"10px", width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
