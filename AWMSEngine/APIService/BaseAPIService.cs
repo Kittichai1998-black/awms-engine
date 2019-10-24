@@ -51,7 +51,7 @@ namespace AWMSEngine.APIService
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
-            var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction(this.Logger.LogRefID);
+            var trans = ADO.DataADO.GetInstant().CreateTransaction(this.Logger.LogRefID);
             this._SqlConnection = trans.Connection;
             this.BuVO.Set(BusinessVOConst.KEY_DB_TRANSACTION, trans);
         }
