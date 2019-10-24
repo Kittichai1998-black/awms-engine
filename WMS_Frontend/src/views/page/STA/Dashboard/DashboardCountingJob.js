@@ -10,13 +10,13 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 //type time,datetime,datelog
 const headercol1 = [
     { accessor: "ActualTime", Header: "Time", type: "time", sortable: false, width: 100, style: { textAlign: "center" } },
-    { accessor: "Document_Code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } },
+    { accessor: "doc_code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } },
     // { accessor: "Gate", Header: "Gate",  style: { fontWeight: '900' }, sortable: false },
-    { accessor: "MVT", Header: "MVT", sortable: false, width: 100, style: { textAlign: "center" } },
+    { accessor: "mvt_name", Header: "MVT", sortable: false, width: 100, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Product", sortable: false },
     { accessor: "OrderNo", Header: "Order", sortable: false, width: 100, style: { textAlign: "center" } },
 
-    { accessor: "QtyUnit", Header: "Qty/Total", sortable: false, width: 100, style: { textAlign: "center" } },
+    { accessor: "qty", Header: "Qty/Total", sortable: false, width: 100, style: { textAlign: "center" } },
     // { accessor: "Destination", Header: "Destination", sortable: false },
 ]
 
