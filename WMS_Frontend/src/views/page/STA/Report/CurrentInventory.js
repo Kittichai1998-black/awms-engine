@@ -141,19 +141,70 @@ const CurrentInventory = (props) => {
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'Name', sortable: false },
         { Header: 'Order No.', accessor: 'OrderNo', width: 80, sortable: false },
-        { Header: 'Qty New', accessor: 'baseQty_evt10', width: 80, sortable: false },
-        { Header: 'Qty Receiving', accessor: 'baseQty_evt11', width: 85, sortable: false },
-        { Header: 'Qty Received', accessor: 'baseQty_evt12', width: 85, sortable: false },
-        { Header: 'Qty Counting', accessor: 'baseQty_evt13', width: 85, sortable: false },
-        { Header: 'Qty Counted', accessor: 'baseQty_evt14', width: 85, sortable: false },
-        { Header: 'Qty Picking', accessor: 'baseQty_evt17', width: 85, sortable: false },
-        { Header: 'Qty Picked', accessor: 'baseQty_evt18', width: 85, sortable: false },
-        { Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false },
+        {
+            Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
         { Header: 'Unit', accessor: 'baseUnitType', width: 70, sortable: false },
+        {
+            Header: 'Receiving', accessor: 'baseQty_evt11', width: 85, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+
+                }
+            })
+        },
+        {
+            Header: 'Received', accessor: 'baseQty_evt12', width: 85, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Counting', accessor: 'baseQty_evt13', width: 85, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Counted', accessor: 'baseQty_evt14', width: 85, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Picking', accessor: 'baseQty_evt17', width: 85, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+
 
     ];
 
-
+    const comma = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     return (
         <div className={classes.root}>
             <AmReport
@@ -166,6 +217,7 @@ const CurrentInventory = (props) => {
                 renderCustomButton={customBtnSelect()}
                 page={true}
                 exportApi={getAPI}
+                excelFooter={true}
             ></AmReport>
         </div>
     )

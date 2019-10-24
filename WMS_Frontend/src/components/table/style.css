@@ -30,7 +30,7 @@ div.-sort-asc div div::after {
 }
 
 .ReactTable .rt-tr:hover .rt-td {
-    background: greenyellow
+    background: greenyellow !important;
 }
 
 .editData .rt-th,.editData .rt-td{

@@ -10,9 +10,9 @@ import styled from 'styled-components'
 import AmInput from "../../../components/AmInput";
 import AmDate from '../../../components/AmDate';
 import AmDropdown from '../../../components/AmDropdown';
+import AmRediRectInfo from '../../../components/AmRedirectInfo'
 import { useTranslation } from 'react-i18next'
 const Axios = new apicall();
-
 const styles = theme => ({
     root: {
         fontFamily: [
@@ -56,7 +56,7 @@ const LabelH = styled.label`
 `;
 
 
-const StockCard = (props) => {
+const DailySTOSumCounting = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -65,8 +65,6 @@ const StockCard = (props) => {
     const [page, setPage] = useState(0);
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
-
-
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "MovementType",
@@ -78,21 +76,32 @@ const StockCard = (props) => {
         l: 100,
         all: "",
     }
+    const DocCodeQuery = {
+        queryString: window.apipath + "/v2/SelectDataTrxAPI",
+        t: "Document",
+        q: '[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID,Code",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+    }
+
     useEffect(() => {
         onGetDocument()
     }, [page])
     const onGetDocument = () => {
+
         Axios.get(window.apipath + "/v2/GetSPReportAPI?"
-            + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
-            + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
-            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-            + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))
-            + "&lot=" + (valueText.lot === undefined || valueText.lot.value === undefined || valueText.lot.value === null ? '' : encodeURIComponent(valueText.lot.value.trim()))
-            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-            + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
+            + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
+            + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
+            + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
+            + "&docType=2004"
+            + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
-            + "&spname=DAILY_STOCKCARD").then((rowselect1) => {
+            + "&spname=DAILY_STOSUM").then((rowselect1) => {
                 if (rowselect1) {
                     if (rowselect1.data._result.status !== 0) {
                         setdatavalue(rowselect1.data.datas)
@@ -101,16 +110,13 @@ const StockCard = (props) => {
                 }
             })
     }
-
     const getAPI = "/v2/GetSPReportAPI?"
-        + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
-        + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
-        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-        + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))
-        + "&lot=" + (valueText.lot === undefined || valueText.lot.value === undefined || valueText.lot.value === null ? '' : encodeURIComponent(valueText.lot.value.trim()))
-        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-        + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-        + "&spname=DAILY_STOCKCARD";
+        + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
+        + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
+        + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
+        + "&docType=2004"
+        + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
+        + "&spname=DAILY_STOSUM";
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
@@ -125,47 +131,22 @@ const StockCard = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-            <FormInline><LabelH>{t("Part NO.")} : </LabelH>
+            <FormInline><LabelH>{t("Doc No.")} : </LabelH>
                 <AmInput
-                    id={"packCode"}
+                    id={"docCode"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
-                />
-            </FormInline><br />
-            {/* <FormInline><LabelH>Batch : </LabelH>
-                <AmInput
-                    id={"batch"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "batch", null, event)}
-                />
-            </FormInline> */}
-            <FormInline><LabelH>{t("Lot")} : </LabelH>
-                <AmInput
-                    id={"lot"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "lot", null, event)}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "docCode", null, event)}
                 />
             </FormInline>
-            {/* <FormInline>
-                <LabelH>Order No. : </LabelH>
-                <AmInput
-                    id={"orderNo"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
-                />
-            </FormInline> */}
             <FormInline><LabelH>{t("Movement")} : </LabelH>
                 <AmDropdown
                     id={'movementType'}
                     fieldDataKey={"ID"}
                     fieldLabel={["Code", "Name"]}
-                    placeholder="Select Movement"
                     labelPattern=" : "
                     width={300}
+                    placeholder="Select Movement"
                     ddlMinWidth={300}
                     zIndex={1000}
                     returnDefaultValue={true}
@@ -176,24 +157,24 @@ const StockCard = (props) => {
             </FormInline>
             <FormInline><LabelH>{t("Date From")} : </LabelH>
                 <AmDate
-                    id={"fromDate"}
+                    id={"dateFrom"}
                     TypeDate={"date"}
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "fromDate", null, null)}
-                    FieldID={"fromDate"} >
+                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
+                    FieldID={"dateFrom"} >
                 </AmDate>
             </FormInline>
             <FormInline><LabelH>{t("Date To")} : </LabelH>
                 <AmDate
-                    id={"toDate"}
+                    id={"dateTo"}
                     TypeDate={"date"}
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "toDate", null, null)}
-                    FieldID={"toDate"} >
+                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
+                    FieldID={"dateTo"} >
                 </AmDate>
             </FormInline>
         </div>
@@ -203,21 +184,46 @@ const StockCard = (props) => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'Date', accessor: 'CreateTime', type: 'datetime', width: 130, sortable: false },
-        { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
-        { Header: 'Part NO.', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'Part Name', accessor: 'pstoName', width: 150, sortable: false },
-        // { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
+        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
+        { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
+        { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: 'pstoName', width: 150, sortable: false },
+        { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        // { Header: 'Order No.', accessor: 'pstoOrder', width: 100, sortable: false },
-        { Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false },
-        { Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false },
-        { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
-        { Header: 'Description', accessor: 'Description', width: 200, sortable: false },
-
+        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
+        // { Header: 'Ref No.', accessor: 'docRefID', width: 100, sortable: false },
+        // { Header: 'Ref1', accessor: 'docRef1', width: 100, sortable: false },
+        // { Header: 'Ref2', accessor: 'docRef2', width: 100, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Unit', accessor: 'unitType', width: 70, sortable: false },
+        {
+            Header: 'Base Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 70, sortable: false },
     ];
-
-
+    const getRedirect = (data) => {
+        if (data.indexOf(',') > 0) {
+            var datashow = data.split(",").map((x) => {
+                return <div>{x}<br /></div>
+            });
+            return (
+                <div style={{ display: "flex", maxWidth: '160px' }}><label className={classes.textNowrap}>{data}</label>
+                    <AmRediRectInfo type={"dialog"} bodyDialog={datashow} titleDialog="List of Document No." />
+                </div>
+            )
+        } else {
+            return data;
+        }
+    }
+    const comma = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     return (
         <div className={classes.root}>
             <AmReport
@@ -229,6 +235,7 @@ const StockCard = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 exportApi={getAPI}
+                excelFooter={true}
                 page={true}
             ></AmReport>
         </div>
@@ -236,4 +243,4 @@ const StockCard = (props) => {
 
 }
 
-export default withStyles(styles)(StockCard);
+export default withStyles(styles)(DailySTOSumCounting);

@@ -199,14 +199,24 @@ const DailySTOReceive = (props) => {
         // { Header: 'Ref No.', accessor: 'docRefID', width: 100, sortable: false },
         // { Header: 'Ref1', accessor: 'docRef1', width: 100, sortable: false },
         // { Header: 'Ref2', accessor: 'docRef2', width: 100, sortable: false },
-        { Header: 'Qty', accessor: 'qty', width: 100, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
         { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false },
-        { Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false },
+        {
+            Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false },
 
     ];
 
-
+    const comma = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     return (
         <div className={classes.root}>
             <AmReport
@@ -218,6 +228,7 @@ const DailySTOReceive = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 exportApi={getAPI}
+                excelFooter={true}
                 page={true}
             ></AmReport>
         </div>
