@@ -156,9 +156,11 @@ const ObjectSize = props => {
       placeholder: "PercentWeightAccept"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
+  const columnsFilter = [
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType"},
     {
       field: "ObjectType",
@@ -230,6 +232,7 @@ const ObjectSize = props => {
   return (
     <div>
       <AmSetOjectSize
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"ObjectSize"}
         table={"ams_ObjectSize"}

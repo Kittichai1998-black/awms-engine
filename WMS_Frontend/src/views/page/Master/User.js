@@ -137,6 +137,19 @@ const User = props => {
       placeholder: "Status"
     }
   ];
+  const primarySearch = [
+    {
+      field: "Code",
+      type: "input",
+      name: "Username",
+      placeholder: "Username"
+    },
+    {
+      field: "Name",
+      type: "input",
+      name: "Name"
+    }
+  ];
   const columnsFilter = [
     {
       field: "Code",
@@ -203,6 +216,7 @@ const User = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"User"}
         table={"ams_User"}
