@@ -10,32 +10,32 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 //type time,datetime,datelog
 const headercol1 = [
     { accessor: "ActualTime", Header: "Time", type: "time", sortable: false, width: 100, style: { textAlign: "center" } },
-    { accessor: "Document_Code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } },
+    { accessor: "doc_code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } },
     // { accessor: "Gate", Header: "Gate",  style: { fontWeight: '900' }, sortable: false },
-    { accessor: "MVT", Header: "MVT", sortable: false, width: 100, style: { textAlign: "center" } },
+    { accessor: "mvt_name", Header: "MVT", sortable: false, width: 100, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Product", sortable: false },
     { accessor: "OrderNo", Header: "Order", sortable: false, width: 100, style: { textAlign: "center" } },
 
-    { accessor: "QtyUnit", Header: "Qty/Total", sortable: false, width: 100, style: { textAlign: "center" } },
+    { accessor: "qty", Header: "Qty/Total", sortable: false, width: 100, style: { textAlign: "center" } },
     // { accessor: "Destination", Header: "Destination", sortable: false },
 ]
 
 const headercol2 = [
-    { accessor: "Time", Header: "Time", width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
-    {
-        accessor: "TaskName", Header: "Task", width: 120, sortable: false, style: { textAlign: "center" },
-        Cell: row => (
-            <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
-        )
-    },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false },
+    { accessor: "pCreateTime", Header: "Time", width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    // { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    // {
+    //     accessor: "TaskName", Header: "Task", width: 120, sortable: false, style: { textAlign: "center" },
+    //     Cell: row => (
+    //         <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
+    //     )
+    // },
+    { accessor: "pallet_code", Header: "Pallet", width: 140, sortable: false },
     { accessor: "Product", Header: "Product", sortable: false },
 
     // { accessor: "LocationCode", Header: "Stage", width: 70, style: { fontWeight: '900' }, sortable: false },
-    { accessor: "OrderNo", Header: "Order", width: 100, sortable: false },
+    // { accessor: "OrderNo", Header: "Order", width: 100, sortable: false },
 
-    { accessor: "Qty", Header: "Qty", width: 100, className: 'right', sortable: false },
+    { accessor: "qty", Header: "Qty", width: 100, className: 'right', sortable: false },
     // { accessor: "Destination", Header: "Destination", width: 170, sortable: false },
 
     // { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }

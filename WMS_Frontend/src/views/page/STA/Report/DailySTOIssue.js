@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AmReport from '../../../components/AmReport'
-import AmButton from '../../../components/AmButton'
-import AmFindPopup from '../../../components/AmFindPopup'
-import { apicall } from '../../../components/function/CoreFunction'
+import AmReport from '../../../../components/AmReport'
+import AmButton from '../../../../components/AmButton'
+import AmFindPopup from '../../../../components/AmFindPopup'
+import { apicall } from '../../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
-import AmInput from "../../../components/AmInput";
-import AmDate from '../../../components/AmDate';
-import AmDropdown from '../../../components/AmDropdown';
-import AmRediRectInfo from '../../../components/AmRedirectInfo'
+import AmInput from "../../../../components/AmInput";
+import AmDate from '../../../../components/AmDate';
+import AmDropdown from '../../../../components/AmDropdown';
 import { useTranslation } from 'react-i18next'
 const Axios = new apicall();
+
 const styles = theme => ({
     root: {
         fontFamily: [
@@ -55,8 +55,7 @@ const LabelH = styled.label`
     width: 100px; 
 `;
 
-
-const DailySTOSumCounting = (props) => {
+const DailySTOIssue = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -65,6 +64,7 @@ const DailySTOSumCounting = (props) => {
     const [page, setPage] = useState(0);
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
+
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "MovementType",
@@ -97,11 +97,13 @@ const DailySTOSumCounting = (props) => {
             + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
             + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
             + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
-            + "&docType=2004"
+            + "&docType=1002"
+            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
             + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
-            + "&spname=DAILY_STOSUM").then((rowselect1) => {
+            + "&spname=DAILY_STO").then((rowselect1) => {
                 if (rowselect1) {
                     if (rowselect1.data._result.status !== 0) {
                         setdatavalue(rowselect1.data.datas)
@@ -114,9 +116,11 @@ const DailySTOSumCounting = (props) => {
         + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
         + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
         + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
-        + "&docType=2004"
+        + "&docType=1002"
+        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
         + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-        + "&spname=DAILY_STOSUM";
+        + "&spname=DAILY_STO";
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
@@ -131,6 +135,24 @@ const DailySTOSumCounting = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
+            <FormInline>
+                <LabelH>{t('SKU Code')} : </LabelH>
+                <AmInput
+                    id={"packCode"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                />
+            </FormInline>
+            <FormInline>
+                <LabelH>{t("Order No.")} : </LabelH>
+                <AmInput
+                    id={"orderNo"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                />
+            </FormInline>
             <FormInline><LabelH>{t("Doc No.")} : </LabelH>
                 <AmInput
                     id={"docCode"}
@@ -178,49 +200,30 @@ const DailySTOSumCounting = (props) => {
                 </AmDate>
             </FormInline>
         </div>
-
     }
     const customBtnSelect = () => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
-        { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
-        { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: 'pstoName', width: 150, sortable: false },
-        { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
-        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
-        // { Header: 'Ref No.', accessor: 'docRefID', width: 100, sortable: false },
-        // { Header: 'Ref1', accessor: 'docRef1', width: 100, sortable: false },
-        // { Header: 'Ref2', accessor: 'docRef2', width: 100, sortable: false },
+        { Header: 'Date', accessor: 'createTime', type: 'datetime', width: 130, sortable: false },
+        { Header: 'Pallet', accessor: 'bstoCode', width: 100, sortable: false },
+        { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
+        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
+        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 90, sortable: false },
         {
-            Header: 'Qty', accessor: 'qty', width: 70, sortable: false,
+            Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
-        { Header: 'Unit', accessor: 'unitType', width: 70, sortable: false },
+        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
         {
-            Header: 'Base Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
-        { Header: 'Base Unit', accessor: 'baseUnitType', width: 70, sortable: false },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
     ];
-    const getRedirect = (data) => {
-        if (data.indexOf(',') > 0) {
-            var datashow = data.split(",").map((x) => {
-                return <div>{x}<br /></div>
-            });
-            return (
-                <div style={{ display: "flex", maxWidth: '160px' }}><label className={classes.textNowrap}>{data}</label>
-                    <AmRediRectInfo type={"dialog"} bodyDialog={datashow} titleDialog="List of Document No." />
-                </div>
-            )
-        } else {
-            return data;
-        }
-    }
     const comma = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -243,4 +246,4 @@ const DailySTOSumCounting = (props) => {
 
 }
 
-export default withStyles(styles)(DailySTOSumCounting);
+export default withStyles(styles)(DailySTOIssue);

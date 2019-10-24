@@ -18,7 +18,7 @@ const CreateDocGISTAWare = Loadable({
   loading: Loading
 });
 const StorageObjectSTA = Loadable({
-  loader: () => import("../../views/page/STA/Report/StorageObject"),
+  loader: () => import("../../views/page/STA/Warehouse/StorageObject"),
   loading: Loading
 });
 const DocumentSearchSTA = Loadable({
@@ -110,7 +110,38 @@ const LoadingReturnByBarcode = Loadable({
   loader: () => import("../../views/page/STA/Issues/ReturnLoadByBarcode"),
   loading: Loading
 });
-
+const CurrentInventory = Loadable({
+  loader: () => import("../../views/page/STA/Report/CurrentInventory"),
+  loading: Loading
+});
+const StockCard = Loadable({
+  loader: () => import("../../views/page/STA/Report/StockCard"),
+  loading: Loading
+});
+const DailySTOReceive = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOReceive"),
+  loading: Loading
+});
+const DailySTOIssue = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOIssue"),
+  loading: Loading
+});
+const DailySTOCounting = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOCounting"),
+  loading: Loading
+});
+const DailySTOSumReceive = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOSumReceive"),
+  loading: Loading
+});
+const DailySTOSumIssue = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOSumIssue"),
+  loading: Loading
+});
+const DailySTOSumCounting = Loadable({
+  loader: () => import("../../views/page/STA/Report/DailySTOSumCounting"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/dashboard/scanreceiveproduct",
@@ -267,7 +298,15 @@ const routes = [
     name: "base5",
     compoment: ProcessQueueCT,
     exact: true
-  }
+  },
+  { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
+  { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
+  { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
+  { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
+  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
+  { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
+  { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
 ];
 
 export default routes;

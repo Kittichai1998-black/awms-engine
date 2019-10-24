@@ -105,19 +105,11 @@ const Warehouse = props => {
       placeholder: "Status"
     }
   ];
+  const primarySearch = [
+    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
   const columnsFilter = [
-    {
-      field: "Code",
-      type: "input",
-      name: "Code",
-      placeholder: "Code"
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: "Name",
-      placeholder: "Name"
-    },
     {
       field: "Branch_Code",
       type: "dropdow",
@@ -170,6 +162,7 @@ const Warehouse = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Warehouse"}
         table={"ams_Warehouse"}

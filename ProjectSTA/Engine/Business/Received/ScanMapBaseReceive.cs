@@ -60,6 +60,11 @@ namespace ProjectSTA.Engine.Business.Received
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of SKU Code: " + skuCode + " Not Found");
             }
+            ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == skuItem.SKUMasterType_ID);
+            if(smt.Code != "FG")
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type must be 'FG' only.");
+            }
 
             //หา Array ของ ArealocationID ที่ AreaMaster_ID ตรงกับ areaID
             var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(

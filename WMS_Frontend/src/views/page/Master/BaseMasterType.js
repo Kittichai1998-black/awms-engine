@@ -121,7 +121,7 @@ const BaseMasterType = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     {
       field: "Code",
       type: "input",
@@ -133,7 +133,9 @@ const BaseMasterType = props => {
       type: "input",
       name: "Base Type Name",
       placeholder: "Name"
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "Weight",
       type: "input",
@@ -193,6 +195,7 @@ const BaseMasterType = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"BaseMasterType"}
         table={"ams_BaseMasterType"}

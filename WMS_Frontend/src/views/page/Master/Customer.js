@@ -30,7 +30,7 @@ const Customer = props => {
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 120,
+      width: 130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY hh:mm"
     }
@@ -88,9 +88,11 @@ const Customer = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
+  const columnsFilter = [
     {
       field: "Description",
       type: "input",
@@ -140,6 +142,7 @@ const Customer = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Customer"}
         table={"ams_Customer"}

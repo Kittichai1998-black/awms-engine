@@ -48,7 +48,9 @@ const AmReport = (props) => {
         if (page != false)
             pages(pageTb)
     }, [pageTb])
-
+    const comma = (value)=>{
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
     const SumTables = () => {
         return columnTable.filter(row => row.Footer === true).map(row => {
             return { accessor: row.accessor, sumData: sumFooterTotal(row.accessor) }
@@ -63,7 +65,7 @@ const AmReport = (props) => {
         if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal)) {
             return '-'
         } else {
-            return sumVal.toFixed(3)
+            return comma(sumVal.toFixed(2))
         }
     }
     const CreateDataWithFooter = () => {

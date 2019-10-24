@@ -398,6 +398,17 @@ const FuncFilter = () => {
     } 
   })
 }
+const FuncFilterPri = () => {
+  const x = props.columnsFilterPrimary
+  return x.map(y=>{
+    return { 
+     "field":y.field,
+     "component":(condition, cols, key)=>{
+       return <div key={key} style={{display:"inline-block"}}>{FuncFilterSetEle(key,y.field, y.type, y.name,condition,cols.field,y.fieldLabel,y.placeholder,y.dataDropDow,y.typeDropdow,y.labelTitle,y.colsFindPopup,y.fieldDataKey,y.checkBox)}</div>
+      }
+    } 
+  })
+}
 //===========================================================
 
 const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,placeholder,dataDropDow,typeDropdow,labelTitle,colsFindPopup,fieldDataKey,inputType) => {
@@ -1114,7 +1125,7 @@ const Clear=()=>{
 //===========================================================
     return (
       <div>   
-        <AmFilterTable defaultCondition={{"f":"status","c":"!=","v":"2"}} extensionSearch={FuncFilter()} onAccept={(status, obj)=>onHandleFilterConfirm(status, obj)}/><br/>
+        <AmFilterTable defaultCondition={{"f":"status","c":"!=","v":"2"}} primarySearch={FuncFilterPri()} extensionSearch={FuncFilter()} onAccept={(status, obj)=>onHandleFilterConfirm(status, obj)}/><br/>
         <AmDialogs typePopup={"success"} onAccept={(e) => {setOpenSuccess(e)}} open={openSuccess} content={"Success"} ></AmDialogs>
         <AmDialogs typePopup={"error"} onAccept={(e) => {setOpenError(e)}} open={openError} content={textError} ></AmDialogs>
         <AmEditorTable renderOptionalText={<span style={{color:"red"}}>* required field  </span>} 

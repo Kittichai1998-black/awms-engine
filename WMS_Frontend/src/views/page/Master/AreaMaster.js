@@ -45,16 +45,16 @@ const AreaMaster = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
-    { Header: "Name", accessor: "Name" },
-    { Header: "Warehouse", accessor: "Warehouse_Code", width: 100 },
+    { Header: "Code", accessor: "Code", fixed: "left", width: 100 },
+    { Header: "Name", accessor: "Name", width: 130 },
+    { Header: "Warehouse", accessor: "Warehouse_Code", width: 220 },
     { Header: "AreaMasterType", accessor: "AreaMasterType_Code", width: 250 },
     { Header: "GroupType", accessor: "GroupType", width: 100, type: "number" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 120,
+      width: 150,
       type: "datetime",
       dateFormat: "DD/MM/YYYY hh:mm"
     }
@@ -137,19 +137,21 @@ const AreaMaster = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     {
       field: "Code",
       type: "input",
-      name: "Base Type Code",
+      name: "Code",
       placeholder: "Code"
     },
     {
       field: "Name",
       type: "input",
-      name: "Base Type Name",
+      name: "Name",
       placeholder: "Name"
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "Warehouse_Code",
       type: "dropdow",
@@ -213,6 +215,7 @@ const AreaMaster = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"AreaMaster"}
         table={"ams_AreaMaster"}

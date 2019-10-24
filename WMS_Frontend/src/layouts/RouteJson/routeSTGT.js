@@ -55,27 +55,6 @@ const DocumentViewPISTGT = Loadable({
   loader: () => import("../../views/page/STGT/Audit/DocumentViewPISTGT"),
   loading: Loading
 });
-
-const StorageObject = Loadable({
-  loader: () => import("../../views/page/STGT/Report/StorageObject"),
-  loading: Loading
-});
-const CurrentInventory = Loadable({
-  loader: () => import("../../views/page/STGT/Report/CurrentInventory"),
-  loading: Loading
-});
-const StockCard = Loadable({
-  loader: () => import("../../views/page/STGT/Report/StockCard"),
-  loading: Loading
-});
-const StorageObjectView = Loadable({
-  loader: () => import("../../views/page/STGT/Report/StorageObjectView"),
-  loading: Loading
-});
-const CurrentBoxSummary = Loadable({
-  loader: () => import("../../views/page/STGT/Report/CurrentBoxSummary"),
-  loading: Loading
-});
 const ReceiveFromCustomer = Loadable({
   loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
   loading: Loading
@@ -92,7 +71,43 @@ const ReceiveProductionLine = Loadable({
   loader: () => import("../../views/page/STGT/Receive/ReceiveProductionLine"),
   loading: Loading
 });
+const StorageObject = Loadable({
+  loader: () => import("../../views/page/STGT/Warehouse/StorageObject"),
+  loading: Loading
+});
 
+const CurrentInventory = Loadable({
+  loader: () => import("../../views/page/STGT/Report/CurrentInventory"),
+  loading: Loading
+});
+const StockCard = Loadable({
+  loader: () => import("../../views/page/STGT/Report/StockCard"),
+  loading: Loading
+});
+const DailySTOReceive = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOReceive"),
+  loading: Loading
+});
+const DailySTOIssue = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOIssue"),
+  loading: Loading
+});
+const DailySTOCounting = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOCounting"),
+  loading: Loading
+});
+const DailySTOSumReceive = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOSumReceive"),
+  loading: Loading
+});
+const DailySTOSumIssue = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOSumIssue"),
+  loading: Loading
+});
+const DailySTOSumCounting = Loadable({
+  loader: () => import("../../views/page/STGT/Report/DailySTOSumCounting"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/issue/search",
@@ -177,31 +192,7 @@ const routes = [
     name: "base5",
     compoment: StorageObject,
     exact: true
-  },
-  {
-    path: "/report/currentinventory",
-    name: "Current Inventory",
-    compoment: CurrentInventory,
-    exact: true
-  },
-  {
-    path: "/report/stockcard",
-    name: "StockCard",
-    compoment: StockCard,
-    exact: true
-  },
-  {
-    path: "/report/storageobject",
-    name: "base5",
-    compoment: StorageObjectView,
-    exact: true
-  },
-  {
-    path: "/report/currentboxsummary",
-    name: "base5",
-    compoment: CurrentBoxSummary,
-    exact: true
-  },
+  }, 
   {
     path: "/receive/receiveforcustomer",
     name: "Customers Return",
@@ -210,7 +201,14 @@ const routes = [
   },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
   { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
-  
+  { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
+  { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
+  { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
+  { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
+  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
+  { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
+  { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
 ];
 
 export default routes;
