@@ -137,7 +137,7 @@ const PackMasterType = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     {
       field: "Code",
       type: "input",
@@ -149,7 +149,9 @@ const PackMasterType = props => {
       type: "input",
       name: "Pack Type Name",
       placeholder: "Name"
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "UnitTypeCode",
       type: "dropdow",
@@ -212,6 +214,7 @@ const PackMasterType = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"PackMasterType"}
         table={"ams_PackMasterType"}

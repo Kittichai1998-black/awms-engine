@@ -71,10 +71,11 @@ const PackMaster = props => {
       field: "SKUMaster_ID",
       type: "findPopup",
       colsFindPopup: colsSKUMaster,
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       dataDropDow: SKUMasterQuery,
-      placeholder: window.project === "TAP" ? "Part NO." : 'SKU Code',
-      labelTitle: "Search of " + window.project === "TAP" ? "Part NO." : 'SKU Code',
+      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
+      labelTitle:
+        "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
       fieldLabel: ["ID", "Code"]
     },
     {
@@ -161,10 +162,11 @@ const PackMaster = props => {
       field: "SKUMaster_ID",
       type: "findPopup",
       colsFindPopup: colsSKUMaster,
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       dataDropDow: SKUMasterQuery,
-      placeholder: window.project === "TAP" ? "Part NO." : 'SKU Code',
-      labelTitle: "Search of " + window.project === "TAP" ? "Part NO." : 'SKU Code',
+      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
+      labelTitle:
+        "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
       fieldLabel: ["Code", "Name"]
     },
     {
@@ -247,30 +249,24 @@ const PackMaster = props => {
       placeholder: "Status"
     }
   ];
+  const primarySearch = [
+    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
   const columnsFilter = [
     {
       field: "SKUMaster",
       type: "findPopup",
       colsFindPopup: colsSKUMaster,
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       dataDropDow: SKUMasterQuery,
-      placeholder: window.project === "TAP" ? "Part NO." : 'SKU Code',
-      labelTitle: "Search of " + window.project === "TAP" ? "Part NO." : 'SKU Code',
+      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
+      labelTitle:
+        "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
-    {
-      field: "Code",
-      type: "input",
-      name: "Pack Code",
-      placeholder: window.project === "TAP" ? "Part NO." : 'SKU Code'
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: "Pack Name",
-      placeholder: window.project === "TAP" ? "Part Name" : 'SKU Name'
-    },
+
     {
       field: "WeightKG",
       type: "input",
@@ -364,7 +360,12 @@ const PackMaster = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: "SKUMaster", fixed: "left", width: 120 },
+    {
+      Header: window.project === "TAP" ? "Part NO." : "SKU Code",
+      accessor: "SKUMaster",
+      fixed: "left",
+      width: 120
+    },
     { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
     {
@@ -408,6 +409,7 @@ const PackMaster = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"PackMaster"}
         table={"ams_PackMaster"}

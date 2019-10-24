@@ -252,6 +252,10 @@ const AreaLocationMaster = props => {
       placeholder: "Status"
     }
   ];
+  const columnsFilterPri = [
+    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
   const columnsFilter = [
     {
       field: "AreaCode",
@@ -263,8 +267,6 @@ const AreaLocationMaster = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
-    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" },
     { field: "Gate", type: "input", name: "Gate", placeholder: "Gate" },
     { field: "Bank", type: "input", name: "Bank", placeholder: "Bank" },
     { field: "Bay", type: "input", name: "Bay", placeholder: "Bay" },
@@ -332,6 +334,7 @@ const AreaLocationMaster = props => {
     <div>
       <MasterData
         columnsFilter={columnsFilter}
+        columnsFilterPrimary={columnsFilterPri}
         tableQuery={"AreaLocationMaster"}
         table={"ams_AreaLocationMaster"}
         dataAdd={columns}

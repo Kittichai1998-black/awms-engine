@@ -35,15 +35,15 @@ const AreaRoute = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "IOType", accessor: "IOTypeCode", fixed: "left" },
-    { Header: "Sou Area", accessor: "AreaSou", width: 150 },
-    { Header: "Des Area", accessor: "AreaDes", width: 150 },
+    { Header: "IOType", accessor: "IOTypeCode", fixed: "left", width: 100 },
+    { Header: "Sou Area", accessor: "AreaSou", width: 170 },
+    { Header: "Des Area", accessor: "AreaDes" },
     { Header: "Priority", accessor: "Priority", width: 100, type: "number" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 120,
+      width: 130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY hh:mm"
     }
@@ -128,15 +128,7 @@ const AreaRoute = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
-    {
-      field: "IOType",
-      type: "iotype",
-      typeDropdow: "normal",
-      name: "IOType",
-      dataDropDow: IOTypeStatus,
-      placeholder: "IOType"
-    },
+  const primarySearch = [
     {
       field: "AreaSou",
       type: "dropdow",
@@ -156,7 +148,18 @@ const AreaRoute = props => {
       placeholder: "Des Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
+    }
+  ];
+  const columnsFilter = [
+    {
+      field: "IOType",
+      type: "iotype",
+      typeDropdow: "normal",
+      name: "IOType",
+      dataDropDow: IOTypeStatus,
+      placeholder: "IOType"
     },
+
     {
       field: "Priority",
       type: "input",
@@ -206,6 +209,7 @@ const AreaRoute = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"AreaRoute"}
         table={"ams_AreaRoute"}

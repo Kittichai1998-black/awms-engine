@@ -57,7 +57,7 @@ const ObjectSizeMap = props => {
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 120,
+      width: 130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY hh:mm"
     }
@@ -141,7 +141,7 @@ const ObjectSizeMap = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     {
       field: "OutCode",
       type: "dropdow",
@@ -161,7 +161,9 @@ const ObjectSizeMap = props => {
       placeholder: "InnerObjectSize",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "MinQuantity",
       type: "input",
@@ -217,6 +219,7 @@ const ObjectSizeMap = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"ObjectSizeMap"}
         table={"ams_ObjectSizeMap"}

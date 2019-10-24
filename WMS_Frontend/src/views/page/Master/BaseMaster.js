@@ -184,9 +184,11 @@ const BaseMaster = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
+  const columnsFilter = [
     {
       field: "WeightKG",
       type: "input",
@@ -266,6 +268,7 @@ const BaseMaster = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"BaseMaster"}
         table={"ams_BaseMaster"}

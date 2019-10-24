@@ -89,9 +89,11 @@ const Supplier = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
+  const columnsFilter = [
     {
       field: "Description",
       type: "input",
@@ -141,6 +143,7 @@ const Supplier = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Supplier"}
         table={"ams_Supplier"}

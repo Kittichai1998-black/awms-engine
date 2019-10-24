@@ -137,19 +137,22 @@ const APIKey = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+
+  const primarySearch = [
     {
       field: "Code",
       type: "input",
-      name: "Username",
-      placeholder: "Username"
+      name: "Code",
+      placeholder: "Code"
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name"
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "Description",
       type: "input",
@@ -205,6 +208,7 @@ const APIKey = props => {
     <div>
       <AmSetAPIKey
         columnsFilter={columnsFilter}
+        columnsFilterPrimary={primarySearch}
         tableQuery={"APIKey"}
         table={"ams_APIKey"}
         dataAdd={columns}
