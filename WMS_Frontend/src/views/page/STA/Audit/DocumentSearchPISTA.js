@@ -192,7 +192,7 @@ const DocumentSearchPISTA = props => {
 
   const primarySearch = [
     {
-      label: "EventStatus",
+      label: "Status",
       field: "EventStatus",
       searchType: "dropdown",
       dropdownData: DocumentEventStatusSearch,
