@@ -140,7 +140,7 @@ const CurrentInventory = (props) => {
     const columns = [
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'Name', sortable: false },
-        { Header: 'Order No.', accessor: 'OrderNo', width: 80, sortable: false },
+        { Header: 'Order No.', accessor: 'OrderNo', width: 70, sortable: false },
         {
             Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false,
             Footer: true,
@@ -148,7 +148,7 @@ const CurrentInventory = (props) => {
         },
         { Header: 'Unit', accessor: 'baseUnitType', width: 70, sortable: false },
         {
-            Header: 'Receiving', accessor: 'baseQty_evt11', width: 85, sortable: false,
+            Header: 'Receiving', accessor: 'baseQty_evt11', width: 70, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString()),
             getProps: (state, rowInfo) => ({
@@ -159,7 +159,7 @@ const CurrentInventory = (props) => {
             })
         },
         {
-            Header: 'Received', accessor: 'baseQty_evt12', width: 85, sortable: false,
+            Header: 'Received', accessor: 'baseQty_evt12', width: 70, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString()),
             getProps: (state, rowInfo) => ({
@@ -169,7 +169,7 @@ const CurrentInventory = (props) => {
             })
         },
         {
-            Header: 'Counting', accessor: 'baseQty_evt13', width: 85, sortable: false,
+            Header: 'QC', accessor: 'baseQty_evt98', width: 70, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString()),
             getProps: (state, rowInfo) => ({
@@ -179,7 +179,7 @@ const CurrentInventory = (props) => {
             })
         },
         {
-            Header: 'Counted', accessor: 'baseQty_evt14', width: 85, sortable: false,
+            Header: 'Return', accessor: 'baseQty_evt96', width: 70, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString()),
             getProps: (state, rowInfo) => ({
@@ -189,7 +189,7 @@ const CurrentInventory = (props) => {
             })
         },
         {
-            Header: 'Picking', accessor: 'baseQty_evt17', width: 85, sortable: false,
+            Header: 'Partial', accessor: 'baseQty_evt97', width: 70, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString()),
             getProps: (state, rowInfo) => ({
@@ -198,6 +198,46 @@ const CurrentInventory = (props) => {
                 }
             })
         },
+        {
+            Header: 'Counting', accessor: 'baseQty_evt13', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Counted', accessor: 'baseQty_evt14', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Picking', accessor: 'baseQty_evt17', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        },
+        {
+            Header: 'Hold', accessor: 'baseQty_evt99', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()),
+            getProps: (state, rowInfo) => ({
+                style: {
+                    backgroundColor: 'rgb(224, 235, 235, 0.7)'
+                }
+            })
+        }
 
 
     ];
