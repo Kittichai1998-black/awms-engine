@@ -65,9 +65,13 @@ const StorageObject = props => {
     { label: "AUDITED", value: "AUDITED" },
     { label: "RECEIVED", value: "RECEIVED" },
     { label: "RECEIVING", value: "RECEIVING" },
-    { label: "PICKING", value: "PICdKING" },
+    { label: "PICKING", value: "PICKING" },
     { label: "PICKED", value: "PICKED" },
-    { label: "HOLD", value: "HOLD" }
+    { label: "HOLD", value: "HOLD" },
+    { label: "PARTIAL", value: "PARTIAL" },
+    { label: "RETURN", value: "RETURN" },
+    { label: "REMOVED", value: "REMOVED" },
+    { label: "QUALITY_CONTROL", value: "QUALITY_CONTROL" }
   ];
 
   const iniCols = [
@@ -79,15 +83,11 @@ const StorageObject = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Pallet", accessor: "Pallet", width: 150 },
-    { Header: "Part NO.", accessor: "SKU_Code", width: 200 },
-    { Header: "Part Name", accessor: "SKU_Name", width: 300 },
-    { Header: "Warehouse", accessor: "Warehouse", width: 150 },
-    { Header: "Area", accessor: "Area", width: 130 },
-    { Header: "Location", accessor: "Location", width: 120 },
-    { Header: "Batch", accessor: "Batch", width: 120 },
-    { Header: "Lot", accessor: "Lot", width: 120 },
-    { Header: "OrderNo", accessor: "OrderNo", width: 120 },
+    { Header: "Pallet Code", accessor: "Pallet", width: 110 },
+    { Header: "SKU Code", accessor: "SKU_Code", width: 200 },
+    { Header: "SKU Name", accessor: "SKU_Name", width: 300 },
+    { Header: "Order No", accessor: "OrderNo", width: 120 },
+    { Header: "Carton No", accessor: "Carton_No", width: 120 },
     {
       Header: "Qty",
       accessor: "Qty",
@@ -95,21 +95,11 @@ const StorageObject = props => {
       type: "number",
       Cell: e => getNumberQty(e.original)
     },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-    {
-      Header: "Weigth PalletPack",
-      accessor: "Wei_PalletPack",
-      width: 150,
-      type: "number"
-    },
-    { Header: "Weigth Pack", accessor: "Wei_Pack", width: 120, type: "number" },
-    {
-      Header: "Weigth PackStd",
-      accessor: "Wei_PackStd",
-      width: 150,
-      type: "number"
-    },
+    { Header: "Base_Unit", accessor: "Base_Unit", width: 100 },
     { Header: "Remark", accessor: "Remark", width: 150 },
+    { Header: "Warehouse", accessor: "Warehouse", width: 120 },
+    { Header: "Area", accessor: "Area", width: 130 },
+    { Header: "Location", accessor: "Location", width: 120 },
     {
       Header: "Received Date",
       accessor: "Receive_Time",
@@ -118,9 +108,7 @@ const StorageObject = props => {
       dateFormat: "DD/MM/YYYY hh:mm"
     }
   ];
-  const getNumberQty = value => {
-    return parseInt(value.Qty);
-  };
+
   const columns = [
     {
       field: "Option",
@@ -138,15 +126,13 @@ const StorageObject = props => {
     "Area",
     "Location",
     "Batch",
-    "Lot",
     "OrderNo",
     "Qty",
-    "Base_Unit",
-    "Wei_PalletPack",
-    "Wei_Pack",
-    "Wei_PackStd"
+    "Base_Unit"
   ];
-
+  const getNumberQty = value => {
+    return parseInt(value.Qty);
+  };
   const getStatus = value => {
     if (value.Status === "NEW") {
       return <AmStorageObjectStatus key={value.Status} statusCode={10} />;
@@ -168,19 +154,16 @@ const StorageObject = props => {
       return <AmStorageObjectStatus key={value.Status} statusCode={98} />;
     } else if (value.Status === "REMOVING") {
       return <AmStorageObjectStatus key={value.Status} statusCode={21} />;
+    } else if (value.Status === "RETURN") {
+      return <AmStorageObjectStatus key={value.Status} statusCode={96} />;
     } else if (value.Status === "REMOVED") {
       return <AmStorageObjectStatus key={value.Status} statusCode={22} />;
+    } else if (value.Status === "PARTIAL") {
+      return <AmStorageObjectStatus key={value.Status} statusCode={97} />;
     } else {
       return null;
     }
   };
-  const OverDate = [
-    { label: "1 month", value: 1 },
-    { label: "3 month", value: 3 },
-    { label: "6 month", value: 6 },
-    { label: "9 month", value: 9 },
-    { label: "12 month", value: 12 }
-  ];
   const primarySearch = [
     {
       label: "Pallet",
@@ -189,19 +172,10 @@ const StorageObject = props => {
       placeholder: "Pallet"
     },
     {
-      label: "Part NO.",
+      label: "SKU Code",
       field: "SKU_Code",
       searchType: "input",
-      placeholder: "Part NO."
-    },
-    {
-      label: "IDLE Month",
-      field: "Month",
-      searchType: "status",
-      typeDropdow: "normal",
-      name: "IDLE Month",
-      dataDropDow: OverDate,
-      placeholder: "IDLE Month"
+      placeholder: "SKU Code"
     }
   ];
 
@@ -230,10 +204,10 @@ const StorageObject = props => {
       placeholder: "Status"
     },
     {
-      label: "Part Name",
+      label: "SKU Name",
       field: "SKU_Name",
       searchType: "input",
-      placeholder: "Part Name"
+      placeholder: "SKU Name"
     },
     {
       label: "Warehouse",
@@ -257,25 +231,13 @@ const StorageObject = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Name"
     },
-    {
-      label: "Location",
-      field: "Location",
-      searchType: "findPopup",
-      colsFindPopup: colsLocation,
-      name: "Location",
-      dataDropDow: AreaLocationMasterQuery,
-      placeholder: "Location",
-      labelTitle: "Search of Location",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
+
     {
       label: "Batch",
       field: "Batch",
       searchType: "input",
       placeholder: "Batch"
     },
-    { label: "Lot", field: "Lot", searchType: "input", placeholder: "Lot" },
     {
       label: "OrderNo",
       field: "OrderNo",
@@ -295,38 +257,20 @@ const StorageObject = props => {
       fieldDataKey: "Code"
     },
     {
-      label: "Wei PalletPack",
-      field: "Wei_PalletPack",
-      searchType: "input",
-      placeholder: "Weigth PalletPack"
-    },
-    {
-      label: "Weigth Pack",
-      field: "Wei_Pack",
-      searchType: "input",
-      placeholder: "Weigth Pack"
-    },
-    {
-      label: "Weigth PackStd",
-      field: "Wei_PackStd",
-      searchType: "input",
-      placeholder: "Weigth PackStd"
-    },
-    {
       label: "Remark",
       field: "Remark",
       searchType: "input",
       placeholder: "Remark"
     },
     {
-      label: "Date From ",
+      label: "Date From",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
       dateSearchType: "dateFrom"
     },
     {
-      label: "Date To ",
+      label: "Date To",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
@@ -342,10 +286,13 @@ const StorageObject = props => {
         iniCols={iniCols}
         cols={iniCols2}
         dataRemark={columns}
-        export={true}
         table={"StorageObject"}
         selection={true}
         modifyRemark={true}
+        export={false}
+        modifyhold={true}
+        modifyreceived={true}
+        modifyQC={true}
       />
     </div>
   );

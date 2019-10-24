@@ -189,14 +189,24 @@ const StockCard = (props) => {
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
         { Header: 'Order No.', accessor: 'pstoOrder', width: 80, sortable: false },
-        { Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false },
-        { Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false },
+        {
+            Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        {
+            Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
         { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
         { Header: 'Description', accessor: 'Description', width: 200, sortable: false },
 
     ];
 
-
+    const comma = (value) => {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     return (
         <div className={classes.root}>
             <AmReport
@@ -209,6 +219,7 @@ const StockCard = (props) => {
                 renderCustomButton={customBtnSelect()}
                 page={true}
                 exportApi={getAPI}
+                excelFooter={true}
             ></AmReport>
         </div>
     )

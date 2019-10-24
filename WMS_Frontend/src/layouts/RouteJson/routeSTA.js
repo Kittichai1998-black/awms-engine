@@ -18,7 +18,7 @@ const CreateDocGISTAWare = Loadable({
   loading: Loading
 });
 const StorageObjectSTA = Loadable({
-  loader: () => import("../../views/page/STA/Report/StorageObject"),
+  loader: () => import("../../views/page/STA/Warehouse/StorageObject"),
   loading: Loading
 });
 const DocumentSearchSTA = Loadable({
