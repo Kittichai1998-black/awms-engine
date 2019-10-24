@@ -10,6 +10,7 @@ using AMWUtil.DataAccess;
 using AWMSModel.Entity;
 using AWMSEngine.Engine.V2.Business.Received;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 
 namespace ProjectSTGT.Engine.WM
 {
@@ -33,11 +34,13 @@ namespace ProjectSTGT.Engine.WM
             {
                 while (true)
                 {
+                    var dbTrx = AWMSEngine.ADO.DataADO.GetInstant().CreateTransaction();
+                    VOCriteria buVO = new VOCriteria(dbTrx);
                     try
                     {
                         ReadFileFromDirectory();
                     }
-                    catch { 
+                    catch {
                     }
                     finally
                     {
@@ -90,6 +93,7 @@ namespace ProjectSTGT.Engine.WM
                 {
                     try
                     {
+
                         var doc = new CreateGRDocument.TReq();
 
                         doc.documentDate = DateTime.Now;
