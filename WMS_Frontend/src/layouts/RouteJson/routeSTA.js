@@ -282,7 +282,7 @@ const routes = [
     exact: true
   },
   {
-    path: "/counting/adjust",
+    path: "/counting/manualcounting",
     name: "CountingAdj",
     compoment: CountingAdj,
     exact: true
@@ -299,14 +299,54 @@ const routes = [
     compoment: ProcessQueueCT,
     exact: true
   },
-  { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
-  { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
-  { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
-  { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
-  { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
-  { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
-  { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
+  {
+    path: "/report/currentinventory",
+    name: "Current Inventory",
+    compoment: CurrentInventory,
+    exact: true
+  },
+  {
+    path: "/report/stockcard",
+    name: "StockCard",
+    compoment: StockCard,
+    exact: true
+  },
+  {
+    path: "/report/receive",
+    name: "Receive Report",
+    compoment: DailySTOReceive,
+    exact: true
+  },
+  {
+    path: "/report/issue",
+    name: "Issue Report",
+    compoment: DailySTOIssue,
+    exact: true
+  },
+  {
+    path: "/report/counting",
+    name: "Counting Report",
+    compoment: DailySTOCounting,
+    exact: true
+  },
+  {
+    path: "/report/dailyreceivesum",
+    name: "Receive Summary Report ",
+    compoment: DailySTOSumReceive,
+    exact: true
+  },
+  {
+    path: "/report/dailyissuesum",
+    name: "Issue Summary Report ",
+    compoment: DailySTOSumIssue,
+    exact: true
+  },
+  {
+    path: "/report/dailycountsum",
+    name: "Counting Summary Report ",
+    compoment: DailySTOSumCounting,
+    exact: true
+  }
 ];
 
 export default routes;

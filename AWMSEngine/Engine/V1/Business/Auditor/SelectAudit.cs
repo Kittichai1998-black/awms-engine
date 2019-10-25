@@ -28,6 +28,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public string batch;
                 public string orderNo;
                 public string lot;
+                public string options;
+
             }
         }
 
@@ -60,8 +62,9 @@ namespace AWMSEngine.Engine.Business.Auditor
                             stoID = sto.id.Value,
                             batch = sto.batch,
                             orderNo = sto.orderNo,
-                            lot = sto.lot
-                           
+                            lot = sto.lot,
+                            options = sto.options
+
                         });
                     }
                     

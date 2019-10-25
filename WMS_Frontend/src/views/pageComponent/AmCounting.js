@@ -26,6 +26,7 @@ import _ from "lodash";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
+import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import AmRadioGroup from "../../components/AmRadioGroup";
 const Axios = new apicall();
@@ -343,9 +344,43 @@ const AmCounting = props => {
     }
     setValueEdit(value);
   };
+
+  const StroageEventStatusSearch = [
+    { label: "NEW", value: 10 },
+    { label: "RECEIVING", value: 11 },
+    { label: "RECEIVED", value: 12 },
+    { label: "AUDITING", value: 13 },
+    { label: "AUDITED", value: 14 },
+    { label: "PICKING", value: 17 },
+    { label: "PICKED", value: 18 },
+    { label: "REMOVING", value: 21 },
+    { label: "REMOVED", value: 22 },
+    { label: "REJECTING", value: 23 },
+    { label: "REJECTED", value: 24 },
+    { label: "RETURN", value: 96 },
+    { label: "PARTIAL", value: 97 },
+    { label: "QC", value: 98 },
+    { label: "HOLD", value: 99 }
+  ];
   const DataShowRenderer = (data, doc) => {
+    var tmpDoneStatus = "";
+
+    data.forEach(x => {
+      var qryStr = queryString.parse(x.options);
+      tmpDoneStatus = qryStr._old_event_status;
+    });
+
+    var tmpRadio = {};
+    StroageEventStatusSearch.forEach(x => {
+      if (x.value === parseInt(tmpDoneStatus, 10)) {
+        tmpRadio.value = tmpDoneStatus;
+        tmpRadio.label = x.label.toString();
+      }
+    });
+    var tmpDefaultDataRadio = { value: tmpDoneStatus };
     var dataRadio = props.dataRadio;
-    var defaultDataRadio = props.defaultDataRadio;
+    dataRadio.push(tmpRadio);
+    var defaultDataRadio = tmpDefaultDataRadio;
     return data.map((list, index) => {
       return (
         <Card
