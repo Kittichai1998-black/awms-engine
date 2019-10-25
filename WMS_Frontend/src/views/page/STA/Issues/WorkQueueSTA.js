@@ -50,7 +50,7 @@ const WorkQueueSTA = (props) => {
 
     const ordersDDL = [
         { label: 'createtime', value: 'createtime' }, 
-        { label: 'Batch', value: 'Batch' },
+        { label: 'Order No', value: 'Orderno' },
     ];
 
     const Priolity = [
@@ -91,7 +91,7 @@ const WorkQueueSTA = (props) => {
 
     const DefaulSorting = [{
         By: "createtime",
-        ID: -1,
+        ID: 0,
         Order: "FIFO"
     }]
   
