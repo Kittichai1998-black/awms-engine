@@ -10,7 +10,7 @@ import queryString from "query-string";
 const DocumentViewGI = props => {
   const TextHeader = [
     [
-      { label: "Document No", values: "Code" },
+          { label: "Document No", values: "Code" },
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
