@@ -718,7 +718,6 @@ const Scanbarcode = (props) => {
         }
         else
             return null;
-        }
     }
 
     return (
