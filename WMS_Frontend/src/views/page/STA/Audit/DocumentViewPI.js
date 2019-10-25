@@ -10,16 +10,16 @@ import queryString from "query-string";
 const DocumentViewPI = props => {
   const TextHeader = [
     [
-      { label: "Document No", values: "code" },
+      { label: "Document No", values: "Code" },
       { label: "Document Date", values: "documentDate", type: "date" }
     ],
     [
-      { label: "Movement Type", values: "movementName" },
+      { label: "Movement Type", values: "MovementName" },
       { label: "Action Time", values: "actionTime", type: "dateTime" }
     ],
     [
-      { label: "Source Warehouse", values: "souWarehouseName" },
-      { label: "Destination Warehouse", values: "desWarehouseName" }
+      { label: "Source Warehouse", values: "SouWarehouseName" },
+      { label: "Destination Warehouse", values: "DesWarehouseName" }
     ],
     [
       {
@@ -27,7 +27,7 @@ const DocumentViewPI = props => {
         values: "renderDocumentStatus()",
         type: "function"
       },
-      { label: "Remark", values: "remark" }
+      { label: "Remark", values: "Remark" }
     ]
   ];
   const columns = [
