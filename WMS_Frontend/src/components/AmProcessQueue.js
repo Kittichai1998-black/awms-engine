@@ -2007,6 +2007,7 @@ const AmProcessQueue = props => {
                                         }
 
                                         if (!dataSorting[idx]) {
+                                            if (props.DefaulSorting !== undefined)
                                             dataSorting[idx] = [...props.DefaulSorting];
                                           
                                         }
@@ -2446,7 +2447,7 @@ const AmProcessQueue = props => {
 
                                                                                             </AmCheckBox>
 
-                                                                                            <AmCheckBox
+                                                                                            {props.StatusReject === true ? <AmCheckBox
                                                                                                 value="Reject"
                                                                                                 label="Reject"
                                                                                                 //checked={true}
@@ -2456,7 +2457,7 @@ const AmProcessQueue = props => {
                                                                                                 }
                                                                                             >
 
-                                                                                            </AmCheckBox>
+                                                                                            </AmCheckBox>: null }
 
                                                                                             {props.StatusHold === true? <AmCheckBox
                                                                                                 value="Hold"
@@ -2473,7 +2474,7 @@ const AmProcessQueue = props => {
 
                                                                                             <AmCheckBox
                                                                                                 value="Return"
-                                                                                                label="Return"
+                                                                                                label="Returns"
                                                                                                 defaultChecked={true}
                                                                                                 //checked={true}
                                                                                                 onChange={(e, v) =>
