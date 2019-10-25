@@ -38,7 +38,7 @@ const StorageObjectEventStatus = [
     // {status: "TRANSFERED",code: 116, label: 'T'}
     { status: "HOLD", code: 99, label: 'HD' },
     { status: "QUALITY_CONTROL", code: 98, label: 'QC' },
-    { status: "PARTIAL", code: 97, label: 'PR' },
+    { status: "PARTIAL", code: 97, label: 'PT' },
     { status: "RETURN", code: 96, label: 'RT' }
 ]
 
