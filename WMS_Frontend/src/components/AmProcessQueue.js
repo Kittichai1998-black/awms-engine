@@ -222,6 +222,7 @@ const AmProcessQueue = props => {
     const [docDesWarehouse, setdocDesWarehouse] = useState([]);
     const [docDesCustomer, setdocDesCustomer] = useState([]);
     const [checkboxDocItems, setcheckboxDocItems] = useState([]);
+    const [idxSortBtn, setidxSortBtn] = useState();
 
 
     //======== AAI============
@@ -480,9 +481,11 @@ const AmProcessQueue = props => {
         setDataSource(dataSource);
         setReload({});
     };
-    const onHandleDeleteSort = (v, o, rowdata, ind) => {
+    const onHandleDeleteSort = (v, o, rowdata, ind,idxsort) => {
         let idx = dataSorting[ind].findIndex(x => x.ID === v);
-        dataSorting[ind].splice(idx, 1);
+        console.log(idx)
+        dataSorting[ind].splice(idx,1);
+        console.log(dataSorting)
         setdataSorting(dataSorting);
         setReload({});
     };
@@ -533,6 +536,7 @@ const AmProcessQueue = props => {
     };
 
     const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode) => {
+        console.log(addData)
         if (addData) {
             if (editData) {
                 editData[field] = value;
@@ -585,30 +589,30 @@ const AmProcessQueue = props => {
         }
     };
     const onChangeEditorSortConfirm = (status, rowdata) => {
+
         if (status) {
             var chkDataSort = dataSorting[indexBtn].filter(x => {
                 return x.ID === rowdata.ID;
             });
-
             if (chkDataSort.length > 0) {
                 for (let row in editDataSort) {
                     chkDataSort[0][row] = editDataSort[row];
                 }
             } else {
-                var CheckOrder = dataSorting[indexBtn][0]["Order"];
+                var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
                 var CheckBy = dataSorting[indexBtn][0]["By"];
                 if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
                     setMsgDialogErr("DataSorting Dupicate");
                     setStateDialogErr(true);
                 } else {
-                    dataSorting[indexBtn].push(editDataSort);
-                    setAddDataID(addDataID - 1);
-                }
+                   dataSorting[indexBtn].push(rowdata);
+                    //setAddDataID(addDataID - 1);
+               }
             }
         }
         setReload({});
         setEditDataSort();
-        // setAddDataID(addDataID - 1);
+        setAddDataID(addDataID - 1);
         setAddData(false);
         setDialogSort(false);
     };
@@ -1259,7 +1263,7 @@ const AmProcessQueue = props => {
     const addConPage = () => {
         let datasSort = null;
         let dataPriolity = null;
-        dataSorting.map((x, idx) => {
+        [...dataSorting].map((x, idx) => {
             return (datasSort = x);
         });
 
@@ -1303,11 +1307,13 @@ const AmProcessQueue = props => {
                     return dfaultS;
                 }
             });
+            console.log(dataSortXX)
+            console.log(dataSorting)
             //setdatasDoc([...datasDoc]);
             datasQ["DataDocdetail"] = dataDetialdoc;
             datasQ["DataDocumentItem"] = [...DataDocumentItem];
             datasQ["DataSource"] = [...dataSource];
-            datasQ["DataSorting"] = dataSortXX;
+            datasQ["DataSorting"] = [...dataSorting];
             datasQ["DataDocumentCode"] =
             dataDocument[dataDocument.length - 1].DocumentCode;
             datasQ["DataDocumentID"] = documentID;
@@ -1394,7 +1400,6 @@ const AmProcessQueue = props => {
                 })));
             });
         }
-
         setDocumentID(doc.DataDocumentID);
         setDataDocumentItem(doc.DataDocumentItem);
         setDataSource(doc.DataSource);
@@ -1994,106 +1999,118 @@ const AmProcessQueue = props => {
                             {value === 0 ? (
                                 <div>
                                     {" "}
-
+                                 
                                     {[...DataDocumentItem].map((x, idx) => {
-
-                                        if (!dataSource[idx]) dataSource[idx] = [x];
+                                        
+                                        if (!dataSource[idx]) {
+                                            dataSource[idx] = [x];
+                                        }
 
                                         if (!dataSorting[idx]) {
-                                            dataSorting[idx] = props.DefaulSorting;
+                                            if (props.DefaulSorting !== undefined)
+                                            dataSorting[idx] = [...props.DefaulSorting];
+                                          
                                         }
+
+                                      //return dataSorting[idx].map((yz, idxSort) => {
+
+                                        var columnConditionx = [...columnCondition];
+                                        var columnSortx = [...columnSort];
+
+                                            columnConditionx.push(
+                                                {
+                                                    Header: "",
+                                                    width: 110,
+                                                    Cell: e =>
+                                                        e.original.ID < 0 ? (
+                                                            <AmButton
+                                                                style={{ width: 100 }}
+                                                                styleType="info"
+                                                                disable={e.original.ID > 0 ? false : true}
+                                                                onClick={() => {
+                                                                    setEditData(e);
+                                                                    setDialog(true);
+                                                                    setTitle("Edit");
+                                                                    
+                                                                }}
+                                                            >
+                                                                {t("Edit")}
+                                                            </AmButton>
+                                                        ) : null
+                                                },
+                                                {
+                                                    Header: "",
+                                                    width: 110,
+                                                    Cell: e =>
+                                                        e.original.ID < 0 ? (
+                                                            <AmButton
+                                                                style={{ width: 100 }}
+                                                                styleType="delete"
+                                                                disable={e.original.ID > 0 ? false : true}
+                                                                onClick={() => {
+                                                                    onHandleDelete(
+                                                                        e.original.ID,
+                                                                        e.original,
+                                                                        e,
+                                                                        idx
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {t("Remove")}
+                                                            </AmButton>
+                                                        ) : null
+                                                }
+                                            );
+
+                                            columnSortx.push(
+                                                {
+                                                    Header: "",
+                                                    width: 110,
+                                                    Cell: e => (
+                                                        <AmButton
+                                                            style={{ width: 100 }}
+                                                            styleType="info"
+                                                            onClick={() => {
+                                                                setEditDataSort(e);
+                                                                setDialogSort(true);
+                                                                setTitleSort("Edit Sort");
+                                                                //setidxSortBtn(idxSort)
+                                                            }}
+                                                        >
+                                                            {t("Edit")}
+                                                        </AmButton>
+                                                    )
+                                                },
+                                                {
+                                                    Header: "",
+                                                    width: 110,
+                                                    Cell: e => (
+                                                        <AmButton
+                                                            style={{ width: 100 }}
+                                                            styleType="delete"
+                                                            onClick={() => {
+                                                                onHandleDeleteSort(
+                                                                    e.original.ID,
+                                                                    e.original,
+                                                                    e,
+                                                                    idx
+                                                                    //idxSort
+                                                                );
+                                                            }}
+                                                        >
+                                                            {t("Remove")}
+                                                        </AmButton>
+                                                    )
+                                                }
+                                            );
+
 
                                         var STqty = qtyInput;
                                         var Inqty = parseInt(STqty, 10);
                                         var Inqtys = parseInt(x.BaseQuantity, 10);
                                         let qty = _.sum([Inqtys, Inqty]);
 
-                                        var columnConditionx = [...columnCondition];
-                                        columnConditionx.push(
-                                            {
-                                                Header: "",
-                                                width: 110,
-                                                Cell: e =>
-                                                    e.original.ID < 0 ? (
-                                                        <AmButton
-                                                            style={{ width: 100 }}
-                                                            styleType="info"
-                                                            disable={e.original.ID > 0 ? false : true}
-                                                            onClick={() => {
-                                                                setEditData(e);
-                                                                setDialog(true);
-                                                                setTitle("Edit");
-                                                            }}
-                                                        >
-                                                            {t("Edit")}
-                                                        </AmButton>
-                                                    ) : null
-                                            },
-                                            {
-                                                Header: "",
-                                                width: 110,
-                                                Cell: e =>
-                                                    e.original.ID < 0 ? (
-                                                        <AmButton
-                                                            style={{ width: 100 }}
-                                                            styleType="delete"
-                                                            disable={e.original.ID > 0 ? false : true}
-                                                            onClick={() => {
-                                                                onHandleDelete(
-                                                                    e.original.ID,
-                                                                    e.original,
-                                                                    e,
-                                                                    idx
-                                                                );
-                                                            }}
-                                                        >
-                                                            {t("Remove")}
-                                                        </AmButton>
-                                                    ) : null
-                                            }
-                                        );
-
-                                        var columnSortx = [...columnSort];
-                                        columnSortx.push(
-                                            {
-                                                Header: "",
-                                                width: 110,
-                                                Cell: e => (
-                                                    <AmButton
-                                                        style={{ width: 100 }}
-                                                        styleType="info"
-                                                        onClick={() => {
-                                                            setEditDataSort(e);
-                                                            setDialogSort(true);
-                                                            setTitleSort("Edit Sort");
-                                                        }}
-                                                    >
-                                                        {t("Edit")}
-                                                    </AmButton>
-                                                )
-                                            },
-                                            {
-                                                Header: "",
-                                                width: 110,
-                                                Cell: e => (
-                                                    <AmButton
-                                                        style={{ width: 100 }}
-                                                        styleType="delete"
-                                                        onClick={() => {
-                                                            onHandleDeleteSort(
-                                                                e.original.ID,
-                                                                e.original,
-                                                                e,
-                                                                idx
-                                                            );
-                                                        }}
-                                                    >
-                                                        {t("Remove")}
-                                                    </AmButton>
-                                                )
-                                            }
-                                        );
-
+                                   
                                         if (
                                             x.BaseQuantity !== null &&
                                             !qtyDocItem[idx] &&
@@ -2430,7 +2447,7 @@ const AmProcessQueue = props => {
 
                                                                                             </AmCheckBox>
 
-                                                                                            <AmCheckBox
+                                                                                            {props.StatusReject === true ? <AmCheckBox
                                                                                                 value="Reject"
                                                                                                 label="Reject"
                                                                                                 //checked={true}
@@ -2440,7 +2457,7 @@ const AmProcessQueue = props => {
                                                                                                 }
                                                                                             >
 
-                                                                                            </AmCheckBox>
+                                                                                            </AmCheckBox>: null }
 
                                                                                             {props.StatusHold === true? <AmCheckBox
                                                                                                 value="Hold"
@@ -2457,7 +2474,7 @@ const AmProcessQueue = props => {
 
                                                                                             <AmCheckBox
                                                                                                 value="Return"
-                                                                                                label="Return"
+                                                                                                label="Returns"
                                                                                                 defaultChecked={true}
                                                                                                 //checked={true}
                                                                                                 onChange={(e, v) =>
@@ -2494,20 +2511,7 @@ const AmProcessQueue = props => {
                                                                                             >
                                                                                                 >
                                               </AmCheckBox>
-
-
-                                                                                                <AmCheckBox
-                                                                                                    value="Return"
-                                                                                                    label="Returns"
-                                                                                                    defaultChecked={true}
-                                                                                                    //checked={true}
-                                                                                                    onChange={(e, v) =>
-                                                                                                        onChangCheckboxStatus(e, idx)
-                                                                                                    }
-                                                                                                >
-
-                                                                                                </AmCheckBox>
-
+      
                                                                                         </FormInline>
                                                                                     </div>
                                                                                        
@@ -2530,8 +2534,8 @@ const AmProcessQueue = props => {
                                                                                                
                                                                          
                                                                                             <AmCheckBox
-                                                                                                value="Reject"
-                                                                                                label="Reject"
+                                                                                                value="QC"
+                                                                                                label="QC"
                                                                                                 //checked={true}
                                                                                                 defaultChecked={true}
                                                                                                 onChange={(e, v) =>
@@ -2542,7 +2546,7 @@ const AmProcessQueue = props => {
                                                                                             </AmCheckBox>
                                                                                             <AmCheckBox
                                                                                                 value="Return"
-                                                                                                label="Return"
+                                                                                                label="Returns"
                                                                                                 defaultChecked={true}
                                                                                                 //checked={true}
                                                                                                 onChange={(e, v) =>
@@ -2672,6 +2676,7 @@ const AmProcessQueue = props => {
                                                                                     setAddData(true);
                                                                                     setTitleSort("Add Sorting");
                                                                                     setindexBtn(idx);
+                                                                                    //setidxSortBtn(idxSort)
                                                                                 }}
                                                                             >
                                                                                 {t("Add Sorting")}
@@ -2680,12 +2685,14 @@ const AmProcessQueue = props => {
                                                                     ) : null}
                                                                     {props.dataSortShow === true ? (
                                                                         <div style={{ marginTop: "5px" }}>
+                                                                            
                                                                             <AmTable
                                                                                 data={dataSorting[idx]}
                                                                                 reload={reload}
                                                                                 columns={columnSortx}
                                                                                 minRows={1}
                                                                                 sortable={false}
+                                                                              
                                                                             ></AmTable>
                                                                         </div>
                                                                     ) : null}
@@ -2706,6 +2713,7 @@ const AmProcessQueue = props => {
                                                                                         setAddData(true);
                                                                                         setTitle("Add");
                                                                                         setindexBtn(idx);
+                                                                                        //setidxSortBtn(idxSort);
                                                                                     }}
                                                                                 >
                                                                                     {t("Add Conditions")}
@@ -2733,7 +2741,9 @@ const AmProcessQueue = props => {
                                                 </BorderAdd>
                                             </div>
                                         );
-                                    })}
+                                        //})
+                                    })
+                                    }
                                 </div>
                             ) : null}
 
@@ -2765,7 +2775,7 @@ const AmProcessQueue = props => {
                     {datasDoc !== [] ? (
                         <Card style={{ overflow: "initial" }}>
                             <div style={{ marginTop: "10px" }}>
-                                <div>{console.log(datasDoc)}
+                                <div>
                                     {datasDoc.map((x, idx) => {
                                         var docs = x;
                                         var dataSOs = x["DataSource"];

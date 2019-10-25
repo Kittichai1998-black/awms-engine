@@ -7,9 +7,32 @@ import {
 import AmDocumentSearch from "../../../pageComponent/AmDocumentSearch";
 import AmDocumentStatus from "../../../../components/AmDocumentStatus";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmDate from "../../../../components/AmDate";
+import AmButton from "../../../../components/AmButton";
+import AmDialogs from "../../../../components/AmDialogs"
+import styled from 'styled-components'
+import moment from "moment";
 import DocView from "../../../pageComponent/DocumentView"; //css
 
 const Axios = new apicall();
+
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+
 
 export default props => {
     useEffect(() => { 
@@ -23,7 +46,11 @@ export default props => {
 
     const [dataCustomer, setDataCustomer] = useState();
     const [dataWarehouse, setDataWarehouse] = useState();
-
+    const [dates, setdates] = useState();
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
+    const [stateDialogErr, setStateDialogErr] = useState(false);
+    const [msgDialogErr, setMsgDialogErr] = useState("");
 
 
     const Warehouse = {
@@ -177,12 +204,81 @@ export default props => {
         );
     };
 
+    const BtnexportCSV = () => {
+        return (<div>
+            <FormInline>
+                <div style={{ marginLeft: "20px" }}>
+                    <AmDate
+                        TypeDate={"date"}
+                        defaultValue={true}
+                        onChange={(ele) => { onChangeEditorDate(ele) }}
+                    />
+                </div>
+                <AmButton styleType="info"
+                    onClick={() => { OnclickExportData() }}
+                >{"Export Data"}</AmButton>
+
+            </FormInline>
+
+        </div>)
+    }
+
+    const onChangeEditorDate = (e) => {
+        setdates(e.fieldDataObject)
+
+    }
+
+    const OnclickExportData = () => {
+        let dateExports = moment(dates).format("YYMMDD");
+        let dataExport = {
+            "exportName": "DocumentIssuedToCD",
+            "whereValues": [dates, dateExports],
+        }
+        Axios.post(window.apipath + "/v2/ExportQueryToFileServerAPI", dataExport).then((res) => {
+            console.log(res)
+            if (res.data._result.status === 1) {
+                console.log(res.data._result.status )
+                setMsgDialogSuc(res.data.fileExport)
+                setStateDialogSuc(true)
+            } else {
+                setStateDialogErr(true)
+                setMsgDialogErr("Export Data Fail")
+
+            }
+
+        })
+
+
+    }
+
+
     return (
+        <div>
+
+            <AmDialogs
+                typePopup={"success"}
+                content={msgDialogSuc}
+                onAccept={e => {
+                    setStateDialogSuc(e);
+                }}
+                open={stateDialogSuc}
+            ></AmDialogs>
+            <AmDialogs
+                typePopup={"error"}
+                content={msgDialogErr}
+                onAccept={e => {
+                    setStateDialogErr(e);
+                }}
+                open={stateDialogErr}
+            ></AmDialogs>
+
         <AmDocumentSearch
             columns={iniCols}
             primarySearch={primarySearch}
             expensionSearch={search}
             docTypeCode="1002"
-        />
+            customButton={BtnexportCSV()}
+            />
+        </div>
     );
 };

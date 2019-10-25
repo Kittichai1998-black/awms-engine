@@ -1,15 +1,49 @@
 import React, { useState, useEffect, useContext } from "react";
 import MasterData from "../../../pageComponent/MasterData";
 import {
-    apicall,
     createQueryString
 } from "../../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../../components/AmEntityStatus";
 import AmButton from "../../../../components/AmButton";
+import AmDate from "../../../../components/AmDate";
+import styled from 'styled-components'
+import { apicall } from "../../../../components/function/CoreFunction2";
+import AmDialogs from "../../../../components/AmDialogs"
+import moment from "moment";
+import "moment/locale/pt-br";
 const Axios = new apicall();
+
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+
+
 
 //======================================================================
 const SKUMaster = props => {
+
+    const [dates, setdates] = useState();
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
+    const [stateDialogErr, setStateDialogErr] = useState(false);
+    const [msgDialogErr, setMsgDialogErr] = useState("");
+
+
+
+
   const UnitTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "UnitType",
@@ -296,17 +330,81 @@ const SKUMaster = props => {
 
     const BtnexportCSV = () => {
         return <div>
-            <AmButton styleType="default_clear">{"Export Data"}</AmButton>
+            <FormInline>
+                <div style={{ marginLeft: "20px" }}>
+                <AmDate
+                        TypeDate={"date"}
+                        defaultValue={true}                     
+                    onChange={(ele) => { onChangeEditorDate(ele) }}
+                    />
+                </div>
+                <AmButton styleType="info"
+                    onClick={() => { OnclickExportData() }}
+                >{"Export Data"}</AmButton>
+
+                <AmButton styleType="add"
+                    onClick={() => { OnclickExportData() }}
+                >{"Import Data"}</AmButton>
+
+            </FormInline>
 
         </div>
 
     }
 
+    const onChangeEditorDate = (e) => {
+        setdates(e.fieldDataObject)
+
+    }
+
+    const OnclickExportData = () => {
+        console.log(dates)
+        let dateExports = moment(dates).format("YYMMDD");
+        console.log(dateExports)
+        let dataExport = {
+            "exportName": "ProductToShop",
+            "whereValues": [dates, dateExports],
+        }
+        Axios.post(window.apipath + "/v2/ExportQueryToFileServerAPI" , dataExport).then((res) => {
+            console.log(res)
+            if (res.data._result.status === 1) {
+                setMsgDialogSuc("Success")
+                setStateDialogSuc(true)
+            } else {
+                setStateDialogErr(true)
+                setMsgDialogErr("Export Data Fail")
+
+            }
+
+            })
+
+
+    }
+
   return (
-    <div>
+      <div>
+          <AmDialogs
+              typePopup={"success"}
+              content={msgDialogSuc}
+              onAccept={e => {
+                  setStateDialogSuc(e);
+              }}
+              open={stateDialogSuc}
+          ></AmDialogs>
+          <AmDialogs
+              typePopup={"error"}
+              content={msgDialogErr}
+              onAccept={e => {
+                  setStateDialogErr(e);
+              }}
+              open={stateDialogErr}
+          ></AmDialogs>
+
+
+
       <MasterData
-              columnsFilter={columnsFilter}
-              customButton={<AmButton styleType="default_clear">{"Export Data"}</AmButton>}
+        columnsFilter={columnsFilter}
+       customButton={BtnexportCSV()}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}
         dataAdd={columns}

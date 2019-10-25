@@ -235,7 +235,7 @@ const AmStorageObjectMulti = props => {
       setOpenWarning(true);
     } else {
       let cloneData = selection;
-      setRemark(encodeURIComponent(value));
+      setRemark(value);
       setDataSentToAPI(cloneData);
     }
   };
@@ -243,10 +243,15 @@ const AmStorageObjectMulti = props => {
   async function getData(qryString) {
     setTable([]);
 
-    const res = await Axios.get(qryString.replace("#", "%23")).then(res => res);
+    const res = await Axios.get(qryString).then(res => res);
 
-    var groupPallet = _.groupBy(res.data.datas, "Pallet");
-    var dataGroup = [];
+    //var groupPallet = _.groupBy(res.data.datas, "Pallet");
+
+    res.data.datas.forEach(x => {
+      x.Remark = decodeURIComponent(x.Remark);
+    });
+
+    //var dataGroup = [];
 
     if (window.project === "AAI") {
       res.data.datas.forEach(x => {
@@ -289,6 +294,7 @@ const AmStorageObjectMulti = props => {
     //   }
     //   dataGroup.push(groupPallet[data][0])
     // }
+
     setDataSource(res.data.datas);
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);
@@ -593,7 +599,7 @@ const AmStorageObjectMulti = props => {
 
           var qryStr = queryString.parse(row1.Options);
 
-          qryStr.Remark = remark;
+          qryStr.Remark = remark.replace("&", encodeURIComponent("&"));
           var qryStr1 = queryString.stringify(qryStr);
           var uri_dec = decodeURIComponent(qryStr1);
           row1.Options = uri_dec;

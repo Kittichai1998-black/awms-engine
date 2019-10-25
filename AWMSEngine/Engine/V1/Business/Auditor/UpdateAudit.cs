@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,9 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
+            var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value,this.BuVO);
+
+
             if(reqVO.itemLists.Count > 0)
             {
                 reqVO.itemLists.ForEach(x =>
@@ -41,8 +45,17 @@ namespace AWMSEngine.Engine.Business.Auditor
                     var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
                     ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty,x.option, getPack.parentID.Value, this.BuVO);
                 });
+                var Disto = new List<amt_DocumentItemStorageObject>();
+                getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); }) ;
 
-                var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
+
+                var CheckDisto = Disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE);
+                if (CheckDisto)
+                {
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
+                }
+
+                 var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
                 return res;
             }
             else
