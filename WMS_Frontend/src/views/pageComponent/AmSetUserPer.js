@@ -127,7 +127,7 @@ const AmSetUserPer = (props) => {
   const [totalSizePer, setTotalSizePer] = useState(0);
   const [datax, setDatax] = useState([])
   const FuncGetRole = () => {
-    console.log(datax)
+  
     const iniCols = [
       { Header: 'Code', accessor: 'Code', fixed: 'left', width: 250 },
       { Header: 'Name', accessor: 'Name', width: 250 },
@@ -174,13 +174,13 @@ const AmSetUserPer = (props) => {
     };
     await Axios.get(createQueryString(Query)).then((res) => {
       var row = res.data.datas
-      console.log(row)
+    
       row.forEach(x => {
         //defaultRole.push(x.Role_ID)
         defaultRole.push({ "ID": x.Permission_ID })
       })
     })
-    console.log(defaultRole)
+   
     setDatax(defaultRole)
     //return randerFunc(defaultRole,iniCols)
   }
@@ -723,7 +723,7 @@ const AmSetUserPer = (props) => {
             placeholder={placeholder}
             type={"input"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => { console.log(val); onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => {onChangeEditor(cols.field, data, val, "", inputType) }}
           />
         </InputDiv>
       </FormInline>
@@ -739,7 +739,7 @@ const AmSetUserPer = (props) => {
             placeholder={placeholder}
             type={"password"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => { console.log(val); onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => {  onChangeEditor(cols.field, data, val, "", inputType) }}
           />
         </InputDiv>
       </FormInline>
@@ -1046,7 +1046,7 @@ const AmSetUserPer = (props) => {
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
-    console.log(updjson)
+ 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
