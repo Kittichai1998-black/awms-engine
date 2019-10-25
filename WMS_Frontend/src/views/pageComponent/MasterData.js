@@ -759,7 +759,7 @@ const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFind
             placeholder={placeholder}
             type={"input"}     
             defaultValue={data ? data[cols.field]:""}
-            onChange={(val)=>{console.log(val) ;onChangeEditor(cols.field, data, val,"",inputType)}}  
+            onChange={(val)=>{onChangeEditor(cols.field, data, val,"",inputType)}}  
         />
       </InputDiv>
     </FormInline>
@@ -775,7 +775,7 @@ const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFind
             placeholder={placeholder}
             type={"password"}     
             defaultValue={data ? data[cols.field]:""}
-            onChange={(val)=>{console.log(val) ;onChangeEditor(cols.field, data, val,"",inputType)}}  
+            onChange={(val)=>{onChangeEditor(cols.field, data, val,"",inputType)}}  
         />
       </InputDiv>
     </FormInline>
@@ -1055,7 +1055,7 @@ const UpdateData =(rowdata,type) =>{
   
   if(props.tableQuery === "User"){
     if(type === "edit"){
-console.log(rowdata)
+
     dataSentToAPI.forEach( row =>{
     
       delete row["Password"]
@@ -1095,7 +1095,7 @@ console.log(rowdata)
     "nr": false,
     "_token": localStorage.getItem("Token")
   }
-console.log(updjson)
+
   Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson  ).then((res) => {
     if (res.data._result !== undefined) {
       if (res.data._result.status === 1) {

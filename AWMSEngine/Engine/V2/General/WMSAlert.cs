@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override string ExecuteEngine(TReq reqVO)
         {
-            var res = JsonConvert.SerializeObject(reqVO.messages);
+            var res = JsonConvert.SerializeObject(reqVO);
             return res;
         }
     }
