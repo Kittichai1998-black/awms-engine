@@ -247,9 +247,10 @@ const AmStorageObjectMulti = props => {
 
     //var groupPallet = _.groupBy(res.data.datas, "Pallet");
 
-    // res.data.datas.forEach(x => {
-    //   x.Options = decodeURIComponent(x.Options);
-    // });
+    res.data.datas.forEach(x => {
+      x.Remark = decodeURIComponent(x.Remark);
+    });
+
     //var dataGroup = [];
 
     if (window.project === "AAI") {
@@ -293,6 +294,7 @@ const AmStorageObjectMulti = props => {
     //   }
     //   dataGroup.push(groupPallet[data][0])
     // }
+
     setDataSource(res.data.datas);
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);
@@ -597,7 +599,7 @@ const AmStorageObjectMulti = props => {
 
           var qryStr = queryString.parse(row1.Options);
 
-          qryStr.Remark = remark;
+          qryStr.Remark = remark.replace("&", encodeURIComponent("&"));
           var qryStr1 = queryString.stringify(qryStr);
           var uri_dec = decodeURIComponent(qryStr1);
           row1.Options = uri_dec;
