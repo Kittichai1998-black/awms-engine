@@ -696,7 +696,8 @@ const AmDocumentSearch = props => {
         selectionType="checkbox"
         getSelection={data => setSelection(data)}
         style={{ maxHeight: "500px" }}
-        currentPage={page}
+              currentPage={page}
+              renderCustomButtonB4={<div> {props.customButton} </div>}
         pageSize={20}
       />
       <div>
