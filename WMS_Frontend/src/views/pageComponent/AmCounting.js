@@ -255,7 +255,7 @@ const AmCounting = props => {
         '[{ "f": "ID", "c":"=", "v": "' +
         ID +
         '"},{ "f": "Status", "c":"<", "v": 2}]',
-      f: "Code",
+      f: "ID,Code",
       g: "",
       s: "[{'f':'Code','od':'asc'}]",
       sk: 0,
@@ -267,10 +267,10 @@ const AmCounting = props => {
         res.data.datas.forEach(x => {
           setDocName(x.Code);
           doc = x.Code;
+          setDocID(x.ID);
         });
       }
     });
-    //   setDocID(res.data.docID);
 
     setTable(itemLists);
     setDataShow(DataShowRenderer(itemLists, doc));
