@@ -102,7 +102,7 @@ const useAreaID = (areaID) => {
 }
 
 const useWCSStatus = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState();
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -287,10 +287,6 @@ const Scanbarcode = (props) => {
     }, t)
    const time = clock 
 
-   useEffect(() => {
-    console.log(wcsAlert)
-    }, [wcsAlert])
-
     useEffect(() => {
         setTimeout(() => {
             set_width_height({
@@ -430,6 +426,7 @@ const Scanbarcode = (props) => {
                     mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
                     mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
                     mapSto.isRoot = false;
+                    mapSto.validateSKUTypeCodes = ["FG"];
                 }
             }
         }
@@ -439,7 +436,7 @@ const Scanbarcode = (props) => {
     }
 
     const RemovePackSto = (baseID, areaID) => {
-        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => console.log(res))
+        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID})
         document.getElementById("barcodeLong").focus()
     }
 
@@ -709,12 +706,15 @@ const Scanbarcode = (props) => {
     }
 
     const WCSStatusText = () => {
-        let res = wcsAlert.find(x=> x.AreaCode === localStorage.getItem("areaCode"))
-        if(res !== null && res !== undefined){
-            if(res.ErrorFlag === true)
-                return res.Status + ' : ' + res.Description;
-            else
+        if(wcsAlert !== undefined && wcsAlert !== null){
+            if(wcsAlert.code === localStorage.getItem("areaCode")){
+                return wcsAlert.messages.map((wcs, idx)=>{
+                    return <div key={idx}>{wcs.title + ' : ' + wcs.message}</div>;
+                })
+            }
+            else{
                 return null;
+            }
         }
         else
             return null;
@@ -768,11 +768,7 @@ const Scanbarcode = (props) => {
                     </Grid>
                 </div>
                 
-                <div style={{backgroundColor:"Red",fontSize:"3em", width:"100%", textAlign:"center"}}>
-                    {
-                        WCSStatusText()
-                    }
-                </div>
+                <div style={{backgroundColor:"Red",fontSize:"3em", width:"100%", textAlign:"center"}}>{WCSStatusText()}</div>
                 <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
                 <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
                 <div>
@@ -885,7 +881,7 @@ const Scanbarcode = (props) => {
                                                     }}>Manual</AmButton>}
 
                                                 <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={()=> {
-                                                    RemovePackSto(pallet2, areaIDs)
+                                                    RemovePackSto(pallet, areaIDs)
                                                 }}>Remove</AmButton></div>
                                             </Card>
                                         </Flash> : 
@@ -946,6 +942,7 @@ const Scanbarcode = (props) => {
                                                             
                                                     <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                         MapStoNoDoc(areaGate, "left")
+                                                        UnlockGate(areaGate, "left")
                                                         setManualAddLeft({});
                                                     }}>Save</AmButton>
                                                     <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
@@ -1073,6 +1070,7 @@ const Scanbarcode = (props) => {
                                                         <div style={{textAlign:"center"}}>
                                                             <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                                 MapStoNoDoc(areaGate2, "right");
+                                                                UnlockGate(areaGate2, "right");
                                                                 setManualAddRight({});
                                                                 }}>Save</AmButton>
                                                             <AmButton style={{marginTop:"10px", width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {

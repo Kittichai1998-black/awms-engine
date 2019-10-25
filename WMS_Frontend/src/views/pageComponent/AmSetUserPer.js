@@ -127,7 +127,7 @@ const AmSetUserPer = (props) => {
   const [totalSizePer, setTotalSizePer] = useState(0);
   const [datax, setDatax] = useState([])
   const FuncGetRole = () => {
-    console.log(datax)
+  
     const iniCols = [
       { Header: 'Code', accessor: 'Code', fixed: 'left', width: 250 },
       { Header: 'Name', accessor: 'Name', width: 250 },
@@ -174,13 +174,13 @@ const AmSetUserPer = (props) => {
     };
     await Axios.get(createQueryString(Query)).then((res) => {
       var row = res.data.datas
-      console.log(row)
+    
       row.forEach(x => {
         //defaultRole.push(x.Role_ID)
         defaultRole.push({ "ID": x.Permission_ID })
       })
     })
-    console.log(defaultRole)
+   
     setDatax(defaultRole)
     //return randerFunc(defaultRole,iniCols)
   }
@@ -352,7 +352,17 @@ const AmSetUserPer = (props) => {
     }
   }
   //===========================================================
-
+  const FuncFilterPri = () => {
+    const x = props.columnsFilterPrimary
+    return x.map(y=>{
+      return { 
+       "field":y.field,
+       "component":(condition, cols, key)=>{
+         return <div key={key} style={{display:"inline-block"}}>{FuncFilterSetEle(key,y.field, y.type, y.name,condition,cols.field,y.fieldLabel,y.placeholder,y.dataDropDow,y.typeDropdow,y.labelTitle,y.colsFindPopup,y.fieldDataKey,y.checkBox)}</div>
+        }
+      } 
+    })
+  }
   const FuncFilter = () => {
     const x = props.columnsFilter
     return x.map(y => {
@@ -713,7 +723,7 @@ const AmSetUserPer = (props) => {
             placeholder={placeholder}
             type={"input"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => { console.log(val); onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => {onChangeEditor(cols.field, data, val, "", inputType) }}
           />
         </InputDiv>
       </FormInline>
@@ -729,7 +739,7 @@ const AmSetUserPer = (props) => {
             placeholder={placeholder}
             type={"password"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => { console.log(val); onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => {  onChangeEditor(cols.field, data, val, "", inputType) }}
           />
         </InputDiv>
       </FormInline>
@@ -1036,7 +1046,7 @@ const AmSetUserPer = (props) => {
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
-    console.log(updjson)
+ 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
@@ -1066,7 +1076,7 @@ const AmSetUserPer = (props) => {
   //===========================================================
   return (
     <div>
-      <AmFilterTable defaultCondition={{ "f": "status", "c": "!=", "v": "2" }} extensionSearch={FuncFilter()} onAccept={(status, obj) => onHandleFilterConfirm(status, obj)} /><br />
+      <AmFilterTable defaultCondition={{ "f": "status", "c": "!=", "v": "2" }} primarySearch={FuncFilterPri()} extensionSearch={FuncFilter()} onAccept={(status, obj) => onHandleFilterConfirm(status, obj)} /><br />
       <AmDialogs typePopup={"success"} onAccept={(e) => { setOpenSuccess(e) }} open={openSuccess} content={"Success"} ></AmDialogs>
       <AmDialogs typePopup={"error"} onAccept={(e) => { setOpenError(e) }} open={openError} content={textError} ></AmDialogs>
       <AmEditorTable renderOptionalText={<span style={{ color: "red" }}>* required field  </span>}

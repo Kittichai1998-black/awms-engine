@@ -487,11 +487,12 @@ const AmPickingReturn = (props) => {
                         }
                     }
                 }
-            } else {
-                if (preAutoPost) {
-                    alertDialogRenderer("Please fill your information completely.", "error", true);
-                }
-            }
+            } 
+            // else {
+            //     if (preAutoPost) {
+            //         alertDialogRenderer("Please check and fill your information completely.", "error", true);
+            //     }
+            // }
         }
         setPreAutoPost(false);
     }
@@ -503,7 +504,7 @@ const AmPickingReturn = (props) => {
         if (resValuePosts) {
             let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+                qryStrOpt[SC.OPT_REMARK] = encodeURIComponent(valueInput[SC.OPT_REMARK]);
             }
             if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
                 qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
@@ -565,7 +566,7 @@ const AmPickingReturn = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
                 // inputClear();
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     if (res.data.bsto) {
                         let checkMVT = false;
                         let qryStr = queryString.parse(res.data.bsto.options);
@@ -579,6 +580,8 @@ const AmPickingReturn = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
+                            } else {
+                                checkMVT = true;
                             }
                         }
                         if (showOldValue && checkMVT) {
@@ -725,7 +728,8 @@ const AmPickingReturn = (props) => {
                             } : {}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -742,7 +746,8 @@ const AmPickingReturn = (props) => {
                             type="number"
                             style={{ width: "330px" }} defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -834,7 +839,7 @@ const AmPickingReturn = (props) => {
                     valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                     ele.value = x.defaultValue ? x.defaultValue : "";
                 } else {
-
+                    ele.value = valueInput[x.field] ? valueInput[x.field] : ""
                 }
                 if (x.isFocus === true) {
                     ele.focus();

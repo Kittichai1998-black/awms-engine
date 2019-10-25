@@ -122,19 +122,11 @@ const Permission = props => {
       placeholder: "Status"
     }
   ];
+  const primarySearch = [
+    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
   const columnsFilter = [
-    {
-      field: "Code",
-      type: "input",
-      name: "Code",
-      placeholder: "Username"
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: "Name",
-      placeholder: "Name"
-    },
     {
       field: "Description",
       type: "input",
@@ -183,6 +175,7 @@ const Permission = props => {
   return (
     <div>
       <AmSetUserPer
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Role"}
         table={"ams_Role"}

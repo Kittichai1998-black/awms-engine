@@ -53,6 +53,24 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
 
                 }
+                else
+                {
+                    var disto = new amt_DocumentItemStorageObject
+                    {
+                        ID = null,
+                        DocumentItem_ID = null,
+                        Sou_StorageObject_ID = stoEmp.id.Value,
+                        Des_StorageObject_ID = stoEmp.id.Value,
+                        Quantity = 0,
+                        BaseQuantity = 0,
+                        UnitType_ID = stoEmp.unitID,
+                        BaseUnitType_ID = stoEmp.baseUnitID,
+                        Status = EntityStatus.ACTIVE
+                    };
+
+                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+
+                }
             }
             else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
             {
@@ -66,6 +84,23 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 {
                     throw new AMWException(logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
                 }
+                packList.ForEach(pack =>
+                {
+                    var disto = new amt_DocumentItemStorageObject
+                    {
+                        ID = null,
+                        DocumentItem_ID = null,
+                        Sou_StorageObject_ID = pack.id.Value,
+                        Des_StorageObject_ID = pack.id.Value,
+                        Quantity = 0,
+                        BaseQuantity = 0,
+                        UnitType_ID = pack.unitID,
+                        BaseUnitType_ID = pack.baseUnitID,
+                        Status = EntityStatus.ACTIVE
+                    };
+
+                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+                });
             }
             else
             {

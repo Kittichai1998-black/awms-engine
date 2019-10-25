@@ -259,7 +259,6 @@ const AmMappingPallet2 = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-     
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -303,7 +302,7 @@ const AmMappingPallet2 = (props) => {
     }, [inputSource]);
     useEffect(() => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
-        GetWarehouseDDL();
+            GetWarehouseDDL();
         }
     }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
@@ -473,6 +472,7 @@ const AmMappingPallet2 = (props) => {
                 }
             }
         }
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -492,10 +492,6 @@ const AmMappingPallet2 = (props) => {
                     }
                 }
             }
-        } else {
-            if (preAutoPost) {
-                alertDialogRenderer("Please fill your information completely.", "error", true);
-            }
         }
         setPreAutoPost(false);
     }
@@ -509,7 +505,7 @@ const AmMappingPallet2 = (props) => {
         if (resValuePosts) {
             let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+                qryStrOpt[SC.OPT_REMARK] = encodeURIComponent(valueInput[SC.OPT_REMARK]);
             }
             if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
                 qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
@@ -580,7 +576,7 @@ const AmMappingPallet2 = (props) => {
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     let checkMVT = false;
                     let checkDataNull = false;
                     if (res.data.code) {
@@ -595,6 +591,8 @@ const AmMappingPallet2 = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
+                            } else {
+                                checkMVT = true;
                             }
                         }
 
@@ -609,7 +607,7 @@ const AmMappingPallet2 = (props) => {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
-                    } 
+                    }
                     else {
                         if (actionValue === 2) {
                             checkDataNull = true;
@@ -647,7 +645,7 @@ const AmMappingPallet2 = (props) => {
                                     setStorageObj(res.data);
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } 
+                                }
                                 // else {
                                 //     alertDialogRenderer("Remove Pallet Success", "success", true);
                                 //     onHandleClear();
@@ -657,7 +655,7 @@ const AmMappingPallet2 = (props) => {
                     } else {
                         if (checkDataNull) {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
-                        }                          
+                        }
                         onHandleClear();
                     }
                 } else {
@@ -675,7 +673,7 @@ const AmMappingPallet2 = (props) => {
     const addEmptyPallet = (dataEmptyPallet) => {
 
         Axios.post(window.apipath + apiCreate, dataEmptyPallet).then((res) => {
-            if (res.data._result.message === "Success") {
+            if (res.data._result.status === 1) {
                 setStorageObj(res.data);
                 alertDialogRenderer("Add & Mapping Pallet Success", "success", true);
             } else {
@@ -689,7 +687,7 @@ const AmMappingPallet2 = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClearAll();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         setStorageObj(res.data);
                         alertDialogRenderer("Select Pallet Success", "success", true);
                     } else {
@@ -732,7 +730,7 @@ const AmMappingPallet2 = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClearAll();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
@@ -837,6 +835,7 @@ const AmMappingPallet2 = (props) => {
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
 
                         />
                     </div>
@@ -854,6 +853,7 @@ const AmMappingPallet2 = (props) => {
                             type="number"
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         /></div>
                 </FormInline>
@@ -875,7 +875,7 @@ const AmMappingPallet2 = (props) => {
                     returnDefaultValue={true}
                     defaultValue={valueInput && valueInput[field] != undefined ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInputBlur(value, dataObject, field, fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
                 /></FormInline>
         } else if (type === "datepicker") {
@@ -974,16 +974,23 @@ const AmMappingPallet2 = (props) => {
         setDDLArea(null);
     }
     const inputClear = () => {
-        // setReqPost({});
-        onClearInput(itemCreate);
+        if (scanFirstbarcode === false) {
+            onClearInput(FirstScans);
+        } else {
+            onClearInput(itemCreate);
+        }
     }
     const onClearInput = (inputCreate) => {
         if (inputCreate !== undefined) {
             inputCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
-                    valueInput[x.field] = x.defaultValue ? x.defaultValue : "";
-                    ele.value = x.defaultValue ? x.defaultValue : "";
+                    if (x.clearInput) {
+                        valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                        ele.value = x.defaultValue ? x.defaultValue : "";
+                    } else {
+                        ele.value = valueInput[x.field] ? valueInput[x.field] : ""
+                    }
                     if (x.isFocus === true) {
                         ele.focus();
                     }

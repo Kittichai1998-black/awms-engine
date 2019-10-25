@@ -8,7 +8,9 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using AMWUtil.DataAccess;
 using AWMSModel.Entity;
-using AWMSEngine.ADO;
+using AWMSEngine.Engine.V2.Business.Received;
+using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 
 namespace ProjectSTGT.Engine.WM
 {
@@ -30,7 +32,21 @@ namespace ProjectSTGT.Engine.WM
         {
             var tsk = Task.Run(() =>
             {
-                ReadFileFromDirectory();
+                while (true)
+                {
+                    var dbTrx = AWMSEngine.ADO.DataADO.GetInstant().CreateTransaction();
+                    VOCriteria buVO = new VOCriteria(dbTrx);
+                    try
+                    {
+                        ReadFileFromDirectory();
+                    }
+                    catch {
+                    }
+                    finally
+                    {
+                        Thread.Sleep(3000);
+                    }
+                }
             });
             return tsk;
         }
@@ -45,6 +61,8 @@ namespace ProjectSTGT.Engine.WM
                 try
                 {
                     var res = FilesTypeAccess.ExcelAccess(file);
+                    CreateDocument(res);
+                    file.MoveTo($"{directoryPath}\\Archive\\{file.Name}");
                 }
                 catch
                 {
@@ -52,17 +70,46 @@ namespace ProjectSTGT.Engine.WM
             }
         }
 
-        private amt_Document CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
+        private void CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
         {
-            var doc = new amt_Document();
-            //doc.
+            excelData.worksheet.ForEach(data =>
+            {
+                var docItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+                data.rows.Skip(1).ToList().ForEach(row =>
+                {
+                    docItems.Add(new CreateGRDocument.TReq.ReceiveItem()
+                    {
+                        skuCode = row.cells[0],
+                        orderNo = row.cells[1],
+                        options = $"carton_no={row.cells[5]}&saleorder={row.cells[2]}",
+                        quantity = Convert.ToDecimal(row.cells[3]),
+                        unitType = row.cells[4]
+                    });
+                });
 
+                var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => key.ToList()).ToList();
 
+                gDocItems.ForEach(x =>
+                {
+                    try
+                    {
 
+                        var doc = new CreateGRDocument.TReq();
 
+                        doc.documentDate = DateTime.Now;
+                        doc.eventStatus = DocumentEventStatus.NEW;
+                        doc.movementTypeID = MovementType.FG_TRANSFER_WM;
+                        doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
+                        doc.receiveItems = x;
 
-            //DocumentADO.GetInstant().Create();
-            return null;
+                        var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
+                        var res = createGRDoc.Execute(doc);
+                    }
+                    catch
+                    {
+                    }
+                });
+            });
         }
     }
 }

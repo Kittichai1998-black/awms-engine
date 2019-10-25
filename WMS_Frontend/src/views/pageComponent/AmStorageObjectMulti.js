@@ -235,14 +235,16 @@ const AmStorageObjectMulti = props => {
       setOpenWarning(true);
     } else {
       let cloneData = selection;
-      setRemark(value);
+      setRemark(encodeURIComponent(value));
       setDataSentToAPI(cloneData);
     }
   };
   //===========================================================
   async function getData(qryString) {
     setTable([]);
-    const res = await Axios.get(qryString).then(res => res);
+
+    const res = await Axios.get(qryString.replace("#", "%23")).then(res => res);
+
     var groupPallet = _.groupBy(res.data.datas, "Pallet");
     var dataGroup = [];
 
@@ -270,8 +272,6 @@ const AmStorageObjectMulti = props => {
         ));
       });
     }
-
-    console.log(res.data.datas);
 
     // for( var data in groupPallet){
     //   if(groupPallet[data].length > 1){
@@ -566,20 +566,6 @@ const AmStorageObjectMulti = props => {
   };
   //===========================================================
   async function UpdateData(type) {
-    if (type != 0) {
-      if (type === 99) {
-        holdData(99);
-      } else if (type === 98) {
-        holdData(98);
-      } else if (type === 12) {
-        holdData(12);
-      } else if (type === 97) {
-        holdData(97);
-      } else if (type === 96) {
-        holdData(96);
-      }
-    }
-
     var dataObj = [];
 
     for (var data in dataSentToAPI) {
@@ -623,20 +609,36 @@ const AmStorageObjectMulti = props => {
       nr: false,
       _token: localStorage.getItem("Token")
     };
-    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
-        if (res.data._result.status === 1) {
-          //setOpenSuccess(true)
-          getData(createQueryString(query));
-          Clear();
-        } else {
-          //setOpenError(true)
-          setTextError(res.data._result.message);
-          getData(createQueryString(query));
-          Clear();
+    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson)
+      .then(res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            //setOpenSuccess(true)
+            getData(createQueryString(query));
+            Clear();
+          } else {
+            //setOpenError(true)
+            setTextError(res.data._result.message);
+            getData(createQueryString(query));
+            Clear();
+          }
         }
-      }
-    });
+      })
+      .then(x => {
+        if (type != 0) {
+          if (type === 99) {
+            holdData(99);
+          } else if (type === 98) {
+            holdData(98);
+          } else if (type === 12) {
+            holdData(12);
+          } else if (type === 97) {
+            holdData(97);
+          } else if (type === 96) {
+            holdData(96);
+          }
+        }
+      });
 
     return dataObj;
   }
@@ -698,6 +700,7 @@ const AmStorageObjectMulti = props => {
         }
       }
     }
+
     setFilterData(obj);
   };
   //===========================================================

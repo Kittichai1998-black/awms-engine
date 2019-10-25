@@ -398,6 +398,17 @@ const FuncFilter = () => {
     } 
   })
 }
+const FuncFilterPri = () => {
+  const x = props.columnsFilterPrimary
+  return x.map(y=>{
+    return { 
+     "field":y.field,
+     "component":(condition, cols, key)=>{
+       return <div key={key} style={{display:"inline-block"}}>{FuncFilterSetEle(key,y.field, y.type, y.name,condition,cols.field,y.fieldLabel,y.placeholder,y.dataDropDow,y.typeDropdow,y.labelTitle,y.colsFindPopup,y.fieldDataKey,y.checkBox)}</div>
+      }
+    } 
+  })
+}
 //===========================================================
 
 const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,placeholder,dataDropDow,typeDropdow,labelTitle,colsFindPopup,fieldDataKey,inputType) => {
@@ -748,7 +759,7 @@ const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFind
             placeholder={placeholder}
             type={"input"}     
             defaultValue={data ? data[cols.field]:""}
-            onChange={(val)=>{console.log(val) ;onChangeEditor(cols.field, data, val,"",inputType)}}  
+            onChange={(val)=>{onChangeEditor(cols.field, data, val,"",inputType)}}  
         />
       </InputDiv>
     </FormInline>
@@ -764,7 +775,7 @@ const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFind
             placeholder={placeholder}
             type={"password"}     
             defaultValue={data ? data[cols.field]:""}
-            onChange={(val)=>{console.log(val) ;onChangeEditor(cols.field, data, val,"",inputType)}}  
+            onChange={(val)=>{onChangeEditor(cols.field, data, val,"",inputType)}}  
         />
       </InputDiv>
     </FormInline>
@@ -903,10 +914,10 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     const [excelDataSrouce, setExcelDataSource] = useState([]);
 //===========================================================
 
-const onHandleEditConfirm = (status, rowdata) => {
+const onHandleEditConfirm = (status, rowdata,type) => {
  
   if(status){
-    UpdateData()
+    UpdateData(rowdata,type)
   }
   setValueText1([])
   setEditData()
@@ -1040,8 +1051,20 @@ useEffect(()=>{
 }, [dataSource, editRow])
 
 //===========================================================
-const UpdateData =() =>{
+const UpdateData =(rowdata,type) =>{
+  
   if(props.tableQuery === "User"){
+    if(type === "edit"){
+
+    dataSentToAPI.forEach( row =>{
+    
+      delete row["Password"]
+      delete row["ModifyBy"]
+      delete row["ModifyTime"]
+    })    
+
+    }else{
+       
     dataSentToAPI.forEach( row =>{
       var guidstr = guid.raw().toUpperCase()
       var i = 0, strLength = guidstr.length;
@@ -1057,6 +1080,7 @@ const UpdateData =() =>{
       delete row["ModifyBy"]
       delete row["ModifyTime"]
     })    
+  }
   }else{
     dataSentToAPI.forEach( row =>{
       delete row["ModifyBy"]
@@ -1071,7 +1095,7 @@ const UpdateData =() =>{
     "nr": false,
     "_token": localStorage.getItem("Token")
   }
-console.log(updjson)
+
   Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson  ).then((res) => {
     if (res.data._result !== undefined) {
       if (res.data._result.status === 1) {
@@ -1101,13 +1125,13 @@ const Clear=()=>{
 //===========================================================
     return (
       <div>   
-        <AmFilterTable defaultCondition={{"f":"status","c":"!=","v":"2"}} extensionSearch={FuncFilter()} onAccept={(status, obj)=>onHandleFilterConfirm(status, obj)}/><br/>
+        <AmFilterTable defaultCondition={{"f":"status","c":"!=","v":"2"}} primarySearch={FuncFilterPri()} extensionSearch={FuncFilter()} onAccept={(status, obj)=>onHandleFilterConfirm(status, obj)}/><br/>
         <AmDialogs typePopup={"success"} onAccept={(e) => {setOpenSuccess(e)}} open={openSuccess} content={"Success"} ></AmDialogs>
         <AmDialogs typePopup={"error"} onAccept={(e) => {setOpenError(e)}} open={openError} content={textError} ></AmDialogs>
         <AmEditorTable renderOptionalText={<span style={{color:"red"}}>* required field  </span>} 
         //style={{width:"600",height:"300px"}} 
         open={dialog} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTest()}/>
-        <AmEditorTable open={dialogEdit} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTestEdit()}/>
+        <AmEditorTable open={dialogEdit} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata,"edit")} titleText={addData=== true?'Add':'Edit'} data={editData} columns={FuncTestEdit()}/>
         <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit Password '} data={editData} columns={FuncTestEditPassWord()}/>
         <AmEditorTable open={dialogDelete} onAccept={(status)=>onHandleDeleteConfirm(status)} titleText={'Confirm Delete'}  columns={[]}/>
         <AmEditorTable open={dialogRole} onAccept={(status, rowdata)=>onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()}/>

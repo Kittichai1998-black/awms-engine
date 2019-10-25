@@ -118,12 +118,17 @@ const CustomerReturnPallet = (props) => {
                 oldValue.push({
                     field: "scanCode",
                     value: ""
+                },{
+                    field: "orderNo",
+                    value: ""
                 });
             }
         }
         return oldValue;
     }
     async function onBeforePost(reqValue, storageObj, curInput) {
+        console.log(reqValue)
+        console.log(curInput)
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -139,72 +144,61 @@ const CustomerReturnPallet = (props) => {
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
+                }
+                if (reqValue.scanCode && reqValue.scanCode.trim().length !== 0) {
+                    reqValue.scanCode = reqValue.scanCode.trim();
+                    if (reqValue.scanCode.includes('@')) {
+                        skuCode = reqValue.scanCode.replace(/\@/g, " ");
+                    } else {
+                        skuCode = reqValue.scanCode;
+                    }
+                    skuCode = skuCode.trim();
+                    console.log(skuCode)
                 } else {
-                    if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
+                    if (curInput === 'scanCode') {
+                        skuCode = null;
+                        console.log("skuCode null")
+                        alertDialogRenderer("Reorder No. must be value.", "error", true);
                     }
                 }
 
-                if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].trim().length !== 0) {
-                        skuCode = reqValue['scanCode'].trim();
+                if (reqValue.orderNo && reqValue.orderNo.trim().length !== 0) {
+                    reqValue.orderNo = reqValue.orderNo.trim();
+                    if (reqValue.orderNo.match(/^[A-Za-z0-9]{7}$/)) {
+                        orderNo = reqValue['orderNo'];
                     } else {
-                        if (curInput === 'scanCode') {
-                            skuCode = null;
-                            alertDialogRenderer("Reorder No. must be value.", "error", true);
+                        if (curInput === 'orderNo') {
+                            orderNo = null;
+                            console.log("orderNo not match")
+                            alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
                         }
                     }
-                    if (reqValue['orderNo']) {
-                        if (reqValue['orderNo'].trim().length === 7) {
-                            orderNo = reqValue['orderNo'].trim();
-                        } else {
-                            if (curInput === 'orderNo') {
-                                orderNo = null;
-                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                } else {
-                                    alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
-
-                                }
-                            }
-                        }
+                } else {
+                    if (curInput === 'orderNo') {
+                        orderNo = null;
+                        console.log("orderNo null")
+                        alertDialogRenderer("SI (Order No.) must be value.", "error", true);
                     }
-
-                    if (reqValue['cartonNo']) {
-                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
+                }
+                if (reqValue.cartonNo && reqValue.cartonNo.trim().length !== 0) {
+                    reqValue.cartonNo = reqValue.cartonNo.trim();
+                    if (reqValue.cartonNo.match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)) {
+                        let resCartonNo = ExplodeRangeNum(reqValue.cartonNo);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
-                            if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                            } else {
-                                alertDialogRenderer("Carton No. must be value.", "error", true);
-                            }
+                            console.log("cartonNo not match")
+                            alertDialogRenderer("Carton No. must be in ranges number format.", "error", true);
                         }
                     }
                 } else {
-                    if (reqValue['orderNo']) {
-                        if (reqValue['orderNo'].trim().length === 7) {
-                            orderNo = reqValue['orderNo'].trim();
-                        } else {
-                            if (curInput === 'orderNo') {
-                                orderNo = null;
-                                alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
-
-                            }
-                        }
+                    if (curInput === 'cartonNo') {
+                        cartonNo = null;
+                        console.log("cartonNo null")
+                        alertDialogRenderer("Carton No. must be value.", "error", true);
                     }
-
-                    if (reqValue['cartonNo']) {
-                        let resCartonNo = ExplodeRangeNum(reqValue['cartonNo']);
-                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                    } else {
-                        if (curInput === 'cartonNo') {
-                            cartonNo = null;
-                            alertDialogRenderer("Carton No. must be value.", "error", true);
-                        }
-                    }
-                }
-
+                } 
 
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
@@ -340,6 +334,7 @@ const CustomerReturnPallet = (props) => {
                     };
                     if (reqValue.action != 2) { //ไม่ใช่เคสลบ
                         if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
+                            alertDialogRenderer("Please select source customer before.", "error", true);
                             dataScan.allowSubmit = false;
                         }
                     }
@@ -349,10 +344,16 @@ const CustomerReturnPallet = (props) => {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
-                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {
+                                if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                                    if (storageObj.mapstos[0].code !== reqValue.scanCode) {
+                                     alertDialogRenderer("Pallet Code doesn't match.", "error", true);
+                                    }
+                                }else{
+                                    alertDialogRenderer("Pallet Code doesn't match.", "error", true);
+                                }
                                 resValuePost = { ...reqValue, allowSubmit: false }
                             }
                         } else {

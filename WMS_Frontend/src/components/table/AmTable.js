@@ -32,6 +32,7 @@ const AmTable = props => {
       setSelection([]);
     }
   }, [props.defaultSelection]);
+
   const createColumn = () => {
     let cols = [...props.columns];
 
@@ -60,7 +61,7 @@ const AmTable = props => {
         cols.unshift({
           mode: "selection",
           fixed: "left",
-          width: 34,
+          width: 31,
           sortable: false,
           Cell: e => {
             let checked =
@@ -69,7 +70,6 @@ const AmTable = props => {
               <Radio
                 type="radio"
                 checked={checked}
-                className={classNames("selection")}
                 style={{ padding: 0 }}
                 name="selection"
                 onChange={ele =>
@@ -99,7 +99,7 @@ const AmTable = props => {
               />
             );
           },
-          width: 34,
+          width: 31,
           sortable: false,
           Cell: e => {
             let checked =
@@ -107,8 +107,8 @@ const AmTable = props => {
             return (
               <Checkbox
                 checked={checked}
-                className={classNames("selection")}
                 style={{ padding: 0 }}
+                className={classNames("selection")}
                 onChange={ele =>
                   onHandleSelection(e, "checkbox", ele.target.checked)
                 }

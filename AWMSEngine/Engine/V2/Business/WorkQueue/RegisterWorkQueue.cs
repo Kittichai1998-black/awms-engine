@@ -12,6 +12,7 @@ using AMWUtil.Common;
 using AWMSEngine.Common;
 using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
+using AWMSEngine.ADO.StaticValue;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -202,7 +203,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var docItem = GetDocumentItemAndDISTO(sto, reqVO);
                 var desLocation = this.GetDesLocations(sto, reqVO);
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                if(queueTrx.IOType == IOType.OUTPUT)
+                {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
+                    StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
+                    StorageObjectEventStatus.PICKING, this.BuVO);
+                }
+                else
+                {
+                   ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
+                   StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
+                   StorageObjectEventStatus.RECEIVING, this.BuVO);
+                }
                
                 if(docItem.Count > 0)
                 {

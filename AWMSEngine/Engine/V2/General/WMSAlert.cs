@@ -6,19 +6,18 @@ using Newtonsoft.Json;
 
 namespace AWMSEngine.Engine.V2.General
 {
-    public class WCSStatus : BaseEngine<WCSStatus.TReq, string>
+    public class WMSAlert : BaseEngine<WMSAlert.TReq, string>
     {
         public class TReq
         {
-            public List<MachineDetail> MachineStatus;
-            public class MachineDetail
+            public string code;
+            public List<Detail> messages;
+            public class Detail
             {
-                public string MachineType;
-                public string AreaCode;
-                public string Status;
-                public string Description;
-                public DateTime DateTime;
-                public bool ErrorFlag;
+                public string title;
+                public string message;
+                public string alertType;
+                public DateTime actionTime;
             }
         }
 

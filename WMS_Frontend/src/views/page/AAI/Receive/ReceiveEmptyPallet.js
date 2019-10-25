@@ -28,6 +28,7 @@ const ReceiveEmptyPallet = (props) => {
                 itemCreate={inputItem} //input scan pallet
                 modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
                 setVisibleTabMenu={['Select', 'Add', 'Remove']}
+                autoPost={true}
             />
         </div>
     );

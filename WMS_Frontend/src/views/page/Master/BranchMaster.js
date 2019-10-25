@@ -74,9 +74,11 @@ const BranchMaster = props => {
       placeholder: "Status"
     }
   ];
+  const primarySearch = [
+    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
+    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
+  ];
   const columnsFilter = [
-    { field: "Code", type: "input", name: "Branch Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Branch Name", placeholder: "Name" },
     {
       field: "Status",
       type: "status",
@@ -119,6 +121,7 @@ const BranchMaster = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Branch"}
         table={"ams_Branch"}

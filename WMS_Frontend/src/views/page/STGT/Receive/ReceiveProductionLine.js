@@ -24,8 +24,8 @@ const CustomerQuery = {
   l: 100,
   all: ""
 };
-const ReceiveProductionLine = props => {
-  const {} = props;
+const CustomerReturnPalletByBarcode = props => {
+  const { } = props;
 
   const inputWarehouse = {
     visible: true,
@@ -50,36 +50,13 @@ const ReceiveProductionLine = props => {
     customQ: "{ 'f': 'ID', 'c':'=', 'v': 13}"
   };
 
-  const inputSource = [
-    {
-      field: SC.OPT_SOU_CUSTOMER_ID,
-      type: "dropdown",
-      typeDropdown: "search",
-      name: "Sou.Customer",
-      dataDropDown: CustomerQuery,
-      placeholder: "Select Customer",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "ID",
-      required: true
-    }
-  ];
-
   const inputItem = [
-    {
-      field: "scanCode",
-      type: "input",
-      name: "Scan Code",
-      placeholder: "Scan Code",
-      isFocus: true,
-      maxLength: 31,
-      required: true,
-      clearInput: true
-    },
     {
       field: SC.OPT_REMARK,
       type: "input",
       name: "Remark",
-      placeholder: "Remark"
+      placeholder: "Remark",
+      isFocus: true
     },
     {
       field: SC.OPT_DONE_DES_EVENT_STATUS,
@@ -87,6 +64,15 @@ const ReceiveProductionLine = props => {
       name: "Status",
       fieldLabel: [{ value: "12", label: "RECEIVED" }],
       defaultValue: { value: "12", disabled: true }
+    },
+    {
+      field: "scanCode",
+      type: "input",
+      name: "Scan Code",
+      placeholder: "Scan Code",
+      maxLength: 31,
+      required: true,
+      clearInput: true
     }
   ];
 
@@ -104,13 +90,6 @@ const ReceiveProductionLine = props => {
         textToolTip: "Carton No."
       }
     ];
-    // , {
-    // text: 'MVT',
-    // value: QryStrGetValue(value, 'MVT'),
-    // styleAvatar: {
-    //     backgroundColor: '#1769aa'
-    // }
-
     return res;
   };
   function onOldValue(storageObj) {
@@ -133,18 +112,14 @@ const ReceiveProductionLine = props => {
         {
           field: SC.OPT_REMARK,
           value: qryStrOpt_root[SC.OPT_REMARK]
+            ? qryStrOpt_root[SC.OPT_REMARK]
+            : ""
+        },
+        {
+          field: "scanCode",
+          value: ""
         }
       ];
-
-      if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-        let dataMapstos = storageObj.mapstos[0];
-        let qryStrOpt = queryString.parse(dataMapstos.options);
-
-        oldValue.push({
-          field: SC.OPT_SOU_CUSTOMER_ID,
-          value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
-        });
-      }
     }
     return oldValue;
   }
@@ -160,53 +135,43 @@ const ReceiveProductionLine = props => {
       let qryStrOpt = {};
 
       if (storageObj) {
-        // if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
-        //   SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
-        // } else {
-        //   if (reqValue.action != 2) {
-        //     alertDialogRenderer(
-        //       "Please select source customer before.",
-        //       "error",
-        //       true
-        //     );
-        //   }
-        // }
-
         if (reqValue["scanCode"]) {
-          if (reqValue["scanCode"].length === 31) {
-            orderNo = reqValue["scanCode"].substr(0, 7);
-            console.log(reqValue["scanCode"]);
-            console.log(reqValue["scanCode"].length);
-            let skuCode1 = reqValue["scanCode"].substr(7, 20);
+          reqValue.scanCode = reqValue.scanCode.trim();
+          if (reqValue["scanCode"].trim().length === 31) {
+            let orderNoStr = reqValue['scanCode'].substr(0, 7);
+            if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
+              orderNo = orderNoStr;
+            } else {
+              alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
+            }
+            let skuCode1 = reqValue['scanCode'].substr(7, 20);
 
-            console.log(skuCode1);
-            if (skuCode1.includes("@")) {
+            if (skuCode1.includes('@')) {
               skuCode = skuCode1.replace(/\@/g, " ");
             } else {
               skuCode = skuCode1;
             }
             skuCode = skuCode.trim();
-            cartonNo = parseInt(reqValue["scanCode"].substr(27, 4));
+            let cartonStr = reqValue['scanCode'].substr(27, 4);
+            if (cartonStr.match(/^\d{4}$/)) {
+              cartonNo = parseInt(cartonStr);
+            } else {
+              alertDialogRenderer("Carton No. must be equal to 4-digits in number format.", "error", true);
+            }
 
-            console.log(skuCode);
-            console.log(cartonNo);
-            console.log(orderNo);
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
               let dataMapstos = storageObj.mapstos[0];
               qryStrOpt = queryString.parse(dataMapstos.options);
-              if (
-                skuCode !== dataMapstos.code ||
-                orderNo !== dataMapstos.orderNo
-              ) {
-                alertDialogRenderer(
-                  "The new product doesn't match the previous product on the pallet.",
-                  "error",
-                  true
-                );
+              if (skuCode !== null && skuCode !== dataMapstos.code) {
+                alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
                 skuCode = null;
+              }
+              if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
+                alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
                 orderNo = null;
               }
-              if (rootID && skuCode && orderNo) {
+
+              if (rootID && skuCode && orderNo && cartonNo) {
                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
                 let resCartonNo = ExplodeRangeNum(oldOptions);
                 let splitCartonNo = resCartonNo.split(",").map((x, i) => {
@@ -219,8 +184,8 @@ const ReceiveProductionLine = props => {
                   if (indexCartonNo < 0) {
                     alertDialogRenderer(
                       "This Carton No. " +
-                        cartonNo +
-                        " doesn't exist in pallet.",
+                      cartonNo +
+                      " doesn't exist in pallet.",
                       "error",
                       true
                     );
@@ -245,12 +210,12 @@ const ReceiveProductionLine = props => {
 
                       alertDialogRenderer(
                         "Pallet No. " +
-                          storageObj.code +
-                          " had SKU Code: " +
-                          skuCode +
-                          " and Carton No." +
-                          cartonNo.toString() +
-                          " already",
+                        storageObj.code +
+                        " had SKU Code: " +
+                        skuCode +
+                        " and Carton No." +
+                        cartonNo.toString() +
+                        " already",
                         "error",
                         true
                       );
@@ -272,9 +237,6 @@ const ReceiveProductionLine = props => {
             }
 
             if (cartonNo && rootID && skuCode && orderNo) {
-              if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
-                qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
-              }
               qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
               let qryStr1 = queryString.stringify(qryStrOpt);
               let uri_opt = decodeURIComponent(qryStr1);
@@ -286,6 +248,7 @@ const ReceiveProductionLine = props => {
                 options: cartonNo === "0" ? null : uri_opt,
                 validateSKUTypeCodes: ["FG"]
               };
+
               resValuePost = { ...reqValue, ...dataScan };
             } else {
               if (rootID === null) {
@@ -301,15 +264,10 @@ const ReceiveProductionLine = props => {
               if (storageObj.code === reqValue.scanCode) {
                 resValuePost = { ...reqValue, allowSubmit: true };
               }
-            } else {
-              alertDialogRenderer(
-                "Please scan code of product.",
-                "error",
-                true
-              );
             }
           }
         } else {
+          alertDialogRenderer("Please scan code of product.", "error", true);
           resValuePost = { ...reqValue, allowSubmit: false };
         }
       } else {
@@ -345,7 +303,6 @@ const ReceiveProductionLine = props => {
       <AmMappingPallet
         showWarehouseDDL={inputWarehouse}
         showAreaDDL={inputArea}
-        //sourceCreate={inputSource}
         itemCreate={inputItem} //input scan pallet
         onBeforePost={onBeforePost}
         customOptions={customOptions}
@@ -353,10 +310,10 @@ const ReceiveProductionLine = props => {
         setVisibleTabMenu={[null, "Add", "Remove"]}
         //setMovementType={"1012"}
         autoPost={true}
-        showOldValue={onOldValue}
         apiCreate={"/v2/ScanReceivedProductionLineAPI"}
+        showOldValue={onOldValue}
       />
     </div>
   );
 };
-export default ReceiveProductionLine;
+export default CustomerReturnPalletByBarcode;

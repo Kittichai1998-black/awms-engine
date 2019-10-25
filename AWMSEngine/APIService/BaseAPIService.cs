@@ -4,6 +4,7 @@ using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSEngine.Engine.General;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -38,13 +39,19 @@ namespace AWMSEngine.APIService
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
         }
-        
+        public BaseAPIService()
+        {
+            this.IsAuthenAuthorize = false;
+            this.ControllerAPI = null;
+            this.APIServiceID = 0;
+        }
+
         private SqlConnection _SqlConnection = null;
 
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
-            var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction(this.Logger.LogRefID);
+            var trans = ADO.DataADO.GetInstant().CreateTransaction(this.Logger.LogRefID);
             this._SqlConnection = trans.Connection;
             this.BuVO.Set(BusinessVOConst.KEY_DB_TRANSACTION, trans);
         }
@@ -289,9 +296,7 @@ namespace AWMSEngine.APIService
                 return;
             this.Logger.LogInfo("AuthenAuthorize!");
 
-
             ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
-
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");

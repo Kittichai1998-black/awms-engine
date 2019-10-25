@@ -373,7 +373,6 @@ const AmMappingPallet = (props) => {
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         setCurInput(field);
-
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
@@ -415,12 +414,12 @@ const AmMappingPallet = (props) => {
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        // console.log(dataScan)
+                        console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
-                        }
+                        }  
                     } else {
-                        inputClearAll();
+                        inputClear();
                     }
                 } else {
                     dataScan = {
@@ -445,9 +444,9 @@ const AmMappingPallet = (props) => {
                     if (dataScan) {
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
-                        }
+                        }  
                     } else {
-                        inputClearAll();
+                        inputClear();
                     }
                 } else {
                     dataScan = {
@@ -460,7 +459,7 @@ const AmMappingPallet = (props) => {
             }
 
         }
-        // console.log(resValuePosts)
+        console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -480,11 +479,12 @@ const AmMappingPallet = (props) => {
                     }
                 }
             }
-        } else {
-            if (preAutoPost) {
-                alertDialogRenderer("Please fill your information completely.", "error", true);
-            }
         }
+        // else {
+        //     if (preAutoPost) {
+        //         alertDialogRenderer("Please check and fill your information completely.", "error", true);
+        //     }
+        // }
         setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
@@ -496,7 +496,7 @@ const AmMappingPallet = (props) => {
         if (resValuePosts) {
             let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+                qryStrOpt[SC.OPT_REMARK] = encodeURIComponent(valueInput[SC.OPT_REMARK]);
             }
             if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
                 qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
@@ -568,7 +568,7 @@ const AmMappingPallet = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             //inputClear();
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.status === 1) {
                     let checkMVT = false;
                     let checkDataNull = false;
                     if (res.data.code) {
@@ -586,6 +586,8 @@ const AmMappingPallet = (props) => {
                                     } else {
                                         alertDialogRenderer("Moment Type isn't match.", "error", true);
                                     }
+                                } else {
+                                    checkMVT = true;
                                 }
                             }
                         }
@@ -646,7 +648,7 @@ const AmMappingPallet = (props) => {
 
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } 
+                                }
                                 // else {
                                 //     alertDialogRenderer("Remove Pallet Success", "success", true);
                                 //     onHandleClear();
@@ -656,7 +658,7 @@ const AmMappingPallet = (props) => {
                     } else {
                         if (checkDataNull) {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
-                        } 
+                        }
                         onHandleClear();
                     }
                 } else {
@@ -674,7 +676,7 @@ const AmMappingPallet = (props) => {
     const addEmptyPallet = (dataEmptyPallet) => {
 
         Axios.post(window.apipath + apiCreate, dataEmptyPallet).then((res) => {
-            if (res.data._result.message === "Success") {
+            if (res.data._result.status === 1) {
                 setStorageObj(res.data);
                 //inputClear();
                 alertDialogRenderer("Add & Mapping Pallet Success", "success", true);
@@ -684,12 +686,13 @@ const AmMappingPallet = (props) => {
         });
     }
     const scanBarcodeEmptyPalletApi = (req) => {
+        req.scanCode = req.scanCode.trim();
         if (actionValue === 0) {
             //select จะแสดงค่าก็ต่อเมื่อเคยสร้าง sto ของทั้ง pallet และ sku empty pallet
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         setStorageObj(res.data);
                         alertDialogRenderer("Select Pallet Success", "success", true);
                     } else {
@@ -732,7 +735,7 @@ const AmMappingPallet = (props) => {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
-                    if (res.data._result.message === "Success") {
+                    if (res.data._result.status === 1) {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
@@ -807,7 +810,7 @@ const AmMappingPallet = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput, x.validate, x.regExp)}
                         </div>
                     }
                 }
@@ -816,7 +819,7 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput, validate, regExp) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
@@ -832,10 +835,14 @@ const AmMappingPallet = (props) => {
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
+                            // validate={validate}
+                            // regExp={regExp}
+                            // msgError={"Error"}
+                            // styleValidate={{display: 'block'}}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                        //onChangeV2={(value, obj, element, event) => onHandleOnChange(value, null, field, null, event)}
+                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -852,7 +859,8 @@ const AmMappingPallet = (props) => {
                             type="number"
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -967,7 +975,6 @@ const AmMappingPallet = (props) => {
         setDDLArea(null);
     }
     const inputClear = () => {
-        // setReqPost({});
         onClearInput(itemCreate);
     }
     const onClearInput = (inputCreate) => {
@@ -978,7 +985,7 @@ const AmMappingPallet = (props) => {
                     valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                     ele.value = x.defaultValue ? x.defaultValue : "";
                 } else {
-
+                    ele.value = valueInput[x.field] ? valueInput[x.field] : ""
                 }
                 if (x.isFocus === true) {
                     ele.focus();

@@ -17,6 +17,17 @@ namespace AWMSModel.Criteria
         {
             this.VO = new Dictionary<string, dynamic>();
         }
+        public VOCriteria(AMWLogger logger, SqlTransaction sqlTransaction)
+        {
+            this.VO = new Dictionary<string, dynamic>();
+            this.Set(Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
+            this.Set(Constant.StringConst.BusinessVOConst.KEY_DB_TRANSACTION, sqlTransaction);
+        }
+        public VOCriteria(SqlTransaction sqlTransaction)
+        {
+            this.VO = new Dictionary<string, dynamic>();
+            this.Set(Constant.StringConst.BusinessVOConst.KEY_DB_TRANSACTION, sqlTransaction);
+        }
         public void Set(string key, dynamic val)
         {
             if (key.StartsWith("*"))

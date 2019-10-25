@@ -70,7 +70,7 @@ const SKUMaster = props => {
       accessor: "Name",
       width: 250
     },
-    { Header: "SKU Type", accessor: "SKUMasterType_Name", width: 100 },
+    { Header: "SKU Type", accessor: "SKUMasterType_Name", width: 130 },
     {
       Header: "Gross Weight",
       accessor: "WeightKG",
@@ -83,7 +83,7 @@ const SKUMaster = props => {
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 120,
+      width: 130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY hh:mm"
     }
@@ -201,7 +201,7 @@ const SKUMaster = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
+  const primarySearch = [
     {
       field: "Code",
       type: "input",
@@ -215,7 +215,9 @@ const SKUMaster = props => {
       name: window.project === "TAP" ? "Part Name" : "SKU Name",
       placeholder: "Name",
       validate: /^.+$/
-    },
+    }
+  ];
+  const columnsFilter = [
     {
       field: "SKUMasterType_Name",
       type: "dropdow",
@@ -296,6 +298,7 @@ const SKUMaster = props => {
   return (
     <div>
       <MasterData
+        columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}

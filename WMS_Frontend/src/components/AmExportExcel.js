@@ -30,7 +30,7 @@ const LoadWorkbook = (props) => {
 
 
     useEffect(() => {
-        if (data) {
+        if (data && data.length > 0) {
             getData(data);
         } else {
             setDataSrc([]);
@@ -54,10 +54,13 @@ const LoadWorkbook = (props) => {
                     if (datarow[xfield] != null)
                         datarow[xfield] = datarow[xfield].toString();
                 }
-                if (headerItemNo) {
+            }
+            if (headerItemNo) {
+                if (datarow["norownum"]) {
+                    datarow[headerItemNo] = "";
+                } else {
                     datarow[headerItemNo] = (index + 1).toString();
                 }
-
             }
             return datarow
         })
