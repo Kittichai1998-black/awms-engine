@@ -102,7 +102,7 @@ const useAreaID = (areaID) => {
 }
 
 const useWCSStatus = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState();
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -706,7 +706,7 @@ const Scanbarcode = (props) => {
     }
 
     const WCSStatusText = () => {
-        if(wcsAlert.length > 0){
+        if(wcsAlert !== undefined && wcsAlert !== null){
             if(wcsAlert.code === localStorage.getItem("areaCode")){
                 return wcsAlert.messages.map((wcs, idx)=>{
                     return <div key={idx}>{wcs.title + ' : ' + wcs.message}</div>;
