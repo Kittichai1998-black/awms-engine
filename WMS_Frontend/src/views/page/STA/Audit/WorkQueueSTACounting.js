@@ -47,11 +47,13 @@ const WorkQueueSTACounting = (props) => {
         { label: 'FIFO', value: 'FIFO' },
         { label: 'LIFO', value: 'LIFO' },
     ];
-
     const ordersDDL = [
-        { label: 'ReceiveDate', value: 'Receivedate' }, 
-        { label: 'Batch', value: 'Batch' },
+        { label: 'Carton No', value: 'Orderno' },
+        { label: 'Order No', value: 'Orderno' },
+        { label: 'Createtime', value: 'createtime' },
+
     ];
+
 
     const Priolity = [
         { label: 'Very Low', value: '0' },
@@ -168,6 +170,7 @@ const WorkQueueSTACounting = (props) => {
             random={true}
             docType={"audit"}
             StatusHold={false}
+            StatusReject={false}
             dataSort={false}
             apiResConfirm={"/counting/managequeue"}
             apidetail={"/counting/detail?docID="}
