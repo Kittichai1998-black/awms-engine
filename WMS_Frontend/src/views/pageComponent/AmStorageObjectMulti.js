@@ -235,7 +235,7 @@ const AmStorageObjectMulti = props => {
       setOpenWarning(true);
     } else {
       let cloneData = selection;
-      setRemark(encodeURIComponent(value));
+      setRemark(value);
       setDataSentToAPI(cloneData);
     }
   };
@@ -243,10 +243,14 @@ const AmStorageObjectMulti = props => {
   async function getData(qryString) {
     setTable([]);
 
-    const res = await Axios.get(qryString.replace("#", "%23")).then(res => res);
+    const res = await Axios.get(qryString).then(res => res);
 
-    var groupPallet = _.groupBy(res.data.datas, "Pallet");
-    var dataGroup = [];
+    //var groupPallet = _.groupBy(res.data.datas, "Pallet");
+
+    // res.data.datas.forEach(x => {
+    //   x.Options = decodeURIComponent(x.Options);
+    // });
+    //var dataGroup = [];
 
     if (window.project === "AAI") {
       res.data.datas.forEach(x => {
