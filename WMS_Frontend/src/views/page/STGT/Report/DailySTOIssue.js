@@ -98,6 +98,8 @@ const DailySTOIssue = (props) => {
             + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
             + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
             + "&docType=1002"
+            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
             + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
@@ -115,6 +117,8 @@ const DailySTOIssue = (props) => {
         + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
         + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
         + "&docType=1002"
+        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
         + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
         + "&spname=DAILY_STO";
 
@@ -131,6 +135,24 @@ const DailySTOIssue = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
+            <FormInline>
+                <LabelH>{t('SKU Code')} : </LabelH>
+                <AmInput
+                    id={"packCode"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                />
+            </FormInline>
+            <FormInline>
+                <LabelH>{t("Order No.")} : </LabelH>
+                <AmInput
+                    id={"orderNo"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                />
+            </FormInline>
             <FormInline><LabelH>{t("Doc No.")} : </LabelH>
                 <AmInput
                     id={"docCode"}

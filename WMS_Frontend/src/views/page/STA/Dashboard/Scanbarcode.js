@@ -102,7 +102,7 @@ const useAreaID = (areaID) => {
 }
 
 const useWCSStatus = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState();
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -436,7 +436,7 @@ const Scanbarcode = (props) => {
     }
 
     const RemovePackSto = (baseID, areaID) => {
-        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => console.log(res))
+        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID})
         document.getElementById("barcodeLong").focus()
     }
 
@@ -706,17 +706,18 @@ const Scanbarcode = (props) => {
     }
 
     const WCSStatusText = () => {
-        if(wcsAlert.length > 0){
-            let res = wcsAlert.find(x=> x.code === localStorage.getItem("areaCode"))
-            if(res !== null && res !== undefined){
-                if(res.alertType === "error")
-                    return res.title + ' : ' + res.message;
-                else
-                    return null;
+        if(wcsAlert !== undefined && wcsAlert !== null){
+            if(wcsAlert.code === localStorage.getItem("areaCode")){
+                return wcsAlert.messages.map((wcs, idx)=>{
+                    return <div key={idx}>{wcs.title + ' : ' + wcs.message}</div>;
+                })
             }
-            else
+            else{
                 return null;
+            }
         }
+        else
+            return null;
     }
 
     return (
@@ -767,11 +768,7 @@ const Scanbarcode = (props) => {
                     </Grid>
                 </div>
                 
-                <div style={{backgroundColor:"Red",fontSize:"3em", width:"100%", textAlign:"center"}}>
-                    {
-                        WCSStatusText()
-                    }
-                </div>
+                <div style={{backgroundColor:"Red",fontSize:"3em", width:"100%", textAlign:"center"}}>{WCSStatusText()}</div>
                 <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
                 <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
                 <div>

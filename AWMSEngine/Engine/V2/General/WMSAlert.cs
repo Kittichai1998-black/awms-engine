@@ -10,10 +10,10 @@ namespace AWMSEngine.Engine.V2.General
     {
         public class TReq
         {
+            public string code;
             public List<Detail> messages;
             public class Detail
             {
-                public string code;
                 public string title;
                 public string message;
                 public string alertType;
@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override string ExecuteEngine(TReq reqVO)
         {
-            var res = JsonConvert.SerializeObject(reqVO.messages);
+            var res = JsonConvert.SerializeObject(reqVO);
             return res;
         }
     }
