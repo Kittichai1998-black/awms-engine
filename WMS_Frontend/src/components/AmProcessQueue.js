@@ -483,9 +483,7 @@ const AmProcessQueue = props => {
     };
     const onHandleDeleteSort = (v, o, rowdata, ind,idxsort) => {
         let idx = dataSorting[ind].findIndex(x => x.ID === v);
-        console.log(idx)
         dataSorting[ind].splice(idx,1);
-        console.log(dataSorting)
         setdataSorting(dataSorting);
         setReload({});
     };
@@ -536,7 +534,6 @@ const AmProcessQueue = props => {
     };
 
     const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode) => {
-        console.log(addData)
         if (addData) {
             if (editData) {
                 editData[field] = value;
@@ -599,15 +596,16 @@ const AmProcessQueue = props => {
                     chkDataSort[0][row] = editDataSort[row];
                 }
             } else {
-                var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
-                var CheckBy = dataSorting[indexBtn][0]["By"];
-                if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
-                    setMsgDialogErr("DataSorting Dupicate");
-                    setStateDialogErr(true);
-                } else {
-                   dataSorting[indexBtn].push(rowdata);
-                    //setAddDataID(addDataID - 1);
-               }
+                dataSorting[indexBtn].push(rowdata);
+               // var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
+               // var CheckBy = dataSorting[indexBtn][0]["By"];
+               // if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
+               //     setMsgDialogErr("DataSorting Dupicate");
+               //     setStateDialogErr(true);
+               // } else {
+               //    dataSorting[indexBtn].push(rowdata);
+               //     //setAddDataID(addDataID - 1);
+               //}
             }
         }
         setReload({});
@@ -626,17 +624,9 @@ const AmProcessQueue = props => {
         data,
         pair
     ) => {
-        setValueText({
-            ...valueText,
-            [inputID]: {
-                value: value,
-                dataObject: dataObject,
-                fieldDataKey: fieldDataKey
-            }
-        });
-
+        console.log(dataObject)     
         if (value !== null) {
-            onChangeEditorSort(field, data, dataObject.value, pair);
+            onChangeEditorSort(field, data, dataObject.value, dataObject.label,pair);
         }
     };
 
@@ -647,32 +637,36 @@ const AmProcessQueue = props => {
         }
     };
 
-    const onChangeEditorSort = (field, rowdata, value, pair, dataPair) => {
-        if (addData) {
-            if (editDataSort) {
-                editDataSort[field] = value;
-                if (pair) {
-                    editDataSort[pair] = dataPair;
+    const onChangeEditorSort = (field, rowdata, value, label,pair, dataPair) => {
+        console.log(value)
+        console.log(label)
+        if (rowdata.length > 0) {
+            if (addData) {
+                if (editDataSort) {
+                    editDataSort[field] = value;
+                    if (pair) {
+                        editDataSort[pair] = dataPair;
+                    }
+                    setEditDataSort(editDataSort);
+                } else {
+                    let addData = {};
+                    addData["ID"] = addDataID;
+                    addData[field] = value;
+                    if (pair) {
+                        addData[pair] = dataPair;
+                    }
+                    setEditDataSort(addData);
                 }
-                setEditDataSort(editDataSort);
             } else {
-                let addData = {};
-                addData["ID"] = addDataID;
-                addData[field] = value;
+                let editRowX = editDataSort.original
+                    ? { ...editDataSort.original }
+                    : { ...editDataSort };
+                editRowX[field] = value;
                 if (pair) {
-                    addData[pair] = dataPair;
+                    editRowX[pair] = dataPair;
                 }
-                setEditDataSort(addData);
+                setEditDataSort(editRowX);
             }
-        } else {
-            let editRowX = editDataSort.original
-                ? { ...editDataSort.original }
-                : { ...editDataSort };
-            editRowX[field] = value;
-            if (pair) {
-                editRowX[pair] = dataPair;
-            }
-            setEditDataSort(editRowX);
         }
     };
 
@@ -853,7 +847,8 @@ const AmProcessQueue = props => {
                                 data,
                                 cols,
                                 row,
-                                row.dataDDL
+                                row.dataDDL,
+                                row.defaultsort
                             )}
                         </div>
                     );
@@ -995,7 +990,8 @@ const AmProcessQueue = props => {
         data,
         cols,
         row,
-        dataDDL
+        dataDDL,
+        defaultsort
     ) => {
         if (type === "input") {
             return (
@@ -1058,8 +1054,9 @@ const AmProcessQueue = props => {
                                 ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
                                 valueData={valueText[idddls]} //��� value ������͡
                                 defaultValue={
-                                    data !== {} && data !== null ? data[accessor] : ""
+                                    defaultsort ? defaultsort : ""
                                 }
+                                returnDefaultValue={true}
                                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                                     getdataDDLSort(
                                         value,
@@ -1301,13 +1298,11 @@ const AmProcessQueue = props => {
             var datasQ = {};
 
             var dataSortXX = [...DataDocumentItem].map((di, idx) => {
-                console.log(di)
-                if (props.DefaulSorting !== undefined) {
-                    console.log(dataSorting)
+               if (props.DefaulSorting !== undefined) {           
                     let dfaultS = [...dataSorting[idx]];
                     dfaultS["docItemID"] = di.ID;
                     return dfaultS;
-                }
+               }
             });
             console.log(dataSortXX)
             console.log(dataSorting)
@@ -1450,7 +1445,6 @@ const AmProcessQueue = props => {
         dataConfirmQ["processQueues"] = [];
         datasDoc.forEach((a, idx) => {            
             a.DataDocumentItem.forEach(y => {
-                console.log(y.CheckDocument)
                 if (y.CheckDocument === true) {
                     var conditions = [];
                     var orderBys = [];
@@ -1458,12 +1452,11 @@ const AmProcessQueue = props => {
                     if (a.DataSorting[0] !== undefined) {
                         a.DataSorting.filter(x => x.docItemID === y.ID).forEach(
                             (ds, dsIdx) => {
-                                console.log(ds)
                                 if (props.docType !== "audit") {
                                     ds.forEach((d, idx) => {
                                         console.log(d)
                                         let sort = {
-                                            fieldName: "psto." + d.By,
+                                            fieldName: "psto." +  d.value,
                                             orderByType: d.Order === "FIFO" ? 0 : 1
                                         };
                                         orderBys.push(sort);
@@ -2013,9 +2006,8 @@ const AmProcessQueue = props => {
                                         if (!dataSorting[idx]) {
                                             if (props.DefaulSorting !== undefined)
                                             dataSorting[idx] = [...props.DefaulSorting];
-                                          
+                                            //dataSorting[idx] = dataSorting
                                         }
-
                                       //return dataSorting[idx].map((yz, idxSort) => {
 
                                         var columnConditionx = [...columnCondition];
