@@ -15,6 +15,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
     {
         public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
+            var docLists = new List<long>();
             reqVO.ForEach(x =>
             {
                 var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
@@ -28,7 +29,6 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             if (docItem.DocItemStos.TrueForAll(z => z.Status == EntityStatus.ACTIVE))
                             {
                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
-
                                 var sum_disto = docItem.DocItemStos.Sum(t => t.Quantity);
                                 //ถ้า STO ของที่เบิก เบิกไม่หมด จะต้องเอาของที่เหลือไปสร้างเอกสาร Picking Return
                                 if (sum_disto > docItem.Quantity)
@@ -43,6 +43,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
+                            docLists.Add(x);
                         }
                         else
                         {
@@ -66,7 +67,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
             });
 
-            return reqVO;
+            return docLists;
         }
         private void CreateGRDocument(amt_DocumentItem docItem, AMWLogger logger, VOCriteria buVO)
         {

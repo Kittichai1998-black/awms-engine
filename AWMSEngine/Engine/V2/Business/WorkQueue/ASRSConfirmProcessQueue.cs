@@ -228,7 +228,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     });
                 }                
 
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus,true, this.BuVO);
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
@@ -246,7 +246,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }, this.BuVO);
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
-            rstos.ForEach(rsto =>
+            rstos.FindAll(rsto =>
+            {
+                var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
+                var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
+                return areaType.groupType == AreaMasterGroupType.STORAGE;
+            }
+            ).ForEach(rsto =>
             {
                 wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
                 {

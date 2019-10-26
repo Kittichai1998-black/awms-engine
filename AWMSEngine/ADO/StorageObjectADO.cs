@@ -156,7 +156,13 @@ namespace AWMSEngine.ADO
         }*/
 
         public int UpdateStatusToChild(long stoRootID,
-            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus,
+            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, 
+            VOCriteria buVO)
+        {
+            return this.UpdateStatusToChild(stoRootID,fromEventStatus, fromStatus, toEventStatus, false, buVO);
+        }
+        public int UpdateStatusToChild(long stoRootID,
+            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, bool flagOldStatus,
             VOCriteria buVO)
         {
             EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(toEventStatus);
@@ -166,6 +172,8 @@ namespace AWMSEngine.ADO
             param.Add("fromStatus", fromStatus);
             param.Add("toEventStatus", toEventStatus);
             param.Add("toStatus", toStatus);
+            param.Add("flagOldStatus", flagOldStatus);
+            
             param.Add("actionBy", buVO.ActionBy);
             var res = this.Execute(
                 "SP_STO_UPDATE_STATUS_TO_CHILD",
