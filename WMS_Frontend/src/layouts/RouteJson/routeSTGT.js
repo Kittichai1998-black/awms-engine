@@ -108,6 +108,16 @@ const DailySTOSumCounting = Loadable({
   loader: () => import("../../views/page/STGT/Report/DailySTOSumCounting"),
   loading: Loading
 });
+
+const ProcessQueueGI = Loadable({
+    loader: () => import("../../views/page/STGT/Issues/WorkQueueSTA"),
+    loading: Loading
+});
+const ProcessQueueCT = Loadable({
+    loader: () => import("../../views/page/STGT/Audit/WorkQueueSTACounting"),
+    loading: Loading
+});
+
 const routes = [
   {
     path: "/issue/search",
@@ -198,7 +208,19 @@ const routes = [
     name: "Customers Return",
     compoment: ReceiveFromCustomer,
     exact: true
-  },
+    },
+    {
+        path: "/issue/managequeue",
+        name: "base5",
+        compoment: ProcessQueueGI,
+        exact: true
+    },
+    {
+        path: "/counting/managequeue",
+        name: "base5",
+        compoment: ProcessQueueCT,
+        exact: true
+    },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
   { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },

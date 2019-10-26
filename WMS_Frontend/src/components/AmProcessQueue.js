@@ -1301,8 +1301,10 @@ const AmProcessQueue = props => {
             var datasQ = {};
 
             var dataSortXX = [...DataDocumentItem].map((di, idx) => {
+                console.log(di)
                 if (props.DefaulSorting !== undefined) {
-                    let dfaultS = [...props.DefaulSorting];
+                    console.log(dataSorting)
+                    let dfaultS = [...dataSorting[idx]];
                     dfaultS["docItemID"] = di.ID;
                     return dfaultS;
                 }
@@ -1313,7 +1315,7 @@ const AmProcessQueue = props => {
             datasQ["DataDocdetail"] = dataDetialdoc;
             datasQ["DataDocumentItem"] = [...DataDocumentItem];
             datasQ["DataSource"] = [...dataSource];
-            datasQ["DataSorting"] = [...dataSorting];
+            datasQ["DataSorting"] = dataSortXX;
             datasQ["DataDocumentCode"] =
             dataDocument[dataDocument.length - 1].DocumentCode;
             datasQ["DataDocumentID"] = documentID;
@@ -1325,6 +1327,7 @@ const AmProcessQueue = props => {
             setDocumentID();
             setdataDocument([]);
             setbtnAdd(true);
+            console.log(datasQ)
             // dataDocument[dataDocument.length - 1].DocumentCode = []
 
             Axios.get(createQueryString(docQuery)).then(res => {
@@ -1452,12 +1455,13 @@ const AmProcessQueue = props => {
                     var conditions = [];
                     var orderBys = [];
                     var eventStatuses = [];
-
                     if (a.DataSorting[0] !== undefined) {
                         a.DataSorting.filter(x => x.docItemID === y.ID).forEach(
                             (ds, dsIdx) => {
+                                console.log(ds)
                                 if (props.docType !== "audit") {
                                     ds.forEach((d, idx) => {
+                                        console.log(d)
                                         let sort = {
                                             fieldName: "psto." + d.By,
                                             orderByType: d.Order === "FIFO" ? 0 : 1
@@ -2511,6 +2515,40 @@ const AmProcessQueue = props => {
                                                                                             >
                                                                                                 >
                                               </AmCheckBox>
+
+                                                                                                <AmCheckBox
+                                                                                                    value="QC"
+                                                                                                    label="QC"
+                                                                                                    //checked={true}
+                                                                                                    defaultChecked={false}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+
+                                                                                                </AmCheckBox>
+                                                                                                <AmCheckBox
+                                                                                                    value="Return"
+                                                                                                    label="Returns"
+                                                                                                    defaultChecked={false}
+                                                                                                    //checked={true}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+
+                                                                                                </AmCheckBox>
+                                                                                                <AmCheckBox
+                                                                                                    value="Partial"
+                                                                                                    label="Partial"
+                                                                                                    defaultChecked={false}
+                                                                                                    //checked={true}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+
+                                                                                                </AmCheckBox>
       
                                                                                         </FormInline>
                                                                                     </div>
