@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Exception;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -52,7 +53,11 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var CheckDisto = Disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE);
                 if (CheckDisto)
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
+                    var WorkedDoc = new  WorkedDocument().Execute(this.Logger, this.BuVO,new List<long> { reqVO.docID.Value });
+                    var ClosingDoc = new  ClosingDocument().Execute(this.Logger, this.BuVO, WorkedDoc);
+                    var ClosedDoc = new  ClosedDocument().Execute(this.Logger, this.BuVO, ClosingDoc);
+
+                   // ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
                 }
 
                  var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
