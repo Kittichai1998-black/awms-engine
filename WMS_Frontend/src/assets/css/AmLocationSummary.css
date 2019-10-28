@@ -3,20 +3,20 @@
   background-color: blue !important;
   cursor: pointer;
 }
-#divTableTopView tr:not(:first-child) td:nth-last-child(2){
+#divTableTopView tr:not(:first-child) td:nth-last-child(2) {
   position: sticky;
   font-size: 8px;
   text-align: left !important;
   right: 0;
-  background-color:#FAFAFA;
+  background-color: #fafafa;
   padding-right: 15px;
 }
-#divTableTopView tr:not(:first-child) td:nth-last-child(1){
+#divTableTopView tr:not(:first-child) td:nth-last-child(1) {
   position: sticky;
   font-size: 8px;
   text-align: center !important;
   right: 0;
-  background-color:#FAFAFA;
+  background-color: #fafafa;
   /* padding: 0; */
 }
 #divTableTopView tr:not(:first-child) td:first-child,
@@ -26,21 +26,21 @@
   width: 40px; */
   text-align: right !important;
   left: 0;
-  background-color:#FAFAFA;
+  background-color: #fafafa;
   /* z-index: 1; */
 }
 #divTableTopView tr:first-child td:not(:first-child),
 #divTableSideView tr:first-child td:not(:first-child) {
   position: sticky;
   top: 0;
-  background-color:#FAFAFA;
+  background-color: #fafafa;
 }
 #divTableTopView tr:first-child td:first-child,
 #divTableSideView tr:first-child td:first-child {
   position: sticky;
   top: 0;
   left: 0;
-  background-color:#FAFAFA;
+  background-color: #fafafa;
   z-index: 1;
 }
 
@@ -49,9 +49,7 @@
   overflow: auto;
   /* margin-left: 42px; */
 }
-#divTableTopView tr.active {
-  background-color: blue;
-}
+#divTableTopView tr.active,
 #divTableTopView tr.active td:first-child {
   background-color: blue;
 }
