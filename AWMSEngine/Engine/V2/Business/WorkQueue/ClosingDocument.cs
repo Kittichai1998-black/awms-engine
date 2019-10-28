@@ -16,7 +16,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosing, reqVO);
             if (res == null)
             {
-                 
+                var docLists = new List<long>();
                 reqVO.ForEach(x =>
                 {
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
@@ -28,6 +28,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                             {
                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                docLists.Add(x);
                             }
                             else
                             {
@@ -57,7 +58,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 });
 
-                res = reqVO;
+                res = docLists;
             }
 
             return res;

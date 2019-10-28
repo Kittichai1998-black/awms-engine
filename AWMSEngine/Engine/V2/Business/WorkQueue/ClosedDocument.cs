@@ -27,6 +27,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
             if (res == null)
             {
+                var docLists = new List<long>();
+
                 reqVO.ForEach(x =>
                 {
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
@@ -52,7 +54,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 {
                                     var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, this.BuVO);
 
-                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
                                     {
                                         UpdateStorageObjectReceived(queue, this.BuVO);
                                     }
@@ -68,6 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                 {
                                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                    docLists.Add(x);
                                 }
                                 else
                                 {
@@ -97,7 +100,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         });
                     }
                 });
-                res = reqVO;
+                res = docLists;
             }
 
             return res;

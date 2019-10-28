@@ -49,9 +49,9 @@ const WorkQueueSTA = (props) => {
     ];
 
     const ordersDDL = [
-        { label: 'Carton No',  value: 'ref2' },
-        { label: 'Order No', value: 'orderno' },
-        { label: 'Create time',value: 'createtime' }, 
+        { label: 'Carton No', value: 'Carton No' },
+        { label: 'Order No', value: 'Order No' },
+        { label: 'Createtime', value: 'Createtime' }, 
       
     ];
 
@@ -86,14 +86,13 @@ const WorkQueueSTA = (props) => {
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order", defaultsort:"FIFO" },
-        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By", defaultsort: "ref2"},
+        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
     ];
 
     const DefaulSorting = [{
         By: "Carton No",
-        value: "ref2",
         ID: 0,
         Order: "FIFO"
     }]

@@ -15,12 +15,12 @@ const createQueryString = (select) => {
         + "&apikey=free01"
     return queryS
 }
-const WorkQueueSTA = (props) => {
+const WorkQueueSTACounting = (props) => {
 
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -47,13 +47,13 @@ const WorkQueueSTA = (props) => {
         { label: 'FIFO', value: 'FIFO' },
         { label: 'LIFO', value: 'LIFO' },
     ];
-
     const ordersDDL = [
-        { label: 'Carton No',  value: 'ref2' },
-        { label: 'Order No', value: 'orderno' },
-        { label: 'Create time',value: 'createtime' }, 
-      
+        { label: 'Carton No', value: 'Orderno' },
+        { label: 'Order No', value: 'Orderno' },
+        { label: 'Createtime', value: 'createtime' },
+
     ];
+
 
     const Priolity = [
         { label: 'Very Low', value: '0' },
@@ -63,7 +63,33 @@ const WorkQueueSTA = (props) => {
         { label: 'Very High', value: '4' },
         { label: 'Critical', value: '5' },
     ];
+    const [DataSource, setDataSource] = useState();
+    const [query, setQuery] = useState(Document);
+    const [documentID, setDocumentID] = useState();
+    const [dataDetail, setdataDetail] = useState();
+    const [datasDetails, setdatasDetails] = useState([]);
+    const [DeswarehouseID, setDeswarehouseID] = useState();
+    const [movement, setmovement] = useState();
+    const [remark, setremark] = useState();
+    const [souware, setsouware] = useState();
+    const [desware, setdesware] = useState();
 
+
+    const detailDocument = [
+        [{ "label": "Movement Type :", "type": "label", "values": movement },
+        { "label": "Remark :", "values": remark, "type": "label" },
+        { "label": "Source Warehouse :", "values": souware, "type": "label" },
+        { "label": "Destination Warehouse :", "values": desware, "type": "label" }],
+    ];
+
+
+    useEffect(() => {
+        setdatasDetails([...detailDocument])
+    }, [desware, documentID])
+
+    useEffect(() => {
+        getDetailDoc();
+    }, [documentID])
 
     const Document = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -77,28 +103,33 @@ const WorkQueueSTA = (props) => {
         all: "",
     }
 
+    const getDetailDoc = () => {
+        Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + "2004" + "&docID=" + documentID + "&getMapSto=true&_token=" + localStorage.getItem("Token")).then((res) => {
+            if (res.data._result.status === 1) {
+                var doc = res.data.document
+                setmovement(doc.movementName);
+                setremark(doc.remark);
+                setsouware(doc.souWarehouseName);
+                setdesware(doc.desWarehouseName);
+            } else {
+
+            }
+        })
+
+    }
+
     const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
     { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
     { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
         { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order", defaultsort:"FIFO" },
-        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By", defaultsort: "ref2"},
+        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
-    ];
-
-    const DefaulSorting = [{
-        By: "Carton No",
-        value: "ref2",
-        ID: 0,
-        Order: "FIFO"
-    }]
-  
-
+    ]; 
     const columnConfirm = [
         { Header: 'SKU', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
@@ -110,41 +141,44 @@ const WorkQueueSTA = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:11 },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValue: 8 },
 
     ];
 
     return (<div>
         <AmProcessQueue
+            // apiDocument={Document}
+            detailDocument={datasDetails}
             orderDDL={orderDDL}
-            ordersDDL={ordersDDL}
+            ordersDDL={ordersDDL}      
             columnCondition={columnCondition}
             columnSort={columnSort}
             columnConfirm={columnConfirm}
             ProcessQ={ProcessQ}
-            DefaulSorting={DefaulSorting}
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
-            //fullPallets={true}
-           // receives={true}
-            priolity={Priolity}
-            DocType={1002}
-            docType={"issue"}
-            status={true}
-            random={false}
-            dataSortShow={true}
+            //fullPallet={true}
+            //receive={true}
             FullPallet={true}
             defaultFullPallete={true}
             disibleFullPallet={true}
-            StatusfromDeswarehouse={true}
-            StatusfromDescustomer={true}
-            apidetail={"/issue/detail?docID="}
-            apiResConfirm={"/issue/managequeue"}
+            AllStatus={true}
+            priolity={Priolity}
+            DocType={2004}
+            status={true}
+            random={true}
+            docType={"audit"}
+            StatusHold={false}
+            StatusReject={false}
+            dataSort={false}
+            apiResConfirm={"/counting/managequeue"}
+            apidetail={"/counting/detail?docID="}
+
         ></AmProcessQueue>
 
     </div>)
 
 }
 
-export default WorkQueueSTA;
+export default WorkQueueSTACounting;

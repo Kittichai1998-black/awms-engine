@@ -142,7 +142,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Document Item Storage Object Not Found");
                         }
                         //update STO Event = Received เลย
-                        UpdateStorageObjectReceived(queueTrx, this.BuVO);
+                        //UpdateStorageObjectReceived(queueTrx, this.BuVO);
                         //ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
                     }
                 }
@@ -363,7 +363,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
 
         }
-
+         
         private void UpdateStorageObjectReceived(SPworkQueue queue, VOCriteria buVO)
         {
             var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO);
