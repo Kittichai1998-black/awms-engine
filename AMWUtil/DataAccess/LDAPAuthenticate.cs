@@ -9,34 +9,36 @@ namespace AMWUtil.DataAccess
 {
     public class LDAPAuthenticate
     {
-        public static bool ValidateUser(string username, string password ,string serverName, string formatDN)
+        public static bool ValidateUser(string binddn, string bindpw, string host, int? port, int? version, bool? starttls)
         {
-            var spFormat = formatDN.Split(',');
-
-            List<string> userDn = new List<string>();
-            foreach (var id in spFormat)
-            {
-                var sp = id.Split('=');
-                if (sp[1] != "")
-                    userDn.Add(id);
-                else
-                {
-                    userDn.Add($"{sp[0]}={username}");
-                }
-            }
-
             try
             {
                 using (var connection = new LdapConnection { SecureSocketLayer = false })
                 {
-                    connection.Connect(serverName, LdapConnection.DEFAULT_PORT);
-                    connection.Bind(string.Join(',', userDn.ToArray()), password);
+                    connection.Connect(host, port.Value);
+                    if (starttls != null)
+                    {
+                        if(starttls.Value)
+                            connection.StartTls();
+                    }
+                    if (version != null)
+                    {
+                        if(version == null)
+                            connection.Bind(version.Value, binddn, bindpw);
+                        else
+                            connection.Bind(binddn, bindpw);
+                    }
+                    else
+                    {
+                        connection.Bind(binddn, bindpw);
+                    }
                     if (connection.Bound)
                         return true;
                 }
             }
             catch (LdapException ex)
             {
+                throw ex;
                 //throw new System.Exception();
             }
             return false;
