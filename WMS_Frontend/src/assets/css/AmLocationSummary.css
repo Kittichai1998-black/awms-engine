@@ -1,31 +1,70 @@
-.HoverTable:not(:first-child):hover {
-  background-color: yellow!important;
+#divTableTopView .HoverTable:not(:first-child):hover,
+#divTableSideView .HoverTable:not(:first-child):hover {
+  background-color: blue !important;
   cursor: pointer;
 }
-#divTableTopView tr td:first-child{
-  position: absolute;
-  margin-left:-42px;
-  width:40px;
-  text-align:right !important;
-}
-#divTableSideView tr td:first-child{
-  position: absolute;
-  margin-left:-42px;
-  width:40px;
-  text-align:right !important;
-  padding-top:4px;
-}
-#divTableTopView,#divTableSideView{
-  overflow: auto;
-  margin-left: 42px;
-}
-#divTableTopView tr.active{
-  background-color: #FFC8C8;
-}
-#divTableTopView tr.active td:first-child{
-  background-color: #FFC8C8;
-}
-/* #divTableTopView>tr>td,#divTableSideView{
+#divTableTopView tr:not(:first-child) td:nth-last-child(2) {
+  position: sticky;
   font-size: 8px;
-  margin-left: 42px;
-} */
+  text-align: left !important;
+  right: 0;
+  background-color: #fafafa;
+  padding-right: 15px;
+}
+#divTableTopView tr:not(:first-child) td:nth-last-child(1) {
+  position: sticky;
+  font-size: 8px;
+  text-align: center !important;
+  right: 0;
+  background-color: #fafafa;
+  /* padding: 0; */
+}
+#divTableTopView tr:not(:first-child) td:first-child,
+#divTableSideView tr:not(:first-child) td:first-child {
+  position: sticky;
+  /* margin-left: -42px;
+  width: 40px; */
+  text-align: right !important;
+  left: 0;
+  background-color: #fafafa;
+  /* z-index: 1; */
+}
+#divTableTopView tr:first-child td:not(:first-child),
+#divTableSideView tr:first-child td:not(:first-child) {
+  position: sticky;
+  top: 0;
+  background-color: #fafafa;
+}
+#divTableTopView tr:first-child td:first-child,
+#divTableSideView tr:first-child td:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: #fafafa;
+  z-index: 1;
+}
+
+#divTableTopView,
+#divTableSideView {
+  overflow: auto;
+  /* margin-left: 42px; */
+}
+#divTableTopView tr.active,
+#divTableTopView tr.active td:first-child {
+  background-color: blue;
+}
+
+.list,
+.listitem,
+.listitemtext {
+  padding: 0;
+  margin: 0;
+}
+
+.listitem {
+  background-color: #dcdcdc;
+}
+
+.listitemtext {
+  padding: 0 5px;
+}

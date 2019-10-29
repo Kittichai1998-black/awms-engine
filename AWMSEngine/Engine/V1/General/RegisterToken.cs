@@ -24,9 +24,29 @@ namespace AWMSEngine.Engine.General
         {
             if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature(FeatureCode.AUTHENLDAP))
             {
-                var serverName = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_SERVER").DataValue;
-                var ldapDNFormat = ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "LDAP_FORMAT").DataValue;
-                var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser(reqVO.Username, reqVO.Password, serverName, ldapDNFormat);
+                var host = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.host");
+                var port = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.port");
+                var binddn = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.binddn");
+                var version = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.version");
+                var starttls = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.starttls");
+                var basedn = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.basedn");
+
+                var userdn = binddn["ldap.binddn"];
+                userdn = userdn.Replace("{username}", reqVO.Username);
+                userdn = userdn.Replace("{host}", host["ldap.host"]);
+                userdn = userdn.Replace("{port}", port == null ? "389" : port["ldap.host"]);
+                userdn = userdn.Replace("{version}", version == null ? "" : version["ldap.version"]);
+                userdn = userdn.Replace("{basedn}", basedn == null ? "" : basedn["ldap.basedn"]);
+
+                var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser(
+                    userdn, 
+                    reqVO.Password, 
+                    host["ldap.host"],
+                    port == null ? 389 : int.Parse(port["ldap.host"]),
+                    version == null ? (int?)null : int.Parse(version["ldap.version"]),
+                    starttls == null ? (bool?)null : Convert.ToBoolean(starttls["ldap.starttls"])
+                    );
+
                 if (!ldapRes)
                     throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login False");
                 else

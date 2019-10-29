@@ -84,10 +84,10 @@ const StorageObject = props => {
       Cell: e => getStatus(e.original)
     },
     { Header: "Pallet Code", accessor: "Pallet", width: 110 },
-    { Header: "SKU Code", accessor: "SKU_Code", width: 200 },
-    { Header: "SKU Name", accessor: "SKU_Name", width: 300 },
-    { Header: "Order No", accessor: "OrderNo", width: 120 },
-    { Header: "Carton No", accessor: "Carton_No", width: 120 },
+    { Header: "SI.", accessor: "OrderNo", width: 120 },
+    { Header: "Reorder", accessor: "SKU_Code", width: 200 },
+    { Header: "Brand", accessor: "SKU_Name", width: 300 },
+    { Header: "Carton No.", accessor: "Carton_No", width: 120 },
     {
       Header: "Qty",
       accessor: "Qty",
@@ -172,10 +172,10 @@ const StorageObject = props => {
       placeholder: "Pallet"
     },
     {
-      label: "SKU Code",
+      label: "Reorder",
       field: "SKU_Code",
       searchType: "input",
-      placeholder: "SKU Code"
+      placeholder: "Reorder"
     }
   ];
 
@@ -204,10 +204,10 @@ const StorageObject = props => {
       placeholder: "Status"
     },
     {
-      label: "SKU Name",
+      label: "Brand",
       field: "SKU_Name",
       searchType: "input",
-      placeholder: "SKU Name"
+      placeholder: "Brand"
     },
     {
       label: "Warehouse",
@@ -231,18 +231,11 @@ const StorageObject = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Name"
     },
-
     {
-      label: "Batch",
-      field: "Batch",
-      searchType: "input",
-      placeholder: "Batch"
-    },
-    {
-      label: "OrderNo",
+      label: "SI.",
       field: "OrderNo",
       searchType: "input",
-      placeholder: "OrderNo"
+      placeholder: "SI."
     },
     { label: "Qty", field: "Qty", searchType: "input", placeholder: "Qty" },
     {
@@ -289,7 +282,7 @@ const StorageObject = props => {
         table={"StorageObject"}
         selection={true}
         modifyRemark={true}
-        export={false}
+        export={true}
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}

@@ -142,7 +142,18 @@ const DailySTOSumCounting = Loadable({
   loader: () => import("../../views/page/STA/Report/DailySTOSumCounting"),
   loading: Loading
 });
+
+const SKUMasterType = Loadable({
+  loader: () => import("../../views/page/STA/Master/SKUMasterType"),
+  loading: Loading
+});
 const routes = [
+  {
+    path: "/setting/skutype",
+    name: "SKU Type",
+    compoment: SKUMasterType,
+    exact: true
+  },
   {
     path: "/dashboard/scanreceiveproduct",
     name: "Scan Receive Product Line",

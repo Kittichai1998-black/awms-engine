@@ -111,7 +111,7 @@ const DocumentSearchPISTA = props => {
     {
       Header: "Movement",
       accessor: "MovementName",
-      width: 200
+      width: 220
     },
     {
       Header: "Sou.Warehouse",

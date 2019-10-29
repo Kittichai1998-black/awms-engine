@@ -54,7 +54,9 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.ID.Value, this.BuVO);
                 ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
-                if (!reqVO.validateSKUTypeCodes.Any(x => x == smt.Code))
+                //SKUGroupType smt_GroupType = (SKUGroupType)Enum.Parse(typeof(SKUGroupType), smt.GroupType);
+                SKUGroupType smt_GroupType = smt.GroupType;
+                if (!reqVO.validateSKUTypeCodes.Any(x => x == smt_GroupType.ToString()))
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type Not Match");
             }
         }

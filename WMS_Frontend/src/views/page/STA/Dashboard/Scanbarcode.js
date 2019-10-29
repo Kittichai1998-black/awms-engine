@@ -386,6 +386,7 @@ const Scanbarcode = (props) => {
                     mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
                     mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
                     mapSto.isRoot = false;
+                    mapSto.validateSKUTypeCodes = ["FG"];
                 }
             }
         }

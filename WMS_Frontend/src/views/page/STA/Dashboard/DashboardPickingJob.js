@@ -17,7 +17,7 @@ const headercol1 = [
     { accessor: "PalletCode", Header: "Pallet", sortable: false, width: 140, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Product", sortable: false, width: 550 },
     { accessor: "QtyUnit", Header: "Qty", sortable: false, width: 90, style: { textAlign: "center" } },
-    { accessor: "Remark", Header: "Remark", sortable: false, style: { textAlign: "center" } },
+    { accessor: "Remark", Header: "Remark", sortable: false, style: { textAlign: "center" }, Cell: row => row.value ? decodeURI(row.value) : null },
     { accessor: "Document_Code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } }
 ]
 
