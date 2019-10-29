@@ -192,7 +192,7 @@ const CreateDocGICus = props => {
   const columnEdit = [
     { Header: "Pallet Code", accessor: "palletcode", type: "input" },
     {
-      Header: "SKU Item",
+      Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -209,7 +209,7 @@ const CreateDocGICus = props => {
 
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-    { Header: "SKU Item", accessor: "SKUItems" },
+    { Header: "Reorder", accessor: "SKUItems" },
     { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 70 },
     { Header: "Unit", accessor: "unitType", width: 70 }

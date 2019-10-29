@@ -33,6 +33,7 @@ const DocumentViewPI = props => {
   const columns = [
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 100, accessor: "locationcode", Header: "Location" },
+    { width: 130, accessor: "orderNo", Header: "SI." },
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Brand" },
     {
@@ -41,7 +42,7 @@ const DocumentViewPI = props => {
       Header: "Counting (%)",
       type: "number"
     },
-    { width: 130, accessor: "orderNo", Header: "SI." },
+
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 

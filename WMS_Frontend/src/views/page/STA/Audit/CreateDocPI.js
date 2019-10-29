@@ -162,7 +162,7 @@ const CreateDocPI = props => {
       columsddl: columsFindpopUp
     },
     {
-      Header: "SKU Item",
+      Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -183,7 +183,7 @@ const CreateDocPI = props => {
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
-    { Header: "SKU Item", accessor: "SKUItems" },
+    { Header: "Reorder", accessor: "SKUItems" },
     { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }

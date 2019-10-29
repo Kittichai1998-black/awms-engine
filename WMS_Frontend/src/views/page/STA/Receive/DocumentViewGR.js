@@ -36,10 +36,11 @@ const DocumentViewGR = props => {
   ];
 
   const columns = [
+    { width: 130, accessor: "OrderNo", Header: "SI." },
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
 
     { accessor: "SKUMaster_Name", Header: "Brand" },
-    { width: 130, accessor: "OrderNo", Header: "SI." },
+
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
