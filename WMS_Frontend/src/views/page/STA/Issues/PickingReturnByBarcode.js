@@ -5,6 +5,7 @@ import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+import { CustomInfoChip } from '../CustomComponent/CustomInfo'
 
 // const Axios = new apicall()
 
@@ -15,12 +16,6 @@ const PickingReturnByBarcode = (props) => {
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '13'}" };
 
-    // const inputHeader = [
-    //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
-    //     { "field": "areaID", "type": "dropdown", "typeDropdown": "normal", "name": "Area", "dataDropDown": AreaMasterQuery, "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13 },
-    //     // { "field": "MovementType_ID", "type": "dropdown", "typeDropdown": "search", "name": "Movement Type", "dataDropDown": MVTQuery, "placeholder": "Movement Type", "fieldLabel": ["Code"], "fieldDataKey": "ID" },
-    //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
-    // ]
     const inputItem = [
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
@@ -37,22 +32,6 @@ const PickingReturnByBarcode = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
 
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
-        return res;
-    }
     function onOldValue(storageObj) {
         let oldValue = [];
         if (storageObj) {
@@ -231,12 +210,11 @@ const PickingReturnByBarcode = (props) => {
                 // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanPickingReturnAPI"
                 onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
                 // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
-                customOptions={customOptions}
-                showOptions={true}
                 autoPost={true}
                 setMovementType={"1091"}
                 showOldValue={onOldValue}
-            // useMultiSKU={false}
+                customInfoChip={CustomInfoChip}
+                // useMultiSKU={false}
             />
         </div>
     );
