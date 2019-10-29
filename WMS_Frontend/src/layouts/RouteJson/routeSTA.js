@@ -147,11 +147,21 @@ const SKUMasterType = Loadable({
   loader: () => import("../../views/page/STA/Master/SKUMasterType"),
   loading: Loading
 });
+const PackMaster = Loadable({
+  loader: () => import("../../views/page/STA/Master/PackMaster"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/setting/skutype",
     name: "SKU Type",
     compoment: SKUMasterType,
+    exact: true
+  },
+  {
+    path: "setting/skuconvertor",
+    name: "SKU Convertor",
+    compoment: PackMaster,
     exact: true
   },
   {
