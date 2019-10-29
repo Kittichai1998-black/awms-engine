@@ -423,8 +423,7 @@ const AmProcessQueue = props => {
             queryString: window.apipath + "/v2/SelectDataViwAPI/",
             t: "DocumentItem",
             q: "[{ 'f': 'Document_ID', c:'=', 'v': " + docID + "}]",
-            f:
-                "ID,Code,RefID,Ref2,Batch,Ref1,Quantity,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot,BaseUnitType_Code,PackMaster_Code,UnitType_Name",
+            f:  "*",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
             sk: 0,
@@ -1449,16 +1448,31 @@ const AmProcessQueue = props => {
                     var conditions = [];
                     var orderBys = [];
                     var eventStatuses = [];
+                    var fildNames = ""
                     if (a.DataSorting[0] !== undefined) {
                         a.DataSorting.filter(x => x.docItemID === y.ID).forEach(
                             (ds, dsIdx) => {
                                 if (props.docType !== "audit") {
                                     ds.forEach((d, idx) => {
-                                        console.log(d)
+                                    
+                                        console.log(d.value)
+                                        if (d.value ==="Carton No") {
+                                              fildNames = "ref2"
+                                        } else if (d.value === "Order No") {
+                                             fildNames = "orderno"
+
+                                        } else if (d.value === "Create time") {
+                                              fildNames = "createtime"
+
+                                        } else  {
+                                            fildNames = d.value
+                                        }
+
                                         let sort = {
-                                            fieldName: "psto." +  d.value,
-                                            orderByType: d.Order === "FIFO" ? 0 : 1
+                                            fieldName: "psto." + fildNames,
+                                            oบววrderByType: d.Order === "FIFO" ? 0 : 1
                                         };
+                                        console.log(sort)
                                         orderBys.push(sort);
                                     });
                                 } else {
@@ -2223,20 +2237,39 @@ const AmProcessQueue = props => {
                                                                 onChangCheckboxDocItem(e, idx)
                                                             }
                                                         ></AmCheckBox>
-                                                        <AmButton
-                                                            styleType="add_clear"
-                                                            style={{ marginLeft: "10px" }}
-                                                            onClick={() => onclickToggel(idx)}
-                                                        >
-                                                            {x.Code}: {x.SKUMaster_Name}
+                                                            {window.project === "STA" ?
+                                                                <AmButton
+                                                                    styleType="add_clear"
+                                                                    style={{ marginLeft: "10px" }}
+                                                                    onClick={() => onclickToggel(idx)}
+                                                                >
+
+                                                                    {x.OrderNo} : {x.Code} :{x.SKUMaster_Name} : {x.SKUMaster_Type}
+
                                                             <ExpandLessIcon
-                                                                className={
-                                                                    toggle[idx]
-                                                                        ? classes.expand
-                                                                        : classes.collapse
-                                                                }
-                                                            />
-                                                            </AmButton>
+                                                                        className={
+                                                                            toggle[idx]
+                                                                                ? classes.expand
+                                                                                : classes.collapse
+                                                                        }
+                                                                    />
+                                                                </AmButton>
+
+                                                              :  <AmButton
+                                                                styleType="add_clear"
+                                                                style={{ marginLeft: "10px" }}
+                                                                onClick={() => onclickToggel(idx)}
+                                                            >
+                                                               
+                                                                {x.Code}: {x.SKUMaster_Name}}
+                                                            <ExpandLessIcon
+                                                                    className={
+                                                                        toggle[idx]
+                                                                            ? classes.expand
+                                                                            : classes.collapse
+                                                                    }
+                                                                />
+                                                            </AmButton> }
                                                         </FormInline>
                                                         <div style={{ clear: "both" }}></div>
                                                         <Collapse in={toggle[idx]}>
@@ -2251,18 +2284,28 @@ const AmProcessQueue = props => {
                                                                                 direction="column"
                                                                                 spacing={14}
                                                                             >
-                                                                                <LabelH>
-                                                                                    {x.Code} : {x.SKUMaster_Name}
-                                                                                    {palletcode ? (
-                                                                                        <LabelH> / {palletcode}</LabelH>
-                                                                                    ) : null}
-                                                                                    {locationcode ? (
-                                                                                        <LabelH> / {locationcode}</LabelH>
-                                                                                    ) : null}
-                                                                                </LabelH>
+
+                                                                                {window.project === "STA" ?
+                                                                                    
+                                                                                    <LabelH>
+                                                                                      
+                                                                                        {x.OrderNo} : {x.Code} :{x.SKUMaster_Name} : {x.SKUMaster_Type}
+                                                                                      
+                                                                                    </LabelH>
+
+                                                                                :    <LabelH>
+                                                                                        {x.Code} : {x.SKUMaster_Name}
+                                                                                        {palletcode ? (
+                                                                                            <LabelH> / {palletcode}</LabelH>
+                                                                                        ) : null}
+                                                                                        {locationcode ? (
+                                                                                            <LabelH> / {locationcode}</LabelH>
+                                                                                        ) : null}
+                                                                                    </LabelH>}
                                                                             </Grid>
                                                                             <LabelH>{t("Qty")} :</LabelH>{" "}
                                                                             <label>
+                                                                                
                                                                                
                                                                                 {x.Quantity === null ? "-" : x.Quantity  } {x.UnitType_Name} (
                                         {qtyDocItem[idx] === null ? "-" : qtyDocItem[idx] } {x.BaseUnitType_Code})
@@ -2967,7 +3010,25 @@ const AmProcessQueue = props => {
 
 
 
-                                                                            <AmButton
+                                                                            {window.project ==="STA" ?
+                                                                                <AmButton
+                                                                                    styleType="info_clear"
+                                                                                    style={{ marginLeft: "10px" }}
+                                                                                    onClick={() =>
+                                                                                        onclickToggelDataQueue(
+                                                                                            idx + "T" + idxItem
+                                                                                        )
+                                                                                    }
+                                                                                > { y.OrderNo } : {y.Code} :{y.SKUMaster_Name} : {y.SKUMaster_Type}
+                                                                                    <ExpandLessIcon
+                                                                                        className={
+                                                                                            toggleQueue[idx + "T" + idxItem]
+                                                                                                ? classes.expand
+                                                                                                : classes.collapse
+                                                                                        }
+                                                                                    />
+                                                                                </AmButton>
+                                                                               : <AmButton
                                                                                 styleType="info_clear"
                                                                                 style={{ marginLeft: "10px" }}
                                                                                 onClick={() =>
@@ -2984,7 +3045,7 @@ const AmProcessQueue = props => {
                                                                                             : classes.collapse
                                                                                     }
                                                                                 />
-                                                                            </AmButton>
+                                                                            </AmButton>}
                                                                         </FormInline>
 
                                                                         : <FormInline> <AmCheckBox
@@ -3034,25 +3095,35 @@ const AmProcessQueue = props => {
                                                                                                 marginLeft: "15px"
                                                                                             }}
                                                                                         >
-                                                                                            <div style={{ width: "800px" }}>
-                                                                                                {" "}
-                                                                                    
-                                                                                                <LabelH>
-                                                                                                    {y.Code} : {y.SKUMaster_Name}
-                                                                                                </LabelH>
-                                                                                                {y.palletcode ? (
-                                                                                                    <LabelH>
-                                                                                                        {" "}
-                                                                                                        / {y.palletcode}
+                                                                                            ฃ
+                                                                                          
+                                                                                               
+                                                                                            {window.project === "STA" ? <div style={{ width: "800px" }}>
+                                                                                                <LabelH >
+                                                                                                    {y.OrderNo} : {y.Code} :{y.SKUMaster_Name} : {y.SKUMaster_Type}
+                                                                                            </LabelH> </div>
+                                                                                                : <div style={{ width: "800px" }}>
+                                                                                                    < LabelH >
+                                                                                                        {y.Code} : {y.SKUMaster_Name}
                                                                                                     </LabelH>
-                                                                                                ) : null}
-                                                                                                {y.locationcode ? (
-                                                                                                    <LabelH>
-                                                                                                        {" "}
-                                                                                                        / {y.locationcode}
-                                                                                                    </LabelH>
-                                                                                                ) : null}
-                                                                                            </div>
+                                                                                                    {y.palletcode ?
+                                                                                                        <LabelH>
+                                                                                                            {" "}
+                                                                                                            / {y.palletcode}
+                                                                                                        </LabelH>
+                                                                                                        : null}
+                                                                                                    {y.locationcode ?
+                                                                                                        <LabelH>
+                                                                                                            {" "}
+                                                                                                            / {y.locationcode}
+                                                                                                        </LabelH>
+                                                                                                        : null}
+
+                                                                                                </div>
+                                                                                                    
+                                                                                                    }
+                                                                                            
+                                                                                              
                                                                                             <div>
                                                                                                 <LabelH>{t("Qty")} :</LabelH>{" "}
                                                                                                 <label>

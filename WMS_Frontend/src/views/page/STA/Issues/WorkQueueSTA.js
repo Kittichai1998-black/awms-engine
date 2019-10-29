@@ -49,9 +49,9 @@ const WorkQueueSTA = (props) => {
     ];
 
     const ordersDDL = [
-        { label: 'Carton No',  value: 'ref2' },
-        { label: 'Order No', value: 'orderno' },
-        { label: 'Create time',value: 'createtime' }, 
+        { label: 'Carton No', value: 'Carton No' },
+        { label: 'Order No', value: 'Order No' },
+        { label: 'Create time', value: 'Create time' }, 
       
     ];
 
@@ -77,34 +77,30 @@ const WorkQueueSTA = (props) => {
         all: "",
     }
 
-    const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
-    { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
-    { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+    const columnCondition = [ { Header: "SI.", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
         { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
         { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order", defaultsort:"FIFO" },
+        { Header: 'SI.', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order", defaultsort:"FIFO" },
         { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By", defaultsort: "ref2"},
 
     ];
 
     const DefaulSorting = [{
         By: "Carton No",
-        value: "ref2",
+        value: "Carton No",
         ID: 0,
         Order: "FIFO"
     }]
   
 
     const columnConfirm = [
-        { Header: 'SKU', accessor: 'SKU', width: 200 },
+        { Header: 'Reorder', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Batch', accessor: 'Batch', },
-        { Header: 'Lot', accessor: 'Lot', },
-        { Header: "Order", accessor: 'OrderNo', },
+        { Header: "SI.", accessor: 'OrderNo', },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
@@ -113,6 +109,7 @@ const WorkQueueSTA = (props) => {
         { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:11 },
 
     ];
+
 
     return (<div>
         <AmProcessQueue
@@ -126,6 +123,7 @@ const WorkQueueSTA = (props) => {
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
+            Defaulwarehouse={1}
             //fullPallets={true}
            // receives={true}
             priolity={Priolity}

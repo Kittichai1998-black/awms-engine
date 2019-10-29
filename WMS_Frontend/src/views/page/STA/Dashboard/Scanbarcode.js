@@ -540,6 +540,7 @@ const Scanbarcode = (props) => {
                             setqtyMax(x.MaxQuantity)
                         }
 
+                        console.log(x)
                         setproductCode(x.Code)
                         setorderNo(x.OrderNo)
                         setunitCode(x.UnitCode)
@@ -551,7 +552,8 @@ const Scanbarcode = (props) => {
                 }
                 else{
                     setarea2(x.areaLocationCode)
-                    if(x.baseID !== null){
+                    if (x.baseID !== null) {
+                        console.log(x)
                         setgateRight(true)
                         setpallet2(x.baseCode)
                         setareaGate2(x.areaID)
@@ -590,14 +592,13 @@ const Scanbarcode = (props) => {
                     if (res.data.datas[0].bsto !== null) {
                         setgateLeft(true)
                         let datas = res.data.datas[0].bsto
-                        
+                        console.log(datas)
                         setpallet(datas.code)
                         setareaGate(datas.areaID)
                         let datass = datas.mapstos[0]
 
                         if (datass !== undefined) {
                             let dataQtyMax = datas.objectSizeMaps[0]
-                            console.log(dataQtyMax)
                             if (datass.qty === null || datass.qty === undefined) {
                                 setqty(0)
                             } else {
@@ -845,19 +846,20 @@ const Scanbarcode = (props) => {
                                             <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                                 <Grid item xs={1}></Grid><Grid item xs={11}>
                                                     <FormInline style={{ paddingTop: "10px" }} >
-                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet Code:</Typography >
                                                         <Typography variant="h5" component="h3">{pallet}</Typography>
-                                                    </FormInline>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">SI. :</Typography >
+                                                                <Typography variant="h5" component="h3">{orderNo}</Typography>
+                                                            </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
+                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
                                                         <Typography variant="h5" component="h3">{productCode}</Typography>
                                                     </FormInline>
+                                                 
                                                     <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
-                                                        <Typography variant="h5" component="h3">{orderNo}</Typography>
-                                                    </FormInline>
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
+                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton No:</Typography >
                                                         <Typography variant="h5" component="h3">{carton}</Typography>
                                                     </FormInline>
 
@@ -889,7 +891,7 @@ const Scanbarcode = (props) => {
                                             <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                                 <Grid item xs={1}></Grid><Grid item xs={11}>
                                                     <FormInline style={{ paddingTop: "10px" }} >
-                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet Code :</Typography >
                                                         <Typography variant="h5" component="h3">{pallet}</Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
@@ -974,21 +976,22 @@ const Scanbarcode = (props) => {
                                             <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                                 <Grid item xs={1}></Grid><Grid item xs={11}>
                                                     <FormInline style={{ paddingTop: "10px" }} >
-                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
-                                                        <Typography variant="h5" component="h3">{pallet2}</Typography>
-                                                    </FormInline>
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
-                                                        <Typography variant="h5" component="h3">{productCode2}</Typography>
-                                                    </FormInline>
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
-                                                        <Typography variant="h5" component="h3">{orderNo2}</Typography>
-                                                    </FormInline>
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
-                                                        <Typography variant="h5" component="h3">{carton2}</Typography>
-                                                    </FormInline>
+                                                                <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet Code:</Typography >
+                                                                <Typography variant="h5" component="h3">{pallet2}</Typography>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">SI. :</Typography >
+                                                                <Typography variant="h5" component="h3">{orderNo2}</Typography>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
+                                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
+                                                            </FormInline>
+
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton No:</Typography >
+                                                                <Typography variant="h5" component="h3">{carton2}</Typography>
+                                                            </FormInline>
 
                                                 </Grid></Grid>
                                                     {lockStateRight === true ?
