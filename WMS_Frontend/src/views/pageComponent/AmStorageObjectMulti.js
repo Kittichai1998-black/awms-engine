@@ -60,17 +60,17 @@ const AmStorageObjectMulti = props => {
     all: ""
   };
 
-  // const ExportQuery = {
-  //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-  //     t: props.tableQuery,
-  //     q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
-  //     f: "*",
-  //     g: "",
-  //     s: "[{'f':'Pallet','od':'asc'}]",
-  //     sk: 0,
-  //     l: 0,
-  //     all: "",
-  //   };
+  const ExportQuery = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: props.tableQuery,
+    q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: 0,
+    all: ""
+  };
   //===========================================================
 
   //=============================================================
@@ -299,10 +299,12 @@ const AmStorageObjectMulti = props => {
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);
 
-    // let getExcelQuery = Clone(ExportQuery);
-    // getExcelQuery.q = query.q
-    // const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
-    // setExcelDataSource(resExcel.data.datas)
+    let getExcelQuery = Clone(ExportQuery);
+    getExcelQuery.q = query.q;
+    const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
+      res => res
+    );
+    setExcelDataSource(resExcel.data.datas);
   }
   //===========================================================
   const getStatus = Status => {
@@ -804,10 +806,10 @@ const AmStorageObjectMulti = props => {
             <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{onClickHold(12)}}>RECEIVED</AmButton>
             <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{onClickHold(98)}}>QC</AmButton> */}
       {/* <AmExportDataTable
-            data={excelDataSrouce ? excelDataSrouce : []}
-            fileName={"Table"}
-            cols={exportColumns()}
-          /> */}
+        data={excelDataSrouce ? excelDataSrouce : []}
+        fileName={"Table"}
+        cols={exportColumns()}
+      /> */}
 
       <Table
         primaryKey="ID"
@@ -827,13 +829,15 @@ const AmStorageObjectMulti = props => {
         getSelection={data => {
           setSelection(data);
         }}
-        // exportData={props.export}
-        // excelData={excelDataSrouce}
-        // renderCustomButtonB4={<AmExportDataTable
-        //   data={excelDataSrouce ? excelDataSrouce : []}
-        //   fileName={"Table"}
-        //   cols={exportColumns()}
-        // />}
+        exportData={props.export}
+        excelData={excelDataSrouce}
+        // renderCustomButtonB4={
+        //   <AmExportDataTable
+        //     data={excelDataSrouce ? excelDataSrouce : []}
+        //     fileName={"Table"}
+        //     cols={exportColumns()}
+        //   />
+        // }
         // renderCustomButtonB4={
         // props.modifyRemark === true && props.selection === true ?
         // <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncRanderRemark();setAddData(true); setDialog(true)}} >Remark</AmButton>

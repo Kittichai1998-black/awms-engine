@@ -39,6 +39,7 @@ namespace AWMSEngine.Engine.V2.Business
             public long packID;
             public string packCode;
             public string packName;
+            public string skuType;
 
             public decimal packQty;
             public long packUnitID;
@@ -117,6 +118,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
                 bstos.ForEach(bs =>
                 {
+                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(bs.sou_packID, this.BuVO);
                     sou_sto.Add(new bsto
                     {
                         id = bs.sou_id,
@@ -126,6 +128,7 @@ namespace AWMSEngine.Engine.V2.Business
                         packID = bs.sou_packID,
                         packCode = bs.sou_packCode,
                         packName = bs.sou_packName,
+                        skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x=> x.ID == sku.SKUMasterType_ID).Code,
 
                         packQty = bs.sou_packQty,
                         packUnitID = bs.sou_packUnitID,
@@ -185,6 +188,7 @@ namespace AWMSEngine.Engine.V2.Business
                         packID = bs.des_packID,
                         packCode = bs.des_packCode,
                         packName = bs.des_packName,
+                        skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID).Code,
 
                         packQty = bs.des_packQty,
                         packUnitID = bs.des_packUnitID,
