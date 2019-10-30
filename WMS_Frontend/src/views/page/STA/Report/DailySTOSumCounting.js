@@ -68,7 +68,7 @@ const DailySTOSumCounting = (props) => {
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "MovementType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -76,18 +76,17 @@ const DailySTOSumCounting = (props) => {
         l: 100,
         all: "",
     }
-    const DocCodeQuery = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI",
-        t: "Document",
-        q: '[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code",
+    const SKUTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "SKUMasterType",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
         l: 100,
         all: "",
     }
-
     useEffect(() => {
         onGetDocument()
     }, [page])
@@ -100,6 +99,7 @@ const DailySTOSumCounting = (props) => {
             + "&docType=2004"
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+            + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
             + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
@@ -119,6 +119,7 @@ const DailySTOSumCounting = (props) => {
         + "&docType=2004"
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
         + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+        + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
         + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
         + "&spname=DAILY_STOSUM";
 
@@ -135,7 +136,7 @@ const DailySTOSumCounting = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-           <FormInline>
+            <FormInline>
                 <LabelH>{t("SI")}. : </LabelH>
                 <AmInput
                     id={"orderNo"}
@@ -151,6 +152,22 @@ const DailySTOSumCounting = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                />
+            </FormInline>
+            <FormInline><LabelH>{t("Size")} : </LabelH>
+                <AmDropdown
+                    id={'skuType'}
+                    fieldDataKey={"ID"}
+                    fieldLabel={["Code", "Name"]}
+                    labelPattern=" : "
+                    width={300}
+                    placeholder="Select Size"
+                    ddlMinWidth={300}
+                    zIndex={1000}
+                    returnDefaultValue={true}
+                    queryApi={SKUTypeQuery}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'skuType', fieldDataKey, null)}
+                    ddlType={'search'}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Doc No")}. : </LabelH>
@@ -211,7 +228,7 @@ const DailySTOSumCounting = (props) => {
         { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
-        { Header: 'Size', accessor: 'pstoName', width: 70, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
             Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
             Footer: true,
