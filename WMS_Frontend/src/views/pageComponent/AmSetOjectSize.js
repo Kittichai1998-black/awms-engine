@@ -171,8 +171,8 @@ const AmSetOjectSize = (props) => {
           <Table
             primaryKey="ID"
             sortable={false}
-            //defaultSelection={datax}
-            //primaryKey="ID"
+            defaultSelection={datax}
+            primaryKey="ID"
             data={objectSize}
             columns={iniCols}
             pageSize={100}
@@ -265,7 +265,7 @@ const AmSetOjectSize = (props) => {
     const Query = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
       t: "ObjectSizeMap",
-      q: "[{ 'f': 'OuterObjectSize_ID', c:'==', 'v': " + data.original.ID + "},{ 'f': 'Status', 'c':'==', 'v': 1}]",
+      q: "[{ 'f': 'InnerObjectSize_ID', c:'==', 'v': " + data.original.ID + "},{ 'f': 'Status', 'c':'==', 'v': 1}]",
       f: "ID,InnerObjectSize_ID,OuterObjectSize_ID,MinQuantity,MaxQuantity",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
@@ -277,10 +277,10 @@ const AmSetOjectSize = (props) => {
       var row = res.data.datas
       row.forEach(x => {
         //defaultRole.push(x.Role_ID)
-        defaultRole.push({ "ID": x.InnerObjectSize_ID, "MinQuantity": x.MinQuantity, "MaxQuantity": x.MaxQuantity })
+        defaultRole.push({ "ID": x.OuterObjectSize_ID, "MinQuantity": x.MinQuantity, "MaxQuantity": x.MaxQuantity })
       })
     })
-    //console.log(defaultRole)
+    console.log(defaultRole)
     setDatax(defaultRole)
     setSelection(defaultRole)
     //return randerFunc(defaultRole,iniCols)
@@ -314,12 +314,12 @@ const AmSetOjectSize = (props) => {
       }
     })
 
-    // console.log(rowdata)
-    //console.log(selection)
+     console.log(rowdata.ID  )
+    console.log(selection.ID)
     const Query3 = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
       t: "ObjectSizeMap",
-      q: "[{ 'f': 'OuterObjectSize_ID', c:'==', 'v': " + rowdata.ID + "}]",
+      q: "[{ 'f': 'InnerObjectSize_ID', c:'==', 'v': " +rowdata.ID  + "}]",
       f: "ID,OuterObjectSize_ID,InnerObjectSize_ID,Status,MinQuantity,MaxQuantity",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
@@ -327,17 +327,20 @@ const AmSetOjectSize = (props) => {
       l: 100,
       all: "",
     };
-
+    console.log(selection)
     await Axios.get(createQueryString(Query3)).then((res) => {
       var row = res.data.datas
+      console.log(row)
       var datafi = row.map(dataMap => {
+        console.log(dataMap)
         var dataselect = selection.find(list => {
+          console.log(list)
           return list.ID === dataMap.InnerObjectSize_ID
         })
-        //console.log(dataselect)
+        console.log(dataselect)
         if (dataselect) {
           selection.forEach(sel => {
-            //console.log(sel)
+            console.log(sel)
             if (dataselect.ID === sel.ID) {
               dataMap.MinQuantity = sel.MinQuantity
               dataMap.MaxQuantity = sel.MaxQuantity
@@ -361,10 +364,10 @@ const AmSetOjectSize = (props) => {
           // console.log(datas)
           return {
             ID: null,
-            OuterObjectSize_ID: dataRow,
-            InnerObjectSize_ID: datas.ID,
+            OuterObjectSize_ID: datas.ID,
+            InnerObjectSize_ID: dataRow,
             MinQuantity: datas.MinQuantity,
-            MaxQuantity:  datas.MaxQuantity,
+            MaxQuantity: datas.MaxQuantity,
             Status: 1
           }
         }
@@ -1151,24 +1154,23 @@ const AmSetOjectSize = (props) => {
         delete row["ModifyTime"]
       })
     } else {
-
       if(props.tableQuery ==="ObjectSize"){
         dataSentToAPI.forEach(row => {
-
-         if(row.MaxWeigthKG === "" ||row.MaxWeigthKG === undefined){
-           row.MaxWeigthKG = null
-         }
-         if(row.MinWeigthKG === ""||row.MinWeigthKG === undefined){
+        if(row.MaxWeigthKG === "" ||row.MaxWeigthKG === undefined ){
+          row.MaxWeigthKG = null
+        }
+        if(row.MinWeigthKG === "" ||row.MinWeigthKG === undefined ){
           row.MinWeigthKG = null
-         }
+        }
         })
+       
       }
       dataSentToAPI.forEach(row => {
         delete row["ModifyBy"]
         delete row["ModifyTime"]
       })
     }
-// console.log(dataSentToAPI)
+
     let updjson = {
       "t": props.table,
       "pk": "ID",
