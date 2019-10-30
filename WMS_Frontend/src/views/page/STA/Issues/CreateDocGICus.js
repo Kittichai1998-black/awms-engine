@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
-import AmCreateDocument from "../../../../components/AmCreateDocument";
+import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import {
   apicall,
   createQueryString
@@ -75,6 +75,7 @@ const CreateDocGICus = props => {
       if (headerCreates.length > 0) {
         setTable(
           <AmCreateDocument
+            addList
             headerCreate={headerCreates}
             columns={columns}
             columnEdit={columnEdit}
@@ -82,7 +83,7 @@ const CreateDocGICus = props => {
             createDocType={"issue"}
             history={props.history}
             apiRes={apiRes}
-            //createByCus={false}
+          //createByCus={false}
           ></AmCreateDocument>
         );
       }
@@ -104,6 +105,18 @@ const CreateDocGICus = props => {
   //         </AmCreateDocument>)
   //     }
   // },[dataTest,props.location.search])
+  const palletSto = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "PalletSto",
+    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    f:
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+    g: "",
+    s: "[{'f':'ID','od':'ASC'}]",
+    sk: 0,
+    l: 20,
+    all: ""
+  }
 
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",

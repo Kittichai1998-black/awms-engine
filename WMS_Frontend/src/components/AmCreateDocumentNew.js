@@ -3,17 +3,17 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 
-import AmButton from '../../../../components/AmButton'
-import AmDate from '../../../../components/AmDate'
-import AmDatepicker from '../../../../components/AmDate'
-import AmDialogs from '../../../../components/AmDialogs'
-import AmDropdown from '../../../../components/AmDropdown'
-import AmEditorTable from '../../../../components/table/AmEditorTable'
-import AmFindPopup from '../../../../components/AmFindPopup'
-import AmInput from '../../../../components/AmInput'
-import AmTable from '../../../../components/table/AmTable'
-import { apicall } from '../../../../components/function/CoreFunction2'
-import BtnAddSKU from '../../../../components/AmCreateDocument_BtnAdd_BySKU'
+import AmButton from './AmButton'
+import AmDate from './AmDate'
+import AmDatepicker from './AmDate'
+import AmDialogs from './AmDialogs'
+import AmDropdown from './AmDropdown'
+import AmEditorTable from './table/AmEditorTable'
+import AmFindPopup from './AmFindPopup'
+import AmInput from './AmInput'
+import AmTable from './table/AmTable'
+import { apicall } from './function/CoreFunction2'
+import BtnAddSKU from './AmCreateDocument_BtnAdd_BySKU'
 
 const Axios = new apicall()
 
@@ -152,9 +152,9 @@ const AmCreateDocument = (props) => {
 
         let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode")
         let indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch")
-        let indexOrderNo= props.columnEdit.findIndex(x => x.accessor === "OrderNo")
+        let indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "OrderNo")
         let indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity")
-        // let indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
+        let indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
 
         //CaseByCase
         if (field === "palletcode" && data) {
@@ -163,12 +163,12 @@ const AmCreateDocument = (props) => {
             editData.batch = data.Batch
             editData.OrderNo = data.OrderNo
             editData.quantity = data.Quantity
-            editData.unitType = data.UnitCode
+            editData.unitType = data.UnitTypeCode
             editData.skuCode = data.Code
             editData.locationcode = data.LocationCode
 
-            editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
-            editData.BaseUnitCode = data.BaseUnitCode
+            // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
+            // editData.BaseUnitCode = data.BaseUnitCode
 
             if (indexBatch !== -1)
                 ref.current[indexBatch].current.value = data.Batch
@@ -176,11 +176,13 @@ const AmCreateDocument = (props) => {
                 ref.current[indexOrderNo].current.value = data.OrderNo
             if (indexQuantity !== -1)
                 ref.current[indexQuantity].current.value = data.Quantity
+            if (indexUnitType !== -1)
+                ref.current[indexUnitType].current.value = data.UnitTypeCode
 
-            let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
-            if (data.UnitCode !== data.BaseUnitCode)
-                unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
-            setDataUnit(unitArr)
+            // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
+            // if (data.UnitCode !== data.BaseUnitCode)
+            //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
+            // setDataUnit(unitArr)
         }
         if (field === "SKUItems" && data) {
             delete editData.palletcode
@@ -188,19 +190,25 @@ const AmCreateDocument = (props) => {
                 setTimeout(() => {
                     ref.current[indexPalletCode].current.value = ""
                 }, 1);
+                console.log(ref);
+                
+            if (indexUnitType !== -1)
+                ref.current[indexUnitType].current.innerText = data.UnitTypeCode
 
             editData["ID"] = addDataID
             editData.skuCode = data.Code
-            editData.unitType = data.UnitCode
+            editData.unitType = data.UnitTypeCode
 
-            editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
-            editData.BaseUnitCode = data.BaseUnitCode
+            // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
+            // editData.BaseUnitCode = data.BaseUnitCode
 
-            let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
-            if (data.UnitCode !== data.BaseUnitCode)
-                unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
-            setDataUnit(unitArr)
+            // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
+            // if (data.UnitCode !== data.BaseUnitCode)
+            //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
+            // setDataUnit(unitArr)
         }
+        // console.log(editData);
+
         setEditData(editData)
     }
 
@@ -366,7 +374,7 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelH>{Header} : </LabelH>
                     <InputDiv>
-                        {<label>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
+                        {<label ref={ref.current[index]}>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
                     </InputDiv>
                 </FormInline>
             )
@@ -885,7 +893,7 @@ const AmCreateDocument = (props) => {
                             dataCheck={dataCheck}
                         /> : null}
 
-                        <AmButton className="float-right" styleType="add" style={{ width: "150px"}} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
+                        <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
                             {t('Add')}
                         </AmButton>
                     </div>
