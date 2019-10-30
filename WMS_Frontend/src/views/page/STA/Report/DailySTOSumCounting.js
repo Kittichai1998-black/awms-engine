@@ -135,17 +135,8 @@ const DailySTOSumCounting = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-            <FormInline>
-                <LabelH>{t('SKU Code')} : </LabelH>
-                <AmInput
-                    id={"packCode"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
-                />
-            </FormInline>
-            <FormInline>
-                <LabelH>{t("Order No.")} : </LabelH>
+           <FormInline>
+                <LabelH>{t("SI")}. : </LabelH>
                 <AmInput
                     id={"orderNo"}
                     type="input"
@@ -153,7 +144,16 @@ const DailySTOSumCounting = (props) => {
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
                 />
             </FormInline>
-            <FormInline><LabelH>{t("Doc No.")} : </LabelH>
+            <FormInline>
+                <LabelH>{t('Reorder')} : </LabelH>
+                <AmInput
+                    id={"packCode"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                />
+            </FormInline>
+            <FormInline><LabelH>{t("Doc No")}. : </LabelH>
                 <AmInput
                     id={"docCode"}
                     type="input"
@@ -208,9 +208,10 @@ const DailySTOSumCounting = (props) => {
     const columns = [
         { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 90, sortable: false },
+        { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
+        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
+        { Header: 'Size', accessor: 'pstoName', width: 70, sortable: false },
         {
             Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
             Footer: true,
