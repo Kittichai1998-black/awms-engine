@@ -543,7 +543,7 @@ const Scanbarcode = (props) => {
                             setqtyMax(x.MaxQuantity)
                         }
 
-                        //console.log(x)
+                         //console.log(x)
                         setproductCode(x.Code)
                         setorderNo(x.OrderNo)
                         setunitCode(x.UnitCode)
@@ -860,6 +860,10 @@ const Scanbarcode = (props) => {
                                                                 <Typography variant="h5" component="h3">{orderNo}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
+                                                                <Typography variant="h5" component="h3">{productCode}</Typography>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Brand :</Typography >
                                                                 <Typography variant="h5" component="h3">{productName}</Typography>
                                                             </FormInline>
@@ -867,11 +871,6 @@ const Scanbarcode = (props) => {
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Size :</Typography >
                                                                 <Typography variant="h5" component="h3">{skuType}</Typography>
                                                             </FormInline>
-                                                            <FormInline style={{ paddingTop: "10px" }}>
-                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
-                                                                <Typography variant="h5" component="h3">{productCode}</Typography>
-                                                            </FormInline>
-
                                                             <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton No:</Typography >
                                                                 <Typography variant="h5" component="h3">{carton}</Typography>
@@ -909,18 +908,6 @@ const Scanbarcode = (props) => {
                                                                     <Typography variant="h5" component="h3">{pallet}</Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
-                                                                    <Typography variant="h5" component="h3">
-                                                                        <AmInput id="code" value={manualAddLeft["code"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "code", value);
-                                                                        }} onKeyPress={(value, a, b, event) => {
-                                                                            if (event.key === "Enter") {
-                                                                                document.getElementById("orderNo").focus();
-                                                                            }
-                                                                        }} />
-                                                                    </Typography>
-                                                                </FormInline>
-                                                                <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
                                                                     <Typography variant="h5" component="h3">
                                                                         <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
@@ -932,6 +919,19 @@ const Scanbarcode = (props) => {
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
+                                                                <FormInline style={{ paddingTop: "10px" }} >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
+                                                                    <Typography variant="h5" component="h3">
+                                                                        <AmInput id="code" value={manualAddLeft["code"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("left", "code", value);
+                                                                        }} onKeyPress={(value, a, b, event) => {
+                                                                            if (event.key === "Enter") {
+                                                                                document.getElementById("orderNo").focus();
+                                                                            }
+                                                                        }} />
+                                                                    </Typography>
+                                                                </FormInline>
+                                                           
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton No :</Typography >
                                                                     <Typography variant="h5" component="h3">
@@ -998,16 +998,16 @@ const Scanbarcode = (props) => {
                                                                 <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
+                                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Brand :</Typography >
                                                                 <Typography variant="h5" component="h3">{productName2}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Size :</Typography >
                                                                 <Typography variant="h5" component="h3">{skuType2}</Typography>
-                                                            </FormInline>
-                                                            <FormInline style={{ paddingTop: "10px" }}>
-                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
-                                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
                                                             </FormInline>
 
                                                             <FormInline style={{ paddingTop: "10px" }}>
@@ -1048,18 +1048,6 @@ const Scanbarcode = (props) => {
                                                                     <Typography variant="h5" component="h3">{pallet2}</Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reorder :</Typography >
-                                                                    <Typography variant="h5" component="h3">
-                                                                        <AmInput id="code2" value={manualAddRight["code"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("right", "code", value);
-                                                                        }} onKeyPress={(value, a, b, event) => {
-                                                                            if (event.key === "Enter") {
-                                                                                document.getElementById("orderNo2").focus();
-                                                                            }
-                                                                        }} />
-                                                                    </Typography>
-                                                                </FormInline>
-                                                                <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
                                                                     <Typography variant="h5" component="h3">
                                                                         <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event) => {
@@ -1071,6 +1059,19 @@ const Scanbarcode = (props) => {
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
+                                                                <FormInline style={{ paddingTop: "10px" }} >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reorder :</Typography >
+                                                                    <Typography variant="h5" component="h3">
+                                                                        <AmInput id="code2" value={manualAddRight["code"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("right", "code", value);
+                                                                        }} onKeyPress={(value, a, b, event) => {
+                                                                            if (event.key === "Enter") {
+                                                                                document.getElementById("orderNo2").focus();
+                                                                            }
+                                                                        }} />
+                                                                    </Typography>
+                                                                </FormInline>
+                                                             
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton No :</Typography >
                                                                     <Typography variant="h5" component="h3">
