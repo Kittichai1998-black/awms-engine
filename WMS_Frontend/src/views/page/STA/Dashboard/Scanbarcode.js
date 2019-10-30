@@ -432,12 +432,23 @@ const Scanbarcode = (props) => {
             }
         }
         Axios.post(window.apipath + '/v2/ScanMapStoAPI', mapSto).then(res => {
-            UnlockGate(areaGateLoc, side)
+            if(res.data._result.stat === 0){
+                setMsgDialog(res.data._result.message);
+                setStateDialog(true);
+            }
+            else{
+                UnlockGate(areaGateLoc, side)
+            }
         })
     }
 
     const RemovePackSto = (baseID, areaID) => {
-        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID})
+        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => {
+            if(res.data._result.stat === 0){
+                setMsgDialog(res.data._result.message);
+                setStateDialog(true);
+            }
+        })
         document.getElementById("barcodeLong").focus()
     }
 
