@@ -16,8 +16,8 @@ const CountingAdj = props => {
   ];
   var defaultDataRadio = { value: "99" };
   const columns = [
-    { field: "packCode", Name: "SKU Code" },
-    { field: "orderNo", Name: "Order No" }
+    { field: "packCode", Name: "Reorder" },
+    { field: "orderNo", Name: "SI" }
   ];
 
   return (

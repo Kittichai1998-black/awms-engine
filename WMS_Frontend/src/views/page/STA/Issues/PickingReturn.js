@@ -6,6 +6,7 @@ import AmPickingReturn2 from '../../../pageComponent/AmpickingReturn2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+import { CustomInfoChip, OnOldValue } from '../CustomComponent/CustomInfo'
 
 // const Axios = new apicall()
 
@@ -45,72 +46,7 @@ const PickingReturn = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
-        return res;
-    }
-    function onOldValue(storageObj) {
-        let oldValue = [];
-        if (storageObj) {
-            let qryStrOpt_root = queryString.parse(storageObj.options);
-            oldValue = [{
-                field: "warehouseID",
-                value: storageObj.warehouseID
-            },
-            {
-                field: "areaID",
-                value: storageObj.areaID
-            },
-            {
-                field: SC.OPT_DONE_DES_EVENT_STATUS,
-                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            }, {
-                field: SC.OPT_REMARK, 
-                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
-            }, {
-                field: "cartonNo",
-                value: ""
-            }, {
-                field: "amount",
-                value: 0
-            }]
-
-            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-                let dataMapstos = storageObj.mapstos[0];
-                //let qryStrOpt = queryString.parse(dataMapstos.options);
-
-                oldValue.push({
-                    field: "orderNo",
-                    value: dataMapstos.orderNo
-                }, {
-                    field: "scanCode",
-                    value: dataMapstos.code
-                });
-            } else {
-                oldValue.push({
-                    field: "scanCode",
-                    value: ""
-                },{
-                    field: "orderNo",
-                    value: ""
-                });
-            }
-        }
-        return oldValue;
-    }
+  
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -363,11 +299,10 @@ const PickingReturn = (props) => {
                 // apiCreate={apiCreate} // api ���ҧ sto default => "/v2/ScanPickingReturnAPI"
                 onBeforePost={onBeforePost} //�ѧ����������������ͧ ��͹��� api
                 // //�ѧ�����������������ʴ��� options �ͧ
-                customOptions={customOptions}
-                showOptions={true}
                 autoPost={false}
                 setMovementType={"1091"}
-                showOldValue={onOldValue}
+                showOldValue={OnOldValue}
+                customInfoChip={CustomInfoChip}
             />
         </div>
     );

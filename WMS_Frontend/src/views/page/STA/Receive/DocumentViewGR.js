@@ -36,9 +36,11 @@ const DocumentViewGR = props => {
   ];
 
   const columns = [
-    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
-    { accessor: "SKUMaster_Name", Header: "SKU Name" },
-    { width: 130, accessor: "OrderNo", Header: "Order No" },
+    { width: 130, accessor: "OrderNo", Header: "SI." },
+    { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
+
+    { accessor: "SKUMaster_Name", Header: "Brand" },
+
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -50,20 +52,22 @@ const DocumentViewGR = props => {
       Header: "Task",
       Cell: e => getStatusGR(e.original)
     },
-    { width: 100, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No" },
+    { width: 100, accessor: "code", Header: "Pallet Code" },
+    { width: 125, accessor: "orderNo", Header: "SI." },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
     //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
-    { width: 100, accessor: "code ", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "นrderNo", Header: "Order No" },
+    { width: 100, accessor: "code ", Header: "Pallet Code" },
+    { width: 125, accessor: "นrderNo", Header: "SI." },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];

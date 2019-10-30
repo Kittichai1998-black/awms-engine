@@ -10,7 +10,7 @@ import queryString from "query-string";
 const DocumentViewGI = props => {
   const TextHeader = [
     [
-          { label: "Document No", values: "Code" },
+      { label: "Document No", values: "Code" },
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
@@ -34,9 +34,10 @@ const DocumentViewGI = props => {
 
   const columns = [
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
-    { width: 200, accessor: "SKUMaster_Code", Header: "Part NO." },
-    { accessor: "SKUMaster_Name", Header: "Part Name" },
-    { width: 130, accessor: "OrderNo", Header: "OrderNo" },
+    { width: 130, accessor: "OrderNo", Header: "SI." },
+    { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
+    { accessor: "SKUMaster_Name", Header: "Brand" },
+
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -48,11 +49,12 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 120, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "Part NO." },
-    { accessor: "packName", Header: "Part Name" },
+    { width: 120, accessor: "code", Header: "Pallet Code" },
+    { width: 125, accessor: "orderNo", Header: "SI." },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
     //{ width: 100, accessor: "itemNo", Header: "Item No." },
-    { width: 125, accessor: "orderNo", Header: "OrderNo" },
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -64,11 +66,13 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 120, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "Part NO." },
-    { accessor: "packName", Header: "Part Name" },
+    { width: 120, accessor: "code", Header: "Pallet Code" },
+    { width: 125, accessor: "orderNo", Header: "SI." },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
     // { width: 100, accessor: "itemNo", Header: "Item No." },
-    { width: 125, accessor: "orderNo", Header: "OrderNo" },
+    { width: 125, accessor: "orderNo", Header: "SI." },
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];

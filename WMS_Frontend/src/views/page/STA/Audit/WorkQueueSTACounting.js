@@ -20,7 +20,7 @@ const WorkQueueSTACounting = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -118,9 +118,8 @@ const WorkQueueSTACounting = (props) => {
 
     }
 
-    const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
-    { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
-    { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+    const columnCondition = [
+    { Header: "SI.", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
         { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
@@ -131,17 +130,15 @@ const WorkQueueSTACounting = (props) => {
 
     ]; 
     const columnConfirm = [
-        { Header: 'SKU', accessor: 'SKU', width: 200 },
+        { Header: 'Reorder', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Batch', accessor: 'Batch', },
-        { Header: 'Lot', accessor: 'Lot', },
-        { Header: "Order", accessor: 'OrderNo', },
+        { Header: "SI.", accessor: 'OrderNo', },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValue: 8 },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster},
 
     ];
 
