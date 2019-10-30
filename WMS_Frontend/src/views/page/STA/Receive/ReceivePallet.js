@@ -5,6 +5,7 @@ import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+import { CustomInfoChip } from '../CustomComponent/CustomInfo'
 // const Axios = new apicall()
 
 const WarehouseQuery = {
@@ -60,25 +61,8 @@ const ReceivePallet = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
-        return res;
-    }
+ 
     function onOldValue(storageObj) {
-        console.log(storageObj)
         let oldValue = [];
         if (storageObj) {
             let qryStrOpt_root = queryString.parse(storageObj.options);
@@ -94,7 +78,7 @@ const ReceivePallet = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
-                field: SC.OPT_REMARK, 
+                field: SC.OPT_REMARK,
                 value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
             }, {
                 field: "cartonNo",
@@ -122,7 +106,7 @@ const ReceivePallet = (props) => {
                 oldValue.push({
                     field: "scanCode",
                     value: ""
-                },{
+                }, {
                     field: "orderNo",
                     value: ""
                 });
@@ -146,7 +130,7 @@ const ReceivePallet = (props) => {
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                     SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
-                } 
+                }
 
                 if (reqValue.scanCode && reqValue.scanCode.trim().length !== 0) {
                     reqValue.scanCode = reqValue.scanCode.trim();
@@ -201,7 +185,7 @@ const ReceivePallet = (props) => {
                         console.log("cartonNo null")
                         alertDialogRenderer("Carton No. must be value.", "error", true);
                     }
-                } 
+                }
 
                 if (storageObj.mapstos != null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
@@ -351,9 +335,9 @@ const ReceivePallet = (props) => {
                             } else {
                                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                                     if (storageObj.mapstos[0].code !== reqValue.scanCode) {
-                                     alertDialogRenderer("Pallet Code doesn't match.", "error", true);
+                                        alertDialogRenderer("Pallet Code doesn't match.", "error", true);
                                     }
-                                }else{
+                                } else {
                                     alertDialogRenderer("Pallet Code doesn't match.", "error", true);
                                 }
                                 resValuePost = { ...reqValue, allowSubmit: false }
@@ -394,13 +378,13 @@ const ReceivePallet = (props) => {
                 FirstScans={inputFirst}
                 // apiCreate={apiCreate} // api ���ҧ sto default => "/v2/ScanMapStoAPI"
                 onBeforePost={onBeforePost} //�ѧ����������������ͧ ��͹��� api
-                // //�ѧ�����������������ʴ��� options �ͧ
-                customOptions={customOptions}
-                showOptions={true}
+                // customOptions={customOptions}
+                // showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
                 setMovementType={"1011"}
                 showOldValue={onOldValue}
+                customInfoChip={CustomInfoChip}
             />
         </div>
     );

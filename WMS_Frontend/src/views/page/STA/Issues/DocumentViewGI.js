@@ -34,9 +34,10 @@ const DocumentViewGI = props => {
 
   const columns = [
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
+    { width: 130, accessor: "OrderNo", Header: "SI." },
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Brand" },
-    { width: 130, accessor: "OrderNo", Header: "SI." },
+
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -53,7 +54,7 @@ const DocumentViewGI = props => {
     { width: 150, accessor: "packCode", Header: "Reorder" },
     { accessor: "packName", Header: "Brand" },
     //{ width: 100, accessor: "itemNo", Header: "Item No." },
-
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -71,6 +72,7 @@ const DocumentViewGI = props => {
     { accessor: "packName", Header: "Brand" },
     // { width: 100, accessor: "itemNo", Header: "Item No." },
     { width: 125, accessor: "orderNo", Header: "SI." },
+    { width: 125, accessor: "skuType", Header: "Size" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
