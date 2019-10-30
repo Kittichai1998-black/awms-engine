@@ -230,17 +230,17 @@ const DailySTOSumIssue = (props) => {
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
-            Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString())
-        },
-        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
-        {
             Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 90, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
     ];
     const getRedirect = (data) => {
         if (data.indexOf(',') > 0) {

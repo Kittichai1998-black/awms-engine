@@ -219,12 +219,12 @@ const StockCard = (props) => {
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
-            Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
+            Header: 'Issue', accessor: 'creditBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         {
-            Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false,
+            Header: 'Receive', accessor: 'debitBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
