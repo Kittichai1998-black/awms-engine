@@ -364,7 +364,7 @@ const AmSetOjectSize = (props) => {
             OuterObjectSize_ID: dataRow,
             InnerObjectSize_ID: datas.ID,
             MinQuantity: datas.MinQuantity,
-            MaxQuantity: datas.MaxQuantity,
+            MaxQuantity:  datas.MaxQuantity,
             Status: 1
           }
         }
@@ -1067,7 +1067,7 @@ const AmSetOjectSize = (props) => {
 
     let getExcelQuery = Clone(ExportQuery);
     getExcelQuery.q = query.q
-    const resExcel = await axios.get(createQueryString(getExcelQuery)).then(res => res)
+    const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
     setExcelDataSource(resExcel.data.datas)
   }
   //===========================================================
@@ -1151,12 +1151,24 @@ const AmSetOjectSize = (props) => {
         delete row["ModifyTime"]
       })
     } else {
+
+      if(props.tableQuery ==="ObjectSize"){
+        dataSentToAPI.forEach(row => {
+
+         if(row.MaxWeigthKG === "" ||row.MaxWeigthKG === undefined){
+           row.MaxWeigthKG = null
+         }
+         if(row.MinWeigthKG === ""||row.MinWeigthKG === undefined){
+          row.MinWeigthKG = null
+         }
+        })
+      }
       dataSentToAPI.forEach(row => {
         delete row["ModifyBy"]
         delete row["ModifyTime"]
       })
     }
-
+// console.log(dataSentToAPI)
     let updjson = {
       "t": props.table,
       "pk": "ID",

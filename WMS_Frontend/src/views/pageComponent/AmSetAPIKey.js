@@ -782,7 +782,7 @@ async function getData(qryString){
 
       let getExcelQuery = Clone(ExportQuery);
       getExcelQuery.q = query.q
-      const resExcel = await axios.get(createQueryString(getExcelQuery)).then(res => res)
+      const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
       setExcelDataSource(resExcel.data.datas)
 }
 //===========================================================
