@@ -122,21 +122,21 @@ const StockCard = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-            <FormInline><LabelH>{t('SKU Code')} : </LabelH>
-                <AmInput
-                    id={"packCode"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
-                />
-            </FormInline>
             <FormInline>
-                <LabelH>{t("Order No")}. : </LabelH>
+                <LabelH>{t("SI")}. : </LabelH>
                 <AmInput
                     id={"orderNo"}
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                />
+            </FormInline>
+            <FormInline><LabelH>{t('Reorder')} : </LabelH>
+                <AmInput
+                    id={"packCode"}
+                    type="input"
+                    style={{ width: "300px" }}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
                 />
             </FormInline><br />
             <FormInline><LabelH>{t("Movement")} : </LabelH>
@@ -186,9 +186,10 @@ const StockCard = (props) => {
     const columns = [
         { Header: 'Date', accessor: 'CreateTime', type: 'datetime', width: 130, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrder', width: 80, sortable: false },
+        { Header: 'SI.', accessor: 'pstoOrder', width: 70, sortable: false },
+        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
+        { Header: 'Size', accessor: 'pstoName', width: 70, sortable: false },
         {
             Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
             Footer: true,
@@ -200,7 +201,7 @@ const StockCard = (props) => {
             "Cell": (e) => comma(e.value.toString())
         },
         { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
-        { Header: 'Description', accessor: 'Description', width: 200, sortable: false },
+        { Header: 'Description', accessor: 'Description', width: 250, sortable: false },
 
     ];
 
