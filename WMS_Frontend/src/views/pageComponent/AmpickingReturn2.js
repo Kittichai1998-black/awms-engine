@@ -234,6 +234,7 @@ const AmPickingReturn2 = (props) => {
         onBeforePost,
         apiCreate,
         customOptions,
+        customInfoChip,
         showOptions,
         showWarehouseDDL,
         showAreaDDL,
@@ -681,7 +682,7 @@ const AmPickingReturn2 = (props) => {
         var bstoData = data.bsto;
         if (docrow === null) {
             if (bstoData)
-                return <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} />;
+                return <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>;
 
         } else {
             return <div className={classes.detail}>
@@ -697,10 +698,10 @@ const AmPickingReturn2 = (props) => {
                             </div>
                         </div>
                         <hr />
-                        {bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} /> : null}
+                        {bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions}  customInfoChip={customInfoChip}/> : null}
                     </div>
                 }) :
-                    bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} /> : null
+                    bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions}  customInfoChip={customInfoChip}/> : null
                 }
             </div>
         }
@@ -988,6 +989,7 @@ AmPickingReturn2.propTypes = {
     onBeforePost: PropTypes.func,
     apiCreate: PropTypes.string,
     customOptions: PropTypes.func,
+    customInfoChip: PropTypes.func,
     showOptions: PropTypes.bool,
     chipRenderer: PropTypes.func,
     customConfirmMapSTO: PropTypes.func,

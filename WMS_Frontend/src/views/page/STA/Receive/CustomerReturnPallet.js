@@ -5,6 +5,7 @@ import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+import { CustomInfoChip } from '../CustomComponent/CustomInfo'
 
 // const Axios = new apicall()
 
@@ -26,7 +27,7 @@ const CustomerReturnPallet = (props) => {
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
 
     const inputSource = [
-        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true },
+        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
 
     const inputItem = [
@@ -57,23 +58,7 @@ const CustomerReturnPallet = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
-        return res;
-    }
+ 
     function onOldValue(storageObj) {
         let oldValue = [];
         if (storageObj) {
@@ -392,12 +377,11 @@ const CustomerReturnPallet = (props) => {
                 // apiCreate={apiCreate} // api ���ҧ sto default => "/v2/ScanMapStoAPI"
                 onBeforePost={onBeforePost} //�ѧ����������������ͧ ��͹��� api
                 // //�ѧ�����������������ʴ��� options �ͧ
-                customOptions={customOptions}
-                showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 setMovementType={"1012"}
                 autoPost={false}
                 showOldValue={onOldValue}
+                customInfoChip={CustomInfoChip}
             />
         </div>
     );

@@ -4,6 +4,7 @@ import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
+import { CustomInfoChip, OnOldValueWH } from '../CustomComponent/CustomInfo'
 
 // const Axios = new apicall()
 
@@ -23,13 +24,7 @@ const ReceiveWIPSup = (props) => {
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '8,13'}" };
-
-    // const inputHeader = [
-    //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
-    //     { "field": "areaID", "type": "dropdown", "typeDropdown": "normal", "name": "Area", "dataDropDown": AreaMasterQuery, "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13 },
-    //     // { "field": "MovementType_ID", "type": "dropdown", "typeDropdown": "search", "name": "Movement Type", "dataDropDown": MVTQuery, "placeholder": "Movement Type", "fieldLabel": ["Code"], "fieldDataKey": "ID" },
-    //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
-    // ]
+ 
     const inputSource = [
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
@@ -47,58 +42,7 @@ const ReceiveWIPSup = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
-        return res;
-    }
-    function onOldValue(storageObj) {
-        let oldValue = [];
-        if (storageObj) {
-            let qryStrOpt_root = queryString.parse(storageObj.options);
-            oldValue = [{
-                field: "warehouseID",
-                value: storageObj.warehouseID
-            },
-            {
-                field: "areaID",
-                value: storageObj.areaID
-            },
-            {
-                field: SC.OPT_DONE_DES_EVENT_STATUS,
-                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            }, {
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
-            }, {
-                field: "scanCode",
-                value: ""
-            }]
-
-            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-                let dataMapstos = storageObj.mapstos[0];
-                let qryStrOpt = queryString.parse(dataMapstos.options);
-
-                oldValue.push({
-                    field: SC.OPT_SOU_WAREHOUSE_ID,
-                    value: parseInt(qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID])
-                });
-            }
-        }
-        return oldValue;
-    }
+ 
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -113,7 +57,7 @@ const ReceiveWIPSup = (props) => {
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                     SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
-                } 
+                }
 
                 if (reqValue['scanCode']) {
                     reqValue.scanCode = reqValue.scanCode.trim();
@@ -142,7 +86,7 @@ const ReceiveWIPSup = (props) => {
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
                             qryStrOpt = queryString.parse(dataMapstos.options);
-                            
+
                             if (skuCode !== null && skuCode !== dataMapstos.code) {
                                 alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
                                 skuCode = null;
@@ -230,7 +174,7 @@ const ReceiveWIPSup = (props) => {
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }
-                        }  
+                        }
                     }
                 } else {
                     alertDialogRenderer("Please scan code of product.", "error", true);
@@ -267,13 +211,11 @@ const ReceiveWIPSup = (props) => {
                 itemCreate={inputItem} //input scan pallet
                 // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
                 onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
-                // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
-                customOptions={customOptions}
-                showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={true}
                 setMovementType={"2011"}
-                showOldValue={onOldValue}
+                showOldValue={OnOldValueWH}
+                customInfoChip={CustomInfoChip}
             />
         </div>
     );

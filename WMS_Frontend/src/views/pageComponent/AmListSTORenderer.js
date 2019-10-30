@@ -92,6 +92,7 @@ const AmListSTORenderer = (props) => {
         dataSrc,
         showOptions = false,
         customOptions,
+        customInfoChip,
         chipRenderer = customOptionsRender } = props;
 
     const showDataPalletRenderer = (row) => {
@@ -111,8 +112,8 @@ const AmListSTORenderer = (props) => {
                         <div className={classnames(classes.inline)}>
                             {row.objectSizeName ? oriChipRenderer({
                                 text: row.objectSizeName,
-                                textAvatar: 'S',
-                                textToolTip: 'Size Name',
+                                textAvatar: 'OS',
+                                textToolTip: 'Object Size',
                                 className: classes.chip,
                                 classNameAvatar: classnames(classes.avatar)
                             }) : null}
@@ -154,42 +155,8 @@ const AmListSTORenderer = (props) => {
                     primary={<div className={classnames(classes.divLevel1)}><label className={classes.textNowrap}><span className={classes.labelHead}>{row.code}</span>{" : " + row.name}</label></div>}
                     secondary={
                         <div className={classnames(classes.inline)}>
-                            {row.objectSizeName ? oriChipRenderer({
-                                text: row.objectSizeName,
-                                textAvatar: 'S',
-                                textToolTip: 'Size Name',
-                                className: classes.chip,
-                                classNameAvatar: classnames(classes.avatar)
-                            }) : null}
-                            {row.orderNo ? oriChipRenderer({
-                                text: row.orderNo,
-                                textAvatar: 'ON',
-                                textToolTip: 'Order No.',
-                                className: classes.chip,
-                                classNameAvatar: classnames(classes.avatar)
-                            }) : null}
-                            {row.batch ? oriChipRenderer({
-                                text: row.batch,
-                                textAvatar: 'B',
-                                textToolTip: 'Batch',
-                                className: classes.chip,
-                                classNameAvatar: classnames(classes.avatar)
-                            }) : null}
-                            {row.lot ? oriChipRenderer({
-                                text: row.lot,
-                                textAvatar: 'L',
-                                textToolTip: 'Lot',
-                                className: classes.chip,
-                                classNameAvatar: classnames(classes.avatar)
-                            }) : null}
-                            {row.qty && row.unitCode ? oriChipRenderer({
-                                text: row.qty + " " + row.unitCode,
-                                textAvatar: 'Q',
-                                textToolTip: 'Quantity',
-                                className: classes.chip,
-                                classNameAvatar: classnames(classes.avatar)
-                            }) : null}
-                            {row.options && showOptions ? customOptions ? optionsRenderer(row.options)
+                            {customInfoChip ? optionsRenderer(customInfoChip(row)) : oriInfoChipRenderer(row)}
+                            {row.options && showOptions ? customOptions ? optionsRenderer(customOptions(row.options))
                                 : oriChipRenderer({
                                     text: row.options,
                                     textAvatar: 'OP',
@@ -210,9 +177,9 @@ const AmListSTORenderer = (props) => {
                 </List>
                 : null}
         </div>
-    }
-    const optionsRenderer = (value) => {
-        var resOptions = customOptions(value);
+    } 
+
+    const optionsRenderer = (resOptions) => {
         if (resOptions) {
             return resOptions.map((x, i) => {
                 return chipRenderer({
@@ -228,7 +195,56 @@ const AmListSTORenderer = (props) => {
             return null;
         }
     }
-
+    const oriInfoChipRenderer = (row) => {
+        let tempInfo = [];
+        if (row.objectSizeName && row.objectSizeName !== null) {
+            tempInfo.push({
+                text: 'OS',
+                value: row.objectSizeName,
+                textToolTip: 'Object Size'
+            })
+        }
+        if (row.orderNo && row.orderNo !== null) {
+            tempInfo.push({
+                text: 'ON',
+                value: row.orderNo,
+                textToolTip: 'Order No.'
+            })
+        }
+        if (row.batch && row.batch !== null) {
+            tempInfo.push({
+                text: 'B',
+                value: row.batch,
+                textToolTip: 'Batch'
+            })
+        }
+        if (row.lot && row.lot !== null) {
+            tempInfo.push({
+                text: 'L',
+                value: row.lot,
+                textToolTip: 'lot'
+            })
+        }
+        if (row.qty && row.unitCode && row.qty !== null && row.unitCode !== null) {
+            tempInfo.push({
+                text: 'Q',
+                value: row.qty + " " + row.unitCode,
+                textToolTip: 'Quantity'
+            })
+        }
+        if(tempInfo.length > 0){
+            return tempInfo.map((x, i) => {
+                return chipRenderer({
+                    text: x.value,
+                    textAvatar: x.text,
+                    textToolTip: x.textToolTip,
+                    className: classes.chip,
+                    classNameAvatar: classnames(classes.avatar), 
+                    styleAvatar: x.styleAvatar ? x.styleAvatar : null
+                }, i)
+            })
+        }
+    }
     const oriChipRenderer = ({ text, textAvatar, textToolTip, className, classNameAvatar }) => (
         <AmToolTip textTitle={textToolTip} placement={"top"}><Chip
             className={className}

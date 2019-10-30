@@ -151,6 +151,10 @@ const PackMaster = Loadable({
   loader: () => import("../../views/page/STA/Master/PackMaster"),
   loading: Loading
 });
+const ScanPalletInfo = Loadable({
+  loader: () => import("../../views/page/STA/Warehouse/ScanPalletInfo"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/setting/skutype",
@@ -367,7 +371,13 @@ const routes = [
     name: "Counting Summary Report ",
     compoment: DailySTOSumCounting,
     exact: true
-  }
+  },
+  {
+    path: "/warehouse/checkpallet",
+    name: "Scan Pallet Information",
+    compoment: ScanPalletInfo,
+    exact: true
+  },
 ];
 
 export default routes;

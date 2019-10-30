@@ -206,6 +206,7 @@ const AmMappingPallet2 = (props) => {
         apiCreate,
         apiConfirm,
         customOptions,
+        customInfoChip,
         showOptions,
         showWarehouseDDL,
         showAreaDDL,
@@ -771,7 +772,7 @@ const AmMappingPallet2 = (props) => {
                 if (areaDetail)
                     DetailRenderer();
             } else {
-                setNewStorageObj(<AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} />);
+                setNewStorageObj(<AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>);
             }
         } else {
             setExpanded(false);
@@ -782,7 +783,7 @@ const AmMappingPallet2 = (props) => {
         var ren = <div className={classes.detail}>
             <label className={classnames(classes.textNowrap, classes.areadetail)}><span className={classes.labelHead}>Area : </span> {areaDetail}</label>
             <hr />
-            <AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} />
+            <AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>
         </div>;
 
         setNewStorageObj(ren);
@@ -1146,6 +1147,7 @@ AmMappingPallet2.propTypes = {
     apiCreate: PropTypes.string,
     apiConfirm: PropTypes.string,
     customOptions: PropTypes.func,
+    customInfoChip: PropTypes.func,
     showOptions: PropTypes.bool,
     chipRenderer: PropTypes.func,
     modeEmptyPallet: PropTypes.bool,
