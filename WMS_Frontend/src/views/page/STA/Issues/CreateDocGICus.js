@@ -1,19 +1,21 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+
 import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
-import axios from "axios";
-import Clone from "../../../../components/function/Clone";
+// import axios from "axios";
+// import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
 const CreateDocGICus = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
-  const [dataMovementType, setDataMovementType] = useState("");
+  // const [dataMovementType, setDataMovementType] = useState("");
   const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
-  const [dataType2, setDataType2] = useState("");
-  const [dataTest, setDataTest] = useState([]);
+  // const [dataType2, setDataType2] = useState("");
+  // const [dataTest, setDataTest] = useState([]);
   const [table, setTable] = useState(null);
 
   useEffect(() => {
@@ -105,7 +107,28 @@ const CreateDocGICus = props => {
   //         </AmCreateDocument>)
   //     }
   // },[dataTest,props.location.search])
-  const palletSto = {
+  const columsFindpopUpPALC = [
+    { Header: 'Pallet Code', accessor: 'palletcode', width: 110, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    { Header: "SKU Items", accessor: 'SKUItems', width: 350 },
+    // { Header: "SKU Code", accessor: 'Code', width: 110 },
+    // { Header: "SKU Name", accessor: 'Name', width: 170 },
+    { Header: 'Location', accessor: 'LocationCode', width: 90, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    { Header: 'Batch', accessor: 'Batch', width: 100, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    // { Header: 'Batch', accessor: 'Batch' },
+
+    { Header: "Quantity", accessor: 'Quantity', width: 90 },
+    { Header: 'Unit', accessor: 'UnitCode', width: 70 },
+    { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
+  ]
+
+  // const columsFindpopUpSKU = [
+  //     { Header: 'Code', accessor: 'Code', fixed: 'left', width: 100, sortable: true },
+  //     { Header: 'Name', accessor: 'Name', width: 250, sortable: true }
+  // ];
+
+
+  const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
@@ -141,17 +164,17 @@ const CreateDocGICus = props => {
     l: 100,
     all: ""
   };
-  const WarehouseQuery2 = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Warehouse",
-    q: '[{ "f": "Status", "c":"<", "v": 2},]',
-    f: "ID,Code,Name",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  // const WarehouseQuery2 = {
+  //   queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  //   t: "Warehouse",
+  //   q: '[{ "f": "Status", "c":"<", "v": 2},]',
+  //   f: "ID,Code,Name",
+  //   g: "",
+  //   s: "[{'f':'ID','od':'asc'}]",
+  //   sk: 0,
+  //   l: 100,
+  //   all: ""
+  // };
   const CustomerQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Customer",
@@ -163,17 +186,17 @@ const CreateDocGICus = props => {
     l: 100,
     all: ""
   };
-  const MovementTypeQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "MovementType",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1011}]',
-    f: "ID,Code,Name",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  // const MovementTypeQuery = {
+  //   queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  //   t: "MovementType",
+  //   q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1011}]',
+  //   f: "ID,Code,Name",
+  //   g: "",
+  //   s: "[{'f':'ID','od':'asc'}]",
+  //   sk: 0,
+  //   l: 100,
+  //   all: ""
+  // };
   const MovementTypeQuery2 = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "MovementType",
@@ -203,12 +226,11 @@ const CreateDocGICus = props => {
   ];
 
   const columnEdit = [
-    { Header: "Pallet Code", accessor: "palletcode", type: "input" },
+    { Header: "Pallet Code", accessor: 'palletcode', type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
     {
       Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
-      pair: "skuCode",
       idddl: "skuitems",
       queryApi: SKUMaster,
       fieldLabel: ["Code", "Name"],

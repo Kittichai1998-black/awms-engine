@@ -150,11 +150,12 @@ const AmCreateDocument = (props) => {
             editData[field] = data
         }
 
-        let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode")
-        let indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch")
-        let indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "OrderNo")
-        let indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity")
-        let indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
+        let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode"),
+            indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch"),
+            indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "OrderNo"),
+            indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity"),
+            indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
+        console.log(data);
 
         //CaseByCase
         if (field === "palletcode" && data) {
@@ -163,7 +164,7 @@ const AmCreateDocument = (props) => {
             editData.batch = data.Batch
             editData.OrderNo = data.OrderNo
             editData.quantity = data.Quantity
-            editData.unitType = data.UnitTypeCode
+            editData.unitType = data.UnitCode
             editData.skuCode = data.Code
             editData.locationcode = data.LocationCode
 
@@ -177,7 +178,7 @@ const AmCreateDocument = (props) => {
             if (indexQuantity !== -1)
                 ref.current[indexQuantity].current.value = data.Quantity
             if (indexUnitType !== -1)
-                ref.current[indexUnitType].current.value = data.UnitTypeCode
+                ref.current[indexUnitType].current.innerText = data.UnitCode
 
             // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
             // if (data.UnitCode !== data.BaseUnitCode)
@@ -190,8 +191,6 @@ const AmCreateDocument = (props) => {
                 setTimeout(() => {
                     ref.current[indexPalletCode].current.value = ""
                 }, 1);
-                console.log(ref);
-                
             if (indexUnitType !== -1)
                 ref.current[indexUnitType].current.innerText = data.UnitTypeCode
 

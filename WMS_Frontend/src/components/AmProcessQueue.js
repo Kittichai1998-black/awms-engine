@@ -595,17 +595,22 @@ const AmProcessQueue = props => {
                     chkDataSort[0][row] = editDataSort[row];
                 }
             } else {
+                //console.log(dataSorting[indexBtn][0])
+                //var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
+                //var CheckBy = dataSorting[indexBtn][0]["By"];
+                //console.log(CheckBy)
+                //console.log(CheckOrder)
+                //if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
+                //    setMsgDialogErr("DataSorting Dupicate");
+                //    setStateDialogErr(true);
+                //} else {
+                //}
+                console.log(rowdata)
                 dataSorting[indexBtn].push(rowdata);
-               // var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
-               // var CheckBy = dataSorting[indexBtn][0]["By"];
-               // if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
-               //     setMsgDialogErr("DataSorting Dupicate");
-               //     setStateDialogErr(true);
-               // } else {
-               //    dataSorting[indexBtn].push(rowdata);
-               //     //setAddDataID(addDataID - 1);
-               //}
-            }
+                
+                    setAddDataID(addDataID - 1);
+               }
+            
         }
         setReload({});
         setEditDataSort();
@@ -623,9 +628,10 @@ const AmProcessQueue = props => {
         data,
         pair
     ) => {
-        console.log(dataObject)     
+        console.log(value)
         if (value !== null) {
-            onChangeEditorSort(field, data, dataObject.value, dataObject.label,pair);
+
+            onChangeEditorSort(field, data, dataObject.value, pair);
         }
     };
 
@@ -636,16 +642,15 @@ const AmProcessQueue = props => {
         }
     };
 
-    const onChangeEditorSort = (field, rowdata, value, label,pair, dataPair) => {
-        console.log(value)
-        console.log(label)
-        if (rowdata.length > 0) {
+    const onChangeEditorSort = (field, rowdata, value, pair, dataPair) => {
             if (addData) {
+                console.log(value)
                 if (editDataSort) {
                     editDataSort[field] = value;
                     if (pair) {
                         editDataSort[pair] = dataPair;
                     }
+          
                     setEditDataSort(editDataSort);
                 } else {
                     let addData = {};
@@ -654,6 +659,7 @@ const AmProcessQueue = props => {
                     if (pair) {
                         addData[pair] = dataPair;
                     }
+  
                     setEditDataSort(addData);
                 }
             } else {
@@ -664,9 +670,10 @@ const AmProcessQueue = props => {
                 if (pair) {
                     editRowX[pair] = dataPair;
                 }
+
                 setEditDataSort(editRowX);
             }
-        }
+        
     };
 
     //Advance Condition
@@ -1052,9 +1059,7 @@ const AmProcessQueue = props => {
                                 width={300} //��˹��������ҧ�ͧ��ͧ input
                                 ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
                                 valueData={valueText[idddls]} //��� value ������͡
-                                defaultValue={
-                                    defaultsort ? defaultsort : ""
-                                }
+                                defaultValue={data ? data[cols.field] : ""}
                                 returnDefaultValue={true}
                                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                                     getdataDDLSort(
@@ -1470,7 +1475,7 @@ const AmProcessQueue = props => {
 
                                         let sort = {
                                             fieldName: "psto." + fildNames,
-                                            oบววrderByType: d.Order === "FIFO" ? 0 : 1
+                                            orderByType: d.Order === "FIFO" ? 0 : 1
                                         };
                                         console.log(sort)
                                         orderBys.push(sort);
