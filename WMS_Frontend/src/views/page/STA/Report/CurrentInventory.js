@@ -67,7 +67,7 @@ const CurrentInventory = (props) => {
     const SKUTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "SKUMasterType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -82,7 +82,7 @@ const CurrentInventory = (props) => {
 
         Axios.get(window.apipath + "/v2/GetSPReportAPI?"
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-            // + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
+            + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
@@ -97,7 +97,7 @@ const CurrentInventory = (props) => {
     }
     const getAPI = "/v2/GetSPReportAPI?"
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-        // + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value.trim()))
+        + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
         + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
         + "&spname=CURRENTINV_STOSUM";
 
@@ -132,15 +132,6 @@ const CurrentInventory = (props) => {
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
                 />
             </FormInline>
-            {/* <FormInline>
-                <LabelH>{t('Size')} : </LabelH>
-                <AmInput
-                    id={"packName"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packName", null, event)}
-                />
-            </FormInline> */}
             <FormInline><LabelH>{t("Size")} : </LabelH>
                 <AmDropdown
                     id={'skuType'}
@@ -167,13 +158,19 @@ const CurrentInventory = (props) => {
         { Header: 'SI.', accessor: 'OrderNo', width: 70, sortable: false },
         { Header: 'Reorder', accessor: 'Code', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'Name', width: 200, sortable: false },
-        { Header: 'Size', accessor: 'Name', width: 70, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
-            Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
-        { Header: 'Unit', accessor: 'baseUnitType', width: 70, sortable: false },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 90, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false }, 
         {
             Header: 'Receiving', accessor: 'baseQty_evt11', width: 70, sortable: false,
             Footer: true,

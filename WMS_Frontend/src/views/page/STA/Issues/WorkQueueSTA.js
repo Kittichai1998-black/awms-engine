@@ -84,8 +84,8 @@ const WorkQueueSTA = (props) => {
     ];
 
     const columnSort = [
-        { Header: 'SI.', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order", defaultsort:"FIFO" },
-        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By", defaultsort: "ref2"},
+        { Header: 'Sorting', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
     ];
 
