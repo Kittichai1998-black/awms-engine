@@ -164,7 +164,7 @@ const AmCreateDocument = (props) => {
             editData.batch = data.Batch
             editData.OrderNo = data.OrderNo
             editData.quantity = data.Quantity
-            editData.unitType = data.UnitTypeCode
+            editData.unitType = data.UnitCode
             editData.skuCode = data.Code
             editData.locationcode = data.LocationCode
 
@@ -178,9 +178,7 @@ const AmCreateDocument = (props) => {
             if (indexQuantity !== -1)
                 ref.current[indexQuantity].current.value = data.Quantity
             if (indexUnitType !== -1)
-                ref.current[indexUnitType].current.value = data.UnitTypeCode
-            if (indexUnitType !== -1)
-                ref.current[indexUnitType].current.innerText = data.UnitTypeCode
+                ref.current[indexUnitType].current.innerText = data.UnitCode
 
             // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
             // if (data.UnitCode !== data.BaseUnitCode)
