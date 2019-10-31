@@ -70,7 +70,7 @@ const DailySTOSumReceive = (props) => {
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "MovementType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -78,18 +78,17 @@ const DailySTOSumReceive = (props) => {
         l: 100,
         all: "",
     }
-    const DocCodeQuery = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI",
-        t: "Document",
-        q: '[{ "f": "DocumentType_ID", "c":"=", "v": 1001},{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code",
+    const SKUTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "SKUMasterType",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
         l: 100,
         all: "",
     }
-
     useEffect(() => {
         onGetDocument()
     }, [page])
@@ -102,6 +101,7 @@ const DailySTOSumReceive = (props) => {
             + "&docType=1001"
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+            + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
             + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
@@ -122,6 +122,7 @@ const DailySTOSumReceive = (props) => {
         + "&docType=1001"
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
         + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+        + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
         + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
         + "&spname=DAILY_STOSUM";
 
@@ -154,6 +155,22 @@ const DailySTOSumReceive = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                />
+            </FormInline>
+            <FormInline><LabelH>{t("Size")} : </LabelH>
+                <AmDropdown
+                    id={'skuType'}
+                    fieldDataKey={"ID"}
+                    fieldLabel={["Code", "Name"]}
+                    labelPattern=" : "
+                    width={300}
+                    placeholder="Select Size"
+                    ddlMinWidth={300}
+                    zIndex={1000}
+                    returnDefaultValue={true}
+                    queryApi={SKUTypeQuery}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'skuType', fieldDataKey, null)}
+                    ddlType={'search'}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Doc No")}. : </LabelH>
@@ -214,19 +231,19 @@ const DailySTOSumReceive = (props) => {
         { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
-        { Header: 'Size', accessor: 'pstoName', width: 70, sortable: false },
-        {
-            Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString())
-        },
-        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 90, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
     ];
 
     const getRedirect = (data) => {

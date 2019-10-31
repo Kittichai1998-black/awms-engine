@@ -66,11 +66,21 @@ const StockCard = (props) => {
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
 
-
+    const SKUTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "SKUMasterType",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+    }
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "MovementType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -89,6 +99,7 @@ const StockCard = (props) => {
             + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+            + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
             + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
             + "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
@@ -106,6 +117,7 @@ const StockCard = (props) => {
         + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
         + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+        + "&skuType=" + (valueText.skuType === undefined || valueText.skuType.value === undefined || valueText.skuType.value === null ? '' : encodeURIComponent(valueText.skuType.value))
         + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
         + "&spname=DAILY_STOCKCARD";
 
@@ -138,7 +150,23 @@ const StockCard = (props) => {
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
                 />
-            </FormInline><br />
+            </FormInline>
+            <FormInline><LabelH>{t("Size")} : </LabelH>
+                <AmDropdown
+                    id={'skuType'}
+                    fieldDataKey={"ID"}
+                    fieldLabel={["Code", "Name"]}
+                    labelPattern=" : "
+                    width={300}
+                    placeholder="Select Size"
+                    ddlMinWidth={300}
+                    zIndex={1000}
+                    returnDefaultValue={true}
+                    queryApi={SKUTypeQuery}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'skuType', fieldDataKey, null)}
+                    ddlType={'search'}
+                />
+            </FormInline>
             <FormInline><LabelH>{t("Movement")} : </LabelH>
                 <AmDropdown
                     id={'movementType'}
@@ -189,14 +217,14 @@ const StockCard = (props) => {
         { Header: 'SI.', accessor: 'pstoOrder', width: 70, sortable: false },
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
-        { Header: 'Size', accessor: 'pstoName', width: 70, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         {
-            Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
+            Header: 'Issue', accessor: 'creditBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         {
-            Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false,
+            Header: 'Receive', accessor: 'debitBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },

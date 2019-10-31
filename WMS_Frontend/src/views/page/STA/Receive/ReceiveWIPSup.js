@@ -49,7 +49,7 @@ const ReceiveWIPSup = (props) => {
         if (reqValue) {
             let orderNo = null;
             let skuCode = null;
-            let cartonNo = null;
+            // let cartonNo = null;
             let SOU_WAREHOUSE_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
@@ -68,20 +68,17 @@ const ReceiveWIPSup = (props) => {
                             if(!x.match(/^\@{9}$/)){
                                 let card = x.replace(/\@/g, "");
                                 if(card.length > 0){
-                                    tempCardNo.push(x.trim()); 
+                                    tempCardNo.push(card.trim()); 
                                 }
                             } 
                         });
-
-                        console.log(tempCardNo)
                         orderNo = tempCardNo.join();
-                        console.log(orderNo)
 
                         let skuCode1 = reqValue['scanCode'].substr(19, 15);
                         skuCode = skuCode1.replace(/\@/g, "").trim();
                         // skuCode = skuCode.trim();
 
-                        cartonNo = '0';
+                        // cartonNo = '0';
 
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
