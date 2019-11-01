@@ -160,7 +160,8 @@ const CreateDocPI = props => {
       queryApi: AreaLocationMaster,
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
-    },
+      },
+      { Header: "SI", accessor: "orderNo", type: "input" },
     {
       Header: "Reorder",
       accessor: "SKUItems",
@@ -171,7 +172,6 @@ const CreateDocPI = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
@@ -181,10 +181,10 @@ const CreateDocPI = props => {
   ];
 
   const columns = [
-    { Header: "Pallet Code", accessor: "palletcode", width: 100 },
+      { Header: "Pallet Code", accessor: "palletcode", width: 100 },
+      { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
     { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];

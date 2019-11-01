@@ -26,11 +26,13 @@ const CustomInfoChip = (row) => {
     }
     if (row.options !== null) {
         var qryStr = queryString.parse(row.options)
-        tempInfo.push({
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        })
+        if (qryStr[SC.OPT_CARTON_NO]) {
+            tempInfo.push({
+                text: 'CN',
+                value: qryStr[SC.OPT_CARTON_NO],
+                textToolTip: 'Carton No.'
+            })
+        }
     }
     return tempInfo
 };

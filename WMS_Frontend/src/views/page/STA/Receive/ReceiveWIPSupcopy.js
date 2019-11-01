@@ -24,7 +24,7 @@ const ReceiveWIPSup = (props) => {
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '8,13'}" };
-
+ 
     const inputSource = [
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
@@ -36,20 +36,20 @@ const ReceiveWIPSup = (props) => {
             ],
             "defaultValue": { value: '12', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 34, "required": true, "clearInput": true }
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-
+ 
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
             let orderNo = null;
             let skuCode = null;
-            // let cartonNo = null;
+            let cartonNo = null;
             let SOU_WAREHOUSE_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
@@ -61,24 +61,27 @@ const ReceiveWIPSup = (props) => {
 
                 if (reqValue['scanCode']) {
                     reqValue.scanCode = reqValue.scanCode.trim();
-                    if (reqValue['scanCode'].trim().length === 34) {
-                        let orderNoStr = reqValue['scanCode'].substr(0, 19);
-                        let tempCardNo = [];
-                        let cardNos = orderNoStr.split(',').map((x, i) => { 
-                            if(!x.match(/^\@{9}$/)){
-                                let card = x.replace(/\@/g, "");
-                                if(card.length > 0){
-                                    tempCardNo.push(card.trim()); 
-                                }
-                            } 
-                        });
-                        orderNo = tempCardNo.join();
+                    if (reqValue['scanCode'].trim().length === 26) {
+                        let orderNoStr = reqValue['scanCode'].substr(0, 7);
+                        if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
+                            orderNo = orderNoStr;
+                        } else {
+                            alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
+                        }
+                        let skuCode1 = reqValue['scanCode'].substr(7, 15);
 
-                        let skuCode1 = reqValue['scanCode'].substr(19, 15);
-                        skuCode = skuCode1.replace(/\@/g, "").trim();
-                        // skuCode = skuCode.trim();
-
-                        // cartonNo = '0';
+                        if (skuCode1.includes('@')) {
+                            skuCode = skuCode1.replace(/\@/g, " ");
+                        } else {
+                            skuCode = skuCode1;
+                        }
+                        skuCode = skuCode.trim();
+                        let cartonStr = reqValue['scanCode'].substr(22, 4);
+                        if (cartonStr.match(/^\d{4}$/)) {
+                            cartonNo = parseInt(cartonStr);
+                        } else {
+                            alertDialogRenderer("Carton No. must be equal to 4-digits in number format.", "error", true);
+                        }
 
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
@@ -88,19 +91,62 @@ const ReceiveWIPSup = (props) => {
                                 alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
                                 skuCode = null;
                             }
-                            // if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
-                            //     alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
-                            //     orderNo = null;
-                            // }
-                             
+                            if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
+                                alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
+                                orderNo = null;
+                            }
+                            if (rootID && skuCode && orderNo && cartonNo) {
+                                let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
+                                let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                                let lenSplitCartonNo = splitCartonNo.length;
+                                let numCarton = 0;
+                                if (reqValue.action === 2) {
+                                    var indexCartonNo = splitCartonNo.indexOf(cartonNo);
+                                    if (indexCartonNo < 0) {
+                                        alertDialogRenderer("This Carton No. " + cartonNo + " doesn't exist in pallet.", "error", true);
+                                        cartonNo = null;
+                                    } else {
+                                        splitCartonNo.splice(indexCartonNo, 1);
+                                        if (splitCartonNo.length === 0) {
+                                            cartonNo = "0";
+                                        } else if (splitCartonNo.length == 1) {
+                                            cartonNo = splitCartonNo[0].toString();
+                                        } else {
+                                            var rangcartonNo = ToRanges(splitCartonNo);
+                                            cartonNo = rangcartonNo.join();
+                                        }
+                                    }
+                                } else {
+                                    for (let no in splitCartonNo) {
+                                        numCarton++;
+
+                                        if (cartonNo === parseInt(splitCartonNo[no])) {
+                                            ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
+
+                                            alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
+
+                                            cartonNo = null;
+                                            break;
+                                        }
+                                        else {
+                                            if (numCarton === lenSplitCartonNo) {
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
+                                            } else {
+                                                continue;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        if (rootID && skuCode && orderNo) {
+                        if (cartonNo && rootID && skuCode && orderNo) {
 
                             if (reqValue.action != 2 && SOU_WAREHOUSE_ID) {
                                 qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
                             }
-                            qryStrOpt[SC.OPT_CARTON_NO] = "0";
+                            qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                             let qryStr1 = queryString.stringify(qryStrOpt)
                             let uri_opt = decodeURIComponent(qryStr1);
 
@@ -108,7 +154,7 @@ const ReceiveWIPSup = (props) => {
                                 allowSubmit: true,
                                 orderNo: orderNo,
                                 scanCode: skuCode,
-                                options: uri_opt,
+                                options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["WIP"]
                             };
                             if (reqValue.action != 2) { //ไม่ใช่เคสลบ

@@ -152,6 +152,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }).ToList();
                 _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(_distos, this.BuVO);
                 distos.AddRange(_distos);
+
             };
             docs.ForEach(doc =>
             {
@@ -165,6 +166,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
             });
 
+            //create by anon
             rstos.ForEach(x =>
             {
                 //New GI For Multi SKU

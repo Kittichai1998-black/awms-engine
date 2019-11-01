@@ -36,6 +36,7 @@ const styles = theme => ({
     avatarStatus: {
         width: '25px',
         height: '25px',
+        fontSize: '95%',
     },
     textNowrap: { overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
     labelHead: {
@@ -44,17 +45,17 @@ const styles = theme => ({
     },
     divLevel1: { display: "block" },
     chip: {
-        margin: '2px 2px',
-        height: '24px',
-        // padding: '1px',
-        borderRadius: '15px',
+        // margin: '2px 2px',
+        height: '26px',
+        padding: '1px',
+        // borderRadius: '15px',
         backgroundColor: 'rgba(255, 255, 255, 0.2)'
     },
     avatar: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
         color: '#fff',
-        fontSize: '95%',
+        fontSize: '90%',
         backgroundColor: grey[500]
     },
     listRoot: {
@@ -66,7 +67,12 @@ const styles = theme => ({
         maxWidth: '30px',
     },
     inline: {
-        display: 'inline',
+        display: 'flex',
+        justifyContent: 'left',
+        flexWrap: 'wrap',
+        '& > *': {
+            margin: theme.spacing(0.2),
+        },
     },
     gutters: {
         padding: '0px 5px 0px 35px',
@@ -177,7 +183,7 @@ const AmListSTORenderer = (props) => {
                 </List>
                 : null}
         </div>
-    } 
+    }
 
     const optionsRenderer = (resOptions) => {
         if (resOptions) {
@@ -232,26 +238,29 @@ const AmListSTORenderer = (props) => {
                 textToolTip: 'Quantity'
             })
         }
-        if(tempInfo.length > 0){
+        if (tempInfo.length > 0) {
             return tempInfo.map((x, i) => {
                 return chipRenderer({
                     text: x.value,
                     textAvatar: x.text,
                     textToolTip: x.textToolTip,
                     className: classes.chip,
-                    classNameAvatar: classnames(classes.avatar), 
+                    classNameAvatar: classnames(classes.avatar),
                     styleAvatar: x.styleAvatar ? x.styleAvatar : null
                 }, i)
             })
         }
     }
     const oriChipRenderer = ({ text, textAvatar, textToolTip, className, classNameAvatar }) => (
-        <AmToolTip textTitle={textToolTip} placement={"top"}><Chip
-            className={className}
-            avatar={<Avatar className={classNameAvatar}>{textAvatar}</Avatar>}
-            label={text}
-            variant="outlined"
-        /></AmToolTip>
+        <AmToolTip textTitle={textToolTip} placement={"top"}>
+            <Chip
+                className={className}
+                avatar={<Avatar className={classNameAvatar}>{textAvatar}</Avatar>}
+                label={text}
+                size={"small"}
+                variant="outlined"
+            />
+        </AmToolTip>
     )
     return showDataPalletRenderer(dataSrc)
 }
@@ -271,6 +280,7 @@ export const customOptionsRender = ({ value, text, textAvatar, textToolTip, clas
             className={className}
             avatar={<Avatar className={classNameAvatar} style={styleAvatar}>{textAvatar}</Avatar>}
             label={text}
+            size={"small"}
             variant="outlined"
         />
     </AmToolTip>

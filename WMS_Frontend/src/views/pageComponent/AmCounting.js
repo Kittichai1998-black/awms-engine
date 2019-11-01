@@ -189,6 +189,7 @@ const AmCounting = props => {
   const [valueEdit, setValueEdit] = useState(0);
   const [docName, setDocName] = useState("");
   const [option, setOption] = useState();
+  const [tmp, setTmp] = useState();
 
   const alertDialogRenderer = (message, type, state) => {
     setMsgDialog(message);
@@ -320,6 +321,7 @@ const AmCounting = props => {
     setActiveStep(0);
     setValueInput({});
     setDataShow(null);
+    setTmp();
     // setLabelBarcode(null);
   }
 
@@ -339,6 +341,7 @@ const AmCounting = props => {
     }
   };
   const createAuditEdit = (value, dataTable) => {
+    console.log(value);
     for (var data in dataTable) {
       dataTable[data].auditQty = parseInt(value, 10);
     }
@@ -377,10 +380,17 @@ const AmCounting = props => {
         tmpRadio.label = x.label.toString();
       }
     });
+    console.log(tmpRadio);
     var tmpDefaultDataRadio = { value: tmpDoneStatus };
     var dataRadio = props.dataRadio;
-    dataRadio.push(tmpRadio);
+
+    console.log(dataRadio);
+    var c = dataRadio.filter(x => x.value === tmpRadio.value);
+
+    if (c.length === 0) dataRadio.push(tmpRadio);
+
     var defaultDataRadio = tmpDefaultDataRadio;
+    console.log(defaultDataRadio);
     return data.map((list, index) => {
       return (
         <Card
