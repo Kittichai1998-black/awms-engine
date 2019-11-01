@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.General
 
         protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
-            if (ADO.StaticValue.StaticValueManager.GetInstant().GetFeature("AUTHENLDAP").DataValue == "1")
+            if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature("AUTHENLDAP"))
             {
                 var host = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.host");
                 var port = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.port");
