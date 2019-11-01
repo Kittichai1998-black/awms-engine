@@ -133,12 +133,12 @@ const StyledSearch = styled.div`
 const BtnAddSkuByItem = (props) => {
 
     const [open, setOpen] = useState(false);
-    const conditionDefault = '[{ "f": "EventStatus", "c":"=", "v": "12"}]'
+    const conditionDefault = '[{"f":"Status" , "c":"=" , "v":"1"},{ "f": "EventStatus", "c":"=", "v": "12"}]'
     const [query, setQuery] = useState({
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PalletSto",
         q: conditionDefault, //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "*",
+        f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark",
         g: "",
         s: "[{'f':'ID','od':'ASC'}]",
         sk: 0,
@@ -156,22 +156,25 @@ const BtnAddSkuByItem = (props) => {
 
     const columns = [
         { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
-        { Header: 'SRM Line', accessor: 'srmLine', width: 95, style: { textAlign: "center" } },
-        { Header: "SKU Items", accessor: 'SKUItems', width: 350 },
+        // { Header: 'SRM Line', accessor: 'srmLine', width: 95, style: { textAlign: "center" } },
+        { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
         // { Header: "SKU Code", accessor: 'Code', width: 110 },
         // { Header: "SKU Name", accessor: 'Name', width: 170 },
         { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
-        { Header: 'Batch', accessor: 'Batch', width: 100, style: { textAlign: "center" } },
-        // { Header: 'Batch', accessor: 'Batch' },
+        // { Header: 'Batch', accessor: 'Batch', width: 100, style: { textAlign: "center" } },
+        { Header: 'SI', accessor: 'OrderNo', width: 70, style: { textAlign: "center" } },
 
         { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
         { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
-        { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95, style: { textAlign: "center" } },
+        // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95, style: { textAlign: "center" } },
+        { Header: 'Remark', accessor: 'Remark', width: 110, style: { textAlign: "center" } },
     ]
 
     useEffect(() => {
         if (open) {
             Axios.get(createQueryString(query)).then(res => {
+                console.log(res.data.datas);
+
                 setData([...res.data.datas])
                 setTotalSize(res.data.counts)
                 let data = props.dataCheck || []
@@ -207,21 +210,27 @@ const BtnAddSkuByItem = (props) => {
             // }
             Object.keys(keySearch).map((x, idx) => {
                 if (keySearch[x]) {
-                    if (idx === 0) {
-                        newSel.push({
-                            "o": "and",
-                            "f": x,
-                            "c": "like",
-                            "v": encodeURIComponent(keySearch[x])
-                        })
-                    } else {
-                        newSel.push({
-                            "o": "and",
-                            "f": x,
-                            "c": "like",
-                            "v": encodeURIComponent(keySearch[x])
-                        })
-                    }
+                    newSel.push({
+                        "o": "and",
+                        "f": x,
+                        "c": "like",
+                        "v": encodeURIComponent(keySearch[x])
+                    })
+                    // if (idx === 0) {
+                    //     newSel.push({
+                    //         "o": "and",
+                    //         "f": x,
+                    //         "c": "like",
+                    //         "v": encodeURIComponent(keySearch[x])
+                    //     })
+                    // } else {
+                    //     newSel.push({
+                    //         "o": "and",
+                    //         "f": x,
+                    //         "c": "like",
+                    //         "v": encodeURIComponent(keySearch[x])
+                    //     })
+                    // }
                 }
             });
 
@@ -259,7 +268,7 @@ const BtnAddSkuByItem = (props) => {
                         onClickSearch={() => setSearchAction(true)}
                     />
                     <SearchInput
-                        placeholder={"SKU Code"}
+                        placeholder={"Reorder"}
                         defaultValue={keySearch ? keySearch.Code : null}
                         // labelInput={"SKU Code"}
                         onHandleKeyUp={(val) => setKeySearch({ ...keySearch, Code: val })}
@@ -273,10 +282,10 @@ const BtnAddSkuByItem = (props) => {
                         onClickSearch={() => setSearchAction(true)}
                     />
                     <SearchInput
-                        placeholder={"Batch"}
-                        defaultValue={keySearch ? keySearch.Batch : null}
+                        placeholder={"Remark"}
+                        defaultValue={keySearch ? keySearch.Remark : null}
                         // labelInput={"Batch"}
-                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, Batch: val })}
+                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, Remark: val })}
                         onClickSearch={() => setSearchAction(true)}
                     />
                 </StyledSearch>
