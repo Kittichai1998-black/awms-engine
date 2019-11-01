@@ -12,7 +12,7 @@ import { CustomInfoChip } from '../CustomComponent/CustomInfo'
 const CustomerQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Customer",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",

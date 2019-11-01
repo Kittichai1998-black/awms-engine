@@ -141,7 +141,7 @@ const styles = (theme) => {
             }
         },
         chip: {
-            margin: '4px 4px 0px 0',
+            margin: '4px 0px 0px 0',
             float: 'left',
             height: 24,
         }

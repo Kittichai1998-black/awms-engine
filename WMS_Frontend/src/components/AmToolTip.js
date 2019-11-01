@@ -1,139 +1,136 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-
-const styles = theme => ({
-    arrow: {
-        position: "absolute",
-        fontSize: 7,
-        width: "3em",
-        height: "3em",
-        "&::before": {
-            content: '""',
-            margin: "auto",
-            display: "block",
-            width: 0,
-            height: 0,
-            borderStyle: "solid"
-        }
-    },
-    bootstrapPopper: arrowGenerator(theme.palette.grey[700]),
-    bootstrapTooltip: {
-        backgroundColor: theme.palette.grey[700]
-    },
-    bootstrapPlacementLeft: {
-        margin: "0 8px"
-    },
-    bootstrapPlacementRight: {
-        margin: "0 8px"
-    },
-    bootstrapPlacementTop: {
-        margin: "8px 0"
-    },
-    bootstrapPlacementBottom: {
-        margin: "8px 0"
-    }
-});
+import Typography from '@material-ui/core/Typography';
 
 function arrowGenerator(color) {
     return {
         '&[x-placement*="bottom"] $arrow': {
             top: 0,
             left: 0,
-            marginTop: "-0.9em",
-            width: "3em",
-            height: "1em",
-            "&::before": {
-                borderWidth: "0 1em 1em 1em",
-                borderColor: `transparent transparent ${color} transparent`
-            }
+            marginTop: '-0.95em',
+            width: '2em',
+            height: '1em',
+            '&::before': {
+                borderWidth: '0 1em 1em 1em',
+                borderColor: `transparent transparent ${color} transparent`,
+            },
         },
         '&[x-placement*="top"] $arrow': {
             bottom: 0,
             left: 0,
-            marginBottom: "-0.9em",
-            width: "3em",
-            height: "1em",
-            "&::before": {
-                borderWidth: "1em 1em 0 1em",
-                borderColor: `${color} transparent transparent transparent`
-            }
+            marginBottom: '-0.95em',
+            width: '2em',
+            height: '1em',
+            '&::before': {
+                borderWidth: '1em 1em 0 1em',
+                borderColor: `${color} transparent transparent transparent`,
+            },
         },
         '&[x-placement*="right"] $arrow': {
             left: 0,
-            marginLeft: "-0.9em",
-            height: "3em",
-            width: "1em",
-            "&::before": {
-                borderWidth: "1em 1em 1em 0",
-                borderColor: `transparent ${color} transparent transparent`
-            }
+            marginLeft: '-0.95em',
+            height: '2em',
+            width: '1em',
+            '&::before': {
+                borderWidth: '1em 1em 1em 0',
+                borderColor: `transparent ${color} transparent transparent`,
+            },
         },
         '&[x-placement*="left"] $arrow': {
             right: 0,
-            marginRight: "-0.9em",
-            height: "3em",
-            width: "1em",
-            "&::before": {
-                borderWidth: "1em 0 1em 1em",
-                borderColor: `transparent transparent transparent ${color}`
+            marginRight: '-0.95em',
+            height: '2em',
+            width: '1em',
+            '&::before': {
+                borderWidth: '1em 0 1em 1em',
+                borderColor: `transparent transparent transparent ${color}`,
+            },
+        },
+    };
+}
+
+
+const useStylesBootstrap = makeStyles(theme => ({
+    arrow: {
+        position: 'absolute',
+        fontSize: 7,
+        '&::before': {
+            content: '""',
+            margin: 'auto',
+            display: 'block',
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+        },
+    },
+    popper: arrowGenerator(theme.palette.grey[700]),
+    tooltip: {
+        position: 'relative',
+        backgroundColor: theme.palette.grey[700],
+    },
+    tooltipPlacementLeft: {
+        margin: '0 8px',
+    },
+    tooltipPlacementRight: {
+        margin: '0 8px',
+    },
+    tooltipPlacementTop: {
+        margin: '8px 0',
+    },
+    tooltipPlacementBottom: {
+        margin: '8px 0',
+    },
+}));
+
+function BootstrapTooltip(props) {
+    const { arrow, ...classes } = useStylesBootstrap();
+    const [arrowRef, setArrowRef] = React.useState(null);
+
+    return (
+        <Tooltip
+            classes={classes}
+            PopperProps={{
+                popperOptions: {
+                    modifiers: {
+                        arrow: {
+                            enabled: Boolean(arrowRef),
+                            element: arrowRef,
+                        },
+                    },
+                },
+            }}
+            {...props}
+            title={
+                <React.Fragment>
+                    {props.title}
+                    <span className={arrow} ref={setArrowRef} />
+                </React.Fragment>
             }
-        }
-    };
+        />
+    );
 }
 
-class AmTooltip extends React.Component {
-    state = {
-        arrowRef: null
-    };
+BootstrapTooltip.propTypes = {
+    title: PropTypes.node,
+};
 
-    handleArrowRef = node => {
-        this.setState({
-            arrowRef: node
-        });
-    };
-    render() {
-        const { children, classes, className, textTitle, placement, ...other } = this.props;
 
-        return (
-            <Tooltip
-                title={
-                    <React.Fragment>
-                        {textTitle}
-                        <span className={classes.arrow} ref={this.handleArrowRef} />
-                    </React.Fragment>
-                }
-                classes={{
-                    tooltip: classes.bootstrapTooltip,
-                    popper: classes.bootstrapPopper,
-                    tooltipPlacementLeft: classes.bootstrapPlacementLeft,
-                    tooltipPlacementRight: classes.bootstrapPlacementRight,
-                    tooltipPlacementTop: classes.bootstrapPlacementTop,
-                    tooltipPlacementBottom: classes.bootstrapPlacementBottom
-                }}
-                PopperProps={{
-                    popperOptions: {
-                        modifiers: {
-                            arrow: {
-                                enabled: Boolean(this.state.arrowRef),
-                                element: this.state.arrowRef
-                            }
-                        }
-                    }
-                }}
-                placement={placement}
-                {...other} >{children}
-            </Tooltip>
-        );
-    }
+export default function CustomizedTooltips(props) {
+    // const { children, classes, className, textTitle, placement, ...other } = this.props;
+
+    return (
+        <div>
+            <BootstrapTooltip
+                title={props.textTitle}
+                placement={props.placement}
+                {...props}
+                >
+                {props.children}
+            </BootstrapTooltip>
+
+        </div>
+    );
 }
-
-AmTooltip.propTypes = {
-    classes: PropTypes.object.isRequired,
-    className: PropTypes.string,
-    children: PropTypes.node.isRequired,
-    textTitle: PropTypes.string
-}
-export default withStyles(styles)(AmTooltip);
