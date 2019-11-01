@@ -147,7 +147,8 @@ const CreateDocPI = props => {
     { Header: "Location", accessor: "locationcode", type: "findPopUp", pair: "locationcode", idddl: "locationcode", queryApi: AreaLocationMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
     { Header: "SI", accessor: "orderNo", type: "input" },
     { Header: "Reorder/Brand", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
-    { Header: "Counting (%)", accessor: "qtyrandom", type: "inputNum", TextInputnum: "%" }
+    { Header: "Counting (%)", accessor: "qtyrandom", type: "inputNum", TextInputnum: "%" },
+    { Header: "Unit", accessor: "unitType", type: "unitType" }
   ];
 
   const columns = [
