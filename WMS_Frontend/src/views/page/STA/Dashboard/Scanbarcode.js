@@ -23,6 +23,7 @@ import IconLockOpen from '@material-ui/icons/LockOpen';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
 import * as SC from '../../../../constant/StringConst'
+import AmDialogConfirm from '../../../../components/AmDialogConfirm';
 import Axios1 from 'axios'
 const Axios = new apicall()
 
@@ -140,6 +141,19 @@ const useWCSStatus = () => {
 
     return data;
 }
+
+const createRemoveList = (cartons) => {
+
+
+
+
+
+
+
+
+    return null;
+}
+
 
 const useDashboardArea = (areaID) => {
     const [data, setData] = useState(null);
@@ -266,6 +280,9 @@ const Scanbarcode = (props) => {
     const [lockStateRight, setLockStateRight] = useState(false)
 
     const [lockGateID, setLockGateID] = useState([])
+    const [removeDialog, setRemoveDialog] = useState(false)
+    const [removeDialogList, setRemoveDialogList] = useState()
+    const [removeDialogItem, setRemoveDialogItem] = useState([])
 
     const [manualAddLeft, setManualAddLeft] = useState({})
     const [manualAddRight, setManualAddRight] = useState({})
@@ -1113,6 +1130,14 @@ const Scanbarcode = (props) => {
                     </Grid>
                 </div>
             </div>
+            {/*<AmDialogConfirm open={removeDialog} close={() => { setRemoveDialog(false); setRemoveDialogItem([])}}
+            titleDialog={"Remove Carton"}
+            bodyDialog={[]}
+            dataDialog={props.data}
+            maxWidth={"500px"}
+            customAcceptBtn={<AmButton id={"Remove"} onClick={() => setRemoveDialog(false)} styleType="confirm_clear">{t("Remove")}</AmButton>}
+            customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => {setRemoveDialog(false); setRemoveDialogItem([])}} styleType="delete_clear">{t("Cancel")}</AmButton>}
+            styleDialog={props.style} />*/}
         </Fullscreen>
     );
 }
