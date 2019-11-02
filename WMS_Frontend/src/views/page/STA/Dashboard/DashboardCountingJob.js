@@ -21,21 +21,21 @@ const headercol1 = [
 ]
 
 const headercol2 = [
-    { accessor: "Time", Header: "Time", width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "TIME", Header: "Time", width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    { accessor: "Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
     {
         accessor: "TaskName", Header: "Task", width: 120, sortable: false, style: { textAlign: "center" },
         Cell: row => (
             <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
         )
     },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false },
+    { accessor: "pallet_code", Header: "Pallet", width: 140, sortable: false },
     { accessor: "Product", Header: "Product", sortable: false },
 
     // { accessor: "LocationCode", Header: "Stage", width: 70, style: { fontWeight: '900' }, sortable: false },
     { accessor: "OrderNo", Header: "Order", width: 100, sortable: false },
 
-    { accessor: "Qty", Header: "Qty", width: 100, className: 'right', sortable: false },
+    { accessor: "qty", Header: "Qty", width: 100, className: 'right', sortable: false },
     // { accessor: "Destination", Header: "Destination", width: 170, sortable: false },
 
     // { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
