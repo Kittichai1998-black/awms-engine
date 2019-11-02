@@ -30,6 +30,10 @@ const DocumentViewGRSTGT = Loadable({
   loading: Loading
 });
 
+const dashboardInOut = Loadable({
+  loader: () => import("../../views/page/STGT/Dashboard/DashboardInOut"),
+  loading: Loading
+});
 const dashboardPickingJob = Loadable({
   loader: () => import("../../views/page/STGT/Dashboard/DashboardPickingJob"),
   loading: Loading
@@ -62,7 +66,7 @@ const ReceiveFromCustomer = Loadable({
 const ReceiveFromWarehouse = Loadable({
   loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
   loading: Loading
-}); 
+});
 const LoadingReturn = Loadable({
   loader: () => import("../../views/page/STGT/Issues/LoadingReturn"),
   loading: Loading
@@ -110,118 +114,34 @@ const DailySTOSumCounting = Loadable({
 });
 
 const ProcessQueueGI = Loadable({
-    loader: () => import("../../views/page/STGT/Issues/WorkQueueSTA"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Issues/WorkQueueSTA"),
+  loading: Loading
 });
 const ProcessQueueCT = Loadable({
-    loader: () => import("../../views/page/STGT/Audit/WorkQueueSTACounting"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Audit/WorkQueueSTACounting"),
+  loading: Loading
 });
 
 const routes = [
-  {
-    path: "/issue/search",
-    name: "Search GI",
-    compoment: DocumentSearchGISTGT,
-    exact: true
-  },
-  {
-    path: "/issue/detail",
-    name: "GI View",
-    compoment: DocumentViewGISTGT,
-    exact: true
-  },
-  {
-    path: "/issue/create",
-    name: "base5",
-    compoment: CreateDocGISTGTCUS,
-    exact: true
-  },
-  {
-    path: "/issue/createWM",
-    name: "base5",
-    compoment: CreateDocGISTGTWM,
-    exact: true
-  },
-  {
-    path: "/receive/productionLine",
-    name: "Search GR",
-    compoment: ReceiveProductionLine,
-    exact: true
-  },
-  {
-    path: "/receive/search",
-    name: "Search GR",
-    compoment: DocumentSearchSTGT,
-    exact: true
-  },
-  {
-    path: "/receive/detail",
-    name: "base5",
-    compoment: DocumentViewGRSTGT,
-    exact: true
-  },
-  {
-    path: "/counting/search",
-    name: "base5",
-    compoment: DocumentSearchPISTGT,
-    exact: true
-  },
-  {
-    path: "/counting/detail",
-    name: "base5",
-    compoment: DocumentViewPISTGT,
-    exact: true
-  },
-  {
-    path: "/counting/createPhysical",
-    name: "base5",
-    compoment: CreateDocPIPhysicalSTGT,
-    exact: true
-  },
-  {
-    path: "/counting/createRework",
-    name: "base5",
-    compoment: CreateDocPIReworkSTGT,
-    exact: true
-  },
-  {
-    path: "/dashboard/pickingjobs",
-    name: "TestRedirect",
-    compoment: dashboardPickingJob,
-    exact: true
-  },
-  {
-    path: "/dashboard/countingjobs",
-    name: "TestRedirect",
-    compoment: dashboardCountingJob,
-    exact: true
-  },
-  {
-    path: "/warehouse/storageobject",
-    name: "base5",
-    compoment: StorageObject,
-    exact: true
-  }, 
-  {
-    path: "/receive/receiveforcustomer",
-    name: "Customers Return",
-    compoment: ReceiveFromCustomer,
-    exact: true
-    },
-    {
-        path: "/issue/managequeue",
-        name: "base5",
-        compoment: ProcessQueueGI,
-        exact: true
-    },
-    {
-        path: "/counting/managequeue",
-        name: "base5",
-        compoment: ProcessQueueCT,
-        exact: true
-    },
-  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
+  { path: "/issue/search", name: "Search GI", compoment: DocumentSearchGISTGT, exact: true },
+  { path: "/issue/detail", name: "GI View", compoment: DocumentViewGISTGT, exact: true },
+  { path: "/issue/create", name: "base5", compoment: CreateDocGISTGTCUS, exact: true },
+  { path: "/issue/createWM", name: "base5", compoment: CreateDocGISTGTWM, exact: true },
+  { path: "/receive/productionLine", name: "Search GR", compoment: ReceiveProductionLine, exact: true },
+  { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTGT, exact: true },
+  { path: "/receive/detail", name: "base5", compoment: DocumentViewGRSTGT, exact: true },
+  { path: "/counting/search", name: "base5", compoment: DocumentSearchPISTGT, exact: true },
+  { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTGT, exact: true },
+  { path: "/counting/createPhysical", name: "base5", compoment: CreateDocPIPhysicalSTGT, exact: true },
+  { path: "/counting/createRework", name: "base5", compoment: CreateDocPIReworkSTGT, exact: true },
+  { path: "/dashboard/inout", name: "TestRedirect", compoment: dashboardInOut, exact: true },
+  { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
+  { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },
+  { path: "/warehouse/storageobject", name: "base5", compoment: StorageObject, exact: true },
+  { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: ReceiveFromCustomer, exact: true },
+  { path: "/issue/managequeue", name: "base5", compoment: ProcessQueueGI, exact: true },
+  { path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
+  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true },
   { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
