@@ -44,6 +44,7 @@
     "react-table-hoc-fixed-columns": "^2.0.1",
     "react-virtualized": "^9.21.0",
     "reactstrap": "^7.1.0",
+    "read-excel-file": "^4.0.3",
     "styled-components": "^4.4.0"
   },
   "scripts": {
