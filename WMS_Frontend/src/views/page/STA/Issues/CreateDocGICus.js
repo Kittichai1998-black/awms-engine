@@ -40,36 +40,16 @@ const CreateDocGICus = props => {
           { label: "Document Date", type: "date", key: "documentDate" }
         ],
         [
-          {
-            label: "Movement Type",
-            type: "labeltext",
-            key: "movementTypeID",
-            texts: dataMovementTypeCUS,
-            valueTexts: "1012"
-          },
+          { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: dataMovementTypeCUS, valueTexts: "1012" },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
-          {
-            label: "Source Warehouse",
-            type: "labeltext",
-            key: "souWarehouseID",
-            texts: dataWarehouse,
-            valueTexts: "1"
-          },
-          {
-            label: "Destination Customer",
-            key: "desCustomerID",
-            type: "dropdown",
-            pair: "ID",
-            idddl: "desCustomerID",
-            queryApi: CustomerQuery,
-            fieldLabel: ["Code", "Name"]
-          }
+          { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: dataWarehouse, valueTexts: "1" },
+          { label: "Destination Customer", key: "desCustomerID", type: "dropdown", pair: "ID", idddl: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1 }
         ],
         [
           { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
-          { label: "", type: "", key: "" }
+          { label: "Remark", type: "input", key: "remark" }
         ]
         //[{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },{ label: "", type: "", key: "",texts: "" },]
       ];
@@ -86,7 +66,7 @@ const CreateDocGICus = props => {
             history={props.history}
             apiRes={apiRes}
           //createByCus={false}
-          ></AmCreateDocument>
+          />
         );
       }
     }
@@ -108,18 +88,19 @@ const CreateDocGICus = props => {
   //     }
   // },[dataTest,props.location.search])
   const columsFindpopUpPALC = [
-    { Header: 'Pallet Code', accessor: 'palletcode', width: 110, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
-    { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
-    { Header: "SKU Items", accessor: 'SKUItems', width: 350 },
+    { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
+    // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
-    { Header: 'Location', accessor: 'LocationCode', width: 90, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
-    { Header: 'Batch', accessor: 'Batch', width: 100, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
+    { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
+    // { Header: 'Batch', accessor: 'Batch', width: 100,  style: { textAlign: "center" }  },
     // { Header: 'Batch', accessor: 'Batch' },
-
-    { Header: "Quantity", accessor: 'Quantity', width: 90 },
-    { Header: 'Unit', accessor: 'UnitCode', width: 70 },
-    { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
+    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
+    { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
+    { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
+    // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
+    { Header: 'Remark', accessor: 'Remark', width: 110, style: { textAlign: "center" } },
   ]
 
   // const columsFindpopUpSKU = [
@@ -131,9 +112,8 @@ const CreateDocGICus = props => {
   const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
-    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-    f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+    q: '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -145,8 +125,7 @@ const CreateDocGICus = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f:
-      "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f: "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -210,42 +189,25 @@ const CreateDocGICus = props => {
   };
 
   const columsFindpopUp = [
-    {
-      Header: "Code",
-      accessor: "Code",
-      fixed: "left",
-      width: 130,
-      sortable: true
-    },
-    {
-      Header: "Name",
-      accessor: "Name",
-      width: 200,
-      sortable: true
-    }
+    { Header: "Reorder", accessor: "Code", fixed: "left", width: 130, sortable: true },
+    { Header: "Brand", accessor: "Name", width: 200, sortable: true }
   ];
 
   const columnEdit = [
     { Header: "Pallet Code", accessor: 'palletcode', type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
-    {
-      Header: "Reorder",
-      accessor: "SKUItems",
-      type: "findPopUp",
-      idddl: "skuitems",
-      queryApi: SKUMaster,
-      fieldLabel: ["Code", "Name"],
-      columsddl: columsFindpopUp
-    },
     { Header: "SI", accessor: "orderNo", type: "input" },
+    { Header: "Reorder/Brand", accessor: "SKUItems", type: "findPopUp", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
-    { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 },
-    { Header: "Example", type: "text", texts: "Qty = 20" }
+    { Header: "Unit", accessor: "unitType", type: "unitType" },
+    // { Header: "Example", type: "text", texts: "Qty = 20" }
   ];
 
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-    { Header: "Reorder", accessor: "SKUItems" },
     { Header: "SI", accessor: "orderNo", width: 100 },
+    // { Header: "Reorder/Brand", accessor: "SKUItems" },
+    { Header: "Reorder", accessor: "skuCode" },
+    { Header: "Brand", accessor: "skuName" },
     { Header: "Quantity", accessor: "quantity", width: 70 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
