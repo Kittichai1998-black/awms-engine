@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
 import AmDropdown from "../../../../components/AmDropdown"
 import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
-import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match, ExplodeRangeNumToIntArray } from '../../../../components/function/RangeNumUtill';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -23,6 +23,9 @@ import IconLockOpen from '@material-ui/icons/LockOpen';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
 import * as SC from '../../../../constant/StringConst'
+import AmDialogConfirm from '../../../../components/AmDialogConfirm';
+import {AmTable} from '../../../../components/table';
+import DialogContent from '@material-ui/core/DialogContent';
 import Axios1 from 'axios'
 const Axios = new apicall()
 
@@ -266,9 +269,41 @@ const Scanbarcode = (props) => {
     const [lockStateRight, setLockStateRight] = useState(false)
 
     const [lockGateID, setLockGateID] = useState([])
+    const [removeDialog, setRemoveDialog] = useState(false)
+    const [confirmRemove, setConfirmRemove] = useState([])
+    const [removeDialogItem, setRemoveDialogItem] = useState([])
 
     const [manualAddLeft, setManualAddLeft] = useState({})
     const [manualAddRight, setManualAddRight] = useState({})
+
+    const columns = [{Header:"Carton", accessor:"carton", width:300}];
+
+    const createRemoveList = (cartons, pallet, areaIDs, productCode, orderNo) => {
+        let spreadCarton = ExplodeRangeNumToIntArray(cartons)
+        let arrCarton = spreadCarton.map((x, idx) => {
+            return {ID:x,carton:x, pallet , areaID:areaIDs, productCode:productCode, orderNo:orderNo, original:cartons}
+        })
+        setRemoveDialogItem(arrCarton);
+        
+    }
+
+    const createRemoveListTable = () => {
+        return <AmTable
+            primaryKey="ID"
+            data={removeDialogItem}
+            columns={columns}
+            pageSize={1000}
+            sortable = {false}
+            style={{ maxHeight: "390px" }}
+            //397px ^
+            selection={true}
+            selectionType="checkbox"
+            getSelection={(data) => setConfirmRemove(data)}
+        />;
+    }
+
+
+
 
     const updateNoQRData = (side, field, value) => {
         let iniData = {};
@@ -433,14 +468,31 @@ const Scanbarcode = (props) => {
         })
     }
 
-    const RemovePackSto = (baseID, areaID) => {
-        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => {
-            if(res.data._result.stat === 0){
-                setMsgDialog(res.data._result.message);
-                setStateDialog(true);
-            }
-        })
-        document.getElementById("barcodeLong").focus()
+    const RemovePackSto = () => {
+
+        if(confirmRemove.length > 0){
+            let spreadCarton = ExplodeRangeNumToIntArray(confirmRemove[0].original);
+            let cartonNo = confirmRemove.map(x => x.carton)
+
+            var cartons = spreadCarton.filter(x => !cartonNo.includes(x))
+
+            Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {
+                baseStoID:confirmRemove[0]["pallet"], 
+                areaID:confirmRemove[0]["areaID"], 
+                count:cartons.length,
+                productCode:confirmRemove[0]["productCode"],
+                orderNo:confirmRemove[0]["orderNo"],
+                cartons:MergeRangeNum(cartons.join(','))}).then(res => {
+                if(res.data._result.stat === 0){
+                    setMsgDialog(res.data._result.message);
+                    setStateDialog(true);
+                }
+            })
+            document.getElementById("barcodeLong").focus()
+        }
+        
+
+        
     }
 
     const UnlockGate = (areaGateLoc, side) => {
@@ -543,7 +595,7 @@ const Scanbarcode = (props) => {
                             setqtyMax(x.MaxQuantity)
                         }
 
-                         //console.log(x)
+                        //console.log(x)
                         setproductCode(x.Code)
                         setorderNo(x.OrderNo)
                         setunitCode(x.UnitCode)
@@ -860,10 +912,6 @@ const Scanbarcode = (props) => {
                                                                 <Typography variant="h5" component="h3">{orderNo}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
-                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
-                                                                <Typography variant="h5" component="h3">{productCode}</Typography>
-                                                            </FormInline>
-                                                            <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Brand :</Typography >
                                                                 <Typography variant="h5" component="h3">{productName}</Typography>
                                                             </FormInline>
@@ -871,6 +919,11 @@ const Scanbarcode = (props) => {
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Size :</Typography >
                                                                 <Typography variant="h5" component="h3">{skuType}</Typography>
                                                             </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
+                                                                <Typography variant="h5" component="h3">{productCode}</Typography>
+                                                            </FormInline>
+
                                                             <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton No:</Typography >
                                                                 <Typography variant="h5" component="h3">{carton}</Typography>
@@ -896,7 +949,9 @@ const Scanbarcode = (props) => {
                                                                 }}>Manual</AmButton>}
 
                                                             <AmButton style={{ marginTop: "10px", width: "80%", fontSize: "2em" }} styleType="delete" onClick={() => {
-                                                                RemovePackSto(pallet, areaIDs)
+                                                                //RemovePackSto(pallet, areaIDs)
+                                                                setRemoveDialog(true)
+                                                                createRemoveList(carton, pallet, areaIDs, productCode, orderNo)
                                                             }}>Remove</AmButton></div>
                                                     </Card>
                                                 </Flash> :
@@ -906,18 +961,6 @@ const Scanbarcode = (props) => {
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet Code :</Typography >
                                                                     <Typography variant="h5" component="h3">{pallet}</Typography>
-                                                                </FormInline>
-                                                                <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
-                                                                    <Typography variant="h5" component="h3">
-                                                                        <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "orderNo", value);
-                                                                        }} onKeyPress={(value, a, b, event) => {
-                                                                            if (event.key === "Enter") {
-                                                                                document.getElementById("carton").focus();
-                                                                            }
-                                                                        }} />
-                                                                    </Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
@@ -931,7 +974,18 @@ const Scanbarcode = (props) => {
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
-                                                           
+                                                                <FormInline style={{ paddingTop: "10px" }} >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
+                                                                    <Typography variant="h5" component="h3">
+                                                                        <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("left", "orderNo", value);
+                                                                        }} onKeyPress={(value, a, b, event) => {
+                                                                            if (event.key === "Enter") {
+                                                                                document.getElementById("carton").focus();
+                                                                            }
+                                                                        }} />
+                                                                    </Typography>
+                                                                </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton No :</Typography >
                                                                     <Typography variant="h5" component="h3">
@@ -998,16 +1052,16 @@ const Scanbarcode = (props) => {
                                                                 <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
-                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
-                                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
-                                                            </FormInline>
-                                                            <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Brand :</Typography >
                                                                 <Typography variant="h5" component="h3">{productName2}</Typography>
                                                             </FormInline>
                                                             <FormInline style={{ paddingTop: "10px" }}>
                                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Size :</Typography >
                                                                 <Typography variant="h5" component="h3">{skuType2}</Typography>
+                                                            </FormInline>
+                                                            <FormInline style={{ paddingTop: "10px" }}>
+                                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Reoder :</Typography >
+                                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
                                                             </FormInline>
 
                                                             <FormInline style={{ paddingTop: "10px" }}>
@@ -1035,7 +1089,9 @@ const Scanbarcode = (props) => {
                                                                 }}>Manual</AmButton>
                                                             }
                                                             <AmButton style={{ marginTop: "10px", width: "80%", fontSize: "2em" }} styleType="delete" onClick={() => {
-                                                                RemovePackSto(pallet2, areaIDs)
+                                                                //RemovePackSto(pallet2, areaIDs)
+                                                                setRemoveDialog(true)
+                                                                createRemoveList(carton2, pallet2, areaIDs, productCode2, orderNo2)
                                                             }}>Remove</AmButton>
                                                         </div>
                                                     </Card>
@@ -1046,18 +1102,6 @@ const Scanbarcode = (props) => {
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet Code:</Typography >
                                                                     <Typography variant="h5" component="h3">{pallet2}</Typography>
-                                                                </FormInline>
-                                                                <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
-                                                                    <Typography variant="h5" component="h3">
-                                                                        <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("right", "orderNo", value);
-                                                                        }} onKeyPress={(value, a, b, event) => {
-                                                                            if (event.key === "Enter") {
-                                                                                document.getElementById("carton2").focus();
-                                                                            }
-                                                                        }} />
-                                                                    </Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reorder :</Typography >
@@ -1071,7 +1115,18 @@ const Scanbarcode = (props) => {
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
-                                                             
+                                                                <FormInline style={{ paddingTop: "10px" }} >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
+                                                                    <Typography variant="h5" component="h3">
+                                                                        <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("right", "orderNo", value);
+                                                                        }} onKeyPress={(value, a, b, event) => {
+                                                                            if (event.key === "Enter") {
+                                                                                document.getElementById("carton2").focus();
+                                                                            }
+                                                                        }} />
+                                                                    </Typography>
+                                                                </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton No :</Typography >
                                                                     <Typography variant="h5" component="h3">
@@ -1114,6 +1169,15 @@ const Scanbarcode = (props) => {
                     </Grid>
                 </div>
             </div>
+
+            <AmDialogConfirm open={removeDialog} close={() => { setRemoveDialog(false); setRemoveDialogItem([])}}
+            titleDialog={"Remove Carton"}
+            bodyDialog={createRemoveListTable()}
+            dataDialog={props.data}
+            maxWidth={"500px"}
+            customAcceptBtn={<AmButton id={"Remove"} onClick={() => {setRemoveDialog(false);RemovePackSto()}} styleType="confirm_clear">{t("Remove")}</AmButton>}
+            customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => {setRemoveDialog(false); setRemoveDialogItem([])}} styleType="delete_clear">{t("Cancel")}</AmButton>}
+            styleDialog={props.style} />
         </Fullscreen>
     );
 }

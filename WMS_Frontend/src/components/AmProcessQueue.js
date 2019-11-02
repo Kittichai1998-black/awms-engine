@@ -223,6 +223,8 @@ const AmProcessQueue = props => {
     const [docDesCustomer, setdocDesCustomer] = useState([]);
     const [checkboxDocItems, setcheckboxDocItems] = useState([]);
     const [idxSortBtn, setidxSortBtn] = useState();
+    const [defaulDDLArea, setdefaulDDLArea] = useState();
+    const [defaulDDLArea2, setdefaulDDLArea2] = useState()
 
 
     //======== AAI============
@@ -262,6 +264,20 @@ const AmProcessQueue = props => {
         l: 100,
         all: ""
     };
+
+    const AreaMaster = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'desc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+
+    }
+
 
     const detailDocuments = [
         window.project === "AAI"
@@ -357,7 +373,17 @@ const AmProcessQueue = props => {
     ) => {
         //setDataDocumentItem();
         if (value !== undefined && value !== null && dataObject.Code !== null) {
+            console.log(dataObject.deswarehouse)
+            console.log(dataObject.descustomer)
+            if (dataObject.deswarehouse !== null) {
+                setdefaulDDLArea(true)
+            } else {
+                setdefaulDDLArea2(true)
+            }
+
+
             setdocDesWarehouse(dataObject.deswarehouse)
+
             setdocDesCustomer(dataObject.descustomer)
             setdocCodelink(dataObject.Code);
             setDocumentID(value);
@@ -1139,7 +1165,9 @@ const AmProcessQueue = props => {
         field,
         dataDDL,
         Label,
-        defaultValue, defaultValues
+        defaultValue,
+        defaultValues,
+
     ) => {
         if (type === "dropdown") {
             return (
@@ -1153,9 +1181,10 @@ const AmProcessQueue = props => {
                             data={dataDDL}
                             fieldDataKey="value"
                             fieldLabel={["label"]}
-                            width={300} //��˹��������ҧ�ͧ��ͧ input
-                            ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
-                            valueData={valueText[idddls]} //��� value ������͡
+                            width={300} 
+                            ddlMinWidth={300} 
+                            valueData={valueText[idddls]}
+                            //defaultValue={ docDesCustomer && props.StatusfromDescustomer  ? 11 :  null }
                             onChange={(value, dataObject, inputID, fieldDataKey) =>
                                 onHandleChangeDDLProcess(
                                     value,
@@ -1171,11 +1200,14 @@ const AmProcessQueue = props => {
                 </FormInline>
             );
         } else if (type === "dropdownapi") {
+
             return (
                 <FormInline>
                     {" "}
+                   
                     <LabelHDes>{t(Label)} :</LabelHDes>
                     <InputDiv>
+                       
                         <AmDropdown
                             id={idddls}
                             placeholder="Select"
@@ -1187,7 +1219,8 @@ const AmProcessQueue = props => {
                             valueData={valueText[idddls]} //��� value ������͡
                             queryApi={queryApi}
                             returnDefaultValue={true}
-                            defaultValue={defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
+                            defaultValue={ defaulDDLArea === true ? 8 : defaulDDLArea2 === true ? 11                  
+                             : defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
                             disabled={defaultValue ? true : false}
                             //defaultValue={data ? data : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -1206,6 +1239,8 @@ const AmProcessQueue = props => {
             );
         }
     };
+
+    console.log(defaulDDLArea)
     const DetailDoc = () => {
         if (detailsdata === undefined) {
             return detailDocuments.map(x => {
@@ -1308,8 +1343,6 @@ const AmProcessQueue = props => {
                     return dfaultS;
                }
             });
-            console.log(dataSortXX)
-            console.log(dataSorting)
             //setdatasDoc([...datasDoc]);
             datasQ["DataDocdetail"] = dataDetialdoc;
             datasQ["DataDocumentItem"] = [...DataDocumentItem];
@@ -3357,7 +3390,43 @@ const AmProcessQueue = props => {
                                             </Grid>
                                             <Grid item>
                                                 <FormInline style={{ marginRight: "10px" }}>
-                                                    <div>{processDLLs}</div>
+                                                    {window.project === "STA" ? 
+
+                                                        <FormInline>
+                                                            {" "}
+
+                                                            <LabelHDes>Destination Area :</LabelHDes>
+                                                            <InputDiv>
+
+                                                                <AmDropdown
+                                                                    id="desASRSAreaCode"
+                                                                    placeholder="Select"
+                                                                    fieldDataKey="ID" 
+                                                                    fieldLabel={["Code", "Name"]} 
+                                                                    labelPattern=" : " 
+                                                                    width={300} 
+                                                                    ddlMinWidth={300} 
+                                                                    //valueData={valueText[idddls]} 
+                                                                    queryApi={AreaMaster}
+                                                                    returnDefaultValue={true}
+                                                                    defaultValue={defaulDDLArea === true ? 8 : defaulDDLArea2 === true ? 11 : ""}
+                                                                   // disabled={defaultValue ? true : false}
+                                                             
+                                                                    onChange={(value, dataObject, inputID, fieldDataKey) =>
+                                                                        onHandleChangeDDLProcessAPI(
+                                                                            value,
+                                                                            dataObject,
+                                                                            inputID,
+                                                                            fieldDataKey
+                                                                      
+                                                                        )
+                                                                    }
+                                                                    ddlType={"search"} //�ٻẺ Dropdown
+                                                                />
+                                                            </InputDiv>
+                                                        </FormInline>
+
+                                                        :<div>{processDLLs}</div>}
                                                     <AmButton
                                                         style={{ width: "80px", marginLeft: "5px" }}
                                                         styleType="confirm"

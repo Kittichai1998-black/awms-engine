@@ -94,7 +94,7 @@ namespace AWMSModel.Constant.EnumConst
         EXEWM_CheckSAP_BeforeProcessQueue,
 
         [EnumValueAttribute(ValueString = "AUTHEN_LDAP")]
-        AUTHENLDAP,
+        AUTHENLDAP = 38,
 
     }
 }

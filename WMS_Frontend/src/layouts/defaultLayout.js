@@ -175,7 +175,12 @@ const checkstatus = () => {
         sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
         sessionStorage.setItem('Username', localStorage.getItem('Username'));
     } else {
-        localStorage.clear();
+        localStorage.removeItem("User_ID");
+        localStorage.removeItem("Token");
+        localStorage.removeItem("MenuItems");
+        localStorage.removeItem("ExpireTime");
+        localStorage.removeItem("ExtendKey");
+        localStorage.removeItem("Username");
         sessionStorage.clear();
         return <Redirect from='/' to='/login' />;
     }
@@ -237,7 +242,12 @@ const Default = props => {
     const handleLogout = event => {
         handleClose(event);
         sessionStorage.clear();
-        localStorage.clear();
+        localStorage.removeItem("User_ID");
+        localStorage.removeItem("Token");
+        localStorage.removeItem("MenuItems");
+        localStorage.removeItem("ExpireTime");
+        localStorage.removeItem("ExtendKey");
+        localStorage.removeItem("Username");
         i18n.changeLanguage("EN")
     };
     const matches = useMediaQuery('(max-width:400px)');

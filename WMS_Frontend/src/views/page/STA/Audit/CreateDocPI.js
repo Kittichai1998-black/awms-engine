@@ -1,11 +1,11 @@
-import React, { Component, useState, useEffect } from "react";
-import AmCreateDocument from "../../../../components/AmCreateDocument";
+import React, { useState, useEffect } from "react";
+import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
-import axios from "axios";
-import Clone from "../../../../components/function/Clone";
+// import axios from "axios";
+// import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
 const CreateDocPI = props => {
@@ -35,30 +35,12 @@ const CreateDocPI = props => {
           { label: "Document Date", type: "date", key: "documentDate" }
         ],
         [
-          {
-            label: "Movement Type",
-            type: "labeltext",
-            key: "movementTypeID",
-            texts: "FG_PHYSICAL_COUNT_WM ",
-            valueTexts: "1041"
-          },
+          { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_PHYSICAL_COUNT_WM ", valueTexts: "1041" },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
-          {
-            label: "Source Warehouse",
-            type: "labeltext",
-            key: "souWarehouseID",
-            texts: dataWarehouse,
-            valueTexts: "1"
-          },
-          {
-            label: "Destination Warehouse",
-            type: "labeltext",
-            key: "desWarehouseID",
-            texts: dataWarehouse,
-            valueTexts: "1"
-          }
+          { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: dataWarehouse, valueTexts: "1" },
+          { label: "Destination Warehouse", type: "labeltext", key: "desWarehouseID", texts: dataWarehouse, valueTexts: "1" }
         ],
         [
           { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
@@ -74,6 +56,7 @@ const CreateDocPI = props => {
     if (dataTest.length > 0) {
       setTable(
         <AmCreateDocument
+          addList
           headerCreate={dataTest}
           columns={columns}
           columnEdit={columnEdit}
@@ -86,12 +69,33 @@ const CreateDocPI = props => {
     }
   }, [dataTest]);
 
+  const columsFindpopUpPALC = [
+    { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
+    { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
+    { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
+    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
+    { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
+    { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
+    { Header: 'Remark', accessor: 'Remark', width: 110, style: { textAlign: "center" } },
+  ]
+
+  const PalletCode = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "PalletSto",
+    q: '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark",
+    g: "",
+    s: "[{'f':'ID','od':'ASC'}]",
+    sk: 0,
+    l: 20,
+    all: ""
+  }
+
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f:
-      "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f: "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -134,57 +138,26 @@ const CreateDocPI = props => {
   };
 
   const columsFindpopUp = [
-    {
-      Header: "Code",
-      accessor: "Code",
-      fixed: "left",
-      width: 130,
-      sortable: true
-    },
-    {
-      Header: "Name",
-      accessor: "Name",
-      width: 200,
-      sortable: true
-    }
+    { Header: "Reorder", accessor: "Code", fixed: "left", width: 130, sortable: true },
+    { Header: "Brand", accessor: "Name", width: 200, sortable: true }
   ];
 
   const columnEdit = [
-    { Header: "Pallet Code", accessor: "palletcode", type: "input" },
-    {
-      Header: "Location",
-      accessor: "locationcode",
-      type: "findPopUp",
-      pair: "locationcode",
-      idddl: "locationcode",
-      queryApi: AreaLocationMaster,
-      fieldLabel: ["Code", "Name"],
-      columsddl: columsFindpopUp
-      },
-      { Header: "SI", accessor: "orderNo", type: "input" },
-    {
-      Header: "Reorder",
-      accessor: "SKUItems",
-      type: "findPopUp",
-      pair: "skuCode",
-      idddl: "skuitems",
-      queryApi: SKUMaster,
-      fieldLabel: ["Code", "Name"],
-      columsddl: columsFindpopUp
-    },
-    {
-      Header: "Counting (%)",
-      accessor: "qtyrandom",
-      type: "inputNum",
-      TextInputnum: "%"
-    }
+    { Header: "Pallet Code", accessor: 'palletcode', type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
+    { Header: "Location", accessor: "locationcode", type: "findPopUp", pair: "locationcode", idddl: "locationcode", queryApi: AreaLocationMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
+    { Header: "SI", accessor: "orderNo", type: "input" },
+    { Header: "Reorder/Brand", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
+    { Header: "Counting (%)", accessor: "qtyrandom", type: "inputNum", TextInputnum: "%" },
+    { Header: "Unit", accessor: "unitType", type: "unitType" }
   ];
 
   const columns = [
-      { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-      { Header: "SI", accessor: "orderNo", width: 100 },
+    { Header: "Pallet Code", accessor: "palletcode", width: 100 },
+    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
-    { Header: "Reorder", accessor: "SKUItems" },
+    // { Header: "Reorder", accessor: "SKUItems" },
+    { Header: "Reorder", accessor: "skuCode" },
+    { Header: "Brand", accessor: "skuName" },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
@@ -192,12 +165,7 @@ const CreateDocPI = props => {
   const apicreate = "/v2/CreateADDocAPI/"; //API ���ҧ Doc
   const apiRes = "/counting/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
 
-  return (
-    <div>
-      {table}
-      <div />
-    </div>
-  );
+  return table
 };
 
 export default CreateDocPI;

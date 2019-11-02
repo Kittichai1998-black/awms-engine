@@ -3,16 +3,16 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 
-import AmButton from './AmButton'
-import AmDate from './AmDate'
-import AmDatepicker from './AmDate'
-import AmDialogs from './AmDialogs'
-import AmDropdown from './AmDropdown'
-import AmEditorTable from './table/AmEditorTable'
-import AmFindPopup from './AmFindPopup'
-import AmInput from './AmInput'
-import AmTable from './table/AmTable'
-import { apicall } from './function/CoreFunction2'
+import AmButton from '../components/AmButton'
+import AmDate from '../components/AmDate'
+import AmDatepicker from '../components/AmDate'
+import AmDialogs from '../components/AmDialogs'
+import AmDropdown from '../components/AmDropdown'
+import AmEditorTable from '../components/table/AmEditorTable'
+import AmFindPopup from '../components/AmFindPopup'
+import AmInput from '../components/AmInput'
+import AmTable from '../components/table/AmTable'
+import { apicall } from '../components/function/CoreFunction2'
 import BtnAddSKU from './AmCreateDocument_BtnAdd_BySKU'
 
 const Axios = new apicall()
@@ -70,15 +70,21 @@ const AmCreateDocument = (props) => {
     const [addDataID, setAddDataID] = useState(-1);
     const [title, setTitle] = useState("");
     const [dataSource, setDataSource] = useState([]);
-    const [reload, setRelaod] = useState();
-    const [createDocumentData, setcreateDocumentData] = useState({});
+    const [reload, setReload] = useState();
+
+    const dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+        arr[el.key] = el.valueTexts || el.defaultValue
+        return arr
+    }, {})
+    const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
+
     const [valueText, setValueText] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
-    const [dataUnit, setDataUnit] = useState()
+    // const [dataUnit, setDataUnit] = useState()
     const [dataCheck, setDataCheck] = useState()
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const rem = [
@@ -87,10 +93,10 @@ const AmCreateDocument = (props) => {
                 setEditData(e.original);
                 setDialog(true);
                 setTitle("Edit")
-                let unitArr = [{ label: e.original.UnitCode, value: e.original.UnitCode }]
-                if (e.original.UnitCode !== e.original.BaseUnitCode)
-                    unitArr.push({ label: e.original.BaseUnitCode, value: e.original.BaseUnitCode })
-                setDataUnit(unitArr)
+                // let unitArr = [{ label: e.original.UnitCode, value: e.original.UnitCode }]
+                // if (e.original.UnitCode !== e.original.BaseUnitCode)
+                //     unitArr.push({ label: e.original.BaseUnitCode, value: e.original.BaseUnitCode })
+                // setDataUnit(unitArr)
             }}>{t("Edit")
                 }</AmButton>,
         },
@@ -98,10 +104,12 @@ const AmCreateDocument = (props) => {
             Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
                 () => {
                     onHandleDelete(e.original.ID, e.original, e);
-                    //setRelaod({});
+                    //setReload({});
                 }}>{t("Remove")}</AmButton>,
         }
     ];
+
+
 
     const columns = props.columns !== undefined ? props.columns.concat(rem) : null
 
@@ -110,7 +118,7 @@ const AmCreateDocument = (props) => {
         dataSource.splice(idx, 1);
         setDataSource(dataSource);
         setDataCheck(dataSource);
-        setRelaod({})
+        setReload({})
     }
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
@@ -150,54 +158,66 @@ const AmCreateDocument = (props) => {
             editData[field] = data
         }
 
-        let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode")
-        let indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch")
-        let indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "OrderNo")
-        let indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity")
-        let indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
+        let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode"),
+            indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch"),
+            indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity"),
+            indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "orderNo")
 
         //CaseByCase
-        if (field === "palletcode" && data) {
-            editData.ID = data.ID
-            editData.SKUItems = data.SKUItems
-            editData.batch = data.Batch
-            editData.OrderNo = data.OrderNo
-            editData.quantity = data.Quantity
-            editData.unitType = data.UnitTypeCode
-            editData.skuCode = data.Code
-            editData.locationcode = data.LocationCode
+        if (field === "palletcode") {
+            if (data) {
+                editData.ID = data.ID
+
+                editData.SKUItems = data.SKUItems
+                editData.skuCode = data.Code
+                editData.skuName = data.Name
+
+                editData.batch = data.Batch
+                editData.quantity = data.Quantity
+                editData.unitType = data.UnitCode
+
+                editData.locationcode = data.LocationCode
+
+                editData.orderNo = data.orderNo
+
+
+
+                if (indexBatch !== -1)
+                    ref.current[indexBatch].current.value = data.Batch
+                if (indexQuantity !== -1)
+                    ref.current[indexQuantity].current.value = data.Quantity
+                if (indexOrderNo !== -1)
+                    ref.current[indexOrderNo].current.value = data.orderNo
+            } else {
+                delete editData.ID
+            }
 
             // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
             // editData.BaseUnitCode = data.BaseUnitCode
-
-            if (indexBatch !== -1)
-                ref.current[indexBatch].current.value = data.Batch
-            if (indexOrderNo !== -1)
-                ref.current[indexOrderNo].current.value = data.OrderNo
-            if (indexQuantity !== -1)
-                ref.current[indexQuantity].current.value = data.Quantity
-            if (indexUnitType !== -1)
-                ref.current[indexUnitType].current.value = data.UnitTypeCode
-
             // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
             // if (data.UnitCode !== data.BaseUnitCode)
             //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
-            // setDataUnit(unitArr)
+            //  setDataUnit({})
+
         }
-        if (field === "SKUItems" && data) {
+        if (field === "SKUItems") {
             delete editData.palletcode
+            editData["ID"] = addDataID
             if (indexPalletCode !== -1)
                 setTimeout(() => {
                     ref.current[indexPalletCode].current.value = ""
                 }, 1);
-                console.log(ref);
-                
-            if (indexUnitType !== -1)
-                ref.current[indexUnitType].current.innerText = data.UnitTypeCode
+            if (data) {
+                editData.skuCode = data.Code
+                editData.unitType = data.UnitTypeCode
+                editData.skuName = data.Name
+            } else {
+                delete editData.skuCode
+                delete editData.unitType
+                delete editData.skuName
+            }
 
-            editData["ID"] = addDataID
-            editData.skuCode = data.Code
-            editData.unitType = data.UnitTypeCode
+
 
             // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
             // editData.BaseUnitCode = data.BaseUnitCode
@@ -207,8 +227,7 @@ const AmCreateDocument = (props) => {
             //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
             // setDataUnit(unitArr)
         }
-        // console.log(editData);
-
+        setReload({})
         setEditData(editData)
     }
 
@@ -251,7 +270,7 @@ const AmCreateDocument = (props) => {
         setAddDataID(addDataID - 1);
         setAddData(false)
         setDialog(false)
-        setDataUnit()
+        // setDataUnit()
         // setUnitCodes();
         setDataCheck(dataSource);
         setDataSource(dataSource);
@@ -320,7 +339,6 @@ const AmCreateDocument = (props) => {
                 </FormInline>
             )
         } else if (type === "dropdown") {
-
             return (
                 <FormInline>
                     <LabelH>{Header} : </LabelH>
@@ -329,16 +347,16 @@ const AmCreateDocument = (props) => {
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
-                            // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            // fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                            // labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                            fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             width={width ? width : 300} //กำหนดความกว้างของช่อง input
                             ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
                             // valueData={valueText[idddl]} //ค่า value ที่เลือก
-                            // queryApi={queryApi}
-                            data={dataUnit}
+                            queryApi={queryApi}
+                            // data={dataUnit}
                             // returnDefaultValue={true}
-                            defaultValue={editData ? editData.unitType : ""}
+                            defaultValue={editData ? editData[accessor] : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
@@ -374,7 +392,7 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelH>{Header} : </LabelH>
                     <InputDiv>
-                        {<label ref={ref.current[index]}>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
+                        {<label>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
                     </InputDiv>
                 </FormInline>
             )
@@ -433,8 +451,9 @@ const AmCreateDocument = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    style={style ? style : { width: "300px" }}
+                    // style={style ? style : { width: "300px" }}
                     onChange={(e) => {
+
                         let docData = createDocumentData
                         docData[key] = e
                         setcreateDocumentData(docData)
@@ -603,6 +622,7 @@ const AmCreateDocument = (props) => {
             }
             CreateDocuments(CreateData, docItem);
         } else if (props.createDocType === "issue" && props.columnsModifi === undefined) {
+
             dataCreate.issueItems = dataSource.map((x, idx) => {
                 let findPair = props.columnEdit.filter(y => y.pair)
                 findPair.forEach(z => {
@@ -638,7 +658,7 @@ const AmCreateDocument = (props) => {
                     "expireDate": x.expireDate === undefined ? null : x.expireDate,
                     "lot": x.lot === undefined ? null : x.lot,
                     "options": options,
-                    "OrderNo": x.OrderNo === undefined ? null : x.OrderNo,
+                    "orderNo": x.orderNo === undefined ? null : x.orderNo,
                     "packCode": x.packCode === undefined ? null : x.packCode,
                     "packItemQty": x.packItemQty === undefined ? null : x.packItemQty,
                     "productionDate": x.productionDate === undefined ? null : x.productionDate,
@@ -657,7 +677,7 @@ const AmCreateDocument = (props) => {
                 "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
                 "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
                 "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                "Orderno": dataCreate.Orderno === undefined ? null : dataCreate.Orderno,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
                 "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
                 "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
                 "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
@@ -683,7 +703,7 @@ const AmCreateDocument = (props) => {
                 "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
                 "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
                 "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                "Orderno": dataCreate.Orderno === undefined ? null : dataCreate.Orderno,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
                 "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
                 "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
                 "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
@@ -783,10 +803,12 @@ const AmCreateDocument = (props) => {
                 "desAreaMasterCode": dataCreate.desAreaMasterCode === undefined ? null : dataCreate.desAreaMasterCode,
                 "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
                 "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
+                "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
                 "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
                 "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
                 "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
                 "receiveItems": dataCreate.receiveItems === undefined ? null : dataCreate.receiveItems,
+                options: props.optionDoneDesEstatus ? props.optionDoneDesEstatus : null
             }
             CreateDocuments(CreateData, docItem);
         }
@@ -841,20 +863,24 @@ const AmCreateDocument = (props) => {
         data.forEach(x => {
             // let chkData = dataSource.filter(z => z.ID === x.ID)
             // if (chkData.length === 0) {
+
             let y = {
                 ID: x.ID,
                 palletcode: x.palletcode,
                 SKUItems: x.SKUItems,
                 batch: x.Batch || x.batch,
-                OrderNo: x.orderNo || x.OrderNo,
                 quantity: x.Quantity || x.quantity,
                 unitType: x.UnitCode,
                 skuCode: x.Code || x.skuCode,
+                skuName: x.Name || x.skuName,
+                orderNo: x.orderNo,
                 UnitCode: x.UnitCode,
                 BaseUnitCode: x.BaseUnitCode,
                 locationcode: x.LocationCode || x.locationcode
             };
             // ['Batch', 'Quantity', 'UnitCode'].forEach(e => delete y[e]);
+            if (props.createDocType === "audit")
+                y.qtyrandom = "100%"
             dataSource.push(y)
             // }
         })

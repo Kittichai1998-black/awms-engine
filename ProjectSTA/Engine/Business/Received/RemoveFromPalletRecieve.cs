@@ -2,6 +2,7 @@
 using AWMSEngine.ADO;
 using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,38 @@ namespace ProjectSTA.Engine.Business.Received
         {
             public string baseStoID;
             public long areaID;
+            public string cartons;
+            public string productCode;
+            public string orderNo;
+            public decimal count;
         }
 
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
             var stos = StorageObjectADO.GetInstant().Get(reqVO.baseStoID, null, reqVO.areaID, false, true, this.BuVO);
-            stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).ForEach(x =>
+            var packs = new List<StorageObjectCriteria>();
+            if (string.IsNullOrWhiteSpace(reqVO.orderNo))
             {
-                StorageObjectADO.GetInstant().UpdateStatus(x.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-            });
+                packs = stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK && x.code == reqVO.productCode );
+            }
+            else
+            {
+                packs = stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK && x.code == reqVO.productCode && x.orderNo == reqVO.orderNo);
+            }
 
+            if (string.IsNullOrWhiteSpace(reqVO.cartons))
+                packs.ForEach(x => StorageObjectADO.GetInstant().UpdateStatus(x.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO));
+            else
+            {
+                packs.ForEach(x =>
+                {
+                    var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(x.options, OptionVOConst.OPT_CARTON_NO, reqVO.cartons);
+                    x.options = optionsNew;
+                    x.qty = reqVO.count;
+                    x.baseQty = this.StaticValue.ConvertToBaseUnitByPack(x.mstID.Value, reqVO.count, x.unitID).baseQty;
+                    StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
+                });
+            }
             return StorageObjectADO.GetInstant().Get(stos.id.Value, StorageObjectType.BASE, false, true, this.BuVO);
         }
     }

@@ -236,86 +236,72 @@ const SKUMaster = props => {
       placeholder: "Status"
     }
   ];
-  const columnsFilter = [
-    {
-      field: "Code",
-      type: "input",
-      name: window.project === "TAP" ? "Part NO." : "SKU Code",
-      placeholder: "Code",
-      validate: /^.+$/
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: window.project === "TAP" ? "Part Name" : "SKU Name",
-      placeholder: "Name",
-      validate: /^.+$/
-    },
-    {
-      field: "SKUMasterType_Name",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "SKU Type",
-      dataDropDow: SKUMasterTypeQuery,
-      placeholder: "SKU Type",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Name"
-    },
-    {
-      field: "WeightKG",
-      type: "input",
-      inputType: "number",
-      name: "Gross Weight",
-      placeholder: "Gross Weight",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "UnitTypeCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
-    {
-      field: "ObjectSizeCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
-    {
-      field: "Status",
-      type: "status",
-      typeDropdow: "normal",
-      name: "Status",
-      dataDropDow: EntityEventStatus,
-      placeholder: "Status"
-    },
-    {
-      field: "LastUpdateBy",
-      type: "input",
-      name: "Update By",
-      placeholder: "Update By"
-    },
-    {
-      field: "LastUpdateTime",
-      type: "dateFrom",
-      name: "Update From",
-      placeholder: "Update Time From"
-    },
-    {
-      field: "LastUpdateTime",
-      type: "dateTo",
-      name: "Update To",
-      placeholder: "Update Time To"
-    }
-  ];
+    const columnsFilter = [
+        {
+            field: "SKUMasterType_Name",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "SKU Type",
+            dataDropDow: SKUMasterTypeQuery,
+            placeholder: "SKU Type",
+            fieldLabel: ["Code", "Name"],
+            fieldDataKey: "Name"
+        },
+        {
+            field: "WeightKG",
+            type: "input",
+            inputType: "number",
+            name: "Gross Weight",
+            placeholder: "Gross Weight",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "UnitTypeCode",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "Unit Type",
+            dataDropDow: UnitTypeQuery,
+            placeholder: "Unit Type",
+            fieldLabel: ["Code", "Name"],
+            fieldDataKey: "Code"
+        },
+        {
+            field: "ObjectSizeCode",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "% Weight Verify",
+            dataDropDow: ObjectSizeQuery,
+            placeholder: "% Weight Verify",
+            fieldLabel: ["Code", "Name"],
+            fieldDataKey: "Code"
+        },
+        {
+            field: "Status",
+            type: "status",
+            typeDropdow: "normal",
+            name: "Status",
+            dataDropDow: EntityEventStatus,
+            placeholder: "Status"
+        },
+        {
+            field: "LastUpdateBy",
+            type: "input",
+            name: "Update By",
+            placeholder: "Update By"
+        },
+        {
+            field: "LastUpdateTime",
+            type: "dateFrom",
+            name: "Update From",
+            placeholder: "Update Time From"
+        },
+        {
+            field: "LastUpdateTime",
+            type: "dateTo",
+            name: "Update To",
+            placeholder: "Update Time To"
+        }
+    ];
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
       return <AmEntityStatus key={0} statusCode={0} />;
@@ -380,6 +366,22 @@ const SKUMaster = props => {
 
 
     }
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name: window.project === "TAP" ? "Part NO." : "SKU Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name: window.project === "TAP" ? "Part Name" : "SKU Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
 
   return (
       <div>
@@ -400,10 +402,9 @@ const SKUMaster = props => {
               open={stateDialogErr}
           ></AmDialogs>
 
-
-
-      <MasterData
-        columnsFilter={columnsFilter}
+          <MasterData
+        columnsFilterPrimary={primarySearch}
+       columnsFilter={columnsFilter}
        customButton={BtnexportCSV()}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}
