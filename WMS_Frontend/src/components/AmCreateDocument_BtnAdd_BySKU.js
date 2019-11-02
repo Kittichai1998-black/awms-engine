@@ -174,11 +174,12 @@ const BtnAddSkuByItem = (props) => {
         if (open) {
             Axios.get(createQueryString(query)).then(res => {
                 console.log(res.data.datas);
-
-                setData([...res.data.datas])
-                setTotalSize(res.data.counts)
-                let data = props.dataCheck || []
-                setDefaultSelect([...data])
+                if (res.data.datas) {
+                    setData([...res.data.datas])
+                    setTotalSize(res.data.counts)
+                    let data = props.dataCheck || []
+                    setDefaultSelect([...data])
+                }
             })
         }
     }, [query, open])
