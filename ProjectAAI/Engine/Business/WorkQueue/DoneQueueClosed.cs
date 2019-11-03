@@ -26,7 +26,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
     {
         public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
-             
+            var docLists = new List<long>();
+
             reqVO.ForEach(x =>
                 {
                     var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
@@ -222,6 +223,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                         });
                                         UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
                                     }
+                                    docLists.Add(x);
                                 }
                                 else
                                 {
@@ -252,7 +254,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     }
                 });
 
-            return reqVO;
+            return docLists;
         }
  
         private void LogException(long? docID, string message, VOCriteria buVO)
