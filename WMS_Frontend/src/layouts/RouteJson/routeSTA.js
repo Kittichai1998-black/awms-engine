@@ -151,11 +151,21 @@ const PackMaster = Loadable({
   loader: () => import("../../views/page/STA/Master/PackMaster"),
   loading: Loading
 });
+const SKUMaster = Loadable({
+  loader: () => import("../../views/page/STA/Master/SKUMaster"),
+  loading: Loading
+});
 const ScanPalletInfo = Loadable({
   loader: () => import("../../views/page/STA/Warehouse/ScanPalletInfo"),
   loading: Loading
 });
 const routes = [
+  {
+    path: "/setting/sku",
+    name: "SKU",
+    compoment: SKUMaster,
+    exact: true
+  },
   {
     path: "/setting/skutype",
     name: "SKU Type",
@@ -377,7 +387,7 @@ const routes = [
     name: "Scan Pallet Information",
     compoment: ScanPalletInfo,
     exact: true
-  },
+  }
 ];
 
 export default routes;

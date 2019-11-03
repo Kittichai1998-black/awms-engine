@@ -22,29 +22,24 @@ namespace AWMSEngine.Engine.General
 
         protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
-            if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature(FeatureCode.AUTHENLDAP))
+            if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature("AUTHENLDAP"))
             {
-                var host = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.host");
-                var port = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.port");
-                var binddn = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.binddn");
-                var version = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.version");
-                var starttls = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.starttls");
-                var basedn = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("ldap.basedn");
+                var appProp = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("app");
 
-                var userdn = binddn["ldap.binddn"];
+                var userdn = appProp["ldap.binddn"];
                 userdn = userdn.Replace("{username}", reqVO.Username);
-                userdn = userdn.Replace("{host}", host["ldap.host"]);
-                userdn = userdn.Replace("{port}", port == null ? "389" : port["ldap.host"]);
-                userdn = userdn.Replace("{version}", version == null ? "" : version["ldap.version"]);
-                userdn = userdn.Replace("{basedn}", basedn == null ? "" : basedn["ldap.basedn"]);
+                userdn = userdn.Replace("{host}", appProp["ldap.host"]);
+                userdn = userdn.Replace("{port}", appProp["ldap.port"] == null ? "389" : appProp["ldap.port"]);
+                userdn = userdn.Replace("{version}", appProp["ldap.version"] == null ? "" : appProp["ldap.version"]);
+                userdn = userdn.Replace("{basedn}", appProp["ldap.basedn"] == null ? "" : appProp["ldap.basedn"]);
 
                 var ldapRes = AMWUtil.DataAccess.LDAPAuthenticate.ValidateUser(
                     userdn, 
-                    reqVO.Password, 
-                    host["ldap.host"],
-                    port == null ? 389 : int.Parse(port["ldap.host"]),
-                    version == null ? (int?)null : int.Parse(version["ldap.version"]),
-                    starttls == null ? (bool?)null : Convert.ToBoolean(starttls["ldap.starttls"])
+                    reqVO.Password,
+                    appProp["ldap.host"],
+                    appProp["ldap.port"] == null ? 389 : int.Parse(appProp["ldap.port"]),
+                    appProp["ldap.version"] == null ? (int?)null : int.Parse(appProp["ldap.version"]),
+                    appProp["ldap.starttls"] == null ? (bool?)null : Convert.ToBoolean(appProp["ldap.starttls"])
                     );
 
                 if (!ldapRes)

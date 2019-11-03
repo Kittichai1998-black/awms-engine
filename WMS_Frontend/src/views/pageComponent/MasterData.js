@@ -21,6 +21,7 @@ import AmDate from "../../components/AmDate";
 import guid from 'guid';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next'
+import readXlsxFile from 'read-excel-file'
 const Axios = new apicall()
 //   const createQueryString = (select) => {
 //     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -343,7 +344,58 @@ const edit = (e,type) =>{
 }
 
 //===========================================================
-//const [query2, setQuery2] = useState(Query2)
+const [fileCol, setFileCol] = useState(null)
+const input = document.getElementById('input')
+const FuncImport = (e) => {
+  var columnsExcel = props.columnsExcel
+  readXlsxFile(input.files[0]).then((rows) => {
+    //console.log(rows)
+    //console.log(rows[0])
+    var dataImport = []
+
+    for(var i = 1; i < rows.length; i++){ 
+    //console.log( rows[i])
+    var dataObj = {}
+
+      rows[i].forEach((row,idx)=>{
+        //console.log(row)     
+        //console.log(columnsExcel[idx])  
+        if(columnsExcel[idx] !== undefined){
+          dataObj[columnsExcel[idx]] = row
+        }
+       
+      })
+      dataImport.push(dataObj)
+    }
+    //console.log(dataImport)
+    Axios.post(window.apipath + "/v2/UpdateImportSKUAPI", {data:dataImport}).then(
+      res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            input.value = null
+            getData(createQueryString(query));
+            
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            input.value = null
+            getData(createQueryString(query));
+            
+            Clear();
+          }
+        }
+      }
+    );
+    
+    
+ })
+
+}
+
+
+//===========================================================
 const [valueText1, setValueText1] = useState({})
 
  const FuncTest = () => {
@@ -367,7 +419,7 @@ const FuncTestEdit = () => {
    return { 
      "field":y.field,
      "component":(data=null, cols, key)=>{
-       return <div key={key}>{FuncTestSetEleEdit(y.name,y.type,data,cols,y.dataDropDow,y.typeDropdow,y.colsFindPopup,y.placeholder,y.labelTitle,y.fieldLabel,y.validate,y.inputType)}</div>
+       return <div key={key}>{FuncTestSetEleEdit(y.name,y.type,data,cols,y.dataDropDow,y.typeDropdow,y.colsFindPopup,y.placeholder,y.labelTitle,y.fieldLabel,y.validate,y.inputType,y.disable)}</div>
      }
    } 
  })
@@ -746,7 +798,7 @@ const FuncTestSetEle = (name,type,data,cols,dataDropDow,typeDropdow,colsFindPopu
 }
 //=============================================================
 
-const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFindPopup,placeholder,labelTitle,fieldLabel,validate,inputType) => {
+const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFindPopup,placeholder,labelTitle,fieldLabel,validate,inputType,disable) => {
   if(type === "input"){
     return  <FormInline> <LabelH>{t(name)} : </LabelH>
       <InputDiv>
@@ -783,6 +835,7 @@ const FuncTestSetEleEdit = (name,type,data,cols,dataDropDow,typeDropdow,colsFind
     return <FormInline> <LabelH>{t(name)} : </LabelH>   
       <AmDropdown
         id={cols.field}
+        disabled ={disable} 
         placeholder={placeholder}
         fieldDataKey={"ID"}
         fieldLabel={fieldLabel}
@@ -1145,10 +1198,38 @@ const Clear=()=>{
             style={{maxHeight:"550px"}}
             editFlag="editFlag"
             currentPage={page}
-            exportData={true}
-            excelData={excelDataSrouce}
-            renderCustomButtonB4={ <div><AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncTest();setAddData(true); setDialog(true)}} >{t("Add")}</AmButton> {props.customButton} </div>}
+            //exportData={true}
+            //excelData={excelDataSrouce}
+            renderCustomButtonB4={ <div>
+              <AmButton  
+                style={{marginRight:"5px"}} 
+                styleType="add" 
+                onClick={()=>{FuncTest();
+                setAddData(true);
+                setDialog(true)}} >{t("Add")}
+              </AmButton>
+            {props.import == true ?<label style={{ 
+  width:"60px",
+  fontWeight: "bolder",
+   display: "inline-block",
+  background:  "#22a6b3",
+  color: "white",
+  //border: "1px solid #999",
+  borderRadius: "5px",
+  padding: "6px 5px",
+  paddingTop: "4px",
+  outline: "none",
+  whiteSpace: "nowrap",
+  boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
+ }} >Import
+  <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null }
+             {props.customButton} </div>}
         />
+
+              
+             
+       
+     
         <Pagination
               totalSize={totalSize} 
               pageSize={100}

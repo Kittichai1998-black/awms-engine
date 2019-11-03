@@ -106,7 +106,7 @@ const WorkQueueSTA = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:11 },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
 
     ];
 

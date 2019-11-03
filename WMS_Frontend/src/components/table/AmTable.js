@@ -33,8 +33,8 @@ const AmTable = props => {
     }
   }, [props.defaultSelection]);
   useEffect(() => {
-    console.log(props.excelData);
-    console.log(props.exportData);
+    // console.log(props.excelData);
+    // console.log(props.exportData);
   }, []);
   const createColumn = () => {
     let cols = [...props.columns];
