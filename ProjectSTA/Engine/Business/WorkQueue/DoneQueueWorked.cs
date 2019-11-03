@@ -1,7 +1,9 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.Received;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -43,6 +45,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
+                            RemoveOPTDocument(x, docs.Options, buVO);
                             docLists.Add(x);
                         }
                         else
@@ -188,6 +191,23 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                    });*/
 
 
+        }
+        private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
+        {
+            //remove 
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(docID, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AMWUtil.Exception;
+using AMWUtil.Common;
 using AWMSEngine.APIService.V2.ASRS;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -65,6 +67,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                                    RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);
                                 }
                                 else
@@ -101,6 +104,22 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return res;
         }
+        private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
+        {
+            //remove 
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(options);
+            var opt_done = "";
 
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(docID, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
+        }
     }
 }

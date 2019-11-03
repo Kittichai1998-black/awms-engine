@@ -444,7 +444,7 @@ const AmMappingPallet = (props) => {
                 } else {
                     if (modeEmptyPallet === false) {
                         dataScan = {
-                            rootID: rootFocusID,
+                            rootID: modeSelectOnly ? null : rootFocusID,
                             amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                             mode: 0,
                             action: actionValue,
