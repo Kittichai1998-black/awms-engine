@@ -252,7 +252,7 @@ const AmListSTORenderer = (props) => {
         }
     }
     const oriChipRenderer = ({ text, textAvatar, textToolTip, className, classNameAvatar }) => (
-        <AmToolTip textTitle={textToolTip} placement={"top"}>
+        <AmToolTip texttitle={textToolTip} placement={"top"}>
             <Chip
                 className={className}
                 avatar={<Avatar className={classNameAvatar}>{textAvatar}</Avatar>}
@@ -274,7 +274,7 @@ AmListSTORenderer.propTypes = {
 export default withStyles(styles)(AmListSTORenderer);
 
 export const customOptionsRender = ({ value, text, textAvatar, textToolTip, className, classNameAvatar, styleAvatar }, key) => (
-    <AmToolTip key={key} textTitle={textToolTip} placement={"top"}>
+    <AmToolTip key={key} texttitle={textToolTip} placement={"top"}>
         <Chip
             key={key}
             className={className}

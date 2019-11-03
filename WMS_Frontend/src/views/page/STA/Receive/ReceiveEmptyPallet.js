@@ -21,7 +21,7 @@ const ReceiveEmptyPallet = (props) => {
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
     const inputItem = [
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
+        // { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true, "clearInput": true },
         {    //  "visible": false, 
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '12', label: "RECEIVED" },
@@ -40,7 +40,7 @@ const ReceiveEmptyPallet = (props) => {
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
-                setVisibleTabMenu={['Select', 'Add', 'Remove']}
+                setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={true}
             />
         </div>

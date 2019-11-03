@@ -4,7 +4,7 @@ import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
-import { CustomInfoChip, OnOldValueWH } from '../CustomComponent/CustomInfo'
+import { CustomInfoChipWIP, OnOldValueWH } from '../CustomComponent/CustomInfo'
 
 // const Axios = new apicall()
 
@@ -49,7 +49,7 @@ const ReceiveWIPSup = (props) => {
         if (reqValue) {
             let orderNo = null;
             let skuCode = null;
-            // let cartonNo = null;
+            let amount = 0;
             let SOU_WAREHOUSE_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
@@ -69,6 +69,7 @@ const ReceiveWIPSup = (props) => {
                                 let card = x.replace(/\@/g, "");
                                 if(card.length > 0){
                                     tempCardNo.push(card.trim()); 
+                                    amount += 1;
                                 }
                             } 
                         });
@@ -79,20 +80,28 @@ const ReceiveWIPSup = (props) => {
                         // skuCode = skuCode.trim();
 
                         // cartonNo = '0';
-
+                        let checksku = false;
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
                             qryStrOpt = queryString.parse(dataMapstos.options);
 
                             if (skuCode !== null && skuCode !== dataMapstos.code) {
-                                alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
+                                alertDialogRenderer("Product doesn't match the previous product on the pallet.", "error", true);
                                 skuCode = null;
+                            } 
+                            if(rootID && skuCode && orderNo){
+                                if(reqValue.action === 2) {
+                                    if(orderNo === dataMapstos.orderNo){
+                                        amount = 2;
+                                    }else{
+                                        alertDialogRenderer("Card No. doesn't match the previous product on the pallet.", "error", true);
+                                        orderNo = null;
+                                    }
+                                }else if(reqValue.action === 1){
+                                    alertDialogRenderer("This product has been existed on pallet.", "error", true);
+                                    skuCode = null;
+                                }
                             }
-                            // if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
-                            //     alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
-                            //     orderNo = null;
-                            // }
-                             
                         }
 
                         if (rootID && skuCode && orderNo) {
@@ -109,7 +118,9 @@ const ReceiveWIPSup = (props) => {
                                 orderNo: orderNo,
                                 scanCode: skuCode,
                                 options: uri_opt,
-                                validateSKUTypeCodes: ["WIP"]
+                                amount: amount,
+                                validateSKUTypeCodes: ["WIP"],
+                                clearRemark: true
                             };
                             if (reqValue.action != 2) { //ไม่ใช่เคสลบ
                                 if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
@@ -120,13 +131,17 @@ const ReceiveWIPSup = (props) => {
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {
-                                alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
+                                alertDialogRenderer("Please scan the pallet before scan the product.", "error", true);
                             }
                         }
                     } else {
                         if (reqValue.action === 2) {
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
+                            }
+                        }else{
+                            if (storageObj.code !== reqValue.scanCode) {
+                            resValuePost = { ...reqValue, allowSubmit: true, mapnewpallet: true }
                             }
                         }
                     }
@@ -169,7 +184,7 @@ const ReceiveWIPSup = (props) => {
                 autoPost={true}
                 setMovementType={"2011"}
                 showOldValue={OnOldValueWH}
-                customInfoChip={CustomInfoChip}
+                customInfoChip={CustomInfoChipWIP}
             />
         </div>
     );

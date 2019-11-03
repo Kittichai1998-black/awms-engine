@@ -295,7 +295,7 @@ function Test5(props) {
                 <span>ลิงค์ เปลี่ยนสีปุ่ม {' - '}</span><AmLink href={"/doc/gi/create"} target="_blank" className={classNames(classes.link)}>Test2</AmLink>
                 <br />
                 <h4>Button</h4>
-                <AmToolTip textTitle={"Add"} placement="top"><AmButton styleType="add" className={classNames(classes.button)}>
+                <AmToolTip texttitle={"Add"} placement="top"><AmButton styleType="add" className={classNames(classes.button)}>
                     {'Test add'}
                 </AmButton></AmToolTip>
                 {' - '}
