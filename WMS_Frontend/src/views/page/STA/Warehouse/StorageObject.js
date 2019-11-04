@@ -144,7 +144,6 @@ const StorageObject = props => {
     "Base_Unit"
   ];
   const getRemark = value => {
-    console.log(value);
     if (value.Remark === null || value.Remark === "null") {
       return "";
     } else {
