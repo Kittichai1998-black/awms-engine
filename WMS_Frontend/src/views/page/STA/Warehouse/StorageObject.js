@@ -97,7 +97,12 @@ const StorageObject = props => {
       Cell: e => getNumberQty(e.original)
     },
     { Header: "Base_Unit", accessor: "Base_Unit", width: 100 },
-    { Header: "Remark", accessor: "Remark", width: 150 },
+    {
+      Header: "Remark",
+      accessor: "Remark",
+      width: 150,
+      Cell: e => getRemark(e.original)
+    },
     { Header: "Warehouse", accessor: "Warehouse", width: 120 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
@@ -138,6 +143,14 @@ const StorageObject = props => {
     "Qty",
     "Base_Unit"
   ];
+  const getRemark = value => {
+    console.log(value);
+    if (value.Remark === null || value.Remark === "null") {
+      return "";
+    } else {
+      return value.Remark;
+    }
+  };
   const getNumberQty = value => {
     return parseInt(value.Qty);
   };
