@@ -70,7 +70,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                 {
                                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                    RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);
+
                                 }
                                 else
                                 {
@@ -229,6 +231,23 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
             
 
+        }
+        private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
+        {
+            //remove 
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
         }
     }
 }

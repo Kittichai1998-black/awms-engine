@@ -172,7 +172,11 @@ const PickingReturnByBarcode = (props) => {
                             if(storageObj.code === reqValue.scanCode){
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }
-                        } 
+                        }else{
+                            if (storageObj.code !== reqValue.scanCode) {
+                            resValuePost = { ...reqValue, allowSubmit: true, mapnewpallet: true }
+                            }
+                        }
                     }
                 } else {
                     alertDialogRenderer("Please scan code of product.", "error", true);

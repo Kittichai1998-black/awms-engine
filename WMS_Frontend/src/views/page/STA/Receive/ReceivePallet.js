@@ -37,11 +37,10 @@ const ReceivePallet = (props) => {
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '98', label: "QC" },
                 { value: '12', label: "RECEIVED" },
-
+                { value: '98', label: "QC" },
             ],
-            "defaultValue": { value: '98' }
+            "defaultValue": { value: '12' }
         }
     ]
 
@@ -49,11 +48,10 @@ const ReceivePallet = (props) => {
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '98', label: "QC" },
                 { value: '12', label: "RECEIVED" },
-
+                { value: '98', label: "QC" },
             ],
-            "defaultValue": { value: '98' }
+            "defaultValue": { value: '12' }
         },
         { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
     ]

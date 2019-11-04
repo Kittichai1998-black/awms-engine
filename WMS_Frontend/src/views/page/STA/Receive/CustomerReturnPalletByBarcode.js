@@ -209,9 +209,12 @@ const CustomerReturnPalletByBarcode = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
-
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
+                            }
+                        }else{
+                            if (storageObj.code !== reqValue.scanCode) {
+                            resValuePost = { ...reqValue, allowSubmit: true, mapnewpallet: true }
                             }
                         }
                     }
