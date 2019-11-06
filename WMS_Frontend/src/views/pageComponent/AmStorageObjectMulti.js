@@ -300,12 +300,14 @@ const AmStorageObjectMulti = props => {
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);
 
-    let getExcelQuery = Clone(ExportQuery);
-    getExcelQuery.q = query.q;
-    const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
-      res => res
-    );
-    setExcelDataSource(resExcel.data.datas);
+    if (props.export === true) {
+      let getExcelQuery = Clone(ExportQuery);
+      getExcelQuery.q = query.q;
+      const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
+        res => res
+      );
+      setExcelDataSource(resExcel.data.datas);
+    }
   }
   //===========================================================
   const getStatus = Status => {
