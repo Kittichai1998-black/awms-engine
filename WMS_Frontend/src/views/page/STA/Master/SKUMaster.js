@@ -328,7 +328,7 @@ const SKUMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         columnsExcel={columnsExcel}
-        //import={true}
+      import={true}
       />
     </div>
   );

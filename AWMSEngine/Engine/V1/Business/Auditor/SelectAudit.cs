@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,9 @@ namespace AWMSEngine.Engine.Business.Auditor
         {
             public long? docID;
             public List<ItemList> itemLists;
-            public List<PackList> PackLists;
+            public StorageObjectCriteria PackLists;
 
-            public class PackList
-            {
-
-
-            }
+          
 
             public class ItemList
             {
@@ -84,7 +81,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var res = new TRes()
                 {
                     docID = doc.ID,
-                    itemLists = itemLists
+                    itemLists = itemLists,
+                    PackLists = stoList
                 };
 
                 return res;

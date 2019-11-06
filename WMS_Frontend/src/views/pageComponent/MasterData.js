@@ -22,6 +22,10 @@ import guid from 'guid';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next'
 import readXlsxFile from 'read-excel-file'
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+
 const Axios = new apicall()
 //   const createQueryString = (select) => {
 //     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -965,6 +969,7 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     const [openError, setOpenError] = useState(false);
     const [textError, setTextError] = useState("");
     const [excelDataSrouce, setExcelDataSource] = useState([]);
+    const [openFilex, setOpenFilex] = useState()
 //===========================================================
 
 const onHandleEditConfirm = (status, rowdata,type) => {
@@ -1175,6 +1180,7 @@ const Clear=()=>{
   setPackCode("")
   setPackName("")
 }
+
 //===========================================================
     return (
       <div>   
@@ -1198,8 +1204,8 @@ const Clear=()=>{
             style={{maxHeight:"550px"}}
             editFlag="editFlag"
             currentPage={page}
-            //exportData={true}
-            //excelData={excelDataSrouce}
+            exportData={true}
+            excelData={excelDataSrouce}
             renderCustomButtonB4={ <div>
               <AmButton  
                 style={{marginRight:"5px"}} 
@@ -1215,6 +1221,7 @@ const Clear=()=>{
   background:  "#22a6b3",
   color: "white",
   //border: "1px solid #999",
+  marginRight: "5px",
   borderRadius: "5px",
   padding: "6px 5px",
   paddingTop: "4px",
@@ -1225,9 +1232,7 @@ const Clear=()=>{
   <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null }
              {props.customButton} </div>}
         />
-
-              
-             
+  
        
      
         <Pagination

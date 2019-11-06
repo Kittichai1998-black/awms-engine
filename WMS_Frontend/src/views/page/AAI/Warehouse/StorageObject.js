@@ -321,6 +321,7 @@ const StorageObject = props => {
         selection={true}
         modifyRemark={true}
         export={false}
+        multi={true}
         // modifyhold={true}
         // modifyreceived={true}
         // modifyQC={true}

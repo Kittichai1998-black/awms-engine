@@ -252,8 +252,8 @@ const AmStorageObjectMulti = props => {
     });
 
     //var dataGroup = [];
-
-    if (window.project === "AAI") {
+    //console.log(props.multi);
+    if (props.multi === true) {
       res.data.datas.forEach(x => {
         x.SKU_Code = x.SKU_Code.split("\\n").map(y => (
           <div style={{ marginBottom: "3px" }}>{y}</div>
@@ -270,6 +270,7 @@ const AmStorageObjectMulti = props => {
         x.Batch = x.Batch.split("\\n").map(y => (
           <div style={{ marginBottom: "3px" }}>{y}</div>
         ));
+
         x.Status = x.Status.split("\\n").map(y => (
           <div style={{ marginBottom: "3px", textAlign: "center" }}>
             {getStatus(y)}

@@ -315,6 +315,7 @@ const StorageObject = props => {
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}
+        //multi={true}
       />
     </div>
   );
