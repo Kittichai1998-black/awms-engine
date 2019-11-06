@@ -300,11 +300,15 @@ async function UpdateRole (rowdata) {
           if (res.data._result.status === 1) {
             setOpenSuccess(true)
             getData(createQueryString(query))
+            setPage(0);
+            setResetPage(true);
             Clear()
           }else{
             setOpenError(true)
             setTextError(res.data._result.message)
             getData(createQueryString(query))
+            setPage(0);
+            setResetPage(true);
             Clear()
           }           
         }
@@ -362,10 +366,16 @@ const FuncImport = (e) => {
     var dataObj = {}
 
       rows[i].forEach((row,idx)=>{
-        //console.log(row)     
-        //console.log(columnsExcel[idx])  
+        // console.log(row)     
+        // console.log(columnsExcel[idx])  
         if(columnsExcel[idx] !== undefined){
-          dataObj[columnsExcel[idx]] = row
+          if(columnsExcel[idx] === "WeightKG" && row === null ){
+            //console.log("dfw")
+            dataObj[columnsExcel[idx]] = 0
+          }else{
+            dataObj[columnsExcel[idx]] = row
+          }
+
         }
        
       })
@@ -379,14 +389,16 @@ const FuncImport = (e) => {
             setOpenSuccess(true);
             input.value = null
             getData(createQueryString(query));
-            
+            setPage(0);
+            setResetPage(true);
             Clear();
           } else {
             setOpenError(true);
             setTextError(res.data._result.message);
             input.value = null
             getData(createQueryString(query));
-            
+            setPage(0);
+            setResetPage(true);
             Clear();
           }
         }
@@ -930,7 +942,7 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     }
   });
 
-  if(props.tableQuery === "PackMaster" ){
+  if(props.tableQuery === "PackMaster"  ){
     if(dataObject !== null){
       setPackCode(dataObject.Code)
       setPackName(dataObject.Name)
@@ -970,6 +982,8 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     const [textError, setTextError] = useState("");
     const [excelDataSrouce, setExcelDataSource] = useState([]);
     const [openFilex, setOpenFilex] = useState()
+    //const [page, setPage] = useState();
+    const [resetPage, setResetPage] = useState(false);
 //===========================================================
 
 const onHandleEditConfirm = (status, rowdata,type) => {
@@ -998,6 +1012,12 @@ const onHandleDeleteConfirm = (status, rowdata) => {
 //===========================================================  
 useEffect(()=> {
 }, [editRow])
+
+useEffect(() => {
+  if (resetPage === true) {
+    setResetPage(false);
+  }
+}, [resetPage]);
 
 useEffect(()=> {
   getData(createQueryString(query))
@@ -1058,11 +1078,15 @@ dataDelete["Status"] = 2
             if (res.data._result.status === 1) {
               setOpenSuccess(true)
               getData(createQueryString(query))
+              setPage(0);
+              setResetPage(true);
               Clear()
             }else{
               setOpenError(true)
               setTextError(res.data._result.message)
               getData(createQueryString(query))
+              setPage(0);
+              setResetPage(true);
               Clear()
             }                 
           }
@@ -1071,6 +1095,15 @@ dataDelete["Status"] = 2
 //===========================================================
 
 const onChangeEditor = (field, rowdata, value,type,inputType) => {
+// console.log(value)
+// console.log(field)
+// console.log(type)
+// console.log(inputType)
+
+if(field === "WeightKG"|| value === ""){
+  //console.log("value")
+  value = null
+}
 
   if(inputType === "number"&&value==""){
     value =null
@@ -1159,11 +1192,15 @@ const UpdateData =(rowdata,type) =>{
       if (res.data._result.status === 1) {
         setOpenSuccess(true)
         getData(createQueryString(query))
+        setPage(0);
+        setResetPage(true);
         Clear()
       }else{
         setOpenError(true)
         setTextError(res.data._result.message)
         getData(createQueryString(query))
+        setPage(0);
+        setResetPage(true);
         Clear()
       }           
     }
@@ -1239,7 +1276,10 @@ const Clear=()=>{
         <Pagination
               totalSize={totalSize} 
               pageSize={100}
+              resetPage={resetPage}
               onPageChange={(page) => setPage(page)}
+
+            
         />
          <br />
       </div>
