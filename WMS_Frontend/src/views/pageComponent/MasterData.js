@@ -1215,21 +1215,22 @@ const Clear=()=>{
                 setDialog(true)}} >{t("Add")}
               </AmButton>
             {props.import == true ?<label style={{ 
-  width:"60px",
-  fontWeight: "bolder",
-   display: "inline-block",
-  background:  "#22a6b3",
-  color: "white",
-  //border: "1px solid #999",
-  marginRight: "5px",
-  borderRadius: "5px",
-  padding: "6px 5px",
-  paddingTop: "4px",
-  outline: "none",
-  whiteSpace: "nowrap",
-  boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
- }} >Import
-  <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null }
+                width:"60px",
+                fontWeight: "bolder",
+                display: "inline-block",
+                background:  "#22a6b3",
+                color: "white",
+                //border: "1px solid #999",
+                marginRight: "5px",
+                borderRadius: "5px",
+                padding: "6px 5px",
+                paddingTop: "4px",
+                outline: "none",
+                whiteSpace: "nowrap",
+                boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
+              }} >Import
+              <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null
+            }
              {props.customButton} </div>}
         />
   

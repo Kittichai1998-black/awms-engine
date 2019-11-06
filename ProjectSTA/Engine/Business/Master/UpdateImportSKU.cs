@@ -69,6 +69,7 @@ namespace ProjectSTA.Engine.Business
                         BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
                         ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
                         ItemQty = 0 ,
+                        Status = EntityStatus.ACTIVE
 
                     });
                 }
