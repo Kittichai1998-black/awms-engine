@@ -163,7 +163,17 @@ const ScanPalletInfo = Loadable({
   loader: () => import("../../views/page/STA/Warehouse/ScanPalletInfo"),
   loading: Loading
 });
+const ReportStorageObject = Loadable({
+  loader: () => import("../../views/page/STA/Report/StorageObject"),
+  loading: Loading
+});
 const routes = [
+  {
+    path: "/report/storageobject",
+    name: "Issue Report",
+    compoment: ReportStorageObject,
+    exact: true
+  },
   {
     path: "/setting/sku",
     name: "SKU",
