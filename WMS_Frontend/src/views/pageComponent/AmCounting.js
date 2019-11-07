@@ -247,7 +247,7 @@ const AmCounting = props => {
       { label: "Adjust Quantity", value: null }
     ];
   }
-  async function getDocumentName(ID, itemLists) {
+  async function getDocumentName(ID, itemLists, packLists) {
     var doc = "";
     const QueryDocName = {
       queryString: window.apipath + "/v2/SelectDataTrxAPI/",
@@ -274,7 +274,7 @@ const AmCounting = props => {
     });
 
     setTable(itemLists);
-    setDataShow(DataShowRenderer(itemLists, doc));
+    setDataShow(DataShowRenderer(itemLists, doc, packLists));
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   }
   function getStepContent(step) {
@@ -333,7 +333,11 @@ const AmCounting = props => {
         if (res.data._result.status === 0) {
           alertDialogRenderer(res.data._result.message, "error", true);
         } else {
-          getDocumentName(res.data.docID, res.data.itemLists);
+          getDocumentName(
+            res.data.docID,
+            res.data.itemLists,
+            res.data.PackLists
+          );
         }
       });
     } else {
@@ -341,7 +345,6 @@ const AmCounting = props => {
     }
   };
   const createAuditEdit = (value, dataTable) => {
-    console.log(value);
     for (var data in dataTable) {
       dataTable[data].auditQty = parseInt(value, 10);
     }
@@ -365,7 +368,7 @@ const AmCounting = props => {
     { label: "QC", value: 98 },
     { label: "HOLD", value: 99 }
   ];
-  const DataShowRenderer = (data, doc) => {
+  const DataShowRenderer = (data, doc, packLists) => {
     var tmpDoneStatus = "";
 
     data.forEach(x => {
@@ -380,18 +383,27 @@ const AmCounting = props => {
         tmpRadio.label = x.label.toString();
       }
     });
-    console.log(tmpRadio);
-    var tmpDefaultDataRadio = { value: tmpDoneStatus };
+    var tmpDefaultDataRadio = { value: tmpDoneStatus, disabled: true };
+    var tmpDefaultDataRadioDisable = { value: tmpDoneStatus, disabled: false };
     var dataRadio = props.dataRadio;
+    var dataRadioCheck = props.dataRadioCheck;
 
-    console.log(dataRadio);
-    var c = dataRadio.filter(x => x.value === tmpRadio.value);
+    var dataCheck = dataRadio.filter(x => x.value === tmpRadio.value);
 
-    if (c.length === 0) dataRadio.push(tmpRadio);
+    if (dataCheck.length === 0) dataRadio.push(tmpRadio);
+
+    var dataCheckDisable = dataRadioCheck.filter(
+      x => x.value === tmpRadio.value
+    );
+
+    if (dataCheckDisable.length === 0) dataRadioCheck.push(tmpRadio);
 
     var defaultDataRadio = tmpDefaultDataRadio;
-    console.log(defaultDataRadio);
-    return data.map((list, index) => {
+    var defaultDataRadioDisable = tmpDefaultDataRadioDisable;
+
+    return packLists.mapstos.map((list, index) => {
+      var check = data.filter(x => x.stoID === list.id);
+
       return (
         <Card
           key={index}
@@ -426,12 +438,14 @@ const AmCounting = props => {
                   <div><label style={{fontWeight: "bolder"}}>Batch : </label> {list.batch}</div> */}
             <div>
               {/* <label style={{ fontWeight: "bolder" }}>Adj.Qty : </label>{" "} */}
+
               <FormInline>
                 <LabelH>Adj.Qty : </LabelH>{" "}
                 <AmInput
                   defaultValue={list.qty}
                   style={{ width: "70px", padding: "0px" }}
                   type="number"
+                  disabled={check.length === 0 ? true : false}
                   id="QtyEdit"
                   name="QtyEdit"
                   onChange={(value, obj, element, event) => {
@@ -446,10 +460,15 @@ const AmCounting = props => {
                   <LabelH1>Status : </LabelH1>
                   <AmRadioGroup
                     row={true}
+                    // disabled={true}
                     name={"Status"}
-                    dataValue={dataRadio}
+                    dataValue={check.length === 0 ? dataRadio : dataRadioCheck}
                     returnDefaultValue={true}
-                    defaultValue={defaultDataRadio}
+                    defaultValue={
+                      check.length === 0
+                        ? defaultDataRadio
+                        : defaultDataRadioDisable
+                    }
                     onChange={(value, obj, element, event) =>
                       onHandleChangeRadio(value)
                     }

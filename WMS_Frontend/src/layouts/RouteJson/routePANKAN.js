@@ -57,6 +57,16 @@ const SettingSKUMaster = Loadable({
     loader: () => import("../../views/page/Pankan/Master/SKUMaster"),
     loading: Loading
 });
+
+const SettingSupplier = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/Supplier"),
+    loading: Loading
+});
+
+const SettingCustomer = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/Customer"),
+    loading: Loading
+});
 const routes = [
   { path: "/receive/search", name: "base5", compoment: searchGR, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DetailGR, exact: true },
@@ -93,7 +103,9 @@ const routes = [
   },
   { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },
     { path: "/loading/loading", name: "base5", compoment: LoadingEx, exact: true },
-    { path: "/mst/sku/manage", name: "base5", compoment: SettingSKUMaster, exact: true }
+    { path: "/mst/sku/manage", name: "base5", compoment: SettingSKUMaster, exact: true },
+    { path: "/mst/supplier/manage", name: "base5", compoment: SettingSupplier, exact: true },
+    { path: "/mst/customer/manage", name: "base5", compoment: SettingCustomer, exact: true }
 
 ];
 

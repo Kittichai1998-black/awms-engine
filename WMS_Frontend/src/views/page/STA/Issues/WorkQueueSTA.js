@@ -98,9 +98,9 @@ const WorkQueueSTA = (props) => {
   
 
     const columnConfirm = [
-        { Header: 'Reorder', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
         { Header: "SI.", accessor: 'OrderNo', },
+        { Header: 'Reorder', accessor: 'SKU', width: 200 },      
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];

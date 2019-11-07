@@ -130,12 +130,12 @@ const WorkQueueSTACounting = (props) => {
 
     ]; 
     const columnConfirm = [
-        { Header: 'Reorder', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
         { Header: "SI.", accessor: 'OrderNo', },
+        { Header: 'Reorder', accessor: 'SKU', width: 200 },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
-    ];
+ ]
 
     const ProcessQ = [
         { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster},
