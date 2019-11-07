@@ -32,7 +32,8 @@ const AmValidate = withStyles(theme => ({
         msgSuccess,
         msgError,
         regExp,
-        customValidate
+        customValidate,
+        onValidate
     } = props;
     const [resValid, setResValid] = useState(true);
     const [showValid, setShowValid] = useState(true);
@@ -40,11 +41,11 @@ const AmValidate = withStyles(theme => ({
          var values = value.toString();
         if (regExp) {
             if (values.match(regExp)) {
-                // console.log("true")
                 setResValid(true);
+                onValidate(true, msgSuccess)
             } else {
-                // console.log("false")
                 setResValid(false);
+                onValidate(false, msgError)
             }
             if(values.length > 0){
                 setShowValid(true)
@@ -52,12 +53,17 @@ const AmValidate = withStyles(theme => ({
                 setShowValid(false)
             }
             if(regExp == "/^.+$/"){
-                // console.log(regExp)
                 setShowValid(true)
             } 
         } else if (customValidate) {
-            // console.log("func")
-            setResValid(customValidate(values))
+            let checkCustom = customValidate(values);
+            setResValid(checkCustom)
+            if(checkCustom){
+                onValidate(true, msgSuccess)
+            }else{
+                onValidate(false, msgError)
+            }
+            
             if(values.length > 0){
                 setShowValid(true)
             }else{

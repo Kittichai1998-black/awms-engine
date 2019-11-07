@@ -23,7 +23,8 @@ const AmReport = (props) => {
         excelFooter,
         renderCustomButton,
         totalSize,
-        exportApi
+        exportApi,
+        fileNameTable
     } = props;
 
     const [dataSrc, setDataSrc] = useState([]);
@@ -38,58 +39,37 @@ const AmReport = (props) => {
         }
     }, [dataTable]);
     useEffect(() => {
-        if (exportApi) {
-            GetDataExport(exportApi)
-        } else {
-            setDataExport(dataSrc)
-        }
-    }, [exportApi])
-    useEffect(() => {
         if (page != false)
             pages(pageTb)
     }, [pageTb])
-    const comma = (value)=>{
+    const comma = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      }
+    }
     const SumTables = () => {
         return columnTable.filter(row => row.Footer === true).map(row => {
-            return { accessor: row.accessor, sumData: sumFooterTotal(row.accessor) }
+            return { accessor: row.accessor, sumData: sumFooterTotal(dataSrc, row.accessor) }
         })
     }
-    const sumFooterTotal = (value) => {
-        var sumVal = _.sumBy(dataSrc, value)
-        /*var sumVal = _.sumBy(dataSrc,
-            x => _.every(dataSrc, value) == true ?
-                parseFloat(x[value] === null ? 0 : x[value]) : 0)
-       */
+    const sumFooterTotal = (data, value) => {
+        var sumVal = _.sumBy(data, value)
+
         if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal)) {
             return '-'
         } else {
             return comma(sumVal.toFixed(2))
         }
     }
-    const CreateDataWithFooter = () => {
-        if (dataExport && dataExport.length > 0) {
-            var tempdata = Clone(dataExport)
+    const CreateDataWithFooter = (data) => {
+        if (data && data.length > 0) {
+            var tempdata = Clone(data)
             var objfoot = {};
             columnTable.filter(row => row.Footer === true).forEach(row => {
-                objfoot[row.accessor] = sumFooterTotal(row.accessor);
+                objfoot[row.accessor] = sumFooterTotal(data, row.accessor);
                 objfoot["norownum"] = true;
             });
             return tempdata.concat(objfoot);
         }
         return null;
-    }
-    async function GetDataExport() {
-        if (exportApi) {
-            await Axios.get(window.apipath + exportApi).then((rowselect1) => {
-                if (rowselect1) {
-                    if (rowselect1.data._result.status !== 0) {
-                        setDataExport(rowselect1.data.datas);
-                    }
-                }
-            })
-        }
     }
     return (
         <div>
@@ -106,7 +86,10 @@ const AmReport = (props) => {
                 sortable={sortable}
                 currentPage={page ? pageTb : 0}
                 exportData={exportData !== undefined ? exportData : true}
-                excelData={excelFooter !== undefined && true ? CreateDataWithFooter() : dataExport}
+                excelData={dataExport}
+                onExcelFooter={excelFooter !== undefined && true ? CreateDataWithFooter : null}
+                excelQueryAPI={exportApi}
+                fileNameTable={fileNameTable}
                 renderCustomButtonB4={renderCustomButton}
             ></Table>
             {page ? <Pagination
@@ -138,6 +121,8 @@ AmReport.propTypes = {
     exportData: PropTypes.bool,
     excelFooter: PropTypes.bool,
     sortable: PropTypes.bool,
-    sort: PropTypes.func
+    sort: PropTypes.func,
+    exportApi: PropTypes.string,
+    fileNameTable: PropTypes.string
 }
 export default AmReport;

@@ -61,6 +61,7 @@ function CustomTextField(props) {
     regExp,
     customValidate,
     styleValidate,
+    onValidate,
     ...other
   } = props;
 
@@ -161,6 +162,7 @@ function CustomTextField(props) {
             msgError={msgError}
             customValidate={customValidate}
             regExp={regExp}
+            onValidate={onValidate}
           />
         ) : null}
       </div>
