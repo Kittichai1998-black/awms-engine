@@ -42,7 +42,8 @@ namespace ProjectSTA.Engine.Business
         {
             reqVO.data.ForEach(data =>
             {
-             var skuInsert = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_SKUMaster>(this.BuVO, new ams_SKUMaster()
+               
+                var skuInsert = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_SKUMaster>(this.BuVO, new ams_SKUMaster()
                 {
                     Code = data.Code,
                     Name = data.Name,
@@ -50,10 +51,10 @@ namespace ProjectSTA.Engine.Business
                     ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
                     Status = EntityStatus.ACTIVE,
                     UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
+                    //WeightKG = data.WeightKG == ""? 0 : Int32.Parse(data.WeightKG)
                     WeightKG = data.WeightKG
-                });
+                }) ;
 
-                var x = skuInsert;
                 if (skuInsert != null)
                 {
                     AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_PackMaster>(this.BuVO, new ams_PackMaster()
