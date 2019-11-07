@@ -151,11 +151,35 @@ const PackMaster = Loadable({
   loader: () => import("../../views/page/STA/Master/PackMaster"),
   loading: Loading
 });
+const SKUMaster = Loadable({
+  loader: () => import("../../views/page/STA/Master/SKUMaster"),
+  loading: Loading
+});
+const ObjectSizeMap = Loadable({
+  loader: () => import("../../views/page/Master/ObjectSizeMap"),
+  loading: Loading
+});
 const ScanPalletInfo = Loadable({
   loader: () => import("../../views/page/STA/Warehouse/ScanPalletInfo"),
   loading: Loading
 });
+const ReportStorageObject = Loadable({
+  loader: () => import("../../views/page/STA/Report/StorageObject"),
+  loading: Loading
+});
 const routes = [
+  {
+    path: "/report/storageobject",
+    name: "Issue Report",
+    compoment: ReportStorageObject,
+    exact: true
+  },
+  {
+    path: "/setting/sku",
+    name: "SKU",
+    compoment: SKUMaster,
+    exact: true
+  },
   {
     path: "/setting/skutype",
     name: "SKU Type",
@@ -166,6 +190,12 @@ const routes = [
     path: "setting/skuconvertor",
     name: "SKU Convertor",
     compoment: PackMaster,
+    exact: true
+  },
+  {
+    path: "setting/ObjectSizeMap",
+    name: "ObjectSizeMap",
+    compoment: ObjectSizeMap,
     exact: true
   },
   {
@@ -377,7 +407,7 @@ const routes = [
     name: "Scan Pallet Information",
     compoment: ScanPalletInfo,
     exact: true
-  },
+  }
 ];
 
 export default routes;

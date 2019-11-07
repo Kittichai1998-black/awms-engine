@@ -12,14 +12,16 @@ const Container = styled.div`
 
 const Home = (props) => {
     let Img =require('../../../assets/logo/home.png')
-    if (window.project === "ENGINE") { Img =require('../../../assets/logo/home.png')}
-    else if (window.project === "STA") {Img =require('../../../assets/logo/stalogo.png')}
-    else if (window.project === "MRK") {Img =require('../../../assets/logo/mrklogo-new.png')}
-    else if (window.project === "TAP") {Img =require('../../../assets/logo/taplogo.png')}
-   
+    let ContentImg ;
+    if (window.project === "ENGINE") { Img =require('../../../assets/logo/home.png');ContentImg = <img src={Img} width="40%" style={{marginTop:'5%'}}></img>}
+    else if (window.project === "STA") {Img =require('../../../assets/logo/stalogo.png'); ContentImg = <img src={Img} width="60%" style={{marginTop:'-5%'}}></img>}
+    else if (window.project === "MRK") {Img =require('../../../assets/logo/mrklogo-new.png');ContentImg = <img src={Img} width="40%" style={{marginTop:'5%'}}></img>}
+    else if (window.project === "TAP") {Img =require('../../../assets/logo/taplogo.png');ContentImg = <img src={Img} width="40%" style={{marginTop:'5%'}}></img>}
+    else {ContentImg = <img src={Img} width="40%" style={{marginTop:'5%'}}></img>}
+
     return (
         <Container>
-                    <img src={Img} width="40%" style={{marginTop:'5%'}}></img>
+          {ContentImg}
         </Container>
     );
 }

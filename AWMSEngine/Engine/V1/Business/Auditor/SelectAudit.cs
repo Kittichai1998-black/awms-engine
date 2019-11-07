@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace AWMSEngine.Engine.Business.Auditor
         {
             public long? docID;
             public List<ItemList> itemLists;
+            public StorageObjectCriteria PackLists;
+
+          
 
             public class ItemList
             {
@@ -36,6 +40,8 @@ namespace AWMSEngine.Engine.Business.Auditor
         protected override TRes ExecuteEngine(string reqVO)
         {
             var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT ,this.BuVO);
+
+            
             if (listItem.Count > 0)
             {
                 var doc = listItem.First();
@@ -44,10 +50,13 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var getPalletID = ADO.StorageObjectADO.GetInstant().Get(reqVO, (long?)null, (long?)null, false, false, this.BuVO);
                 List<TRes.ItemList> itemLists = new List<TRes.ItemList>();
 
+                var stoList = ADO.StorageObjectADO.GetInstant().Get(getPalletID.id.Value, StorageObjectType.PACK, false, true, this.BuVO);
+
                 disto.ForEach(x =>
                 {
                     var sto = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                    if(sto.parentID == getPalletID.id)
+                    
+                    if (sto.parentID == getPalletID.id)
                     {
                         itemLists.Add(new TRes.ItemList()
                         {
@@ -72,7 +81,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var res = new TRes()
                 {
                     docID = doc.ID,
-                    itemLists = itemLists
+                    itemLists = itemLists,
+                    PackLists = stoList
                 };
 
                 return res;

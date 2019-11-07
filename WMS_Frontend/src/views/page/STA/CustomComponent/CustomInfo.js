@@ -37,6 +37,33 @@ const CustomInfoChip = (row) => {
     return tempInfo
 };
 
+const CustomInfoChipWIP = (row) => {
+    let tempInfo = [];
+    if (row.objectSizeName && row.objectSizeName !== null) {
+        tempInfo.push({
+            text: 'OS',
+            value: row.objectSizeName,
+            textToolTip: 'Object Size'
+        })
+    }
+    if (row.orderNo && row.orderNo !== null) {
+        tempInfo.push({
+            text: 'CA',
+            value: row.orderNo,
+            textToolTip: 'Card No.'
+        })
+    }
+    if (row.qty && row.unitCode && row.qty !== null && row.unitCode !== null) {
+        tempInfo.push({
+            text: 'Q',
+            value: row.qty + " " + row.unitCode,
+            textToolTip: 'Quantity'
+        })
+    }
+
+    return tempInfo
+};
+
 function OnOldValueWH(storageObj) {
     let oldValue = [];
     if (storageObj) {
@@ -122,4 +149,4 @@ function OnOldValue(storageObj) {
     }
     return oldValue;
 }
-export { CustomInfoChip, OnOldValueWH, OnOldValue }
+export { CustomInfoChip, CustomInfoChipWIP, OnOldValueWH, OnOldValue }

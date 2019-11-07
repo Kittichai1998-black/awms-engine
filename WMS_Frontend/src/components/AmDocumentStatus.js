@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
   root: {
-    minWidth: '2.2em',
+    minWidth: "2.2em",
     height: "1.725em"
   }
 });
@@ -35,7 +35,7 @@ const DocumentStatus = props => {
     strLabel = result[0].label;
   }
   return (
-    <>
+    <div style={{ display: "inline-block" }}>
       <IconStatus
         className={classNames(className, classes.root)}
         styleType={strStatus}
@@ -43,7 +43,7 @@ const DocumentStatus = props => {
       >
         {strLabel}
       </IconStatus>
-    </>
+    </div>
   );
 };
 DocumentStatus.propTypes = {

@@ -189,7 +189,7 @@ const styles = theme => ({
 function IconStatus(props) {
     const { children, classes, className, styleType, ...other } = props;
     return (
-        <AmToolTip textTitle={styleType} placement={"top"} >
+        <AmToolTip texttitle={styleType} placement={"top"} >
             <div className={classNames(
                 classes.root, classes[`${styleType}`],
                 className,

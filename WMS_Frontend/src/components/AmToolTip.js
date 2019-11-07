@@ -119,12 +119,12 @@ BootstrapTooltip.propTypes = {
 
 
 export default function CustomizedTooltips(props) {
-    // const { children, classes, className, textTitle, placement, ...other } = this.props;
+    // const { children, classes, className, texttitle, placement, ...other } = this.props;
 
     return (
         <div>
             <BootstrapTooltip
-                title={props.textTitle}
+                title={props.texttitle}
                 placement={props.placement}
                 {...props}
                 >

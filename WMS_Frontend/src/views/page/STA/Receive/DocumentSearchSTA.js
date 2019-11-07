@@ -98,9 +98,10 @@ const DocumentSearchSTA = props => {
     var Statusdisplay = (
       <div style={{ textAlign: "center" }}>
         <AmDocumentStatus key={status} statusCode={status} />{" "}
-        {qryStrOptions._error !== undefined ||
-        qryStrOptions._info !== undefined ||
-        qryStrOptions._warning !== undefined ? (
+        {(qryStrOptions._error !== undefined && qryStrOptions._error !== "") ||
+        (qryStrOptions._info !== undefined && qryStrOptions._info !== "") ||
+        (qryStrOptions._warning !== undefined &&
+          qryStrOptions._warning !== "") ? (
           <IconButton
             aria-label="error"
             size="small"
@@ -131,6 +132,9 @@ const DocumentSearchSTA = props => {
     datatextwarning,
     datatypePopup
   ) => {
+    console.log(datatextError);
+    console.log(datatextinfo);
+    console.log(datatextwarning);
     if (datatextinfo !== "") {
       setTextError(datatextinfo);
       setTypePopup("info");
@@ -162,7 +166,7 @@ const DocumentSearchSTA = props => {
     {
       Header: "",
       accessor: "EventStatus",
-      width: 70,
+      width: 90,
       fixed: "left",
       Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
     },
