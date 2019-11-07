@@ -5,10 +5,21 @@ import {
     createQueryString
 } from "../../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../../components/AmEntityStatus";
+import AmDialogs from "../../../../components/AmDialogs";
+import AmButton from "../../../../components/AmButton";
 const Axios = new apicall();
 
 //======================================================================
 const Supplier = props => {
+
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
+    const [stateDialogErr, setStateDialogErr] = useState(false);
+    const [msgDialogErr, setMsgDialogErr] = useState("");
+
+
+
+
   const EntityEventStatus = [
     { label: "INACTIVE", value: 0 },
     { label: "ACTIVE", value: 1 }
@@ -135,11 +146,75 @@ const Supplier = props => {
     } else {
       return null;
     }
-  };
+    };
+
+
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name: window.project === "TAP" ? "Part NO." : "SKU Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name: window.project === "TAP" ? "Part Name" : "SKU Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
+
+    const BtnexportCSV = () => {
+        return <div>
+        
+
+                <AmButton styleType="add"
+                    onClick={() => { OnclickLoadData() }}
+                >{"Load Data"}</AmButton>
+
+        </div>
+
+    }
+
+    const OnclickLoadData = () => {
+        Axios.post(window.apipath + "/v2/PutSupplierFromFileServerAPI", {}).then((res) => {
+            if (res.data.apiResults.length > 0) {
+                setMsgDialogSuc(res.data.apiResults[0].fileRequest  + "Success")
+                setStateDialogSuc(true)
+            } else {
+                setStateDialogErr(true)
+                setMsgDialogErr("Load Data Fail")
+            }
+        })
+    }
+
 
   return (
-    <div>
-      <MasterData
+      <div>
+
+
+          <AmDialogs
+              typePopup={"success"}
+              content={msgDialogSuc}
+              onAccept={e => {
+                  setStateDialogSuc(e);
+              }}
+              open={stateDialogSuc}
+          ></AmDialogs>
+          <AmDialogs
+              typePopup={"error"}
+              content={msgDialogErr}
+              onAccept={e => {
+                  setStateDialogErr(e);
+              }}
+              open={stateDialogErr}
+          ></AmDialogs>
+
+          <MasterData
+              columnsFilterPrimary={primarySearch}
+              customButton={BtnexportCSV()}
         columnsFilter={columnsFilter}
         tableQuery={"Supplier"}
         table={"ams_Supplier"}

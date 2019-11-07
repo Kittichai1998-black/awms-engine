@@ -11,7 +11,9 @@ import { apicall } from "../../../../components/function/CoreFunction2";
 import AmDialogs from "../../../../components/AmDialogs"
 import moment from "moment";
 import "moment/locale/pt-br";
+import Axios1 from "axios";
 const Axios = new apicall();
+
 
 const FormInline = styled.div`
 display: flex;
@@ -329,8 +331,8 @@ const SKUMaster = props => {
                 >{"Export Data"}</AmButton>
 
                 <AmButton styleType="add"
-                    onClick={() => { OnclickExportData() }}
-                >{"Import Data"}</AmButton>
+                    onClick={() => { OnclickLoadData() }}
+                >{"Load Data"}</AmButton>
 
             </FormInline>
 
@@ -344,9 +346,7 @@ const SKUMaster = props => {
     }
 
     const OnclickExportData = () => {
-        console.log(dates)
         let dateExports = moment(dates).format("YYMMDD");
-        console.log(dateExports)
         let dataExport = {
             "exportName": "ProductToShop",
             "whereValues": [dates, dateExports],
@@ -363,6 +363,24 @@ const SKUMaster = props => {
             }
 
             })
+
+
+    }
+
+    const OnclickLoadData = () => {
+
+        Axios.post(window.apipath + "/v2/PutSKUMasterFromFileServerAPI", {}).then((res) => {
+    
+            if (res.data.apiResults.length > 0) {
+                setMsgDialogSuc(res.data.apiResults[0].fileRequest + "Success")
+                setStateDialogSuc(true)
+            } else {
+                setStateDialogErr(true)
+                setMsgDialogErr("Load Data Fail")
+
+            }
+
+        })
 
 
     }
