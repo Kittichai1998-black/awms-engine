@@ -61,7 +61,7 @@ namespace ProjectSTA.Engine.Business.Received
                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of SKU Code: " + skuCode + " Not Found");
             }
             ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == skuItem.SKUMasterType_ID);
-            if (smt.GroupType == SKUGroupType.FG)
+            if (smt.GroupType != SKUGroupType.FG)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type must be 'FG' only.");
             }
@@ -255,7 +255,7 @@ namespace ProjectSTA.Engine.Business.Received
                                         if (tempStoBaseItems.Count() > 0)
                                         {
                                             //ที่ ObjectType = Base
-                                            var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+                                            var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt());
 
                                             List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
                                             return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
@@ -296,7 +296,7 @@ namespace ProjectSTA.Engine.Business.Received
                             {
                                 if (tempStoBaseItems.Count() > 0)
                                 {
-                                    var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+                                    var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt());
 
                                     return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
                                 }
@@ -307,7 +307,7 @@ namespace ProjectSTA.Engine.Business.Received
                             }
                             else
                             {
-                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoBaseItems.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoBaseItems.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt());
 
                                 return this.GenerateMapSto(reqVO, orderNo, optionsNew, stoBaseItems, skuItem, mapStosPack, areaItem, location, root_optionsNew);
                             }
@@ -334,7 +334,7 @@ namespace ProjectSTA.Engine.Business.Received
                             if (tempStoBaseItems.Count() > 0)
                             {
                                 //ที่ ObjectType = Base
-                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt());
 
                                 List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
                                 return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
