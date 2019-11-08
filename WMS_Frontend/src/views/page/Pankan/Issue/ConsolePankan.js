@@ -16,6 +16,7 @@ import { withStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 import PropTypes from "prop-types";
 import Card from "@material-ui/core/Card";
+import Box from '@material-ui/core/Box';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -137,6 +138,7 @@ const ConsolePankan = (props) => {
     const [qtypick, setqtypick] = useState();
     const [qtyconsole, setqtyconsole] = useState();
     const [datasSourse, setdatasSourse] = useState([]);
+    const [bodyGuides, setbodyGuides] = useState();
 
 
     const Customer = {
@@ -217,6 +219,7 @@ const ConsolePankan = (props) => {
             localStorage.getItem("Token")
         ).then(res => {
             let resDatas = res.data.docItemLists
+            let dataGuides = res.data.locationLists
             let datas = null
             let pacItem = null
             let quantity = null
@@ -233,15 +236,39 @@ const ConsolePankan = (props) => {
                 setreload({})
             })
 
-        //    let pacItem = x.code  x.name
-        //    data = {
-        //        'pacItem': x.code : x.name,
-        //        "quantity": "1/12",
-        //        'unittype': "PC"
+            BodyGuide(dataGuides)
+            //dataGuides.map((y) => {
+            //    BodyGuide(y)
 
-        //    }
-        //    setdatasSourse.push(datas)
+            //})
+
         })
+    }
+
+    const BodyGuide = (datas) => {
+        setdataGiude(datas.map((x) => {
+            return <div>
+                <FormInline>
+                {x.areaCode !== null ?
+                    <Box bgcolor="text.secondary" color="background.paper" p={1} m={1}>
+                        {x.areaCode}
+                    </Box> : null}               
+                {x.locCode !== null ? 
+                    <Box bgcolor="text.secondary" color="background.paper" p={1} m={1}>
+                        {x.locCode}
+                    </Box> : null}
+                {x.baseCode !== null ?
+                    <Box bgcolor="text.secondary" color="background.paper" p={1} m={1}>
+                        {x.baseCode}
+                        </Box> : null}
+                </FormInline>
+            </div>
+
+        } )
+
+      )
+
+
     }
 
     const onChangeEditorBarcodepick = (e) => {
@@ -258,13 +285,14 @@ const ConsolePankan = (props) => {
         }
     }
 
+
+
+
     const Column = [
         { Header: "Pack Item", accessor: 'pacItem' },
         { Header: "Quantity", accessor: "quantity" },
         { Header: 'UnitType', accessor: 'unittype' },
     ];
-
-  
 
     const handleChange = (event, newValue) => {
         setvalue(newValue);
@@ -295,13 +323,12 @@ const ConsolePankan = (props) => {
                 }
             })
 
-
         }
 
-
-      
     };
 
+
+  
     const onclickPickClear = () => {
 
     };
@@ -349,6 +376,7 @@ const ConsolePankan = (props) => {
     const onclickConsoleClear = () => {
 
     }
+
 
  return (
      <div>
@@ -429,7 +457,13 @@ const ConsolePankan = (props) => {
                 ></AmTable>
          </div>
          <div style={{ paddingTop: "10px" }}>
-             <labelH style={{ color: "red"}}>Guide for Picking</labelH>
+             <FormInline>
+                 <labelH style={{ color: "red" }}>Guide for Picking</labelH>
+                 <div>
+                     {dataGiude}
+
+                 </div>
+             </FormInline>
          </div>
          <div style={{ paddingTop:"10px" }}>
              <AppBar position="static" color="default">
