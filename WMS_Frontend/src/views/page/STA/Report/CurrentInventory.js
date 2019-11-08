@@ -276,7 +276,7 @@ const CurrentInventory = (props) => {
                 renderCustomButton={customBtnSelect()}
                 page={true}
                 exportApi={onGetALL()}
-                excelFooter={true}
+                //excelFooter={true}
                 fileNameTable={"CURINV"}
             ></AmReport>
         </div>

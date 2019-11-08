@@ -3,7 +3,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next'
 import AmButton from "../AmButton";
 import AmExportExcel from '../AmExportExcel'
-import { apicall } from '../../components/function/CoreFunction2'
+import { apicall } from '../../components/function/CoreFunction'
 const Axios = new apicall();
 const useExportExcel = (initialData, onExcelFooter) => {
     const [dataSrc, setDataSrc] = useState(initialData);
