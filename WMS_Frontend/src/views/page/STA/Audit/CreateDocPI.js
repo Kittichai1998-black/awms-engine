@@ -77,7 +77,7 @@ const CreateDocPI = props => {
     { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
     { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
     { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
-    { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
+    { Header: 'Unit', accessor: 'BaseUnitCode', width: 70, style: { textAlign: "center" } },
     { Header: 'Remark', accessor: 'remark', width: 110, style: { textAlign: "center" } },
   ]
 
