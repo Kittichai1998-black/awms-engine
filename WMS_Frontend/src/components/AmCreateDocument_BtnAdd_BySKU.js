@@ -1,16 +1,17 @@
 import CloseIcon from '@material-ui/icons/Close';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
+
+// import InputAdornment from '@material-ui/core/InputAdornment';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect, useRef } from "react";
-import SearchIcon from '@material-ui/icons/Search';
+// import SearchIcon from '@material-ui/icons/Search';
 import styled from 'styled-components'
 import Typography from '@material-ui/core/Typography';
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 import { withStyles } from '@material-ui/core/styles';
 
 import AmAux from './AmAux'
@@ -131,20 +132,8 @@ const StyledSearch = styled.div`
   margin: 10px;
 `
 const BtnAddSkuByItem = (props) => {
-
     const [open, setOpen] = useState(false);
-    const conditionDefault = '[{"f":"Status" , "c":"=" , "v":"1"},{ "f": "EventStatus", "c":"=", "v": "12"}]'
-    const [query, setQuery] = useState({
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: conditionDefault, //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 20,
-        all: ""
-    })
+    const [query, setQuery] = useState({ ...props.queryApi })
     const [data, setData] = useState([]);
     const [sort, setSort] = useState()
     const [dataSelect, setDataSelect] = useState([])
@@ -154,26 +143,43 @@ const BtnAddSkuByItem = (props) => {
     const [defaultSelect, setDefaultSelect] = useState();
     const [totalSize, setTotalSize] = useState(0);
 
-    const columns = [
-        { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
-        // { Header: 'SRM Line', accessor: 'srmLine', width: 95, style: { textAlign: "center" } },
-        { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
-        // { Header: "SKU Code", accessor: 'Code', width: 110 },
-        // { Header: "SKU Name", accessor: 'Name', width: 170 },
-        { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
-        // { Header: 'Batch', accessor: 'Batch', width: 100, style: { textAlign: "center" } },
-        { Header: 'SI', accessor: 'OrderNo', width: 70, style: { textAlign: "center" } },
+    useEffect(() => {
+        if (open) {
+            const dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.search)
+            if (dataHeader.length) {
+                dataHeader.map(x => {
+                    props.search.map(y => {
+                        if (x.key === y.accessor) {
+                            if (y.defaultValue) {
+                                let queryQ = JSON.parse(query.q),
+                                    ind = queryQ.findIndex(z => z.f === x.key)
+                                if (ind !== -1)
+                                    queryQ.splice(ind, 1)
+                                queryQ.push({
+                                    f: x.key,
+                                    c: "like",
+                                    v: y.defaultValue
+                                })
+                                query.q = JSON.stringify(queryQ)
+                            } else {
+                                let queryQ = JSON.parse(query.q),
+                                    ind = queryQ.findIndex(z => z.f === x.key)
 
-        { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
-        { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
-        // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95, style: { textAlign: "center" } },
-        { Header: 'Remark', accessor: 'Remark', width: 110, style: { textAlign: "center" } },
-    ]
+                                if (ind !== -1)
+                                    queryQ.splice(ind, 1)
+                                query.q = JSON.stringify(queryQ)
+                            }
+                        }
+                    })
+                })
+            }
+        }
+    }, [open])
 
     useEffect(() => {
         if (open) {
             Axios.get(createQueryString(query)).then(res => {
-                console.log(res.data.datas);
+                // console.log(res.data.datas);
                 if (res.data.datas) {
                     setData([...res.data.datas])
                     setTotalSize(res.data.counts)
@@ -205,10 +211,7 @@ const BtnAddSkuByItem = (props) => {
 
     useEffect(() => {
         if (searchAction) {
-            let newSel = [];
-            // if (conditionDefault) {
-            newSel = JSON.parse(conditionDefault)
-            // }
+            let newSel = JSON.parse(props.queryApi.q)
             Object.keys(keySearch).map((x, idx) => {
                 if (keySearch[x]) {
                     newSel.push({
@@ -241,12 +244,24 @@ const BtnAddSkuByItem = (props) => {
         }
     }, [searchAction])
 
+    const search = props.search.map(x => {
+        return (
+            <SearchInput
+                placeholder={x.placeholder}
+                defaultValue={x.defaultValue ? x.defaultValue : null}
+                // labelInput={"Pallet Code"}
+                onHandleKeyUp={(val) => setKeySearch({ ...keySearch, [x.accessor]: val })}
+                onClickSearch={() => setSearchAction(true)}
+            />
+        )
+    })
+
     return (
         <AmAux>
             <AmButton className="float-right" styleType="add" style={{ width: "150px", margin: "0 0 0 20px" }} onClick={() => {
                 setOpen(true)
             }} >
-                {props.text}
+                {props.textBtn}
             </AmButton>
             <Dialog
                 onClose={() => setOpen(false)}
@@ -258,37 +273,10 @@ const BtnAddSkuByItem = (props) => {
                     id="customized-dialog-title"
                     onClose={() => setOpen(false)}
                 >
-                    {props.text}
+                    {props.textBtn}
                 </DialogTitle>
                 <StyledSearch>
-                    <SearchInput
-                        placeholder={"Pallet Code"}
-                        defaultValue={keySearch ? keySearch.palletcode : null}
-                        // labelInput={"Pallet Code"}
-                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, palletcode: val })}
-                        onClickSearch={() => setSearchAction(true)}
-                    />
-                    <SearchInput
-                        placeholder={"Reorder"}
-                        defaultValue={keySearch ? keySearch.Code : null}
-                        // labelInput={"SKU Code"}
-                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, Code: val })}
-                        onClickSearch={() => setSearchAction(true)}
-                    />
-                    <SearchInput
-                        placeholder={"Location"}
-                        defaultValue={keySearch ? keySearch.LocationCode : null}
-                        // labelInput={"Location"}
-                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, LocationCode: val })}
-                        onClickSearch={() => setSearchAction(true)}
-                    />
-                    <SearchInput
-                        placeholder={"Remark"}
-                        defaultValue={keySearch ? keySearch.Remark : null}
-                        // labelInput={"Batch"}
-                        onHandleKeyUp={(val) => setKeySearch({ ...keySearch, Remark: val })}
-                        onClickSearch={() => setSearchAction(true)}
-                    />
+                    {search}
                 </StyledSearch>
 
                 <DialogContent>
@@ -296,7 +284,7 @@ const BtnAddSkuByItem = (props) => {
                         primaryKey="ID"
                         defaultSelection={defaultSelect}
                         data={data}
-                        columns={columns}
+                        columns={props.columns}
                         pageSize={20}
                         sort={(sort) => setSort({ field: sort.id, order: sort.sortDirection })}
                         style={{ maxHeight: "390px" }}

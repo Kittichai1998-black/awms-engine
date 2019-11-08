@@ -81,44 +81,38 @@ const StockCard = (props) => {
     useEffect(() => {
         onGetDocument()
     }, [page])
-    const onGetDocument = () => {
-        console.log(valueText);
-
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
-            + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
-            + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
-            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-            + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-            + "&page=" + (page === undefined || null ? 0 : page)
-            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
-            + "&spname=DAILY_STOCKCARD").then((rowselect1) => {
-                if (rowselect1) {
-                    if (rowselect1.data._result.status !== 0) {
-                        setdatavalue(rowselect1.data.datas)
-                        setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
-                    }
-                }
-            })
+    const onGetALL = () => {
+        return window.apipath + "/v2/GetSPReportAPI?"
+            + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+            + "&toDate=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
+            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+            + "&movementType=" + (valueText.movementType === undefined || t.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+            + "&spname=DAILY_STOCKCARD";
     }
-    const getAPI = "/v2/GetSPReportAPI?"
-        + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
-        + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
-        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-        + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-        + "&spname=DAILY_STOCKCARD";
+    const onGetDocument = () => {
+
+        let pathGetAPI = onGetALL() +
+            "&page=" + (page === undefined || null ? 0 : page)
+            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
+        Axios.get(pathGetAPI).then((rowselect1) => {
+            if (rowselect1) {
+                if (rowselect1.data._result.status !== 0) {
+                    setdatavalue(rowselect1.data.datas)
+                    setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
+                }
+            }
+        });
+
+    }
+
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
+        valueText[inputID] = value;
 
-        valueText[inputID] = {
-            value: value,
-            dataObject: dataObject,
-            fieldDataKey: fieldDataKey,
-        }
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -218,7 +212,8 @@ const StockCard = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 page={true}
-                exportApi={getAPI}
+                exportApi={onGetALL()}
+                fileNameTable={"STC"}
                 excelFooter={true}
             ></AmReport>
         </div>

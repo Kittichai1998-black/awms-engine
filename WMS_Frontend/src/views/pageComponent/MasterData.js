@@ -104,6 +104,11 @@ const MasterData = (props) => {
     all: "",
   };
 //===========================================================
+useEffect(() => {
+  if (resetPage === true) {
+    setResetPage(false);
+  }
+}, [resetPage]);
 
 
 const FuncSetTable  = () => {
@@ -369,13 +374,13 @@ const FuncImport = (e) => {
         // console.log(row)     
         // console.log(columnsExcel[idx])  
         if(columnsExcel[idx] !== undefined){
-          if(columnsExcel[idx] === "WeightKG" && row === null ){
-            //console.log("dfw")
-            dataObj[columnsExcel[idx]] = 0
-          }else{
-            dataObj[columnsExcel[idx]] = row
-          }
-
+          // if(columnsExcel[idx] === "WeightKG" && row === null ){
+          //   //console.log("dfw")
+          //   dataObj[columnsExcel[idx]] = 0
+          // }else{
+          //   dataObj[columnsExcel[idx]] = row
+          // }
+          dataObj[columnsExcel[idx]] = row
         }
        
       })
@@ -1013,11 +1018,6 @@ const onHandleDeleteConfirm = (status, rowdata) => {
 useEffect(()=> {
 }, [editRow])
 
-useEffect(() => {
-  if (resetPage === true) {
-    setResetPage(false);
-  }
-}, [resetPage]);
 
 useEffect(()=> {
   getData(createQueryString(query))
@@ -1271,9 +1271,7 @@ const Clear=()=>{
                     {props.customButton}</FormInline>
                 </div>}
         />
-  
-       
-     
+    
         <Pagination
               totalSize={totalSize} 
               pageSize={100}

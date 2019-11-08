@@ -91,51 +91,43 @@ const DailySTOSumIssue = (props) => {
     useEffect(() => {
         onGetDocument()
     }, [page])
-    const onGetDocument = () => {
 
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
-            + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
-            + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
-            + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
+    const onGetALL = () => {
+        return window.apipath + "/v2/GetSPReportAPI?"
+            + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom))
+            + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo))
+            + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
+            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
+            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+            + "&movementTypeID=" + (valueText.movementType === undefined || t.movementType === null ? '' : encodeURIComponent(valueText.movementType))
             + "&docType=1002"
-            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-            + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-            + "&page=" + (page === undefined || null ? 0 : page)
-            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
-            + "&spname=DAILY_STOSUM").then((rowselect1) => {
-                if (rowselect1) {
-                    if (rowselect1.data._result.status !== 0) {
-                        setdatavalue(rowselect1.data.datas)
-                        setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
-                    }
-                }
-            })
+            + "&spname=DAILY_STOSUM";
     }
-    const getAPI = "/v2/GetSPReportAPI?"
-        + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
-        + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
-        + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
-        + "&docType=1002"
-        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-        + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
-        + "&spname=DAILY_STOSUM";
+    const onGetDocument = () => {
+        let pathGetAPI = onGetALL() +
+            "&page=" + (page === undefined || null ? 0 : page)
+            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
 
+        Axios.get(pathGetAPI).then((rowselect1) => {
+            if (rowselect1) {
+                if (rowselect1.data._result.status !== 0) {
+                    setdatavalue(rowselect1.data.datas)
+                    setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
+
+                }
+            }
+        })
+    }
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
+        valueText[inputID] = value;
 
-        valueText[inputID] = {
-            value: value,
-            dataObject: dataObject,
-            fieldDataKey: fieldDataKey,
-        }
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-           <FormInline>
+            <FormInline>
                 <LabelH>{t('SKU Code')} : </LabelH>
                 <AmInput
                     id={"packCode"}
@@ -251,7 +243,8 @@ const DailySTOSumIssue = (props) => {
                 pages={(x) => setPage(x)}
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
-                exportApi={getAPI}
+                exportApi={onGetALL()}
+                fileNameTable={"DAILYSTO_SUM_ISSUE"}
                 excelFooter={true}
                 page={true}
             ></AmReport>

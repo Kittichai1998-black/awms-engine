@@ -68,39 +68,33 @@ const CurrentInventory = (props) => {
     useEffect(() => {
         onGetDocument()
     }, [page])
-    const onGetDocument = () => {
-
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
-            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-            + "&packName=" + (valueText.packName === undefined || valueText.packName.value === undefined || valueText.packName.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
-            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-            + "&page=" + (page === undefined || null ? 0 : page)
-            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize)
-            + "&spname=CURRENTINV_STOSUM").then((rowselect1) => {
-                if (rowselect1) {
-                    if (rowselect1.data._result.status !== 0) {
-                        setdatavalue(rowselect1.data.datas)
-                        setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
-                    }
-                }
-            })
+    const onGetALL = () => {
+        return window.apipath + "/v2/GetSPReportAPI?"
+            + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
+            + "&packName=" + (valueText.packName === undefined || valueText.packName === null ? '' : encodeURIComponent(valueText.packName.trim()))
+            + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+            + "&spname=CURRENTINV_STOSUM";
     }
-    const getAPI = "/v2/GetSPReportAPI?"
-        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
-        + "&packName=" + (valueText.packName === undefined || valueText.packName.value === undefined || valueText.packName.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
-        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
-        + "&spname=CURRENTINV_STOSUM";
+    const onGetDocument = () => {
+        let pathGetAPI = onGetALL() +
+            "&page=" + (page === undefined || null ? 0 : page)
+            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
+
+        Axios.get(pathGetAPI).then((rowselect1) => {
+            if (rowselect1) {
+                if (rowselect1.data._result.status !== 0) {
+                    setdatavalue(rowselect1.data.datas)
+                    setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
+                }
+            }
+        });
+    }
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
-
-        valueText[inputID] = {
-            value: value,
-            dataObject: dataObject,
-            fieldDataKey: fieldDataKey,
-        }
+        valueText[inputID] = value;
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -141,6 +135,12 @@ const CurrentInventory = (props) => {
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'Name', sortable: false },
         { Header: 'Order No.', accessor: 'OrderNo', width: 70, sortable: false },
+        {
+            Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
         {
             Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false,
             Footer: true,
@@ -256,12 +256,12 @@ const CurrentInventory = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 page={true}
-                exportApi={getAPI}
+                exportApi={onGetALL()}
                 excelFooter={true}
+                fileNameTable={"CURINV"}
             ></AmReport>
         </div>
     )
-
 }
 
 export default withStyles(styles)(CurrentInventory);

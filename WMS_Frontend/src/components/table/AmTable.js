@@ -175,8 +175,8 @@ const AmTable = props => {
               <span>
                 {Moment(data.original[x.accessor]).isValid
                   ? Moment(data.original[x.accessor]).format(
-                      x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
-                    )
+                    x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
+                  )
                   : ""}
               </span>
             );
@@ -300,7 +300,9 @@ const AmTable = props => {
         {props.exportData ? (
           <AmExportDataTable
             data={props.excelData ? props.excelData : []}
-            fileName={"Table"}
+            excelQueryAPI={props.excelQueryAPI}
+            onExcelFooter={props.onExcelFooter}
+            fileName={props.fileNameTable ? props.fileNameTable : "Table"}
             cols={exportColumns()}
           />
         ) : null}
@@ -392,7 +394,7 @@ AmTable.propTypes = {
   getSelection: PropTypes.func,
   style: PropTypes.object,
   onRowClick: PropTypes.func,
-  sumFooter: PropTypes.object,
+  sumFooter: PropTypes.array,
   currentPage: PropTypes.number,
   editFlag: PropTypes.string,
   exportData: PropTypes.bool
