@@ -50,11 +50,11 @@ const CreateDocGIWare = props => {
         ],
         [
           { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: dataWarehouse, valueTexts: "1" },
-          { label: "Destination Warehouse", key: "desWarehouseID", type: "dropdown", pair: "ID", idddl: "desWarehouseID", queryApi: WarehouseQuery2, fieldLabel: ["Code", "Name"],defaultValue:1 }
+          { label: "Destination Warehouse", key: "desWarehouseID", type: "dropdown", pair: "ID", idddl: "desWarehouseID", queryApi: WarehouseQuery2, fieldLabel: ["Code", "Name"], defaultValue: 1 }
         ],
         [
           { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
-          { label: "Remark", type: "input", key: "remark" }
+          { label: "Remark", type: "input", key: "remark", search: true }
         ]
         //[{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },{ label: "", type: "", key: "", texts: "" },]
       ];
@@ -62,7 +62,7 @@ const CreateDocGIWare = props => {
       if (headerCreates.length > 0) {
         setTable(
           <AmCreateDocument
-            addList
+            addList={addList}
             headerCreate={headerCreates}
             columns={columns}
             columnEdit={columnEdit}
@@ -94,6 +94,7 @@ const CreateDocGIWare = props => {
 
   const columsFindpopUpPALC = [
     { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
+    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
     // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
     { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
@@ -101,11 +102,11 @@ const CreateDocGIWare = props => {
     { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
     // { Header: 'Batch', accessor: 'Batch', width: 100,  style: { textAlign: "center" }  },
     // { Header: 'Batch', accessor: 'Batch' },
-    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
+   
     { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
-    { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
+    { Header: 'Unit', accessor: 'BaseUnitCode', width: 70, style: { textAlign: "center" } },
     // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
-    { Header: 'Remark', accessor: 'Remark', width: 110, style: { textAlign: "center" } },
+    { Header: 'Remark', accessor: 'remark', width: 110, style: { textAlign: "center" } },
   ]
 
   // const columsFindpopUpSKU = [
@@ -118,12 +119,23 @@ const CreateDocGIWare = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q: '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-    f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark",
+    f: "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
     l: 20,
     all: ""
+  }
+
+  const addList = {
+    queryApi: PalletCode,
+    columns: columsFindpopUpPALC,
+    search: [
+      { accessor: "palletcode", placeholder: "Pallet Code" },
+      { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "remark", placeholder: "Remark" }
+    ]
   }
 
   const SKUMaster = {

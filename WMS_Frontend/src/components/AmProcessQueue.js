@@ -2257,6 +2257,7 @@ const AmProcessQueue = props => {
                                                 }
                                             }
                                             //locationcode = qryStr2["bestq_blk"] 
+                                            console.log(x)
 
                                         }
 
@@ -3133,7 +3134,7 @@ const AmProcessQueue = props => {
                                                                                                 marginLeft: "15px"
                                                                                             }}
                                                                                         >
-                                                                                            ฃ
+                                                                                            
                                                                                           
                                                                                                
                                                                                             {window.project === "STA" ? <div style={{ width: "800px" }}>

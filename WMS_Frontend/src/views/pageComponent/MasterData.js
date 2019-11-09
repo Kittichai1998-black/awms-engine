@@ -1242,8 +1242,8 @@ const Clear=()=>{
             editFlag="editFlag"
             currentPage={page}
             exportData={true}
-            excelData={excelDataSrouce}
-            renderCustomButtonB4={ <div>
+                excelData={excelDataSrouce}
+                renderCustomButtonB4={<div><FormInline>
               <AmButton  
                 style={{marginRight:"5px"}} 
                 styleType="add" 
@@ -1267,15 +1267,16 @@ const Clear=()=>{
                 boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
               }} >Import
               <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null
-            }
-             {props.customButton} </div>}
+                    }
+                    {props.customButton}</FormInline>
+                </div>}
         />
     
         <Pagination
               totalSize={totalSize} 
               pageSize={100}
               resetPage={resetPage}
-              onPageChange={(page) => setPage(page)}            
+              onPageChange={(page) => setPage(page)}
         />
          <br />
       </div>

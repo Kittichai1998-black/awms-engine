@@ -109,8 +109,6 @@ const AmCreateDocument = (props) => {
         }
     ];
 
-
-
     const columns = props.columns !== undefined ? props.columns.concat(rem) : null
 
     const onHandleDelete = (v, o, rowdata) => {
@@ -174,7 +172,7 @@ const AmCreateDocument = (props) => {
 
                 editData.batch = data.Batch
                 editData.quantity = data.Quantity
-                editData.unitType = data.UnitCode
+                editData.unitType = data.BaseUnitCode
 
                 editData.locationcode = data.LocationCode
 
@@ -413,7 +411,7 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue) => {
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
         if (type === "date") {
             return (
                 <AmDate
@@ -453,6 +451,8 @@ const AmCreateDocument = (props) => {
                     //value={createDocumentData[key]}              
                     // style={style ? style : { width: "300px" }}
                     onChange={(e) => {
+                        if (obj.search)
+                            props.addList.search.find(x => x.accessor === key).defaultValue = e
 
                         let docData = createDocumentData
                         docData[key] = e
@@ -523,7 +523,7 @@ const AmCreateDocument = (props) => {
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
                                     <LabelH>{t(y.label) + syn}</LabelH>
-                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue)}
+                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
                                 </FormInline></div>
                             </Grid>
                         )
@@ -870,7 +870,7 @@ const AmCreateDocument = (props) => {
                 SKUItems: x.SKUItems,
                 batch: x.Batch || x.batch,
                 quantity: x.Quantity || x.quantity,
-                unitType: x.UnitCode,
+                unitType: x.BaseUnitCode,
                 skuCode: x.Code || x.skuCode,
                 skuName: x.Name || x.skuName,
                 orderNo: x.orderNo,
@@ -913,8 +913,11 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
                         {props.addList ? <BtnAddSKU
-                            // queryApi={props.typeAdd.queryApi}
-                            text={t("Add List")}
+                            headerCreate={props.headerCreate}
+                            queryApi={props.addList.queryApi}
+                            columns={props.addList.columns}
+                            search={props.addList.search}
+                            textBtn={t("Add List")}
                             onSubmit={(data) => { setDataSource(setFormatData(data)); setDataCheck(data); }}
                             dataCheck={dataCheck}
                         /> : null}
