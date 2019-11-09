@@ -30,7 +30,7 @@ namespace ProjectSTA.Engine.Business
             public string Base_Unit_Type;
             public long Sale_Qty;
             public string Sale_Unit_Type;
-            public long WeightKG;
+            public decimal? WeightKG;
             public string ObjectSize;
         }
         public class TDocRes
@@ -51,7 +51,8 @@ namespace ProjectSTA.Engine.Business
                     ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
                     Status = EntityStatus.ACTIVE,
                     UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
-                    //WeightKG = data.WeightKG == ""? 0 : Int32.Parse(data.WeightKG)
+                    //WeightKG = data.WeightKG? 0 : Int32.Parse(data.WeightKG)
+                    //WeightKG = string.IsNullOrWhiteSpace(data.WeightKG)? (decimal?)null: (decimal?)data.WeightKG
                     WeightKG = data.WeightKG
                 }) ;
 
