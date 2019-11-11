@@ -94,6 +94,7 @@ const CreateDocGIWare = props => {
 
   const columsFindpopUpPALC = [
     { Header: 'Pallet Code', accessor: 'palletcode', width: 110, style: { textAlign: "center" } },
+    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
     // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
     { Header: "Reorder/Brand", accessor: 'SKUItems', width: 400 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
@@ -101,9 +102,9 @@ const CreateDocGIWare = props => {
     { Header: 'Location', accessor: 'LocationCode', width: 90, style: { textAlign: "center" } },
     // { Header: 'Batch', accessor: 'Batch', width: 100,  style: { textAlign: "center" }  },
     // { Header: 'Batch', accessor: 'Batch' },
-    { Header: 'SI', accessor: 'orderNo', width: 70, style: { textAlign: "center" } },
+   
     { Header: "Quantity", accessor: 'Quantity', width: 90, style: { textAlign: "center" } },
-    { Header: 'Unit', accessor: 'UnitCode', width: 70, style: { textAlign: "center" } },
+    { Header: 'Unit', accessor: 'BaseUnitCode', width: 70, style: { textAlign: "center" } },
     // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
     { Header: 'Remark', accessor: 'remark', width: 110, style: { textAlign: "center" } },
   ]
