@@ -2246,6 +2246,14 @@ const AmProcessQueue = props => {
 
                                         }
 
+                                        if (props.AllStatus === true) {
+                                            onChangCheckboxConsFull(null, null, idx);
+                                            onChangCheckboxConsRecieve(null, null, idx);
+                                            onChangCheckboxConsQC(null, null, idx);
+                                            onChangCheckboxConsReturn(null, null, idx);
+                                            onChangCheckboxConsPartail(null, null, idx);
+                                        }
+
                                         var RecieveFromDoc = false
                                         var QcFromDoc = false
                                         var BlockFromDoc = false
