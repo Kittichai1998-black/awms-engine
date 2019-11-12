@@ -29,6 +29,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public long unitID;
                 public long baseUnitID;
                 public string option;
+                public string remark;
 
             }
         }
@@ -45,6 +46,19 @@ namespace AWMSEngine.Engine.Business.Auditor
                     var getPack = ADO.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
                     var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
                     ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty,x.option, getPack.parentID.Value, this.BuVO);
+
+                    getPack.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(getPack.options,
+                       new KeyValuePair<string, object>[] {
+                           new KeyValuePair<string, object>("remark",x.remark)
+                       });
+
+                    ADO.StorageObjectADO.GetInstant().PutV2(getPack, this.BuVO);
+
+                    //AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.stoID, this.BuVO,
+                    //    new KeyValuePair<string, object>[] {
+                    //        new KeyValuePair<string, object>("Options","remark=" +x.remark)
+                    //    });
+
                 });
                 var Disto = new List<amt_DocumentItemStorageObject>();
                 getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); }) ;

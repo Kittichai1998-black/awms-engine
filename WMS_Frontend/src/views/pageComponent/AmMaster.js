@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Table from '../../components/table/AmTable';
+import Table from '../../components/table/AmTableV2';
 // import DocView from "../../views/pageComponent/DocumentView";
 import Pagination from '../../components/table/AmPagination';
 import AmEditorTable from '../../components/table/AmEditorTable';
@@ -25,7 +25,8 @@ import readXlsxFile from 'read-excel-file'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-
+import EditIcon from "@material-ui/icons/Edit";
+import IconButton from "@material-ui/core/IconButton";
 const Axios = new apicall()
 //   const createQueryString = (select) => {
 //     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -134,10 +135,28 @@ const FuncSetTable  = () => {
           },{      
             Header: 'Edit',
             width:80,
-            Cell:(e)=>
-            <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
-            {t('Info')}
-            </AmButton>,
+            Cell:(e)=>          <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <EditIcon
+              fontSize="small"
+              style={{ color: "#E53935" }}
+              // onClick={() =>
+              //   handleClickOpenDialog(
+              //     qryStrOptions._error,
+              //     qryStrOptions._info,
+              //     qryStrOptions._warning,
+              //     typePopup
+              //   )
+              // }
+            />
+          </IconButton>,
+            // <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
+            // {t('Info')}
+            // </AmButton>,
             sortable:false,
           },{
             Header: 'Delete',
@@ -150,12 +169,32 @@ const FuncSetTable  = () => {
           },)
     }else{
       iniCols.push({      
-        Header: 'Edit',
-        width:80,
+        Header: '',
+        width:20,
+        filterable: false,
         Cell:(e)=>
-        <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
-      {t('Edit')}
-        </AmButton>,
+        <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <EditIcon
+              fontSize="small"
+              style={{ color: "#f39c12" }}
+              // onClick={() =>
+              //   handleClickOpenDialog(
+              //     qryStrOptions._error,
+              //     qryStrOptions._info,
+              //     qryStrOptions._warning,
+              //     typePopup
+              //   )
+              // }
+            />
+          </IconButton>,
+      //   <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
+      // {t('Edit')}
+      //   </AmButton>,
         sortable:false,
       },{
         Header: 'Delete',
@@ -1234,10 +1273,12 @@ const Clear=()=>{
             sort={(sort) => setSort({field:sort.id, order:sort.sortDirection})}
             style={{maxHeight:"550px"}}
             editFlag="editFlag"
+            filterData={(e)=>{console.log(e)}}
+            filterable={true}
             currentPage={page}
             exportData={true}
                 //excelData={excelDataSrouce}
-              renderCustomButtonB4={<FormInline>
+              renderCustomTopRight={<FormInline>
               <AmButton  
                 style={{marginRight:"5px"}} 
                 styleType="add" 

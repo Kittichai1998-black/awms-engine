@@ -5,6 +5,8 @@ import {
   createQueryString
 } from "../../components/function/CoreFunction";
 import AmEntityStatus from "../../components/AmEntityStatus";
+import EditIcon from "@material-ui/icons/Edit";
+import IconButton from "@material-ui/core/IconButton";
 const Axios = new apicall();
 
 //======================================================================
@@ -45,6 +47,7 @@ const testMasterV2 = props => {
       fixed: "left",
       width: 35,
       sortable: false,
+      filterable: false,
       Cell: e => getStatus(e.original)
     },
     { Header: "SKU Type Code", accessor: "Code", fixed: "left", width: 120 },
