@@ -1359,6 +1359,7 @@ const AmProcessQueue = props => {
             setDocumentID();
             setdataDocument([]);
             setbtnAdd(true);
+            setbtnBack(false);
             console.log(datasQ)
             // dataDocument[dataDocument.length - 1].DocumentCode = []
 
@@ -1451,6 +1452,7 @@ const AmProcessQueue = props => {
         datasDoc.splice(idx, 1)
         setdataQueue([...datasDoc]);
         setdatasDoc([...datasDoc]);
+        setbtnBack(false);
 
 
         if (window.project === "AAI") {
@@ -2224,6 +2226,33 @@ const AmProcessQueue = props => {
                                             }
                                         }
                                         //option เอกสาร จาก Sap
+
+                                        if (docDesCustomer !== undefined && props.StatusfromDescustomer === true) {
+                                            onChangCheckboxConsFull(null, null, idx);
+                                            onChangCheckboxConsRecieve(null, null, idx);
+
+                                        }
+
+
+                                        console.log(docDesWarehouse)
+                                        console.log(props.StatusfromDesWarehouse)
+
+                                        if (docDesWarehouse !== undefined && props.StatusfromDeswarehouse === true) {
+                                            onChangCheckboxConsFull(null, null, idx);
+                                              onChangCheckboxConsRecieve(null, null, idx);
+                                              onChangCheckboxConsQC(null, null, idx);
+                                              onChangCheckboxConsReturn(null, null, idx);
+                                              onChangCheckboxConsPartail(null, null, idx);
+
+                                        }
+
+                                        if (props.AllStatus === true) {
+                                            onChangCheckboxConsFull(null, null, idx);
+                                            onChangCheckboxConsRecieve(null, null, idx);
+                                            onChangCheckboxConsQC(null, null, idx);
+                                            onChangCheckboxConsReturn(null, null, idx);
+                                            onChangCheckboxConsPartail(null, null, idx);
+                                        }
 
                                         var RecieveFromDoc = false
                                         var QcFromDoc = false

@@ -155,6 +155,7 @@ const WorkQueueSTACounting = (props) => {
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
+            Defaulwarehouse={1}
             //fullPallet={true}
             //receive={true}
             FullPallet={true}
