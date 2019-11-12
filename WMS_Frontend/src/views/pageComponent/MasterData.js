@@ -371,15 +371,7 @@ const FuncImport = (e) => {
     var dataObj = {}
 
       rows[i].forEach((row,idx)=>{
-        // console.log(row)     
-        // console.log(columnsExcel[idx])  
         if(columnsExcel[idx] !== undefined){
-          // if(columnsExcel[idx] === "WeightKG" && row === null ){
-          //   //console.log("dfw")
-          //   dataObj[columnsExcel[idx]] = 0
-          // }else{
-          //   dataObj[columnsExcel[idx]] = row
-          // }
           dataObj[columnsExcel[idx]] = row
         }
        
@@ -1031,12 +1023,12 @@ useEffect(()=> {
   }
 }, [page])
 
-useEffect(()=> {
-    if(sort){
+useEffect(()=> { 
+    if(sort !==0 ){
         const queryEdit = JSON.parse(JSON.stringify(query));
         queryEdit.s = '[{"f":"'+ sort.field +'", "od":"'+sort.order+'"}]';  
         setQuery(queryEdit)
-     
+     console.log(sort)
     }
 }, [sort])
 //===========================================================
@@ -1053,8 +1045,9 @@ async function getData(qryString){
 
       let getExcelQuery = Clone(ExportQuery);
       getExcelQuery.q = query.q
-      const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
-      setExcelDataSource(resExcel.data.datas)
+      //const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
+      const resExcel = createQueryString(getExcelQuery)
+      setExcelDataSource(resExcel)
 }
 //===========================================================
 let fil1 ={}
@@ -1233,6 +1226,7 @@ const Clear=()=>{
         <AmEditorTable open={dialogRole} onAccept={(status, rowdata)=>onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()}/>
  
         <Table 
+            excelQueryAPI={excelDataSrouce}
             primaryKey="ID"
             data={dataSource}
             columns={columns}
@@ -1242,8 +1236,8 @@ const Clear=()=>{
             editFlag="editFlag"
             currentPage={page}
             exportData={true}
-                excelData={excelDataSrouce}
-                renderCustomButtonB4={<div><FormInline>
+                //excelData={excelDataSrouce}
+              renderCustomButtonB4={<FormInline>
               <AmButton  
                 style={{marginRight:"5px"}} 
                 styleType="add" 
@@ -1256,6 +1250,9 @@ const Clear=()=>{
                 fontWeight: "bolder",
                 display: "inline-block",
                 background:  "#22a6b3",
+                //marginTop:"0px !important",
+                //marginBottom:"0px !important",
+                margin:"0px 0px 0px 0px ",
                 color: "white",
                 //border: "1px solid #999",
                 marginRight: "5px",
@@ -1269,7 +1266,7 @@ const Clear=()=>{
               <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null
                     }
                     {props.customButton}</FormInline>
-                </div>}
+               }
         />
     
         <Pagination
