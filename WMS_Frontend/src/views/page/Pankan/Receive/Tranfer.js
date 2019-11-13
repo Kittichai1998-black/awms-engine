@@ -177,6 +177,8 @@ const Tranfer = (props) => {
     const [expanded, setExpanded] = useState(true);
     const [barCodeDes, setbarCodeDes] = useState();
     const [barCodeSou, setbarCodeSou] = useState();
+    const [barCodeDesArea, setbarCodeDesAre] = useState();
+    const [barCodeSouArea, setbarCodeSouArea] = useState(); 
     const [qtys, setqtys] = useState();
     const [activeStep, setActiveStep] = useState(0);
     const [soupack, setsoupack] = useState();
@@ -189,14 +191,18 @@ const Tranfer = (props) => {
         var soubase = "";
         var soupack = "";
         var qtys = "";
+        var souarea = "";
+        var desarea = "";
 
         //if (valueInput) {
         //    if (valueInput.LocationCode) { locaCode = valueInput.LocationCode; }
 
         //    if (valueInput.PalletCode) { baseCode = valueInput.PalletCode; }
         //}
-        return [{ label: 'Destination Base', value: desbase },
-        { label: 'Source Base', value: soubase },
+        return [{ label: 'Destination Area', value: desarea },
+            { label: 'Source Area', value: souarea },
+            { label: 'Destination Base', value: desbase },
+            { label: 'Source Base', value: soubase },     
         { label: 'Source SKU', value: soupack },
         { label: 'Quantity', value: qtys },
         { label: 'Confirm Tranfer', value: null },
@@ -222,7 +228,6 @@ const Tranfer = (props) => {
 
 
     const handleNext = (index) => {
-        console.log(index)
         if (index === 0) {
             CheckDesbase();
         }
@@ -376,13 +381,14 @@ const Tranfer = (props) => {
 
     const getStepContent = (step) => {
         switch (step) {
+
             case 0:
                 return <div>
                     <AmInput
-                        id={"desbase"}
+                        id={"desarea"}
                         autoFocus={true}
-                        placeholder={"Scan"}  
-                        style={{ width: "100%" }} 
+                        placeholder={"Scan"}
+                        style={{ width: "100%" }}
                         defaultValue={barCodeDes}
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "desbase", null, event)}
                         onKeyPress={(value, obj, element, event) => onHandleChangeInputDesbase(value, null, "desbase", null, event)}
@@ -396,6 +402,33 @@ const Tranfer = (props) => {
                         id={"soubase"}
                         autoFocus={true}
                         placeholder={"Scan "}
+                        style={{ width: "100%" }}
+                        defaultValue={barCodeSou}
+                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "soubase", null, event)}
+                        onKeyPress={(value, obj, element, event) => onHandleChangeInputSoubase(value, null, "soubase", null, event)}
+                    ></AmInput>
+
+                </div>;
+            case 2:
+                return <div>
+                    <AmInput
+                        id={"desbase"}
+                        autoFocus={true}
+                        placeholder={"Scan"}  
+                        style={{ width: "100%" }} 
+                        defaultValue={barCodeDes}
+                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "desbase", null, event)}
+                        onKeyPress={(value, obj, element, event) => onHandleChangeInputDesbase(value, null, "desbase", null, event)}
+
+                    ></AmInput>
+                </div>;
+            case 3:
+                return <div>
+
+                    <AmInput
+                        id={"soubase"}
+                        autoFocus={true}
+                        placeholder={"Scan "}
                         style={{ width: "100%" }}                     
                         defaultValue={barCodeSou}                                
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "soubase", null, event)}
@@ -403,7 +436,7 @@ const Tranfer = (props) => {
                     ></AmInput>
 
                 </div>;
-            case 2: return <div>
+            case 4: return <div>
                 <AmInput
                     id={"soupack"}
                     autoFocus={true}
@@ -414,7 +447,7 @@ const Tranfer = (props) => {
                     onKeyPress={(value, obj, element, event) => onHandleChangeInputSoupack(value, null, "soupack", null, event)}
                 ></AmInput>
             </div>;
-            case 3: return <div>
+            case 5: return <div>
 
                 <AmInput
                     id={"qty"}
@@ -428,7 +461,7 @@ const Tranfer = (props) => {
                     onKeyPress={(value, obj, element, event) => onHandleChangeInputQty(value, null, "qty", null, event)}
                 ></AmInput>
             </div>;
-           case 4: return <div></div>;
+           case 6: return <div></div>;
             default:
                 return 'Unknown step';
         }

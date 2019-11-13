@@ -373,6 +373,7 @@ const AmProcessQueue = props => {
     ) => {
         //setDataDocumentItem();
         if (value !== undefined && value !== null && dataObject.Code !== null) {
+            console.log(dataObject)
             console.log(dataObject.deswarehouse)
             console.log(dataObject.descustomer)
             if (dataObject.deswarehouse !== null) {
@@ -1207,7 +1208,6 @@ const AmProcessQueue = props => {
                    
                     <LabelHDes>{t(Label)} :</LabelHDes>
                     <InputDiv>
-                       
                         <AmDropdown
                             id={idddls}
                             placeholder="Select"
@@ -1240,7 +1240,7 @@ const AmProcessQueue = props => {
         }
     };
 
-    console.log(defaulDDLArea)
+
     const DetailDoc = () => {
         if (detailsdata === undefined) {
             return detailDocuments.map(x => {
@@ -2232,10 +2232,6 @@ const AmProcessQueue = props => {
                                             onChangCheckboxConsRecieve(null, null, idx);
 
                                         }
-
-
-                                        console.log(docDesWarehouse)
-                                        console.log(props.StatusfromDesWarehouse)
 
                                         if (docDesWarehouse !== undefined && props.StatusfromDeswarehouse === true) {
                                             onChangCheckboxConsFull(null, null, idx);
