@@ -1224,7 +1224,7 @@ const Clear=()=>{
         <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit Password '} data={editData} columns={FuncTestEditPassWord()}/>
         <AmEditorTable open={dialogDelete} onAccept={(status)=>onHandleDeleteConfirm(status)} titleText={'Confirm Delete'}  columns={[]}/>
         <AmEditorTable open={dialogRole} onAccept={(status, rowdata)=>onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()}/>
- 
+       
         <Table 
             excelQueryAPI={excelDataSrouce}
             primaryKey="ID"

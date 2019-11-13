@@ -26,7 +26,9 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
+import AmExportDataTable from "../../components/table/AmExportDataTable";
 const Axios = new apicall()
 //   const createQueryString = (select) => {
 //     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -144,14 +146,7 @@ const FuncSetTable  = () => {
             <EditIcon
               fontSize="small"
               style={{ color: "#E53935" }}
-              // onClick={() =>
-              //   handleClickOpenDialog(
-              //     qryStrOptions._error,
-              //     qryStrOptions._info,
-              //     qryStrOptions._warning,
-              //     typePopup
-              //   )
-              // }
+              onClick={()=>{setEditData(e);edit(e,"edit") }}
             />
           </IconButton>,
             // <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
@@ -182,14 +177,7 @@ const FuncSetTable  = () => {
             <EditIcon
               fontSize="small"
               style={{ color: "#f39c12" }}
-              // onClick={() =>
-              //   handleClickOpenDialog(
-              //     qryStrOptions._error,
-              //     qryStrOptions._info,
-              //     qryStrOptions._warning,
-              //     typePopup
-              //   )
-              // }
+              onClick={()=>{setEditData(e);edit(e,"edit") }}
             />
           </IconButton>,
       //   <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
@@ -197,12 +185,25 @@ const FuncSetTable  = () => {
       //   </AmButton>,
         sortable:false,
       },{
-        Header: 'Delete',
-        width:80,
+        Header: '',
+        width:20,
+        filterable: false,
         Cell:(e)=>
-        <AmButton style={{lineHeight:"1"}} styleType="delete"  onClick={()=>{setDeleteData(e);edit(e,"delete");}} >
-        {t('Delete')}
-        </AmButton>,
+        <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <DeleteIcon
+              fontSize="small"
+              style={{ color: "#e74c3c" }}
+              onClick={()=>{setDeleteData(e);edit(e,"delete")}}
+            />
+          </IconButton>,
+        // <AmButton style={{lineHeight:"1"}} styleType="delete"  onClick={()=>{setDeleteData(e);edit(e,"delete");}} >
+        // {t('Delete')}
+        // </AmButton>,
 
         sortable:false,
       },)
@@ -614,6 +615,10 @@ const onChangeFilterDateTime = (value, field, type) =>{
   setDatetime(datetimeRange)
 }
 const onChangeFilter = (condition, field, value,type) => {
+console.log(condition)
+console.log(field)
+console.log(value)
+console.log(type)
 
   let obj
   if(filterData.length > 0)
@@ -1239,7 +1244,16 @@ const UpdateData =(rowdata,type) =>{
   })
 }
 //===========================================================
+const getDataFilter=(datas)=>{
+  console.log(datas)
 
+for(var data in datas){
+  console.log(data)
+console.log(datas[data])
+}
+
+}
+//===========================================================
 const Clear=()=>{
   setEditRow([])
   setDeleteDataTmp([])
@@ -1263,7 +1277,7 @@ const Clear=()=>{
         <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata)=>onHandleEditConfirm(status, rowdata)} titleText={addData=== true?'Add':'Edit Password '} data={editData} columns={FuncTestEditPassWord()}/>
         <AmEditorTable open={dialogDelete} onAccept={(status)=>onHandleDeleteConfirm(status)} titleText={'Confirm Delete'}  columns={[]}/>
         <AmEditorTable open={dialogRole} onAccept={(status, rowdata)=>onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()}/>
- 
+       
         <Table 
             excelQueryAPI={excelDataSrouce}
             primaryKey="ID"
@@ -1273,7 +1287,7 @@ const Clear=()=>{
             sort={(sort) => setSort({field:sort.id, order:sort.sortDirection})}
             style={{maxHeight:"550px"}}
             editFlag="editFlag"
-            filterData={(e)=>{console.log(e)}}
+            filterData={(e)=>{getDataFilter(e)}}
             filterable={true}
             currentPage={page}
             exportData={true}
@@ -1286,27 +1300,14 @@ const Clear=()=>{
                 setAddData(true);
                 setDialog(true)}} >{t("Add")}
               </AmButton>
-            {props.import == true ?<label style={{ 
-                width:"60px",
-                fontWeight: "bolder",
-                display: "inline-block",
-                background:  "#22a6b3",
-                //marginTop:"0px !important",
-                //marginBottom:"0px !important",
-                margin:"0px 0px 0px 0px ",
-                color: "white",
-                //border: "1px solid #999",
-                marginRight: "5px",
-                borderRadius: "5px",
-                padding: "6px 5px",
-                paddingTop: "4px",
-                outline: "none",
-                whiteSpace: "nowrap",
-                boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
-              }} >Import
-              <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null
-                    }
-                    {props.customButton}</FormInline>
+              <AmExportDataTable
+            data={true}
+            excelQueryAPI={excelDataSrouce}
+            //onExcelFooter={props.onExcelFooter}
+            fileName={"Table"}
+            cols={columns}
+          />
+            </FormInline>
                }
         />
     

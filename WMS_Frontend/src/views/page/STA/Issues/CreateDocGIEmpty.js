@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
-
 import {
   apicall,
   createQueryString
@@ -10,10 +8,10 @@ import {
 // import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
-const CreateDocGICus = props => {
+const CreateDocGIEmpty = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
-  // const [dataMovementType, setDataMovementType] = useState("");
-  const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
+  const [dataMovementType, setDataMovementType] = useState("");
+  // const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
   // const [dataType2, setDataType2] = useState("");
   // const [dataTest, setDataTest] = useState([]);
   const [table, setTable] = useState(null);
@@ -24,16 +22,23 @@ const CreateDocGICus = props => {
         setDataWarehouse(row.data.datas[0].Name);
       }
     });
-    Axios.get(createQueryString(MovementTypeQuery2)).then(res => {
+    Axios.get(createQueryString(MovementTypeQuery)).then(res => {
       if (res.data.datas) {
-        setDataMovementTypeCUS(res.data.datas[0].Name);
+        console.log(res.data.datas[0].Name);
+        setDataMovementType(res.data.datas[0].Name);
       }
     });
   }, []);
 
+  // const getURL = ()=>{
+  //     const values = queryString.parse(props.location.search)
+
+  //     setDataType(values.MVT.toString())
+  // }
+
   useEffect(() => {
     // getURL()
-    if (dataWarehouse !== "" && dataMovementTypeCUS !== "") {
+    if (dataWarehouse !== "" && dataMovementType !== "") {
       var headerCreates = [
         [
           { label: "Document No.", type: "labeltext", key: "", texts: "-" },
@@ -44,8 +49,8 @@ const CreateDocGICus = props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: dataMovementTypeCUS,
-            valueTexts: "1012"
+            texts: dataMovementType,
+            valueTexts: "3011"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
@@ -58,12 +63,12 @@ const CreateDocGICus = props => {
             valueTexts: "1"
           },
           {
-            label: "Destination Customer",
-            key: "desCustomerID",
+            label: "Destination Warehouse",
+            key: "desWarehouseID",
             type: "dropdown",
             pair: "ID",
-            idddl: "desCustomerID",
-            queryApi: CustomerQuery,
+            idddl: "desWarehouseID",
+            queryApi: WarehouseQuery2,
             fieldLabel: ["Code", "Name"],
             defaultValue: 1
           }
@@ -72,9 +77,9 @@ const CreateDocGICus = props => {
           { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
           { label: "Remark", type: "input", key: "remark", search: true }
         ]
-        //[{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },{ label: "", type: "", key: "",texts: "" },]
+        //[{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },{ label: "", type: "", key: "", texts: "" },]
       ];
-      //setDataTest(headerCreates)
+      // setDataTest(headerCreates)
       if (headerCreates.length > 0) {
         setTable(
           <AmCreateDocument
@@ -86,12 +91,11 @@ const CreateDocGICus = props => {
             createDocType={"issue"}
             history={props.history}
             apiRes={apiRes}
-            //createByCus={false}
-          />
+          ></AmCreateDocument>
         );
       }
     }
-  }, [dataWarehouse, dataMovementTypeCUS]);
+  }, [dataWarehouse, dataMovementType]);
 
   // useEffect(()=> {
   //    console.log(dataTest)
@@ -108,6 +112,7 @@ const CreateDocGICus = props => {
   //         </AmCreateDocument>)
   //     }
   // },[dataTest,props.location.search])
+
   const columsFindpopUpPALC = [
     {
       Header: "Pallet Code",
@@ -115,13 +120,13 @@ const CreateDocGICus = props => {
       width: 110,
       style: { textAlign: "center" }
     },
-    // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
     {
       Header: "SI",
       accessor: "orderNo",
       width: 70,
       style: { textAlign: "center" }
     },
+    // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
     { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
@@ -164,7 +169,7 @@ const CreateDocGICus = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q:
-      '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+      '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"},{"f": "GroupType" , "c":"=" , "v": "3"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
       "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark",
     g: "",
@@ -174,13 +179,24 @@ const CreateDocGICus = props => {
     all: ""
   };
 
+  const addList = {
+    queryApi: PalletCode,
+    columns: columsFindpopUpPALC,
+    search: [
+      { accessor: "palletcode", placeholder: "Pallet Code" },
+      { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "remark", placeholder: "Remark" }
+    ]
+  };
+
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q:
-      '[{ "f": "Status", "c":"<", "v": 2},{"f": "GroupType" , "c":"=" , "v": "1"}]',
+      '[{ "f": "Status", "c":"<", "v": 2},{"f": "GroupType" , "c":"=" , "v": "3"}]',
     f:
-      "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+      "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -198,31 +214,9 @@ const CreateDocGICus = props => {
     l: 100,
     all: ""
   };
-
-  const addList = {
-    queryApi: PalletCode,
-    columns: columsFindpopUpPALC,
-    search: [
-      { accessor: "palletcode", placeholder: "Pallet Code" },
-      { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "LocationCode", placeholder: "Location" },
-      { accessor: "remark", placeholder: "Remark" }
-    ]
-  };
-  // const WarehouseQuery2 = {
-  //   queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  //   t: "Warehouse",
-  //   q: '[{ "f": "Status", "c":"<", "v": 2},]',
-  //   f: "ID,Code,Name",
-  //   g: "",
-  //   s: "[{'f':'ID','od':'asc'}]",
-  //   sk: 0,
-  //   l: 100,
-  //   all: ""
-  // };
-  const CustomerQuery = {
+  const WarehouseQuery2 = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Customer",
+    t: "Warehouse",
     q: '[{ "f": "Status", "c":"<", "v": 2},]',
     f: "ID,Code,Name",
     g: "",
@@ -231,10 +225,10 @@ const CreateDocGICus = props => {
     l: 100,
     all: ""
   };
-  // const MovementTypeQuery = {
+  // const CustomerQuery = {
   //   queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  //   t: "MovementType",
-  //   q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1011}]',
+  //   t: "Customer",
+  //   q: '[{ "f": "Status", "c":"<", "v": 2},]',
   //   f: "ID,Code,Name",
   //   g: "",
   //   s: "[{'f':'ID','od':'asc'}]",
@@ -242,10 +236,10 @@ const CreateDocGICus = props => {
   //   l: 100,
   //   all: ""
   // };
-  const MovementTypeQuery2 = {
+  const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "MovementType",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 3011}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -253,6 +247,17 @@ const CreateDocGICus = props => {
     l: 100,
     all: ""
   };
+  // const MovementTypeQuery2 = {
+  //   queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  //   t: "MovementType",
+  //   q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
+  //   f: "ID,Code,Name",
+  //   g: "",
+  //   s: "[{'f':'ID','od':'asc'}]",
+  //   sk: 0,
+  //   l: 100,
+  //   all: ""
+  // };
 
   const columsFindpopUp = [
     {
@@ -280,6 +285,7 @@ const CreateDocGICus = props => {
       Header: "Reorder/Brand",
       accessor: "SKUItems",
       type: "findPopUp",
+      pair: "skuCode",
       idddl: "skuitems",
       queryApi: SKUMaster,
       fieldLabel: ["Code", "Name"],
@@ -287,7 +293,6 @@ const CreateDocGICus = props => {
     },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     { Header: "Unit", accessor: "unitType", type: "unitType" }
-    // { Header: "Example", type: "text", texts: "Qty = 20" }
   ];
 
   const columns = [
@@ -297,7 +302,7 @@ const CreateDocGICus = props => {
     { Header: "Reorder", accessor: "skuCode" },
     { Header: "Brand", accessor: "skuName" },
     { Header: "Quantity", accessor: "quantity", width: 70 },
-    { Header: "Unit", accessor: "unitType", width: 70 }
+    { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
 
   const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
@@ -306,4 +311,4 @@ const CreateDocGICus = props => {
   return <div>{table}</div>;
 };
 
-export default CreateDocGICus;
+export default CreateDocGIEmpty;
