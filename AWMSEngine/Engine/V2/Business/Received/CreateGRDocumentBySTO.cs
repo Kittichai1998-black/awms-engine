@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             doc = new amt_Document()
             {
-                ActionTime = null,
+                ActionTime = DateTime.Now,
                 Code = null,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,

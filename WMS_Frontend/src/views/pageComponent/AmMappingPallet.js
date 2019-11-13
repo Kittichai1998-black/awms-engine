@@ -260,9 +260,9 @@ const AmMappingPallet = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-    useEffect(() => {
-        console.log(valueInput)
-    }, [valueInput]);
+    // useEffect(() => {
+    //     console.log(valueInput)
+    // }, [valueInput]);
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -406,27 +406,25 @@ const AmMappingPallet = (props) => {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
-
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
                         ...valueInput,
                         rootID: rootFocusID,
+                        rootType: dataRootFocus.type,
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                         mode: 0,
                         action: actionValue,
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
-                          
-                            if (dataScan.mapnewpallet !== undefined && dataScan.mapnewpallet === true) {
-                                console.log("mapnewpallet")
 
+                            if (dataScan.mapnewpallet !== undefined && dataScan.mapnewpallet === true) {
                                 resValuePosts = {
                                     ...valueInput,
                                     rootID: null,
+                                    rootType: null,
                                     mapnewpallet: true,
                                     amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                                     mode: 0,
@@ -445,15 +443,16 @@ const AmMappingPallet = (props) => {
                     if (modeEmptyPallet === false) {
                         dataScan = {
                             rootID: modeSelectOnly ? null : rootFocusID,
+                            rootType: dataRootFocus.type,
                             amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                             mode: 0,
                             action: actionValue,
                         };
                     } else {
-                        console.log(valueInput)
                         if (storageObj.code !== valueInput.scanCode) {
                             dataScan = {
                                 rootID: null,
+                                rootType: null,
                                 amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                                 mode: 0,
                                 action: actionValue,
@@ -461,13 +460,12 @@ const AmMappingPallet = (props) => {
                         } else {
                             dataScan = {
                                 rootID: rootFocusID,
+                                rootType: dataRootFocus.type,
                                 amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                                 mode: 0,
                                 action: actionValue,
                             };
                         }
-                        console.log(dataScan)
-
                     }
                     resValuePosts = { ...valueInput, ...dataScan }
                 }
@@ -500,7 +498,7 @@ const AmMappingPallet = (props) => {
             }
 
         }
-        console.log(resValuePosts)
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -551,7 +549,6 @@ const AmMappingPallet = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            // console.log(resValuePosts);
             if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -561,7 +558,6 @@ const AmMappingPallet = (props) => {
                         if (!modeMultiSKU) {
                             if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
                                 if (resValuePosts.mapnewpallet !== undefined && resValuePosts.mapnewpallet === true) {
-                                    console.log("mapnewpallet")
                                     scanBarcodeApi(resValuePosts);
                                 } else {
                                     alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
@@ -643,7 +639,6 @@ const AmMappingPallet = (props) => {
                             let val = { ...valueInput };
                             if (req.clearRemark !== undefined || null && req.clearRemark === true) {
 
-                                console.log("clearRemark")
                                 getOldValue.map((x, i) => {
                                     if (x.field === SC.OPT_REMARK) {
                                         val[x.field] = "";

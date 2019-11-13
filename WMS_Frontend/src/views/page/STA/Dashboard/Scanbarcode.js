@@ -600,7 +600,7 @@ const Scanbarcode = (props) => {
                         setorderNo(x.OrderNo)
                         setunitCode(x.UnitCode)
                         setproductName(x.Name)
-                        setskuType(skuType)
+                        setskuType(x.skuType)
                         setcarton(x.Options !== "" && x.Options !== null ? x.Options.split("=")[1].split("&")[0] : null)
                     }
                     else {
@@ -629,7 +629,7 @@ const Scanbarcode = (props) => {
                         setorderNo2(x.OrderNo)
                         setunitCode2(x.UnitCode)
                         setproductName2(x.Name)
-                        setskuType2(skuType)
+                        setskuType2(x.skuType)
                         setcarton2(x.Options !== "" && x.Options !== null ? x.Options.split("=")[1].split("&")[0] : null)
                     }
                     else {
@@ -963,22 +963,22 @@ const Scanbarcode = (props) => {
                                                                     <Typography variant="h5" component="h3">{pallet}</Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
                                                                     <Typography variant="h5" component="h3">
-                                                                        <AmInput id="code" value={manualAddLeft["code"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "code", value);
+                                                                        <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("left", "orderNo", value);
                                                                         }} onKeyPress={(value, a, b, event) => {
                                                                             if (event.key === "Enter") {
-                                                                                document.getElementById("orderNo").focus();
+                                                                                document.getElementById("code").focus();
                                                                             }
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
                                                                     <Typography variant="h5" component="h3">
-                                                                        <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "orderNo", value);
+                                                                        <AmInput id="code" value={manualAddLeft["code"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("left", "code", value);
                                                                         }} onKeyPress={(value, a, b, event) => {
                                                                             if (event.key === "Enter") {
                                                                                 document.getElementById("carton").focus();
@@ -1104,22 +1104,22 @@ const Scanbarcode = (props) => {
                                                                     <Typography variant="h5" component="h3">{pallet2}</Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reorder :</Typography >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
                                                                     <Typography variant="h5" component="h3">
-                                                                        <AmInput id="code2" value={manualAddRight["code"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("right", "code", value);
+                                                                        <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("right", "orderNo", value);
                                                                         }} onKeyPress={(value, a, b, event) => {
                                                                             if (event.key === "Enter") {
-                                                                                document.getElementById("orderNo2").focus();
+                                                                                document.getElementById("code2").focus();
                                                                             }
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
                                                                 <FormInline style={{ paddingTop: "10px" }} >
-                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
+                                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reorder :</Typography >
                                                                     <Typography variant="h5" component="h3">
-                                                                        <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("right", "orderNo", value);
+                                                                        <AmInput id="code2" value={manualAddRight["code"]} onChangeV2={(value, a, b, event) => {
+                                                                            updateNoQRData("right", "code", value);
                                                                         }} onKeyPress={(value, a, b, event) => {
                                                                             if (event.key === "Enter") {
                                                                                 document.getElementById("carton2").focus();

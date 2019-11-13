@@ -21,7 +21,7 @@ export default props => {
 
   return (
     <TablePagination
-      style={{ marginRight: '20px' }}
+      style={{ marginRight: '20px', float:"right" }}
       colSpan={3}
       rowsPerPageOptions={[]}
       component='div'
@@ -47,7 +47,7 @@ const actionsStyles = theme => ({
   root: {
     flexShrink: 0,
     color: theme.palette.text.secondary,
-    marginLeft: theme.spacing(2.5)
+    marginLeft: theme.spacing(2.5),
   }
 });
 
