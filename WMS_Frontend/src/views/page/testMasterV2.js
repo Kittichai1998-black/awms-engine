@@ -222,6 +222,7 @@ const testMasterV2 = props => {
         tableQuery={"SKUMasterType"}
         table={"ams_SKUMasterType"}
         dataAdd={columns}
+        history={props.history}
         iniCols={iniCols}
         dataEdit={columnsEdit}
       />
