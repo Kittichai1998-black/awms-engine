@@ -456,6 +456,7 @@ const AmPickingReturn2 = (props) => {
                             ...valueInput,
                             rootBaseCode: rootBaseCode,
                             rootID: rootFocusID,
+                            rootType: dataRootFocus.type,
                             docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
@@ -472,6 +473,7 @@ const AmPickingReturn2 = (props) => {
                     } else {
                         dataScan = {
                             rootID: rootFocusID,
+                            rootType: dataRootFocus.type,
                             docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
@@ -508,7 +510,7 @@ const AmPickingReturn2 = (props) => {
                         }
                     }
                 }
-            }  
+            }
             setPreAutoPost(false);
         }
     }
@@ -596,7 +598,7 @@ const AmPickingReturn2 = (props) => {
                                 } else {
                                     alertDialogRenderer("Moment Type isn't match.", "error", true);
                                 }
-                            }else{
+                            } else {
                                 checkMVT = true;
                             }
                         }
@@ -682,7 +684,7 @@ const AmPickingReturn2 = (props) => {
         var bstoData = data.bsto;
         if (docrow === null) {
             if (bstoData)
-                return <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>;
+                return <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip} />;
 
         } else {
             return <div className={classes.detail}>
@@ -698,10 +700,10 @@ const AmPickingReturn2 = (props) => {
                             </div>
                         </div>
                         <hr />
-                        {bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions}  customInfoChip={customInfoChip}/> : null}
+                        {bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip} /> : null}
                     </div>
                 }) :
-                    bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions}  customInfoChip={customInfoChip}/> : null
+                    bstoData ? <AmListSTORenderer dataSrc={bstoData} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip} /> : null
                 }
             </div>
         }

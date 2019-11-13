@@ -424,6 +424,7 @@ const AmMappingPallet2 = (props) => {
                     var resInput = {
                         ...valueInput,
                         rootID: rootFocusID,
+                        rootType: dataRootFocus.type,
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                         mode: 0,
                         action: actionValue,
@@ -439,6 +440,7 @@ const AmMappingPallet2 = (props) => {
                 } else {
                     dataScan = {
                         rootID: rootFocusID,
+                        rootType: dataRootFocus.type,
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                         mode: 0,
                         action: actionValue,
@@ -772,7 +774,7 @@ const AmMappingPallet2 = (props) => {
                 if (areaDetail)
                     DetailRenderer();
             } else {
-                setNewStorageObj(<AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>);
+                setNewStorageObj(<AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip} />);
             }
         } else {
             setExpanded(false);
@@ -783,7 +785,7 @@ const AmMappingPallet2 = (props) => {
         var ren = <div className={classes.detail}>
             <label className={classnames(classes.textNowrap, classes.areadetail)}><span className={classes.labelHead}>Area : </span> {areaDetail}</label>
             <hr />
-            <AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip}/>
+            <AmListSTORenderer dataSrc={storageObj} showOptions={showOptions} customOptions={customOptions} customInfoChip={customInfoChip} />
         </div>;
 
         setNewStorageObj(ren);
