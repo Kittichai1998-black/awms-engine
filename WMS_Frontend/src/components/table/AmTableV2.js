@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import Moment from "moment";
 
 const Table = styled.table`
     width:100%;
+    position:relative;
 `;
 const TableHead = styled.thead`
 `;
@@ -15,39 +16,51 @@ const TableHeadCell = styled.th`
     user-select: none;  
     position:sticky;
     background:#666ad1;
+    outline: 1px solid #c7c7c7;
+	outline-offset: -1px;
     top:0;
     text-align:center;
     cursor:pointer;
     vertical-align:top;
-    border:1px solid #c7c7c7;
+    border:2px solid #c7c7c7;
     border-collapse:collapse;
     color:white;
+    outline: 1px solid #c7c7c7;
+	outline-offset: -1px;
 `;
+
 const TableBody = styled.tbody`
+    & tr:hover  td{
+        background:#d1d9ff !important;
+    }
 `;
 const TableFoot = styled.tfoot`
+    tr td{
+        background:#eaeaea
+    }
 `;
 const TableRowHeader = styled.tr`
     user-select: none;
 `;
 const TableRow = styled.tr`
-    &:hover{
-        background:#d1d9ff;
-    }
 `;
 const TableCell = styled.td`
-    border:1px solid #c7c7c7;
     border-collapse:collapse;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    border: 2px solid #c7c7c7;
 `;
 const FilterInput = styled(AmInput)`
     width:100%
 `;
 
 const TableCellFix = styled(TableCell)`
+    background:white;
     position:sticky;
+    top: 0;
+    outline: 1px solid #c7c7c7;
+	outline-offset: -1px;
 `;
 
 const Arrow = styled.span`
@@ -67,10 +80,6 @@ const useColumns = (props) => {
     const [columns, setColumns] = useState([]);
     const [selection, setSelection] = useState([]);
     const [selectionAll, setSelectionAll] = useState({select:false, reset:false});
-
-    const freezeCell = () => {
-
-    };
     
     useEffect(()=>{
         if(selection.length > 0){
@@ -115,7 +124,8 @@ const useColumns = (props) => {
     useEffect(()=>{
         let getColumns = [...props.columns];
 
-        getColumns.unshift({
+        if(props.rowNumber){
+            getColumns.unshift({
             Header: 'Row',
             width:40,
             filterable:false,
@@ -135,7 +145,8 @@ const useColumns = (props) => {
                 }
                 return <span style={{ fontWeight: "bold" }}>{numrow}</span>;
               }
-          });
+          });}
+        
 
 
         if(props.selection){
@@ -144,6 +155,7 @@ const useColumns = (props) => {
                     Header: '',
                     filterable:false,
                     fixed: 'left',
+                    width:40,
                     sortable:false,
                     Cell:(ele) => {
                         return <input type="radio" name="selection" value={ele.original[props.primaryKey]} onKeyPress={(e)=> {
@@ -166,6 +178,7 @@ const useColumns = (props) => {
                         }}/>,
                     filterable:false,
                     fixed: 'left',
+                    width:40,
                     sortable:false,
                     Cell:(ele) => {
                         return <input id={"selection_" + ele.original[props.primaryKey]} type="checkbox" name="selection" value={ele.original[props.primaryKey]} onChange={(e)=> {
@@ -210,12 +223,16 @@ const AmTableMaster = (props) => {
     useEffect(()=>{
         if(props.getSelection !== undefined)
             props.getSelection(selection)
+            
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[selection]);
 
     useEffect(()=>{
         if(props.filterData !== undefined)
             props.filterData(filter);
-    }, [filter])
+            
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filter]);
     
     const renderheader = () => {
         const SortHeader = (propsChild) => {
@@ -259,32 +276,41 @@ const AmTableMaster = (props) => {
             }
         }
 
-        return <>
-            <TableRowHeader>
-                {columns.map((row, idx) => {
-                    return <TableHeadCell id={`th_${idx}`} style={{minWidth:row.width}} key={idx} rowData={row}>
-                        {
-                            typeof row.Header === "string" ? 
-                            <SortHeader row={row}>{t(row.Header)}</SortHeader> : 
-                            <SortHeader row={row}>{row.Header(row)}</SortHeader>
-                        }
-                        {
-                            props.filterable ? row.filterable === false ? null : 
-                            typeof row.Filter === "function" ? 
-                            <div>{row.Filter(row.accessor, onChangeFilter)}</div> : 
-                            <div><FilterInput onBlur={(e) => onChangeFilter(row.accessor, e)}/></div> : 
-                            null
-                        }
-                    </TableHeadCell>
-                })}
+        const RenderTableHeader = () => {
+            let getWidth = 0;
+            return columns.map((row, idx) => {
+                let fixedStyle={}
+                if(row.fixed){
+                    fixedStyle = {left:getWidth, zIndex:1000,}
+                    getWidth = getWidth + row.width;
+                }
+                return <TableHeadCell id={`th_${idx}`} style={{minWidth:row.width, ...fixedStyle}} key={idx} rowData={row}>
+                    {
+                        typeof row.Header === "string" ? 
+                        <SortHeader row={row}>{t(row.Header)}</SortHeader> : 
+                        <SortHeader row={row}>{row.Header(row)}</SortHeader>
+                    }
+                    {
+                        props.filterable ? row.filterable === false ? null : 
+                        typeof row.Filter === "function" ? 
+                        <div>{row.Filter(row.accessor, onChangeFilter)}</div> : 
+                        <div><FilterInput onBlur={(e) => onChangeFilter(row.accessor, e)}/></div> : 
+                        null
+                    }
+                </TableHeadCell>
+            })
+        }
+
+        return <TableRowHeader>
+            {RenderTableHeader()}
             </TableRowHeader>
-        </>
     }
+
 
     const renderBody = () => {
         return <>
                 {props.data.map((row, idx) => {
-                    return <TableRow style={props.rowStyleProps} data={{row, idx}} key={idx}>
+                    return <TableRow style={props.rowStyleProps} key={idx}>
                         {renderBodyCell(row, idx)}
                     </TableRow>
                 })}
@@ -292,6 +318,7 @@ const AmTableMaster = (props) => {
     }
 
     const renderBodyCell = (row, dataIdx) => {
+        let getWidth = 0;
         return columns.map((column, idx) => {
             let createCellData = {
                 original:row, 
@@ -300,11 +327,13 @@ const AmTableMaster = (props) => {
                 viewIndex:dataIdx,
             };
             if(column.fixed){
+                let fixedStyle={left:getWidth}
+                getWidth = getWidth + column.width;
                 return <TableCellFix style={column.style === undefined ? 
-                        props.cellStyleProps : 
-                        column.style} 
+                        {...props.cellStyleProps, ...fixedStyle} : 
+                        {...column.style, ...fixedStyle}} 
                         key={idx}>
-                    {column.Cell === undefined || column.Cell === null ? row[column.accessor] : column.Cell(createCellData)}
+                    {column.Cell === undefined || column.Cell === null ? renderCellText(column, row[column.accessor]) : column.Cell(createCellData)}
                 </TableCellFix>
             }
             else{
@@ -317,12 +346,14 @@ const AmTableMaster = (props) => {
     const renderCellText = (columnType, dataRow) => {
         if(columnType.type !== undefined){
             if(columnType.type === "datetime"){
-                return <span>{Moment(dataRow).isValid
+                return <div>{Moment(dataRow).isValid
                     ? Moment(dataRow).format(
                         columnType.dateFormat ? columnType.dateFormat : "DD-MM-YYYY HH:mm"
                     )
-                    : ""}</span>
+                    : ""}</div>
             }
+            else if(columnType.type === "number")
+                return <div style={{width:"100%", textAlign:"right"}}>{dataRow}</div>
         }
         else
         return dataRow
@@ -331,12 +362,25 @@ const AmTableMaster = (props) => {
     const renderFooter = () => {
         let footerCell = [];
         if(columns.filter(column => column.Footer === true).length > 0){
-            columns.forEach(column => {
-                if(column.Footer){
-                    footerCell.push(<TableCell>{column.sumData === undefined ? "NoData" : column.sumData}</TableCell>)
+            let getWidth = 0;
+            columns.forEach((column, idx) => {
+                if(column.fixed){
+                    let fixedStyle={position:"sticky", bottom:0, zIndex:1000}
+                    fixedStyle.left = getWidth;
+                    getWidth = getWidth + column.width;
+                    if(column.Footer)
+                        footerCell.push(<TableCellFix style={fixedStyle} key={idx}>{column.sumData === undefined ? "NoData" : column.sumData}</TableCellFix>)
+                    else
+                        footerCell.push(<TableCellFix style={fixedStyle} key={idx}></TableCellFix>)
                 }
                 else{
-                    footerCell.push(<TableCell></TableCell>)
+                    if(column.Footer){
+                        footerCell.push(<TableCellFix style={{bottom:0}} key={idx}>{column.sumData === undefined ? "NoData" : column.sumData}</TableCellFix>)
+                    }
+                    else{
+                        footerCell.push(<TableCellFix style={{bottom:0}} key={idx}></TableCellFix>)
+                    }
+
                 }
             })
         }
@@ -353,19 +397,14 @@ const AmTableMaster = (props) => {
     }
 
     const RenderCustomBtmLeft = () => {
-        return <div style={{float:"left", marginTop:"10px"}}>{props.renderCustomBtmRight}</div>
+        return <div style={{float:"left", marginTop:"10px"}}>{props.renderCustomBtmLeft}</div>
     }
 
     ///Function OnChange Filter Input
     const onChangeFilter = (field, value) => {
         if(filter !== undefined || filter !== null){
             var getFilter = {...filter};
-            if(value === "" || null){
-                delete getFilter[field];
-            }
-            else{
-                getFilter[field] = value;
-            }
+            getFilter[field] = value;
             setFilter(getFilter)
         }else{
             setFilter({ ...filter,[field]:value })
@@ -374,7 +413,7 @@ const AmTableMaster = (props) => {
 
     return <div style={{width:"99%"}}>
         <RenderCustomTopLeft/><RenderCustomTopRight/>
-        <div style={{width:"100%", maxHeight:props.maxHeight,overflow:"auto"}}>
+        <div style={{width:"100%", maxHeight:props.maxHeight ,overflow:"auto"}}>
             <Table>
                 <TableHead>{renderheader()}</TableHead>
                 <TableBody>{renderBody()}</TableBody>
@@ -400,19 +439,21 @@ AmTableMaster.propTypes = {
     renderCustomTopRight:PropTypes.any,
     renderCustomBtmLeft:PropTypes.any,
     maxHeight:PropTypes.string,
-    sort:PropTypes.func
+    sort:PropTypes.func,
+    rowNumber:PropTypes.bool
 };
 
 AmTableMaster.defaultProps = {
   sortable: true,
   primaryKey:"ID",
-  maxHeight:"600px",
+  maxHeight:"500px",
   filterable:false,
   currentPage:0,
   pageSize:1000,
   selection:false,
   selectionType:"radio",
-  data:[]
+  data:[],
+  rowNumber:true
 };
 
 export default AmTableMaster;
