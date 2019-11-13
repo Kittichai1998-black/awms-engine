@@ -619,6 +619,7 @@ console.log(condition)
 console.log(field)
 console.log(value)
 console.log(type)
+console.log(filterData)
 
   let obj
   if(filterData.length > 0)
@@ -1247,11 +1248,13 @@ const UpdateData =(rowdata,type) =>{
 const getDataFilter=(datas)=>{
   console.log(datas)
 
-for(var data in datas){
-  console.log(data)
-console.log(datas[data])
-}
-
+  for(var data in datas){
+    console.log(data)
+  console.log(datas[data])
+  onChangeFilter({"f":"status","c":"!=","v":"2"},data,datas[data])
+  }
+  
+  //onChangeFilter = (condition, field, value,type)
 }
 //===========================================================
 const Clear=()=>{
