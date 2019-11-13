@@ -98,13 +98,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         //get Document
                         var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
                             DocumentTypeID.GOODS_ISSUED, BuVO);
-                        if(docItemLists == null || docItemLists.Count == 0)
+                        if (docItemLists == null || docItemLists.Count == 0)
                         {
                             docItems = this.ProcessReceiving(sto, reqVO);
                         }
                         else
                         {
-                            docItemLists.ForEach(di => {
+                            docItemLists.ForEach(di =>
+                            {
                                 docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
                             });
                         }
@@ -119,23 +120,85 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         else
                         {
                             //get Document
-                            var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(), 
+                            var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
                                 DocumentTypeID.GOODS_RECEIVED, BuVO);
 
-                            docItemLists.ForEach(di => {
-                                docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));  
-                                    });
+                            docItemLists.ForEach(di =>
+                            {
+                                docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
+                            });
                         }
                     }
 
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
-                //return picking
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED 
-                    || sto.eventStatus == StorageObjectEventStatus.AUDITED
-                    || sto.eventStatus == StorageObjectEventStatus.CONSOLIDATED)
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
                 {
+                    var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
+                    var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
+                    if (skuMaster == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
+                    var SKUMasterType = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
+                    if (SKUMasterType.GroupType == SKUGroupType.EMP)
+                    {
+                        docItems = this.ProcessReceiving(sto, reqVO);
+
+                        if (docItems.Count() == 0)
+                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+
+                    }
+                    else
+                    {
+                        var disto = new amt_DocumentItemStorageObject
+                        {
+                            ID = null,
+                            DocumentItem_ID = null,
+                            Sou_StorageObject_ID = stoEmp.id.Value,
+                            Des_StorageObject_ID = stoEmp.id.Value,
+                            Quantity = 0,
+                            BaseQuantity = 0,
+                            UnitType_ID = stoEmp.unitID,
+                            BaseUnitType_ID = stoEmp.baseUnitID,
+                            Status = EntityStatus.ACTIVE
+                        };
+
+                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, BuVO);
+
+                    }
+                }
+                else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
+                {
+                    var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    var disto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                        new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
+                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
+                        }, BuVO);
+                    if (!disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                    {
+                        throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
+                    }
+                    packList.ForEach(pack =>
+                    {
+                        var disto = new amt_DocumentItemStorageObject
+                        {
+                            ID = null,
+                            DocumentItem_ID = null,
+                            Sou_StorageObject_ID = pack.id.Value,
+                            Des_StorageObject_ID = pack.id.Value,
+                            Quantity = 0,
+                            BaseQuantity = 0,
+                            UnitType_ID = pack.unitID,
+                            BaseUnitType_ID = pack.baseUnitID,
+                            Status = EntityStatus.ACTIVE
+                        };
+
+                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, BuVO);
+                    });
+                }
+                else if (sto.eventStatus == StorageObjectEventStatus.CONSOLIDATED)
+                {//by pass
                 }
                 else
                 {

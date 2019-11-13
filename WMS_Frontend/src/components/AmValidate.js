@@ -42,10 +42,10 @@ const AmValidate = withStyles(theme => ({
         if (regExp) {
             if (values.match(regExp)) {
                 setResValid(true);
-                onValidate(true, msgSuccess)
+                // onValidate(true, msgSuccess)
             } else {
                 setResValid(false);
-                onValidate(false, msgError)
+                // onValidate(false, msgError)
             }
             if(values.length > 0){
                 setShowValid(true)
@@ -59,9 +59,9 @@ const AmValidate = withStyles(theme => ({
             let checkCustom = customValidate(values);
             setResValid(checkCustom)
             if(checkCustom){
-                onValidate(true, msgSuccess)
+                // onValidate(true, msgSuccess)
             }else{
-                onValidate(false, msgError)
+                // onValidate(false, msgError)
             }
             
             if(values.length > 0){
