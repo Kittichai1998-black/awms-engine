@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.V2.Business
         public class TReq
         {
             public long? rootID;
+            public StorageObjectType? rootType;
             public string scanCode;
             public string orderNo;
             public string batch;
@@ -215,7 +216,16 @@ namespace AWMSEngine.Engine.V2.Business
             }
             else
             {
-                mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
+                mapsto = this.ADOSto.Get(reqVO.rootID.Value, reqVO.rootType.Value, reqVO.isRoot, true, this.BuVO);
+                
+                var stoBase = new StorageObjectCriteria();
+                if (reqVO.rootType.Value != StorageObjectType.LOCATION)
+                {
+                    stoBase = mapsto.ToTreeList().Find(x => x.type == StorageObjectType.BASE && x.id == reqVO.rootID.Value);
+                    if (stoBase.id == null)
+                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                }
+
                 if (mapsto == null)
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
 
@@ -250,18 +260,26 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else if (reqVO.action == VirtualMapSTOActionType.ADD)
                 {
-                    if (!mapsto.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't add product in base that it has status is " + mapsto.eventStatus);
+                   if(stoBase.id != null)
+                    {
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't add product in base that it has status is " + stoBase.eventStatus);
+
+                    }
 
                     this.ActionAdd(reqVO, mapsto);
+
                 }
                 else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
                 {
-                    if (!mapsto.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + mapsto.eventStatus);
 
+                    if (stoBase.id != null)
+                    {
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + stoBase.eventStatus);
+                    }
                     this.ActionRemove(reqVO, mapsto);
-                    mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
+                    mapsto = this.ADOSto.Get(reqVO.rootID.Value, reqVO.rootType.Value, reqVO.isRoot, true, this.BuVO);
                 }
             }
             return mapsto;
@@ -328,14 +346,25 @@ namespace AWMSEngine.Engine.V2.Business
                 else if (bm != null)
                 {
                     StorageObjectCriteria regisMap = ADO.StorageObjectADO.GetInstant()
-                        .Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, false, this.BuVO);
+                        .Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
 
                     if (regisMap == null)
+                    {
                         regisMap = this.GenerateStoCrit(bm, bm.ObjectSize_ID, firstMapSto, reqVO);
-
+                    }
+                    else
+                    {
+                        if(firstMapSto.id != regisMap.id)
+                        {
+                            regisMap.parentID = firstMapSto.id;
+                            regisMap.parentType = firstMapSto.type;
+                        }
+                    }
                     this.ADOSto.PutV2(regisMap, this.BuVO);
 
+                    firstMapSto.mapstos = firstMapSto.mapstos.FindAll(x => x.id != regisMap.id);
                     firstMapSto.mapstos.Add(regisMap);
+                    firstMapSto.mapstos = firstMapSto.mapstos.OrderBy(x=> x.id).ToList(); 
 
                 }
                 
@@ -376,15 +405,21 @@ namespace AWMSEngine.Engine.V2.Business
         }
         private void ActionRemove(TReq reqVo, StorageObjectCriteria mapsto)
         {
-            var msf = GetMapStoLastFocus(mapsto);
-            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.eventStatus != StorageObjectEventStatus.NEW)
-                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
+            var msf = GetMapStoLastFocus(mapsto); //กรณี root เป็น area จะลบpallet ไม่ได้
+            if(msf.type != StorageObjectType.LOCATION)
+                if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.eventStatus != StorageObjectEventStatus.NEW)
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
+            
             if (reqVo.scanCode == mapsto.code)
             {
+                if(mapsto.eventStatus != StorageObjectEventStatus.NEW || !mapsto.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
+
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-               // msf.eventStatus = StorageObjectEventStatus.REMOVED;
-               // msf.areaID = msf.areaID.Value;
-               // ADOSto.PutV2(msf, this.BuVO);
+
+                // msf.eventStatus = StorageObjectEventStatus.REMOVED;
+                // msf.areaID = msf.areaID.Value;
+                // ADOSto.PutV2(msf, this.BuVO);
             }
             else
             {
@@ -407,10 +442,14 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else
                 {
-                    rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
-                    rmItem.areaID = msf.areaID.Value;
-                    ADOSto.PutV2(rmItem, this.BuVO);
-                    msf.mapstos.Remove(rmItem);
+                    if (rmItem.mapstos.Count() > 0 && !rmItem.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
+                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
+
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                       /* rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
+                        rmItem.areaID = msf.areaID.Value;
+                        ADOSto.PutV2(rmItem, this.BuVO);
+                        msf.mapstos.Remove(rmItem);*/
                 }
             }
         }

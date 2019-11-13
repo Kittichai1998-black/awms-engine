@@ -1,5 +1,5 @@
 import Grid from '@material-ui/core/Grid';
-import React, { useState, useEffect, useRef, createRef } from "react";
+import React, { useState, useRef, createRef } from "react";
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 
@@ -14,6 +14,7 @@ import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { apicall } from '../components/function/CoreFunction2'
 import BtnAddSKU from './AmCreateDocument_BtnAdd_BySKU'
+import { getUnique } from './function/ObjectFunction'
 
 const Axios = new apicall()
 
@@ -516,7 +517,7 @@ const AmCreateDocument = (props) => {
     const getHeaderCreate = () => {
         return props.headerCreate.map((x, xindex) => {
             return (
-                <Grid key={xindex} container spacing={24}>
+                <Grid key={xindex} container>
                     {x.map((y, yindex) => {
                         let syn = y.label ? " :" : "";
                         return (
@@ -536,6 +537,7 @@ const AmCreateDocument = (props) => {
     const CreateDoc = () => {
         let dataCreate = createDocumentData;
         let dataLebel = [];
+        let options
         //var options = null
         props.headerCreate.forEach(x => {
             x.forEach(y => {
@@ -561,21 +563,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.qtyrandom.replace("%", "")
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                    var options = "locationcode=" + x.locationcode
+                    options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "qtyrandom=" + qtyrandoms
+                    options = "qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "skuCode": x.skuCode === undefined ? null : x.skuCode,
@@ -635,21 +637,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.qtyrandom.replace("%", "")
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
                     options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "qtyrandom=" + qtyrandoms
+                    options = "qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
@@ -738,21 +740,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.perpallet
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "perpallet=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                    var options = "locationcode=" + x.locationcode
+                    options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "perpallet=" + qtyrandoms
+                    options = "perpallet=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
@@ -839,7 +841,7 @@ const AmCreateDocument = (props) => {
                             setMsgDialog(" Create Document success Document ID = " + res.data.ID);
                             // setTypeDialog("success");
                             setStateDialog(true);
-                            if (props.apiRes != undefined)
+                            if (props.apiRes !== undefined)
                                 props.history.push(props.apiRes + res.data.ID)
                         } else {
 
@@ -860,7 +862,7 @@ const AmCreateDocument = (props) => {
 
     const setFormatData = (data) => {
         dataSource.length = 0
-        data.forEach(x => {
+        getUnique(data, "ID").forEach(x => {
             // let chkData = dataSource.filter(z => z.ID === x.ID)
             // if (chkData.length === 0) {
 
@@ -907,8 +909,8 @@ const AmCreateDocument = (props) => {
             {getHeaderCreate()}
 
             {/* Btn ADD */}
-            <Grid container spacing={16}>
-                <Grid item xs container direction="column" spacing={16}>
+            <Grid container>
+                <Grid item xs container direction="column">
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
@@ -938,8 +940,8 @@ const AmCreateDocument = (props) => {
             />
 
             {/* Btn CREATE */}
-            <Grid container spacing={16}>
-                <Grid item xs container direction="column" spacing={16}>
+            <Grid container>
+                <Grid item xs container direction="column">
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>

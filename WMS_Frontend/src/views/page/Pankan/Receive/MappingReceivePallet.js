@@ -32,52 +32,17 @@ const MappingReceivePallet = (props) => {
     }
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 2 };
-    const inputHeader = [
-        { "field": "supplierID", "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" },
-        { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time" },
-    ]
+    // const inputHeader = [
+    //     { "field": SC.OPT_SUPPLIER_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true  },
+    //     { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time", "required": true  },
+    // ]
     const inputItem = [
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1 },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": SC.OPT_SUPPLIER_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "defaultValue": 1297, "fieldDataKey": "ID", "required": true },
+        { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time", "required": true },
+        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1, "required": true, "clearInput": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true, "clearInput": true },
     ]
-    // useEffect(() => {
-    //     GetSupplier();
-    // }, [])
-    // async function GetSupplier() {
-    //     await Axios.get(createQueryString(SupplierQuery)).then(res => {
-    //         if (res.data.datas) {
-    //             setSupplierData(res.data.datas);
-    //         }
-    //     });
-    // }
-    // const getnew = (val) => {
-    //     var show = "";
-    //     for (let no in supplierData) {
-    //         if (supplierData[no].ID === parseInt(val)) {
-    //             show = supplierData[no].Code + " - " + supplierData[no].Name;
-    //             break;
-    //         } else {
-    //             continue;
-    //         }
-    //     }
-    //     return show;
-    // }
-    // const customOptions = (value) => {
-    //     var qryStr = queryString.parse(value);
-    //     let supNew = getnew(qryStr.supplier_id);
-    //     let date = moment(qryStr.date).format("DD-MM-YYYY hh:mm")
-    //     var res = [{
-    //         text: 'SP',
-    //         value: supNew,
-    //         textToolTip: 'Supplier'
-    //     }, {
-    //         text: 'DT',
-    //         value: date,
-    //         textToolTip: 'Donate Date'
-    //     }]
 
-    //     return res;
-    // }
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
         setTypeDialog(type);
@@ -92,78 +57,137 @@ const MappingReceivePallet = (props) => {
     }, [stateDialog, msgDialog, typeDialog]);
 
     async function onBeforePost(reqValue, storageObj) {
-        var resValuePost = null;
-        var dataScan = {};
+        let resValuePost = null;
+        let dataScan = {};
+
         if (reqValue) {
+
             if (reqValue.rootID) {
-                var options = null;
+
+                let SUPPLIER_ID = null;
+                let oldOptions = {};
+                let options = null;
+                let optDATE = null;
+                let optSUPPLIER_ID = null;
+                if (reqValue[SC.OPT_SUPPLIER_ID]) {
+                    SUPPLIER_ID = reqValue[SC.OPT_SUPPLIER_ID];
+                }
+
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-                    var dataMapSto = findMapSto(storageObj, reqValue.scanCode)
-                    // console.log(dataMapSto)
-                    var oldOptions = null;
+                    let dataMapSto = findMapSto(storageObj, reqValue.scanCode);
+       
                     if (dataMapSto) {
-                        oldOptions = dataMapSto.options !== undefined ? queryString.parse(dataMapSto.options) : null;
-                    }
+
+                        if (dataMapSto.parentID !== reqValue.rootID) {
+                            if(dataMapSto.parentID){
+                                reqValue.rootID = dataMapSto.parentID;
+                                reqValue.rootType = dataMapSto.parentType;
+                            }else{
+                                if(reqValue.action !== 2){
+                                    reqValue.rootID = dataMapSto.parentID;
+                                reqValue.rootType = dataMapSto.parentType;
+                                }else{
+                                    reqValue.rootID = dataMapSto.id;
+                                    reqValue.rootType = dataMapSto.type;
+                                }
+                            }
+                           
+                            // console.log(reqValue)
+                        }
+                        oldOptions = queryString.parse(dataMapSto.options);
+                    } 
 
                     if (oldOptions) {
-                        var newsupplier_id = "";
-                        var newdate = "";
+                        let newsupplier_id = "";
+                        let newdate = "";
 
                         if (reqValue.action === 2) {
-                            var date = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE].split(',') : [];
-                            var newdates = date.slice(0, date.length - reqValue.amount);
+                            let date = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE].split(',') : [];
+                            let newdates = date.slice(0, date.length - reqValue.amount);
                             newdate = newdates.join(',');
 
-                            var supplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID].split(',') : [];
-                            var newsupplier_ids = supplier_id.slice(0, supplier_id.length - reqValue.amount);
+                            let supplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID].split(',') : [];
+                            let newsupplier_ids = supplier_id.slice(0, supplier_id.length - reqValue.amount);
                             newsupplier_id = newsupplier_ids.join(',');
 
                         } else {
-                            newsupplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID] + "," + runOptions(reqValue.amount, reqValue.supplierID) : reqValue.supplierID;
+                            if (SUPPLIER_ID) {
+                                newsupplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID] + "," + runOptions(reqValue.amount, SUPPLIER_ID) : SUPPLIER_ID;
+                            }
                             newdate = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE] + "," + runOptions(reqValue.amount, reqValue.donateDate) : reqValue.donateDate;
                         }
-                        oldOptions[SC.OPT_DATE] = newdate;
-                        oldOptions[SC.OPT_SUPPLIER_ID] = newsupplier_id;
-                        var qryStr1 = queryString.stringify(oldOptions);
-                        options = decodeURIComponent(qryStr1)
+                        optDATE = newdate;
+                        optSUPPLIER_ID = newsupplier_id;
+                    } else {
+                        optDATE = runOptions(reqValue.amount, reqValue.donateDate);
+                        optSUPPLIER_ID = runOptions(reqValue.amount, SUPPLIER_ID);
                     }
-
                 } else {
-                    let opt = {};
-                    opt[SC.OPT_DATE] = runOptions(reqValue.amount, reqValue.donateDate);
-                    opt[SC.OPT_SUPPLIER_ID] = runOptions(reqValue.amount, reqValue.supplierID);
-                    var qryStr1 = queryString.stringify(oldOptions);
-                    options = decodeURIComponent(qryStr1)
-                    // options = "date=" + runOptions(reqValue.amount, reqValue.donateDate) + "&supplier_id=" + runOptions(reqValue.amount, reqValue.supplierID)
+                    optDATE = runOptions(reqValue.amount, reqValue.donateDate);
+                    optSUPPLIER_ID = runOptions(reqValue.amount, SUPPLIER_ID);
                 }
+                oldOptions[SC.OPT_DATE] = optDATE;
+                oldOptions[SC.OPT_SUPPLIER_ID] = optSUPPLIER_ID;
+                let qryStr1 = queryString.stringify(oldOptions);
+                options = decodeURIComponent(qryStr1);
+
                 dataScan = {
+                    allowSubmit: true,
                     options: options,
                 };
+                if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                    if (SUPPLIER_ID == null || SUPPLIER_ID.length === 0) {
+                        alertDialogRenderer("Please select supplier before.", "error", true);
+                        dataScan.allowSubmit = false;
+                    }
+                }
+
                 resValuePost = { ...reqValue, ...dataScan }
             } else {
                 resValuePost = { ...reqValue }
             }
         }
+        // console.log(resValuePost)
         return resValuePost;
     }
+    function OnOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: "amount",
+                value: 0
+            }]
 
-    const runOptions = (amount, val) => {
-        var text = "";
-        for (var i = 0; i < amount; i++) {
-            if (i === (amount - 1)) {
-                text += val;
-            } else {
-                text += val + ",";
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                var dataLastPack = findPack(storageObj);
+                if (dataLastPack) {
+                    // console.log(dataLastPack)
+                    let qryStrOpt = queryString.parse(dataLastPack.options);
+                    let optSup = qryStrOpt[SC.OPT_SUPPLIER_ID].split(',');
+                    oldValue.push({
+                        field: SC.OPT_SUPPLIER_ID,
+                        value: optSup[optSup.length - 1]
+                    });
+                }
+
             }
         }
-        return text;
+        return oldValue;
     }
-    const findMapSto = (storageObj, scanCode) => {
+    const findPack = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
         mapstosToTree.reverse();
         var pack = null;
         for (let no in mapstosToTree) {
-            if (mapstosToTree[no].code === scanCode) {
+            if (mapstosToTree[no].type === 2) {
                 pack = mapstosToTree[no];
                 break;
             } else {
@@ -172,6 +196,56 @@ const MappingReceivePallet = (props) => {
         }
         return pack;
     }
+    const runOptions = (amount, val) => {
+        let text = "";
+        for (let i = 0; i < amount; i++) {
+            if (i === (amount - 1)) {
+                text += val;
+            } else {
+                text += val + ",";
+            }
+        }
+        return text;
+    }
+    const findFocusSto = (storageObj) => {
+        let mapstosToTree = ToListTree(storageObj, 'mapstos');
+        mapstosToTree.reverse();
+        let pack = null;
+        for (let no in mapstosToTree) {
+            if (mapstosToTree[no].isFocus) {
+                pack = mapstosToTree[no];
+                break;
+            } else {
+                continue;
+            }
+        }
+        return pack;
+    }
+    const findMapSto = (storageObj, scanCode) => {
+        let mapstosToTree = ToListTree(storageObj, 'mapstos');
+        mapstosToTree.reverse();
+        let pack = null;
+        for (let no in mapstosToTree) {
+            if (mapstosToTree[no].code === scanCode) {
+                var found = mapstosToTree.find(element => {
+                    if(mapstosToTree[no].parentID){
+                        return element.id === mapstosToTree[no].parentID && element.isFocus === true;
+                    }else{
+                        return element.isFocus === true;
+                    }
+                });
+                if (found) {
+                    pack = mapstosToTree[no];
+                } 
+                break;
+            } else {
+                continue;
+            }
+        }
+        // console.log(pack)
+        return pack;
+    }
+
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
@@ -179,12 +253,14 @@ const MappingReceivePallet = (props) => {
             <AmMappingPallet
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
-                headerCreate={inputHeader} //input header
+                // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 onBeforePost={onBeforePost}
                 // customOptions={customOptions}
                 showOptions={false}
                 modeMultiSKU={true}
+                showOldValue={OnOldValue}
+                autoPost={true}
                 confirmReceiveMapSTO={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
             />

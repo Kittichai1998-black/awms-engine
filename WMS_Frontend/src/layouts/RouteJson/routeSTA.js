@@ -13,6 +13,14 @@ const CreateDocGISTACus = Loadable({
   loader: () => import("../../views/page/STA/Issues/CreateDocGICus"),
   loading: Loading
 });
+const CreateDocGIWipWare = Loadable({
+  loader: () => import("../../views/page/STA/Issues/CreateDocGIWipWare"),
+  loading: Loading
+});
+const CreateDocGIEmpty = Loadable({
+  loader: () => import("../../views/page/STA/Issues/CreateDocGIEmpty"),
+  loading: Loading
+});
 const CreateDocGISTAWare = Loadable({
   loader: () => import("../../views/page/STA/Issues/CreateDocGIWare"),
   loading: Loading
@@ -167,6 +175,7 @@ const ReportStorageObject = Loadable({
   loader: () => import("../../views/page/STA/Report/StorageObject"),
   loading: Loading
 });
+
 const routes = [
   {
     path: "/report/storageobject",
@@ -292,6 +301,18 @@ const routes = [
     path: "/issue/createWm",
     name: "base5",
     compoment: CreateDocGISTAWare,
+    exact: true
+  },
+  {
+    path: "/issue/createWipWm",
+    name: "base5",
+    compoment: CreateDocGIWipWare,
+    exact: true
+  },
+  {
+    path: "/issue/createEmpWm",
+    name: "base5",
+    compoment: CreateDocGIEmpty,
     exact: true
   },
   {

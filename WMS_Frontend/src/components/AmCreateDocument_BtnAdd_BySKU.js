@@ -244,9 +244,10 @@ const BtnAddSkuByItem = (props) => {
         }
     }, [searchAction])
 
-    const search = props.search.map(x => {
+    const search = props.search.map((x, xi) => {
         return (
             <SearchInput
+                key={xi}
                 placeholder={x.placeholder}
                 defaultValue={x.defaultValue ? x.defaultValue : null}
                 // labelInput={"Pallet Code"}

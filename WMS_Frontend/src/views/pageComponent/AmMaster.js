@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Table from '../../components/table/AmTable';
+import Table from '../../components/table/AmTableV2';
 // import DocView from "../../views/pageComponent/DocumentView";
 import Pagination from '../../components/table/AmPagination';
 import AmEditorTable from '../../components/table/AmEditorTable';
@@ -25,7 +25,10 @@ import readXlsxFile from 'read-excel-file'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
+import AmExportDataTable from "../../components/table/AmExportDataTable";
 const Axios = new apicall()
 //   const createQueryString = (select) => {
 //     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -66,7 +69,7 @@ input {
     
   }
 `;
-const MasterData = (props) => {
+const AmMaster = (props) => {
   const { t } =useTranslation()
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -134,10 +137,21 @@ const FuncSetTable  = () => {
           },{      
             Header: 'Edit',
             width:80,
-            Cell:(e)=>
-            <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
-            {t('Info')}
-            </AmButton>,
+            Cell:(e)=>          <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <EditIcon
+              fontSize="small"
+              style={{ color: "#E53935" }}
+              onClick={()=>{setEditData(e);edit(e,"edit") }}
+            />
+          </IconButton>,
+            // <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
+            // {t('Info')}
+            // </AmButton>,
             sortable:false,
           },{
             Header: 'Delete',
@@ -150,20 +164,46 @@ const FuncSetTable  = () => {
           },)
     }else{
       iniCols.push({      
-        Header: 'Edit',
-        width:80,
+        Header: '',
+        width:20,
+        filterable: false,
         Cell:(e)=>
-        <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
-      {t('Edit')}
-        </AmButton>,
+        <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <EditIcon
+              fontSize="small"
+              style={{ color: "#f39c12" }}
+              onClick={()=>{setEditData(e);edit(e,"edit") }}
+            />
+          </IconButton>,
+      //   <AmButton style={{lineHeight:"1"}} styleType="info"  onClick={()=>{setEditData(e);edit(e,"edit") }} >
+      // {t('Edit')}
+      //   </AmButton>,
         sortable:false,
       },{
-        Header: 'Delete',
-        width:80,
+        Header: '',
+        width:20,
+        filterable: false,
         Cell:(e)=>
-        <AmButton style={{lineHeight:"1"}} styleType="delete"  onClick={()=>{setDeleteData(e);edit(e,"delete");}} >
-        {t('Delete')}
-        </AmButton>,
+        <IconButton
+            //aria-label="Edit"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <DeleteIcon
+              fontSize="small"
+              style={{ color: "#e74c3c" }}
+              onClick={()=>{setDeleteData(e);edit(e,"delete")}}
+            />
+          </IconButton>,
+        // <AmButton style={{lineHeight:"1"}} styleType="delete"  onClick={()=>{setDeleteData(e);edit(e,"delete");}} >
+        // {t('Delete')}
+        // </AmButton>,
 
         sortable:false,
       },)
@@ -575,6 +615,11 @@ const onChangeFilterDateTime = (value, field, type) =>{
   setDatetime(datetimeRange)
 }
 const onChangeFilter = (condition, field, value,type) => {
+console.log(condition)
+console.log(field)
+console.log(value)
+console.log(type)
+console.log(filterData)
 
   let obj
   if(filterData.length > 0)
@@ -1200,7 +1245,18 @@ const UpdateData =(rowdata,type) =>{
   })
 }
 //===========================================================
+const getDataFilter=(datas)=>{
+  console.log(datas)
 
+  for(var data in datas){
+    console.log(data)
+  console.log(datas[data])
+  onChangeFilter({"f":"status","c":"!=","v":"2"},data,datas[data])
+  }
+  
+  //onChangeFilter = (condition, field, value,type)
+}
+//===========================================================
 const Clear=()=>{
   setEditRow([])
   setDeleteDataTmp([])
@@ -1234,10 +1290,12 @@ const Clear=()=>{
             sort={(sort) => setSort({field:sort.id, order:sort.sortDirection})}
             style={{maxHeight:"550px"}}
             editFlag="editFlag"
+            filterData={(e)=>{getDataFilter(e)}}
+            filterable={true}
             currentPage={page}
             exportData={true}
                 //excelData={excelDataSrouce}
-              renderCustomButtonB4={<FormInline>
+              renderCustomTopRight={<FormInline>
               <AmButton  
                 style={{marginRight:"5px"}} 
                 styleType="add" 
@@ -1245,27 +1303,14 @@ const Clear=()=>{
                 setAddData(true);
                 setDialog(true)}} >{t("Add")}
               </AmButton>
-            {props.import == true ?<label style={{ 
-                width:"60px",
-                fontWeight: "bolder",
-                display: "inline-block",
-                background:  "#22a6b3",
-                //marginTop:"0px !important",
-                //marginBottom:"0px !important",
-                margin:"0px 0px 0px 0px ",
-                color: "white",
-                //border: "1px solid #999",
-                marginRight: "5px",
-                borderRadius: "5px",
-                padding: "6px 5px",
-                paddingTop: "4px",
-                outline: "none",
-                whiteSpace: "nowrap",
-                boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
-              }} >Import
-              <input style={{visibility: "hidden",width:"0px"}}  id="input"type="file"onChange={(e)=>FuncImport(e)} /></label>:null
-                    }
-                    {props.customButton}</FormInline>
+              <AmExportDataTable
+            data={true}
+            excelQueryAPI={excelDataSrouce}
+            //onExcelFooter={props.onExcelFooter}
+            fileName={"Table"}
+            cols={columns}
+          />
+            </FormInline>
                }
         />
     
@@ -1279,4 +1324,4 @@ const Clear=()=>{
       </div>
   )
 }
-export default MasterData;
+export default AmMaster;

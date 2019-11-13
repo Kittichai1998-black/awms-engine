@@ -436,6 +436,7 @@ const AmPickingReturn = (props) => {
                         var resInput = {
                             ...valueInput,
                             rootID: rootFocusID,
+                            rootType: dataRootFocus.type,
                             docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
@@ -452,6 +453,7 @@ const AmPickingReturn = (props) => {
                     } else {
                         dataScan = {
                             rootID: rootFocusID,
+                            rootType: dataRootFocus.type,
                             docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,

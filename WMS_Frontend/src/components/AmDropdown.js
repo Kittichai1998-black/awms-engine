@@ -668,7 +668,7 @@ const DropdownComponent = (props) => {
 DropdownComponent.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
-    id: PropTypes.string.isRequired,
+    // id: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
     value: PropTypes.oneOfType([
         PropTypes.string,

@@ -162,7 +162,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     distos.ToList().ForEach(disto =>
                                     {
                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
-
                                     });
                                 });
                                 //ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
@@ -246,6 +245,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                             {
                                                 if (sto.qty == disto.Quantity)
                                                 {
+
                                                     ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
                                                     //ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
                                                 }
@@ -296,8 +296,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
                                                         var stoIDUpdated2 = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
                                                     }
-                                                    //var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                   // ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
 
                                                 }
                                             }
