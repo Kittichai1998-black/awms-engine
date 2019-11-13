@@ -517,7 +517,7 @@ const AmCreateDocument = (props) => {
     const getHeaderCreate = () => {
         return props.headerCreate.map((x, xindex) => {
             return (
-                <Grid key={xindex} container spacing={24}>
+                <Grid key={xindex} container>
                     {x.map((y, yindex) => {
                         let syn = y.label ? " :" : "";
                         return (
@@ -909,8 +909,8 @@ const AmCreateDocument = (props) => {
             {getHeaderCreate()}
 
             {/* Btn ADD */}
-            <Grid container spacing={16}>
-                <Grid item xs container direction="column" spacing={16}>
+            <Grid container>
+                <Grid item xs container direction="column">
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
@@ -940,8 +940,8 @@ const AmCreateDocument = (props) => {
             />
 
             {/* Btn CREATE */}
-            <Grid container spacing={16}>
-                <Grid item xs container direction="column" spacing={16}>
+            <Grid container>
+                <Grid item xs container direction="column">
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
