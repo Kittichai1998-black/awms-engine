@@ -28,6 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
+import queryString from "query-string";
 import AmExportDataTable from "../../components/table/AmExportDataTable";
 const Axios = new apicall()
 //   const createQueryString = (select) => {
@@ -615,11 +616,11 @@ const onChangeFilterDateTime = (value, field, type) =>{
   setDatetime(datetimeRange)
 }
 const onChangeFilter = (condition, field, value,type) => {
-console.log(condition)
-console.log(field)
-console.log(value)
-console.log(type)
-console.log(filterData)
+// console.log(condition)
+// console.log(field)
+// console.log(value)
+// console.log(type)
+// console.log(filterData)
 
   let obj
   if(filterData.length > 0)
@@ -1055,9 +1056,13 @@ const onHandleDeleteConfirm = (status, rowdata) => {
 useEffect(()=> {
 }, [editRow])
 
+useEffect(()=> {
+  getDataFilterURL()
+}, [])
 
 useEffect(()=> {
   getData(createQueryString(query))
+  
 }, [query])
 
 useEffect(()=> {
@@ -1246,15 +1251,16 @@ const UpdateData =(rowdata,type) =>{
 }
 //===========================================================
 const getDataFilter=(datas)=>{
-  console.log(datas)
-
   for(var data in datas){
-    console.log(data)
-  console.log(datas[data])
   onChangeFilter({"f":"status","c":"!=","v":"2"},data,datas[data])
   }
-  
-  //onChangeFilter = (condition, field, value,type)
+}
+//===========================================================
+const getDataFilterURL=()=>{
+console.log(props.history.location.search)
+var x = props.history.location.search
+var qryStr = queryString.parse(x);
+console.log(qryStr)
 }
 //===========================================================
 const Clear=()=>{
