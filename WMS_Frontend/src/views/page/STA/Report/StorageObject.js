@@ -309,12 +309,12 @@ const StorageObject = props => {
         cols={iniCols2}
         dataRemark={columns}
         table={"StorageObject"}
-        selection={true}
-        modifyRemark={true}
+        selection={false}
+        //modifyRemark={true}
         export={true}
-        modifyhold={true}
-        modifyreceived={true}
-        modifyQC={true}
+        // modifyhold={true}
+        // modifyreceived={true}
+        // modifyQC={true}
         //multi={true}
       />
     </div>

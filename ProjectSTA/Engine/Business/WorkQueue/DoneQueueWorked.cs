@@ -23,41 +23,44 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
                 if (docs != null)
                 {
-                    if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+
+                    var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, buVO);
+                    docItems.ForEach(docItem =>
                     {
-                        var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, buVO);
-                        docItems.ForEach(docItem =>
+                        if (docItem.DocItemStos.TrueForAll(z => z.Status == EntityStatus.ACTIVE))
                         {
-                            if (docItem.DocItemStos.TrueForAll(z => z.Status == EntityStatus.ACTIVE))
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
+                            if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
                             {
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
                                 var sum_disto = docItem.DocItemStos.Sum(t => t.Quantity);
-                                //ถ้า STO ของที่เบิก เบิกไม่หมด จะต้องเอาของที่เหลือไปสร้างเอกสาร Picking Return
-                                if (sum_disto > docItem.Quantity)
+                                    //ถ้า STO ของที่เบิก เบิกไม่หมด จะต้องเอาของที่เหลือไปสร้างเอกสาร Picking Return
+                                    if (sum_disto > docItem.Quantity)
                                 {   //StoQTY = 150 > จำนวนที่ขอเบิก 100 
                                     //เอา 50 ที่เหลือ ไปสร้างเอกสาร Picking Return
-                                    CreateGRDocument(docItem, logger, buVO);
+                                        CreateGRDocument(docItem, logger, buVO);
                                 }
                             }
-                        });
 
-                        var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
-                        if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
-                            RemoveOPTDocument(x, docs.Options, buVO);
-                            docLists.Add(x);
                         }
-                        else
-                        {
-                            buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                            {
-                                docID = x,
-                                msgError = "Status of all document items didn't 'WORKED'."
-                            });
-                        }
+                    });
 
+                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
+                    if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
+                    {
+                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
+                        RemoveOPTDocument(x, docs.Options, buVO);
+                        docLists.Add(x);
                     }
+                    else
+                    {
+                        buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                        {
+                            docID = x,
+                            msgError = "Status of all document items didn't 'WORKED'."
+                        });
+                    }
+
+
                 }
                 else
                 {

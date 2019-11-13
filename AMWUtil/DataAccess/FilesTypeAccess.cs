@@ -23,6 +23,13 @@ namespace AMWUtil.DataAccess
             }
         }
 
+        public static ExcelDataResponse ExcelFileAccess(string filePath)
+        {
+            var getFile = new FileInfo(filePath);
+            var res = FilesTypeAccess.ExcelAccess(getFile);
+            return res;
+        }
+
         public static ExcelDataResponse ExcelAccess(FileInfo fileInfo)
         {
             List<ExcelDataResponse.TWorkSheet> res = new List<ExcelDataResponse.TWorkSheet>();

@@ -187,6 +187,7 @@ const AmCounting = props => {
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
   const [valueEdit, setValueEdit] = useState(0);
+  const [valueEditRemark, setValueEditRemark] = useState("");
   const [docName, setDocName] = useState("");
   const [option, setOption] = useState();
   const [tmp, setTmp] = useState();
@@ -350,7 +351,12 @@ const AmCounting = props => {
     }
     setValueEdit(value);
   };
-
+  const createAuditRemark = (value, dataTable) => {
+    for (var data in dataTable) {
+      dataTable[data].remark = value;
+    }
+    setValueEditRemark(value);
+  };
   const StroageEventStatusSearch = [
     { label: "NEW", value: 10 },
     { label: "RECEIVING", value: 11 },
@@ -402,6 +408,10 @@ const AmCounting = props => {
     var defaultDataRadioDisable = tmpDefaultDataRadioDisable;
 
     return packLists.mapstos.map((list, index) => {
+      console.log(list);
+      var qryStr = queryString.parse(list.options);
+      console.log(qryStr);
+      console.log(qryStr.remark);
       var check = data.filter(x => x.stoID === list.id);
 
       return (
@@ -454,6 +464,22 @@ const AmCounting = props => {
                 />{" "}
                 / {list.qty} {list.unitCode}
               </FormInline>
+              <FormInline>
+                <LabelH>Remark : </LabelH>{" "}
+                <AmInput
+                  defaultValue={
+                    qryStr.remark === undefined ? "" : qryStr.remark
+                  }
+                  style={{ width: "100px", padding: "0px" }}
+                  //type="number"
+                  disabled={check.length === 0 ? true : false}
+                  id="RemarkEdit"
+                  name="RemarkEdit"
+                  onChange={(value, obj, element, event) => {
+                    createAuditRemark(value, data);
+                  }}
+                />
+              </FormInline>
               {props.stateDone === true ? (
                 <FormInline>
                   {" "}
@@ -495,6 +521,7 @@ const AmCounting = props => {
         packCode: x.packCode,
         auditQty: auditQty,
         qty: x.qty,
+        remark: x.remark,
         baseQty: x.baseQty,
         unitID: x.unitID,
         baseUnitID: x.baseUnitID,
