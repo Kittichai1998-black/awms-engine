@@ -149,8 +149,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 Status = EntityStatus.ACTIVE
                             };
                             var idNewUnitType = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(buVO, newUnitType);
-                            unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(idNewUnitType, buVO);
                             StaticValueManager.GetInstant().ClearStaticByTableName("ams_UnitType");
+
+                            unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(idNewUnitType, buVO);
 
                         }
                         var skuCode = pack.MATNR.TrimStart(new char[] { '0' }); //MATNR : Material Number
@@ -173,8 +174,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             };
 
                             var idNewSKU = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_SKUMaster>(buVO, newSKU);
+                            StaticValueManager.GetInstant().LoadPackUnitConvert(buVO);
                             _sku = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(idNewSKU, buVO);
-                            StaticValueManager.GetInstant().ClearStaticByTableName("ams_SKUMaster");
 
                         }
                         if (_sku.UnitType_ID != unit.ID)
