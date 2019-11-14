@@ -667,6 +667,7 @@ if(filterDataList.length > 0){
             createObj.c = "<="
             obj.push(createObj)
         }else{     
+          console.log("ddd")
             let createObj = {};
             createObj.f = field
             createObj.v = value + "%"
@@ -681,6 +682,7 @@ if(filterDataList.length > 0){
 const onHandleFilterConfirm = (status, obj) => {
   if(status){
     let getQuery = Clone(query);
+    console.log(...filterData)
     let filterDatas = [...filterData]
     if(datetime){
       if(datetime["dateFrom"])
@@ -1006,7 +1008,7 @@ const onHandleChange = (value, dataObject, inputID, fieldDataKey,data) => {
     const [sort, setSort] = useState(0);
     const [page, setPage] = useState();
     const [selection, setSelection] = useState();
-    const [query, setQuery] = useState(Query);
+    const [query, setQuery] = useState(null);
     const [query2, setQuery2] = useState(Query2)
     const [editRow, setEditRow] = useState([]);
     const [editData, setEditData] = useState();
@@ -1061,8 +1063,8 @@ useEffect(()=> {
 }, [])
 
 useEffect(()=> {
+if(query !== null)
   getData(createQueryString(query))
-  
 }, [query])
 
 useEffect(()=> {
@@ -1257,10 +1259,34 @@ const getDataFilter=(datas)=>{
 }
 //===========================================================
 const getDataFilterURL=()=>{
+  console.log(props.history)
 console.log(props.history.location.search)
 var x = props.history.location.search
 var qryStr = queryString.parse(x);
 console.log(qryStr)
+//onHandleFilterConfirmURL(true,qryStr)
+let obj =[{"f":"status","c":"!=","v":"2"}]
+for(var data in qryStr ){
+  let createObj = {};
+  createObj.f = data
+  createObj.v = qryStr[data] + "%"
+  createObj.c = "like"
+  obj.push(createObj)
+  
+}
+//setFilterData(obj)  
+onHandleFilterConfirmURL(obj)
+}
+const onHandleFilterConfirmURL = (obj) => {
+ 
+    let getQuery = Clone(Query);
+    let filterDatas = [...obj]
+    console.log(...filterData)
+    getQuery.q = JSON.stringify(filterDatas);
+    console.log()
+    setQuery(getQuery)
+  
+
 }
 //===========================================================
 const Clear=()=>{
@@ -1291,10 +1317,11 @@ const Clear=()=>{
             excelQueryAPI={excelDataSrouce}
             primaryKey="ID"
             data={dataSource}
+            maxHeight="550px"
             columns={columns}
             pageSize={100}
             sort={(sort) => setSort({field:sort.id, order:sort.sortDirection})}
-            style={{maxHeight:"550px"}}
+            //style={{maxHeight:"550px"}}
             editFlag="editFlag"
             filterData={(e)=>{getDataFilter(e)}}
             filterable={true}
