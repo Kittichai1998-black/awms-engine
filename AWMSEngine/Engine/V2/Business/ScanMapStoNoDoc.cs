@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business
         public class TReq
         {
             public long? rootID;
-            public StorageObjectType? rootType;
+            public StorageObjectType? rootType = StorageObjectType.BASE;
             public string scanCode;
             public string orderNo;
             public string batch;
