@@ -18,18 +18,31 @@ const createQueryString = select => {
   return queryS;
 };
 const WorkQueueAAIR6 = props => {
-  const AreaMaster = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "AreaMaster",
-    q:
-      '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
-    f: "ID,Code,Name",
-    g: "",
-    s: "[{'f':'ID','od':'desc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  //const AreaMaster = {
+  //  queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  //  t: "AreaMaster",
+  //  q:
+  //    '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
+  //  f: "ID,Code,Name",
+  //  g: "",
+  //  s: "[{'f':'ID','od':'desc'}]",
+  //  sk: 0,
+  //  l: 100,
+  //  all: ""
+  //};
+
+    const AreaMaster = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaMaster",
+        q:
+            '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'desc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
   const Warehouse = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -49,7 +62,7 @@ const WorkQueueAAIR6 = props => {
   ];
 
   const ordersDDL = [
-    { label: "createtime", value: "createtime" },
+      { label: "Create time", value: "Create time" },
     { label: "Batch", value: "Batch" }
   ];
 
@@ -114,7 +127,8 @@ const WorkQueueAAIR6 = props => {
 
   const DefaulSorting = [
     {
-      By: "createtime",
+          By: "Create time",
+          value: "Create time",
       ID: -1,
       Order: "FIFO"
     }

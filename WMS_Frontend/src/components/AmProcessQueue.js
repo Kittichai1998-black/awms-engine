@@ -1507,6 +1507,7 @@ const AmProcessQueue = props => {
                                             fildNames = d.value
                                         }
 
+                                        
                                         let sort = {
                                             fieldName: "psto." + fildNames,
                                             orderByType: d.Order === "FIFO" ? 0 : 1
