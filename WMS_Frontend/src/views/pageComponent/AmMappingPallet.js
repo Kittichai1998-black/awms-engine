@@ -304,13 +304,15 @@ const AmMappingPallet = (props) => {
     useEffect(() => {
         if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
+            console.log("area1")
         }
     }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (ddlArea === null && selWarehouse) {
             if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
                 GetAreaDDL(selWarehouse)
-            }
+            console.log("area2")
+        }
         }
     }, [ddlArea])
 
@@ -1009,6 +1011,7 @@ const AmMappingPallet = (props) => {
     }
 
     const onHandleClear = () => {
+        console.log("onHandleClear")
         setValueInput({});
         setStorageObj(null);
         setNewStorageObj(null);
@@ -1021,6 +1024,7 @@ const AmMappingPallet = (props) => {
         setResValuePost(null);
     }
     const inputClearAll = () => {
+        console.log("inputClearAll")
         setInputHeader(null);
         setInputItem(null);
         setInputSource(null);

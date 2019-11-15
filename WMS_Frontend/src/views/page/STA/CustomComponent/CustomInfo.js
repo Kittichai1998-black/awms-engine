@@ -3,13 +3,22 @@ import * as SC from '../../../../constant/StringConst'
 
 const CustomInfoChip = (row) => {
     let tempInfo = [];
-    if (row.objectSizeName && row.objectSizeName !== null) {
+    if (row.skuTypeName && row.skuTypeName !== null) {
         tempInfo.push({
-            text: 'OS',
-            value: row.objectSizeName,
-            textToolTip: 'Object Size'
+            text: 'S',
+            value: row.skuTypeName,
+            textToolTip: 'Size'
         })
+    }else{
+        if (row.objectSizeName && row.objectSizeName !== null) {
+            tempInfo.push({
+                text: 'OS',
+                value: row.objectSizeName,
+                textToolTip: 'Object Size'
+            })
+        }
     }
+    
     if (row.orderNo && row.orderNo !== null) {
         tempInfo.push({
             text: 'SI',
@@ -39,13 +48,22 @@ const CustomInfoChip = (row) => {
 
 const CustomInfoChipWIP = (row) => {
     let tempInfo = [];
-    if (row.objectSizeName && row.objectSizeName !== null) {
+    if (row.skuTypeName && row.skuTypeName !== null) {
         tempInfo.push({
-            text: 'OS',
-            value: row.objectSizeName,
-            textToolTip: 'Object Size'
+            text: 'S',
+            value: row.skuTypeName,
+            textToolTip: 'Size'
         })
+    }else{
+        if (row.objectSizeName && row.objectSizeName !== null) {
+            tempInfo.push({
+                text: 'OS',
+                value: row.objectSizeName,
+                textToolTip: 'Object Size'
+            })
+        }
     }
+    
     if (row.orderNo && row.orderNo !== null) {
         tempInfo.push({
             text: 'CA',
