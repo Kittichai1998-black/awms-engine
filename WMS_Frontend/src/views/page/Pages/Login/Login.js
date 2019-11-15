@@ -22,6 +22,8 @@ import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Route, Redirect } from "react-router-dom";
 import DefaultLayout from "../../../../layouts/defaultLayout";
+import { createQueryString } from '../../../../components/function/CoreFunction';
+import _ from "lodash";
 import Axios from "axios";
 
 const styles = theme => ({
@@ -123,8 +125,10 @@ const Login = props => {
   };
 
   const GetMenu = token => {
+    window.loading.onLoading();
     Axios.get(window.apipath + "/v2/ListMenuAPI?token=" + token)
       .then(res => {
+        window.loading.onLoaded();
         localStorage.setItem("MenuItems", JSON.stringify(res.data.webGroups));
       })
       .then(() => {
@@ -135,6 +139,34 @@ const Login = props => {
         console.log(error);
       });
   };
+  const GetStaticValue = (tableNames, apiName = "SelectDataMstAPI") => {
+    tableNames.forEach(tableName => {
+      let newApi = {
+        queryString: window.apipath + "/v2/" + apiName + "/",
+        t: tableName,
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      }
+
+      window.loading.onLoading();
+      Axios.get(createQueryString(newApi) + "&apikey=FREE01")
+        .then(res => {
+          window.loading.onLoaded();
+          let curStatic = JSON.parse(localStorage.getItem("StaticValue")) || [];
+          let newStatic = [{ table: tableName, data: res.data.datas }];
+          let mergeStatic = _.uniqBy([...curStatic, ...newStatic], "table");
+          localStorage.setItem("StaticValue", JSON.stringify(mergeStatic));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  }
   const onHandleLogin = () => {
     if (valueForm.username.length === 0 && valueForm.password.length === 0) {
       setAlertmsg("Please input your username and password.");
@@ -161,6 +193,8 @@ const Login = props => {
               savetoSession("ExpireTime", res.data.ExpireTime);
               savetoSession("Username", valueForm.username);
               GetMenu(res.data.Token);
+              let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
+              GetStaticValue(reqSelect);
             } else if (res.data._result.status === 0) {
               setStatus(false);
               // window.error(res.data._result.message)
@@ -201,6 +235,8 @@ const Login = props => {
             savetoSession("ExpireTime", res.data.ExpireTime);
             savetoSession("Username", valueForm.username);
             GetMenu(res.data.Token);
+
+
           } else if (res.data._result.status === 0) {
             setStatus(false);
             // window.error(res.data._result.message)
@@ -305,8 +341,8 @@ const Login = props => {
                             {showPassword ? (
                               <VisibilityOff fontSize="small" />
                             ) : (
-                              <Visibility fontSize="small" />
-                            )}
+                                <Visibility fontSize="small" />
+                              )}
                           </IconButton>
                         </InputAdornment>
                       )

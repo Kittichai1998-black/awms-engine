@@ -68,10 +68,17 @@ namespace AWMSEngine.Engine.V2.Business
 
             ams_UnitType trueUnit = null;
             long? skuID = null;
+            ams_SKUMasterType? skuType = null;
             if (objType == StorageObjectType.PACK)
             {
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_PackMaster)obj).UnitType_ID);
                 skuID = ((ams_PackMaster)obj).SKUMaster_ID;
+                var skuMaster = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(skuID, this.BuVO);
+                if (skuMaster == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU ID: "+ skuID + " Not Found");
+
+                skuType = this.StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == skuMaster.SKUMasterType_ID);
+
             }
             else if (objType == StorageObjectType.BASE)
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_BaseMaster)obj).UnitType_ID);
@@ -119,8 +126,8 @@ namespace AWMSEngine.Engine.V2.Business
                 qty = reqVO.amount,
                 unitID = trueUnit.ID.Value,
                 unitCode = trueUnit.Code,
-
-
+                skuTypeID = skuType != null ? skuType.ID : null,
+                skuTypeName = skuType != null ? skuType.Name : null,
                 baseQty = baseUnit != null ? baseUnit.baseQty : 1,
                 baseUnitID = baseUnit != null ? baseUnit.baseUnitType_ID : trueUnit.ID.Value,
                 baseUnitCode = baseUnit != null ?

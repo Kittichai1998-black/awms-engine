@@ -50,7 +50,13 @@ const testMasterV2 = props => {
       filterable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "SKU Type Code", accessor: "Code", fixed: "left", width: 120 },
+    {
+      Header: "SKU Type Code",
+      accessor: "Code",
+      fixed: "left",
+      width: 120,
+      Footer: true
+    },
     { Header: "SKU Type Name", accessor: "Name", width: 150 },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
     { Header: "% Weight Verify", accessor: "ObjectSize_Code", width: 150 },
