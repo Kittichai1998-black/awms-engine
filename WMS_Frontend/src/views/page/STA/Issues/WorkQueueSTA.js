@@ -20,7 +20,7 @@ const WorkQueueSTA = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",

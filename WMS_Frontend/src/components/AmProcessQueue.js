@@ -223,9 +223,10 @@ const AmProcessQueue = props => {
     const [docDesCustomer, setdocDesCustomer] = useState([]);
     const [checkboxDocItems, setcheckboxDocItems] = useState([]);
     const [idxSortBtn, setidxSortBtn] = useState();
-    const [defaulDDLArea, setdefaulDDLArea] = useState();
-    const [defaulDDLArea2, setdefaulDDLArea2] = useState()
-
+    const [defaulDDLAreaCus, setdefaulDDLAreaCus] = useState();
+    const [defaulDDLAreaWare, setdefaulDDLAreaWare] = useState();
+    const [defaulDDLAreaEmp, setdefaulDDLAreaEmp] = useState();
+    const [defaulDDLAreaWip, setdefaulDDLAreaWip] = useState();
 
     //======== AAI============
     const [ref1, setref1] = useState();
@@ -268,7 +269,7 @@ const AmProcessQueue = props => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "IS,RW"}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -373,14 +374,6 @@ const AmProcessQueue = props => {
     ) => {
         //setDataDocumentItem();
         if (value !== undefined && value !== null && dataObject.Code !== null) {
-            console.log(dataObject.deswarehouse)
-            console.log(dataObject.descustomer)
-            if (dataObject.deswarehouse !== null) {
-                setdefaulDDLArea(true)
-            } else {
-                setdefaulDDLArea2(true)
-            }
-
 
             setdocDesWarehouse(dataObject.deswarehouse)
 
@@ -1207,7 +1200,6 @@ const AmProcessQueue = props => {
                    
                     <LabelHDes>{t(Label)} :</LabelHDes>
                     <InputDiv>
-                       
                         <AmDropdown
                             id={idddls}
                             placeholder="Select"
@@ -1219,7 +1211,8 @@ const AmProcessQueue = props => {
                             valueData={valueText[idddls]} //��� value ������͡
                             queryApi={queryApi}
                             returnDefaultValue={true}
-                            defaultValue={ defaulDDLArea === true ? 8 : defaulDDLArea2 === true ? 11                  
+                            defaultValue={defaulDDLAreaWare === true || defaulDDLAreaWip === true ? 8
+                                : defaulDDLAreaCus === true || defaulDDLAreaEmp === true ? 11                  
                              : defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
                             disabled={defaultValue ? true : false}
                             //defaultValue={data ? data : ""}
@@ -1240,7 +1233,7 @@ const AmProcessQueue = props => {
         }
     };
 
-    console.log(defaulDDLArea)
+
     const DetailDoc = () => {
         if (detailsdata === undefined) {
             return detailDocuments.map(x => {
@@ -1360,8 +1353,31 @@ const AmProcessQueue = props => {
             setdataDocument([]);
             setbtnAdd(true);
             setbtnBack(false);
-            console.log(datasQ)
+            //console.log(datasQ)
             // dataDocument[dataDocument.length - 1].DocumentCode = []
+            console.log(dataDetialdoc)
+            console.log(dataDetialdoc[0][0])
+            if (dataDetialdoc[0][0].label === "Movement Type") {
+                console.log(dataDetialdoc[0][0].values)
+                if (dataDetialdoc[0][0].values === "EPL_TRANSFER_WM") {
+                    setdefaulDDLAreaEmp(true)
+                } else if (dataDetialdoc[0][0].values === "FG_TRANSFER_CUS") {
+                    setdefaulDDLAreaCus(true)
+                } else if (dataDetialdoc[0][0].values === "FG_TRANSFER_WM") {
+                    setdefaulDDLAreaWare(true)
+                } else if (dataDetialdoc[0][0].values === "WIP_TRANSFER_WM") {
+                    setdefaulDDLAreaWip(true)
+                }
+            } 
+
+
+            
+            //if (dataObject.deswarehouse !== null) {
+            //    setdefaulDDLArea(true)
+            //} else {
+            //    setdefaulDDLArea2(true)
+            //}
+
 
             Axios.get(createQueryString(docQuery)).then(res => {
                 let docSelection = res.data.datas.filter(x => {
@@ -2232,10 +2248,6 @@ const AmProcessQueue = props => {
                                             onChangCheckboxConsRecieve(null, null, idx);
 
                                         }
-
-
-                                        console.log(docDesWarehouse)
-                                        console.log(props.StatusfromDesWarehouse)
 
                                         if (docDesWarehouse !== undefined && props.StatusfromDeswarehouse === true) {
                                             onChangCheckboxConsFull(null, null, idx);
@@ -3439,7 +3451,8 @@ const AmProcessQueue = props => {
                                                                     //valueData={valueText[idddls]} 
                                                                     queryApi={AreaMaster}
                                                                     returnDefaultValue={true}
-                                                                    defaultValue={defaulDDLArea === true ? 8 : defaulDDLArea2 === true ? 11 : ""}
+                                                                    defaultValue={defaulDDLAreaWare === true ? 8 : defaulDDLAreaWip === true ? 8
+                                                                        : defaulDDLAreaCus === true ? 11 :  defaulDDLAreaEmp === true ? 11 : null }
                                                                    // disabled={defaultValue ? true : false}
                                                              
                                                                     onChange={(value, dataObject, inputID, fieldDataKey) =>

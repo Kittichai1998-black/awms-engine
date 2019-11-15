@@ -114,11 +114,11 @@ const DailySTOSumCounting = Loadable({
 });
 
 const ProcessQueueGI = Loadable({
-  loader: () => import("../../views/page/STGT/Issues/WorkQueueSTA"),
+  loader: () => import("../../views/page/STGT/Issues/WorkQueueSTGT"),
   loading: Loading
 });
 const ProcessQueueCT = Loadable({
-  loader: () => import("../../views/page/STGT/Audit/WorkQueueSTACounting"),
+  loader: () => import("../../views/page/STGT/Audit/WorkQueueSTGTCounting"),
   loading: Loading
 });
 
