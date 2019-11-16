@@ -528,7 +528,7 @@ const Scanbarcode = (props) => {
                 if (res.data.bsto != null) {
                     var datass = res.data.bsto.mapstos[0]
                     var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    if (datass.qty === null) {
+                    /*if (datass.qty === null) {
                         setqty(0)
                     } else { setqty(datass.qty) }
                     if (dataQtyMax.maxQuantity === null) {
@@ -536,7 +536,7 @@ const Scanbarcode = (props) => {
                     } else {
                         setqtyMax(dataQtyMax.maxQuantity)
 
-                    }
+                    }*/
                     if (datass.qty != null && dataQtyMax.maxQuantity != null) {
 
                         var qtyIn = parseFloat(datass.qty)
