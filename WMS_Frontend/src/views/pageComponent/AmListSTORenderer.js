@@ -267,6 +267,7 @@ const AmListSTORenderer = (props) => {
 AmListSTORenderer.propTypes = {
     classes: PropTypes.object.isRequired,
     customOptions: PropTypes.func,
+    CustomInfoChip: PropTypes.func,
     showOptions: PropTypes.bool,
     chipRenderer: PropTypes.func,
 };
