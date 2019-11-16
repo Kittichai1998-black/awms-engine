@@ -86,7 +86,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             var getArea = new MoveStoInGateToNextArea();
                             var treq = new MoveStoInGateToNextArea.TReq()
                             {
-                                baseStoID = queue.StorageObject_ID.Value
+                                stoID = queue.StorageObject_ID.Value,
+                                stoType = StorageObjectType.BASE
                             };
                             getArea.Execute(this.Logger, this.BuVO, treq);
 
