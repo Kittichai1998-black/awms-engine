@@ -40,7 +40,7 @@ namespace AWMSEngine.APIService.Business
                 }else{
                         //this.BeginTransaction();                       
                         TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-                        if (docs.EventStatus == DocumentEventStatus.CLOSING || docs.EventStatus == DocumentEventStatus.WORKED)
+                        if (docs.EventStatus == DocumentEventStatus.CLOSING )
                         {
                             var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
            
