@@ -12,7 +12,9 @@ namespace AWMSEngine.Engine.General
     {
         public class TReq
         {
-            public long baseStoID;
+            public long? stoID;
+            public StorageObjectType? stoType;
+
         }
         public class TRes
         {
@@ -21,7 +23,7 @@ namespace AWMSEngine.Engine.General
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseStoID, StorageObjectType.BASE, false, true, this.BuVO);
+            var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.stoID.Value, reqVO.stoType.Value, false, true, this.BuVO);
             var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, mapsto.areaID.Value, this.BuVO);
 
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);

@@ -120,17 +120,17 @@ const styles = theme => ({
     divLevel1: { marginBottom: 3, display: "block" },
     divLevel2: { marginLeft: 22, marginBottom: 3, display: "block" },
     chip: {
-        margin: '2px 2px',
-        height: '24px',
-        // padding: '1px',
-        borderRadius: '15px',
+        // margin: '2px 2px',
+        height: '26px',
+        padding: '1px',
+        // borderRadius: '15px',
         backgroundColor: 'rgba(255, 255, 255, 0.2)'
     },
     avatar: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
         color: '#fff',
-        fontSize: '95%',
+        fontSize: '90%',
         backgroundColor: grey[500]
     },
     chipQty: { backgroundColor: grey[300] },
