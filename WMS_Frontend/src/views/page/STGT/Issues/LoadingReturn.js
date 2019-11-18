@@ -28,7 +28,7 @@ const LoadingReturn = (props) => {
     const inputItem = [
         { "field": SC.OPT_PARENT_DOCUMENT_ID, "type": "dropdown", "typeDropdown": "search", "name": "GI Document", "dataDropDown": DocumentQuery, "placeholder": "Select Good Issue Document", "fieldLabel": ["Code"], "fieldDataKey": "ID", "required": true, "disabled": true },
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
-        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 20, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },

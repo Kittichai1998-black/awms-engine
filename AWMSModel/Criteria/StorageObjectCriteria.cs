@@ -36,6 +36,7 @@ namespace AWMSModel.Criteria
 
         public long? objectSizeID;
         public string objectSizeName;
+       
         public decimal? lengthM;
         public decimal? widthM;
         public decimal? heightM;
@@ -53,7 +54,8 @@ namespace AWMSModel.Criteria
         public string refID;
         public string ref1;
         public string ref2;
-
+        public long? skuTypeID;
+        public string skuTypeName;
         public class ObjectSizeMap
         {
             public long outerObjectSizeID;
@@ -134,6 +136,7 @@ namespace AWMSModel.Criteria
             StorageObjectType stoType = stoMst is ams_BaseMaster ? StorageObjectType.BASE : stoMst is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
             ams_AreaMaster stoArea = null; 
             ams_UnitType stoUnitType = null;
+            //ams_SKUMasterType stoSKUType = null;
             ams_ObjectSize stoObjectSize = null;
             long? stoSkuID = null;
 
@@ -235,20 +238,22 @@ namespace AWMSModel.Criteria
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,
             List<ams_UnitType> staticUnitTypes,
+            List<ams_SKUMasterType> staticSKUMasterType,
             string codeFocus)
         {
-            return Generate(stos, staticObjectSizes, staticUnitTypes, null, codeFocus);
+            return Generate(stos, staticObjectSizes, staticUnitTypes, staticSKUMasterType, null, codeFocus);
         }
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,
             List<ams_UnitType> staticUnitTypes,
+            List<ams_SKUMasterType> staticSKUMasterType,
             long idFocus)
         {
-            return Generate(stos, staticObjectSizes, staticUnitTypes, idFocus, null);
+            return Generate(stos, staticObjectSizes, staticUnitTypes, staticSKUMasterType, idFocus, null);
         }
 
         private static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos,
-            List<ams_ObjectSize> staticObjectSizes, List<ams_UnitType> staticUnitTypes,
+            List<ams_ObjectSize> staticObjectSizes, List<ams_UnitType> staticUnitTypes, List<ams_SKUMasterType> staticSKUMasterType,
             long? idFocus, string codeFocus)
         {
             if (stos.Count() == 0) return null;
@@ -306,6 +311,8 @@ namespace AWMSModel.Criteria
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
                             weiAccept = sos2 != null ? sos2.PercentWeightAccept : null,
+                            skuTypeID = x.skuTypeID,
+                            skuTypeName = x.skuTypeID != null ? staticSKUMasterType.First(y => y.ID == x.skuTypeID).Name : null, 
                         };
                         s.groupSum = CreateGroupSum(s);
                         s.objectSizeMaps = sos2 != null ?

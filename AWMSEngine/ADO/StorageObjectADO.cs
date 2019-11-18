@@ -56,7 +56,8 @@ namespace AWMSEngine.ADO
             
             StorageObjectCriteria res = StorageObjectCriteria.Generate(values,
                 StaticValueManager.GetInstant().ObjectSizes,
-                StaticValueManager.GetInstant().UnitTypes, code);
+                StaticValueManager.GetInstant().UnitTypes,
+                StaticValueManager.GetInstant().SKUMasterTypes, code);
             return res;
         }
         public StorageObjectCriteria GetFree(
@@ -84,7 +85,8 @@ namespace AWMSEngine.ADO
 
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, 
                 StaticValueManager.GetInstant().ObjectSizes,
-                StaticValueManager.GetInstant().UnitTypes, code);
+                StaticValueManager.GetInstant().UnitTypes,
+                StaticValueManager.GetInstant().SKUMasterTypes, code);
             return res;
         }
         public StorageObjectCriteria Get(long id, StorageObjectType type, bool isToRoot, bool isToChild, VOCriteria buVO)
@@ -102,7 +104,8 @@ namespace AWMSEngine.ADO
 
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, 
                 StaticValueManager.GetInstant().ObjectSizes,
-                StaticValueManager.GetInstant().UnitTypes, id);
+                StaticValueManager.GetInstant().UnitTypes,
+                StaticValueManager.GetInstant().SKUMasterTypes, id);
             return res;
         }
 
@@ -513,7 +516,8 @@ namespace AWMSEngine.ADO
 
             StorageObjectCriteria res = StorageObjectCriteria.Generate(values,
                 StaticValueManager.GetInstant().ObjectSizes,
-                StaticValueManager.GetInstant().UnitTypes, null);
+                StaticValueManager.GetInstant().UnitTypes,
+                StaticValueManager.GetInstant().SKUMasterTypes, null);
 
             return res;
         }

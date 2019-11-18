@@ -113,7 +113,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 EventStatus = DocumentEventStatus.NEW,
 
                 Remark = document.Remark,
-                Options = document.Options,
+                Options = null,
                 Transport_ID = null,
 
                 DocumentItems = new List<amt_DocumentItem>(),
@@ -135,7 +135,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 Batch = docItem.Batch,
                 Lot = docItem.Lot,
 
-                Options = docItem.Options,
+                Options = null,
                 ExpireDate = docItem.ExpireDate,
                 ProductionDate = docItem.ProductionDate,
                 Ref1 = docItem.Ref1,
@@ -148,51 +148,6 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             });
 
             var docnew = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO);
-            /*
-            var docItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-
-            docItems.Add(new CreateGRDocument.TReq.ReceiveItem
-            {
-                //clone มาทั้งหมด
-                packCode = docItem.Code,
-                quantity = sum_disto - docItem.BaseQuantity,
-                unitType = StaticValue.UnitTypes.First(x => x.ID == docItem.UnitType_ID).Code,
-                batch = docItem.Batch,
-                lot = docItem.Lot,
-                orderNo = docItem.OrderNo,
-                ref2 = docItem.Ref2,
-                expireDate = docItem.ExpireDate,
-                productionDate = docItem.ExpireDate,
-                ref1 = docItem.Ref1,
-                refID = docItem.RefID,
-                options = null,
-                eventStatus = DocumentEventStatus.NEW,
-                docItemStos = new List<amt_DocumentItemStorageObject>() {}
-            });
-            var doc = new CreateGRDocument().Execute(logger, buVO,
-                   new CreateGRDocument.TReq
-                   {
-                       parentDocumentID = docItem.Document_ID,
-                       souBranchID = document.Sou_Branch_ID,
-                       souWarehouseID = document.Sou_Warehouse_ID,
-                       souAreaMasterID = null,
-                       desBranchID = document.Sou_Branch_ID,
-                       desWarehouseID = document.Sou_Warehouse_ID,
-                       desAreaMasterID = null,
-                       movementTypeID = MovementType.FG_PICK_RETURN_WM,
-                       //lot = null,
-                       //batch = null,
-                       //refID = null,
-                       //ref1 = null,
-                       //ref2 = null,
-                       
-                       documentDate = DateTime.Now,
-                       actionTime = DateTime.Now,
-                       eventStatus = DocumentEventStatus.NEW,
-                       receiveItems = docItems
-
-                   });*/
-
 
         }
         private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)

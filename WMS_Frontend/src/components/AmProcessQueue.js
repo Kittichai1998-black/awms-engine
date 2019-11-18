@@ -319,8 +319,8 @@ const AmProcessQueue = props => {
             dataDetialdoc,
             detailsdata,
             props.onChangeDoc,
-            localStorage.getItem("Lang")
-        ]);
+        localStorage.getItem("Lang")
+    ]);
 
     useEffect(() => {
         setprocessDLLs(ProcessDLL());
@@ -374,7 +374,7 @@ const AmProcessQueue = props => {
     ) => {
         //setDataDocumentItem();
         if (value !== undefined && value !== null && dataObject.Code !== null) {
-
+          
             setdocDesWarehouse(dataObject.deswarehouse)
 
             setdocDesCustomer(dataObject.descustomer)
@@ -614,17 +614,7 @@ const AmProcessQueue = props => {
                     chkDataSort[0][row] = editDataSort[row];
                 }
             } else {
-                //console.log(dataSorting[indexBtn][0])
-                //var CheckOrder = dataSorting[indexBtn][0]["Orderno"];
-                //var CheckBy = dataSorting[indexBtn][0]["By"];
-                //console.log(CheckBy)
-                //console.log(CheckOrder)
-                //if (editDataSort.Order === CheckOrder && editDataSort.By === CheckBy) {
-                //    setMsgDialogErr("DataSorting Dupicate");
-                //    setStateDialogErr(true);
-                //} else {
-                //}
-                console.log(rowdata)
+              
                 dataSorting[indexBtn].push(rowdata);
                 
                     setAddDataID(addDataID - 1);
@@ -647,7 +637,6 @@ const AmProcessQueue = props => {
         data,
         pair
     ) => {
-        console.log(value)
         if (value !== null) {
 
             onChangeEditorSort(field, data, dataObject.value, pair);
@@ -1316,6 +1305,7 @@ const AmProcessQueue = props => {
             setPagesQ(1);
             setDocumentID();
             setDataDocumentItem();
+            setbtnBack(false)
         }
     };
 
@@ -1336,6 +1326,10 @@ const AmProcessQueue = props => {
                     return dfaultS;
                }
             });
+
+
+
+
             //setdatasDoc([...datasDoc]);
             datasQ["DataDocdetail"] = dataDetialdoc;
             datasQ["DataDocumentItem"] = [...DataDocumentItem];
@@ -1348,15 +1342,13 @@ const AmProcessQueue = props => {
             setdatasDoc([...dataQueue]);
             setReload({});
             setDataDocumentItem();
-            setdocHeaderdetail(null);
+            setdocHeaderdetail();
             setDocumentID();
             setdataDocument([]);
             setbtnAdd(true);
             setbtnBack(false);
-            //console.log(datasQ)
-            // dataDocument[dataDocument.length - 1].DocumentCode = []
-            console.log(dataDetialdoc)
-            console.log(dataDetialdoc[0][0])
+
+
             if (dataDetialdoc[0][0].label === "Movement Type") {
                 console.log(dataDetialdoc[0][0].values)
                 if (dataDetialdoc[0][0].values === "EPL_TRANSFER_WM") {
@@ -1368,45 +1360,37 @@ const AmProcessQueue = props => {
                 } else if (dataDetialdoc[0][0].values === "WIP_TRANSFER_WM") {
                     setdefaulDDLAreaWip(true)
                 }
-            } 
+            } else { } 
 
 
-            
-            //if (dataObject.deswarehouse !== null) {
-            //    setdefaulDDLArea(true)
-            //} else {
-            //    setdefaulDDLArea2(true)
-            //}
-
-
-            Axios.get(createQueryString(docQuery)).then(res => {
-                let docSelection = res.data.datas.filter(x => {
-                    return (
-                        [...dataQueue].filter(y => y.DataDocumentCode == x.Code).length ===
-                        0
-                    );
+            if (window.project === "AAI") {
+                Axios.get(createQueryString(docQueryAAI)).then(res => {
+                    let docSelection = res.data.datas.filter(x => {
+                        return (
+                            [...dataQueue].filter(y => y.DataDocumentCode == x.Code).length ===
+                            0
+                        );
+                    });
+                    setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
                 });
-                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
-            });
-        } else {
-        }
-
-        if (window.project === "AAI") {
-            Axios.get(createQueryString(docQueryAAI)).then(res => {
-                let docSelection = res.data.datas.filter(x => {
-                    return (
-                        [...dataQueue].filter(y => y.DataDocumentCode == x.Code).length ===
-                        0
-                    );
+            } else {
+                Axios.get(createQueryString(docQuery)).then(res => {
+                    console.log("Add Data Qury")
+                    let docSelection = res.data.datas.filter(x => {
+                        return (
+                            [...dataQueue].filter(y => y.DataDocumentCode == x.Code).length ===
+                            0
+                        );
+                    });
+                    setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
                 });
-                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
-            });
-        }
+            }
+
+            }
 
     };
 
     const OnclickBackAddDocument = (doc, dataSc, dataSt) => {
-
         if (window.project === "AAI") {
             Axios.get(createQueryString(docQueryAAI)).then(res => {
                 let docSelection = res.data.datas.filter(x => {
@@ -1428,8 +1412,9 @@ const AmProcessQueue = props => {
 
 
         } else {
-
+            
             Axios.get(createQueryString(docQuery)).then(res => {
+                console.log("Edit Datas")
                 let docSelection = res.data.datas.filter(x => {
                     let dataInQueue = [...dataQueue].filter(
                         y => y.DataDocumentCode === x.Code
@@ -1460,9 +1445,8 @@ const AmProcessQueue = props => {
         setdetailsdata(doc.DataDocdetail);
         setValue(0);
         setbtnBack(true);
+        
     };
-
-
 
     const OnclickRemoveAddDocument = (idx) => {
         datasDoc.splice(idx, 1)
@@ -1511,7 +1495,6 @@ const AmProcessQueue = props => {
                                 if (props.docType !== "audit") {
                                     ds.forEach((d, idx) => {
                                     
-                                        console.log(d.value)
                                         if (d.value ==="Carton No") {
                                               fildNames = "ref2"
                                         } else if (d.value === "Order No") {
@@ -1524,11 +1507,12 @@ const AmProcessQueue = props => {
                                             fildNames = d.value
                                         }
 
+                                        
                                         let sort = {
                                             fieldName: "psto." + fildNames,
                                             orderByType: d.Order === "FIFO" ? 0 : 1
                                         };
-                                        console.log(sort)
+                                        
                                         orderBys.push(sort);
                                     });
                                 } else {
@@ -1786,7 +1770,6 @@ const AmProcessQueue = props => {
         } else {
         }
     };
-
     const SumTables = datasConfirms => {
         return props.columnConfirm
             .filter(row => row.Footer === true)
@@ -1850,7 +1833,6 @@ const AmProcessQueue = props => {
                     setdataQueue();
                     setdataSorting();
                     setDataSource();
-
                     props.history.push(props.apiResConfirm);
                 } else {
                     setMsgDialogErr(res.data._result.message);
@@ -1908,7 +1890,6 @@ const AmProcessQueue = props => {
 
                 setref1(doc.Ref1);
                 setrefID(doc.RefID);
-
                 setremark(doc.Remark);
                 setsouware(doc.SouWarehouseName);
                 setdesware(doc.DesWarehouseName);
@@ -2033,8 +2014,8 @@ const AmProcessQueue = props => {
                                                 valueData={valueDocument} //ค่า value ที่เลือก
                                                 //queryApi={apiDoc}
                                                 returnDefaultValue={true}
-                                                defaultValue={documentID ? documentID : ""}
-                                                disabled={btnBack ? true : false}
+                                                defaultValue={btnBack === true  && documentID ? documentID : ""}
+                                                disabled={btnBack === true ? true : false}
                                                 onChange={(value, dataObject) =>
                                                     onHandleChangeDDLDocument(value, dataObject)
                                                 }
@@ -2056,7 +2037,6 @@ const AmProcessQueue = props => {
                             </Grid>
                         </div>
                     ) : null}
-
                     {DataDocumentItem !== undefined && DataDocumentItem.length > 0 ? (
                         <div>
                             <div style={{ marginTop: "10px", paddingBottom: "10px" }}>
@@ -2068,7 +2048,7 @@ const AmProcessQueue = props => {
                                     {" "}
                                  
                                     {[...DataDocumentItem].map((x, idx) => {
-                                        
+                                    
                                         if (!dataSource[idx]) {
                                             dataSource[idx] = [x];
                                         }
@@ -2241,15 +2221,15 @@ const AmProcessQueue = props => {
                                                 Onchangepriolity(values, dataObject, idx);
                                             }
                                         }
-                                        //option เอกสาร จาก Sap
-
-                                        if (docDesCustomer !== undefined && props.StatusfromDescustomer === true) {
+                                     
+                                        if (docDesCustomer !== null && props.StatusfromDescustomer === true) {
                                             onChangCheckboxConsFull(null, null, idx);
                                             onChangCheckboxConsRecieve(null, null, idx);
 
                                         }
 
-                                        if (docDesWarehouse !== undefined && props.StatusfromDeswarehouse === true) {
+                                
+                                        if (docDesWarehouse !== null && props.StatusfromDeswarehouse === true) {
                                             onChangCheckboxConsFull(null, null, idx);
                                               onChangCheckboxConsRecieve(null, null, idx);
                                               onChangCheckboxConsQC(null, null, idx);
@@ -2271,9 +2251,6 @@ const AmProcessQueue = props => {
                                         var BlockFromDoc = false
                                         var HoldFromDoc = false
                                         var RejectFromDoc = false
-
-
-
 
                                         if (props.OptionGIdoc === true) {
                                             if (x.Options !== undefined || x.Options !== null) {
@@ -2297,8 +2274,7 @@ const AmProcessQueue = props => {
                                                     onChangCheckboxConsBlock(null, null, idx);
                                                 }
                                             }
-                                            //locationcode = qryStr2["bestq_blk"] 
-                                            console.log(x)
+                                         
 
                                         }
 
@@ -2616,7 +2592,7 @@ const AmProcessQueue = props => {
                                                                                        
                                                                                         </FormInline>
                                                                                     </div>     
-                                                                                    :docDesCustomer && props.StatusfromDescustomer === true ?
+                                                                                    : x.Des_Customer_ID !== null && props.StatusfromDescustomer === true ?
                                                                                     <div>
                                                                                         <FormInline>
                                                                                             <AmCheckBox
@@ -2670,7 +2646,7 @@ const AmProcessQueue = props => {
                                                                                        
 
 
-                                                                                   :docDesWarehouse && props.StatusfromDeswarehouse === true ?
+                                                                                        : x.Des_Warehouse_ID  !== null && props.StatusfromDeswarehouse === true ?
                                                                                     <div>
                                                                                         <FormInline>
                                                                                             <AmCheckBox
