@@ -118,7 +118,8 @@ namespace AWMSEngine.Engine.V2.Business
                 var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
                 bstos.ForEach(bs =>
                 {
-                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(bs.sou_packID, this.BuVO);
+                    var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
+                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
                     sou_sto.Add(new bsto
                     {
                         id = bs.sou_id,

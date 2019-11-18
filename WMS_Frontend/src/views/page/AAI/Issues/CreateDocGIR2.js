@@ -1,44 +1,43 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState } from "react";
 
-import { AmEditorTable } from '../../../../components/table';
+import { AmEditorTable } from "../../../../components/table";
 
 import {
   apicall,
   createQueryString
-} from '../../../../components/function/CoreFunction';
-import styled from 'styled-components'
-import AmCreateDocument from './AmCreateDocument';
-import AmButton from '../../../../components/AmButton';
-import AmInput from '../../../../components/AmInput';
-import Grid from '@material-ui/core/Grid';
+} from "../../../../components/function/CoreFunction";
+import styled from "styled-components";
+import AmCreateDocument from "./AmCreateDocument";
+import AmButton from "../../../../components/AmButton";
+import AmInput from "../../../../components/AmInput";
+import Grid from "@material-ui/core/Grid";
 
 const FormInline = styled.div`
-display: flex;
-flex-flow: row wrap;
-align-items: center;
-label {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
     margin: 5px 5px 5px 0;
-}
-input {
+  }
+  input {
     vertical-align: middle;
-}
-@media (max-width: 800px) {
+  }
+  @media (max-width: 800px) {
     flex-direction: column;
     align-items: stretch;
-    
   }
 `;
 
 const LabelH = styled.label`
-font-weight: bold;
+  font-weight: bold;
   width: 200px;
 `;
 
 const InputDiv = styled.div`
-    margin: 5px;
-    @media (max-width: 800px) {
-        margin: 0;
-    }
+  margin: 5px;
+  @media (max-width: 800px) {
+    margin: 0;
+  }
 `;
 
 const Axios = new apicall();
@@ -52,88 +51,88 @@ const AmCreateDocumentR2 = props => {
 
   const headerCreates = [
     [
-      { label: 'Document No.', type: 'labeltext', key: 'sapdoc', texts: '-' },
-      { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
+      { label: "Document No.", type: "labeltext", key: "sapdoc", texts: "-" },
+      { label: "Document Date", type: "dateTime", key: "documentDate" }
     ],
     [
       {
-        label: 'Movement Type',
-        type: 'labeltext',
-        key: 'movementTypeID',
-        texts: 'STO_TRANSFER',
-        valueTexts: '5010'
+        label: "Movement Type",
+        type: "labeltext",
+        key: "movementTypeID",
+        texts: "STO_TRANSFER",
+        valueTexts: "5010"
       },
-      { label: 'Action Time', type: 'dateTime', key: 'actionTime' }
+      { label: "Action Time", type: "dateTime", key: "actionTime" }
     ],
     [
       {
-        label: 'Source Warehouse',
-        type: 'labeltext',
-        key: 'souWarehouseID',
-        texts: 'Warehouse1/ASRS',
+        label: "Source Warehouse",
+        type: "labeltext",
+        key: "souWarehouseID",
+        texts: "Warehouse1/ASRS",
         valueTexts: 1
       }
     ],
     [
-      { label: 'Doc Status', type: 'labeltext', key: '', texts: 'New' },
+      { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
       {
-        label: 'Mode',
-        type: 'labeltext',
-        key: 'ref1',
-        texts: 'R02',
-        valueTexts: 'R02'
+        label: "Mode",
+        type: "labeltext",
+        key: "ref1",
+        texts: "R2-เบิกเต็มพาเลทตามใบ Resvation เพื่อผลิต",
+        valueTexts: "R02"
       }
     ]
   ];
 
   var columnsModify = [
     {
-      Header: 'Reservation',
-      accessor: 'RSNUM'
+      Header: "Reservation",
+      accessor: "RSNUM"
     },
     {
-      Header: 'Material',
-      accessor: 'MATNR'
+      Header: "Material",
+      accessor: "MATNR"
     },
     {
-      Header: 'Batch',
-      accessor: 'CHARG'
+      Header: "Batch",
+      accessor: "CHARG"
     },
     {
-      Header: 'Quantity',
-      accessor: 'BDMNG'
+      Header: "Quantity",
+      accessor: "BDMNG"
     },
     {
-      Header: 'Unit',
-      accessor: 'MEINS'
+      Header: "Unit",
+      accessor: "MEINS"
     },
     {
-      Header: 'BIN',
-      accessor: 'LGPLA'
+      Header: "BIN",
+      accessor: "LGPLA"
     },
     {
-      Header: 'MVT',
-      accessor: 'BWLVS'
+      Header: "MVT",
+      accessor: "BWLVS"
     },
     {
-      Header: 'UR',
-      accessor: 'BESTQ_UR'
+      Header: "UR",
+      accessor: "BESTQ_UR"
     },
     {
-      Header: 'QI',
-      accessor: 'BESTQ_QI'
+      Header: "QI",
+      accessor: "BESTQ_QI"
     },
     {
-      Header: 'Blocked',
-      accessor: 'BESTQ_BLK'
+      Header: "Blocked",
+      accessor: "BESTQ_BLK"
     }
   ];
 
-  const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
+  const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
   const apiRes = "/issue/detail?docID=";
 
   const sapConnectorR2 = postData => {
-    Axios.post(window.apipath + '/v2/SAPZWMRF003R2API', postData).then(res => {
+    Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
       if (res.data._result.status === 1) {
         setSAPResponse(res.data.datas);
       } else {
@@ -147,7 +146,7 @@ const AmCreateDocumentR2 = props => {
       sapReq.forEach(x => {
         postData[x.field] = x.value;
       });
-      postData['_token'] = localStorage.getItem('Token');
+      postData["_token"] = localStorage.getItem("Token");
       sapConnectorR2(postData);
     }
     setEditPopup(false);
@@ -159,16 +158,16 @@ const AmCreateDocumentR2 = props => {
 
   const editorList = [
     {
-      field: 'Reservation Number',
+      field: "Reservation Number",
       component: (data, cols, key) => {
         return (
           <FormInline>
             <LabelH>Reservation Number : </LabelH>
             <InputDiv>
               <AmInput
-                defaultValue={data ? data.Name2 : ''}
+                defaultValue={data ? data.Name2 : ""}
                 onChange={value => {
-                  onChangeEditor('RSNUM', value);
+                  onChangeEditor("RSNUM", value);
                 }}
               />
             </InputDiv>
@@ -184,9 +183,8 @@ const AmCreateDocumentR2 = props => {
         return item.BWLVS;
       })
       .filter((value, index, self) => self.indexOf(value) === index)
-      .join(',');
+      .join(",");
     console.log(sapResponse);
-
 
     let document = {
       actionTime:
@@ -268,7 +266,7 @@ const AmCreateDocumentR2 = props => {
         headerData.movementTypeID === undefined
           ? null
           : headerData.movementTypeID,
-      ref1: 'R02',
+      ref1: "R02",
       ref2: groupMVT,
       refID: sapResponse.length > 0 ? sapResponse[0].RSNUM : null,
       remark: headerData.remark === undefined ? null : headerData.remark,
@@ -278,21 +276,21 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        'bestq_ur=' +
+        "bestq_ur=" +
         item.BESTQ_UR +
-        '&bestq_qi=' +
+        "&bestq_qi=" +
         item.BESTQ_QI +
-        '&rsnum=' +
+        "&rsnum=" +
         item.RSNUM +
-        '&lgtyp=' +
+        "&lgtyp=" +
         item.LGTYP +
-        '&bestq_blk=' +
+        "&bestq_blk=" +
         item.BESTQ_BLK +
-        '&lgpla=' +
+        "&lgpla=" +
         item.LGPLA;
 
-      if (item.LENUM !== '' && item.LENUM !== null) {
-        options = options + '&lgpla=' + item.LENUM;
+      if (item.LENUM !== "" && item.LENUM !== null) {
+        options = options + "&lgpla=" + item.LENUM;
       }
       return {
         ID: null,
@@ -301,7 +299,7 @@ const AmCreateDocumentR2 = props => {
         quantity: item.BDMNG,
         unitType: item.MEINS,
         batch: item.CHARG,
-        ref1: 'R02',
+        ref1: "R02",
         ref2: item.BWLVS,
         refID: item.RSNUM,
         options: options
@@ -320,8 +318,8 @@ const AmCreateDocumentR2 = props => {
   const customAdd = () => {
     return (
       <AmEditorTable
-        style={{ width: '600px', height: '500px' }}
-        titleText={'Load'}
+        style={{ width: "600px", height: "500px" }}
+        titleText={"Load"}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -338,7 +336,7 @@ const AmCreateDocumentR2 = props => {
         columns={[]} //colums
         columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
         apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-        createDocType={'custom'} //createDocType มี audit issue recive
+        createDocType={"custom"} //createDocType มี audit issue recive
         history={props.history} //ส่ง porps.history ไปทุกรอบ
         apiRes={apiRes} //หน้ารายละเอียดเอกสาร
         //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
@@ -348,9 +346,9 @@ const AmCreateDocumentR2 = props => {
         //customEditData={(editData)=> setEditData(editData)}
         customAddBtnRender={
           <AmButton
-            className='float-right'
-            styleType='add'
-            style={{ width: '150px' }}
+            className="float-right"
+            styleType="add"
+            style={{ width: "150px" }}
             onClick={() => setEditPopup(true)}
           >
             Load
