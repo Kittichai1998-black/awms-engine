@@ -98,9 +98,10 @@ const DocumentSearchGI = props => {
     var Statusdisplay = (
       <div style={{ textAlign: "center" }}>
         <AmDocumentStatus key={status} statusCode={status} />{" "}
-        {qryStrOptions._error !== undefined ||
-        qryStrOptions._info !== undefined ||
-        qryStrOptions._warning !== undefined ? (
+        {(qryStrOptions._error !== undefined && qryStrOptions._error !== "") ||
+        (qryStrOptions._info !== undefined && qryStrOptions._info !== "") ||
+        (qryStrOptions._warning !== undefined &&
+          qryStrOptions._warning !== "") ? (
           <IconButton
             aria-label="error"
             size="small"
