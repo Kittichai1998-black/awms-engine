@@ -29,233 +29,213 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var docLists = new List<long>();
 
             reqVO.ForEach(x =>
+            {
+                var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
+                if (docs != null)
                 {
-                    var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
-                    if (docs != null)
+                    if (docs.EventStatus == DocumentEventStatus.CLOSING)
                     {
-                        if (docs.EventStatus == DocumentEventStatus.CLOSING)
-                        {
-                            var documentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, buVO);
-                            if (documentItems == null || documentItems.Count == 0)
-                            {
-                                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                {
-                                    docID = x,
-                                    msgError = "Document Items Not Found."
-                                });
-                            }
-                            else
-                            {
-                                if (documentItems.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
-                                {
-                                    docs.DocumentItems = documentItems;
-                                    
-                                    var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, buVO);
-                                    
-                                    var distoGroupByWQ = distos.GroupBy(grp => grp.WorkQueue_ID, (key, g) => new { WorkQueueID = key, DiSTOs = g.ToList() });
-                                    foreach (var di in distoGroupByWQ)
-                                    {
-                                        if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
-                                        {
-                                            UpdateStorageObjectReceived(di.WorkQueueID, di.DiSTOs, buVO);
-                                        }
-                                        else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
-                                        {
-                                            UpdateStorageObjectIssued(di.DiSTOs, buVO);
-                                        }
-                                    }
-
-                                    /*var WorkQueueLists = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
-                                    WorkQueueLists.ForEach(wq =>
-                                    {
-                                        var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                                        //update StorageObjects
-
-                                        if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
-                                        {
-                                            UpdateStorageObjectReceived(queue, buVO);
-                                        }
-                                        else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
-                                        {
-                                            var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
-                                            UpdateStorageObjectIssued(updDistos, queue, buVO, logger);
-                                        }
-                                    });*/
-
-                                    //Update Status Document To Closed
-                                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
-                                    RemoveOPTDocument(x, docs.Options, buVO);
-
-                                    //call to SAP
-                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
-                                    {//ดัก empty pallet ไม่ต้องยิงไปZWMRF002
-
-                                        var tanumlists = new List<string> ();
-                                        var WorkQueueLists2 = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
-                                        WorkQueueLists2.ForEach(wq =>
-                                        {
-                                                var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                                                var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, docs.ID.Value, buVO);
-                                                tanumlists.AddRange(resSAP.datas.OUT_SU.Select(sap => sap.TANUM.ToString()));
-                                                 
-                                                long? TANUMs = resSAP.datas.OUT_SU.Select(data => data.TANUM).First();
-                                                if (TANUMs != null)
-                                                {
-                                                    UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUMs, buVO);
-                                                }
-                                        });
-                                        UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
-
-                                    }
-                                    else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
-                                    {
-                                        var tanumlists = new List<string>();
-                                        docs.DocumentItems.ForEach(docItem =>
-                                        {
-                                            var WorkQueueLists3 = docItem.DocItemStos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
-                                            WorkQueueLists3.ForEach(wq =>
-                                            {
-                                                var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                                                if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
-                                                {
-                                                    IN_AWS inAws = new IN_AWS()
-                                                    {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01",
-                                                        LENUM = queue.StorageObject_Code,
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                    IN_REQ inReq = new IN_REQ() {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01",
-                                                        LENUM = docs.Ref1 == "R01" ? docItem.Code : "",
-                                                        RSNUM = docs.Ref1 == "R02" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = docs.Ref1 == "R02" || docs.Ref1 == "R06" ? int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code : "",
-                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
-                                                        BDMNG = docs.Ref1 == "R02" ? docItem.Quantity : null,
-                                                        MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
-                                                        LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
-                                                        LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
-                                                        LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER),
-                                                        BWLVS = docs.Ref2,
-                                                        BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
-                                                        BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
-                                                        BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                     
-                                                    var resSAP = SendDataToSAP_ZWMRF004(inAws, inReq, docs.ID.Value, buVO);
-                                                    var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
-                                                    tanumlists.AddRange(tanumlist);
-                                                    UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
-                                                }
-                                                else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
-                                                {
-                                                    IN_AWS inAws = new IN_AWS()
-                                                    {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01",
-                                                        LENUM = queue.StorageObject_Code,
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                    ZSWMRF005_IN_REQ inReq = new ZSWMRF005_IN_REQ()
-                                                    {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01", 
-                                                        LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
-                                                        RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
-                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
-                                                        BDMNG = docItem.Quantity,
-                                                        MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
-                                                        LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
-                                                        LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
-                                                        BWLVS = docs.Ref2,
-                                                        BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
-                                                        BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
-                                                        BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
-                                                        LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER), 
-                                                        VBELN_VL = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN_VL), 
-                                                        VBELN = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN), 
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                    var resSAP = SendDataToSAP_ZWMRF005(inAws, inReq, docs.ID.Value, buVO);
-                                                    var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
-                                                    tanumlists.AddRange(tanumlist);
-                                                    UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
-                                                }
-                                                else if (docs.Ref1 == "R05")
-                                                {
-                                                    IN_AWS inAws = new IN_AWS()
-                                                    {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01",
-                                                        LENUM = queue.StorageObject_Code,
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                    ZSWMRF006_IN_REQ inReq = new ZSWMRF006_IN_REQ() {
-                                                        ZMODE = docs.Ref1,
-                                                        LGNUM = "W01",
-                                                        LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
-                                                        RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
-                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
-                                                        BDMNG = docItem.Quantity,
-                                                        MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
-                                                        LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
-                                                        LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
-                                                        LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER),
-                                                        BWLVS = docs.Ref2,
-                                                        BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
-                                                        BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
-                                                        BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
-                                                        POSNR = long.Parse(ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_POSNR)),
-                                                        VBELN_VL = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN_VL),
-                                                        VBELN = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN),
-                                                        GI_DOC = docs.Code
-                                                    };
-                                                    var resSAP = SendDataToSAP_ZWMRF006(inAws, inReq, docs.ID.Value, buVO);
-                                                    var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
-                                                    tanumlists.AddRange(tanumlist);
-                                                    UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
-                                                }
-
-                                                docItem.DocItemStos.ForEach(disto => {
-                                                    var sou_psto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(disto.Sou_StorageObject_ID, buVO);
-                                                    if (sou_psto.EventStatus == StorageObjectEventStatus.RECEIVED)
-                                                    {
-                                                        var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, null, buVO);
-
-                                                        long? TANUMs = resSAP.datas.OUT_SU.Select(data => data.TANUM).First();
-                                                        if (TANUMs != null && TANUMs != 0)
-                                                        {
-                                                            UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUMs, buVO);
-                                                        }
-                                                    }
-                                                });
-                                            });
-                                        });
-                                        UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
-                                    }
-                                    docLists.Add(x);
-                                }
-                                else
-                                {
-                                    buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                    {
-                                        docID = x,
-                                        msgError = "Status of all document items didn't 'CLOSING'."
-                                    });
-                                }
-                            }
-                        }
-                        else
+                        var documentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, buVO);
+                        if (documentItems == null || documentItems.Count == 0)
                         {
                             buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                             {
                                 docID = x,
-                                msgError = "Status of document didn't 'CLOSING'."
+                                msgError = "Document Items Not Found."
                             });
+                        }
+                        else
+                        {
+                            if (documentItems.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
+                            {
+                                docs.DocumentItems = documentItems;
+
+                                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, buVO);
+
+                                var WorkQueueLists = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                                WorkQueueLists.ForEach(wq =>
+                                {
+                                    var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
+                                    //update StorageObjects
+
+                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                                    {
+                                        UpdateStorageObjectReceived(queue, buVO);
+                                    }
+                                    else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                    {
+                                        var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
+                                        UpdateStorageObjectIssued(updDistos, queue, buVO, logger);
+                                    }
+                                });
+
+                                //Update Status Document To Closed
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
+                                RemoveOPTDocument(x, docs.Options, buVO);
+
+                                //call to SAP
+                                if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+                                {//ดัก empty pallet ไม่ต้องยิงไปZWMRF002
+
+                                    var tanumlists = new List<string>();
+                                    var WorkQueueLists2 = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                                    WorkQueueLists2.ForEach(wq =>
+                                    {
+                                        var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
+                                        var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, docs.ID.Value, buVO);
+                                        tanumlists.AddRange(resSAP.datas.OUT_SU.Select(sap => sap.TANUM.ToString()));
+
+                                        long? TANUMs = resSAP.datas.OUT_SU.Select(data => data.TANUM).First();
+                                        if (TANUMs != null)
+                                        {
+                                            UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUMs, buVO);
+                                        }
+                                    });
+                                    UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
+
+                                }
+                                else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+                                {
+                                    var tanumlists = new List<string>();
+                                    docs.DocumentItems.ForEach(docItem =>
+                                    {
+                                        var WorkQueueLists3 = docItem.DocItemStos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                                        WorkQueueLists3.ForEach(wq =>
+                                        {
+                                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
+                                            if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
+                                            {
+                                                IN_AWS inAws = new IN_AWS()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = queue.StorageObject_Code,
+                                                    GI_DOC = docs.Code
+                                                };
+                                                IN_REQ inReq = new IN_REQ()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = docs.Ref1 == "R01" ? docItem.Code : "",
+                                                    RSNUM = docs.Ref1 == "R02" ? long.Parse(docItem.RefID) : null as long?,
+                                                    MATNR = docs.Ref1 == "R02" || docs.Ref1 == "R06" ? int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code : "",
+                                                    CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
+                                                    BDMNG = docs.Ref1 == "R02" ? docItem.Quantity : null,
+                                                    MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
+                                                    LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
+                                                    LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
+                                                    LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER),
+                                                    BWLVS = docs.Ref2,
+                                                    BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
+                                                    BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
+                                                    BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
+                                                    GI_DOC = docs.Code
+                                                };
+
+                                                var resSAP = SendDataToSAP_ZWMRF004(inAws, inReq, docs.ID.Value, buVO);
+                                                var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
+                                                tanumlists.AddRange(tanumlist);
+                                                UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
+                                            }
+                                            else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
+                                            {
+                                                IN_AWS inAws = new IN_AWS()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = queue.StorageObject_Code,
+                                                    GI_DOC = docs.Code
+                                                };
+                                                ZSWMRF005_IN_REQ inReq = new ZSWMRF005_IN_REQ()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
+                                                    RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
+                                                    MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
+                                                    CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
+                                                    BDMNG = docItem.Quantity,
+                                                    MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
+                                                    LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
+                                                    LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
+                                                    BWLVS = docs.Ref2,
+                                                    BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
+                                                    BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
+                                                    BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
+                                                    LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER),
+                                                    VBELN_VL = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN_VL),
+                                                    VBELN = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN),
+                                                    GI_DOC = docs.Code
+                                                };
+                                                var resSAP = SendDataToSAP_ZWMRF005(inAws, inReq, docs.ID.Value, buVO);
+                                                var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
+                                                tanumlists.AddRange(tanumlist);
+                                                UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
+                                            }
+                                            else if (docs.Ref1 == "R05")
+                                            {
+                                                IN_AWS inAws = new IN_AWS()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = queue.StorageObject_Code,
+                                                    GI_DOC = docs.Code
+                                                };
+                                                ZSWMRF006_IN_REQ inReq = new ZSWMRF006_IN_REQ()
+                                                {
+                                                    ZMODE = docs.Ref1,
+                                                    LGNUM = "W01",
+                                                    LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
+                                                    RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
+                                                    MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
+                                                    CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
+                                                    BDMNG = docItem.Quantity,
+                                                    MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
+                                                    LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
+                                                    LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGPLA),
+                                                    LGBER = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGBER),
+                                                    BWLVS = docs.Ref2,
+                                                    BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_UR),
+                                                    BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_QI),
+                                                    BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_BESTQ_BLK),
+                                                    POSNR = long.Parse(ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_POSNR)),
+                                                    VBELN_VL = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN_VL),
+                                                    VBELN = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_VBELN),
+                                                    GI_DOC = docs.Code
+                                                };
+                                                var resSAP = SendDataToSAP_ZWMRF006(inAws, inReq, docs.ID.Value, buVO);
+                                                var tanumlist = resSAP.datas.OUT_SAP.Select(sap => sap.TANUM.ToString());
+                                                tanumlists.AddRange(tanumlist);
+                                                UpdateOptionDocItem(docItem.ID.Value, docItem.Options, new List<string>(tanumlist), buVO);
+                                            }
+
+                                            docItem.DocItemStos.ForEach(disto => {
+                                                var sou_psto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(disto.Sou_StorageObject_ID, buVO);
+                                                if (sou_psto.EventStatus == StorageObjectEventStatus.RECEIVED)
+                                                {
+                                                    var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, null, buVO);
+
+                                                    long? TANUMs = resSAP.datas.OUT_SU.Select(data => data.TANUM).First();
+                                                    if (TANUMs != null && TANUMs != 0)
+                                                    {
+                                                        UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUMs, buVO);
+                                                    }
+                                                }
+                                            });
+                                        });
+                                    });
+                                    UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
+                                }
+                                docLists.Add(x);
+                            }
+                            else
+                            {
+                                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                {
+                                    docID = x,
+                                    msgError = "Status of all document items didn't 'CLOSING'."
+                                });
+                            }
                         }
                     }
                     else
@@ -263,19 +243,29 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                         {
                             docID = x,
-                            msgError = "Document Not Found"
+                            msgError = "Status of document didn't 'CLOSING'."
                         });
                     }
-                });
+                }
+                else
+                {
+                    buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        docID = x,
+                        msgError = "Document Not Found"
+                    });
+                }
+            });
 
             return docLists;
         }
- 
+
         private void LogException(long? docID, string message, VOCriteria buVO)
         {
             if (docID.HasValue)
             {
-                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage() {
+                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
                     docID = docID.Value,
                     msgError = message
                 });
@@ -305,7 +295,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 LogException(docID, res.message, buVO);
             }
-             
+
             return res;
         }
         private SapResponseMulti SendDataToSAP_ZWMRF004(IN_AWS inAws, IN_REQ inReq, long? docID, VOCriteria buVO)
@@ -313,9 +303,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF004(inAws, inReq, buVO);
             if (res.datas.OUT_SAP != null)
             {
-               if (res.datas.OUT_SAP.Any(x => !string.IsNullOrWhiteSpace(x.ERR_MSG)))
+                if (res.datas.OUT_SAP.Any(x => !string.IsNullOrWhiteSpace(x.ERR_MSG)))
                 {
-                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel=> sel.ERR_MSG);
+                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel => sel.ERR_MSG);
                     var message = string.Join(',', messageLists);
                     LogException(docID, message, buVO);
                 }
@@ -398,128 +388,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                             new KeyValuePair<string, object>("Ref2", "R00")
                         });
             });
-            
-        }
-        private void UpdateStorageObjectReceived(long? wqID, List<amt_DocumentItemStorageObject> distos, VOCriteria buVO)
-        {
-            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wqID.Value, buVO);
-
-            var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO);
-
-            //up OPT_DONE_DES_EVENT_STATUS
-            List<ClosedDocument.TUpdateSTO> upd_stolist = new List<ClosedDocument.TUpdateSTO>();
-            StorageObjectEventStatus eventStatus_rootSto = StorageObjectEventStatus.RECEIVED;
-
-            stosList.ToTreeList().ForEach(sto => {
-                if (sto.parentType == StorageObjectType.BASE)
-                {
-                    var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-                    if (done_des_event_status == null || done_des_event_status.Length == 0)
-                    {
-                        upd_stolist.Add(new ClosedDocument.TUpdateSTO()
-                        {
-                            id = sto.id.Value,
-                            done_eventsto = eventStatus_rootSto
-                        });
-                    }
-                    else
-                    {
-                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        upd_stolist.Add(new ClosedDocument.TUpdateSTO()
-                        {
-                            id = sto.id.Value,
-                            done_eventsto = eventStatus
-                        });
-                        RemoveOPTEventSTO(sto.id.Value, sto.options, buVO);
-                    }
-                }
-                else
-                {
-                    //current is base 
-                    var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-                    if (done_des_event_status == null || done_des_event_status.Length == 0)
-                    {
-                        //eventStatus_rootSto = StorageObjectEventStatus.RECEIVED;
-                    }
-                    else
-                    {
-                        eventStatus_rootSto = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        RemoveOPTEventSTO(sto.id.Value, sto.options, buVO);
-                    }
-                    upd_stolist.Add(new ClosedDocument.TUpdateSTO()
-                    {
-                        id = sto.id.Value,
-                        done_eventsto = eventStatus_rootSto
-                    });
-                }
-
-            });
-            var results = upd_stolist.GroupBy(
-                p => p.done_eventsto,
-                (key, g) => new { Done_Eventsto = key, IDs = g.ToList() });
-            foreach (var updSto in results)
-            {
-                EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(updSto.Done_Eventsto);
-                var upSTO = AWMSEngine.ADO.DataADO.GetInstant().UpdateBy<amt_StorageObject>(new SQLConditionCriteria[] {
-                                            new SQLConditionCriteria("ID", string.Join(",", updSto.IDs.Select(x=>x.id).ToArray()), SQLOperatorType.IN ),
-                                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS )
-                                            }, new KeyValuePair<string, object>[]{
-                                            new KeyValuePair<string, object>("EventStatus", updSto.Done_Eventsto),
-                                            new KeyValuePair<string, object>("Status", toStatus)
-                                            }, buVO);
-            }
 
         }
 
-        private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos, VOCriteria buVO)
-        {
-            distos.ForEach(disto =>
-            {
-                if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
-                {
-                    var stoDes = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(disto.Des_StorageObject_ID, buVO);
-                    var done_des_event_status = ObjectUtil.QryStrGetValue(stoDes.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-                    if (done_des_event_status == null || done_des_event_status.Length == 0)
-                    {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, buVO);
-                    }
-                    else
-                    {
-                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, StorageObjectEventStatus.PICKING,
-                            EntityStatus.ACTIVE, eventStatus, buVO);
-                        RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, buVO);
-
-                    }
-                }
-                else //เบิกเเบบเต็ม
-                {
-                    var stoDes = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(disto.Sou_StorageObject_ID, buVO);
-                    var done_des_event_status = ObjectUtil.QryStrGetValue(stoDes.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-
-                    if (stoDes.ParentStorageObject_ID == null)
-                    {
-                        if (done_des_event_status == null || done_des_event_status.Length == 0)
-                        {
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, StorageObjectEventStatus.PICKING,
-                                EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, buVO);
-
-                        }
-                        else
-                        {
-                            StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatus(stoDes.ID.Value, StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, eventStatus, buVO);
-                            RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, buVO);
-
-                        }
-
-                    }
-                }
-
-            });
-        }
-        private void UpdateStorageObjectIssued2(List<amt_DocumentItemStorageObject> distos, SPworkQueue queue, VOCriteria buVO)
+        private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos, SPworkQueue queue, VOCriteria buVO, AMWLogger logger)
         {
             var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
 
@@ -554,10 +426,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     }
                     RemoveOPTEventSTO(bsto.ID.Value, bsto.Options, buVO);
                 }
-            }); 
+            });
         }
 
-        private void UpdateStorageObjectReceived2(SPworkQueue queue, VOCriteria buVO)
+        private void UpdateStorageObjectReceived(SPworkQueue queue, VOCriteria buVO)
         {
             var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO).ToTreeList();
             stosList.ForEach(sto => {
