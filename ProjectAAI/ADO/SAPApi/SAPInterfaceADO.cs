@@ -179,7 +179,7 @@ namespace ProjectAAI.ADO.SAPApi
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "TEST_RUN",
-                        datas = new { P_TEST = "X" }
+                        datas = new { P_TEST = "" }
                     },
                     new SAPReqMulti.SAPList()
                     {
@@ -215,7 +215,7 @@ namespace ProjectAAI.ADO.SAPApi
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "TEST_RUN",
-                        datas = new { P_TEST = "X" }
+                        datas = new { P_TEST = "" }
                     },
                     new SAPReqMulti.SAPList()
                     {
@@ -250,7 +250,7 @@ namespace ProjectAAI.ADO.SAPApi
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "TEST_RUN",
-                        datas = new { P_TEST = "X" }
+                        datas = new { P_TEST = "" }
                     },
                     new SAPReqMulti.SAPList()
                     {
@@ -285,7 +285,7 @@ namespace ProjectAAI.ADO.SAPApi
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "TEST_RUN",
-                        datas = new { P_TEST = "X" }
+                        datas = new { P_TEST = "" }
                     },
                     new SAPReqMulti.SAPList()
                     {

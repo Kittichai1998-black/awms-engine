@@ -76,7 +76,7 @@ const AmCreateDocumentR5 = props => {
         label: "Mode",
         type: "labeltext",
         key: "ref1",
-        texts: "R05",
+        texts: "R5-DO เบิกสินค้าเพื่อ Load เข้าพื้นที่ Pre-load",
         valueTexts: "R05"
       }
     ]

@@ -9,10 +9,12 @@ namespace AWMSModel.Constant.EnumConst
 
         /// new MVT
         /// FG
+        
         FG_TRANSFER = 1010,
         FG_TRANSFER_WM = 1011,
         FG_TRANSFER_CUS = 1012,
         FG_TRANSFER_SUP = 1013,
+        FG_TRANSFER_REJECT = 1014,
 
         FG_FAST_TRANSFER_WM = 1021,
         FG_FAST_TRANSFER_CUS = 1022,
