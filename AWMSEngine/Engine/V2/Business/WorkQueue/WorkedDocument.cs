@@ -72,11 +72,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 }
                                 else
                                 {
-                                    this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                    {
-                                        docID = x,
-                                        msgError = "Status of all document items didn't 'WORKED'."
-                                    });
+                                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                        {
+                                            docID = x,
+                                            msgError = "Status of all document items didn't 'WORKED'."
+                                        });                                                                   
                                 }
                             }
                         }

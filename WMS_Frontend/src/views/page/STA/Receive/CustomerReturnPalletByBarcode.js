@@ -31,14 +31,14 @@ const CustomerReturnPalletByBarcode = (props) => {
     ]
 
     const inputItem = [
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '96', label: "RETURN" },
             ],
             "defaultValue": { value: '96', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true, "validate": true, "regExp": /^[A-Za-z0-9]{7}.{15}\d{4}$|^[A-Za-z0-9]{10}$/ }]
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "isFocus": true, "clearInput": true, "validate": true, "regExp": /^[A-Za-z0-9]{7}.{15}\d{4}$|^[A-Za-z0-9]{10}$/ }]
 
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);

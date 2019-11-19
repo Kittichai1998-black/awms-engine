@@ -38,18 +38,26 @@ namespace AWMSEngine.APIService.Business
                         docs.ID.Value, null, null, "Document Eventstatus is NEW"
                     ));
                 }else{
-                    //this.BeginTransaction();
-                    TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-                    var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
-                     
-                    if(resWorked.Count > 0)
+                        //this.BeginTransaction();                       
+                        TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
+                        if (docs.EventStatus == DocumentEventStatus.CLOSING )
                         {
-                            var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
-                            if(resClosing.Count > 0)
-                            {
-                               var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);                            
-                            }                           
+                            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+           
                         }
+                        else
+                        {
+                            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+
+                            if (resWorked.Count > 0)
+                            {
+                                var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
+                                if (resClosing.Count > 0)
+                                {
+                                    var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
+                                }
+                            }
+                        }                      
                     }
                 }
             });
