@@ -69,11 +69,9 @@ const CreateDocumentGI = (props) => {
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
-    const [baseIDs, setbaseIDs] = useState(25);
-    const [skubyBase, setskubyBase] = useState();
+    const [baseIDs, setbaseIDs] = useState();
+    const [skubyBase, setskubyBase] = useState({});
     const [dataCreate, setdataCreate] = useState([]);
-
-
 
     //useEffect(() => {
     //    setParentStorageObjects({
@@ -89,37 +87,36 @@ const CreateDocumentGI = (props) => {
     //    })
     //}, [skuIDs, units])
 
-
-
     useEffect(() => {
-        setskubyBase({
-            queryString: window.apipath + "/v2/SelectDataViwAPI/",
-            t: "BstoAndPsto",
-            q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs + ' "}]',
-            f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode,pstoCode as skuCode,pstoCode as Code",
-            g: "",
-            s: "[{'f':'bstoID','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
-        })
-
+        console.log("SKU Master By Pallet")
+        console.log(baseIDs)
+        console.log(skubyBase)
+        if (baseIDs !== undefined) {
+            setskubyBase({
+                queryString: window.apipath + "/v2/SelectDataViwAPI/",
+                t: "BstoAndPsto",
+                q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs + ' "}]',
+                f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode,pstoCode as skuCode,pstoCode as Code",
+                g: "",
+                s: "[{'f':'bstoID','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            })
+        }
     }, [baseIDs])
 
-
-
-    const SKUbyPallet = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "BstoAndPsto",
-        q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs +' "}]',
-        f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode",
-        g: "",
-        s: "[{'f':'bstoID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
- }
-
+ //   const SKUbyPallet = {
+ //       queryString: window.apipath + "/v2/SelectDataViwAPI/",
+ //       t: "BstoAndPsto",
+ //       q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs +' "}]',
+ //       f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode",
+ //       g: "",
+ //       s: "[{'f':'bstoID','od':'asc'}]",
+ //       sk: 0,
+ //       l: 100,
+ //       all: "",
+ //}
 
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -235,7 +232,6 @@ const CreateDocumentGI = (props) => {
         { label: "Doc Status", type: "labeltext", texts: "New" }],
 
     ];
-
 
 
     const columnsModifi = [
@@ -462,13 +458,12 @@ const CreateDocumentGI = (props) => {
         },];
 
 
-
-
     const onHandleDDLChangeBse = (value, dataObject, field) => {
-        console.log(field)
+        console.log(value)
+        console.log(dataObject)
+        console.log(skubyBase)
         if (value !== null || value !== undefined) {
-            if (dataObject !== null) {
-                if (field === "base")
+            if (dataObject !== null) {               
                     setbaseIDs(value)
 
                 //onChangeEditor(field, value, dataObject.BaseCode, "bstoCode", dataObject[field])
@@ -562,7 +557,6 @@ const CreateDocumentGI = (props) => {
 
     const setDatacreateDoc = () => {
         if (dataSource !== [] || dataSource !== undefined) {
-            console.log(dataSource)
             let itemIssue = []
             let BaseSto = {}
             let Items = {}
@@ -593,7 +587,7 @@ const CreateDocumentGI = (props) => {
                     "productionDate": null,
                     "BaseSto": BaseSto
 
-                }
+                }          
                 itemIssue.push(Items)
 
             })

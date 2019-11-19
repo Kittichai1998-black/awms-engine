@@ -8,40 +8,40 @@ export default (props) => {
 
     const TextHeader = [
         [
-            { label: "Document No", values: "code" },
+            { label: "Document No", values: "Code" },
             { label: "Document Date", values: "documentDate", type: "date" }
         ],
         [            
-            { label: "Action Time", values: "actionTime", type: "dateTime" },
-            { label: "Remark", values: "remark" }
+            { label: "Action Time", values: "ActionTime", type: "dateTime" },
+            { label: "Remark", values: "Remark" }
         ],
         [
-            { label: "Branch", values: "souBranchName" },
-            { label: "Warehouse", values: "souWarehouseName" }
+            { label: "Branch", values: "SouBranchName" },
+            { label: "Warehouse", values: "SouWarehouseName" }
          
         ],
         [
-            { label: "Customer", values: "desCustomerName" },
+            { label: "Customer", values: "DesCustomerName" },
             { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
            
         ]
     ]
 
     const columns = [
-        { "width": 200, "accessor": "skuMaster_Code", "Header": "SKU Code" },
-        { "accessor": "skuMaster_Name", "Header": "SKU Name" },
-        { "width": 120, "accessor": "_qty", "Header": "Qty" },
-        { "width": 70, "accessor": "unitType_Name", "Header": "Unit" }
+        { "width": 200, "accessor": "PackMaster_Code", "Header": "SKU Code" },
+        { "accessor": "PackMaster_Name", "Header": "SKU Name" },
+        { "width": 120, "accessor": "Quantity", "Header": "Qty" },
+        { "width": 70, "accessor": "UnitType_Code", "Header": "Unit" }
     ]
 
     const columnsDetail = [
         { "width": 40, "accessor": "status", "Header": "Task", "Cell": (e) => getStatusGI(e.original) },
-        { "width": 140, "accessor": "code", "Header": "Pallet" },
-        { "width": 150, "accessor": "packCode", "Header": "SKU Code" },
-        { "accessor": "packName", "Header": "SKU Name" },
-        { "width": 125, "accessor": "orderNo", "Header": "Order No" },
-        { "width": 110, "accessor": "_packQty", "Header": "Qty" },
-        { "width": 60, "accessor": "packUnitCode", "Header": "Unit" }
+        { "width": 140, "accessor": "Code", "Header": "Pallet" },
+        { "width": 150, "accessor": "PackMaster_Code", "Header": "SKU Code" },
+        { "accessor": "packName", "PackMaster_Name": "SKU Name" },
+        { "width": 125, "accessor": "OrderNo", "Header": "Order No" },
+        { "width": 110, "accessor": "Quantity", "Header": "Qty" },
+        { "width": 60, "accessor": "UnitType_Code", "Header": "Unit" }
     ]
 
   
