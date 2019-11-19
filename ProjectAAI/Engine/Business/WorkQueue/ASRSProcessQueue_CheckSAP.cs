@@ -255,6 +255,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             //1 Z01
             //var pList = suList.GroupBy(x => new { x.rstoID, x.pstoID, x.rstoCode, x.pstoCode, x.pstoBatch, x.pstoEventStatus }).Select(x => x.Key);
             var suCodeList = suList.GroupBy(x => new { x.rstoCode }).Select(x => x.Key).Select(x => x.rstoCode).ToArray();
+            if(suCodeList.Length == 0)
+            {
+                return;
+            }
             var sapRes = SAPInterfaceADO.GetInstant().ZWMRF001V2(suCodeList, buVO);//send su
             StorageObjectEventStatus doneEStatus = StorageObjectEventStatus.RECEIVED;
             if (sapRes.status == 1)
