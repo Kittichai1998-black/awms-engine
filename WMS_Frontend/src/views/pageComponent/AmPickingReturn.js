@@ -445,7 +445,22 @@ const AmPickingReturn = (props) => {
                         dataScan = await onBeforePost(resInput, bstoData);
                         if (dataScan) {
                             if (dataScan.allowSubmit === true) {
-                                resValuePosts = { ...dataScan }
+
+                                if (dataScan.mapnewpallet !== undefined && dataScan.mapnewpallet === true) {
+                                    resValuePosts = {
+                                        ...valueInput,
+                                        rootID: null,
+                                        rootType: null,
+                                        mapnewpallet: true,
+                                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                                        mode: 0,
+                                        action: actionValue,
+                                    };
+    
+                                }
+                                else {
+                                    resValuePosts = { ...dataScan }
+                                }
                             }
                         } else {
                             inputClearAll();
@@ -525,7 +540,11 @@ const AmPickingReturn = (props) => {
                 if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
                     var dataLastPack = findPack(resData.bsto);
                     if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
-                        alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                        if (resValuePosts.mapnewpallet !== undefined && resValuePosts.mapnewpallet === true) {
+                            scanBarcodeApi(resValuePosts);
+                        } else {
+                            alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                        }
                     } else {
                         scanBarcodeApi(resValuePosts);
                     }
