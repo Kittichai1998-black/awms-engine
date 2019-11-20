@@ -58,7 +58,17 @@ const StorageObject = props => {
     l: 100,
     all: ""
   };
-
+  const SKUMasterType = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "SKUMasterType",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const DocumentEventStatus = [
     { label: "NEW", value: "NEW" },
     { label: "AUDITING", value: "AUDITING" },
@@ -257,14 +267,17 @@ const StorageObject = props => {
       searchType: "input",
       placeholder: "SI"
     },
+    //SKUMasterType
     {
       label: "Size",
       field: "skuType",
-      searchType: "status",
+      searchType: "dropdown",
       typeDropdow: "normal",
       name: "Size",
-      dataDropDow: SKUGroupType,
-      placeholder: "Size"
+      dataDropDow: SKUMasterType,
+      placeholder: "Size",
+      fieldLabel: ["Code"],
+      fieldDataKey: "Code"
     },
     { label: "Qty", field: "Qty", searchType: "input", placeholder: "Qty" },
     {
