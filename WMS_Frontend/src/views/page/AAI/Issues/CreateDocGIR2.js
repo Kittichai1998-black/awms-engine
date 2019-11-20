@@ -48,6 +48,9 @@ const AmCreateDocumentR2 = props => {
   const [editPopup, setEditPopup] = useState(false);
   const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
+  
+  const [dataSource, setDataSource] = useState([]);
+  const [reload, setRelaod] = useState();
 
   const headerCreates = [
     [
@@ -125,6 +128,19 @@ const AmCreateDocumentR2 = props => {
     {
       Header: "Blocked",
       accessor: "BESTQ_BLK"
+    },
+    {
+      Header: "",
+      Cell: e => {
+        return (
+          <AmButton
+            styleType="delete"
+            onClick={() => onHandleDelete(e.original)}
+          >
+            Remove
+          </AmButton>
+        );
+      }
     }
   ];
 
@@ -134,7 +150,8 @@ const AmCreateDocumentR2 = props => {
   const sapConnectorR2 = postData => {
     Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
       if (res.data._result.status === 1) {
-        setSAPResponse(res.data.datas);
+        var sapRes  = [...sapResponse].push(res.data.datas)
+        setSAPResponse(sapRes);
       } else {
       }
     });
@@ -184,7 +201,6 @@ const AmCreateDocumentR2 = props => {
       })
       .filter((value, index, self) => self.indexOf(value) === index)
       .join(",");
-    console.log(sapResponse);
 
     let document = {
       actionTime:
@@ -268,7 +284,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: "R02",
       ref2: groupMVT,
-      refID: sapResponse.length > 0 ? sapResponse[0].RSNUM : null,
+      refID: sapResponse.length > 0 ? sapResponse.map(x=>x.RSNUM).join(',') : null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -314,12 +330,19 @@ const AmCreateDocumentR2 = props => {
     };
     return documentData;
   };
+  
+  const onHandleDelete = row => {
+    let idx = sapResponse.findIndex(x => x.ID === row.ID);
+    sapResponse.splice(idx, 1);
+    setDataSource([...sapResponse]);
+    setRelaod({});
+  };
 
   const customAdd = () => {
     return (
       <AmEditorTable
         style={{ width: "600px", height: "500px" }}
-        titleText={"Load"}
+        titleText={"Add"}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -334,6 +357,7 @@ const AmCreateDocumentR2 = props => {
         headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
         //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
         columns={[]} //colums
+        reload={reload}
         columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
         apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
         createDocType={"custom"} //createDocType มี audit issue recive
