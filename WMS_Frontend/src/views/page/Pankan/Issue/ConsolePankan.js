@@ -395,7 +395,7 @@ const ConsolePankan = (props) => {
 
     const getViews = () => {
         Axios.get(
-            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID + "&getMapSto=true&_token=" +
+            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docIds + "&getMapSto=true&_token=" +
             localStorage.getItem("Token")
         ).then(res => {
             let resDatas = res.data.docItemLists
@@ -414,7 +414,7 @@ const ConsolePankan = (props) => {
                 }
 
             })
-        }
+        })
 
     }
 
