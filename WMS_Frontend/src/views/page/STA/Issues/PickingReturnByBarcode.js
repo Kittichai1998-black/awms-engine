@@ -17,14 +17,14 @@ const PickingReturnByBarcode = (props) => {
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '13'}" };
 
     const inputItem = [
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true, "isFocus": true }
     ]
 
     const [showDialog, setShowDialog] = useState(null);

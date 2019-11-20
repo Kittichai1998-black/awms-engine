@@ -149,7 +149,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 Status = EntityStatus.ACTIVE
                             };
                             var idNewUnitType = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(buVO, newUnitType);
-                            StaticValueManager.GetInstant().ClearStaticByTableName("ams_UnitType");
+                            //StaticValueManager.GetInstant().ClearStaticByTableName("ams_UnitType");
+                            StaticValueManager.GetInstant().LoadUnitType(buVO);
 
                             unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(idNewUnitType, buVO);
 

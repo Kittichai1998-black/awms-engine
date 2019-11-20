@@ -28,7 +28,7 @@ const ReceiveEmptyPallet = (props) => {
             ],
             "defaultValue": { value: '12', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true, "clearInput": true }
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true, "clearInput": true, "isFocus": true }
     ]
 
 
