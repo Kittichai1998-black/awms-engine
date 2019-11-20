@@ -393,6 +393,32 @@ const ConsolePankan = (props) => {
     }
 
 
+    const getViews = () => {
+        Axios.get(
+            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docIds + "&getMapSto=true&_token=" +
+            localStorage.getItem("Token")
+        ).then(res => {
+            let resDatas = res.data.docItemLists
+            let dataGuides = res.data.locationLists
+            let datas = null
+            let pacItem = null
+            let quantity = null
+            let unittype = null
+            console.log(resDatas)
+            resDatas.map((x) => {
+                datas = {
+                    'pacItem': x.code + ":" + x.name,
+                    "quantity": x.pickQty + "/" + x.allQty,
+                    'unittype': x.unit
+
+                }
+
+            })
+        })
+
+    }
+
+
  return (
      <div>
          <AmDialogs
