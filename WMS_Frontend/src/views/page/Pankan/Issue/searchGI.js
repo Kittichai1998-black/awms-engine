@@ -273,11 +273,14 @@ export default props => {
             ></AmDialogs>
 
         <AmDocumentSearch
-            columns={iniCols}
-            primarySearch={primarySearch}
-            expensionSearch={search}
-            docTypeCode="1002"
-            customButton={BtnexportCSV()}
+                columns={iniCols}
+                primarySearch={primarySearch}
+                expensionSearch={search}
+                docTypeCode="1002"
+                customButton={BtnexportCSV()}
+                buttonClose={true}
+                buttonReject={true}
+                buttonWorking={true}
             />
         </div>
     );
