@@ -613,7 +613,11 @@ const AmDocumentSearch = props => {
       });
     }
 
-    if (props.docTypeCode === "1001" || props.docTypeCode === "1002") {
+    if (
+      props.docTypeCode === "1001" ||
+      props.docTypeCode === "1002" ||
+      props.docTypeCode === "2004"
+    ) {
       Axios.post(window.apipath + "/v2/CloseDocAPI", {
         docIDs: docID
       }).then(res => {
@@ -699,8 +703,8 @@ const AmDocumentSearch = props => {
         selectionType="checkbox"
         getSelection={data => setSelection(data)}
         style={{ maxHeight: "500px" }}
-              currentPage={page}
-              renderCustomButtonB4={<div> {props.customButton} </div>}
+        currentPage={page}
+        renderCustomButtonB4={<div> {props.customButton} </div>}
         pageSize={20}
       />
       <div>
