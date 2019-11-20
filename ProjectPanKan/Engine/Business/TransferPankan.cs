@@ -36,7 +36,7 @@ namespace ProjectPanKan.Engine.Business
             if (location == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Arealocation " + reqVO.souPack + " NotFound");
                 
-                )
+                
 
             var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
                  new SQLConditionCriteria("Code", reqVO.souPack, SQLOperatorType.EQUALS),

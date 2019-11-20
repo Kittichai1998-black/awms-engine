@@ -27,7 +27,9 @@ import { indigo, deepPurple, lightBlue, red, grey, green } from '@material-ui/co
 import Collapse from '@material-ui/core/Collapse';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import { apicall } from "../../../../components/function/CoreFunction2";
 import Axios from 'axios';
+const Axios1 = new apicall();
 const styles = theme => ({
     root: {
         width: "100%"
@@ -173,7 +175,8 @@ const ConsolePankan = (props) => {
 
     useEffect(() => {
         setdatasSourse([]);
-    }, [valuesGuide])
+        setreload({})
+    }, [docIds])
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
@@ -232,11 +235,13 @@ const ConsolePankan = (props) => {
                     'unittype': x.unit
 
                 }
-                datasSourse.push(datas)
-                setreload({})
+            
             })
-
+            console.log(dataGuides)
             BodyGuide(dataGuides)
+            datasSourse.push(datas)
+            setreload({})
+
             //dataGuides.map((y) => {
             //    BodyGuide(y)
 
@@ -308,8 +313,17 @@ const ConsolePankan = (props) => {
             setStateDialogErr(true)
 
         } else {
+            let datasPick = {
+                "docID": docIds,
+                "scanCode": barcodePicks,
+                "baseConso": "",
+                "basePick": "",
+                "scanQty": qtypick,
 
-            Axios.post(window.apipath + '/v2/TransferPanKanAPI').then((res) => {
+            }
+            console.log(datasPick)
+            Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasPick).then((res) => {
+                console.log(res)
                 if (res.data._result.status === 1) {
                     let datas = res.data
                     setNewStorageObjPick(<AmListSTORenderer
@@ -318,7 +332,8 @@ const ConsolePankan = (props) => {
                     />);
 
                 } else {
-
+                    setStateDialogErr(true)
+                    setMsgDialogErr(res.data._result.message)
 
                 }
             })
