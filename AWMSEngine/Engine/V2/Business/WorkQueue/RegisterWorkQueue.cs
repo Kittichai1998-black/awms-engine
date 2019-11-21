@@ -274,9 +274,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                   ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
-                   StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
-                   StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    if(sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.NEW)
+                       ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
+                       StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
+                       StorageObjectEventStatus.RECEIVING, this.BuVO);
                 }
                
                 if(docItem.Count > 0)
