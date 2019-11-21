@@ -133,7 +133,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || sto.eventStatus == StorageObjectEventStatus.PARTIAL || sto.eventStatus == StorageObjectEventStatus.QC || sto.eventStatus == StorageObjectEventStatus.RETURN || sto.eventStatus == StorageObjectEventStatus.HOLD)
                 {
                     var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
                     var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
