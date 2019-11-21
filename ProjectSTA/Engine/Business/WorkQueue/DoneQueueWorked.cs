@@ -30,7 +30,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         if (docItem.DocItemStos.TrueForAll(z => z.Status == EntityStatus.ACTIVE))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
-                            if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                            if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                             {
                                 var sum_disto = docItem.DocItemStos.Sum(t => t.Quantity);
                                     //ถ้า STO ของที่เบิก เบิกไม่หมด จะต้องเอาของที่เหลือไปสร้างเอกสาร Picking Return
