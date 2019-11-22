@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSModel.Criteria;
 using System.Text.RegularExpressions;
+using AMWUtil.Exception;
 
 namespace AWMSEngine.ADO.StaticValue
 {
@@ -95,6 +96,13 @@ namespace AWMSEngine.ADO.StaticValue
         public string GetAreaMasterTypesCode(long id)
         {
             return this.AreaMasterTypes.First(x => x.ID == id).Code;
+        }
+        public ams_AreaMasterType GetAreaMaterTypeByAreaID(long areaID)
+        {
+            var area = this.AreaMasters.FirstOrDefault(x => x.ID == areaID);
+            if (area == null)
+                throw new Exception("AreaID Not Found");
+            return this.AreaMasterTypes.Find(x => x.ID == area.AreaMasterType_ID);
         }
 
         private List<ams_AreaRoute> _AreaRoutes;

@@ -252,9 +252,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 new SQLConditionCriteria("ID", string.Join(",", _pickStos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
             }, this.BuVO);
 
+
             WCSQueueADO.TReq req = new WCSQueueADO.TReq()
             {
-                queueOut = _pickStos.Select(x => new WCSQueueADO.TReq.queueout()
+                queueOut = _pickStos
+                .Where(x => this.StaticValue.GetAreaMaterTypeByAreaID(x.areaID).ID == 10)
+                .Select(x => new WCSQueueADO.TReq.queueout()
                 {
                     queueID = null,
                     desWarehouseCode = reqVO.desASRSWarehouseCode,
