@@ -21,6 +21,9 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
+                public long? pickSeqGroup;
+                public long? pickSeqIndex;
+
                 public baseinfo baseInfo;
                 public class baseinfo
                 {
@@ -51,19 +54,19 @@ namespace AWMSEngine.ADO.QueueApi
         
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
-            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
-            //var res = this.SendJson<TRes>("WCS_SEND_QUEUE", datas, null, buVO);
-            //return res;
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            var res = this.SendJson<TRes>("WCS_SEND_QUEUE", datas, null, buVO);
+            return res;
         }
 
 
         public TRes SendReady(TReq datas, VOCriteria buVO)
         {
-            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
-            //var d = datas.Clone();
-            //d.queueOut.ForEach(x => x.queueID = null);
-            //var res = this.SendJson<TRes>("WCS_SEND_QUEUE", d, null, buVO);
-            //return res;
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            var d = datas.Clone();
+            d.queueOut.ForEach(x => x.queueID = null);
+            var res = this.SendJson<TRes>("WCS_SEND_QUEUE", d, null, buVO);
+            return res;
         }
     }
 }

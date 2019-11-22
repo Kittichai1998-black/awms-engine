@@ -161,7 +161,7 @@ const DocumentSearchPISTA = props => {
     {
       Header: "",
       accessor: "EventStatus",
-      width: 50,
+      width: 70,
       fixed: "left",
       Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
     },
@@ -297,7 +297,8 @@ const DocumentSearchPISTA = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="2004"
-        //buttonClose={true}
+        buttonClose={true}
+        buttonReject={true}
       />
     </div>
   );
