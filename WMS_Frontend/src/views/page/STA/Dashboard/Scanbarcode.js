@@ -387,22 +387,27 @@ const Scanbarcode = (props) => {
                     let splitItem = [];
                     let carton = manualAddLeft.carton.split(',');
                     carton.forEach(e => {
+                        console.log(e)
                         if (e.includes('-')) {
                             let splitCar = [];
                             let carArr = e.split('-');
-                            for (let i = carArr[0]; i <= carArr[1]; i++) {
-                                splitCar.push(parseInt(i))
+                    
+                            for (let j = parseInt(carArr[0]); j <= parseInt(carArr[1]); j++) {
+                                console.log(j)
+                                splitCar.push(parseInt(j))
                             }
                             splitItem = splitItem.concat(splitCar)
                         }
                         else {
                             splitItem.push(parseInt(e))
+                            console.log(splitItem)
                         }
                     });
 
                     let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
                     let resCarton = MergeRangeNum(disCarton.join(','));
-
+                    console.log(disCarton)
+                    console.log(resCarton)
                     mapSto.rootID = leftGate.baseID;
                     mapSto.scanCode = manualAddLeft.code;
                     mapSto.orderNo = manualAddLeft.orderNo;
@@ -429,7 +434,7 @@ const Scanbarcode = (props) => {
                         if (e.includes('-')) {
                             let splitCar = [];
                             let carArr = e.split('-');
-                            for (let i = carArr[0]; i <= carArr[1]; i++) {
+                            for (let i = parseInt(carArr[0]); i <= parseInt(carArr[1]); i++) {
                                 splitCar.push(parseInt(i))
                             }
                             splitItem = splitItem.concat(splitCar)
@@ -441,7 +446,8 @@ const Scanbarcode = (props) => {
 
                     let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
                     let resCarton = MergeRangeNum(disCarton.join(','));
-
+console.log(disCarton)
+console.log(resCarton)
                     mapSto.rootID = rightGate.baseID;
                     mapSto.scanCode = manualAddRight.code;
                     mapSto.orderNo = manualAddRight.orderNo;
@@ -457,6 +463,7 @@ const Scanbarcode = (props) => {
                 }
             }
         }
+        console.log(mapSto)
         Axios.post(window.apipath + '/v2/ScanMapStoAPI', mapSto).then(res => {
             if(res.data._result.stat === 0){
                 setMsgDialog(res.data._result.message);
