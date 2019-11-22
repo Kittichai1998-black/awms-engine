@@ -36,7 +36,6 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
-            var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value,this.BuVO);
 
 
             if(reqVO.itemLists.Count > 0)
@@ -60,6 +59,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                     //    });
 
                 });
+                var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
+
                 var Disto = new List<amt_DocumentItemStorageObject>();
                 getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); }) ;
 

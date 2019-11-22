@@ -27,7 +27,9 @@ import { indigo, deepPurple, lightBlue, red, grey, green } from '@material-ui/co
 import Collapse from '@material-ui/core/Collapse';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import { apicall } from "../../../../components/function/CoreFunction2";
 import Axios from 'axios';
+const Axios1 = new apicall();
 const styles = theme => ({
     root: {
         width: "100%"
@@ -139,6 +141,7 @@ const ConsolePankan = (props) => {
     const [qtyconsole, setqtyconsole] = useState();
     const [datasSourse, setdatasSourse] = useState([]);
     const [bodyGuides, setbodyGuides] = useState();
+    const [onClickPick, setonClickPick] = useState();
 
 
     const Customer = {
@@ -173,7 +176,8 @@ const ConsolePankan = (props) => {
 
     useEffect(() => {
         setdatasSourse([]);
-    }, [valuesGuide])
+        setreload({})
+    }, [docIds, onClickPick])
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
@@ -214,6 +218,7 @@ const ConsolePankan = (props) => {
 
 
     const GetDocument = (docID) => {
+        setonClickPick(true)
         Axios.get(
             window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
             localStorage.getItem("Token")
@@ -232,11 +237,13 @@ const ConsolePankan = (props) => {
                     'unittype': x.unit
 
                 }
-                datasSourse.push(datas)
-                setreload({})
+            
             })
-
+            console.log(dataGuides)
             BodyGuide(dataGuides)
+            datasSourse.push(datas)
+            setreload({})
+
             //dataGuides.map((y) => {
             //    BodyGuide(y)
 
@@ -285,9 +292,6 @@ const ConsolePankan = (props) => {
         }
     }
 
-
-
-
     const Column = [
         { Header: "Pack Item", accessor: 'pacItem' },
         { Header: "Quantity", accessor: "quantity" },
@@ -308,17 +312,29 @@ const ConsolePankan = (props) => {
             setStateDialogErr(true)
 
         } else {
+            let datasPick = {
+                "docID": docIds,
+                "scanCode": barcodePicks,
+                "baseConso": "",
+                "basePick": "BXL0121",
+                "scanQty": qtypick,
 
-            Axios.post(window.apipath + '/v2/TransferPanKanAPI').then((res) => {
+            }
+            console.log(datasPick)
+            Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasPick).then((res) => {
+                console.log(res)
                 if (res.data._result.status === 1) {
                     let datas = res.data
+                    console.log(datas)
+                    
                     setNewStorageObjPick(<AmListSTORenderer
                         dataSrc={datas}
 
                     />);
 
                 } else {
-
+                    setStateDialogErr(true)
+                    setMsgDialogErr(res.data._result.message)
 
                 }
             })
@@ -374,6 +390,32 @@ const ConsolePankan = (props) => {
     };
 
     const onclickConsoleClear = () => {
+
+    }
+
+
+    const getViews = () => {
+        Axios.get(
+            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docIds + "&getMapSto=true&_token=" +
+            localStorage.getItem("Token")
+        ).then(res => {
+            let resDatas = res.data.docItemLists
+            let dataGuides = res.data.locationLists
+            let datas = null
+            let pacItem = null
+            let quantity = null
+            let unittype = null
+            console.log(resDatas)
+            resDatas.map((x) => {
+                datas = {
+                    'pacItem': x.code + ":" + x.name,
+                    "quantity": x.pickQty + "/" + x.allQty,
+                    'unittype': x.unit
+
+                }
+
+            })
+        })
 
     }
 

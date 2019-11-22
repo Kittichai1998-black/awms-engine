@@ -37,7 +37,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
             }
             //return picking
-            else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+            else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || sto.eventStatus == StorageObjectEventStatus.PARTIAL || sto.eventStatus == StorageObjectEventStatus.QC || sto.eventStatus == StorageObjectEventStatus.RETURN || sto.eventStatus == StorageObjectEventStatus.HOLD)
             {
 
                 var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);

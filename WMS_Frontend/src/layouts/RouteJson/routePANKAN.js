@@ -33,6 +33,11 @@ const DocumentViewGI = Loadable({
   loading: Loading
 });
 
+const DocumentSearchLD = Loadable({
+    loader: () => import("../../views/page/Pankan/Loading/searchLD"),
+    loading: Loading
+});
+
 const CreateLD = Loadable({
   loader: () => import("../../views/page/Pankan/Loading/CreateDocumentLD"),
   loading: Loading
@@ -51,6 +56,11 @@ const ConsolePankan = Loadable({
 const LoadingEx = Loadable({
   loader: () => import("../../views/page/Pankan/Loading/Loading"),
   loading: Loading
+});
+
+const LoadingDetail = Loadable({
+    loader: () => import("../../views/page/Pankan/Loading/DetailDocumentLD"),
+    loading: Loading
 });
 
 const SettingSKUMaster = Loadable({
@@ -100,9 +110,16 @@ const routes = [
     name: "Tranfer",
     compoment: Tranfer,
     exact: true
-  },
+    },
+    {
+        path: "/loading/search",
+        name: "base5",
+        compoment: DocumentSearchLD,
+        exact: true
+    },
   { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },
     { path: "/loading/loading", name: "base5", compoment: LoadingEx, exact: true },
+    { path: "/loading/detail", name: "base5", compoment: LoadingDetail, exact: true },
     { path: "/mst/sku/manage", name: "base5", compoment: SettingSKUMaster, exact: true },
     { path: "/mst/supplier/manage", name: "base5", compoment: SettingSupplier, exact: true },
     { path: "/mst/customer/manage", name: "base5", compoment: SettingCustomer, exact: true }

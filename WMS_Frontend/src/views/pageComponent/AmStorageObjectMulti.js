@@ -301,12 +301,18 @@ const AmStorageObjectMulti = props => {
     setTotalSize(res.data.counts);
 
     if (props.export === true) {
+      // let getExcelQuery = Clone(ExportQuery);
+      // getExcelQuery.q = query.q;
+      // const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
+      //   res => res
+      // );
+      // console.log(resExcel.data.datas);
+      // setExcelDataSource(resExcel.data.datas);
       let getExcelQuery = Clone(ExportQuery);
       getExcelQuery.q = query.q;
-      const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
-        res => res
-      );
-      setExcelDataSource(resExcel.data.datas);
+      //const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
+      const resExcel = createQueryString(getExcelQuery);
+      setExcelDataSource(resExcel);
     }
   }
   //===========================================================
@@ -822,6 +828,7 @@ const AmStorageObjectMulti = props => {
             : dataSource
         }
         //data={props.dataSourceModefybuttonB4}
+
         columns={columns}
         pageSize={100}
         sort={sort => setSort({ field: sort.id, order: sort.sortDirection })}
@@ -832,8 +839,9 @@ const AmStorageObjectMulti = props => {
         getSelection={data => {
           setSelection(data);
         }}
-        exportData={props.export}
-        excelData={excelDataSrouce}
+        exportData={true}
+        excelQueryAPI={excelDataSrouce}
+        //excelData={excelDataSrouce}
         // renderCustomButtonB4={
         //   <AmExportDataTable
         //     data={excelDataSrouce ? excelDataSrouce : []}
