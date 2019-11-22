@@ -141,6 +141,7 @@ const ConsolePankan = (props) => {
     const [qtyconsole, setqtyconsole] = useState();
     const [datasSourse, setdatasSourse] = useState([]);
     const [bodyGuides, setbodyGuides] = useState();
+    const [onClickPick, setonClickPick] = useState();
 
 
     const Customer = {
@@ -176,7 +177,7 @@ const ConsolePankan = (props) => {
     useEffect(() => {
         setdatasSourse([]);
         setreload({})
-    }, [docIds])
+    }, [docIds, onClickPick])
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
@@ -217,6 +218,7 @@ const ConsolePankan = (props) => {
 
 
     const GetDocument = (docID) => {
+        setonClickPick(true)
         Axios.get(
             window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
             localStorage.getItem("Token")
@@ -290,9 +292,6 @@ const ConsolePankan = (props) => {
         }
     }
 
-
-
-
     const Column = [
         { Header: "Pack Item", accessor: 'pacItem' },
         { Header: "Quantity", accessor: "quantity" },
@@ -317,7 +316,7 @@ const ConsolePankan = (props) => {
                 "docID": docIds,
                 "scanCode": barcodePicks,
                 "baseConso": "",
-                "basePick": "",
+                "basePick": "BXL0121",
                 "scanQty": qtypick,
 
             }
@@ -326,6 +325,8 @@ const ConsolePankan = (props) => {
                 console.log(res)
                 if (res.data._result.status === 1) {
                     let datas = res.data
+                    console.log(datas)
+                    
                     setNewStorageObjPick(<AmListSTORenderer
                         dataSrc={datas}
 

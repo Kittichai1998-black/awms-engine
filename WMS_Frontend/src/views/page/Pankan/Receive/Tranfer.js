@@ -199,8 +199,8 @@ const Tranfer = (props) => {
 
         //    if (valueInput.PalletCode) { baseCode = valueInput.PalletCode; }
         //}
-        return [{ label: 'Destination Area', value: desarea },
-            { label: 'Source Area', value: souarea },
+        return [//{ label: 'Destination Area', value: desarea },
+            //{ label: 'Source Area', value: souarea },
             { label: 'Destination Base', value: desbase },
             { label: 'Source Base', value: soubase },     
         { label: 'Source SKU', value: soupack },
@@ -292,12 +292,14 @@ const Tranfer = (props) => {
             "souBase": valueInput.soubase,
             "souPack": valueInput.soupack,
             "quantity": valueInput.qty,
-            "areaID": 1,
+            "areaID": 2,
             "warehouseID" : 1
         }
+        console.log(datas)
         Axios.post(window.apipath + '/v2/TransferPanKanAPI', datas).then((res) => {
             if (res.data._result.status === 1) {
                 let datas = res.data
+                console.log(datas)
                 setNewStorageObj(<AmListSTORenderer
                     dataSrc={datas}
 
@@ -316,7 +318,6 @@ const Tranfer = (props) => {
     const handleBack = (index) => {
         console.log(index)
         if (index === 1) {
-            console.log(valueInput)
             setbarCodeDes(valueInput.desbase);
             setValueInput({ ...valueInput, ['desbase']: null, ['soubase']: null })
             // setValueInput({ ...valueInput, ['PalletCode']: null })
@@ -382,7 +383,7 @@ const Tranfer = (props) => {
     const getStepContent = (step) => {
         switch (step) {
 
-            case 0:
+         /*  case 0:
                 return <div>
                     <AmInput
                         id={"desarea"}
@@ -409,7 +410,8 @@ const Tranfer = (props) => {
                     ></AmInput>
 
                 </div>;
-            case 2:
+       */
+            case 0:
                 return <div>
                     <AmInput
                         id={"desbase"}
@@ -422,7 +424,7 @@ const Tranfer = (props) => {
 
                     ></AmInput>
                 </div>;
-            case 3:
+            case 1:
                 return <div>
 
                     <AmInput
@@ -436,7 +438,7 @@ const Tranfer = (props) => {
                     ></AmInput>
 
                 </div>;
-            case 4: return <div>
+            case 2: return <div>
                 <AmInput
                     id={"soupack"}
                     autoFocus={true}
@@ -447,7 +449,7 @@ const Tranfer = (props) => {
                     onKeyPress={(value, obj, element, event) => onHandleChangeInputSoupack(value, null, "soupack", null, event)}
                 ></AmInput>
             </div>;
-            case 5: return <div>
+            case 3: return <div>
 
                 <AmInput
                     id={"qty"}
@@ -461,7 +463,7 @@ const Tranfer = (props) => {
                     onKeyPress={(value, obj, element, event) => onHandleChangeInputQty(value, null, "qty", null, event)}
                 ></AmInput>
             </div>;
-           case 6: return <div></div>;
+           case 4: return <div></div>;
             default:
                 return 'Unknown step';
         }

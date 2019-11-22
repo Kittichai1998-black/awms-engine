@@ -596,7 +596,7 @@ const CreateDocumentGI = (props) => {
             //dataCreate["BaseSto"] = BaseSto
         }
 
-        console.log(dataCreate)
+        //console.log(dataCreate)
 
     }
 

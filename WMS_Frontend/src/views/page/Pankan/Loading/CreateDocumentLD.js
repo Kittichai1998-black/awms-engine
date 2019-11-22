@@ -125,7 +125,7 @@ const CreateDocumentLD = (props) => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "Document",
         q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
-        f: "ID,Code,Name,ActionTime",
+        f: "ID,Code,Name,ActionTime,ID as issuedDocID,ActionTime as actiontime,Code as Doccode",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -174,7 +174,7 @@ const CreateDocumentLD = (props) => {
 
 
 
-    const columnsModifi = [{ Header: "Issue No", accessor: 'issuedDocID', },
+    const columnsModifi = [{ Header: "Issue No", accessor: 'Doccode' },
     { Header: "ActionTime", accessor: 'actiontime' },
     { Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => { setEditData(e); setDialog(true); setTitle("Edit") }}>Edit</AmButton>, },
     {
@@ -202,7 +202,7 @@ const CreateDocumentLD = (props) => {
 
     const primaryFilterList = [
         {
-            "field": "issuedDocID",
+            "field": "Doccode",
             "component": (condition, cols, key) => {
                 return (
                     <div key={key} style={{ display: "inline-block" }}>
@@ -210,9 +210,9 @@ const CreateDocumentLD = (props) => {
                             <LabelH>Document : </LabelH>
                             <InputDiv>
                                 <AmDropdown
-                                    id={"issuedDocID"}
+                                    id={"Doccode"}
                                     placeholder={"Select Document"}
-                                    fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                                    fieldDataKey="issuedDocID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                                     fieldLabel={["Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                                     labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                                     width={300} //กำหนดความกว้างของช่อง input                                    
@@ -241,17 +241,23 @@ const CreateDocumentLD = (props) => {
                         </FormInline>
                     </div>
                 )
-            }
+          }
+
+
+
         },];
 
 
 
     const onHandleDDLChangeDoc = (value, dataObject, field) => {
+        console.log(value)
+        console.log(dataObject)
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {
-                setactiontimes(dataObject.ActionTime)
+                console.log(dataObject.ActionTime)
+                setactiontimes(dataObject.ActionTime)     
                 if (dataObject !== null) {
-                    onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, "Code", dataObject.Code)
+                    onChangeEditor(field, value, dataObject[field], dataObject.ActionTime, "Doccode", dataObject.Code)
                 }
             }
         } else { }
@@ -259,6 +265,7 @@ const CreateDocumentLD = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata) => {
+        console.log(rowdata)
         if (status) {
             var chkData = dataSource.filter(x => {
                 return x.ID === rowdata.ID
@@ -266,15 +273,12 @@ const CreateDocumentLD = (props) => {
 
             if (chkData.length > 0) {
                 for (let row in editData) {
-
                     chkData[0][row] = editData[row]
 
                 }
             }
-            else {
-          
+            else {        
                 dataSource.push(editData)
-
             }
 
         }
@@ -285,87 +289,85 @@ const CreateDocumentLD = (props) => {
         setDataSource(dataSource);
         setDatacreateDoc();
     }
-    const onChangeEditor = (field, rowdata, value, UnitCode, pair, dataPair) => {
+    const onChangeEditor = (field, rowdata, value, actiontimes, pair, dataPair) => {
+        console.log(rowdata)
         if (addData) {
             if (editData) {
                 editData[field] = value;
-                
+                if (field === "Doccode") {
+                    actiontimes ? editData["actiontime"] = actiontimes : delete editData["actiontime"]
+                }
                 if (pair) {
                     editData[pair] = dataPair;
                 }
-
+                //addData["actiontime"] = actiontime;
                 setEditData(editData);
 
             } else {            
                 let addData = {};
                 addData["ID"] = addDataID;
-                addData[field] = value;            
+                addData[field] = value;
+                if (field === "Doccode") {
+                    console.log(actiontimes)
+                    actiontimes ? addData["actiontime"] = actiontimes : delete addData["actiontime"]
+                }
                 if (pair) {
                     addData[pair] = dataPair;
                 }
+                //addData["actiontime"] = actiontime;
                 setEditData(addData);
 
             }
         } else { // EDIT
             if (editData !== undefined) {
                 let editRowX = editData.original ? { ...editData.original } : { ...editData };
+                editRowX[field] = value;
+                if (field === "Doccode") {
+                    actiontimes ? editRowX["actiontime"] = actiontimes : delete editRowX["actiontime"]
+                }
+
                 if (pair) {
                     editRowX[pair] = dataPair;
                 }
-                editRowX[field] = value;
                 setEditData(editRowX);
             }
         }
+
     }
 
     const setDatacreateDoc = () => {
         if (dataSource !== [] || dataSource !== undefined) {
             console.log(dataSource)
-            let itemIssue = []
+            let docItems = []
             let BaseSto = {}
             let Items = {}
             dataSource.map((x, idx) => {
                 console.log(x)
-                BaseSto = {
-                    "baseCode": x.base !== undefined ? x.base : null,
-                    "quantity": null,
-                    "isRegisBaseCode": null,
-                    "isRegisBaseCode": null
+                //BaseSto = {
+                //    "baseCode": x.base !== undefined ? x.base : null,
+                //    "quantity": null,
+                //    "isRegisBaseCode": null,
+                //    "isRegisBaseCode": null
 
-                }
+                //}
           
                 Items = {
-                    "packID": null,
-                    "packCode": null,
-                    "skuCode": x.Code,
-                    "quantity": x.quantity,
-                    "unitType": x.unitType,
-                    "batch": null,
-                    "lot": null,
-                    "orderNo": null,
-                    "refID": null,
-                    "ref1": null,
-                    "ref2": null,
-                    "options": null,
-                    "expireDate": null,
-                     "productionDate": null,
-                     "BaseSto": BaseSto
+                    " issuedDocID": 2
 
 
                 }
-                itemIssue.push(Items)
+                docItems.push(Items)
 
             })
           
-            dataCreate["itemIssue"] = itemIssue
+            dataCreate["docItems"] = docItems
             //dataCreate["BaseSto"] = BaseSto
         }
     
     }
 
-    const apicreate = "/v2/CreateGIDocAPI/"  //API สร้าง Doc
-    const apiRes = "/issue/detail?docID=" //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
-
+    const apicreate = "/v2/CreateLDDocAPI/"  //API สร้าง Doc
+    const apiRes = "/loading/detail?docID=" 
 
     return (
         <div>
@@ -376,7 +378,7 @@ const CreateDocumentLD = (props) => {
                 //columns={columns}  //colums 
                 //columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
                 apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-                createDocType={"issue"} //createDocType มี audit issue recive
+                createDocType={"load"} //createDocType มี audit issue recive
                 columnsModifi={columnsModifi}
                 history={props.history} //ส่ง porps.history ไปทุกรอบ
                 apiRes={apiRes} //หน้ารายละเอียดเอกสาร    
