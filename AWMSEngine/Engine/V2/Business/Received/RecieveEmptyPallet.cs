@@ -39,11 +39,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             var stoLoc = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("AreaLocationMaster_ID", location.ID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("Status", new int[]{ 0,1 }, SQLOperatorType.IN)
+                new SQLConditionCriteria("Status", new int[]{ 0,1 }, SQLOperatorType.IN),
+                 new SQLConditionCriteria("EventStatus",StorageObjectEventStatus.RECEIVING, SQLOperatorType.NOTEQUALS)
             }, this.BuVO);
             var stoPallet = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("Code", reqVO.baseCode, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("Status", new int[]{ 0,1 }, SQLOperatorType.IN)
+               
             }, this.BuVO);
             
             if (stoPallet.Count > 0)

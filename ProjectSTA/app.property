@@ -1,4 +1,4 @@
-﻿database.mssql.connection = Server=S-SGH-SQL17\SGHSQL;Uid=STGTATWH;PASSWORD=Stgt@2019;database=AMS_STA;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection = Server=192.168.43.115;Uid=saa1;PASSWORD=123456;database=AMS_STA1;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
