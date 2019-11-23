@@ -839,7 +839,7 @@ const AmStorageObjectMulti = props => {
         getSelection={data => {
           setSelection(data);
         }}
-        exportData={true}
+        exportData={props.export ? props.export : false}
         excelQueryAPI={excelDataSrouce}
         //excelData={excelDataSrouce}
         // renderCustomButtonB4={
