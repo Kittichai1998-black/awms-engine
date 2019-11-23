@@ -261,7 +261,7 @@ export default props => {
             primarySearch={primarySearch}
             customButton={BtnexportCSV()}
             expensionSearch={search}
-            docTypeCode="1002"
+             docTypeCode="1001"
                 />
                 </div>
         );

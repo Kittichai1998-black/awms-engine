@@ -154,14 +154,14 @@ const Customer = props => {
         {
             field: "Code",
             type: "input",
-            name: window.project === "TAP" ? "Part NO." : "SKU Code",
+            name:"Code",
             placeholder: "Code",
             validate: /^.+$/
         },
         {
             field: "Name",
             type: "input",
-            name: window.project === "TAP" ? "Part Name" : "SKU Name",
+            name:  "Name",
             placeholder: "Name",
             validate: /^.+$/
         }
