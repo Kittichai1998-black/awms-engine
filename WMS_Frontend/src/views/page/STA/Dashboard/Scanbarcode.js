@@ -385,36 +385,47 @@ const Scanbarcode = (props) => {
                 let leftGate = data.find(x => x.gate === 1);
                 if (leftGate !== null && leftGate !== undefined && leftGate.baseID !== null) {
                     let splitItem = [];
-                    let carton = manualAddLeft.carton.split(',');
-                    carton.forEach(e => {
-                        if (e.includes('-')) {
-                            let splitCar = [];
-                            let carArr = e.split('-');
-                            for (let i = carArr[0]; i <= carArr[1]; i++) {
-                                splitCar.push(parseInt(i))
+                    console.log(manualAddLeft)
+                    
+                    if(manualAddLeft.carton !== undefined){
+                        let carton = manualAddLeft.carton.split(',');
+                        carton.forEach(e => {
+ 
+                            if (e.includes('-')) {
+                                let splitCar = [];
+                                let carArr = e.split('-');
+                        
+                                for (let j = parseInt(carArr[0]); j <= parseInt(carArr[1]); j++) {
+                                    console.log(j)
+                                    splitCar.push(parseInt(j))
+                                }
+                                splitItem = splitItem.concat(splitCar)
                             }
-                            splitItem = splitItem.concat(splitCar)
-                        }
-                        else {
-                            splitItem.push(parseInt(e))
-                        }
-                    });
-
-                    let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
-                    let resCarton = MergeRangeNum(disCarton.join(','));
-
-                    mapSto.rootID = leftGate.baseID;
-                    mapSto.scanCode = manualAddLeft.code;
-                    mapSto.orderNo = manualAddLeft.orderNo;
-                    mapSto.amount = disCarton.length;
-                    mapSto.warehouseID = 1;
-                    mapSto.areaID = leftGate.areaID;
-                    mapSto.locationCode = leftGate.areaLocationCode;
-                    mapSto.action = 1;
-                    mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
-                    mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
-                    mapSto.isRoot = false;
-                    mapSto.validateSKUTypeCodes = ["FG"];
+                            else {
+                                splitItem.push(parseInt(e))
+                                console.log(splitItem)
+                            }
+                        });
+    
+                        let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
+                        let resCarton = MergeRangeNum(disCarton.join(','));
+                        mapSto.rootID = leftGate.baseID;
+                        mapSto.scanCode = manualAddLeft.code;
+                        mapSto.orderNo = manualAddLeft.orderNo;
+                        mapSto.amount = disCarton.length;
+                        mapSto.warehouseID = 1;
+                        mapSto.areaID = leftGate.areaID;
+                        mapSto.locationCode = leftGate.areaLocationCode;
+                        mapSto.action = 1;
+                        mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
+                        mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
+                        mapSto.isRoot = false;
+                        mapSto.validateSKUTypeCodes = ["FG"];
+                    }else{
+                        setMsgDialog("กรุณาใส่ carton no.");
+                        setStateDialog(true);
+                    }
+                   
                 }
             }
         }
@@ -424,36 +435,40 @@ const Scanbarcode = (props) => {
                 let rightGate = data.find(x => x.gate === 2);
                 if (rightGate !== null && rightGate !== undefined && rightGate.baseID !== null) {
                     let splitItem = [];
+                    if(manualAddRight.carton !== undefined){
                     let carton = manualAddRight.carton.split(',');
-                    carton.forEach(e => {
-                        if (e.includes('-')) {
-                            let splitCar = [];
-                            let carArr = e.split('-');
-                            for (let i = carArr[0]; i <= carArr[1]; i++) {
-                                splitCar.push(parseInt(i))
+                        carton.forEach(e => {
+                            if (e.includes('-')) {
+                                let splitCar = [];
+                                let carArr = e.split('-');
+                                for (let i = parseInt(carArr[0]); i <= parseInt(carArr[1]); i++) {
+                                    splitCar.push(parseInt(i))
+                                }
+                                splitItem = splitItem.concat(splitCar)
                             }
-                            splitItem = splitItem.concat(splitCar)
-                        }
-                        else {
-                            splitItem.push(parseInt(e))
-                        }
-                    });
+                            else {
+                                splitItem.push(parseInt(e))
+                            }
+                        });
 
-                    let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
-                    let resCarton = MergeRangeNum(disCarton.join(','));
-
-                    mapSto.rootID = rightGate.baseID;
-                    mapSto.scanCode = manualAddRight.code;
-                    mapSto.orderNo = manualAddRight.orderNo;
-                    mapSto.amount = disCarton.length;
-                    mapSto.warehouseID = 1;
-                    mapSto.areaID = rightGate.areaID;
-                    mapSto.locationCode = rightGate.areaLocationCode;
-                    mapSto.action = 1;
-                    mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
-                    mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
-                    mapSto.isRoot = false;
-                    mapSto.validateSKUTypeCodes = ["FG"];
+                        let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
+                        let resCarton = MergeRangeNum(disCarton.join(','));
+                        mapSto.rootID = rightGate.baseID;
+                        mapSto.scanCode = manualAddRight.code;
+                        mapSto.orderNo = manualAddRight.orderNo;
+                        mapSto.amount = disCarton.length;
+                        mapSto.warehouseID = 1;
+                        mapSto.areaID = rightGate.areaID;
+                        mapSto.locationCode = rightGate.areaLocationCode;
+                        mapSto.action = 1;
+                        mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
+                        mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
+                        mapSto.isRoot = false;
+                        mapSto.validateSKUTypeCodes = ["FG"];
+                    }else{
+                        setMsgDialog("กรุณาใส่ carton no.");
+                        setStateDialog(true);
+                    }
                 }
             }
         }

@@ -324,7 +324,7 @@ const StorageObject = props => {
         table={"StorageObject"}
         selection={true}
         modifyRemark={true}
-        //export={true}
+        //export={f}
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}
