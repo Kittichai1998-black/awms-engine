@@ -92,7 +92,7 @@ const StorageObjectExample = (props) => {
             { Header: 'Weigth PalletPack',accessor: 'Wei_PalletPack', width:130,type:'number',Cell:(e)=>getData(e.original.Wei_PalletPack)},
             { Header: 'Weigth Pack',accessor: 'Wei_Pack', width:120,type:'number',Cell:(e)=>getData(e.original.Wei_Pack)},
             { Header: 'Weigth PackStd',accessor: 'Wei_PackStd', width:120,type:'number',Cell:(e)=>getData(e.original.Wei_PackStd)},
-            { Header: 'Received Date',accessor: 'Receive_Time', width:120,type:'datetime',dateFormat:'DD/MM/YYYY hh:mm',}
+            { Header: 'Received Date',accessor: 'Receive_Time', width:120,type:'datetime',dateFormat:'DD/MM/YYYY HH:mm',}
         ];
         
         const getData =(value) => {
