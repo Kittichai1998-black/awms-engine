@@ -25,6 +25,6 @@ ldap.port = 389
 ldap.version = 3
 ldap.starttls = false
 #use {username} for username from input
-ldap.binddn = {username}
+ldap.binddn = {username}@sritranggroup.com
 #ldap.bindpw = ~OpkLxq4
 ldap.basedn = ou=STA User,dc=ad,dc=sritranggroup,dc=com
