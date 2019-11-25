@@ -222,6 +222,7 @@ const DailySTOSumCounting = (props) => {
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
+        { Header: 'Carton No.', accessor: 'cartonNo', width: 100, sortable: false },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,

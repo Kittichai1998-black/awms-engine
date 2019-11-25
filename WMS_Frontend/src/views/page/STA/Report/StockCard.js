@@ -213,6 +213,7 @@ const StockCard = (props) => {
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
+        { Header: 'Carton No.', accessor: 'cartonNo', width: 100, sortable: false },
         {
             Header: 'Issue', accessor: 'creditBaseQuantity', width: 80, sortable: false,
             Footer: true,
