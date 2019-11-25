@@ -30,7 +30,7 @@ const BranchMaster = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -115,10 +115,28 @@ const BranchMaster = props => {
     } else {
       return null;
     }
-  };
+    };
+
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name:  "Branch Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name: "Branch Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
   return (
     <div>
-      <MasterData
+          <MasterData
+              columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Branch"}
         table={"ams_Branch"}
