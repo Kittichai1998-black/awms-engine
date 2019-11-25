@@ -365,6 +365,19 @@ const AmStorageObjectMulti = props => {
     });
     onChangeFilter(condition, colsField, value);
   };
+  const onHandleChangeKeyEnter = (
+    value,
+    dataObject,
+    field,
+    fieldDataKey,
+    event
+  ) => {
+    console.log(event.key);
+    if (event && event.key == "Enter") {
+      console.log("dfdh");
+      onHandleFilterConfirm(true);
+    }
+  };
   //===========================================================
   const createComponent = searchList => {
     return searchList.map((row, idx) => {
@@ -381,9 +394,18 @@ const AmStorageObjectMulti = props => {
                   id={rowC.field}
                   style={{ width: "200px", paddingTop: "5px" }}
                   placeholder={row.placeholder}
-                  onChange={value => {
+                  onChangeV2={value => {
                     onChangeFilter(condition, rowC.field, value);
                   }}
+                  onKeyPress={(value, obj, element, event) =>
+                    onHandleChangeKeyEnter(
+                      value,
+                      null,
+                      "PalletCode",
+                      null,
+                      event
+                    )
+                  }
                 />
               </div>
             );

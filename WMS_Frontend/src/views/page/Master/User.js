@@ -152,17 +152,6 @@ const User = props => {
   ];
   const columnsFilter = [
     {
-      field: "Code",
-      type: "input",
-      name: "Username",
-      placeholder: "Username"
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: "Name"
-    },
-    {
       field: "EmailAddress",
       type: "input",
       name: "Email Address",
