@@ -47,8 +47,8 @@ namespace SAPNCO.ADO
                     parms.Add(RfcConfigParameters.AppServerHost, "192.168.9.13");
                     parms.Add(RfcConfigParameters.SystemNumber, "00");
                     parms.Add(RfcConfigParameters.SystemID, "PRD");
-                    parms.Add(RfcConfigParameters.User, "xxxx");
-                    parms.Add(RfcConfigParameters.Password, "xxxx");
+                    parms.Add(RfcConfigParameters.User, "AAI_RFC");
+                    parms.Add(RfcConfigParameters.Password, "Qazx12345");
                     parms.Add(RfcConfigParameters.Client, "900");
                     parms.Add(RfcConfigParameters.Language, "EN");
                     parms.Add(RfcConfigParameters.PoolSize, "5");
