@@ -25,7 +25,7 @@ namespace SAPNCO.Models
         public class SAPList{
             public string inStructureName;
             public string inTableName;
-            public Dictionary<string, object> datas;
+            public List<Dictionary<string, object>> datas;
         }
     }
 }
