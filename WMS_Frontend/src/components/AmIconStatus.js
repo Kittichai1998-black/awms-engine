@@ -183,6 +183,12 @@ const styles = theme => ({
         background: '#ffc107',
         border: '2px solid #ffc107',
         color: '#2f353a',
+    },
+    PASS:{
+        background: '#357a38',
+        border: '2px solid #357a38',
+        color: '#ffffff',
+        
     }
 });
 
