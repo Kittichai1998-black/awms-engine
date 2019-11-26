@@ -101,11 +101,24 @@ const CurrentInventory = (props) => {
         });
     }
 
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+    const getValue = (value, inputID) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
         valueText[inputID] = value;
+    }
+    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+    };
+    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        if (event && event.key == 'Enter') {
+            onGetDocument();
+        }
+    };
+    const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        onGetDocument();
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -115,7 +128,8 @@ const CurrentInventory = (props) => {
                     id={"orderNo"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -124,7 +138,8 @@ const CurrentInventory = (props) => {
                     id={"packCode"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Size")} : </LabelH>
@@ -139,7 +154,7 @@ const CurrentInventory = (props) => {
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={SKUTypeQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'skuType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'skuType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
