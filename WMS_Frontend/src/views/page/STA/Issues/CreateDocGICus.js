@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
-
+import queryString from "query-string";
 import {
   apicall,
   createQueryString
@@ -122,7 +122,18 @@ const CreateDocGICus = props => {
       width: 70,
       style: { textAlign: "center" }
     },
-    { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
+    { Header: "Reorder/Brand", accessor: "SKUItems" },
+    {
+      Header: "Size",
+      accessor: "Size",
+      width: 50
+    },
+    {
+      Header: "Carton No",
+      accessor: "Carton",
+      width: 100,
+      Cell: e => getCarton(e.original)
+    },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -159,14 +170,17 @@ const CreateDocGICus = props => {
   //     { Header: 'Code', accessor: 'Code', fixed: 'left', width: 100, sortable: true },
   //     { Header: 'Name', accessor: 'Name', width: 250, sortable: true }
   // ];
-
+  const getCarton = value => {
+    var qryStr = queryString.parse(value.Options);
+    return qryStr["carton_no"];
+  };
   const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q:
       '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -203,8 +217,16 @@ const CreateDocGICus = props => {
     queryApi: PalletCode,
     columns: columsFindpopUpPALC,
     search: [
-      { accessor: "palletcode", placeholder: "Pallet Code" },
+      {
+        accessor: "palletcode",
+        placeholder: "Pallet Code"
+      },
+      {
+        accessor: "orderNo",
+        placeholder: "SI"
+      },
       { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "Size", placeholder: "Size" },
       { accessor: "LocationCode", placeholder: "Location" },
       { accessor: "remark", placeholder: "Remark" }
     ]
@@ -220,6 +242,9 @@ const CreateDocGICus = props => {
   //   l: 100,
   //   all: ""
   // };
+  const getStatusGI = value => {
+    console.log(value);
+  };
   const CustomerQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Customer",
@@ -296,6 +321,7 @@ const CreateDocGICus = props => {
     // { Header: "Reorder/Brand", accessor: "SKUItems" },
     { Header: "Reorder", accessor: "skuCode" },
     { Header: "Brand", accessor: "skuName" },
+    //{ accessor: "Size", Header: "Size" },
     { Header: "Quantity", accessor: "quantity", width: 70 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
