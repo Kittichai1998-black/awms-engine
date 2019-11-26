@@ -218,7 +218,7 @@ export default props => {
     Axios.post(window.apipath + "/v2/SAPZWMRF003R6API", postData).then(res => {
       if (res.data._result.status) {
         if (!res.data.datas[0].ERR_MSG) {
-          getUnitTypeCode(res.data.datas[0].MATNR).then(unit => {
+          getUnitTypeCode(res.data.datas[0].MATNR.replace(/^0+/, ''),).then(unit => {
             if (unit) {
               let checkData = dataSource.find(x => {
                 return x.ID === postData.ID;
@@ -505,8 +505,8 @@ export default props => {
         item.BESTQ_BLK;
       return {
         ID: null,
-        skuCode: item.MATNR,
-        packCode: item.MATNR,
+        skuCode: item.MATNR.replace(/^0+/, ''),
+        packCode: item.MATNR.replace(/^0+/, ''),
         // quantity: item.BDMNG,
         unitType: item.unitType,
         batch: item.CHARG,
