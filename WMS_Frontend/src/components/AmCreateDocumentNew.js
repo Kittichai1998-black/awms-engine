@@ -450,7 +450,8 @@ const AmCreateDocument = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    // style={style ? style : { width: "300px" }}
+                    //style={style ? style : { width: "300px" }}
+                    
                     onChange={(e) => {
                         if (obj.search)
                             props.addList.search.find(x => x.accessor === key).defaultValue = e
