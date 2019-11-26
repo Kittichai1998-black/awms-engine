@@ -195,7 +195,11 @@ const DocumentView = props => {
                 : typeDoc === "received"
                 ? row._sumQtyDisto +
                   " / " +
-                  (row.Quantity === null ? " - " : row.Quantity)
+                        (row.Quantity === null ? " - " : row.Quantity)
+                        : typeDoc === "loading"
+                            ? row._sumQtyDisto +
+                            " / " +
+                            (row.Quantity === null ? " - " : row.Quantity)
                 : null
           });
         });

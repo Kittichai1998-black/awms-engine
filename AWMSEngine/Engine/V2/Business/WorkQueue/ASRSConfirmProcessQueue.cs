@@ -252,7 +252,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
-                return areaType.groupType == AreaMasterGroupType.STORAGE;
+                return areaType.ID == 10;
             }
             ).ForEach(rsto =>
             {

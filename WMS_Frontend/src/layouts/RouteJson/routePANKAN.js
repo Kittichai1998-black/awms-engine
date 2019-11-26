@@ -33,6 +33,11 @@ const DocumentViewGI = Loadable({
   loading: Loading
 });
 
+const DocumentSearchLD = Loadable({
+    loader: () => import("../../views/page/Pankan/Loading/searchLD"),
+    loading: Loading
+});
+
 const CreateLD = Loadable({
   loader: () => import("../../views/page/Pankan/Loading/CreateDocumentLD"),
   loading: Loading
@@ -53,6 +58,11 @@ const LoadingEx = Loadable({
   loading: Loading
 });
 
+const LoadingDetail = Loadable({
+    loader: () => import("../../views/page/Pankan/Loading/DetailDocumentLD"),
+    loading: Loading
+});
+
 const SettingSKUMaster = Loadable({
     loader: () => import("../../views/page/Pankan/Master/SKUMaster"),
     loading: Loading
@@ -67,8 +77,35 @@ const SettingCustomer = Loadable({
     loader: () => import("../../views/page/Pankan/Master/Customer"),
     loading: Loading
 });
+
+const SettingArea = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/AreaMaster"),
+    loading: Loading
+});
+
+const SettingArealocation = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/AreaLocationMaster"),
+    loading: Loading
+});
+
+const SettingSkuType = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/SKUMasterType"),
+    loading: Loading
+});
+const SettingBase = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/BaseMaster"),
+    loading: Loading
+});
+const SettingUser = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/User"),
+    loading: Loading
+});
+const SettingBranch = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/BranchMaster"),
+    loading: Loading
+});
 const routes = [
-  { path: "/receive/search", name: "base5", compoment: searchGR, exact: true },
+    { path: "/receive/search", name: "base5", compoment: searchGR, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DetailGR, exact: true },
   { path: "/issue/create", name: "base5", compoment: CreateGI, exact: true },
   {
@@ -100,13 +137,25 @@ const routes = [
     name: "Tranfer",
     compoment: Tranfer,
     exact: true
-  },
+    },
+    {
+        path: "/loading/search",
+        name: "base5",
+        compoment: DocumentSearchLD,
+        exact: true
+    },
   { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },
     { path: "/loading/loading", name: "base5", compoment: LoadingEx, exact: true },
-    { path: "/mst/sku/manage", name: "base5", compoment: SettingSKUMaster, exact: true },
-    { path: "/mst/supplier/manage", name: "base5", compoment: SettingSupplier, exact: true },
-    { path: "/mst/customer/manage", name: "base5", compoment: SettingCustomer, exact: true }
-
+    { path: "/loading/detail", name: "base5", compoment: LoadingDetail, exact: true },
+    { path: "/setting/sku", name: "base5", compoment: SettingSKUMaster, exact: true },
+    { path: "/setting/supplier", name: "base5", compoment: SettingSupplier, exact: true },
+    { path: "/setting/customer", name: "base5", compoment: SettingCustomer, exact: true },
+    { path: "/setting/area", name: "base5", compoment: SettingArea, exact: true },
+    { path: "/setting/arealocation", name: "base5", compoment: SettingArealocation, exact: true },
+    { path: "/setting/skutype", name: "base5", compoment: SettingSkuType, exact: true },
+    { path: "/setting/base", name: "base5", compoment: SettingBase, exact: true },
+    { path: "/setting/user", name: "base5", compoment: SettingUser, exact: true },
+    { path: "/setting/branch", name: "base5", compoment: SettingBranch, exact: true },
 ];
 
 export default routes;

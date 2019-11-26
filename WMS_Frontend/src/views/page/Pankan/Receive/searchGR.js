@@ -130,7 +130,7 @@ export default props => {
             accessor: "ActionTime",
             width: 150,
             type: "datetime",
-            dateFormat: "DD/MM/YYYY hh:mm"
+            dateFormat: "DD/MM/YYYY HH:mm"
         },
         {
             Header: "Document Date",
@@ -261,7 +261,7 @@ export default props => {
             primarySearch={primarySearch}
             customButton={BtnexportCSV()}
             expensionSearch={search}
-            docTypeCode="1002"
+             docTypeCode="1001"
                 />
                 </div>
         );

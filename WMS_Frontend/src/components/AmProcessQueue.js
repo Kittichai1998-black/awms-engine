@@ -1200,7 +1200,7 @@ const AmProcessQueue = props => {
                             valueData={valueText[idddls]} //��� value ������͡
                             queryApi={queryApi}
                             returnDefaultValue={true}
-                            defaultValue={defaulDDLAreaWare === true || defaulDDLAreaWip === true ? 8
+                            defaultValue={defaultValues ? defaultValues : defaulDDLAreaWare === true || defaulDDLAreaWip === true ? 8
                                 : defaulDDLAreaCus === true || defaulDDLAreaEmp === true ? 11                  
                              : defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
                             disabled={defaultValue ? true : false}
@@ -3408,7 +3408,7 @@ const AmProcessQueue = props => {
                                             </Grid>
                                             <Grid item>
                                                 <FormInline style={{ marginRight: "10px" }}>
-                                                    {window.project === "STA" ? 
+                                                    {window.project === "STA" && props.docType  !== "audit" ? 
 
                                                         <FormInline>
                                                             {" "}

@@ -56,7 +56,7 @@ const AreaMaster = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -209,10 +209,28 @@ const AreaMaster = props => {
       return null;
     }
   };
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name: "Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name: "Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
+
 
   return (
     <div>
-      <MasterData
+          <MasterData
+              columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"AreaMaster"}
         table={"ams_AreaMaster"}

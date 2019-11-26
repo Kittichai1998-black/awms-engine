@@ -884,7 +884,30 @@ const AmCreateDocument = (props) => {
             CreateDocuments(CreateData, docItem);
 
 
-        } else if (props.createDocType === "receive" && props.columnsModifi === undefined) {
+        } else if (props.createDocType === "load" && props.columnsModifi !== undefined) {
+
+            let CreateData = {
+                "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
+                "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
+                "souBranchCode": dataCreate.souBranchCode === undefined ? null : dataCreate.souBranchCode,
+                "souWarehouseCode": dataCreate.souWarehouseCode === undefined ? null : dataCreate.souWarehouseCode,
+                "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
+                "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
+                "desCustomerCode": dataCreate.desCustomerCode === undefined ? null : dataCreate.desCustomerCode,
+                "transportID": dataCreate.transportID === undefined ? null : dataCreate.transportID,
+                "transportCode": dataCreate.transportCode === undefined ? null : dataCreate.transportCode,
+                "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
+                "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
+                "remark": dataCreate.remark === undefined ? null : dataCreate.remark,  
+                "docItems": props.dataCreate["docItems"],
+            }
+
+            let docItem = props.dataCreate["docItems"];
+            CreateDocuments(CreateData, docItem);
+
+
+
+        }else if (props.createDocType === "receive" && props.columnsModifi === undefined) {
             dataCreate.receiveItems = dataSource.map((x, idx) => {
                 let findPair = props.columnEdit.filter(y => y.pair)
                 findPair.forEach(z => {

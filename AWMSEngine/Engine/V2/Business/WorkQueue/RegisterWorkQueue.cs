@@ -67,6 +67,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
                 if (sto.code != reqVO.baseCode)
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
+                
+                var stopack = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                if (stopack == null || stopack.Count == 0)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Data of Packs Not Found");
+
+
                 sto.lengthM = reqVO.length;
                 sto.heightM = reqVO.height;
                 sto.widthM = reqVO.width;
@@ -133,7 +139,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || sto.eventStatus == StorageObjectEventStatus.PARTIAL || sto.eventStatus == StorageObjectEventStatus.QC || sto.eventStatus == StorageObjectEventStatus.RETURN || sto.eventStatus == StorageObjectEventStatus.HOLD)
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || 
+                    sto.eventStatus == StorageObjectEventStatus.PARTIAL || 
+                    sto.eventStatus == StorageObjectEventStatus.QC || 
+                    sto.eventStatus == StorageObjectEventStatus.RETURN || 
+                    sto.eventStatus == StorageObjectEventStatus.HOLD)
                 {
                     var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
                     var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);

@@ -193,8 +193,8 @@ const Login = props => {
               savetoSession("ExpireTime", res.data.ExpireTime);
               savetoSession("Username", valueForm.username);
               GetMenu(res.data.Token);
-              let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
-              GetStaticValue(reqSelect);
+              // let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
+              // GetStaticValue(reqSelect);
             } else if (res.data._result.status === 0) {
               setStatus(false);
               // window.error(res.data._result.message)

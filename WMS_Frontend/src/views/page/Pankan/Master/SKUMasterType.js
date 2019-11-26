@@ -57,7 +57,7 @@ const SKUMasterType = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -207,11 +207,30 @@ const SKUMasterType = props => {
     } else {
       return null;
     }
-  };
+    };
+
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name: "Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name: "Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
+
 
   return (
     <div>
-      <MasterData
+          <MasterData
+              columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"SKUMasterType"}
         table={"ams_SKUMasterType"}

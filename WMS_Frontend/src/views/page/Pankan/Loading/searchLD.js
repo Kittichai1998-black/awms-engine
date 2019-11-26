@@ -234,12 +234,6 @@ export default props => {
             "exportName": "DocumentIssuedToCD",
             "whereValues": [dates, dateExports],
         }
-
-        let dataExports = {
-            "exportName": "DocumentIssuedToShop",
-            "whereValues": [dates, dateExports],
-        }
-
         Axios.post(window.apipath + "/v2/ExportQueryToFileServerAPI", dataExport).then((res) => {
             console.log(res)
             if (res.data._result.status === 1) {
@@ -253,19 +247,7 @@ export default props => {
             }
 
         })
-        Axios.post(window.apipath + "/v2/ExportQueryToFileServerAPI", dataExports).then((res) => {
-            console.log(res)
-            if (res.data._result.status === 1) {
-                console.log(res.data._result.status)
-                setMsgDialogSuc(res.data.fileExport)
-                setStateDialogSuc(true)
-            } else {
-                setStateDialogErr(true)
-                setMsgDialogErr("Export Data Fail")
 
-            }
-
-        })
 
     }
 
@@ -294,7 +276,7 @@ export default props => {
                 columns={iniCols}
                 primarySearch={primarySearch}
                 expensionSearch={search}
-                docTypeCode="1002"
+                docTypeCode="1012"
                 customButton={BtnexportCSV()}
                 buttonClose={true}
                 buttonReject={true}

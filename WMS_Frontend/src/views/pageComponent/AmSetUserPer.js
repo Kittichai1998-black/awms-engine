@@ -375,7 +375,17 @@ const AmSetUserPer = (props) => {
     })
   }
   //===========================================================
-
+  const onHandleChangeKeyEnter = (
+    value,
+    dataObject,
+    field,
+    fieldDataKey,
+    event
+  ) => {
+    if (event && event.key == "Enter") {
+      onHandleFilterConfirm(true);
+    }
+  };
   const FuncFilterSetEle = (key, field, type, name, condition, colsField, fieldLabel, placeholder, dataDropDow, typeDropdow, labelTitle, colsFindPopup, fieldDataKey, inputType) => {
     if (type === "input") {
       return (
@@ -386,7 +396,16 @@ const AmSetUserPer = (props) => {
             placeholder={placeholder}
             style={{ width: "200px" }}
             type="input"
-            onChange={(ele) => { onChangeFilter(condition, colsField, ele) }} />
+            onChangeV2={(ele) => { onChangeFilter(condition, colsField, ele) }}
+            onKeyPress={(value, obj, element, event) =>
+              onHandleChangeKeyEnter(
+                value,
+                null,
+                "PalletCode",
+                null,
+                event
+              )
+            } />
         </div>
       )
     } else if (type === "dropdow") {
@@ -1085,7 +1104,7 @@ const AmSetUserPer = (props) => {
       <AmEditorTable open={dialogEdit} onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)} titleText={addData === true ? 'Add' : 'Edit'} data={editData} columns={FuncTestEdit()} />
       <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)} titleText={addData === true ? 'Add' : 'Edit Password '} data={editData} columns={FuncTestEditPassWord()} />
       <AmEditorTable open={dialogDelete} onAccept={(status) => onHandleDeleteConfirm(status)} titleText={'Confirm Delete'} columns={[]} />
-      <AmEditorTable open={dialogRole} onAccept={(status, rowdata) => onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()} />
+      <AmEditorTable  open={dialogRole} onAccept={(status, rowdata) => onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()} />
 
       <Table
         primaryKey="ID"
