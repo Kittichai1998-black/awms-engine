@@ -76,6 +76,14 @@ const StorageObject = props => {
 
   const iniCols = [
     {
+      Header: "QC",
+      accessor: "PassStatus",
+      fixed: "left",
+      width: 50,
+      sortable: false,
+      Cell: e => getPass(e.original)
+    },
+    {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
@@ -143,6 +151,12 @@ const StorageObject = props => {
     "Qty",
     "Base_Unit"
   ];
+  const getPass = value => {
+    if (value.Status === "RECEIVED" || value.Status === "PARTIAL") {
+      return <AmIconStatus styleType={"PASS"}>PASS</AmIconStatus>;
+    }
+  };
+
   const getRemark = value => {
     if (value.Remark === null || value.Remark === "null") {
       return "";
