@@ -7,7 +7,7 @@ import HighlightOff from "@material-ui/icons/HighlightOff";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import queryString from "query-string";
 
-const DocumentViewGI = props => {
+const DocumentViewGICUS = props => {
   const [dataHeader, setDataHeader] = useState(null);
 
   const TextHeader = [
@@ -46,6 +46,12 @@ const DocumentViewGI = props => {
 
   const columnsDetailSOU = [
     {
+      width: 50,
+      accessor: "status",
+      Header: "QC",
+      Cell: e => getPass(e.original)
+    },
+    {
       width: 40,
       accessor: "status",
       Header: "Task",
@@ -61,9 +67,7 @@ const DocumentViewGI = props => {
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
   const getPass = value => {
-    if (value.status === 1) {
-      return <AmIconStatus styleType={"PASS"}>PASS</AmIconStatus>;
-    }
+    return <AmIconStatus styleType={"PASS"}>PASS</AmIconStatus>;
   };
   const columnsDetailDES = [
     {
@@ -126,6 +130,10 @@ const DocumentViewGI = props => {
   return (
     <div>
       <DocView
+        dataHeader={res => {
+          console.log(res);
+          setDataHeader(res);
+        }}
         openSOU={true}
         openDES={false}
         //optionDocItems={optionDocItems}
@@ -146,4 +154,4 @@ const DocumentViewGI = props => {
   );
 };
 
-export default DocumentViewGI;
+export default DocumentViewGICUS;
