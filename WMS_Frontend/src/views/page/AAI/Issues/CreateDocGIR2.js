@@ -49,8 +49,19 @@ const AmCreateDocumentR2 = props => {
   const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   
-  const [dataSource, setDataSource] = useState([]);
   const [reload, setRelaod] = useState();
+  const [remove, setRemove] = useState()
+
+  useEffect(()=>{
+    const onHandleDelete = row => {
+      let del = [...sapResponse].filter(x=>x.RSNUM !== row.RSNUM);
+      setSAPResponse([...del]);
+      setRelaod({});
+    };
+    if(remove !== null || remove !== undefined){
+      onHandleDelete(remove);
+    }
+  }, [remove])
 
   const headerCreates = [
     [
@@ -135,7 +146,7 @@ const AmCreateDocumentR2 = props => {
         return (
           <AmButton
             styleType="delete"
-            onClick={() => onHandleDelete(e.original)}
+            onClick={() => setRemove(e.original)}
           >
             Remove
           </AmButton>
@@ -148,10 +159,15 @@ const AmCreateDocumentR2 = props => {
   const apiRes = "/issue/detail?docID=";
 
   const sapConnectorR2 = postData => {
+    //setSAPResponse([{RSNUM:111}, {RSNUM:222}])
     Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
       if (res.data._result.status === 1) {
-        var sapRes  = [...sapResponse].push(res.data.datas)
-        setSAPResponse(sapRes);
+        var sapRes  = [...sapResponse].concat(res.data.datas)
+
+        var sap = sapRes.filter((x, index, self) =>
+          index === self.findIndex((t) => x.RSNUM === t.RSNUM)
+        )
+        setSAPResponse(sap);
       } else {
       }
     });
@@ -195,8 +211,7 @@ const AmCreateDocumentR2 = props => {
   ];
 
   const CreateDocument = () => {
-    var groupMVT = sapResponse
-      .map((item, idx) => {
+    var groupMVT = sapResponse.map((item, idx) => {
         return item.BWLVS;
       })
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -310,8 +325,8 @@ const AmCreateDocumentR2 = props => {
       }
       return {
         ID: null,
-        skuCode: item.MATNR,
-        packCode: item.MATNR,
+        skuCode: item.MATNR.replace(/^0+/, ''),
+        packCode: item.MATNR.replace(/^0+/, ''),
         quantity: item.BDMNG,
         unitType: item.MEINS,
         batch: item.CHARG,
@@ -331,12 +346,6 @@ const AmCreateDocumentR2 = props => {
     return documentData;
   };
   
-  const onHandleDelete = row => {
-    let idx = sapResponse.findIndex(x => x.ID === row.ID);
-    sapResponse.splice(idx, 1);
-    setDataSource([...sapResponse]);
-    setRelaod({});
-  };
 
   const customAdd = () => {
     return (
@@ -375,7 +384,7 @@ const AmCreateDocumentR2 = props => {
             style={{ width: "150px" }}
             onClick={() => setEditPopup(true)}
           >
-            Load
+            Add
           </AmButton>
         }
         customAddComponentRender={customAdd()}

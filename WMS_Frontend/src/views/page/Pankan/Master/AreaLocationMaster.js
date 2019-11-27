@@ -95,7 +95,7 @@ const AreaLocationMaster = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [

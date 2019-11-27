@@ -57,8 +57,8 @@ const AmDate = props => {
         props.onChange(null);
       } else {
         dataReturn.fieldID = fieldID;
-        dataReturn.fieldDataKey = text.format("YYYY-MM-DDThh:mm");
-        dataReturn.fieldDataObject = text.format("YYYY-MM-DDThh:mm");
+        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm");
+        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm");
         props.onChange(dataReturn);
       }
     } else if (tDate === "time") {

@@ -1,23 +1,26 @@
 // import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent'; import ListSubheader from '@material-ui/core/ListSubheader';
+import CardContent from '@material-ui/core/CardContent';
+
+// import ListSubheader from '@material-ui/core/ListSubheader';
 import Card from '@material-ui/core/Card';
 import Collapse from '@material-ui/core/Collapse';
-import DraftsIcon from '@material-ui/icons/Drafts';
+// import DraftsIcon from '@material-ui/icons/Drafts';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
+// import InboxIcon from '@material-ui/icons/MoveToInbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { log } from 'util';
+// import { log } from 'util';
 import React, { useEffect, useState } from 'react'
-import SendIcon from '@material-ui/icons/Send';
-import StarBorder from '@material-ui/icons/StarBorder';
+// import SendIcon from '@material-ui/icons/Send';
+// import StarBorder from '@material-ui/icons/StarBorder';
 
 import { apicall, createQueryString } from "../../components/function/CoreFunction2"
 import Aux from '../../components/AmAux'
+import { getUnique, groupBy } from '../../components/function/ObjectFunction'
 
 import "../../assets/css/AmLocationSummary.css";
 
@@ -385,32 +388,6 @@ const AmLocationSummary = props => {
         mergeDatas.length = 0
         setBtnClear()
         setOpen({ bank: true, full: false, cell: false })
-    }
-
-    const groupBy = (collection, property) => {
-        var i = 0, val, index,
-            values = [], result = [];
-        for (; i < collection.length; i++) {
-            val = collection[i][property];
-            index = values.indexOf(val);
-            if (index > -1)
-                result[index].push(collection[i]);
-            else {
-                values.push(val);
-                result.push([collection[i]]);
-            }
-        }
-        return result;
-    }
-
-    const getUnique = (arr, comp) => {
-        const unique = arr
-            .map(e => e[comp])
-            // store the keys of the unique objects
-            .map((e, i, final) => final.indexOf(e) === i && i)
-            // eliminate the dead keys & store unique objects
-            .filter(e => arr[e]).map(e => arr[e]);
-        return unique;
     }
 
     return (
