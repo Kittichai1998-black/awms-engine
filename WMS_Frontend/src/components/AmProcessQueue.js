@@ -2607,17 +2607,8 @@ const AmProcessQueue = props => {
                                                                                                 >
                                               </AmCheckBox>
 
-                                                                                                <AmCheckBox
-                                                                                                    value="QC"
-                                                                                                    label="QC"
-                                                                                                    //checked={true}
-                                                                                                    defaultChecked={false}
-                                                                                                    onChange={(e, v) =>
-                                                                                                        onChangCheckboxStatus(e, idx)
-                                                                                                    }
-                                                                                                >
-
-                                                                                                </AmCheckBox>
+                                                                                              
+                                                                                            
                                                                                                 <AmCheckBox
                                                                                                     value="Return"
                                                                                                     label="Returns"

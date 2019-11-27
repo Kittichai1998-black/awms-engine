@@ -101,7 +101,7 @@ const DailySTOSumReceive = (props) => {
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
             + "&skuType=" + (valueText.skuType === undefined || valueText.skuType === null ? '' : encodeURIComponent(valueText.skuType))
-            + "&movementTypeID=" + (valueText.movementType === undefined || t.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+            + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType === null ? '' : encodeURIComponent(valueText.movementType))
             + "&docType=1001"
             + "&spname=DAILY_STOSUM";
     }
@@ -122,11 +122,24 @@ const DailySTOSumReceive = (props) => {
             })
     }
     
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+    const getValue = (value, inputID) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
         valueText[inputID] = value;
+    }
+    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+    };
+    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        if (event && event.key == 'Enter') {
+            onGetDocument();
+        }
+    };
+    const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        onGetDocument();
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -136,7 +149,8 @@ const DailySTOSumReceive = (props) => {
                     id={"orderNo"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -145,7 +159,8 @@ const DailySTOSumReceive = (props) => {
                     id={"packCode"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Size")} : </LabelH>
@@ -160,7 +175,7 @@ const DailySTOSumReceive = (props) => {
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={SKUTypeQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'skuType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'skuType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
@@ -169,7 +184,8 @@ const DailySTOSumReceive = (props) => {
                     id={"docCode"}
                     type="input"
                     style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "docCode", null, event)}
+                    onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, "docCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "docCode", null, event)}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Movement")} : </LabelH>
@@ -184,7 +200,7 @@ const DailySTOSumReceive = (props) => {
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={MVTQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'movementType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'movementType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
@@ -195,7 +211,7 @@ const DailySTOSumReceive = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
                     FieldID={"dateFrom"} >
                 </AmDate>
             </FormInline>
@@ -206,7 +222,7 @@ const DailySTOSumReceive = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
                     FieldID={"dateTo"} >
                 </AmDate>
             </FormInline>
