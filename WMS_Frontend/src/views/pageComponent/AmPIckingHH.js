@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import {
   apicall,
-  createQueryString,
-  Clone
-} from "../../components/function/CoreFunction2";
+  createQueryString
+} from "../../components/function/CoreFunction";
 import AmDialogs from "../../components/AmDialogs";
 import AmButton from "../../components/AmButton";
 import AmInput from "../../components/AmInput";
@@ -16,6 +15,7 @@ import {
   grey,
   green
 } from "@material-ui/core/colors";
+import moment from "moment";
 import Paper from "@material-ui/core/Paper";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
@@ -208,7 +208,6 @@ const AmPIckingHH = props => {
   const steps = getSteps();
 
   const handleNext = index => {
-    console.log(index);
     if (index === 0) {
       GetDataFromPallet(valueInput.PalletCode);
       //CheckAreaLocation(valueInput.LocationCode);
@@ -221,7 +220,6 @@ const AmPIckingHH = props => {
     }
   };
   const handleBack = index => {
-    console.log(index);
     if (index === 1) {
       setLocationID(null);
       setValueInput({
@@ -254,12 +252,8 @@ const AmPIckingHH = props => {
     setDataShowPick(null);
     setDocCode(null);
   }
-  useEffect(() => {
-    console.log(valueInput);
-  }, [valueInput]);
-  useEffect(() => {
-    console.log(locationID);
-  }, [valueInput.PalletCode]);
+  useEffect(() => {}, [valueInput]);
+  useEffect(() => {}, [valueInput.PalletCode]);
   const onHandleChangeInput = (
     value,
     dataObject,
@@ -285,17 +279,14 @@ const AmPIckingHH = props => {
 
   //==================================================================================
   async function GetDataFromPallet(reqPalletCode, dataIndex) {
-    console.log("ddd");
     if (reqPalletCode) {
       await Axios.get(
         window.apipath +
           "/v2/SelectPickingManualAPI/?palletCode=" +
-          reqPalletCode +
-          "&apiKey=free01"
+          reqPalletCode
       ).then(rowselect => {
         if (rowselect.data._result.status === 1) {
           if (rowselect.data.docItems != null) {
-            console.log(rowselect);
             //setBaseID(rowselect.data.docItems.id);
             setListItems(rowselect.data.docItems);
             setPallet(reqPalletCode);
@@ -337,6 +328,11 @@ const AmPIckingHH = props => {
                 <div key={index}>
                   <label style={{ fontWeight: "bolder" }}>{x.Name} : </label>{" "}
                   {list[x.field]}
+                  {x.Name === "Document" ? (
+                    <label style={{ marginLeft: "70px" }}>
+                      {moment(list["createtime"]).format("DD/MM/YYYY")}
+                    </label>
+                  ) : null}
                 </div>
               );
             })}
@@ -371,15 +367,13 @@ const AmPIckingHH = props => {
         "/v2/SelectPickingManualAPI/?palletCode=" +
         reqPalletCode +
         "&docID=" +
-        docID +
-        "&apiKey=free01"
+        docID
     ).then(rowselect => {
       if (rowselect.data._result.status === 1) {
         if (rowselect.data.stos != null) {
           setPalletID(rowselect.data.palletID);
           //setBaseID(rowselect.data.docItems.id);
           if (rowselect.data.stos) {
-            console.log(rowselect.data.docItems);
             setDataShowPick(
               ShowDataPick(rowselect.data.stos, rowselect.data.docItems)
             );
@@ -404,8 +398,6 @@ const AmPIckingHH = props => {
   }
   //==================================================================================
   const ShowDataPick = (data, docItems) => {
-    console.log(data);
-    console.log(docItems[0].pickItems[0].willPick);
     return data.map((list, index) => {
       return (
         <Card
@@ -418,14 +410,28 @@ const AmPIckingHH = props => {
         >
           <CardContent>
             {props.displayDetailDataPick.map((x, index) => {
-              console.log(x);
               return (
                 <div key={index}>
                   <label style={{ fontWeight: "bolder" }}>{x.Name} : </label>{" "}
-                  {list[x.field]}
+                  {x.field === "OrderNo"
+                    ? docItems[0].pickItems[0].orderNo
+                    : list[x.field]}
                 </div>
               );
             })}
+            {props.getOption === true
+              ? props.columnsOptions.map((options, index) => {
+                  var qryStr = queryString.parse(list.item);
+                  return (
+                    <div key={index}>
+                      <label style={{ fontWeight: "bolder" }}>
+                        {options.Name} :{" "}
+                      </label>{" "}
+                      {qryStr[options.field]}
+                    </div>
+                  );
+                })
+              : null}
             <div>
               <label style={{ fontWeight: "bolder" }}>Pallet Quantity : </label>{" "}
               {list.palletQty} {list.unitType}
@@ -464,10 +470,8 @@ const AmPIckingHH = props => {
       docID: docID,
       pickedList: pickedList
     };
-    console.log(data);
     Axios.post(window.apipath + "/v2/UpdateIssuedPickingManualAPI", data).then(
       res => {
-        console.log(res);
         if (res.data._result.status === 1) {
           handleReset();
           alertDialogRenderer("Success", "success", true);
@@ -509,6 +513,7 @@ const AmPIckingHH = props => {
             <AmInput
               id={"PalletCode"}
               placeholder="Scan pallet or box code"
+              autoFocus={true}
               type="input"
               style={{ width: "100%" }}
               onChange={(value, obj, element, event) =>
