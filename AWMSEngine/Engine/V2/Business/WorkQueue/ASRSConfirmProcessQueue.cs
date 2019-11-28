@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
 using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business.Issued;
@@ -251,8 +252,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             rstos.FindAll(rsto =>
             {
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
-                var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
-                return areaType.ID == 10;
+                //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
+                return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
             }
             ).ForEach(rsto =>
             {

@@ -16,6 +16,15 @@ using AWMSEngine.ADO.StaticValue;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
+    public class RegisterWorkQueueTest
+    {
+        public RegisterWorkQueueTest()
+        {
+            int iii1 = 0;
+            int iii2 = iii1 / iii1;
+        }
+    }
+
     public class RegisterWorkQueue : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
@@ -229,16 +238,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
-                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).ID,
-                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
-                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
+                        Sou_AreaMasterType_ID = area.AreaMasterType_ID,
+                        //Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
+                        //Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
                         Sou_AreaMaster_ID = area.ID.Value,
                         Sou_AreaMaster_Code = area.Code,
                         Sou_AreaLocationMaster_ID = location.ID,
                         Sou_AreaLocationMaster_Code = location.Code,
-                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).ID,
-                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
-                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
+                        Des_AreaMasterType_ID = desArea.AreaMasterType_ID,
+                        //Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
+                        //Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
                         Des_AreaMaster_ID = desArea.ID.Value,
                         Des_AreaMaster_Code = reqVO.desAreaCode,
                         Des_AreaLocationMaster_ID = desLocation.ID,
@@ -256,6 +265,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
+            RegisterWorkQueueTest xxx = new RegisterWorkQueueTest();
             this.InitDataASRS(reqVO);
 
             var sto = GetSto(reqVO);

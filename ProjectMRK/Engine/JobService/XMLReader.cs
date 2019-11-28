@@ -417,7 +417,7 @@ namespace ProjectMRK.Engine.JobService
                     var doc = ReadListFileXMLFromDirectory(file);
                     resList.Add(doc);
                 }
-                catch (Exception ex)
+                catch
                 {
                     //XmlDocument doc = new XmlDocument();
                     //doc.Load(file.FullName);
