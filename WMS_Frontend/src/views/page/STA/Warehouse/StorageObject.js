@@ -153,6 +153,7 @@ const StorageObject = props => {
     "Qty",
     "Base_Unit"
   ];
+
   const getRemark = value => {
     if (value.Remark === null || value.Remark === "null") {
       return "";

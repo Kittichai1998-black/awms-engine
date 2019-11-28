@@ -275,19 +275,35 @@ const DocumentSearchGISTA = props => {
   ];
 
   const getRedirect = data => {
-    //console.log(data.ID)
-    return (
-      <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
-        {data.Code}
-        <AmRediRectInfo
-          api={"/issue/detail?docID=" + data.ID}
-          history={props.history}
-          docID={""}
-        >
-          {" "}
-        </AmRediRectInfo>
-      </div>
-    );
+    console.log(data.MovementName);
+
+    if (data.MovementName === "FG_TRANSFER_CUS") {
+      return (
+        <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+          {data.Code}
+          <AmRediRectInfo
+            api={"/issue/detailCus?docID=" + data.ID}
+            history={props.history}
+            docID={""}
+          >
+            {" "}
+          </AmRediRectInfo>
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+          {data.Code}
+          <AmRediRectInfo
+            api={"/issue/detail?docID=" + data.ID}
+            history={props.history}
+            docID={""}
+          >
+            {" "}
+          </AmRediRectInfo>
+        </div>
+      );
+    }
   };
 
   return (
