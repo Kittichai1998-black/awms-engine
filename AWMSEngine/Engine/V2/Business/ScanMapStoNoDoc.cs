@@ -53,7 +53,10 @@ namespace AWMSEngine.Engine.V2.Business
         {
             if (reqVO.validateSKUTypeCodes != null && reqVO.validateSKUTypeCodes.Count > 0)
             {
-                ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.ID.Value, this.BuVO);
+                ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.SKUMaster_ID, this.BuVO);
+                if(sm == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Found");
+
                 ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
                 //SKUGroupType smt_GroupType = (SKUGroupType)Enum.Parse(typeof(SKUGroupType), smt.GroupType);
                 SKUGroupType smt_GroupType = smt.GroupType;
@@ -173,7 +176,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Scan Code '" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
-                    this.CheckSKUType(reqVO, pm);
+                    //this.CheckSKUType(reqVO, pm);
 
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                     ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
@@ -319,7 +322,6 @@ namespace AWMSEngine.Engine.V2.Business
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
             ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
-            this.CheckSKUType(reqVO, pm);
 
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
@@ -333,6 +335,8 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 if (pm != null)
                 {
+                    this.CheckSKUType(reqVO, pm);
+
                     var regisMap = this.GenerateStoCrit(pm, pm.ObjectSize_ID, firstMapSto, reqVO);
                     
                     var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
