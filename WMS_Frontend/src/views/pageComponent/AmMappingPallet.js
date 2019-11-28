@@ -260,9 +260,7 @@ const AmMappingPallet = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-    // useEffect(() => {
-    //     console.log(valueInput)
-    // }, [valueInput]);
+     
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -295,24 +293,21 @@ const AmMappingPallet = (props) => {
         if (inputSource === null) {
             setInputSource(createComponent(sourceCreate));
         }
-    }, [inputSource, valueInput]);
+    }, [inputSource]);
     useEffect(() => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
         }
-    }, [ddlWarehouse, localStorage.getItem("Lang")])
+    }, [ddlWarehouse])
+    //localStorage.getItem("Lang")
     useEffect(() => {
-        if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
+        if (ddlArea !== null && showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
-            console.log("area1")
         }
-    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
+    }, [selWarehouse])
     useEffect(() => {
-        if (ddlArea === null && selWarehouse) {
-            if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
-                GetAreaDDL(selWarehouse)
-            console.log("area2")
-        }
+        if (ddlArea == null && showAreaDDL && showAreaDDL.visible && selWarehouse) {
+            GetAreaDDL(selWarehouse)
         }
     }, [ddlArea])
 

@@ -305,20 +305,18 @@ const AmMappingPallet2 = (props) => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
         }
-    }, [ddlWarehouse, localStorage.getItem("Lang")])
+    }, [ddlWarehouse])
     useEffect(() => {
-        if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
+        if (ddlArea !== null && showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
         }
-    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
+    }, [selWarehouse])
     useEffect(() => {
-        if (ddlArea === null && selWarehouse) {
-            if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
-                GetAreaDDL(selWarehouse)
-            }
+        if (ddlArea == null && showAreaDDL && showAreaDDL.visible && selWarehouse) {
+            GetAreaDDL(selWarehouse)
         }
     }, [ddlArea])
-
+ 
     async function GetWarehouseDDL() {
         let newWarehouseQueryStr = Clone(WarehouseQuery);
         if (showWarehouseDDL.customQ !== undefined) {
