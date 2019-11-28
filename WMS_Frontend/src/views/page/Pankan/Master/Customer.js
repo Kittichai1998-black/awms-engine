@@ -44,7 +44,7 @@ const Customer = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -154,14 +154,14 @@ const Customer = props => {
         {
             field: "Code",
             type: "input",
-            name: window.project === "TAP" ? "Part NO." : "SKU Code",
+            name:"Code",
             placeholder: "Code",
             validate: /^.+$/
         },
         {
             field: "Name",
             type: "input",
-            name: window.project === "TAP" ? "Part Name" : "SKU Name",
+            name:  "Name",
             placeholder: "Name",
             validate: /^.+$/
         }

@@ -50,7 +50,7 @@ const User = props => {
       accessor: "LastUpdateTime",
       width: 150,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -151,17 +151,6 @@ const User = props => {
     }
   ];
   const columnsFilter = [
-    {
-      field: "Code",
-      type: "input",
-      name: "Username",
-      placeholder: "Username"
-    },
-    {
-      field: "Name",
-      type: "input",
-      name: "Name"
-    },
     {
       field: "EmailAddress",
       type: "input",

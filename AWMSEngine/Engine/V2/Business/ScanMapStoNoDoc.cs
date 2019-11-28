@@ -419,7 +419,9 @@ namespace AWMSEngine.Engine.V2.Business
             
             if (reqVo.scanCode == mapsto.code)
             {
-                if(mapsto.eventStatus != StorageObjectEventStatus.NEW || !mapsto.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
+                var checkMapsto = mapsto.ToTreeList();
+
+                if (mapsto.eventStatus != StorageObjectEventStatus.NEW || !checkMapsto.Any(x => x.eventStatus == StorageObjectEventStatus.NEW))
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);

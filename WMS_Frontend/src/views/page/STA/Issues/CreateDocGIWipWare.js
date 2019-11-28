@@ -4,6 +4,7 @@ import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
+import queryString from "query-string";
 // import axios from "axios";
 // import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
@@ -131,6 +132,17 @@ const CreateDocGIWipWare = props => {
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
+      Header: "Size",
+      accessor: "Size",
+      width: 80
+    },
+    {
+      Header: "Carton No",
+      accessor: "Carton",
+      width: 100,
+      Cell: e => getCarton(e.original)
+    },
+    {
       Header: "Location",
       accessor: "LocationCode",
       width: 90,
@@ -164,14 +176,17 @@ const CreateDocGIWipWare = props => {
   //     { Header: 'Code', accessor: 'Code', fixed: 'left', width: 100, sortable: true },
   //     { Header: 'Name', accessor: 'Name', width: 250, sortable: true }
   // ];
-
+  const getCarton = value => {
+    var qryStr = queryString.parse(value.Options);
+    return qryStr["carton_no"];
+  };
   const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q:
       '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"=" , "v": "12"},{"f": "GroupType" , "c":"=" , "v": "2"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -184,7 +199,12 @@ const CreateDocGIWipWare = props => {
     columns: columsFindpopUpPALC,
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
+      {
+        accessor: "orderNo",
+        placeholder: "SI"
+      },
       { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "Size", placeholder: "Size" },
       { accessor: "LocationCode", placeholder: "Location" },
       { accessor: "remark", placeholder: "Remark" }
     ]

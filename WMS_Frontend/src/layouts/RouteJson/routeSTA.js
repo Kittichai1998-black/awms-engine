@@ -41,6 +41,10 @@ const DocumentViewGISTA = Loadable({
   loader: () => import("../../views/page/STA/Issues/DocumentViewGI"),
   loading: Loading
 });
+const DocumentViewGISTACUS = Loadable({
+  loader: () => import("../../views/page/STA/Issues/DocumentViewGICUS"),
+  loading: Loading
+});
 const DocumentSearchPISTA = Loadable({
   loader: () => import("../../views/page/STA/Audit/DocumentSearchPISTA"),
   loading: Loading
@@ -319,6 +323,12 @@ const routes = [
     path: "/issue/detail",
     name: "base5",
     compoment: DocumentViewGISTA,
+    exact: true
+  },
+  {
+    path: "/issue/detailCus",
+    name: "base5",
+    compoment: DocumentViewGISTACUS,
     exact: true
   },
   {

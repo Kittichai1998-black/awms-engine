@@ -56,7 +56,7 @@ const AreaMaster = props => {
       accessor: "LastUpdateTime",
       width: 150,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [

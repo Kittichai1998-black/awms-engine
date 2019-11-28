@@ -121,7 +121,7 @@ const StorageObject = props => {
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
 
@@ -153,6 +153,7 @@ const StorageObject = props => {
     "Qty",
     "Base_Unit"
   ];
+
   const getRemark = value => {
     if (value.Remark === null || value.Remark === "null") {
       return "";
@@ -324,7 +325,7 @@ const StorageObject = props => {
         table={"StorageObject"}
         selection={true}
         modifyRemark={true}
-        //export={true}
+        export={false}
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}

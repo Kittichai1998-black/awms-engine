@@ -267,7 +267,17 @@ const FuncFilterPri = () => {
   })
 }
 //===========================================================
-
+const onHandleChangeKeyEnter = (
+  value,
+  dataObject,
+  field,
+  fieldDataKey,
+  event
+) => {
+  if (event && event.key == "Enter") {
+    onHandleFilterConfirm(true);
+  }
+};
 const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,placeholder,dataDropDow,typeDropdow,labelTitle,colsFindPopup,fieldDataKey,inputType) => {
   if(type === "input"){
     return  (      
@@ -278,7 +288,16 @@ const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,pla
           placeholder={placeholder}
           style={{width:"200px"}}
           type= "input"
-          onChange={(ele)=>{onChangeFilter(condition, colsField, ele)}}/>
+          onChangeV2={(ele)=>{onChangeFilter(condition, colsField, ele)}}
+          onKeyPress={(value, obj, element, event) =>
+            onHandleChangeKeyEnter(
+              value,
+              null,
+              "PalletCode",
+              null,
+              event
+            )
+          }/>
       </div>
     )
   }else if(type === "dropdow"){

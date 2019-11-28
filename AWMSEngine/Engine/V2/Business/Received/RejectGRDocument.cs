@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business.Issued;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Entity;
@@ -29,17 +30,16 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             foreach(var docID in reqVO.docIDs)
             {
-                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID,
-                DocumentEventStatus.CLOSING, null, DocumentEventStatus.REJECTED, this.BuVO);
+                //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID,
+                //DocumentEventStatus.CLOSING, null, DocumentEventStatus.REJECTED, this.BuVO);
 
                 var DocClose =AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID,this.BuVO);
 
-                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(docID, this.BuVO);
+                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docID, this.BuVO);
 
-                var DocItemClose = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", DocClose.ID, this.BuVO);
-                if (DocClose.EventStatus == DocumentEventStatus.REJECTED)
-                {
-                    foreach(var docItem in DocItemClose)
+                //var DocItemClose = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", DocClose.ID, this.BuVO);
+               
+                    foreach (var docItem in distos)
                     {
                         amt_Document doc = new amt_Document();
 
@@ -65,6 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                            issueItems = new List<CreateGIDocument.TReq.IssueItem>() {
                                                                 new CreateGIDocument.TReq.IssueItem
                                                                 {
+                                                                    //palletcode = null,
                                                                     skuCode = docItem.Code,
                                                                     packCode = docItem.Code,
                                                                     quantity = docItem.Quantity,
@@ -72,25 +73,32 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                                                     lot = docItem.Lot,
                                                                     orderNo = docItem.OrderNo,
                                                                     batch = docItem.Batch,
-                                                                    options = docItem.Options,
-                                                                    ref1 = docItem.Ref1,
+                                                                    options =  AMWUtil.Common.ObjectUtil.QryStrSetValue(doc.Options, "palletcode", string.Join(", ",docItem.DocItemStos[0].Sou_StorageObject_ID)),ref1 = docItem.Ref1,
                                                                     ref2 = docItem.Ref2,
                                                                     refID = docItem.RefID,
-                                                                    eventStatus = DocumentEventStatus.NEW
+                                                                    eventStatus = DocumentEventStatus.NEW,
+                                                                    
                                                                     //docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
 
                                                                 }}
                                        });
                     }
-
-
-                }                               
+                this.ProcessQ(reqVO);
             }
        
 
 
             return null;
         }
+            private void ProcessQ(TDocReq reqVO)
+            {
 
-    }
+
+
+            //var process = new ASRSProcessQueue().Execute(
+
+
+            //    );
+            }
+        }
 }

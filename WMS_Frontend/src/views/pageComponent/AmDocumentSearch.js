@@ -66,7 +66,18 @@ const AmDocumentSearch = props => {
     l: 20,
     all: ""
   };
-
+  const onHandleChangeKeyEnter = (
+    value,
+    dataObject,
+    field,
+    fieldDataKey,
+    event
+  ) => {
+    if (event && event.key == "Enter") {
+      onHandleFilterConfirm(true);
+      getData(query);
+    }
+  };
   const createComponent = searchList => {
     return searchList.map((row, idx) => {
       if (row.searchType === "input") {
@@ -81,9 +92,18 @@ const AmDocumentSearch = props => {
                 <AmInput
                   placeholder={row.placeholder}
                   style={{ width: "200px" }}
-                  onChange={value => {
+                  onChangeV2={value => {
                     onChangeFilter(condition, rowC.field, value);
                   }}
+                  onKeyPress={(value, obj, element, event) =>
+                    onHandleChangeKeyEnter(
+                      value,
+                      null,
+                      "PalletCode",
+                      null,
+                      event
+                    )
+                  }
                 />
               </div>
             );

@@ -97,7 +97,7 @@ const DailySTOReceive = (props) => {
             + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo))
             + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-            + "&movementTypeID=" + (valueText.movementType === undefined || t.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+            + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType === null ? '' : encodeURIComponent(valueText.movementType))
             + "&docType=2004"
             + "&spname=DAILY_STO";
     }

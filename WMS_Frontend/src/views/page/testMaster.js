@@ -174,7 +174,7 @@ console.log(ObjectSizeQuery)
         { Header: 'Item Qty',accessor: 'ItemQty', width:100,},
         { Header: '% Weight Verify',accessor: 'ObjectSizeCode', width:150,},
         { Header: 'Update By',accessor: 'UpdateBy', width:70,},
-        { Header: 'Update Time',accessor: 'UpdateTime', width:120,dataType:'datetime',dateFormat:'DD/MM/YYYY hh:mm'},
+        { Header: 'Update Time',accessor: 'UpdateTime', width:120,dataType:'datetime',dateFormat:'DD/MM/YYYY HH:mm'},
 
        
         ];

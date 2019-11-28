@@ -32,35 +32,41 @@ namespace AWMSEngine.APIService.Business
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(doc, this.BuVO);
             if (docs != null)
             {
-                if (docs.EventStatus == DocumentEventStatus.NEW)
-                {
-                    //เอา error ไปเก็บไว้ใน options
-                    BuVO.FinalLogDocMessage.Add(new AWMSModel.Criteria.FinalDatabaseLogCriteria.DocumentOptionMessage(
-                        docs.ID.Value, null, null, "Document Eventstatus is NEW"
-                    ));
-                }else{
-                        //this.BeginTransaction();                       
-                        TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-                        if (docs.EventStatus == DocumentEventStatus.CLOSING )
+                    if(docs.EventStatus == DocumentEventStatus.CLOSED)
+                    {
+                        if (docs.EventStatus == DocumentEventStatus.NEW)
                         {
-                            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
-           
+                            //เอา error ไปเก็บไว้ใน options
+                            BuVO.FinalLogDocMessage.Add(new AWMSModel.Criteria.FinalDatabaseLogCriteria.DocumentOptionMessage(
+                                docs.ID.Value, null, null, "Document Eventstatus is NEW"
+                            ));
                         }
                         else
                         {
-                            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
-
-                            if (resWorked.Count > 0)
+                            //this.BeginTransaction();                       
+                            TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
+                            if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
-                                var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
-                                if (resClosing.Count > 0)
+                                var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+
+                            }
+                            else
+                            {
+                                var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+
+                                if (resWorked.Count > 0)
                                 {
-                                    var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
+                                    var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
+                                    if (resClosing.Count > 0)
+                                    {
+                                        var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
+                                    }
                                 }
                             }
-                        }                      
+                        }
                     }
                 }
+
             });
 
             return null;
