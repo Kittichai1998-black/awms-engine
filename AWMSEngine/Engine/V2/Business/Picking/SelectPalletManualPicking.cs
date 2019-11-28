@@ -40,6 +40,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             public string lot;
             public string batch;
             public string orderNo;
+            public string movement;
+            public DateTime createtime;
             public List<pickItem> pickItems;
 
             public class pickItem
@@ -47,6 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 public string itemCode;
                 public decimal picked;
                 public decimal willPick;
+                public string orderNo;
             }
 
             public class palletItem
@@ -146,32 +149,39 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
 
                         }
-                        ,this.BuVO).Sum(xx => xx.BaseQuantity);
+                        , this.BuVO).Sum(xx => xx.BaseQuantity);
 
                     return new docItem.pickItem()
                     {
                         itemCode = y.Code,
                         picked = g.HasValue ? g.Value : 0, // ถูก pick ไปแล้ว
-                        willPick = y.BaseQuantity.Value //ที่จะ pick
+                        willPick = y.BaseQuantity.Value, //ที่จะ pick
+                        orderNo = y.OrderNo
+
                     };
                 }).ToList();
 
                 string des_warehouse = "", des_customer = "", des_suplier = "";
                 if (x.Des_Warehouse_ID != null)
-                    des_warehouse = this.StaticValue.Warehouses.FirstOrDefault(y => y.ID == x.Des_Warehouse_ID).Code;
+                    des_warehouse = this.StaticValue.Warehouses.FirstOrDefault(y => y.ID == x.Des_Warehouse_ID).Name;
                 if (x.Des_Customer_ID != null)
-                    des_customer = this.StaticValue.Customers.FirstOrDefault(y => y.ID == x.Des_Customer_ID).Code;
+                    des_customer = this.StaticValue.Customers.FirstOrDefault(y => y.ID == x.Des_Customer_ID).Name;
                 if (x.Des_Supplier_ID != null)
-                    des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == x.Des_Supplier_ID).Code;
+                    des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == x.Des_Supplier_ID).Name;
 
                 docItemList.Add(new docItem()
                 {
                     docID = x.ID.Value,
                     docCode = x.Code,
                     lot = x.Lot,
-                    batch = x.Lot,
+                    batch = x.Batch,
                     destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
-                    pickItems = pickItemList
+                    pickItems = pickItemList,
+                    movement = ADO.DataADO.GetInstant().SelectByID<ams_MovementType>(x.MovementType_ID, this.BuVO).Name,
+                    createtime = x.CreateTime
+
+
+
                 });
             });
             return docItemList;
