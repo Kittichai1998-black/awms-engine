@@ -42,6 +42,9 @@ namespace AWMSEngine.Engine.V2.Business
         {
             StorageObjectCriteria mapsto = null;
 
+            if (reqVO.amount == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนเป็น ไม่รับเข้าได้");
+
             mapsto = this.ExecScan(reqVO);
 
             if(mapsto != null)
