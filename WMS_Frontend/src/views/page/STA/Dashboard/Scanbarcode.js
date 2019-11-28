@@ -576,6 +576,7 @@ const Scanbarcode = (props) => {
         document.getElementById("barcodeLong").focus()
     }
 
+    console.log(lockStateLeft)
     const Scanbar = () => {
         var databars = { ...databar }      
         Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
@@ -629,6 +630,7 @@ const Scanbarcode = (props) => {
 
         })
         document.getElementById("barcodeLong").focus()
+        setScanQRcode(false)
     }
 
     useEffect(() => {
@@ -968,20 +970,12 @@ const Scanbarcode = (props) => {
                                         {gateLeft === true ?
                                             ScanQRcode === true ? 
                                                 <Flash> {HeadGateA2(area1 ? area1 : "")}</Flash>
-                                                : productCode ?
+                                                : lockStateLeft === false && productCode  ?
                                                     <div>{HeadGateA(area1 ? area1 : "")}</div>
                                                     : lockStateLeft === true ?
                                                         < Flash >{HeadLock(area1 ? area1 : "")}</Flash>
                                                     :<div>{HeadGateA(area1 ? area1 : "")}</div>
-                                               
-                                            //orderNo === undefined && ScanQRcode === false ?
-                                            //    <Flash> {HeadGateA(area1 ? area1 : "")}</Flash> :
-                                            //ScanQRcode === true  && productCode === null && productCode === undefined ? 
-                                            //       <Flash> {HeadGateA2(area1 ? area1 : "")}</Flash>
-                                            //       : lockStateLeft === true? 
-                                            //      < div > { HeadLock(area1? area1: "") }</div> :
-                                            //      < Flash> {HeadGateA(area1 ? area1 : "")}</Flash>
-                                            //: <div>{HeadGateB(area1 ? area1 : "")}</div>
+
                                             : <div>{HeadGateB(area1 ? area1 : "")}</div> }
                                     </div>
                                     <Card style={{ height: "500px" }}>
@@ -1129,7 +1123,6 @@ const Scanbarcode = (props) => {
                                                                 <AmButton style={{ width: "80%", fontSize: "2em" }} styleType="confirm" onClick={() => {
                                                                     MapStoNoDoc(areaGate, "left")
                                                                     UnlockGate(areaGate, "left")
-                                                                    setLockStateLeft(true)
                                                                     setManualAddLeft({});
                                                                 }}>Save</AmButton>
                                                                 <AmButton style={{ marginTop: "10px", width: "80%", fontSize: "2em" }} styleType="delete" onClick={() => {
@@ -1151,8 +1144,14 @@ const Scanbarcode = (props) => {
                                 <Card>
                                     <div>
                                         {gateRight === true ?
-                                            lockStateRight === true || productCode ? <div>{HeadLock(area2 ? area2 : "")}</div> :
-                                                <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
+                                            ScanQRcode === true ?
+                                                <Flash> {HeadGateA2(area2 ? area2 : "")}</Flash>
+                                                : lockStateLeft === false && productCode ?
+                                                    <div>{HeadGateA(area2 ? area2 : "")}</div>
+                                                    : lockStateLeft === true ?
+                                                        < Flash >{HeadLock(area2 ? area2 : "")}</Flash>
+                                                        : <div>{HeadGateA(area2 ? area2 : "")}</div>
+
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
                                     <Card style={{ height: "500px" }} >
@@ -1188,18 +1187,18 @@ const Scanbarcode = (props) => {
                                                             </FormInline>
 
                                                         </Grid></Grid>
-                                                        {lockStateRight === true ?
-                                                            <BorderGrey>
-                                                                <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
-                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{ marginLeft: "20px" }}>{unitCode2}</label></Typography>
-                                                                </FormInline>
-                                                            </BorderGrey> :
-
-                                                            <Border>
-                                                                <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
-                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{ marginLeft: "20px" }}>{unitCode2}</label></Typography>
-                                                                </FormInline>
-                                                            </Border>
+                                                        { ScanQRcode === false ?
+                                                                <BorderBlue>
+                                                                    <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
+                                                                        <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
+                                                                    </FormInline>
+                                                                </BorderBlue>
+                                                                :
+                                                                <Border>
+                                                                    <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
+                                                                        <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
+                                                                    </FormInline>
+                                                                </Border>
                                                         }
                                                         <div style={{ textAlign: "center" }}>
                                                             {productCode2 !== "" && productCode2 !== null && productCode2 !== undefined ? null :
