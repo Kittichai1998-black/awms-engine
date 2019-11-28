@@ -54,10 +54,10 @@ namespace ProjectSTA.Engine.Business
                 {
                     var dataObjectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value;
                     var dataBaseUnit = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value;
-                    var checkBaseAndObject = checkSKU.FindAll(x => x.ObjectSize_ID == dataObjectSizeID || x.UnitType_ID == dataBaseUnit);
+                    var checkBaseAndObject = checkSKU.FindAll(x => x.ObjectSize_ID != dataObjectSizeID || x.UnitType_ID != dataBaseUnit);
                     if (checkBaseAndObject.Count != 0)
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Code "+ data.Code + " มี ObjectSize หรือ BaseUnitType ที่ซ้ำกัน");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Code "+ data.Code + " มี ObjectSize หรือ BaseUnitType ที่ไม่ตรงกัน");
                     }
 
                     foreach (var dataSKU in checkSKU)

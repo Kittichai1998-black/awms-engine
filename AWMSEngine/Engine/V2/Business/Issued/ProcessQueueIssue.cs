@@ -386,7 +386,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 if (_areaASRS == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + processed.areaID + "'");
 
-                if (this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == processed.areaID).AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
+                if (this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == processed.areaID).AreaMasterType_ID == AreaMasterTypeID.STORAGE_ASRS)
                 {
                     var baseInfo = new WCSQueueADO.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()

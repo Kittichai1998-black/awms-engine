@@ -681,7 +681,7 @@ const onHandleFilterConfirm = (status, obj) => {
     getQuery.q = JSON.stringify(filterDatas);
     setQuery(getQuery)
   }
-  setDatetime({})
+  //setDatetime({})
   //setFilterData([{"f":"status","c":"!=","v":"2"}])
   setFilterDialog(false)
   setFilterDialog(false)

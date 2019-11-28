@@ -8,7 +8,15 @@ namespace AWMSModel.Constant.EnumConst
     {
         STORAGE_ASRS = 10,
         STORAGE_MANUAL = 11,
-        GATE_IO = 20,
-        STAGING = 30
+
+        MACHINE_GATE = 20,
+        MACHINE_MOVE = 21,
+
+        STATION_UNPACK = 30,
+        STATION_PICKING = 31,
+        STATION_CONSOLIDATE = 32,
+
+        STAGING_RECEIVE = 40,
+        STAGING_SHIPPING = 41,
     }
 }

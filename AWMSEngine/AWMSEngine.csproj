@@ -65,6 +65,8 @@
     <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
     <Compile Remove="Engine\V1\Validation\BuVORequiredFields.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
+    <Compile Remove="Engine\V2\ClosedDocument.cs" />
+    <Compile Remove="Engine\V2\ClosingDocument.cs" />
     <Compile Remove="JobService\PostGRDoc311ToSAPJob.cs" />
     <Compile Remove="JobService\PostGRDocPackage321ToSAPJob.cs" />
   </ItemGroup>
