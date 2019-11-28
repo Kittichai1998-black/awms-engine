@@ -14,7 +14,7 @@ namespace AWMSModel.Criteria
         List<ams_Branch> Branchs { get; }
         List<ams_Warehouse> Warehouses { get; }
         List<ams_AreaMaster> AreaMasters { get; }
-        List<ams_AreaMasterType> AreaMasterTypes { get; }
+        /*List<ams_AreaMasterType> AreaMasterTypes { get; }*/
         List<ams_AreaRoute> AreaRoutes { get; }
         List<ams_Supplier> Suppliers { get; }
         List<ams_Customer> Customers { get; }

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business
+namespace AWMSEngine.Engine.V2.Business.Document
 {
     public class CreateDocument : BaseEngine<CreateDocument.TReq, amt_Document>
     {
