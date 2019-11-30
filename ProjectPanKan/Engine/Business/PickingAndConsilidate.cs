@@ -29,23 +29,24 @@ namespace ProjectPanKan.Engine.Business
         {
             public long docID;
             public string baseConso;
-            public BaseSto sto;
+            //public BaseSto sto;
+            public StorageObjectCriteria sto;
 
-            public class BaseSto
-            {
-                public string baseCode;
-                public long baseID;
-                public string baseUnitCode;
-                public List<PackSTO> packSTOs;
+            //public class BaseSto
+            //{
+            //    public string baseCode;
+            //    public long baseID;
+            //    public string baseUnitCode;
+            //    public List<PackSTO> packSTOs;
 
-                public class PackSTO
-                {
-                    public string packCode;
-                    public long packID;
-                    public string packBaseUnitCode;
-                    public decimal packBaseQty;
-                }
-            }
+            //    public class PackSTO
+            //    {
+            //        public string packCode;
+            //        public long packID;
+            //        public string packBaseUnitCode;
+            //        public decimal packBaseQty;
+            //    }
+            //}
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -128,13 +129,14 @@ namespace ProjectPanKan.Engine.Business
                     {
                         docID = reqVO.docID,
                         baseConso = reqVO.baseConso,
-                        sto = new TRes.BaseSto()
-                        {
-                            baseCode = stoScan.code,
-                            baseUnitCode = stoScan.baseUnitCode,
-                            baseID = stoScan.id.Value,
-                            packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
-                        }
+                        sto = StorageObjectADO.GetInstant().Get(stoScan.id.Value, StorageObjectType.BASE, false, true, BuVO)
+                        //sto = new TRes.BaseSto()
+                        //{
+                        //    baseCode = stoScan.code,
+                        //    baseUnitCode = stoScan.baseUnitCode,
+                        //    baseID = stoScan.id.Value,
+                        //    packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
+                        //}
                     };
                 }
 
@@ -338,13 +340,14 @@ namespace ProjectPanKan.Engine.Business
                         {
                             docID = docItem.Document_ID,
                             baseConso = reqVO.baseConso,
-                            sto = new TRes.BaseSto()
-                            {
-                                baseCode = stoScan.code,
-                                baseUnitCode = stoScan.baseUnitCode,
-                                baseID = stoScan.id.Value,
-                                packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
-                            }
+                            sto = StorageObjectADO.GetInstant().Get(stoScan.id.Value, StorageObjectType.BASE, false, true, BuVO)
+                            //sto = new TRes.BaseSto()
+                            //{
+                            //    baseCode = stoScan.code,
+                            //    baseUnitCode = stoScan.baseUnitCode,
+                            //    baseID = stoScan.id.Value,
+                            //    packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
+                            //}
                         };
                     }
                 }
