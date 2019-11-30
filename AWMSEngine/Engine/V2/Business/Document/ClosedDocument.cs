@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.WorkQueue
+namespace AWMSEngine.Engine.V2.Business.Document
 {
     public class ClosedDocument : BaseEngine<List<long>, List<long>>
     {

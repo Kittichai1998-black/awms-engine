@@ -86,10 +86,10 @@ namespace AWMSEngine.APIService
 
         private class _GetKey
         {
-            public string token;
-            public string _token;
-            public string apikey;
-            public string _apikey;
+            public string token { get; set; }
+            public string _token { get; set; }
+            public string apikey { get; set; }
+            public string _apikey { get; set; }
         }
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)
@@ -197,7 +197,7 @@ namespace AWMSEngine.APIService
             catch (SqlException ex) when (ex.Number == 1205)
             {
                 this.RollbackTransaction();
-                var e = new AMWException(this.Logger, AMWExceptionCode.S0004, ex.Message);
+                var e = new AMWException(this.Logger, AMWExceptionCode.S0004, ex.Message, new AMWExceptionSourceChild(ex));
                 this.Logger.LogError(ex.StackTrace);
                 result.status = retryCountdown > 0 ? -1 : 0;
                 result.code = e.GetAMWCode();
@@ -208,7 +208,7 @@ namespace AWMSEngine.APIService
             catch (Exception ex)
             {
                 this.RollbackTransaction();
-                var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
+                var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message, new AMWExceptionSourceChild(ex));
                 this.Logger.LogError(ex.StackTrace);
                 result.status = 0;
                 result.code = e.GetAMWCode();

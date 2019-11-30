@@ -64,8 +64,8 @@ namespace AWMSEngine.Engine
             try
             {
                 this.Logger = logger;
-                this.Logger.LogInfo("--------- Begin Engine.Exec ---------");
-                this.Logger.LogInfo("reqVO=" + resVO.Json());
+                this.Logger.LogInfo("--------- BEGIN_ENGINE:" + (this.GetType().Name) + " ---------");
+                this.Logger.LogInfo("INPUT=" + reqVO.Json());
                 //dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
@@ -79,10 +79,11 @@ namespace AWMSEngine.Engine
             }
             catch (System.Exception ex)
             {
-                this.Logger.LogError(ex.StackTrace);
-                //resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
-                //throw ex;
-                throw;
+
+                var exs = new AMWExceptionSourceChild(ex);
+                //this.Logger.LogError(ex.Message, exs.SourceFile, exs.LineNumber);
+                this.Logger.LogError(ex.StackTrace, exs.SourceFile, exs.LineNumber);
+                throw new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message, exs);
             }
             finally
             {
@@ -90,8 +91,8 @@ namespace AWMSEngine.Engine
 
                 if (this.Logger != null)
                 {
-                    this.Logger.LogInfo("resVO=" + resVO.Json());
-                    this.Logger.LogInfo("--------- End Engine.Exec ---------");
+                    this.Logger.LogInfo("OUTPUT=" + resVO.Json());
+                    this.Logger.LogInfo("--------- END_ENGINE:" + (this.GetType().Name) + " ---------");
                 }
                 logger.SubServiceName = this._subServiceNameTMP;
             }
