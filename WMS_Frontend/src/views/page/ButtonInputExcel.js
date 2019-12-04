@@ -504,6 +504,7 @@ function Test5(props) {
                 <AmIconStatus styleType={"ACTIVE"} className={classNames(classes.icon)}>ACTIVE</AmIconStatus>
                 <AmIconStatus styleType={"REMOVE"} className={classNames(classes.icon)}>REMOVE</AmIconStatus>
                 <AmIconStatus styleType={"DONE"} className={classNames(classes.icon)}>DONE</AmIconStatus>
+                <AmIconStatus styleType={"PASS"} className={classNames(classes.icon)}>PASS</AmIconStatus>
 
                 <br />
                 <span>เรียกใช้ผ่าน component  [StorageObjectEventStatus]</span>

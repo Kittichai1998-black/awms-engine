@@ -31,7 +31,6 @@ namespace AMWUtil.Exception
             AMWExceptionCode code,
             string[] paramters = null,
             ENLanguage Language = ENLanguage.TH,
-            int extendLv = 1,
             [CallerFilePath]string sourceFile = "",
             [CallerLineNumber]int lineNumber = 0)
             : base(
@@ -49,31 +48,28 @@ namespace AMWUtil.Exception
             //this.ClassName = stackTrace.GetFrame(extendLv).GetMethod().DeclaringType.FullName;
             //this.MethodName = stackTrace.GetFrame(extendLv).GetMethod().Name;
             if (logger != null)
-                logger.LogWrite("ERROR", this.Message, sourceFile, lineNumber);
+                logger.LogError(this.Message, sourceFile, lineNumber);
             else
-                Console.Error.WriteLine("[ERROR] " + this.Message);
+                Console.Error.WriteLine("[ERR] " + this.Message);
         }
         public AMWException(
             ILogger logger,
             AMWExceptionCode code,
             string paramters,
-            ENLanguage Language = ENLanguage.TH,
-            int extendLv = 2,
+            ENLanguage language = ENLanguage.TH,
             [CallerFilePath]string sourceFile = "",
             [CallerLineNumber]int lineNumber = 0) :
-            this(logger, code, new string[] { paramters }, Language, extendLv, sourceFile, lineNumber)
+            this(logger, code, new string[] { paramters }, language, sourceFile, lineNumber)
         { }
-        /*
-        public AMWException(ILogger logger, AMWExceptionCode code, string parameter = null, ENLanguage Language = ENLanguage.TH, [CallerLineNumber]int lineNumber = 0)
-            : this(logger, code, new string[] { parameter }, Language, 2, lineNumber) { }
 
-        public AMWException(ILogger logger, AMWExceptionCode code, ENLanguage Language = ENLanguage.TH, [CallerLineNumber]int lineNumber = 0)
-            : this(logger, code, new string[] { }, Language, 2, lineNumber) { }
-
-        public AMWException(ILogger logger, string message, ENLanguage Language = ENLanguage.TH, [CallerLineNumber]int lineNumber = 0)
-            : this(logger, AMWExceptionCode.U0000, new string[] { message }, Language, 2, lineNumber) { }
-            */
-
+        public AMWException(
+            ILogger logger,
+            AMWExceptionCode code,
+            string paramters,
+            AMWExceptionSourceChild source,
+            ENLanguage language = ENLanguage.TH) :
+            this(logger, code, new string[] { paramters }, language, source.SourceFile,source.LineNumber)
+        { }
 
 
     }

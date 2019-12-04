@@ -27,7 +27,12 @@ namespace SAPNCO.ADO
                     if (!string.IsNullOrWhiteSpace(saplist.inTableName))
                     {
                         IRfcTable T_IN_SU = SapFunction.GetTable(saplist.inTableName);
-                        T_IN_SU.Append(SetValue(saplist.datas, IN_SU));
+
+                        foreach (var data in saplist.datas)
+                        {
+                            T_IN_SU.Append(SetValue(data, IN_SU));
+                        }
+                        
 
                         SapFunction.SetValue(saplist.inTableName, T_IN_SU);
                     }
@@ -35,7 +40,8 @@ namespace SAPNCO.ADO
                     {
                         foreach (var data in saplist.datas)
                         {
-                            SapFunction.SetValue(data.Key, data.Value);
+                            foreach (var value in data)
+                                SapFunction.SetValue(value.Key, value.Value);
                         }
                     }
                 });

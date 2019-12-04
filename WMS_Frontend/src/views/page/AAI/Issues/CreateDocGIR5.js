@@ -130,7 +130,7 @@ const AmCreateDocumentR5 = props => {
     Axios.post(window.apipath + "/v2/SAPZWMRF003R5API", postData).then(res => {
       if (res.data._result.status === 1) {
         res.data.datas.forEach(x => {
-          x.MATNR = parseInt(x.MATNR);
+          x.MATNR = x.MATNR.replace(/^0+/, '');
         });
 
         setSAPResponse(res.data.datas);

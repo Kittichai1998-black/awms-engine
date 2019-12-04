@@ -72,6 +72,14 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters ?? this.LoadAreaMaster(); }
+        public ams_AreaMaster GetAreaMaster(long areaID)
+        {
+            return this.GetAreaMaster(areaID, null);
+        }
+        public ams_AreaMaster GetAreaMaster(string areaCode)
+        {
+            return this.GetAreaMaster(null, areaCode);
+        }
         public ams_AreaMaster GetAreaMaster(long? areaID, string areaCode)
         {
             ams_AreaMaster a = null;
@@ -91,7 +99,7 @@ namespace AWMSEngine.ADO.StaticValue
             return this.AreaMasters.First(x => x.ID == id).Code;
         }
 
-        private List<ams_AreaMasterType> _AreaMasterTypes;
+        /*private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes ?? this.LoadAreaMasterType(); }
         public string GetAreaMasterTypesCode(long id)
         {
@@ -103,7 +111,7 @@ namespace AWMSEngine.ADO.StaticValue
             if (area == null)
                 throw new Exception("AreaID Not Found");
             return this.AreaMasterTypes.Find(x => x.ID == area.AreaMasterType_ID);
-        }
+        }*/
 
         private List<ams_AreaRoute> _AreaRoutes;
         public List<ams_AreaRoute> AreaRoutes { get => this._AreaRoutes ?? this.LoadAreaRoute(); }
@@ -195,10 +203,10 @@ namespace AWMSEngine.ADO.StaticValue
         {
             return this._AreaRoutes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, buVO ?? new VOCriteria()));
         }
-        public List<ams_AreaMasterType> LoadAreaMasterType(VOCriteria buVO = null)
+        /*public List<ams_AreaMasterType> LoadAreaMasterType(VOCriteria buVO = null)
         {
             return this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, buVO ?? new VOCriteria()));
-        }
+        }*/
         public List<ams_Warehouse> LoadWarehouse(VOCriteria buVO = null)
         {
             return this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, buVO ?? new VOCriteria()));
@@ -278,7 +286,7 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_UnitType).Name) this._UnitTypes = null;
                 else if (tableName == typeof(ams_AreaMaster).Name) this._AreaMasters = null;
                 else if (tableName == typeof(ams_AreaRoute).Name) this._AreaRoutes = null;
-                else if (tableName == typeof(ams_AreaMasterType).Name) this._AreaMasterTypes = null;
+                /*else if (tableName == typeof(ams_AreaMasterType).Name) this._AreaMasterTypes = null;*/
                 else if (tableName == typeof(ams_Warehouse).Name) this._Warehouses = null;
                 else if (tableName == typeof(ams_Branch).Name) this._Branchs = null;
                 else if (tableName == typeof(ams_Customer).Name) this._Customers = null;

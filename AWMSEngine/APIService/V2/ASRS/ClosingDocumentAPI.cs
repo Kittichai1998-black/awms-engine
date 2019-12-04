@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
+using AWMSEngine.Engine.V2.Business.Document;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {

@@ -322,7 +322,7 @@ const PackMaster = props => {
       accessor: "LastUpdateTime",
       width: 200,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
 

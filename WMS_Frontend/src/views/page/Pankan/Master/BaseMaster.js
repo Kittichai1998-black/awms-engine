@@ -69,7 +69,7 @@ const BaseMaster = props => {
       accessor: "LastUpdateTime",
       width: 120,
       type: "datetime",
-      dateFormat: "DD/MM/YYYY hh:mm"
+      dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
   const columns = [
@@ -262,10 +262,28 @@ const BaseMaster = props => {
     } else {
       return null;
     }
-  };
+    };
+
+    const primarySearch = [
+        {
+            field: "Code",
+            type: "input",
+            name: "Base Code",
+            placeholder: "Code",
+            validate: /^.+$/
+        },
+        {
+            field: "Name",
+            type: "input",
+            name:  "Base Name",
+            placeholder: "Name",
+            validate: /^.+$/
+        }
+    ];
   return (
     <div>
-      <MasterData
+          <MasterData
+              columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"BaseMaster"}
         table={"ams_BaseMaster"}

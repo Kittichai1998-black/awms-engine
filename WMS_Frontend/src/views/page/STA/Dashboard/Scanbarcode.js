@@ -85,6 +85,15 @@ const Border = styled.div`
   display: block;
 `;
 
+const BorderBlue = styled.div`
+  display: inline-block;
+  color: #002f6c;
+  font-size: 1.5em;
+  margin: 1em;
+  display: block;
+`;
+
+
 
 const BorderGrey = styled.div`
   display: inline-block;
@@ -276,7 +285,9 @@ const Scanbarcode = (props) => {
     const [manualAddLeft, setManualAddLeft] = useState({})
     const [manualAddRight, setManualAddRight] = useState({})
 
-    const columns = [{Header:"Carton", accessor:"carton", width:300}];
+    const columns = [{ Header: "Carton", accessor: "carton", width: 300 }];
+
+    const [ScanQRcode, setScanQRcode] = useState(false);
 
     const createRemoveList = (cartons, pallet, areaIDs, productCode, orderNo) => {
         let spreadCarton = ExplodeRangeNumToIntArray(cartons)
@@ -385,45 +396,75 @@ const Scanbarcode = (props) => {
                 let leftGate = data.find(x => x.gate === 1);
                 if (leftGate !== null && leftGate !== undefined && leftGate.baseID !== null) {
                     let splitItem = [];
-                    console.log(manualAddLeft)
-                    
-                    if(manualAddLeft.carton !== undefined){
-                        let carton = manualAddLeft.carton.split(',');
-                        carton.forEach(e => {
- 
-                            if (e.includes('-')) {
-                                let splitCar = [];
-                                let carArr = e.split('-');
-                        
-                                for (let j = parseInt(carArr[0]); j <= parseInt(carArr[1]); j++) {
-                                    console.log(j)
-                                    splitCar.push(parseInt(j))
+                  
+                    if (manualAddLeft.orderNo === undefined || manualAddLeft.orderNo === ""
+                        || manualAddLeft.orderNo.length !== 7 || manualAddLeft.orderNo === null) {
+                        setStateDialog(true)
+                        setMsgDialog("กรุณากรอก SI. ให้ถูกต้อง")
+
+                    } else if (manualAddLeft.code === undefined || manualAddLeft.code === ""
+                        || manualAddLeft.code.length !== 5 || manualAddLeft.code === null) {
+                        setStateDialog(true)
+                        setMsgDialog("กรุณากรอก ReOrder ให้ถูกต้อง")
+                    } else if (manualAddLeft.carton === undefined || manualAddLeft.carton === ""
+                        || manualAddLeft.code === null) {
+                        setStateDialog(true)
+                        setMsgDialog("กรุณากรอก Carton No. ให้ถูกต้อง")
+
+                    } else {
+
+                        if (manualAddLeft.carton !== undefined) {
+                            let carton = manualAddLeft.carton.split(',');
+                            console.log(carton)
+                            carton.forEach(e => {
+                                if (e.includes('-')) {
+                                    let splitCar = [];
+                                    let carArr = e.split('-');
+
+                                    for (let j = parseInt(carArr[0]); j <= parseInt(carArr[1]); j++) {
+                                        console.log(j)
+                                        splitCar.push(parseInt(j))
+                                    }
+                                    console.log(splitCar)
+                                    splitItem = splitItem.concat(splitCar)
                                 }
-                                splitItem = splitItem.concat(splitCar)
+                                else {
+                                    splitItem.push(parseInt(e))
+                                     console.log(splitItem)
+                                }
+                            });
+
+                            let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
+                            let resCarton = null
+                            console.log(disCarton)
+                            console.log(disCarton.length)
+                            if (disCarton.length === 1) {
+                                resCarton = disCarton
+                            } else {
+                                if (disCarton.length > 200) {
+                                    setMsgDialog("จำนวนมากกว่า 200")
+                                    setStateDialog(true)
+                                } else {
+                                    resCarton = MergeRangeNum(disCarton.join(','));
+                                }
                             }
-                            else {
-                                splitItem.push(parseInt(e))
-                                console.log(splitItem)
-                            }
-                        });
-    
-                        let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
-                        let resCarton = MergeRangeNum(disCarton.join(','));
-                        mapSto.rootID = leftGate.baseID;
-                        mapSto.scanCode = manualAddLeft.code;
-                        mapSto.orderNo = manualAddLeft.orderNo;
-                        mapSto.amount = disCarton.length;
-                        mapSto.warehouseID = 1;
-                        mapSto.areaID = leftGate.areaID;
-                        mapSto.locationCode = leftGate.areaLocationCode;
-                        mapSto.action = 1;
-                        mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
-                        mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
-                        mapSto.isRoot = false;
-                        mapSto.validateSKUTypeCodes = ["FG"];
-                    }else{
-                        setMsgDialog("กรุณาใส่ carton no.");
-                        setStateDialog(true);
+                  
+                            mapSto.rootID = leftGate.baseID;
+                            mapSto.scanCode = manualAddLeft.code;
+                            mapSto.orderNo = manualAddLeft.orderNo;
+                            mapSto.amount = disCarton.length;
+                            mapSto.warehouseID = 1;
+                            mapSto.areaID = leftGate.areaID;
+                            mapSto.locationCode = leftGate.areaLocationCode;
+                            mapSto.action = 1;
+                            mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
+                            mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
+                            mapSto.isRoot = false;
+                            mapSto.validateSKUTypeCodes = ["FG"];
+                        } else {
+                            setMsgDialog("กรุณาใส่ carton no.");
+                            setStateDialog(true);
+                        }
                     }
                    
                 }
@@ -535,14 +576,16 @@ const Scanbarcode = (props) => {
         document.getElementById("barcodeLong").focus()
     }
 
+    console.log(lockStateLeft)
     const Scanbar = () => {
-        var databars = { ...databar }
+        var databars = { ...databar }      
         Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
             if (res.data._result.status === 1) {
-
+                console.log(res)
                 if (res.data.bsto != null) {
                     var datass = res.data.bsto.mapstos[0]
                     var dataQtyMax = res.data.bsto.objectSizeMaps[0]
+                    setScanQRcode(true)
                     /*if (datass.qty === null) {
                         setqty(0)
                     } else { setqty(datass.qty) }
@@ -587,6 +630,7 @@ const Scanbarcode = (props) => {
 
         })
         document.getElementById("barcodeLong").focus()
+        setScanQRcode(false)
     }
 
     useEffect(() => {
@@ -726,6 +770,23 @@ const Scanbarcode = (props) => {
     }
 
     const HeadGateA = (getGate) => {
+        return <CardContent style={{ height: "60px", background: "#01579b" }} >
+            <Grid container spacing={12}>
+                <Grid item xs={4}>
+                </Grid> <Grid item xs={6}>
+                    <FormInline>
+                        <div style={{ marginRight: "20px" }}>
+                            <IconLockOpen style={{ color: "#ffffff", fontSize: '40px' }}></IconLockOpen>
+                        </div>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
+                            {getGate}</Typography>
+                    </FormInline>
+                </Grid>
+            </Grid>
+        </CardContent>
+    }
+
+    const HeadGateA2 = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
                 <Grid item xs={4}>
@@ -742,11 +803,12 @@ const Scanbarcode = (props) => {
         </CardContent>
     }
 
+
     const HeadGateB = (getGate) => {
         return <CardContent style={{ height: "60px", }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
-                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
+                    <Typography style={{ color: "#eceff1" }} variant="h4" component="h3">{getGate}</Typography>
                 </Grid>
             </Grid>
         </CardContent>
@@ -761,7 +823,7 @@ const Scanbarcode = (props) => {
                         <div style={{ marginRight: "20px" }}>
                             <IconLock style={{ fontSize: '40px' }}></IconLock>
                         </div>
-                        <Typography style={{ color: "#212121" }} variant="h4" component="h3">{getGate}</Typography>
+                        <Typography style={{ color: "#37474f" }} variant="h4" component="h3">{getGate}</Typography>
                     </FormInline>
                 </Grid>
             </Grid>
@@ -901,16 +963,20 @@ const Scanbarcode = (props) => {
                                 </FormInline>
                             </div>
                         </Grid>
-
-
                         <Grid item xs={6} >
                             <div style={{ paddingTop: "30px", marginRight: "5px" }}>
                                 <Card>
                                     <div>
                                         {gateLeft === true ?
-                                            lockStateLeft === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
-                                                <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
-                                            : <div>{HeadGateB(area1 ? area1 : "")}</div>}
+                                            ScanQRcode === true ? 
+                                                <Flash> {HeadGateA2(area1 ? area1 : "")}</Flash>
+                                                : lockStateLeft === false && productCode  ?
+                                                    <div>{HeadGateA(area1 ? area1 : "")}</div>
+                                                    : lockStateLeft === true ?
+                                                        < Flash >{HeadLock(area1 ? area1 : "")}</Flash>
+                                                    :<div>{HeadGateA(area1 ? area1 : "")}</div>
+
+                                            : <div>{HeadGateB(area1 ? area1 : "")}</div> }
                                     </div>
                                     <Card style={{ height: "500px" }}>
                                         {gateLeft === true ?
@@ -951,8 +1017,15 @@ const Scanbarcode = (props) => {
                                                                 <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
                                                                     <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
                                                                 </FormInline>
-                                                            </BorderGrey> : <Border>
-
+                                                            </BorderGrey> :
+                                                            ScanQRcode === false ? 
+                                                                <BorderBlue>
+                                                                    <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
+                                                                        <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
+                                                                    </FormInline>
+                                                                </BorderBlue>
+                                                                :
+                                                            <Border>
                                                                 <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
                                                                     <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
                                                                 </FormInline>
@@ -965,7 +1038,9 @@ const Scanbarcode = (props) => {
 
                                                             <AmButton style={{ marginTop: "10px", width: "80%", fontSize: "2em" }} styleType="delete" onClick={() => {
                                                                 //RemovePackSto(pallet, areaIDs)
+                                                                setproductCode();
                                                                 setRemoveDialog(true)
+                                                                setScanQRcode(false)
                                                                 createRemoveList(carton, pallet, areaIDs, productCode, orderNo)
                                                             }}>Remove</AmButton></div>
                                                     </Card>
@@ -981,8 +1056,17 @@ const Scanbarcode = (props) => {
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">SI. :</Typography >
                                                                     <Typography variant="h5" component="h3">
                                                                         <AmInput id="orderNo" value={manualAddLeft["orderNo"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "orderNo", value);
+                                                                            if (value === null || value === undefined) {
+                                                                                setMsgDialog("กรุณาใส่ SI. ")
+                                                                                setStateDialog(true)
+                                                                            } else if (value.lenght < 7) {
+                                                                                setMsgDialog("กรุณา SI. ให้ถูกต้อง")
+                                                                                setStateDialog(true)
+                                                                            } else {
+                                                                                updateNoQRData("left", "orderNo", value);
+                                                                            }
                                                                         }} onKeyPress={(value, a, b, event) => {
+                                                                            
                                                                             if (event.key === "Enter") {
                                                                                 document.getElementById("code").focus();
                                                                             }
@@ -993,7 +1077,14 @@ const Scanbarcode = (props) => {
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Reoder :</Typography >
                                                                     <Typography variant="h5" component="h3">
                                                                         <AmInput id="code" value={manualAddLeft["code"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "code", value);
+                                                                            if (value === null || value === undefined) {
+                                                                                setMsgDialog("กรุณาใส่ Reoder ")
+                                                                                setStateDialog(true)
+                                                                            } else if (value.lenght < 7) {
+                                                                                setMsgDialog("กรุณา Reoder ให้ถูกต้อง")
+                                                                            } else {
+                                                                                    updateNoQRData("left", "code", value);
+                                                                                }
                                                                         }} onKeyPress={(value, a, b, event) => {
                                                                             if (event.key === "Enter") {
                                                                                 document.getElementById("carton").focus();
@@ -1004,8 +1095,12 @@ const Scanbarcode = (props) => {
                                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton No :</Typography >
                                                                     <Typography variant="h5" component="h3">
-                                                                        <AmInput id="carton" value={manualAddLeft["carton"]} onChangeV2={(value, a, b, event) => {
-                                                                            updateNoQRData("left", "carton", value);
+                                                                        <AmInput id="carton" value={manualAddLeft["carton"]}
+                                                                            //inputProps={4}
+                                                                            onChangeV2={(value, a, b, event) => {
+                                                                         
+                                                                                updateNoQRData("left", "carton", value);
+                                                                            
                                                                         }} />
                                                                     </Typography>
                                                                 </FormInline>
@@ -1033,6 +1128,7 @@ const Scanbarcode = (props) => {
                                                                 <AmButton style={{ marginTop: "10px", width: "80%", fontSize: "2em" }} styleType="delete" onClick={() => {
                                                                     UnlockGate(areaGate, "left")
                                                                     setManualAddLeft({});
+                                                                    setLockStateLeft(false)
                                                                 }}>Clear</AmButton>
                                                             </div>
                                                         </Card>
@@ -1048,8 +1144,14 @@ const Scanbarcode = (props) => {
                                 <Card>
                                     <div>
                                         {gateRight === true ?
-                                            lockStateRight === true ? <div>{HeadLock(area2 ? area2 : "")}</div> :
-                                                <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
+                                            ScanQRcode === true ?
+                                                <Flash> {HeadGateA2(area2 ? area2 : "")}</Flash>
+                                                : lockStateLeft === false && productCode ?
+                                                    <div>{HeadGateA(area2 ? area2 : "")}</div>
+                                                    : lockStateLeft === true ?
+                                                        < Flash >{HeadLock(area2 ? area2 : "")}</Flash>
+                                                        : <div>{HeadGateA(area2 ? area2 : "")}</div>
+
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
                                     <Card style={{ height: "500px" }} >
@@ -1085,17 +1187,18 @@ const Scanbarcode = (props) => {
                                                             </FormInline>
 
                                                         </Grid></Grid>
-                                                        {lockStateRight === true ?
-                                                            <BorderGrey>
-                                                                <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
-                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{ marginLeft: "20px" }}>{unitCode2}</label></Typography>
-                                                                </FormInline>
-                                                            </BorderGrey> :
-                                                            <Border>
-                                                                <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
-                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{ marginLeft: "20px" }}>{unitCode2}</label></Typography>
-                                                                </FormInline>
-                                                            </Border>
+                                                        { ScanQRcode === false ?
+                                                                <BorderBlue>
+                                                                    <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
+                                                                        <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
+                                                                    </FormInline>
+                                                                </BorderBlue>
+                                                                :
+                                                                <Border>
+                                                                    <FormInline style={{ textAlign: "center", display: "inline-block", width: "100%", paddingTop: "10px" }}>
+                                                                        <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{ marginLeft: "20px" }}>{unitCode}</label></Typography>
+                                                                    </FormInline>
+                                                                </Border>
                                                         }
                                                         <div style={{ textAlign: "center" }}>
                                                             {productCode2 !== "" && productCode2 !== null && productCode2 !== undefined ? null :

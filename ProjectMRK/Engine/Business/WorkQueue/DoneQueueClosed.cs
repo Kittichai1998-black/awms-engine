@@ -93,7 +93,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                         var getArea = new MoveStoInGateToNextArea();
                         var treq = new MoveStoInGateToNextArea.TReq()
                         {
-                            baseStoID = queue.StorageObject_ID.Value
+                            stoID = queue.StorageObject_ID.Value
                         };
                         getArea.Execute(logger, buVO, treq);
 

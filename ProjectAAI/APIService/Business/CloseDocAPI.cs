@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSEngine.APIService;
+using AWMSEngine.Engine.V2.Business.Document;
 
 namespace ProjectAAI.APIService.Business
 {

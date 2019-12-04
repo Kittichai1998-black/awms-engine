@@ -194,7 +194,7 @@ const FuncGetRole = () => {
           primaryKey="ID"
           data={props.dataUser}
           columns={iniCols}
-          pageSize={5}    
+          pageSize={100}    
           style={{maxHeight:"550px"}} 
           selection={true}
           selectionType="checkbox"
@@ -486,7 +486,19 @@ const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,pla
           placeholder={placeholder}
           style={{width:"200px"}}
           type= "input"
-          onChange={(ele)=>{onChangeFilter(condition, colsField, ele)}}/>
+          
+          onChangeV2={(ele)=>{onChangeFilter(condition, colsField, ele)}}
+          onKeyPress={(value, obj, element, event) =>
+            onHandleChangeKeyEnter(
+              value,
+              null,
+              "PalletCode",
+              null,
+              event
+            )
+          }
+          
+          />
       </div>
     )
   }else if(type === "dropdow"){
@@ -630,6 +642,19 @@ if(filterDataList.length > 0){
       }
   setFilterData(obj)  
 }
+const onHandleChangeKeyEnter = (
+  value,
+  dataObject,
+  field,
+  fieldDataKey,
+  event
+) => {
+  console.log(event.key);
+  if (event && event.key == "Enter") {
+    console.log("dfdh");
+    onHandleFilterConfirm(true);
+  }
+};
 //===========================================================
 
 const onHandleFilterConfirm = (status, obj) => {
@@ -656,7 +681,7 @@ const onHandleFilterConfirm = (status, obj) => {
     getQuery.q = JSON.stringify(filterDatas);
     setQuery(getQuery)
   }
-  setDatetime({})
+  //setDatetime({})
   //setFilterData([{"f":"status","c":"!=","v":"2"}])
   setFilterDialog(false)
   setFilterDialog(false)

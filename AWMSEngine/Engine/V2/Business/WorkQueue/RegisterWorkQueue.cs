@@ -16,6 +16,15 @@ using AWMSEngine.ADO.StaticValue;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
+    public class RegisterWorkQueueTest
+    {
+        public RegisterWorkQueueTest()
+        {
+            int iii1 = 0;
+            int iii2 = iii1 / iii1;
+        }
+    }
+
     public class RegisterWorkQueue : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
@@ -67,6 +76,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
                 if (sto.code != reqVO.baseCode)
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
+                
+                var stopack = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                if (stopack == null || stopack.Count == 0)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Data of Packs Not Found");
+
+
                 sto.lengthM = reqVO.length;
                 sto.heightM = reqVO.height;
                 sto.widthM = reqVO.width;
@@ -133,7 +148,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || sto.eventStatus == StorageObjectEventStatus.PARTIAL || sto.eventStatus == StorageObjectEventStatus.QC || sto.eventStatus == StorageObjectEventStatus.RETURN || sto.eventStatus == StorageObjectEventStatus.HOLD)
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED || 
+                    sto.eventStatus == StorageObjectEventStatus.PARTIAL || 
+                    sto.eventStatus == StorageObjectEventStatus.QC || 
+                    sto.eventStatus == StorageObjectEventStatus.RETURN || 
+                    sto.eventStatus == StorageObjectEventStatus.HOLD)
                 {
                     var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
                     var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
@@ -229,16 +248,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
-                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).ID,
-                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
-                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
+                        Sou_AreaMasterType_ID = area.AreaMasterType_ID,
+                        //Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
+                        //Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
                         Sou_AreaMaster_ID = area.ID.Value,
                         Sou_AreaMaster_Code = area.Code,
                         Sou_AreaLocationMaster_ID = location.ID,
                         Sou_AreaLocationMaster_Code = location.Code,
-                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).ID,
-                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
-                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
+                        Des_AreaMasterType_ID = desArea.AreaMasterType_ID,
+                        //Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
+                        //Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
                         Des_AreaMaster_ID = desArea.ID.Value,
                         Des_AreaMaster_Code = reqVO.desAreaCode,
                         Des_AreaLocationMaster_ID = desLocation.ID,
@@ -256,6 +275,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
+            RegisterWorkQueueTest xxx = new RegisterWorkQueueTest();
             this.InitDataASRS(reqVO);
 
             var sto = GetSto(reqVO);

@@ -270,13 +270,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     msgError = message
                 });
             }
-            else
-            {
-                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                {
-                    msgError = message
-                });
-            }
+
             throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, message);
 
         }

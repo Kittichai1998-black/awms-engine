@@ -174,11 +174,10 @@ const Loading = props => {
       }
     });
     setDocID(value);
-    console.log(value);
     const data = {
-      docID: value
-    };
-
+      "docID": value
+      };
+      console.log(data)
     Axios.post(window.apipath + "/v2/ListLoadingConsoAPI", data).then(res => {
       console.log(res);
 
@@ -208,9 +207,10 @@ const Loading = props => {
 
   const getDocument = barcodeDetail => {
     const data = {
-      docID: docID,
-      scanCode: barcodeDetail
-    };
+      "docID": docID,
+      "scanCode": barcodeDetail
+      };
+      console.log(data)
     Axios.post(window.apipath + "/v2/LoadedStoByScanConsoAPI", data).then(
       res => {
         if (res.data._result.status === 1) {
@@ -271,8 +271,8 @@ const Loading = props => {
             fieldDataKey="ID"
             fieldLabel={["Code"]}
             labelPattern=" : "
-            width={150}
-            ddlMinWidth={150}
+            width={200}
+            ddlMinWidth={200}
             zIndex={1000}
             queryApi={DocumentQuery}
             onChange={(value, dataObject, field) => onHandleDDLChange(value)}

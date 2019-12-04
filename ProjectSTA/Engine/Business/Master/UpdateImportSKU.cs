@@ -42,43 +42,107 @@ namespace ProjectSTA.Engine.Business
         {
             reqVO.data.ForEach(data =>
             {
-               
-                var skuInsert = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_SKUMaster>(this.BuVO, new ams_SKUMaster()
-                {
-                    Code = data.Code,
-                    Name = data.Name,
-                    SKUMasterType_ID = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Code == data.SKUMasterType).ID.Value,
-                    ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
-                    Status = EntityStatus.ACTIVE,
-                    UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
-                    //WeightKG = data.WeightKG? 0 : Int32.Parse(data.WeightKG)
-                    //WeightKG = string.IsNullOrWhiteSpace(data.WeightKG)? (decimal?)null: (decimal?)data.WeightKG
-                    WeightKG = data.WeightKG
-                }) ;
+                var checkSKU = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
+                    new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Code",data.Code, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                }, this.BuVO);
 
-                if (skuInsert != null)
+                
+
+                if (checkSKU.Count != 0)//มี SKU ซ็ำ
                 {
-                    AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_PackMaster>(this.BuVO, new ams_PackMaster()
+                    var dataObjectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value;
+                    var dataBaseUnit = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value;
+                    var checkBaseAndObject = checkSKU.FindAll(x => x.ObjectSize_ID != dataObjectSizeID || x.UnitType_ID != dataBaseUnit);
+                    if (checkBaseAndObject.Count != 0)
                     {
-                        Code= data.Code,
-                        Name=data.Name,
-                        Description = data.Description,
-                        SKUMaster_ID = skuInsert.Value,
-                        PackMasterType_ID = null,
-                        Quantity = data.Sale_Qty,
-                        UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Sale_Unit_Type).ID.Value,
-                        BaseQuantity = data.Base_Qty,
-                        BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
-                        ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
-                        ItemQty = 0 ,
-                        Status = EntityStatus.ACTIVE
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Code "+ data.Code + " มี ObjectSize หรือ BaseUnitType ที่ไม่ตรงกัน");
+                    }
 
-                    });
+                    foreach (var dataSKU in checkSKU)
+                    {
+                    var skuUpdate = AWMSEngine.ADO.DataADO.GetInstant().UpdateBy<ams_SKUMaster>(
+                            new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("ID", dataSKU.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Code", dataSKU.Code, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                            },
+                                new KeyValuePair<string, object>[] {
+                                new KeyValuePair<string, object>("Code",data.Code),
+                                new KeyValuePair<string, object>("Name",data.Name),
+                                new KeyValuePair<string, object>("SKUMasterType_ID",StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Code == data.SKUMasterType).ID.Value),
+                                new KeyValuePair<string, object>("ObjectSize_ID",StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value),
+                                new KeyValuePair<string, object>("UnitType_ID",StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value),
+                                new KeyValuePair<string, object>("WeightKG",data.WeightKG),
+                                new KeyValuePair<string, object>("Status",EntityStatus.ACTIVE)
+                            }, this.BuVO);
+
+                     var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(dataSKU.ID.Value, this.BuVO);
+
+                       
+                            var packUpdate = AWMSEngine.ADO.DataADO.GetInstant().UpdateBy<ams_PackMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("ID",pack.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
+                            },
+                                new KeyValuePair<string, object>[] {
+                                new KeyValuePair<string, object>("Code",data.Code),
+                                new KeyValuePair<string, object>("Name",data.Name),
+                                new KeyValuePair<string, object>("Description",data.Description),
+                                new KeyValuePair<string, object>("SKUMaster_ID",StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Code == data.SKUMasterType).ID.Value),
+                                new KeyValuePair<string, object>("PackMasterType_ID",null),
+                                new KeyValuePair<string, object>("Quantity",data.Sale_Qty),
+                                new KeyValuePair<string, object>("UnitType_ID",StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Sale_Unit_Type).ID.Value),
+                                new KeyValuePair<string, object>("BaseQuantity",data.Base_Qty),
+                                new KeyValuePair<string, object>("BaseUnitType_ID",StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value),
+                                new KeyValuePair<string, object>("ObjectSize_ID",StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value),
+                                new KeyValuePair<string, object>("ItemQty",0),
+                                new KeyValuePair<string, object>("Status",EntityStatus.ACTIVE)
+
+                            }, this.BuVO);
+                     
+                    }
+
                 }
                 else
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Insert SKU Fail");
+                    var skuInsert = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_SKUMaster>(this.BuVO, new ams_SKUMaster()
+                    {
+                        Code = data.Code,
+                        Name = data.Name,
+                        SKUMasterType_ID = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Code == data.SKUMasterType).ID.Value,
+                        ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
+                        Status = EntityStatus.ACTIVE,
+                        UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
+                        WeightKG = data.WeightKG
+                    });
+
+                    if (skuInsert != null)
+                    {
+                        AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_PackMaster>(this.BuVO, new ams_PackMaster()
+                        {
+                            Code = data.Code,
+                            Name = data.Name,
+                            Description = data.Description,
+                            SKUMaster_ID = skuInsert.Value,
+                            PackMasterType_ID = null,
+                            Quantity = data.Sale_Qty,
+                            UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Sale_Unit_Type).ID.Value,
+                            BaseQuantity = data.Base_Qty,
+                            BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == data.Base_Unit_Type).ID.Value,
+                            ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.Code == data.ObjectSize).ID.Value,
+                            ItemQty = 0,
+                            Status = EntityStatus.ACTIVE
+
+                        });
+                    }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Insert SKU Fail");
+                    }
                 }
+
+
             });
 
 

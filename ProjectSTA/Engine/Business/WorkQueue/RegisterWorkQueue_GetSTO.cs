@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
@@ -34,12 +35,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
             if (sto.code != reqVO.baseCode)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
-            /*
-            if (_areaASRS.ID != sto.areaID)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Area don't macth");
-            if (_locationASRS.ID != sto.parentID)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Location don't macth");
-            */
+            var stopack = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            if (stopack == null || stopack.Count == 0)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Data of Packs Not Found");
 
             sto.lengthM = reqVO.length;
             sto.heightM = reqVO.height;
