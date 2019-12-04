@@ -46,7 +46,7 @@ namespace AMWUtil.Logger
             if (!this._IsLogging)
                 return;
 
-            message = string.Format("{0:HH:mm:ss.fff} [{1}] {3}/{4}({5}) [{2}] > {6}",
+            message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
                                         DateTime.Now,
                                         this.LogRefID,
                                         logLV,

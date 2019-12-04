@@ -2,6 +2,7 @@
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.Business.Received;
 using AWMSEngine.Engine.V2.Business;
+using AWMSEngine.Engine.V2.Business.Document;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;

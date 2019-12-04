@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.General
 
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
 
-            if (nextArea != null && nextArea.Sou_AreaMasterType_GroupType == AreaMasterGroupType.GATE)
+            if (nextArea != null && nextArea.Sou_AreaMasterType_ID == AreaMasterTypeID.MACHINE_GATE)
             {
                 if (nextArea.Des_AreaLocationMaster_ID.HasValue)
                 {

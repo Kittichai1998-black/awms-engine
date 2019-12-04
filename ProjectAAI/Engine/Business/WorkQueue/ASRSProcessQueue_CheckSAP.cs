@@ -28,7 +28,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
         public ASRSProcessQueue.TRes ExecuteEngine(AMWLogger logger, VOCriteria buVO, ASRSProcessQueue.TReq reqVO)
         {
-            List<amt_Document> docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListAndItem(
+            List<amt_Document> docs = DocumentADO.GetInstant().ListAndItem(
                reqVO.processQueues.GroupBy(x => x.docID).Select(x => x.Key).ToList()
                , buVO);
             CheckDocumentFromSAP(buVO, reqVO, docs);
@@ -215,7 +215,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         break;
                 }
                 if (statusSapRes)
-                    AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(docItem, buVO);
+                    DocumentADO.GetInstant().PutItem(docItem, buVO);
             }
         }
         private void CheckStoFromSAP(VOCriteria buVO, ASRSProcessQueue.TReq reqVO)
@@ -248,7 +248,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             foreach (var search in searchList)
             {
                 search.not_pstoIDs = new List<long>();
-                var su = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListByProcessQueue(search, buVO);
+                var su = StorageObjectADO.GetInstant().ListByProcessQueue(search, buVO);
                 suList.AddRange(su);
             }
 

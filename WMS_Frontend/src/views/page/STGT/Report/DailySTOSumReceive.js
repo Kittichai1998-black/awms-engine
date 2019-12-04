@@ -102,7 +102,7 @@ const DailySTOSumReceive = (props) => {
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
             + "&skuType=" + (valueText.skuType === undefined || valueText.skuType === null ? '' : encodeURIComponent(valueText.skuType))
-            + "&movementTypeID=" + (valueText.movementType === undefined || t.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+            + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType === null ? '' : encodeURIComponent(valueText.movementType))
             + "&docType=1001"
             + "&spname=DAILY_STOSUM";
     }

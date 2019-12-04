@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Exception;
+using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
