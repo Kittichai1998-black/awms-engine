@@ -45,25 +45,21 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     docID = x,
                                     msgError = "Document Items of Storage Object Not Found."
                                 });
-                                //throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
                             }
                             else
                             {
-                                var WorkQueues = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
-                                WorkQueues.ForEach(wq =>
+                                var distoGroupByWQ = distos.GroupBy(grp => grp.WorkQueue_ID, (key, g) => new { WorkQueueID = key, DiSTOs = g.ToList() });
+                                foreach (var di in distoGroupByWQ)
                                 {
-                                    var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, this.BuVO);
-
                                     if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
                                     {
-                                        UpdateStorageObjectReceived(queue, this.BuVO);
+                                        UpdateStorageObjectReceived(di.WorkQueueID);
                                     }
-                                    else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                    else
                                     {
-                                        var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
-                                        UpdateStorageObjectIssued(updDistos, queue, this.BuVO);
+                                        UpdateStorageObjectIssued(di.DiSTOs);
                                     }
-                                });
+                                }
 
                                 //update Closed Document
                                 var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
@@ -107,10 +103,46 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
             return res;
         }
-
-        private void UpdateStorageObjectReceived(SPworkQueue queue, VOCriteria buVO)
+        private void RemoveOPTEventSTO(long bsto_id, string bsto_options, VOCriteria buVO)
         {
-            var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO);
+            //remove OPT_DONE_DES_EVENT_STATUS
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto_options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
+        }
+
+        private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
+        {
+            //remove 
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
+        }
+        private void UpdateStorageObjectReceived(long? wqID)
+        {
+            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wqID.Value, this.BuVO);
+
+            var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
             //up OPT_DONE_DES_EVENT_STATUS
             List<TUpdateSTO> upd_stolist = new List<TUpdateSTO>();
@@ -136,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             id = sto.id.Value,
                             done_eventsto = eventStatus
                         });
-                        RemoveOPTEventSTO(sto.id.Value, sto.options, buVO);
+                        RemoveOPTEventSTO(sto.id.Value, sto.options, this.BuVO);
                     }
                 }
                 else
@@ -150,7 +182,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     else
                     {
                         eventStatus_rootSto = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        RemoveOPTEventSTO(sto.id.Value, sto.options, buVO);
+                        RemoveOPTEventSTO(sto.id.Value, sto.options, this.BuVO);
                     }
                     upd_stolist.Add(new TUpdateSTO()
                     {
@@ -176,79 +208,32 @@ namespace AWMSEngine.Engine.V2.Business.Document
             }
 
         }
-        private void RemoveOPTEventSTO(long bsto_id, string bsto_options, VOCriteria buVO)
+
+        private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos)
         {
-            //remove OPT_DONE_DES_EVENT_STATUS
-            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto_options);
-            var opt_done = "";
-
-            if (listkeyRoot != null && listkeyRoot.Count > 0)
-            {
-                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
-                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
-            }
-
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
-                    new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string, object>("Options", opt_done)
-                    });
-        }
-
-        private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos, SPworkQueue queue, VOCriteria buVO)
-        {
-            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
-
-            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-
             distos.ForEach(disto =>
             {
-                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบ FULL และ partial
                 {
-                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
+                    var stoDes = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(disto.Des_StorageObject_ID, this.BuVO);
+                    var done_des_event_status = ObjectUtil.QryStrGetValue(stoDes.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                    if (done_des_event_status == null || done_des_event_status.Length == 0)
                     {
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, buVO);
-                    }
-                    else
-                    {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, buVO);
-                    }
-                }
-                else
-                {
-                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
-                    {
-                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, null, EntityStatus.ACTIVE, eventStatus, buVO);
+                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, this.BuVO);
                     }
                     else
                     {
                         StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, EntityStatus.ACTIVE, eventStatus, buVO);
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, StorageObjectEventStatus.PICKING,
+                            EntityStatus.ACTIVE, eventStatus, this.BuVO);
+                        RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, this.BuVO);
+
                     }
-                    RemoveOPTEventSTO(bsto.ID.Value, bsto.Options, buVO);
                 }
+
+
             });
-
-
-        }
-        private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
-        {
-            //remove 
-            var listkeyRoot = ObjectUtil.QryStrToKeyValues(options);
-            var opt_done = "";
-
-            if (listkeyRoot != null && listkeyRoot.Count > 0)
-            {
-                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
-                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
-            }
-
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
-                    new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string, object>("Options", opt_done)
-                    });
         }
     }
 }
