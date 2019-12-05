@@ -56,8 +56,8 @@ namespace AWMSEngine.Engine.V2.Business
         {
             if (reqVO.validateSKUTypeCodes != null && reqVO.validateSKUTypeCodes.Count > 0)
             {
-                ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.SKUMaster_ID, this.BuVO);
-                if(sm == null)
+                ams_SKUMaster sm = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
+                if (sm == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Found");
 
                 ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
