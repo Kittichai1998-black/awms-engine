@@ -11,13 +11,6 @@ namespace AMWUtil.Common
         {
             string newValue = "";
             int[] newArray = ExplodeRangeNumToIntArray(rangeNums);
-            //int[] newArray = new int[] { };
-            //if (rangeNums.Length > 0)
-            //{
-            //    for (int i = 0; i < rangeNums.Length; i++){
-            //        newArray = newArray.Concat(ConvertRangeNumToIntArray(rangeNums[i])).ToArray();
-            //    }
-            //}
 
             for (int i = 0; i < newArray.Length; i++)
             {
@@ -36,17 +29,6 @@ namespace AMWUtil.Common
         {
             string newValue = "";
             int[] newArray = ExplodeRangeNumToIntArray(rangeNums);
-
-            //string[] strVal = null;
-            //if (value.Contains(","))
-            //{
-            //    strVal = value.Split(",");
-            //    return ExplodeRangeNum(strVal);
-            //}
-            //else
-            //{
-            //    newArray = newArray.Concat(ConvertRangeNumToIntArray(value)).ToArray();
-            //}
 
             for (int i = 0; i < newArray.Length; i++)
             {
@@ -94,28 +76,27 @@ namespace AMWUtil.Common
         public static int[] ConvertRangeNumToIntArray(string value)
         {
             List<int> termsList = new List<int>();
-            int[] newArray = new int[] { };
-            if (value.Contains("-"))
+            foreach(var v in value.Split(','))
             {
-                string[] eleArray = value.Split("-");
-                int i = int.Parse(eleArray[0]);
-                int end = int.Parse(eleArray[1]);
-                while (i <= end)
+                if (v.Contains("-"))
                 {
-                    termsList.Add(i);
-                    i++;
+                    string[] eleArray = v.Split("-");
+                    int i = int.Parse(eleArray[0]);
+                    int end = int.Parse(eleArray[1]);
+                    while (i <= end)
+                    {
+                        termsList.Add(i);
+                        i++;
+                    }
                 }
-                termsList.Sort();
-                newArray = termsList.ToArray();
-            }
-            else
-            {
-                termsList.Add(int.Parse(value));
-                termsList.Sort();
-                newArray = termsList.ToArray();
+                else
+                {
+                    termsList.Add(int.Parse(v));
+                }
             }
 
-            return newArray;
+            termsList.Sort();
+            return termsList.ToArray();
         }
 
         public static string MergeRangeNum(string value)
@@ -134,12 +115,12 @@ namespace AMWUtil.Common
             if (ints.Count < 1) return new string[] { };
             ints.Sort();
             var lng = ints.Count;
-            var fromnums = new List<int>();
+            var fromnums = new List<int>() { ints[0] };
             var tonums = new List<int>();
             for (var i = 0; i < lng - 1; i++)
             {
-                if (i == 0)
-                    fromnums.Add(ints[0]);
+                //if (i == 0)
+                //    fromnums.Add(ints[0]);
                 if (ints[i + 1] > ints[i] + 1)
                 {
                     tonums.Add(ints[i]);
@@ -151,6 +132,16 @@ namespace AMWUtil.Common
                 i => fromnums[i].ToString() +
                     (tonums[i] == fromnums[i] ? "" : "-" + tonums[i].ToString())
             ).ToArray();
+        }
+
+        public static string IntersectRangeNum(string value1, string value2)
+        {
+            var v1 = ConvertRangeNumToIntArray(value1);
+            var v2 = ConvertRangeNumToIntArray(value2);
+            var v = v1.Intersect(v2).ToList();
+            if (v.Count() > 0)
+                return string.Join(',', ToRanges(v));
+            return string.Empty;
         }
     }
 }

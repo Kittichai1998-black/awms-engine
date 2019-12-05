@@ -38,6 +38,14 @@ namespace TestConvert
             sysout.WriteLine(res);
             sysout.WriteLine(res);
         }
+        [Fact]
+        public void TestIntersectRangeNum()
+        {
+            this.sysout.WriteLine(AMWUtil.Common.RangeNumUtil.IntersectRangeNum("1-2", "3-4"));
+            this.sysout.WriteLine(AMWUtil.Common.RangeNumUtil.IntersectRangeNum("1-5", "3-9"));
+            this.sysout.WriteLine(AMWUtil.Common.RangeNumUtil.IntersectRangeNum("1,2,3,4,5,7", "5,6"));
+            this.sysout.WriteLine(AMWUtil.Common.RangeNumUtil.IntersectRangeNum("1-10,20-30", "5-25"));
+        }
     }
 
 }
