@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class RegisterEmptyPallet : BaseEngine<RegisterWorkQueue.TReq, WorkQueueCriteria>
+    public class RegisterWorkQueueComplete : BaseEngine<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
         protected override WorkQueueCriteria ExecuteEngine(RegisterWorkQueue.TReq reqVO)
         {
