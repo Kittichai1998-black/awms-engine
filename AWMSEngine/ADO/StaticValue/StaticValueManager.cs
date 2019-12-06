@@ -282,7 +282,7 @@ namespace AWMSEngine.ADO.StaticValue
             {
                 if (tableName == typeof(ams_Feature).Name) this._Features = null;
                 else if (tableName == typeof(ams_Config).Name) this._Configs = null;
-                else if (tableName == typeof(ams_ObjectSize).Name) this._ObjectSizes = null;
+                else if (tableName == typeof(ams_ObjectSize).Name || tableName == typeof(ams_ObjectSizeMap).Name) this._ObjectSizes = null;
                 else if (tableName == typeof(ams_UnitType).Name) this._UnitTypes = null;
                 else if (tableName == typeof(ams_AreaMaster).Name) this._AreaMasters = null;
                 else if (tableName == typeof(ams_AreaRoute).Name) this._AreaRoutes = null;
