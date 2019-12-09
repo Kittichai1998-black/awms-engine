@@ -390,6 +390,7 @@ const LoadingReturn = (props) => {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {

@@ -106,13 +106,24 @@ const StockCard = (props) => {
 
     }
 
-
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+    const getValue = (value, inputID) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
         valueText[inputID] = value;
-
+    }
+    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+    };
+    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        if (event && event.key == 'Enter') {
+            onGetDocument();
+        }
+    };
+    const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        onGetDocument();
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -122,6 +133,7 @@ const StockCard = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -131,6 +143,7 @@ const StockCard = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
                 />
             </FormInline><br />
             <FormInline><LabelH>{t("Movement")} : </LabelH>
@@ -145,7 +158,7 @@ const StockCard = (props) => {
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={MVTQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'movementType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'movementType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
@@ -156,7 +169,7 @@ const StockCard = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "fromDate", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "fromDate", null, null)}
                     FieldID={"fromDate"} >
                 </AmDate>
             </FormInline>
@@ -167,7 +180,7 @@ const StockCard = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "toDate", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "toDate", null, null)}
                     FieldID={"toDate"} >
                 </AmDate>
             </FormInline>
