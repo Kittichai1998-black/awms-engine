@@ -70,14 +70,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);
                                 }
-                                else
-                                {
-                                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                        {
-                                            docID = x,
-                                            msgError = "Status of all document items didn't 'WORKED'."
-                                        });                                                                   
-                                }
                             }
                         }
                         else
