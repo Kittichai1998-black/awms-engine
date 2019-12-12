@@ -114,6 +114,15 @@ useEffect(() => {
   }
 }, [resetPage]);
 
+// useEffect(() => {
+//   var xx = filterData.filter(x=> x.c === '=')
+//   var yy = xx.map(x => {
+//     return x.f + '=' + x.v
+//   });
+//   var yyy = xx.join('&');
+//   console.log(yyy)
+//   //props.history.push()
+// }, [filterData]);
 
 const FuncSetTable  = () => {
   const iniCols = props.iniCols
@@ -667,7 +676,7 @@ if(filterDataList.length > 0){
             createObj.c = "<="
             obj.push(createObj)
         }else{     
-          console.log("ddd")
+
             let createObj = {};
             createObj.f = field
             createObj.v = value + "%"
@@ -675,6 +684,7 @@ if(filterDataList.length > 0){
             obj.push(createObj)
         }      
       }
+      console.log(obj)
   setFilterData(obj)  
 }
 //===========================================================
@@ -701,8 +711,23 @@ const onHandleFilterConfirm = (status, obj) => {
         filterDatas.push(createObj)
       }
     }
+    // console.log(filterDatas)
+    // console.log(filterDatas.length)
+    var datachecknull = filterDatas.filter(x=> x.v !== '%')
+    var datacheckLike = datachecknull.filter(x=> x.c === 'like')
+    // console.log(xx)
+    var result = datacheckLike.map(x => {
+      return x.f + '=' + encodeURIComponent(x.v)
+    });
+    // console.log(yy)
+    var resultfilter = result.join('&');
+    // console.log(resultfilter)
+    // console.log(props.history.location.pathname)
+    props.history.push(props.history.location.pathname+"?"+resultfilter)
     getQuery.q = JSON.stringify(filterDatas);
     setQuery(getQuery)
+
+    
   }
   setDatetime({})
   //setFilterData([{"f":"status","c":"!=","v":"2"}])
@@ -1260,10 +1285,20 @@ const getDataFilter=(datas)=>{
 //===========================================================
 const getDataFilterURL=()=>{
   console.log(props.history)
-console.log(props.history.location.search)
+  console.log(...filterData)
+  //props.history.push("/testMasterV2?Code=c")
+
+  
+
+
+
+
+console.log(props.history.location)
 var x = props.history.location.search
 var qryStr = queryString.parse(x);
+//var x = window.history.pushState({"html":response.html,"pageTitle":response.pageTitle},"", urlPath);
 console.log(qryStr)
+
 //onHandleFilterConfirmURL(true,qryStr)
 let obj =[{"f":"status","c":"!=","v":"2"}]
 for(var data in qryStr ){
@@ -1283,7 +1318,8 @@ const onHandleFilterConfirmURL = (obj) => {
     let filterDatas = [...obj]
     console.log(...filterData)
     getQuery.q = JSON.stringify(filterDatas);
-    console.log()
+    //props.history.push("/testMasterV2?Code=c")
+    console.log(props.history)
     setQuery(getQuery)
   
 
