@@ -40,20 +40,20 @@ namespace AWMSEngine.Engine.Validation
             {
                 this.Logger.LogDebug("//Validate Quantity : " + sto.code);
 
-                foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, count = (decimal)x.Count() }))
+                foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, sum = (decimal)x.Sum(y => y.baseQty) }))
                 {
                     var osm = sto.objectSizeMaps.FirstOrDefault(x => x.innerObjectSizeID == s.objectSizeID);
                     if (osm == null)
                     {
                         throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ยังไม่ได้กำหนดค่า ไม่สามารถใส่ลงกล่อง หรือ พาเลทได้");
                     }
-                    if (osm.maxQuantity.HasValue && s.count > osm.maxQuantity.Value)
+                    if (osm.maxQuantity.HasValue && s.sum > osm.maxQuantity.Value)
                         throw new AMWException(this.Logger, AMWExceptionCode.V3002, "เกินจำนวนที่กำหนด");
                 }
 
             }
 
-            if (sto.mapstos != null)
+            if (sto.mapstos != null && sto.mapstos.Count() > 0)
                 sto.mapstos.ForEach(x => this.ValidateQuantity(x));
         }
     }

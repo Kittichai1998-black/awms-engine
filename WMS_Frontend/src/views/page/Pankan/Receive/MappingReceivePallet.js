@@ -37,7 +37,7 @@ const MappingReceivePallet = (props) => {
     //     { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time", "required": true  },
     // ]
     const inputItem = [
-        { "field": SC.OPT_SUPPLIER_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "defaultValue": 1297, "fieldDataKey": "ID", "required": true },
+        { "field": SC.OPT_SUPPLIER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "defaultValue": 1297, "fieldDataKey": "ID", "required": true },
         { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time", "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1, "required": true, "clearInput": true },
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true, "clearInput": true },
@@ -75,49 +75,50 @@ const MappingReceivePallet = (props) => {
 
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     let dataMapSto = findMapSto(storageObj, reqValue.scanCode);
-       
-                    if (dataMapSto) {
 
+                    if (dataMapSto) {
+                        oldOptions = queryString.parse(dataMapSto.options);
                         if (dataMapSto.parentID !== reqValue.rootID) {
-                            if(dataMapSto.parentID){
+                            if (dataMapSto.parentID) {
                                 reqValue.rootID = dataMapSto.parentID;
                                 reqValue.rootType = dataMapSto.parentType;
-                            }else{
-                                if(reqValue.action !== 2){
+                            } else {
+                                if (reqValue.action !== 2) {
                                     reqValue.rootID = dataMapSto.parentID;
-                                reqValue.rootType = dataMapSto.parentType;
-                                }else{
+                                    reqValue.rootType = dataMapSto.parentType;
+                                } else {
                                     reqValue.rootID = dataMapSto.id;
                                     reqValue.rootType = dataMapSto.type;
                                 }
                             }
-                           
-                            // console.log(reqValue)
+
                         }
-                        oldOptions = queryString.parse(dataMapSto.options);
-                    } 
 
-                    if (oldOptions) {
-                        let newsupplier_id = "";
-                        let newdate = "";
+                    }
 
-                        if (reqValue.action === 2) {
-                            let date = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE].split(',') : [];
-                            let newdates = date.slice(0, date.length - reqValue.amount);
-                            newdate = newdates.join(',');
+                    if (oldOptions && oldOptions[SC.OPT_DATE] && oldOptions[SC.OPT_SUPPLIER_ID] 
+                        && oldOptions[SC.OPT_DATE].length > 0 && oldOptions[SC.OPT_SUPPLIER_ID].length > 0) {
+                             
+                            let newsupplier_id = "";
+                            let newdate = "";
 
-                            let supplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID].split(',') : [];
-                            let newsupplier_ids = supplier_id.slice(0, supplier_id.length - reqValue.amount);
-                            newsupplier_id = newsupplier_ids.join(',');
+                            if (reqValue.action === 2) {
+                                let date = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE].split(',') : [];
+                                let newdates = date.slice(0, date.length - reqValue.amount);
+                                newdate = newdates.join(',');
 
-                        } else {
-                            if (SUPPLIER_ID) {
-                                newsupplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID] + "," + runOptions(reqValue.amount, SUPPLIER_ID) : SUPPLIER_ID;
+                                let supplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID].split(',') : [];
+                                let newsupplier_ids = supplier_id.slice(0, supplier_id.length - reqValue.amount);
+                                newsupplier_id = newsupplier_ids.join(',');
+
+                            } else {
+                                if (SUPPLIER_ID) {
+                                    newsupplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID] + "," + runOptions(reqValue.amount, SUPPLIER_ID) : SUPPLIER_ID;
+                                }
+                                newdate = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE] + "," + runOptions(reqValue.amount, reqValue.donateDate) : reqValue.donateDate;
                             }
-                            newdate = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE] + "," + runOptions(reqValue.amount, reqValue.donateDate) : reqValue.donateDate;
-                        }
-                        optDATE = newdate;
-                        optSUPPLIER_ID = newsupplier_id;
+                            optDATE = newdate;
+                            optSUPPLIER_ID = newsupplier_id;
                     } else {
                         optDATE = runOptions(reqValue.amount, reqValue.donateDate);
                         optSUPPLIER_ID = runOptions(reqValue.amount, SUPPLIER_ID);
@@ -228,15 +229,15 @@ const MappingReceivePallet = (props) => {
         for (let no in mapstosToTree) {
             if (mapstosToTree[no].code === scanCode) {
                 var found = mapstosToTree.find(element => {
-                    if(mapstosToTree[no].parentID){
+                    if (mapstosToTree[no].parentID) {
                         return element.id === mapstosToTree[no].parentID && element.isFocus === true;
-                    }else{
+                    } else {
                         return element.isFocus === true;
                     }
                 });
                 if (found) {
                     pack = mapstosToTree[no];
-                } 
+                }
                 break;
             } else {
                 continue;

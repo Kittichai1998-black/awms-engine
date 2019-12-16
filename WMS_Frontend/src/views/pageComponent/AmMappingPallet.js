@@ -260,7 +260,7 @@ const AmMappingPallet = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-     
+
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -993,13 +993,13 @@ const AmMappingPallet = (props) => {
             type: storageObj.type
         }
         Axios.post(window.apipath + apiConfirm, reqConfirm).then((res) => {
-            inputClearAll();
-            if (res.data._result.status !== 0) {
+            if (res.data._result.status === 1) {
                 if (confirm) {
                     alertDialogRenderer("Receive Pallet Success", "success", true);
                 }
                 onHandleClear();
             } else {
+                inputClearAll();
                 alertDialogRenderer(res.data._result.message, "error", true);
             }
         });
