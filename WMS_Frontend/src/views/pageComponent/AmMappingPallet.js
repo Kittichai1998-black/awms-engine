@@ -397,12 +397,17 @@ const AmMappingPallet = (props) => {
         var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
+        let arrayStoBase = null;
         if (valueInput) {
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
+                if(modeMultiSKU){
+                    arrayStoBase = findBaseSto(storageObj);
+                    // console.log(arrayStoBase)
+                }
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
@@ -504,14 +509,32 @@ const AmMappingPallet = (props) => {
                 if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
                     handleClickOpenDialog();
                 } else {
-                    onSubmitToAPI(resValuePosts);
+                    if(modeMultiSKU && arrayStoBase !== null && arrayStoBase.length > 0 && actionValue === 2){
+                        let checkMatch = _.filter(arrayStoBase, { 'code': resValuePosts['scanCode'], 'isFocus': true });
+                        if(checkMatch !== null && checkMatch.length > 0){
+                            handleClickOpenDialog();
+                        }else{
+                            onSubmitToAPI(resValuePosts);
+                        }
+                    }else{
+                        onSubmitToAPI(resValuePosts);
+                    }
                 }
             } else {
                 if (preAutoPost) {
                     if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
                         handleClickOpenDialog();
                     } else {
-                        onSubmitToAPI(resValuePosts);
+                        if(modeMultiSKU && arrayStoBase !== null && arrayStoBase.length > 0 && actionValue === 2){
+                            let checkMatch = _.filter(arrayStoBase, { 'code': resValuePosts['scanCode'], 'isFocus': true });
+                            if(checkMatch !== null && checkMatch.length > 0){
+                                handleClickOpenDialog();
+                            }else{
+                                onSubmitToAPI(resValuePosts);
+                            }
+                        }else{
+                            onSubmitToAPI(resValuePosts);
+                        }
                     }
                 }
             }
@@ -588,6 +611,17 @@ const AmMappingPallet = (props) => {
             }
         }
         return idFocus;
+    }
+    const findBaseSto = (storageObj) => {
+        let mapstosToTree = ToListTree(storageObj, 'mapstos');
+        mapstosToTree.reverse();
+        let base = [];
+        for (let no in mapstosToTree) {
+            if (mapstosToTree[no].type === 1) {
+                base.push(mapstosToTree[no]);
+            }  
+        }
+        return base;
     }
     const findPack = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
