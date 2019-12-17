@@ -312,11 +312,20 @@ const ConsolePankan = (props) => {
             setStateDialogErr(true)
 
         } else {
+            console.log(barcodePicks)
+            console.log(barcodePicks.length)
+            let baseCode = null
+            let SkuCodes = null
+            if (barcodePicks.length < 8) {
+                baseCode = barcodePicks
+            } else {
+
+            }
             let datasPick = {
                 "docID": docIds,
-                "scanCode": barcodePicks,
+                "scanCode": SkuCodes,
                 "baseConso": "",
-                "basePick": "BXL0121",
+                "basePick": baseCode,
                 "scanQty": qtypick,
 
             }
