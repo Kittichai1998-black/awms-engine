@@ -63,7 +63,7 @@ const MappingReceivePallet = (props) => {
         if (reqValue) {
 
             if (reqValue.rootID) {
-
+                
                 let SUPPLIER_ID = null;
                 let oldOptions = {};
                 let options = null;
