@@ -332,7 +332,7 @@ namespace AWMSModel.Criteria
                         if (!s.weiKG.HasValue && s.mapstos.TrueForAll(y => y.weiKG.HasValue))
                             s.weiKG = s.mapstos.Sum(y => y.weiKG.Value);
 
-                        if (!s.isFocus && (s.id == idFocus || s.code.ToUpper() == codeFocus.ToUpper()) && s.type != StorageObjectType.PACK)
+                        if (!s.isFocus && (s.id == idFocus || s.code.ToUpper() == (codeFocus != null ? codeFocus.ToUpper() : null)) && s.type != StorageObjectType.PACK)
                             s.isFocus = true;
                         return s;
                     }).ToList();
