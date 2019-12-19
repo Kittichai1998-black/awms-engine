@@ -311,7 +311,7 @@ namespace AWMSEngine.Engine.V2.Business
             StorageObjectCriteria mapsto)
         {
             if (mapsto.type != StorageObjectType.PACK)
-                mapsto.isFocus = mapsto.code.Equals(reqVO.scanCode);
+                mapsto.isFocus = mapsto.code.ToUpper().Equals(reqVO.scanCode.ToUpper());
             mapsto.mapstos.ForEach(x =>
             {
                 mapsto.isFocus = mapsto.type != StorageObjectType.PACK & (ActionSelect(reqVO, x) | mapsto.isFocus);

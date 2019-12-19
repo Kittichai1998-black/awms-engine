@@ -260,7 +260,7 @@ const AmMappingPallet = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-     
+
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -397,12 +397,17 @@ const AmMappingPallet = (props) => {
         var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
+        let arrayStoBase = null;
         if (valueInput) {
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
+                if(modeMultiSKU){
+                    arrayStoBase = findBaseSto(storageObj);
+                    // console.log(arrayStoBase)
+                }
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
@@ -504,14 +509,32 @@ const AmMappingPallet = (props) => {
                 if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
                     handleClickOpenDialog();
                 } else {
-                    onSubmitToAPI(resValuePosts);
+                    if(modeMultiSKU && arrayStoBase !== null && arrayStoBase.length > 0 && actionValue === 2){
+                        let checkMatch = _.filter(arrayStoBase, { 'code': resValuePosts['scanCode'], 'isFocus': true });
+                        if(checkMatch !== null && checkMatch.length > 0){
+                            handleClickOpenDialog();
+                        }else{
+                            onSubmitToAPI(resValuePosts);
+                        }
+                    }else{
+                        onSubmitToAPI(resValuePosts);
+                    }
                 }
             } else {
                 if (preAutoPost) {
                     if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
                         handleClickOpenDialog();
                     } else {
-                        onSubmitToAPI(resValuePosts);
+                        if(modeMultiSKU && arrayStoBase !== null && arrayStoBase.length > 0 && actionValue === 2){
+                            let checkMatch = _.filter(arrayStoBase, { 'code': resValuePosts['scanCode'], 'isFocus': true });
+                            if(checkMatch !== null && checkMatch.length > 0){
+                                handleClickOpenDialog();
+                            }else{
+                                onSubmitToAPI(resValuePosts);
+                            }
+                        }else{
+                            onSubmitToAPI(resValuePosts);
+                        }
                     }
                 }
             }
@@ -588,6 +611,17 @@ const AmMappingPallet = (props) => {
             }
         }
         return idFocus;
+    }
+    const findBaseSto = (storageObj) => {
+        let mapstosToTree = ToListTree(storageObj, 'mapstos');
+        mapstosToTree.reverse();
+        let base = [];
+        for (let no in mapstosToTree) {
+            if (mapstosToTree[no].type === 1) {
+                base.push(mapstosToTree[no]);
+            }  
+        }
+        return base;
     }
     const findPack = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
@@ -910,7 +944,8 @@ const AmMappingPallet = (props) => {
                             style={{ width: "330px" }}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            // onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -993,13 +1028,13 @@ const AmMappingPallet = (props) => {
             type: storageObj.type
         }
         Axios.post(window.apipath + apiConfirm, reqConfirm).then((res) => {
-            inputClearAll();
-            if (res.data._result.status !== 0) {
+            if (res.data._result.status === 1) {
                 if (confirm) {
                     alertDialogRenderer("Receive Pallet Success", "success", true);
                 }
                 onHandleClear();
             } else {
+                inputClearAll();
                 alertDialogRenderer(res.data._result.message, "error", true);
             }
         });

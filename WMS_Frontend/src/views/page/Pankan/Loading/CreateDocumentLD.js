@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmDate from '../../../../components/AmDate'
 import AmTable from '../../../../components/table/AmTable'
+import moment from "moment";
 import Axios from 'axios';
 
 const createQueryString = (select) => {
@@ -66,6 +67,7 @@ const CreateDocumentLD = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [dataCreate, setdataCreate] = useState([]);
+    const [docIds, setdocIds] = useState();
 
 
 
@@ -236,7 +238,9 @@ const CreateDocumentLD = (props) => {
                         <FormInline>
                             <LabelH>ActiomTime : </LabelH>
                             <InputDiv>
-                                {<label>{actiontimes}</label>}
+                                {moment(actiontimes).format("YYYY-MM-DDTHH:mm") ?
+                                    <label>{moment(actiontimes).format("YYYY-MM-DD HH:mm")}</label>
+                                    :null}
                             </InputDiv>
                         </FormInline>
                     </div>
@@ -250,11 +254,9 @@ const CreateDocumentLD = (props) => {
 
 
     const onHandleDDLChangeDoc = (value, dataObject, field) => {
-        console.log(value)
-        console.log(dataObject)
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {
-                console.log(dataObject.ActionTime)
+                setdocIds(value)
                 setactiontimes(dataObject.ActionTime)     
                 if (dataObject !== null) {
                     onChangeEditor(field, value, dataObject[field], dataObject.ActionTime, "Doccode", dataObject.Code)
@@ -277,8 +279,16 @@ const CreateDocumentLD = (props) => {
 
                 }
             }
-            else {        
-                dataSource.push(editData)
+            else {
+                //console.log(editData["actiontime"])
+                let actiontimes = moment(editData["actiontime"]).format("YYYY-MM-DD HH:mm")
+                let editDatas = {
+                   "ID": editData["ID"],
+                    "Doccode": editData["Doccode"] ,
+                    "actiontime": actiontimes 
+
+                }
+                dataSource.push(editDatas)
             }
 
         }
@@ -352,7 +362,7 @@ const CreateDocumentLD = (props) => {
                 //}
           
                 Items = {
-                    " issuedDocID": 2
+                    " issuedDocID": docIds
 
 
                 }

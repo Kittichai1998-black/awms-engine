@@ -138,9 +138,9 @@ const AmPageDashboard = props => {
             if (format === "time") {
                 return <div>{date.format('HH:mm:ss')}</div>
             } else if (format === "datelog") {
-                return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+                return <div>{date.format('DD/MM/YYYY HH:mm:ss')}</div>
             } else if (format === "datetime") {
-                return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
+                return <div>{date.format('DD/MM/YYYY HH:mm')}</div>
             }
         }
     }

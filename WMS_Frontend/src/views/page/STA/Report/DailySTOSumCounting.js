@@ -232,7 +232,7 @@ const DailySTOSumCounting = (props) => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
+        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD/MM/YYYY', width: 90, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
         { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },

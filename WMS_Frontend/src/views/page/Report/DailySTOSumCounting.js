@@ -118,11 +118,24 @@ const DailySTOSumCounting = (props) => {
         })
     }
 
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+    const getValue = (value, inputID) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
         valueText[inputID] = value;
+    }
+    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+    };
+    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        if (event && event.key == 'Enter') {
+            onGetDocument();
+        }
+    };
+    const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        onGetDocument();
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
@@ -132,6 +145,7 @@ const DailySTOSumCounting = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "docCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "docCode", null, event)}
                 />
             </FormInline>
             <FormInline><LabelH>{t("Movement")} : </LabelH>
@@ -146,7 +160,7 @@ const DailySTOSumCounting = (props) => {
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={MVTQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, 'movementType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'movementType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
@@ -157,7 +171,7 @@ const DailySTOSumCounting = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
                     FieldID={"dateFrom"} >
                 </AmDate>
             </FormInline>
@@ -168,7 +182,7 @@ const DailySTOSumCounting = (props) => {
                     style={{ width: "300px" }}
                     defaultValue={true}
                     // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
+                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
                     FieldID={"dateTo"} >
                 </AmDate>
             </FormInline>
@@ -179,7 +193,7 @@ const DailySTOSumCounting = (props) => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
+        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD/MM/YYYY', width: 90, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: 'pstoName', width: 150, sortable: false },

@@ -198,7 +198,7 @@ export default props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/issue/detail?docID=" + data.ID}
+                    api={"/receive/detail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 />

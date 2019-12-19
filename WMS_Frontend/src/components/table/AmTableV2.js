@@ -440,7 +440,7 @@ const AmTableMaster = props => {
               ? Moment(dataRow).format(
                   columnType.dateFormat
                     ? columnType.dateFormat
-                    : "DD-MM-YYYY HH:mm"
+                    : "DD/MM/YYYY HH:mm"
                 )
               : ""}
           </div>

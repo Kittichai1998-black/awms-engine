@@ -94,12 +94,21 @@ const CurrentInventory = (props) => {
         });
     }
 
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+    const getValue = (value, inputID) => {
         if (value && value.toString().includes("*")) {
             value = value.replace(/\*/g, "%");
         }
         valueText[inputID] = value;
+    }
+    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
     };
+    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
+        getValue(value, inputID);
+        if (event && event.key == 'Enter') {
+            onGetDocument();
+        }
+    }; 
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
             <FormInline>
@@ -109,6 +118,7 @@ const CurrentInventory = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -118,6 +128,7 @@ const CurrentInventory = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packName", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packName", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -127,6 +138,7 @@ const CurrentInventory = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "batch", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "batch", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -136,6 +148,7 @@ const CurrentInventory = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "lot", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "lot", null, event)}
                 />
             </FormInline>
             <FormInline>
@@ -145,6 +158,7 @@ const CurrentInventory = (props) => {
                     type="input"
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
                 />
             </FormInline>
         </div>
