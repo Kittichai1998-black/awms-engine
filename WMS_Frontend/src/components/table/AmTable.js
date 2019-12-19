@@ -175,7 +175,7 @@ const AmTable = props => {
               <span>
                 {Moment(data.original[x.accessor]).isValid
                   ? Moment(data.original[x.accessor]).format(
-                    x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
+                    x.dateFormat ? x.dateFormat : "DD/MM/YYYY HH:mm"
                   )
                   : ""}
               </span>
