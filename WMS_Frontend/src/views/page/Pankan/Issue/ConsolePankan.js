@@ -275,7 +275,6 @@ const ConsolePankan = (props) => {
 
       )
 
-
     }
 
     const onChangeEditorBarcodepick = (e) => {
@@ -449,7 +448,8 @@ const ConsolePankan = (props) => {
          ></AmDialogs>
 
 
-            <FormInline>
+
+         <FormInline>
                 <LabelH>Customer : </LabelH>
                 <InputDiv>
                     <AmDropdown
