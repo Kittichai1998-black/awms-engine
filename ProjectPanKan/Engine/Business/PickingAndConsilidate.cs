@@ -350,6 +350,10 @@ namespace ProjectPanKan.Engine.Business
                             //}
                         };
                     }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Found");
+                    }
                 }
             }
 
