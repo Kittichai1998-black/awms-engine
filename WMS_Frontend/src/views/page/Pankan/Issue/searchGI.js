@@ -217,12 +217,18 @@ export default props => {
                 <AmButton styleType="info"
                     onClick={() => { OnclickExportData() }}
                 >{"Export Data"}</AmButton>
-
+                <AmButton styleType="add"
+                    onClick={() => { CreateDoc()}}
+                >{"Create Document"}</AmButton>
             </FormInline>
 
         </div>)
     }
 
+
+    const CreateDoc = () => {
+        props.history.push("/issue/create");
+    }
     const onChangeEditorDate = (e) => {
         setdates(e.fieldDataObject)
 

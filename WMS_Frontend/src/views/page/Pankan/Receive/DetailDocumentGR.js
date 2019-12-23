@@ -8,30 +8,30 @@ export default (props) => {
 
     const TextHeader = [
         [
-            { label: "Document No", values: "code" },
-            { label: "Document Date", values: "documentDate", type: "date" }
+            { label: "Document No", values: "Code" },
+            { label: "Document Date", values: "DocumentDate", type: "date" }
         ],
         [            
-            { label: "Action Time", values: "actionTime", type: "dateTime" },
-            { label: "Remark", values: "remark" }
+            { label: "Action Time", values: "ActionTime", type: "dateTime" },
+            { label: "Remark", values: "Remark" }
         ],
         [
-            { label: "Branch", values: "souBranchName" },
-            { label: "Warehouse", values: "souWarehouseName" }
+            { label: "Branch", values: "DesBranchName" },
+            { label: "Warehouse", values: "DesWarehouseName" }
          
         ],
         [
-            { label: "Customer", values: "desCustomerName" },
+            { label: "Customer", values: "DesCustomerName" },
             { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
            
         ]
     ]
 
     const columns = [
-        { "width": 200, "accessor": "skuMaster_Code", "Header": "SKU Code" },
-        { "accessor": "skuMaster_Name", "Header": "SKU Name" },
+        { "width": 200, "accessor": "SKUMaster_Code", "Header": "SKU Code" },
+        { "accessor": "SKUMaster_Name", "Header": "SKU Name" },
         { "width": 120, "accessor": "_qty", "Header": "Qty" },
-        { "width": 70, "accessor": "unitType_Name", "Header": "Unit" }
+        { "width": 70, "accessor": "UnitType_Name", "Header": "Unit" }
     ]
 
     const columnsDetail = [
@@ -86,12 +86,12 @@ export default (props) => {
             columnsDetailSOU={columnsDetail}
             //columnsDetailDES={columnsDetailDES}
             columns={columns}
-            typeDoc={"issued"}
-            typeDocNo={1002}
+            typeDoc={"received"}
+            typeDocNo={1001}
             docID={getDocID()}
             header={TextHeader}
             buttonBack={true}
-            linkBack={"/issue/search"}
+            linkBack={"/receive/search"}
             history={props.history}
         />
     )

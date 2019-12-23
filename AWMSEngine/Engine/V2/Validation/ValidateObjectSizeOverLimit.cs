@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine.V2.Validation
             {
                 this.Logger.LogDebug("//Validate Quantity : " + sto.code);
 
-                foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, sum = (decimal)x.Sum(y=>y.baseQty) }))
+                foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, sum = (decimal)x.Sum(y => y.baseQty) }))
                 {
                     var osm = sto.objectSizeMaps.FirstOrDefault(x => x.innerObjectSizeID == s.objectSizeID);
                     if (osm == null)
@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Validation
 
             }
 
-            if (sto.mapstos != null)
+            if (sto.mapstos != null && sto.mapstos.Count() > 0)
                 sto.mapstos.ForEach(x => this.ValidateQuantity(x));
         }
     }

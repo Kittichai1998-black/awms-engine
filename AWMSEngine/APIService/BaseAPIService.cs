@@ -143,6 +143,8 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("request=" + _request_str);
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
+                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
+                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
                 this.BuVO.Set(BusinessVOConst.KEY_FINAL_DB_LOG,
                     new FinalDatabaseLogCriteria()
                     {
@@ -158,6 +160,7 @@ namespace AWMSEngine.APIService
                     if (apiService == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
                 }
+
 
                 //-----------START DB LOGGING
                 this.APIServiceID = apiService.ID.Value;
@@ -285,11 +288,9 @@ namespace AWMSEngine.APIService
         {
             //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
-            this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
             this.Logger.LogInfo("token=" + token);
 
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
-            this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
             this.Logger.LogInfo("apikey=" + apiKey);
 
             if (!this.IsAuthenAuthorize)

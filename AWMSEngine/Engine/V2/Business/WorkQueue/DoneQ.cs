@@ -213,6 +213,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private List<TDocItems> ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<TDocItems> docItems, StorageObjectCriteria stos)
         {
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+
+            var listDisto = new List<amt_DocumentItemStorageObject>();
+            docItems.ForEach(x => { listDisto.AddRange(x.DocItemStos); });
+            var sumDisto = listDisto.GroupBy(x => x.Sou_StorageObject_ID).Select(x => new { stoID = x.Key, sumBaseQty = x.Sum(y => y.BaseQuantity), sumQty = x.Sum(y => y.Quantity) }).ToList();
+
             docItems.ForEach(docItem =>
             {
                 if (docItem.Quantity == null)
@@ -231,8 +236,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     var qtyIssue = docItem.Quantity;//1500
                     var baseqtyIssue = docItem.BaseQuantity;
-                    decimal? sumDiSTOQty = docItem.DocItemStos.Sum(x => x.Quantity);
-                    decimal? sumDiSTOBaseQty = docItem.DocItemStos.Sum(x => x.BaseQuantity);
+                    decimal? sumDiSTOQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumQty;
+                    decimal? sumDiSTOBaseQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumBaseQty;
                     stoList.ForEach(sto =>
                     {
                         var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
@@ -279,6 +284,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         {
                                             StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
                                             updSto.eventStatus = eventStatus;
+                                            RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
                                         }
 
                                         //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
@@ -335,6 +341,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         {
                                             StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
                                             updSto.eventStatus = eventStatus;
+                                            RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
                                         }
 
                                         //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
@@ -402,6 +409,23 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
             }
+        }
+        private void RemoveOPTEventSTO(long bsto_id, string bsto_options, string opt, VOCriteria buVO)
+        {
+            //remove OPT_DONE_DES_EVENT_STATUS
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto_options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(opt));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
         }
     }
 }

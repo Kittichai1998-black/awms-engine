@@ -58,17 +58,60 @@ const LoadingReturn = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
 
-    const customOptions = (value) => {
-        var qryStr = queryString.parse(value)
-        var res = [{
-            text: 'CN',
-            value: qryStr[SC.OPT_CARTON_NO],
-            textToolTip: 'Carton No.'
-        }]
+    // const customOptions = (value) => {
+    //     var qryStr = queryString.parse(value)
+    //     var res = [{
+    //         text: 'CN',
+    //         value: qryStr[SC.OPT_CARTON_NO],
+    //         textToolTip: 'Carton No.'
+    //     }]
 
-        return res;
-    }
-
+    //     return res;
+    // }
+    const CustomInfoChip = (row) => {
+        let tempInfo = [];
+        if (row.skuTypeName && row.skuTypeName !== null) {
+            tempInfo.push({
+                text: 'S',
+                value: row.skuTypeName,
+                textToolTip: 'Size'
+            })
+        }else{
+            if (row.objectSizeName && row.objectSizeName !== null) {
+                tempInfo.push({
+                    text: 'OS',
+                    value: row.objectSizeName,
+                    textToolTip: 'Object Size'
+                })
+            }
+        }
+        
+        if (row.orderNo && row.orderNo !== null) {
+            tempInfo.push({
+                text: 'SI',
+                value: row.orderNo,
+                textToolTip: 'SI.'
+            })
+        }
+        if (row.qty && row.unitCode && row.qty !== null && row.unitCode !== null) {
+            tempInfo.push({
+                text: 'Q',
+                value: row.qty + " " + row.unitCode,
+                textToolTip: 'Quantity'
+            })
+        }
+        if (row.options !== null) {
+            var qryStr = queryString.parse(row.options)
+            if (qryStr[SC.OPT_CARTON_NO]) {
+                tempInfo.push({
+                    text: 'CN',
+                    value: qryStr[SC.OPT_CARTON_NO],
+                    textToolTip: 'Carton No.'
+                })
+            }
+        }
+        return tempInfo
+    };
     function onOldValue(storageObj, valueInput) {
         let oldValue = [];
         if (storageObj) {
@@ -439,14 +482,15 @@ const LoadingReturn = (props) => {
                 // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
                 onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
                 // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
-                customOptions={customOptions}
-                showOptions={true}
+                // customOptions={customOptions}
+                // showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
                 autoDoc={true}
                 setMovementType={"1111"}
                 showOldValue={onOldValue}
                 onBeforeBasePost={onBeforeBasePost}
+                customInfoChip={CustomInfoChip}
             />
         </div>
     );
