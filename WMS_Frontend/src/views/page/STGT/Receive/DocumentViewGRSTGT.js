@@ -9,11 +9,11 @@ const DocumentViewGRSTGT = props => {
   const TextHeader = [
     [
       { label: "Document No", values: "Code" },
-      { label: "Document Date", values: "documentDate", type: "date" }
+      { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
       { label: "Source Customer", values: "SouCustomerName" },
-      { label: "Action Time", values: "actionTime", type: "dateTime" }
+      { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
       { label: "Source Warehouse", values: "SouWarehouseName" },

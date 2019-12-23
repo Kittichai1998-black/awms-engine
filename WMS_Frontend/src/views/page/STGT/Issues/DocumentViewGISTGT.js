@@ -9,11 +9,11 @@ const DocumentViewGISTGT = props => {
   const TextHeader = [
     [
       { label: "Document No", values: "Code" },
-      { label: "Document Date", values: "documentDate", type: "date" }
+      { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
       { label: "Movement Type", values: "MovementName" },
-      { label: "Action Time", values: "actionTime", type: "dateTime" }
+      { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
       { label: "Source Warehouse", values: "SouWarehouseName" },
