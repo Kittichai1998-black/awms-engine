@@ -97,7 +97,7 @@ const DocumentViewGISTGT = props => {
         columnsDetailSOU={columnsDetailSOU}
         columnsDetailDES={columnsDetailDES}
         columns={columns}
-        typeDoc={"received"}
+        typeDoc={"issued"}
         typeDocNo={1002}
         docID={getDocID()}
         header={TextHeader}

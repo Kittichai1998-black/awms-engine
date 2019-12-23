@@ -25,7 +25,7 @@ const CustomerQuery = {
   all: ""
 };
 const CustomerReturnPalletByBarcode = props => {
-  const { } = props;
+  const {} = props;
 
   const inputWarehouse = {
     visible: true,
@@ -52,28 +52,29 @@ const CustomerReturnPalletByBarcode = props => {
 
   const inputItem = [
     {
-      field: SC.OPT_REMARK,
-      type: "input",
-      name: "Remark",
-      placeholder: "Remark",
-      isFocus: true
-    },
-    {
-      field: SC.OPT_DONE_DES_EVENT_STATUS,
-      type: "radiogroup",
-      name: "Status",
-      fieldLabel: [{ value: "12", label: "RECEIVED" }],
-      defaultValue: { value: "12", disabled: true }
-    },
-    {
       field: "scanCode",
       type: "input",
       name: "Scan Code",
       placeholder: "Scan Code",
       maxLength: 31,
       required: true,
-      clearInput: true
+      clearInput: true,
+      isFocus: true
+    },
+    {
+      field: SC.OPT_REMARK,
+      type: "input",
+      name: "Remark",
+      placeholder: "Remark"
+      //isFocus: true
     }
+    // {
+    //   field: SC.OPT_DONE_DES_EVENT_STATUS,
+    //   type: "radiogroup",
+    //   name: "Status",
+    //   fieldLabel: [{ value: "12", label: "RECEIVED" }],
+    //   defaultValue: { value: "12", disabled: true }
+    // },
   ];
 
   const [showDialog, setShowDialog] = useState(null);
@@ -136,38 +137,56 @@ const CustomerReturnPalletByBarcode = props => {
 
       if (storageObj) {
         if (reqValue["scanCode"]) {
+          console.log(reqValue["scanCode"]);
           reqValue.scanCode = reqValue.scanCode.trim();
+          console.log(reqValue["scanCode"].trim().length);
           if (reqValue["scanCode"].trim().length === 31) {
-            let orderNoStr = reqValue['scanCode'].substr(0, 7);
+            let orderNoStr = reqValue["scanCode"].substr(0, 7);
             if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
               orderNo = orderNoStr;
             } else {
-              alertDialogRenderer("SI (Order No.) must be equal to 7-characters in alphanumeric format.", "error", true);
+              alertDialogRenderer(
+                "SI (Order No.) must be equal to 7-characters in alphanumeric format.",
+                "error",
+                true
+              );
             }
-            let skuCode1 = reqValue['scanCode'].substr(7, 20);
+            let skuCode1 = reqValue["scanCode"].substr(7, 20);
 
-            if (skuCode1.includes('@')) {
+            if (skuCode1.includes("@")) {
               skuCode = skuCode1.replace(/\@/g, " ");
             } else {
               skuCode = skuCode1;
             }
             skuCode = skuCode.trim();
-            let cartonStr = reqValue['scanCode'].substr(27, 4);
+            let cartonStr = reqValue["scanCode"].substr(27, 4);
             if (cartonStr.match(/^\d{4}$/)) {
               cartonNo = parseInt(cartonStr);
             } else {
-              alertDialogRenderer("Carton No. must be equal to 4-digits in number format.", "error", true);
+              alertDialogRenderer(
+                "Carton No. must be equal to 4-digits in number format.",
+                "error",
+                true
+              );
             }
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
               let dataMapstos = storageObj.mapstos[0];
               qryStrOpt = queryString.parse(dataMapstos.options);
               if (skuCode !== null && skuCode !== dataMapstos.code) {
-                alertDialogRenderer("Reorder No. doesn't match the previous product on the pallet.", "error", true);
+                alertDialogRenderer(
+                  "Reorder No. doesn't match the previous product on the pallet.",
+                  "error",
+                  true
+                );
                 skuCode = null;
               }
               if (orderNo !== null && orderNo !== dataMapstos.orderNo) {
-                alertDialogRenderer("SI (Order No.) doesn't match the previous product on the pallet.", "error", true);
+                alertDialogRenderer(
+                  "SI (Order No.) doesn't match the previous product on the pallet.",
+                  "error",
+                  true
+                );
                 orderNo = null;
               }
 
@@ -184,8 +203,8 @@ const CustomerReturnPalletByBarcode = props => {
                   if (indexCartonNo < 0) {
                     alertDialogRenderer(
                       "This Carton No. " +
-                      cartonNo +
-                      " doesn't exist in pallet.",
+                        cartonNo +
+                        " doesn't exist in pallet.",
                       "error",
                       true
                     );
@@ -210,12 +229,12 @@ const CustomerReturnPalletByBarcode = props => {
 
                       alertDialogRenderer(
                         "Pallet No. " +
-                        storageObj.code +
-                        " had SKU Code: " +
-                        skuCode +
-                        " and Carton No." +
-                        cartonNo.toString() +
-                        " already",
+                          storageObj.code +
+                          " had SKU Code: " +
+                          skuCode +
+                          " and Carton No." +
+                          cartonNo.toString() +
+                          " already",
                         "error",
                         true
                       );

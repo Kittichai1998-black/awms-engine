@@ -233,6 +233,8 @@ const DocumentSearchPISTGT = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="2004"
+        buttonReject={true}
+        apiReject={"/v2/RejectedADDocAPI"}
       />
     </div>
   );

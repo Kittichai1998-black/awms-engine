@@ -91,7 +91,7 @@ const AmDocumentSearch = props => {
                   style={{
                     padding: "0px 0 0 20px",
                     paddingTop: "10px",
-                    width: "200px"
+                    width: "150px"
                   }}
                 >
                   {t(row.label)} :{" "}
@@ -125,7 +125,7 @@ const AmDocumentSearch = props => {
                 <label
                   style={{
                     padding: "0 0 0 20px",
-                    width: "200px",
+                    width: "150px",
                     paddingTop: "10px"
                   }}
                 >
@@ -153,7 +153,7 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+                <label style={{ padding: "10px 0 0 20px", width: "150px" }}>
                   {t(row.label)} :{" "}
                 </label>
                 <AmMultiDropdown
@@ -177,7 +177,7 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+                <label style={{ padding: "10px 0 0 20px", width: "150px" }}>
                   {t(row.label)} :{" "}
                 </label>
                 <AmDatePicker
