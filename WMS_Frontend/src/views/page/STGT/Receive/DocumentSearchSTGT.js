@@ -52,6 +52,18 @@ const DocumentSearchSTGT = props => {
     l: 100,
     all: ""
   };
+  const AreaLocationMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaLocationMaster",
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v": 10}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Warehouse",
@@ -63,7 +75,17 @@ const DocumentSearchSTGT = props => {
     l: 100,
     all: ""
   };
-
+  const AreaMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaMaster",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const getData = () => {
     Axios.get(createQueryString(MovementTypeQuery)).then(res => {
       setDataMovementType(res.data.datas);
@@ -287,7 +309,41 @@ const DocumentSearchSTGT = props => {
       fieldLabel: "Name"
     }
   ];
-
+  const dataReject = [
+    {
+      field: "souAreaCode",
+      type: "dropdow",
+      typeDropdow: "search",
+      name: "Sou. Area",
+      dataDropDow: AreaMasterQuery,
+      placeholder: "Sou. Area",
+      fieldLabel: ["Code", "Name"]
+      //required: true
+      //disabled: true
+    },
+    {
+      field: "desAreaCode",
+      type: "dropdow",
+      typeDropdow: "search",
+      name: "Dest. Area",
+      dataDropDow: AreaMasterQuery,
+      placeholder: "Dest. Area",
+      fieldLabel: ["Code", "Name"]
+      //required: true,
+      //disabled: true
+    },
+    {
+      field: "desAreaLocationCode",
+      type: "dropdow",
+      typeDropdow: "search",
+      name: "Dest. AreaLocation",
+      dataDropDow: AreaLocationMasterQuery,
+      placeholder: "Des AreaLocation",
+      fieldLabel: ["Code", "Name"]
+      //required: true,
+      //disabled: true
+    }
+  ];
   const getRedirect = data => {
     //console.log(data.ID)
     return (
@@ -330,6 +386,11 @@ const DocumentSearchSTGT = props => {
         expensionSearch={search}
         docTypeCode="1001"
         buttonClose={true}
+        buttonReject={true}
+        dataReject={dataReject}
+        apiReject={"/v2/RejectGRDocAPI"}
+        //apiWorking={""}
+        apiClose={"/v2/CloseDocAPI"}
       />
     </div>
   );
