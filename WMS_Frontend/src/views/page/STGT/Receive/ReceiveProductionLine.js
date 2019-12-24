@@ -162,6 +162,7 @@ const CustomerReturnPalletByBarcode = props => {
             let cartonStr = reqValue["scanCode"].substr(27, 4);
             if (cartonStr.match(/^\d{4}$/)) {
               cartonNo = parseInt(cartonStr);
+              console.log(cartonNo);
             } else {
               alertDialogRenderer(
                 "Carton No. must be equal to 4-digits in number format.",

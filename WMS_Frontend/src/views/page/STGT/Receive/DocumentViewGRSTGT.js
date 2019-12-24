@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
 const DocumentViewGRSTGT = props => {
@@ -69,10 +71,10 @@ const DocumentViewGRSTGT = props => {
   const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
   const getStatusGR = value => {
-    if (value.status === 0)
-      return <AmStorageObjectStatus key={11} statusCode={11} />;
-    else if (value.status === 1)
-      return <AmStorageObjectStatus key={12} statusCode={12} />;
+    //console.log(value)
+    if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+    else if (value.status === 0)
+      return <HighlightOff style={{ color: "red" }} />;
     else return null;
   };
 

@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
 const DocumentViewPISTGT = props => {
@@ -89,12 +91,11 @@ const DocumentViewPISTGT = props => {
   };
 
   const getStatusAD = value => {
-    if (value.status === 0) {
-      // return <AmIconStatus styleType={"AUDITING"}>AUDITING</AmIconStatus>
-      return <AmStorageObjectStatus key={13} statusCode={13} />;
-    } else if (value.status === 1) {
-      return <AmStorageObjectStatus key={14} statusCode={14} />;
-    } else return null;
+    //console.log(value)
+    if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+    else if (value.status === 0)
+      return <HighlightOff style={{ color: "red" }} />;
+    else return null;
   };
 
   const getDocID = () => {
