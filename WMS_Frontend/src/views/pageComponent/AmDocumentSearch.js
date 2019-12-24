@@ -66,6 +66,7 @@ const AmDocumentSearch = props => {
     l: 20,
     all: ""
   };
+
   const onHandleChangeKeyEnter = (
     value,
     dataObject,
@@ -86,7 +87,13 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "0px 0 0 20px", width: "150px" }}>
+                <label
+                  style={{
+                    padding: "0px 0 0 20px",
+                    paddingTop: "10px",
+                    width: "150px"
+                  }}
+                >
                   {t(row.label)} :{" "}
                 </label>
                 <AmInput
@@ -115,7 +122,13 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "0 0 0 20px", width: "150px" }}>
+                <label
+                  style={{
+                    padding: "0 0 0 20px",
+                    width: "150px",
+                    paddingTop: "10px"
+                  }}
+                >
                   {t(row.label)} :{" "}
                 </label>
                 <AmDropdown
@@ -190,6 +203,7 @@ const AmDocumentSearch = props => {
 
   async function getData(qryString) {
     const res = await Axios.get(createQueryString(qryString)).then(res => res);
+
     setDataSource(res.data.datas);
     setTotalSize(res.data.counts);
   }
@@ -209,6 +223,7 @@ const AmDocumentSearch = props => {
   const [textError, setTextError] = useState("");
 
   const [dialog, setDialog] = useState(false);
+  const [dialogReject, setDialogReject] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
   const [dataSentToAPI, setDataSentToAPI] = useState([]);
   const [remark, setRemark] = useState("");
@@ -338,133 +353,46 @@ const AmDocumentSearch = props => {
       });
     }
 
-    if (props.docTypeCode === "1002") {
-      Axios.post(window.apipath + "/v2/WorkingGIDocAPI", {
-        docIDs: docID,
-        remark: remark
-      }).then(res => {
-        if (res.data._result !== undefined) {
-          if (res.data._result.status === 1) {
-            setOpenSuccess(true);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          } else {
-            setOpenError(true);
-            setTextError(res.data._result.message);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          }
+    Axios.post(window.apipath + props.apiWorking, {
+      docIDs: docID,
+      remark: remark
+    }).then(res => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          setOpenSuccess(true);
+          getData(query);
+          setPage(0);
+          setResetPage(true);
+          Clear();
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
+          getData(query);
+          setPage(0);
+          setResetPage(true);
+          Clear();
         }
-      });
-    } else if (props.docTypeCode === "1012") {
-      Axios.post(window.apipath + "/v2/WorkingLDDocAPI", {
-        docIDs: docID,
-        remark: remark
-      }).then(res => {
-        if (res.data._result !== undefined) {
-          if (res.data._result.status === 1) {
-            setOpenSuccess(true);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          } else {
-            setOpenError(true);
-            setTextError(res.data._result.message);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          }
-        }
-      });
-    } else if (props.docTypeCode === "1001") {
-      Axios.post(window.apipath + "/v2/WorkingGRDocAPI", {
-        docIDs: docID,
-        remark: remark
-      }).then(res => {
-        if (res.data._result !== undefined) {
-          if (res.data._result.status === 1) {
-            setOpenSuccess(true);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          } else {
-            setOpenError(true);
-            setTextError(res.data._result.message);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          }
-        }
-      });
-    }
+      }
+    });
   }
   //============================================
   async function onClickReject() {
-    let docID = [];
-    if (selection.length > 0) {
-      selection.forEach(rowdata => {
-        docID.push(rowdata.ID);
-      });
-    }
-
     if (props.docTypeCode === "1001") {
-      if (props.projectCustom === "MRK") {
-        Axios.post(window.apipath + "/v2/MRKRejectedGRDocAPI", {
-          docIDs: docID,
-          remark: remark
-        }).then(res => {
-          if (res.data._result !== undefined) {
-            if (res.data._result.status === 1) {
-              setOpenSuccess(true);
-              getData(query);
-              setPage(0);
-              setResetPage(true);
-              Clear();
-            } else {
-              setOpenError(true);
-              setTextError(res.data._result.message);
-              getData(query);
-              setPage(0);
-              setResetPage(true);
-              Clear();
-            }
-          }
-        });
-      } else {
-        Axios.post(window.apipath + "/v2/RejectedGRDocAPI", {
-          docIDs: docID,
-          remark: remark
-        }).then(res => {
-          if (res.data._result !== undefined) {
-            if (res.data._result.status === 1) {
-              setOpenSuccess(true);
-              getData(query);
-              setPage(0);
-              setResetPage(true);
-              Clear();
-            } else {
-              setOpenError(true);
-              setTextError(res.data._result.message);
-              getData(query);
-              setPage(0);
-              setResetPage(true);
-              Clear();
-            }
-          }
+      let docID = [];
+      if (selection.length > 0) {
+        // console.log(dataSentToAPI);
+        // console.log(desAreaCode);
+        // console.log(souAreaCode);
+        selection.forEach(rowdata => {
+          docID.push(rowdata.ID);
         });
       }
-    } else if (props.docTypeCode === "1002") {
-      Axios.post(window.apipath + "/v2/RejectedGIDocAPI", {
+
+      Axios.post(window.apipath + props.apiReject, {
         docIDs: docID,
-        remark: remark
+        desAreaID: 1,
+        souAreaID: 1,
+        desAreaLocationID: desAreaLocationCode
       }).then(res => {
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
@@ -483,30 +411,18 @@ const AmDocumentSearch = props => {
           }
         }
       });
-    } else if (props.docTypeCode === "2004") {
-      Axios.post(window.apipath + "/v2/RejectedADDocAPI", {
-        docIDs: docID,
-        remark: remark
-      }).then(res => {
-        if (res.data._result !== undefined) {
-          if (res.data._result.status === 1) {
-            setOpenSuccess(true);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          } else {
-            setOpenError(true);
-            setTextError(res.data._result.message);
-            getData(query);
-            setPage(0);
-            setResetPage(true);
-            Clear();
-          }
-        }
-      });
-    } else if (props.docTypeCode === "1012") {
-      Axios.post(window.apipath + "/v2/RejectedLDDocAPI", {
+    } else {
+      let docID = [];
+      if (selection.length > 0) {
+        // console.log(dataSentToAPI);
+        // console.log(desAreaCode);
+        // console.log(souAreaCode);
+        selection.forEach(rowdata => {
+          docID.push(rowdata.ID);
+        });
+      }
+
+      Axios.post(window.apipath + props.apiReject, {
         docIDs: docID,
         remark: remark
       }).then(res => {
@@ -529,7 +445,6 @@ const AmDocumentSearch = props => {
       });
     }
   }
-
   //========================================================================
   const FuncRanderRemark = () => {
     const columns = [
@@ -567,6 +482,156 @@ const AmDocumentSearch = props => {
         }
       };
     });
+  };
+  //========================================================================
+  const FuncReject = () => {
+    if (props.dataReject) {
+      const x = props.dataReject;
+
+      return x.map(y => {
+        return {
+          field: y.field,
+          component: (data = null, cols, key) => {
+            return (
+              <div key={key}>
+                {FuncRejectEle(
+                  y.name,
+                  y.type,
+                  data,
+                  cols,
+                  y.dataDropDow,
+                  y.typeDropdow,
+                  y.colsFindPopup,
+                  y.placeholder,
+                  y.labelTitle,
+                  y.fieldLabel,
+                  y.validate,
+                  y.required,
+                  y.disabled
+                )}
+              </div>
+            );
+          }
+        };
+      });
+    }
+  };
+  //========================================================================
+  const FuncRejectEle = (
+    name,
+    type,
+    data,
+    cols,
+    dataDropDow,
+    typeDropdow,
+    colsFindPopup,
+    placeholder,
+    labelTitle,
+    fieldLabel,
+    validate,
+    required,
+    disabled
+  ) => {
+    if (type === "input") {
+      return (
+        <FormInline>
+          {" "}
+          <LabelH>{t(name)} : </LabelH>
+          <InputDiv>
+            <AmInput
+              id={cols.field}
+              required={required}
+              validate={true}
+              msgError="Error"
+              regExp={validate}
+              style={{ width: "270px", margin: "0px" }}
+              placeholder={placeholder}
+              type="input"
+              value={data ? data[cols.field] : ""}
+              onChange={val => {
+                onChangeEditor(cols.field, data, val);
+              }}
+            />
+          </InputDiv>
+        </FormInline>
+      );
+    } else if (type === "dropdow") {
+      //console.log(valueText1[cols.field]);
+      return (
+        <FormInline>
+          {" "}
+          <LabelH>{t(name)} : </LabelH>
+          <AmDropdown
+            disabled={disabled}
+            required={required}
+            id={cols.field}
+            placeholder={placeholder}
+            fieldDataKey={"ID"}
+            fieldLabel={fieldLabel}
+            labelPattern=" : "
+            width={270}
+            ddlMinWidth={270}
+            valueData={valueText1[cols.field]}
+            queryApi={dataDropDow}
+            defaultValue={
+              cols.field === "souAreaCode"
+                ? 1
+                : cols.field === "desAreaCode"
+                ? 2
+                : null
+            }
+            onChange={(value, dataObject, inputID, fieldDataKey) =>
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+            }
+            ddlType={typeDropdow}
+          />
+        </FormInline>
+      );
+    } else if (type === "Location") {
+      return (
+        <FormInline>
+          {" "}
+          <LabelH>{t(name)} : </LabelH>
+          <AmDropdown
+            id={cols.field}
+            required={required}
+            placeholder={placeholder}
+            fieldDataKey={"value"}
+            width={270}
+            ddlMinWidth={270}
+            valueData={valueText1[cols.field]}
+            data={queryLoc}
+            //defaultValue={"xx"}
+            onChange={(value, dataObject, inputID, fieldDataKey) =>
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+            }
+            ddlType={typeDropdow}
+          />
+        </FormInline>
+      );
+    }
+  };
+  //========================================================================
+  const [valueText1, setValueText1] = useState({});
+  const onHandleDDLChange = (
+    value,
+    dataObject,
+    inputID,
+    fieldDataKey,
+    data
+  ) => {
+    setValueText1({
+      ...valueText1,
+      [inputID]: {
+        value: value,
+        dataObject: dataObject,
+        fieldDataKey: fieldDataKey
+      }
+    });
+    // console.log(inputID);
+    // console.log(data);
+    // console.log(value);
+    onChangeEditor(inputID, data, value);
   };
   //========================================================================
   const FuncTestSetEle = (
@@ -608,22 +673,67 @@ const AmDocumentSearch = props => {
       onClickReject();
       //UpdateData();
     }
-
+    setValueText1([]);
     setDialog(false);
+    setDialogReject(false);
     setSelection([]);
   };
   //======================================================================
-  const onChangeEditor = (field, rowdata, value, type, inputType) => {
-    console.log(value);
+  const [queryLoc, setQueryLoc] = useState([]);
+  const [souAreaCode, setSouAreaCode] = useState("");
+  const [desAreaCode, setDesAreaCode] = useState("");
+  const [desAreaLocationCode, setDesAreaLocationCode] = useState("");
+
+  async function onChangeEditor(field, rowdata, value, type, inputType) {
+    // console.log(field);
+    // console.log(value);
+    // const EntityEventStatus = [];
+    // if (field === "desAreaCode") {
+    //   const AreaLocationMasterQuery = {
+    //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    //     t: "AreaLocationMaster",
+    //     q:
+    //       '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v":' +
+    //       value +
+    //       "}]",
+    //     f: "*",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'asc'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    //   };
+
+    //   setQueryLoc(setQueryLoc);
+    //   await Axios.get(createQueryString(AreaLocationMasterQuery)).then(res => {
+    //     console.log(res);
+    //     res.data.datas.forEach(x => {
+    //       EntityEventStatus.push({ label: x.Code, value: x.ID });
+    //     });
+
+    //     console.log(EntityEventStatus);
+    //     setQueryLoc(EntityEventStatus);
+    //   });
+    // }
+    //console.log(queryLoc);
     if (selection.length === 0) {
       setOpenWarning(true);
     } else {
+      if (field === "souAreaCode") {
+        setSouAreaCode(value);
+      } else if (field === "desAreaCode") {
+        setDesAreaCode(value);
+      } else if (field === "desAreaLocationCode") {
+        setDesAreaLocationCode(value);
+      }
+
       let cloneData = selection;
-      console.log(selection);
+      //console.log(selection);
       setRemark(value);
+
       setDataSentToAPI(cloneData);
     }
-  };
+  }
   //========================================================================
   const onClickClose = () => {
     let docID = [];
@@ -633,39 +743,41 @@ const AmDocumentSearch = props => {
       });
     }
 
-    if (
-      props.docTypeCode === "1001" ||
-      props.docTypeCode === "1002" ||
-      props.docTypeCode === "2004"
-    ) {
-      Axios.post(window.apipath + "/v2/CloseDocAPI", {
-        docIDs: docID
-      }).then(res => {
-        console.log(res);
-        if (res.data._result !== undefined) {
-          if (res.data._result.status === 1) {
-            setOpenSuccess(true);
-            getData(query);
-            Clear();
-          } else {
-            setOpenError(true);
-            setTextError(res.data._result.message);
-            getData(query);
-            Clear();
-          }
+    Axios.post(window.apipath + props.apiClose, {
+      docIDs: docID
+    }).then(res => {
+      //console.log(res);
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          setOpenSuccess(true);
+          getData(query);
+          Clear();
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
+          getData(query);
+          Clear();
         }
-      });
-    }
+      }
+    });
   };
   const Clear = () => {
     setSelection([]);
     setRemark("");
+    setDesAreaLocationCode("");
   };
 
   // end add by ple
   return (
     <div>
       {/*  add by ple */}
+      <AmEditorTable
+        open={dialogReject}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+        titleText={"Select"}
+        //data={editData}
+        columns={FuncReject()}
+      />
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
@@ -713,6 +825,7 @@ const AmDocumentSearch = props => {
       />
       <br />
       <br />
+
       <AmTable
         primaryKey="ID"
         data={dataSource}
@@ -727,29 +840,29 @@ const AmDocumentSearch = props => {
         renderCustomButtonB4={<div> {props.customButton} </div>}
         pageSize={20}
       />
-      <div>
-        <div
-          style={{ display: "inline-flex", float: "left", paddingTop: "10px" }}
-        >
-          {props.buttonClose === true ? (
+      <div
+        style={{ display: "inline-flex", float: "left", paddingTop: "10px" }}
+      >
+        {props.buttonClose === true ? (
+          <AmButton
+            onClick={() => {
+              onClickClose();
+            }}
+            style={{ marginRight: "5px" }}
+            styleType="confirm"
+          >
+            {t("Close")}
+          </AmButton>
+        ) : (
+          ""
+        )}
+        {props.buttonReject === true ? (
+          props.docTypeCode === "1001" ? (
             <AmButton
               onClick={() => {
-                onClickClose();
-              }}
-              style={{ marginRight: "5px" }}
-              styleType="confirm"
-            >
-              {t("Close")}
-            </AmButton>
-          ) : (
-            ""
-          )}
-          {props.buttonReject === true ? (
-            <AmButton
-              onClick={() => {
-                onClickReject();
+                //onClickReject();
                 //FuncRanderRemark();
-                //setDialog(true);
+                setDialogReject(true);
               }}
               style={{ marginRight: "5px" }}
               styleType="delete"
@@ -757,23 +870,37 @@ const AmDocumentSearch = props => {
               {t("Reject")}
             </AmButton>
           ) : (
-            ""
-          )}
-          {props.buttonWorking === true ? (
             <AmButton
               onClick={() => {
-                onClickWorking();
+                //onClickReject();
                 //FuncRanderRemark();
-                //setDialog(true);
+                setDialog(true);
               }}
-              styleType="warning"
+              style={{ marginRight: "5px" }}
+              styleType="delete"
             >
-              {t("Working")}
+              {t("Reject")}
             </AmButton>
-          ) : (
-            ""
-          )}
-        </div>
+          )
+        ) : (
+          ""
+        )}
+        {props.buttonWorking === true ? (
+          <AmButton
+            onClick={() => {
+              onClickWorking();
+              //FuncRanderRemark();
+              //setDialog(true);
+            }}
+            styleType="warning"
+          >
+            {t("Working")}
+          </AmButton>
+        ) : (
+          ""
+        )}
+      </div>
+      <div>
         <AmPagination
           //จำนวนข้อมูลทั้งหมด
           totalSize={totalSize}

@@ -231,6 +231,11 @@ const DocumentSearchGISTGT = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1002"
+        //buttonClose={true}
+        buttonReject={true}
+        //apiClose={"/v2/CloseDocAPI"}
+        apiReject={"/v2/RejectedGIDocAPI"}
+        //buttonWorking={true}
       />
     </div>
   );

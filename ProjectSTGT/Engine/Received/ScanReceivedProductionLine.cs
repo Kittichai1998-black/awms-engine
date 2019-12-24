@@ -109,6 +109,7 @@ namespace ProjectSTGT.Engine.Received
                     Des_StorageObject_ID = sto.mapstos[0].id.Value,
                     Quantity = docItem.Quantity,
                     UnitType_ID = docItem.UnitType_ID.Value,
+                    BaseQuantity = docItem.BaseQuantity,
                     BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
                     Status = EntityStatus.INACTIVE
 
