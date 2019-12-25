@@ -110,7 +110,7 @@ export default props => {
             valueTexts: dataWarehouse.ID
           },
           {
-            label: "Destination Warehouse",
+            label: "Destination Customer",
             type: "labeltext",
             key: "desWarehouseID",
             texts: dataWarehouse.Name,
