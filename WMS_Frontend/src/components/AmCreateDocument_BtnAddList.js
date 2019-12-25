@@ -143,7 +143,7 @@ const StyledSearch = styled.div`
   top: 0;
   margin: 10px;
 `;
-const BtnAddSkuByItem = props => {
+const BtnAddList = props => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState({ ...props.queryApi });
   const [data, setData] = useState([]);
@@ -340,8 +340,8 @@ const BtnAddSkuByItem = props => {
   );
 };
 
-BtnAddSkuByItem.propTypes = {
+BtnAddList.propTypes = {
   onSubmit: PropTypes.func.isRequired
 };
 
-export default BtnAddSkuByItem;
+export default BtnAddList;

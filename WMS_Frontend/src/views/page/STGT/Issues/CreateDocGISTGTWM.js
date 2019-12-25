@@ -15,6 +15,64 @@ export default props => {
   const [dataHeader, setDataHeader] = useState([]);
   const [table, setTable] = useState(null);
 
+  const PalletCode = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "PalletSto",
+    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    f:
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+    g: "",
+    s: "[{'f':'ID','od':'ASC'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
+
+  const columsFindpopUpPALC = [
+    {
+      Header: "Pallet Code",
+      accessor: "palletcode",
+      width: 110,
+      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
+    },
+    {
+      Header: "SRM Line",
+      accessor: "srmLine",
+      width: 95,
+      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
+    },
+    { Header: "SKU Items", accessor: "SKUItems", width: 350 },
+    // { Header: "SKU Code", accessor: 'Code', width: 110 },
+    // { Header: "SKU Name", accessor: 'Name', width: 170 },
+    {
+      Header: "Location",
+      accessor: "LocationCode",
+      width: 90,
+      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
+    },
+    {
+      Header: "Order No",
+      accessor: "OrderNo",
+      width: 100,
+      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
+    },
+    // { Header: 'Batch', accessor: 'Batch' },
+
+    { Header: "Quantity", accessor: "Quantity", width: 90 },
+    { Header: "Unit", accessor: "UnitCode", width: 70 }
+  ];
+
+  const addList = {
+    queryApi: PalletCode,
+    columns: columsFindpopUpPALC,
+    search: [
+      { accessor: "palletcode", placeholder: "Pallet Code" },
+      { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "remark", placeholder: "Remark" }
+    ]
+  }
+
   //get api set dataWarehouse
   useEffect(() => {
     Axios.get(createQueryString(WarehouseQuery)).then(row => {
@@ -71,7 +129,7 @@ export default props => {
     if (dataHeader.length > 0) {
       setTable(
         <AmCreateDocument
-          addList={{}}
+          addList={addList}
           headerCreate={dataHeader}
           columns={columns}
           columnEdit={columnEdit}
@@ -84,18 +142,7 @@ export default props => {
     }
   }, [dataHeader]);
 
-  const PalletCode = {
-    queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "PalletSto",
-    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-    f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
-    g: "",
-    s: "[{'f':'ID','od':'ASC'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  
 
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -133,40 +180,6 @@ export default props => {
     l: 100,
     all: ""
   };
-
-  const columsFindpopUpPALC = [
-    {
-      Header: "Pallet Code",
-      accessor: "palletcode",
-      width: 110,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    {
-      Header: "SRM Line",
-      accessor: "srmLine",
-      width: 95,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    { Header: "SKU Items", accessor: "SKUItems", width: 350 },
-    // { Header: "SKU Code", accessor: 'Code', width: 110 },
-    // { Header: "SKU Name", accessor: 'Name', width: 170 },
-    {
-      Header: "Location",
-      accessor: "LocationCode",
-      width: 90,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    {
-      Header: "Order No",
-      accessor: "OrderNo",
-      width: 100,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    // { Header: 'Batch', accessor: 'Batch' },
-
-    { Header: "Quantity", accessor: "Quantity", width: 90 },
-    { Header: "Unit", accessor: "UnitCode", width: 70 }
-  ];
 
   const columsFindpopUpSKU = [
     {
