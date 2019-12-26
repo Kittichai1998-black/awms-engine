@@ -77,7 +77,7 @@ namespace ProjectSTGT.Engine.Received
                        new SQLConditionCriteria[] {
                        new SQLConditionCriteria("OrderNo",reqVO.orderNo, SQLOperatorType.EQUALS),
                        new SQLConditionCriteria("Code",reqVO.scanCode, SQLOperatorType.EQUALS),
-                       new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW,  SQLOperatorType.EQUALS),
+                       new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
                        new SQLConditionCriteria("Options","%"+reqVO.options+"%", SQLOperatorType.LIKE),
                      }, this.BuVO).FirstOrDefault();
 
@@ -87,6 +87,7 @@ namespace ProjectSTGT.Engine.Received
                     //Update Qty and Options
                     var doneDes = ObjectUtil.QryStrGetValue(docItems.Options, "status");
                     stos.mapstos[0].qty = docItems.Quantity.Value;
+                    stos.mapstos[0].baseQty = docItems.BaseQuantity.Value;
                     var _carton_no = ObjectUtil.QryStrGetValue(reqVO.options, "carton_no");
                     var strCNoptions = _carton_no + "-" + ((Int32.Parse(_carton_no) + Decimal.ToInt32(docItems.Quantity.Value)) - 1).ToString();
                     var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, OptionVOConst.OPT_CARTON_NO, strCNoptions);

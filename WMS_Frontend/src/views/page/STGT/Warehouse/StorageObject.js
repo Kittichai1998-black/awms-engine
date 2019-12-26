@@ -58,7 +58,17 @@ const StorageObject = props => {
     l: 100,
     all: ""
   };
-
+  const SKUMasterType = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "SKUMasterType",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const DocumentEventStatus = [
     { label: "NEW", value: "NEW" },
     { label: "AUDITING", value: "AUDITING" },
@@ -84,10 +94,11 @@ const StorageObject = props => {
       Cell: e => getStatus(e.original)
     },
     { Header: "Pallet Code", accessor: "Pallet", width: 110 },
-    { Header: "SKU Code", accessor: "SKU_Code", width: 200 },
-    { Header: "SKU Name", accessor: "SKU_Name", width: 300 },
-    { Header: "Order No", accessor: "OrderNo", width: 120 },
-    { Header: "Carton No", accessor: "Carton_No", width: 120 },
+    { Header: "SI.", accessor: "OrderNo", width: 120 },
+    { Header: "Reorder", accessor: "SKU_Code", width: 200 },
+    { Header: "Brand", accessor: "SKU_Name", width: 300 },
+    { Header: "Size", accessor: "skuType", width: 100 },
+    { Header: "Carton No.", accessor: "Carton_No", width: 120 },
     {
       Header: "Qty",
       accessor: "Qty",
@@ -96,7 +107,12 @@ const StorageObject = props => {
       Cell: e => getNumberQty(e.original)
     },
     { Header: "Base_Unit", accessor: "Base_Unit", width: 100 },
-    { Header: "Remark", accessor: "Remark", width: 150 },
+    {
+      Header: "Remark",
+      accessor: "Remark",
+      width: 150,
+      Cell: e => getRemark(e.original)
+    },
     { Header: "Warehouse", accessor: "Warehouse", width: 120 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
@@ -118,7 +134,14 @@ const StorageObject = props => {
       required: true
     }
   ];
-
+  const SKUGroupType = [
+    { label: "FG", value: "FG" },
+    { label: "WIP", value: "WIP" },
+    { label: "EMP", value: "EMP" },
+    { label: "RAW", value: "RAW" },
+    { label: "STO", value: "STO" },
+    { label: "DOC", value: "DOC" }
+  ];
   const iniCols2 = [
     "SKU_Code",
     "SKU_Name",
@@ -130,6 +153,14 @@ const StorageObject = props => {
     "Qty",
     "Base_Unit"
   ];
+
+  const getRemark = value => {
+    if (value.Remark === null || value.Remark === "null") {
+      return "";
+    } else {
+      return value.Remark;
+    }
+  };
   const getNumberQty = value => {
     return parseInt(value.Qty);
   };
@@ -172,10 +203,16 @@ const StorageObject = props => {
       placeholder: "Pallet"
     },
     {
-      label: "SKU Code",
+      label: "SI.",
+      field: "OrderNo",
+      searchType: "input",
+      placeholder: "SI."
+    },
+    {
+      label: "Reorder",
       field: "SKU_Code",
       searchType: "input",
-      placeholder: "SKU Code"
+      placeholder: "Reorder"
     }
   ];
 
@@ -204,10 +241,10 @@ const StorageObject = props => {
       placeholder: "Status"
     },
     {
-      label: "SKU Name",
+      label: "Brand",
       field: "SKU_Name",
       searchType: "input",
-      placeholder: "SKU Name"
+      placeholder: "Brand"
     },
     {
       label: "Warehouse",
@@ -231,18 +268,16 @@ const StorageObject = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Name"
     },
-
     {
-      label: "Batch",
-      field: "Batch",
-      searchType: "input",
-      placeholder: "Batch"
-    },
-    {
-      label: "OrderNo",
-      field: "OrderNo",
-      searchType: "input",
-      placeholder: "OrderNo"
+      label: "Size",
+      field: "skuType",
+      searchType: "dropdown",
+      typeDropdow: "normal",
+      name: "Size",
+      dataDropDow: SKUMasterType,
+      placeholder: "Size",
+      fieldLabel: ["Code"],
+      fieldDataKey: "Code"
     },
     { label: "Qty", field: "Qty", searchType: "input", placeholder: "Qty" },
     {
@@ -293,6 +328,7 @@ const StorageObject = props => {
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}
+        //multi={true}
       />
     </div>
   );
