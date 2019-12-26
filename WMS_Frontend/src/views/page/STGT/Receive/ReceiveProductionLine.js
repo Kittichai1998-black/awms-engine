@@ -162,6 +162,7 @@ const CustomerReturnPalletByBarcode = props => {
             let cartonStr = reqValue["scanCode"].substr(27, 4);
             if (cartonStr.match(/^\d{4}$/)) {
               cartonNo = parseInt(cartonStr);
+              //reqValue["amount"] = 0;
               console.log(cartonNo);
             } else {
               alertDialogRenderer(
