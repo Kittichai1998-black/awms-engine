@@ -46,8 +46,8 @@ const CustomerReturnPalletByBarcode = props => {
     placeholder: "Select Area",
     fieldLabel: ["Code", "Name"],
     fieldDataKey: "ID",
-    defaultValue: 13,
-    customQ: "{ 'f': 'ID', 'c':'=', 'v': 13}"
+    defaultValue: 16,
+    customQ: "{ 'f': 'ID', 'c':'=', 'v': 16}"
   };
 
   const inputItem = [

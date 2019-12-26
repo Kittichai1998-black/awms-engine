@@ -275,7 +275,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            RegisterWorkQueueTest xxx = new RegisterWorkQueueTest();
+            //RegisterWorkQueueTest xxx = new RegisterWorkQueueTest();
             this.InitDataASRS(reqVO);
 
             var sto = GetSto(reqVO);
