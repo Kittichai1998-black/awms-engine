@@ -16,27 +16,27 @@ namespace ProjectPanKan.Engine.Business
         public class TReq
         {
             public string desBase;
-            public string desArea;
+           //public string desArea;
             public int? warehouseID;
             public int? areaID;
             public string souBase;
             public string souPack;
-            public String souArea;
+           // public String souArea;
             public int quantity;
         }
 
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
-            
 
-            
-            var location = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new SQLConditionCriteria[]{
-                 new SQLConditionCriteria("Code",reqVO.souArea , SQLOperatorType.EQUALS),
-                }, this.BuVO).FirstOrDefault();
-            if (location == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Arealocation " + reqVO.souPack + " NotFound");
-                
-                
+
+
+            //var location = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new SQLConditionCriteria[]{
+            //     new SQLConditionCriteria("Code",reqVO.souArea , SQLOperatorType.EQUALS),
+            //    }, this.BuVO).FirstOrDefault();
+            //if (location == null)
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Arealocation " + reqVO.souPack + " NotFound");
+
+
 
             var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
                  new SQLConditionCriteria("Code", reqVO.souPack, SQLOperatorType.EQUALS),

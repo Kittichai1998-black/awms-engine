@@ -142,6 +142,8 @@ const ConsolePankan = (props) => {
     const [datasSourse, setdatasSourse] = useState([]);
     const [bodyGuides, setbodyGuides] = useState();
     const [onClickPick, setonClickPick] = useState();
+    const [onClickDoc, setonClickDoc] = useState();
+    const [basepick, setbasepick] = useState();
 
 
     const Customer = {
@@ -174,11 +176,19 @@ const ConsolePankan = (props) => {
         }
     }, [customerIds])
 
+    //useEffect(() => {
+    //    setdatasSourse([]);
+    //    setreload({})
+    //}, [docIds, onClickPick])
+
+    //useEffect(() => {
+    //    setreload({})
+    //}, onClickDoc)
+
     useEffect(() => {
         setdatasSourse([]);
-        setreload({})
-    }, [docIds, onClickPick])
-
+        setreload({}) 
+    }, [onClickPick])
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
         if (value === null) {
@@ -219,8 +229,16 @@ const ConsolePankan = (props) => {
 
     const GetDocument = (docID) => {
         setonClickPick(true)
+        setdatasSourse([]);
+        let idDoc = null
+        if (docIds === undefined) {
+            idDoc = docID
+        } else {
+            idDoc = docIds
+        }
+
         Axios.get(
-            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
+            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + idDoc +  "&getMapSto=true&_token=" +
             localStorage.getItem("Token")
         ).then(res => {
             let resDatas = res.data.docItemLists
@@ -230,19 +248,26 @@ const ConsolePankan = (props) => {
             let quantity = null
             let unittype = null
             console.log(resDatas)
-            resDatas.map((x) => {
-                datas = {
-                'pacItem': x.code + ":" + x.name,
-                    "quantity": x.pickQty + "/" + x.allQty,
-                    'unittype': x.unit
+            if (resDatas !== undefined) {
+                resDatas.map((x) => {
+                    datas = {
+                        'pacItem': x.code + ":" + x.name,
+                        "quantity": x.pickQty + "/" + x.allQty,
+                        'unittype': x.unit
 
-                }
-            
-            })
-            console.log(dataGuides)
-            BodyGuide(dataGuides)
-            datasSourse.push(datas)
-            setreload({})
+                    }
+
+                })
+                console.log(dataGuides)
+                BodyGuide(dataGuides)
+                setonClickDoc(true)
+                datasSourse.push(datas)
+                setdatasSourse([...datasSourse])
+                console.log(datasSourse)
+                setreload({})
+            }
+           
+           
 
             //dataGuides.map((y) => {
             //    BodyGuide(y)
@@ -250,6 +275,8 @@ const ConsolePankan = (props) => {
             //})
 
         })
+
+        //setreload({})
     }
 
     const BodyGuide = (datas) => {
@@ -306,7 +333,7 @@ const ConsolePankan = (props) => {
             setMsgDialogErr("Barcode invalid")
             setStateDialogErr(true)
 
-        } else if (qtypick === undefined ) {
+        } else if (qtypick === undefined) {
             setMsgDialogErr("Qty invalid")
             setStateDialogErr(true)
 
@@ -316,37 +343,67 @@ const ConsolePankan = (props) => {
             let baseCode = null
             let SkuCodes = null
             if (barcodePicks.length < 8) {
-                baseCode = barcodePicks
-            } else {
+                setbasepick(barcodePicks)
 
-            }
-            let datasPick = {
-                "docID": docIds,
-                "scanCode": SkuCodes,
-                "baseConso": "",
-                "basePick": baseCode,
-                "scanQty": qtypick,
-
-            }
-            console.log(datasPick)
-            Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasPick).then((res) => {
-                console.log(res)
-                if (res.data._result.status === 1) {
-                    let datas = res.data
-                    console.log(datas)
-                    
-                    setNewStorageObjPick(<AmListSTORenderer
-                        dataSrc={datas}
-
-                    />);
-
-                } else {
-                    setStateDialogErr(true)
-                    setMsgDialogErr(res.data._result.message)
+                let datasPick = {
+                    "docID": docIds,
+                    "scanCode": barcodePicks,
+                    "baseConso": "",
+                    "basePick": "",
+                    "scanQty": qtypick,
 
                 }
-            })
+                console.log(datasPick)
+                Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasPick).then((res) => {
+                    console.log(res)
+                    if (res.data._result.status === 1) {
+                        let datas = res.data
+                        console.log(datas.sto)
+                       
+                        setNewStorageObjPick(<AmListSTORenderer
+                            dataSrc={datas.sto}
+                            
 
+                        />);
+
+                    } else {
+                        setStateDialogErr(true)
+                        setMsgDialogErr(res.data._result.message)
+
+                    }
+                })
+
+               
+
+            } else {
+             
+
+                let datasPick = {
+                    "docID": docIds,
+                    "scanCode": barcodePicks,
+                    "baseConso": "",
+                    "basePick": basepick,
+                    "scanQty": qtypick,
+
+                }
+                
+                Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasPick).then((res) => {
+                    if (res.data._result.status === 1) {
+                        let datas = res.data
+                        GetDocument();
+                        setNewStorageObjPick(<AmListSTORenderer
+                            dataSrc={datas.sto}
+
+                        />);
+
+                    } else {
+                        setStateDialogErr(true)
+                        setMsgDialogErr(res.data._result.message)
+
+                    }
+                })
+
+            }
         }
 
     };
@@ -501,7 +558,7 @@ const ConsolePankan = (props) => {
             </div>
             <div style={{ paddingTop: "10px" }}>
                 <AmTable
-                    data={datasSourse}
+                    data={[...datasSourse]}
                     reload={reload}
                     columns={Column}
                     sortable={false}
