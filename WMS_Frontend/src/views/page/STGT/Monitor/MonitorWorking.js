@@ -42,7 +42,7 @@ export default props => {
                     { //table in col
                         data: [],
                         headercol: headercol1,
-                        // title: "In Bound"
+                        title: "Inbound"
                     }
                 ]
             }
@@ -54,7 +54,7 @@ export default props => {
                     { //table in col
                         data: [],
                         headercol: headercol2,
-                        title: "Out Bound"
+                        title: "Outbound"
                     }
                 ]
             }
