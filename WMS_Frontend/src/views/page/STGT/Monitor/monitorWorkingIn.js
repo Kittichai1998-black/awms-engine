@@ -9,31 +9,25 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 
 //type time,datetime,datelog
 const headercol1 = [
-    { accessor: "ActualTime", Header: "Time", type: "time", className: 'center', sortable: false },
-    { accessor: "Gate", Header: "Gate", className: 'center', style: { fontWeight: '900' }, sortable: false },
-    { accessor: "MVT", Header: "MVT", className: 'center', sortable: false },
-    { accessor: "PalletCode", Header: "Pallet", sortable: false },
-    { accessor: "Product", Header: "Product", sortable: false },
-    { accessor: "QtyUnit", Header: "QtyUnit", sortable: false },
-    { accessor: "Destination", Header: "Destination", sortable: false },
-    { accessor: "Document_Code", Header: "Doc No.", sortable: false }
+    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "PackName", Header: "Product", sortable: false },
+    // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
+    // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
+    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 const headercol2 = [
-    { accessor: "Time", Header: "Time", width: 110, className: 'center', type: "time", sortable: false },
-    {
-        accessor: "TaskName", Header: "Task", width: 130, className: 'center', sortable: false,
-        Cell: row => (
-            <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
-        )
-    },
-    { accessor: "LocationCode", Header: "Stage", width: 70, style: { fontWeight: '900' }, sortable: false },
-    { accessor: "PalletCode", Header: "Pallet", width: 160, sortable: false },
-    { accessor: "Product", Header: "Product", sortable: false },
-    { accessor: "Qty", Header: "Qty", width: 140, className: 'right', style: { fontWeight: '900' }, sortable: false },
-    { accessor: "Destination", Header: "Destination", width: 170, sortable: false },
-    { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false },
-    // { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
+    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "PackName", Header: "Product", sortable: false },
+    // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
+    // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
+    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 export default props => {
@@ -46,22 +40,24 @@ export default props => {
                 table: [
                     { //table in col
                         data: [],
-                        headercol: headercol1
+                        headercol: headercol1,
+                        // title: "In Bound"
                     }
                 ]
             }
         ],
-        [ //row
-            { //col 
-                type: null,
-                table: [
-                    { //table in col
-                        data: [],
-                        headercol: headercol2
-                    }
-                ]
-            }
-        ]
+        // [ //row
+        //     { //col 
+        //         type: null,
+        //         table: [
+        //             { //table in col
+        //                 data: [],
+        //                 headercol: headercol2,
+        //                 title: "Out Bound"
+        //             }
+        //         ]
+        //     }
+        // ]
     ])
 
     let url = window.apipath + '/dashboard'
@@ -76,16 +72,16 @@ export default props => {
     const signalrStart = () => {
         connection.start()
             .then(() => {
-                connection.on("DASHBOARD_COUNTING_1", res => {
+                connection.on("DASHBOARD_WORKING_IN", res => {
                     console.log(JSON.parse(res));
                     data[0][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
-                connection.on("DASHBOARD_COUNTING_2", res => {
-                    console.log(JSON.parse(res));
-                    data[1][0].table[0].data = JSON.parse(res)
-                    setData([...data])
-                })
+                // connection.on("DASHBOARD_OUT", res => {
+                //     console.log(JSON.parse(res));
+                //     data[1][0].table[0].data = JSON.parse(res)
+                //     setData([...data])
+                // })
             })
             .catch((err) => {
                 console.log(err);
@@ -109,7 +105,7 @@ export default props => {
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
-        label: "Date/Time"
+        // label: "Date/Time"
     }
 
     // const optionsArea = [

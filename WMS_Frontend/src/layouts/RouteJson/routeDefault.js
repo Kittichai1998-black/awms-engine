@@ -137,8 +137,8 @@ const Permission = Loadable({
   loader: () => import("../../views/page/Master/Permission"),
   loading: Loading
 });
-const DashboardIO = Loadable({
-  loader: () => import("../../views/page/Dashboard/DashboardIO"),
+const MonitorIO = Loadable({
+  loader: () => import("../../views/page/Monitor/MonitorIO"),
   loading: Loading
 });
 const TestPicking = Loadable({
@@ -189,13 +189,13 @@ let routes = [
   {
     path: "/dashboard/inbound",
     name: "Inbound Progress",
-    compoment: DashboardIO,
+    compoment: MonitorIO,
     exact: true
   },
   {
     path: "/dashboard/outbound",
     name: "Outbound Progress",
-    compoment: DashboardIO,
+    compoment: MonitorIO,
     exact: true
   },
   // {path: "/dashboard/picking",name: "Pickiing Progress",compoment: Picking,exact: true},

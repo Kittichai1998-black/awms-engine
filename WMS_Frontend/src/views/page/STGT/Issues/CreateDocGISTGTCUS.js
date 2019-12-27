@@ -59,7 +59,7 @@ export default props => {
         // { Header: 'Batch', accessor: 'Batch' },
 
         { Header: "Quantity", accessor: "Quantity", width: 90 },
-        { Header: "Unit", accessor: "UnitCode", width: 70 }
+        { Header: "Unit", accessor: "BaseUnitCode", width: 70 }
     ];
 
     const PalletCode = {

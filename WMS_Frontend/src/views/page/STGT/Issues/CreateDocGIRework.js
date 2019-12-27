@@ -95,8 +95,8 @@ export default props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: "FG_TRANSFER_WM",
-            valueTexts: "1011"
+            texts: "FG_REWORK_WM",
+            valueTexts: "1061"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
