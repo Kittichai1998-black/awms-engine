@@ -10,25 +10,25 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 //type time,datetime,datelog
 const headercol1 = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Gate", Header: "Gate", width: 100, sortable: false },
+    { accessor: "Gate", Header: "Gate", width: 70, sortable: false },
     // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PackName", Header: "Product", sortable: false },
-    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
-    { accessor: "Remark", Header: "Remark", width: 170, sortable: false },
+    { accessor: "PackName", Header: "Product", width: 550, sortable: false },
+    { accessor: "Qty", Header: "Qty", width: 90, sortable: false },
+    { accessor: "Remark", Header: "Remark", sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    // { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 const headercol2 = [
-    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PackName", Header: "Product", sortable: false },
-    // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
-    // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
-    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "ActualTime", Header: "Time", type: "time", sortable: false, width: 100, style: { textAlign: "center" } },
+    { accessor: "Gate", Header: "Gate", sortable: false, width: 70, style: { textAlign: "center" } },
+    // { accessor: "MVT", Header: "MVT", sortable: false },
+    { accessor: "PalletCode", Header: "Pallet", sortable: false, width: 140, style: { textAlign: "center" } },
+    { accessor: "Product", Header: "Product", sortable: false, width: 550 },
+    { accessor: "QtyUnit", Header: "Qty", sortable: false, width: 90, style: { textAlign: "center" } },
+    { accessor: "Remark", Header: "Remark", sortable: false, style: { textAlign: "center" }, Cell: row => row.value ? decodeURI(row.value) : null },
+    { accessor: "Document_Code", Header: "Doc No.", sortable: false, width: 160, style: { textAlign: "center" } }
 ]
 
 export default props => {
