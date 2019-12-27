@@ -13,7 +13,7 @@ import AmFindPopup from '../components/AmFindPopup'
 import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { apicall } from '../components/function/CoreFunction2'
-import BtnAddSKU from './AmCreateDocument_BtnAdd_BySKU'
+import BtnAddList from './AmCreateDocument_BtnAddList'
 import { getUnique } from './function/ObjectFunction'
 
 const Axios = new apicall()
@@ -915,7 +915,7 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {props.addList ? <BtnAddSKU
+                        {props.addList ? <BtnAddList
                             headerCreate={props.headerCreate}
                             queryApi={props.addList.queryApi}
                             columns={props.addList.columns}

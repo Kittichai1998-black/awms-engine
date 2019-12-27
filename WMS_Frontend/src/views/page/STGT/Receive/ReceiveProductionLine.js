@@ -46,8 +46,8 @@ const CustomerReturnPalletByBarcode = props => {
     placeholder: "Select Area",
     fieldLabel: ["Code", "Name"],
     fieldDataKey: "ID",
-    defaultValue: 13,
-    customQ: "{ 'f': 'ID', 'c':'=', 'v': 13}"
+    defaultValue: 17,
+    customQ: "{ 'f': 'ID', 'c':'in', 'v': '13,17'}"
   };
 
   const inputItem = [
@@ -162,6 +162,8 @@ const CustomerReturnPalletByBarcode = props => {
             let cartonStr = reqValue["scanCode"].substr(27, 4);
             if (cartonStr.match(/^\d{4}$/)) {
               cartonNo = parseInt(cartonStr);
+              //reqValue["amount"] = 0;
+              console.log(cartonNo);
             } else {
               alertDialogRenderer(
                 "Carton No. must be equal to 4-digits in number format.",

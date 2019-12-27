@@ -85,7 +85,7 @@ const useClock = (propsTime, t) => {
 //     return { width, height };
 // };
 
-const AmPageDashboard = props => {
+const AmMonitor = props => {
     const { t } = useTranslation()
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.35);
@@ -333,10 +333,10 @@ const AmPageDashboard = props => {
     );
 }
 
-AmPageDashboard.propTypes = {
+AmMonitor.propTypes = {
     time: PropTypes.object,
     dropdown: PropTypes.object,
     coltable: PropTypes.array.isRequired,
 }
 
-export default AmPageDashboard
+export default AmMonitor

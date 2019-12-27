@@ -235,6 +235,8 @@ const DocumentSearchPISTGT = props => {
         docTypeCode="2004"
         buttonReject={true}
         apiReject={"/v2/RejectedADDocAPI"}
+        buttonClose={true}
+        apiClose={"/v2/CloseDocAPI"}
       />
     </div>
   );

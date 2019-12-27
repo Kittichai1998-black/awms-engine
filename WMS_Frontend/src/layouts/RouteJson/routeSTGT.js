@@ -21,6 +21,10 @@ const CreateDocGISTGTWM = Loadable({
   loader: () => import("../../views/page/STGT/Issues/CreateDocGISTGTWM"),
   loading: Loading
 });
+const CreateDocGIRework = Loadable({
+  loader: () => import("../../views/page/STGT/Issues/CreateDocGIRework"),
+  loading: Loading
+});
 const DocumentSearchSTGT = Loadable({
   loader: () => import("../../views/page/STGT/Receive/DocumentSearchSTGT"),
   loading: Loading
@@ -29,20 +33,18 @@ const DocumentViewGRSTGT = Loadable({
   loader: () => import("../../views/page/STGT/Receive/DocumentViewGRSTGT"),
   loading: Loading
 });
-
-const dashboardInOut = Loadable({
-  loader: () => import("../../views/page/STGT/Dashboard/DashboardInOut"),
+const monitorWorkingIn = Loadable({
+  loader: () => import("../../views/page/STGT/Monitor/MonitorWorkingIn"),
   loading: Loading
 });
-const dashboardPickingJob = Loadable({
-  loader: () => import("../../views/page/STGT/Dashboard/DashboardPickingJob"),
+const monitorWorkingOut = Loadable({
+  loader: () => import("../../views/page/STGT/Monitor/MonitorWorkingOut"),
   loading: Loading
 });
-const dashboardCountingJob = Loadable({
-  loader: () => import("../../views/page/STGT/Dashboard/DashboardCountingJob"),
+const monitorWorking = Loadable({
+  loader: () => import("../../views/page/STGT/Monitor/MonitorWorking"),
   loading: Loading
 });
-
 const CreateDocPIPhysicalSTGT = Loadable({
   loader: () => import("../../views/page/STGT/Audit/CreateDocPIPhysicalSTGT"),
   loading: Loading
@@ -59,14 +61,14 @@ const DocumentViewPISTGT = Loadable({
   loader: () => import("../../views/page/STGT/Audit/DocumentViewPISTGT"),
   loading: Loading
 });
-const ReceiveFromCustomer = Loadable({
-  loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
-  loading: Loading
-});
-const ReceiveFromWarehouse = Loadable({
-  loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
-  loading: Loading
-});
+// const ReceiveFromCustomer = Loadable({
+//   loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
+//   loading: Loading
+// });
+// const ReceiveFromWarehouse = Loadable({
+//   loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
+//   loading: Loading
+// });
 const LoadingReturn = Loadable({
   loader: () => import("../../views/page/STGT/Issues/LoadingReturn"),
   loading: Loading
@@ -127,6 +129,7 @@ const routes = [
   { path: "/issue/detail", name: "GI View", compoment: DocumentViewGISTGT, exact: true },
   { path: "/issue/create", name: "base5", compoment: CreateDocGISTGTCUS, exact: true },
   { path: "/issue/createWM", name: "base5", compoment: CreateDocGISTGTWM, exact: true },
+  { path: "/issue/createRework", name: "base5", compoment: CreateDocGIRework, exact: true },
   { path: "/receive/productionLine", name: "Search GR", compoment: ReceiveProductionLine, exact: true },
   { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTGT, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DocumentViewGRSTGT, exact: true },
@@ -134,9 +137,11 @@ const routes = [
   { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTGT, exact: true },
   { path: "/counting/createPhysical", name: "base5", compoment: CreateDocPIPhysicalSTGT, exact: true },
   { path: "/counting/createRework", name: "base5", compoment: CreateDocPIReworkSTGT, exact: true },
-  { path: "/dashboard/inout", name: "TestRedirect", compoment: dashboardInOut, exact: true },
-  { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
-  { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },
+
+  { path: "/monitor/workingin", name: "TestRedirect", compoment: monitorWorkingIn, exact: true },
+  { path: "/monitor/workingout", name: "TestRedirect", compoment: monitorWorkingOut, exact: true },
+  { path: "/monitor/inout", name: "TestRedirect", compoment: monitorWorking, exact: true },
+  
   { path: "/warehouse/storageobject", name: "base5", compoment: StorageObject, exact: true },
   // { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: ReceiveFromCustomer, exact: true },
   { path: "/issue/managequeue", name: "base5", compoment: ProcessQueueGI, exact: true },
