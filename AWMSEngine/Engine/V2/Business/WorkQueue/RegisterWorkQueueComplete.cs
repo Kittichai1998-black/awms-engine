@@ -1,4 +1,5 @@
-﻿using AWMSModel.Criteria;
+﻿using AWMSEngine.Engine.V2.Business;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class RegisterWorkQueueComplete : BaseEngine<RegisterWorkQueue.TReq, WorkQueueCriteria>
+    public class RegisterWorkQueueComplete : BaseEngine<RegisterWorkQueue.TReq, List<long>>
     {
-        protected override WorkQueueCriteria ExecuteEngine(RegisterWorkQueue.TReq reqVO)
+        protected override List<long> ExecuteEngine(RegisterWorkQueue.TReq reqVO)
         {
             var regQueue = new RegisterWorkQueue();
             var resRegQueue = regQueue.Execute(this.Logger, this.BuVO, reqVO);
 
             var workingData = new WorkingStageQueue.TReq()
             {
-                warehouseCode= reqVO.desAreaCode,
-                actualTime= DateTime.Now,
-                areaCode= reqVO.desAreaCode,
-                baseCode= reqVO.baseCode,
-                locationCode= reqVO.desLocationCode,
-                queueID= resRegQueue.queueID
+                warehouseCode = reqVO.warehouseCode,
+                actualTime = DateTime.Now,
+                areaCode = reqVO.desAreaCode,
+                baseCode = reqVO.baseCode,
+                locationCode = reqVO.desLocationCode,
+                queueID = resRegQueue.queueID
             };
             var workingQueue = new WorkingStageQueue();
             var resWorkingQueue = workingQueue.Execute(this.Logger, this.BuVO, workingData);
@@ -35,9 +36,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 queueID = resWorkingQueue.queueID
             };
             var doneQueue = new DoneQ();
-            doneQueue.Execute(this.Logger, this.BuVO, doneData);
+            var resDone = doneQueue.Execute(this.Logger, this.BuVO, doneData);
 
-            return resRegQueue;
+            var workedDocument = new Document.WorkedDocument();
+            var workedDocIDs = workedDocument.Execute(this.Logger, this.BuVO, resDone);
+            var closingDocument = new Document.ClosingDocument();
+            var closingDocIDs = closingDocument.Execute(this.Logger, this.BuVO, workedDocIDs);
+            var closedDocument = new Document.ClosedDocument();
+            var closedDocIDs = closedDocument.Execute(this.Logger, this.BuVO, closingDocIDs);
+
+            return closedDocIDs;
         }
     }
 }
