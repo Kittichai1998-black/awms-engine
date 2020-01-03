@@ -77,36 +77,37 @@ namespace ProjectSTGT.Engine.WM
                 var docItems = new List<CreateGRDocument.TReq.ReceiveItem>();
                 data.rows.Skip(1).ToList().ForEach(row =>
                 {
+                    var status = AMWUtil.Common.EnumUtil.GetValueEnum<StorageObjectEventStatus>(row.cells[6]);
                     docItems.Add(new CreateGRDocument.TReq.ReceiveItem()
                     {
                         skuCode = row.cells[0],
                         orderNo = row.cells[1],
-                        options = $"carton_no={row.cells[5]}&saleorder={row.cells[2]}",
+                        options = $"carton_no={row.cells[5]}&saleorder={row.cells[2]}&status={status}&remark={row.cells[7]}",
                         quantity = Convert.ToDecimal(row.cells[3]),
                         unitType = row.cells[4]
                     });
                 });
 
-                var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => key.ToList()).ToList();
+                var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => new { sku = key.Key, docItems = key.ToList() }).ToList();
 
                 gDocItems.ForEach(x =>
                 {
                     try
                     {
-
                         var doc = new CreateGRDocument.TReq();
 
                         doc.documentDate = DateTime.Now;
                         doc.eventStatus = DocumentEventStatus.NEW;
                         doc.movementTypeID = MovementType.FG_TRANSFER_WM;
                         doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-                        doc.receiveItems = x;
+                        doc.receiveItems = x.docItems;
 
                         var createGRDoc = new AWMSEngine.APIService.Doc.CreateGRDocAPI(null, 0, false);
                         var res = createGRDoc.Execute(doc);
                     }
                     catch
                     {
+                        return;
                     }
                 });
             });
