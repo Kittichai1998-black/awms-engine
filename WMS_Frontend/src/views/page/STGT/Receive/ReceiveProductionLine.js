@@ -56,7 +56,7 @@ const CustomerReturnPalletByBarcode = props => {
       type: "input",
       name: "Scan Code",
       placeholder: "Scan Code",
-      maxLength: 31,
+      maxLength: 33,
       required: true,
       clearInput: true,
       isFocus: true
@@ -140,7 +140,7 @@ const CustomerReturnPalletByBarcode = props => {
           console.log(reqValue["scanCode"]);
           reqValue.scanCode = reqValue.scanCode.trim();
           console.log(reqValue["scanCode"].trim().length);
-          if (reqValue["scanCode"].trim().length === 31) {
+          if (reqValue["scanCode"].trim().length === 33) {
             let orderNoStr = reqValue["scanCode"].substr(0, 7);
             if (orderNoStr.match(/^[A-Za-z0-9]{7}$/)) {
               orderNo = orderNoStr;
@@ -159,8 +159,8 @@ const CustomerReturnPalletByBarcode = props => {
               skuCode = skuCode1;
             }
             skuCode = skuCode.trim();
-            let cartonStr = reqValue["scanCode"].substr(27, 4);
-            if (cartonStr.match(/^\d{4}$/)) {
+            let cartonStr = reqValue["scanCode"].substr(27, 6);
+            if (cartonStr.match(/^\d{6}$/)) {
               cartonNo = parseInt(cartonStr);
               //reqValue["amount"] = 0;
               console.log(cartonNo);
