@@ -153,7 +153,7 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "10px 0 0 20px", width: "150px" }}>
+                <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
                   {t(row.label)} :{" "}
                 </label>
                 <AmMultiDropdown
@@ -162,7 +162,7 @@ const AmDocumentSearch = props => {
                   data={row.dropdownData}
                   fieldDataKey={row.dropdownKey}
                   fieldLabel={row.dropdownLabel}
-                  ddlMinWidth="250px"
+                  ddlMinWidth="150px"
                   onChange={value =>
                     onChangeFilter(condition, rowC.field, value)
                   }
@@ -177,7 +177,7 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "10px 0 0 20px", width: "150px" }}>
+                <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
                   {t(row.label)} :{" "}
                 </label>
                 <AmDatePicker
@@ -223,6 +223,7 @@ const AmDocumentSearch = props => {
   const [textError, setTextError] = useState("");
 
   const [dialog, setDialog] = useState(false);
+  const [dialogRejectworking, setDialogRejectworking] = useState(false);
   const [dialogReject, setDialogReject] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
   const [dataSentToAPI, setDataSentToAPI] = useState([]);
@@ -387,13 +388,14 @@ const AmDocumentSearch = props => {
           docID.push(rowdata.ID);
         });
       }
-
+      console.log(desAreaLocationCode);
       Axios.post(window.apipath + props.apiReject, {
         docIDs: docID,
         desAreaID: 1,
         souAreaID: 1,
         desAreaLocationID: desAreaLocationCode
       }).then(res => {
+        console.log(res);
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
             setOpenSuccess(true);
@@ -675,6 +677,7 @@ const AmDocumentSearch = props => {
     }
     setValueText1([]);
     setDialog(false);
+    setDialogRejectworking(false);
     setDialogReject(false);
     setSelection([]);
   };
@@ -682,7 +685,7 @@ const AmDocumentSearch = props => {
   const [queryLoc, setQueryLoc] = useState([]);
   const [souAreaCode, setSouAreaCode] = useState("");
   const [desAreaCode, setDesAreaCode] = useState("");
-  const [desAreaLocationCode, setDesAreaLocationCode] = useState("");
+  const [desAreaLocationCode, setDesAreaLocationCode] = useState(0);
 
   async function onChangeEditor(field, rowdata, value, type, inputType) {
     // console.log(field);
@@ -766,6 +769,24 @@ const AmDocumentSearch = props => {
     setRemark("");
     setDesAreaLocationCode("");
   };
+  function allTrue(obj) {
+    for (var o in obj) if (obj[o].EventStatus === 31) return false;
+
+    return true;
+  }
+
+  const onCheckReject = () => {
+    console.log(selection);
+
+    var check = allTrue(selection);
+    console.log(check);
+    if (check === true) {
+      setDialogRejectworking(true);
+    } else {
+      setDialogReject(true);
+    }
+    //setDialogReject(true);
+  };
 
   // end add by ple
   return (
@@ -780,6 +801,13 @@ const AmDocumentSearch = props => {
       />
       <AmEditorTable
         open={dialog}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+        titleText={"Remark"}
+        data={text}
+        columns={FuncRanderRemark()}
+      />
+      <AmEditorTable
+        open={dialogRejectworking}
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
         titleText={"Remark"}
         data={text}
@@ -862,7 +890,7 @@ const AmDocumentSearch = props => {
               onClick={() => {
                 //onClickReject();
                 //FuncRanderRemark();
-                setDialogReject(true);
+                onCheckReject();
               }}
               style={{ marginRight: "5px" }}
               styleType="delete"
