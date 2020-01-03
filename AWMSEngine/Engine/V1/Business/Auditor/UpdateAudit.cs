@@ -39,13 +39,26 @@ namespace AWMSEngine.Engine.Business.Auditor
         {
 
 
-            if(reqVO.itemLists.Count > 0)
+            if (reqVO.itemLists.Count > 0)
             {
+                var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
+
+                var Disto = new List<amt_DocumentItemStorageObject>();
+                getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); });
+
+                var qID = new amt_WorkQueue();
+                foreach (var disto in Disto)
+                {
+                    qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
+                    if (qID.EventStatus != WorkQueueEventStatus.CLOSED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
+                }
+
                 reqVO.itemLists.ForEach(x =>
                 {
                     var getPack = ADO.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
                     var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
-                    ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty,x.option, getPack.parentID.Value, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty, x.option, getPack.parentID.Value, this.BuVO);
 
                     getPack.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(getPack.options,
                        new KeyValuePair<string, object>[] {
@@ -60,23 +73,23 @@ namespace AWMSEngine.Engine.Business.Auditor
                     //    });
 
                 });
-                var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
+                var getDisto1 = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
 
-                var Disto = new List<amt_DocumentItemStorageObject>();
-                getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); }) ;
+                var Disto1 = new List<amt_DocumentItemStorageObject>();
+                getDisto1.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto1.AddRange(x); });
 
 
-                var CheckDisto = Disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE);
+                var CheckDisto = Disto1.TrueForAll(x => x.Status == EntityStatus.ACTIVE);
                 if (CheckDisto)
                 {
-                    var WorkedDoc = new  WorkedDocument().Execute(this.Logger, this.BuVO,new List<long> { reqVO.docID.Value });
-                    var ClosingDoc = new  ClosingDocument().Execute(this.Logger, this.BuVO, WorkedDoc);
-                    var ClosedDoc = new  ClosedDocument().Execute(this.Logger, this.BuVO, ClosingDoc);
+                    var WorkedDoc = new WorkedDocument().Execute(this.Logger, this.BuVO, new List<long> { reqVO.docID.Value });
+                    var ClosingDoc = new ClosingDocument().Execute(this.Logger, this.BuVO, WorkedDoc);
+                    var ClosedDoc = new ClosedDocument().Execute(this.Logger, this.BuVO, ClosingDoc);
 
-                   // ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
+                    // ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
                 }
 
-                 var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
+                var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
                 return res;
             }
             else
