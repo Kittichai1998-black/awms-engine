@@ -166,7 +166,7 @@ const CustomerReturnPalletByBarcode = props => {
               console.log(cartonNo);
             } else {
               alertDialogRenderer(
-                "Carton No. must be equal to 4-digits in number format.",
+                "Carton No. must be equal to 6-digits in number format.",
                 "error",
                 true
               );
