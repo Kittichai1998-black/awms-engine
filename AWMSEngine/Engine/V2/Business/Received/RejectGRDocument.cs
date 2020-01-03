@@ -237,6 +237,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         ADO.DocumentADO.GetInstant().UpdateEventStatus(docID, DocumentEventStatus.REJECTED, this.BuVO);
                     }
                 }
+                else if (grDoc.EventStatus == DocumentEventStatus.NEW)
+                {
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docID, DocumentEventStatus.REJECTED, this.BuVO);
+                }
 
             }
             return docIDs;
