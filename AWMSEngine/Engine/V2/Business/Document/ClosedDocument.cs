@@ -34,70 +34,79 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
-                        //update StorageObjects
-                        if (docs.EventStatus == DocumentEventStatus.CLOSING)
+                        try
                         {
-                            var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
-                            if (distos == null)
+                            //update StorageObjects
+                            if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
-                                this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                {
-                                    docID = x,
-                                    msgError = "Document Items of Storage Object Not Found."
-                                });
-                            }
-                            else
-                            {
-                                var distoGroupByWQ = distos.GroupBy(grp => grp.WorkQueue_ID, (key, g) => new { WorkQueueID = key, DiSTOs = g.ToList() });
-                                foreach (var di in distoGroupByWQ)
-                                {
-                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
-                                    {
-                                        UpdateStorageObjectReceived(di.WorkQueueID);
-                                    }
-                                    else
-                                    {
-                                        UpdateStorageObjectIssued(di.DiSTOs);
-                                    }
-                                }
-
-                                //update Closed Document
-                                var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
-                                if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
-                                {
-                                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
-                                    RemoveOPTDocument(x, docs.Options, this.BuVO);
-                                    docLists.Add(x);
-
-                                }
-                                else
+                                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                                if (distos == null)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                                     {
                                         docID = x,
-                                        msgError = "Status of all document items didn't 'CLOSING'."
+                                        msgError = "Document Items of Storage Object Not Found."
                                     });
                                 }
+                                else
+                                {
+                                    var distoGroupByWQ = distos.GroupBy(grp => grp.WorkQueue_ID, (key, g) => new { WorkQueueID = key, DiSTOs = g.ToList() });
+                                    foreach (var di in distoGroupByWQ)
+                                    {
+                                        if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
+                                        {
+                                            UpdateStorageObjectReceived(di.WorkQueueID);
+                                        }
+                                        else
+                                        {
+                                            UpdateStorageObjectIssued(di.DiSTOs);
+                                        }
+                                    }
+
+                                    //update Closed Document
+                                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                    if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
+                                    {
+                                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                        RemoveOPTDocument(x, docs.Options, this.BuVO);
+                                        docLists.Add(x);
+
+                                    }
+                                    else
+                                    {
+                                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                        {
+                                            docID = x,
+                                            msgError = "Status of all document items didn't 'CLOSING'."
+                                        });
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                {
+                                    docID = x,
+                                    msgError = "Status of document didn't 'CLOSING'."
+                                });
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
                             this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                             {
                                 docID = x,
-                                msgError = "Status of document didn't 'CLOSING'."
+                                msgError = ex.Message
                             });
+                            this.Logger.LogError(ex.Message);
                         }
                     }
                     else
                     {
-                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = x,
-                            msgError = "Document Not Found"
-                        });
+                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
                     }
                 });
+
                 res = docLists;
             }
 
