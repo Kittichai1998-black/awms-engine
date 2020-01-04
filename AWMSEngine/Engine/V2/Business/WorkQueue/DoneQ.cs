@@ -91,8 +91,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private void UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
         {
             var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
-            var docItemss = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO);
-            List<TDocItems> docItems = docItemss.Select(x => new TDocItems { ID = x.ID, Document_ID = x.Document_ID, Quantity = x.Quantity, BaseQuantity = x.BaseQuantity, DocItemStos = x.DocItemStos }).Distinct().ToList();
+            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
+            //List<TDocItems> docItems = docItemss.Select(x => new TDocItems { ID = x.ID, Document_ID = x.Document_ID, Quantity = x.Quantity, BaseQuantity = x.BaseQuantity, DocItemStos = x.DocItemStos }).Distinct().ToList();
 
             var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
 
@@ -168,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             disto.Status = EntityStatus.ACTIVE;
             return disto;
         }
-        private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<TDocItems> docItems, StorageObjectCriteria stos)
+        private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (docItems.Count > 0)
             {
@@ -210,7 +210,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
         }
-        private List<TDocItems> ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<TDocItems> docItems, StorageObjectCriteria stos)
+        private List<amt_DocumentItem> ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
@@ -234,15 +234,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
+
                     var qtyIssue = docItem.Quantity;//1500
                     var baseqtyIssue = docItem.BaseQuantity;
                     decimal? sumDiSTOQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumQty;
                     decimal? sumDiSTOBaseQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumBaseQty;
                     stoList.ForEach(sto =>
                     {
-                        var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                        var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id).ToList();
 
-                        distos.ToList().ForEach(disto =>
+                        distos.ForEach(disto =>
                         {
                             if (disto.Quantity == null)
                             {
@@ -282,7 +283,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         }
                                         else
                                         {
-                                            StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                            StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
                                             updSto.eventStatus = eventStatus;
                                             RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
                                         }
@@ -339,7 +340,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         }
                                         else
                                         {
-                                            StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                            StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
                                             updSto.eventStatus = eventStatus;
                                             RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
                                         }
@@ -373,7 +374,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
             return docItems;
         }
-        private StorageObjectCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<TDocItems> docItems, StorageObjectCriteria stos)
+        private StorageObjectCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
             {
