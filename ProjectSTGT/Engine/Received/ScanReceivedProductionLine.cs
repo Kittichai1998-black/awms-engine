@@ -42,15 +42,15 @@ namespace ProjectSTGT.Engine.Received
         {
             var resDisto = new amt_DocumentItemStorageObject();
 
-            if(reqVO.action == VirtualMapSTOActionType.REMOVE)
+            if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
-                var getBase= AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
+                var getBase = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                        new SQLConditionCriteria[] {
                        new SQLConditionCriteria("Code",reqVO.scanCode, SQLOperatorType.EQUALS),
-                       new SQLConditionCriteria("Status", EntityStatus.ACTIVE,  SQLOperatorType.EQUALS),                    
+                       new SQLConditionCriteria("Status", EntityStatus.ACTIVE,  SQLOperatorType.EQUALS),
                       }, this.BuVO).FirstOrDefault();
 
-                if(getBase == null) //เป็น pack
+                if (getBase == null) //เป็น pack
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Please scan pallet fro remove");
 
 
@@ -86,12 +86,17 @@ namespace ProjectSTGT.Engine.Received
 
                     //Update Qty and Options
                     var doneDes = ObjectUtil.QryStrGetValue(docItems.Options, "status");
+
+                    var doneDesStatus = this.getDoneStatus(doneDes);
+
                     stos.mapstos[0].qty = docItems.Quantity.Value;
                     stos.mapstos[0].baseQty = docItems.BaseQuantity.Value;
                     var _carton_no = ObjectUtil.QryStrGetValue(reqVO.options, "carton_no");
+                    var saleorder = ObjectUtil.QryStrGetValue(docItems.Options, "saleorder");
                     var strCNoptions = _carton_no + "-" + ((Int32.Parse(_carton_no) + Decimal.ToInt32(docItems.Quantity.Value)) - 1).ToString();
                     var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, OptionVOConst.OPT_CARTON_NO, strCNoptions);
-                    optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDes);
+                    optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, "saleorder", saleorder);
+                    optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
 
                     stos.mapstos[0].options = optionsNew;
                     //AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, "carton_no", strCNoptions);
@@ -106,8 +111,8 @@ namespace ProjectSTGT.Engine.Received
                 else
                 {
                     if (reqVO.action == VirtualMapSTOActionType.REMOVE)
-                    {                      
-                            this.RemoveDisto( reqVO);                        
+                    {
+                        this.RemoveDisto(reqVO);
                     }
                 }
             }
@@ -139,7 +144,7 @@ namespace ProjectSTGT.Engine.Received
 
             return DocItemsMapStos;
         }
-       
+
         private List<amt_DocumentItemStorageObject> RemoveDisto(ScanMapStoNoDoc.TReq reqVO)
         {
 
@@ -158,6 +163,33 @@ namespace ProjectSTGT.Engine.Received
             var updateDisto = AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(res.ID.Value, EntityStatus.REMOVE, this.BuVO);
 
             return null;
+        }
+        private string getDoneStatus(string statusOption)
+        {
+            var statusOptions = statusOption.ToLower();
+
+
+            if (statusOptions == "pass")
+            {
+                return "12";
+            }
+            else if (statusOptions == "inspection" || statusOptions == "annual check")
+            {
+                return "98";
+            }
+            else if (statusOptions == "return")
+            {
+                return "96";
+            }
+            else if (statusOptions == "over stuffing")
+            {
+                return "97";
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document Status Not Found");
+            }
+
         }
     }
 }
