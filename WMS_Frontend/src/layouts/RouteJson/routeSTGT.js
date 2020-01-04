@@ -127,11 +127,21 @@ const CountingAdj = Loadable({
   loader: () => import("../../views/page/STGT/Audit/CountingAdj"),
   loading: Loading
 });
+const ReportStorageObject = Loadable({
+  loader: () => import("../../views/page/STGT/Report/StorageObject"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/issue/search",
     name: "Search GI",
     compoment: DocumentSearchGISTGT,
+    exact: true
+  },
+  {
+    path: "/report/storageobject",
+    name: "Issue Report",
+    compoment: ReportStorageObject,
     exact: true
   },
   {
