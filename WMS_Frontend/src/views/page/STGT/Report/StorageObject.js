@@ -85,14 +85,14 @@ const StorageObject = props => {
   ];
 
   const iniCols = [
-    {
-      Header: "QC",
-      accessor: "PassStatus",
-      fixed: "left",
-      width: 50,
-      sortable: false,
-      Cell: e => getPass(e.original)
-    },
+    // {
+    //   Header: "QC",
+    //   accessor: "PassStatus",
+    //   fixed: "left",
+    //   width: 50,
+    //   sortable: false,
+    //   Cell: e => getPass(e.original)
+    // },
     {
       Header: "Status",
       accessor: "Status",
