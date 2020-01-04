@@ -123,39 +123,193 @@ const ProcessQueueCT = Loadable({
   loader: () => import("../../views/page/STGT/Audit/WorkQueueSTGTCounting"),
   loading: Loading
 });
-
+const CountingAdj = Loadable({
+  loader: () => import("../../views/page/STGT/Audit/CountingAdj"),
+  loading: Loading
+});
+const ReportStorageObject = Loadable({
+  loader: () => import("../../views/page/STGT/Report/StorageObject"),
+  loading: Loading
+});
 const routes = [
-  { path: "/issue/search", name: "Search GI", compoment: DocumentSearchGISTGT, exact: true },
-  { path: "/issue/detail", name: "GI View", compoment: DocumentViewGISTGT, exact: true },
-  { path: "/issue/create", name: "base5", compoment: CreateDocGISTGTCUS, exact: true },
-  { path: "/issue/createWM", name: "base5", compoment: CreateDocGISTGTWM, exact: true },
-  { path: "/issue/createRework", name: "base5", compoment: CreateDocGIRework, exact: true },
-  { path: "/receive/productionLine", name: "Search GR", compoment: ReceiveProductionLine, exact: true },
-  { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTGT, exact: true },
-  { path: "/receive/detail", name: "base5", compoment: DocumentViewGRSTGT, exact: true },
-  { path: "/counting/search", name: "base5", compoment: DocumentSearchPISTGT, exact: true },
-  { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTGT, exact: true },
-  { path: "/counting/createPhysical", name: "base5", compoment: CreateDocPIPhysicalSTGT, exact: true },
-  { path: "/counting/createRework", name: "base5", compoment: CreateDocPIReworkSTGT, exact: true },
+  {
+    path: "/issue/search",
+    name: "Search GI",
+    compoment: DocumentSearchGISTGT,
+    exact: true
+  },
+  {
+    path: "/report/storageobject",
+    name: "Issue Report",
+    compoment: ReportStorageObject,
+    exact: true
+  },
+  {
+    path: "/counting/manualcounting",
+    name: "CountingAdj",
+    compoment: CountingAdj,
+    exact: true
+  },
+  {
+    path: "/issue/detail",
+    name: "GI View",
+    compoment: DocumentViewGISTGT,
+    exact: true
+  },
+  {
+    path: "/issue/create",
+    name: "base5",
+    compoment: CreateDocGISTGTCUS,
+    exact: true
+  },
+  {
+    path: "/issue/createWM",
+    name: "base5",
+    compoment: CreateDocGISTGTWM,
+    exact: true
+  },
+  {
+    path: "/issue/createRework",
+    name: "base5",
+    compoment: CreateDocGIRework,
+    exact: true
+  },
+  {
+    path: "/receive/productionLine",
+    name: "Search GR",
+    compoment: ReceiveProductionLine,
+    exact: true
+  },
+  {
+    path: "/receive/search",
+    name: "Search GR",
+    compoment: DocumentSearchSTGT,
+    exact: true
+  },
+  {
+    path: "/receive/detail",
+    name: "base5",
+    compoment: DocumentViewGRSTGT,
+    exact: true
+  },
+  {
+    path: "/counting/search",
+    name: "base5",
+    compoment: DocumentSearchPISTGT,
+    exact: true
+  },
+  {
+    path: "/counting/detail",
+    name: "base5",
+    compoment: DocumentViewPISTGT,
+    exact: true
+  },
+  {
+    path: "/counting/createPhysical",
+    name: "base5",
+    compoment: CreateDocPIPhysicalSTGT,
+    exact: true
+  },
+  {
+    path: "/counting/createRework",
+    name: "base5",
+    compoment: CreateDocPIReworkSTGT,
+    exact: true
+  },
 
-  { path: "/monitor/workingin", name: "TestRedirect", compoment: monitorWorkingIn, exact: true },
-  { path: "/monitor/workingout", name: "TestRedirect", compoment: monitorWorkingOut, exact: true },
-  { path: "/monitor/inout", name: "TestRedirect", compoment: monitorWorking, exact: true },
-  
-  { path: "/warehouse/storageobject", name: "base5", compoment: StorageObject, exact: true },
+  {
+    path: "/monitor/workingin",
+    name: "TestRedirect",
+    compoment: monitorWorkingIn,
+    exact: true
+  },
+  {
+    path: "/monitor/workingout",
+    name: "TestRedirect",
+    compoment: monitorWorkingOut,
+    exact: true
+  },
+  {
+    path: "/monitor/inout",
+    name: "TestRedirect",
+    compoment: monitorWorking,
+    exact: true
+  },
+
+  {
+    path: "/warehouse/storageobject",
+    name: "base5",
+    compoment: StorageObject,
+    exact: true
+  },
   // { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: ReceiveFromCustomer, exact: true },
-  { path: "/issue/managequeue", name: "base5", compoment: ProcessQueueGI, exact: true },
-  { path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
+  {
+    path: "/issue/managequeue",
+    name: "base5",
+    compoment: ProcessQueueGI,
+    exact: true
+  },
+  {
+    path: "/counting/managequeue",
+    name: "base5",
+    compoment: ProcessQueueCT,
+    exact: true
+  },
   // { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true },
-  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
-  { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
-  { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
-  { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
-  { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
-  { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
-  { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
-  { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
+  {
+    path: "/issue/loadingreturn",
+    name: "Loading Return",
+    compoment: LoadingReturn,
+    exact: true
+  },
+  {
+    path: "/report/currentinventory",
+    name: "Current Inventory",
+    compoment: CurrentInventory,
+    exact: true
+  },
+  {
+    path: "/report/stockcard",
+    name: "StockCard",
+    compoment: StockCard,
+    exact: true
+  },
+  {
+    path: "/report/receive",
+    name: "Receive Report",
+    compoment: DailySTOReceive,
+    exact: true
+  },
+  {
+    path: "/report/issue",
+    name: "Issue Report",
+    compoment: DailySTOIssue,
+    exact: true
+  },
+  {
+    path: "/report/counting",
+    name: "Counting Report",
+    compoment: DailySTOCounting,
+    exact: true
+  },
+  {
+    path: "/report/dailyreceivesum",
+    name: "Receive Summary Report ",
+    compoment: DailySTOSumReceive,
+    exact: true
+  },
+  {
+    path: "/report/dailyissuesum",
+    name: "Issue Summary Report ",
+    compoment: DailySTOSumIssue,
+    exact: true
+  },
+  {
+    path: "/report/dailycountsum",
+    name: "Counting Summary Report ",
+    compoment: DailySTOSumCounting,
+    exact: true
+  }
 ];
 
 export default routes;

@@ -271,7 +271,7 @@ const LoadingReturn = (props) => {
                 }
                 if (reqValue.cartonNo && reqValue.cartonNo.trim().length !== 0) {
                     reqValue.cartonNo = reqValue.cartonNo.trim();
-                    if (reqValue.cartonNo.match(/^[0-9]{1,4}(?:-[0-9]{1,4})?(,[0-9]{1,4}(?:-[0-9]{1,4})?)*$/)) {
+                    if (reqValue.cartonNo.match(/^[0-9]{1,6}(?:-[0-9]{1,6})?(,[0-9]{1,6}(?:-[0-9]{1,6})?)*$/)) {
                         let resCartonNo = ExplodeRangeNum(reqValue.cartonNo);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                     } else {

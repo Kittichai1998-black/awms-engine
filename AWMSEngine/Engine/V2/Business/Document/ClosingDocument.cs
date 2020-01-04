@@ -25,42 +25,50 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
-                        if (docs.EventStatus == DocumentEventStatus.WORKED)
+                        try
                         {
-                            var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
-                            if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
+                            if (docs.EventStatus == DocumentEventStatus.WORKED)
                             {
-                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
-                                RemoveOPTDocument(x, docs.Options, this.BuVO);
+                                var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
+                                {
+                                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                    RemoveOPTDocument(x, docs.Options, this.BuVO);
 
-                                docLists.Add(x);
+                                    docLists.Add(x);
 
+                                }
+                                else
+                                {
+                                    this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                    {
+                                        docID = x,
+                                        msgError = "Status of all document items didn't 'WORKED'."
+                                    });
+                                }
                             }
                             else
                             {
                                 this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                                 {
                                     docID = x,
-                                    msgError = "Status of all document items didn't 'WORKED'."
+                                    msgError = "Status of document didn't 'WORKED'."
                                 });
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
                             this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                             {
                                 docID = x,
-                                msgError = "Status of document didn't 'WORKED'."
+                                msgError = ex.Message
                             });
+                            this.Logger.LogError(ex.Message);
                         }
                     }
                     else
                     {
-                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = x,
-                            msgError = "Document Not Found"
-                        });
+                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
                     }
                 });
 

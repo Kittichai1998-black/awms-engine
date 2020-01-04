@@ -100,6 +100,7 @@ const AmStorageObjectMulti = props => {
   const [typeButton, setTypeButton] = useState(0);
   const [name, setName] = useState("");
   const [excelDataSrouce, setExcelDataSource] = useState([]);
+  const [resetPage, setResetPage] = useState([]);
   //===========================================================
 
   useEffect(() => {
@@ -278,38 +279,14 @@ const AmStorageObjectMulti = props => {
         ));
       });
     }
-
-    // for( var data in groupPallet){
-    //   if(groupPallet[data].length > 1){
-    //     for(let i = 1;i < groupPallet[data].length;i++ ){
-    //       props.cols.forEach(x=>{
-    //         if(groupPallet[data][0][x]=== null){
-    //           groupPallet[data][0][x]= ""
-    //         }
-    //         if(groupPallet[data][i][x]=== null){
-    //           groupPallet[data][i][x]= ""
-    //         }
-    //       groupPallet[data][0][x] = groupPallet[data][0][x]  +"\n" + groupPallet[data][i][x]
-    //     })
-    //     }
-    //   }
-    //   dataGroup.push(groupPallet[data][0])
-    // }
-
     setDataSource(res.data.datas);
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);
 
     if (props.export === true) {
-      // let getExcelQuery = Clone(ExportQuery);
-      // getExcelQuery.q = query.q;
-      // const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(
-      //   res => res
-      // );
-      // console.log(resExcel.data.datas);
-      // setExcelDataSource(resExcel.data.datas);
       let getExcelQuery = Clone(ExportQuery);
       getExcelQuery.q = query.q;
+      getExcelQuery.s = query.s;
       //const resExcel = await Axios.get(createQueryString(getExcelQuery)).then(res => res)
       const resExcel = createQueryString(getExcelQuery);
       setExcelDataSource(resExcel);
@@ -567,6 +544,7 @@ const AmStorageObjectMulti = props => {
           filterDatas.push(createObj);
         }
       }
+      setResetPage([]);
       query.q = JSON.stringify(filterDatas);
       getData(createQueryString(query));
     }
@@ -792,6 +770,51 @@ const AmStorageObjectMulti = props => {
     });
   };
   //===========================================================
+  const comma = value => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  const SumTables = () => {
+    return columns
+      .filter(row => row.Footer === true)
+      .map(row => {
+        console.log(row);
+        return {
+          accessor: row.accessor,
+          sumData: sumFooterTotal(dataSource, row.accessor)
+        };
+      });
+  };
+  const sumFooterTotal = (data, value) => {
+    data.forEach(x => {
+      x[value] = parseInt(x[value]);
+    });
+    var sumVal = _.sumBy(data, value);
+    if (
+      sumVal === 0 ||
+      sumVal === null ||
+      sumVal === undefined ||
+      isNaN(sumVal)
+    ) {
+      return "-";
+    } else {
+      return comma(sumVal.toFixed(2));
+    }
+  };
+  const CreateDataWithFooter = data => {
+    if (data && data.length > 0) {
+      var tempdata = Clone(data);
+      var objfoot = {};
+      columns
+        .filter(row => row.Footer === true)
+        .forEach(row => {
+          objfoot[row.accessor] = sumFooterTotal(data, row.accessor);
+          objfoot["norownum"] = true;
+        });
+      return tempdata.concat(objfoot);
+    }
+    return null;
+  };
+  //===========================================================
   return (
     <div>
       <AmDialogs
@@ -833,14 +856,6 @@ const AmStorageObjectMulti = props => {
       />
       <br />
       <br />
-      {/* <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{onClickHold(99)}}>HOLD</AmButton>
-            <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{onClickHold(12)}}>RECEIVED</AmButton>
-            <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{onClickHold(98)}}>QC</AmButton> */}
-      {/* <AmExportDataTable
-        data={excelDataSrouce ? excelDataSrouce : []}
-        fileName={"Table"}
-        cols={exportColumns()}
-      /> */}
 
       <Table
         primaryKey="ID"
@@ -850,7 +865,7 @@ const AmStorageObjectMulti = props => {
             : dataSource
         }
         //data={props.dataSourceModefybuttonB4}
-
+        sumFooter={SumTables()}
         columns={columns}
         pageSize={100}
         sort={sort => setSort({ field: sort.id, order: sort.sortDirection })}
@@ -863,18 +878,6 @@ const AmStorageObjectMulti = props => {
         }}
         exportData={props.export ? props.export : false}
         excelQueryAPI={excelDataSrouce}
-        //excelData={excelDataSrouce}
-        // renderCustomButtonB4={
-        //   <AmExportDataTable
-        //     data={excelDataSrouce ? excelDataSrouce : []}
-        //     fileName={"Table"}
-        //     cols={exportColumns()}
-        //   />
-        // }
-        // renderCustomButtonB4={
-        // props.modifyRemark === true && props.selection === true ?
-        // <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncRanderRemark();setAddData(true); setDialog(true)}} >Remark</AmButton>
-        //   :props.randerModefybuttonB4?props.randerModefybuttonB4:""}
         renderCustomButtonBTMLeft={
           props.modifyRemark === true && props.selection === true ? (
             <div style={{ paddingTop: "10px" }}>
@@ -959,6 +962,7 @@ const AmStorageObjectMulti = props => {
       <Pagination
         totalSize={totalSize}
         pageSize={100}
+        resetPage={resetPage}
         onPageChange={page => setPage(page)}
       />
       <br />

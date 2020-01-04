@@ -56,7 +56,7 @@ const DocumentSearchSTGT = props => {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaLocationMaster",
     q:
-      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v": 10}]',
+      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v": 16}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -78,7 +78,7 @@ const DocumentSearchSTGT = props => {
   const AreaMasterQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 16}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -210,11 +210,11 @@ const DocumentSearchSTGT = props => {
       accessor: "DesWarehouseName",
       width: 150
     },
-    {
-      Header: "Sou.Customer",
-      accessor: "SouCustomerName",
-      width: 150
-    },
+    // {
+    //   Header: "Sou.Customer",
+    //   accessor: "SouCustomerName",
+    //   width: 150
+    // },
 
     {
       Header: "Remark",
@@ -264,14 +264,14 @@ const DocumentSearchSTGT = props => {
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
-    {
-      label: "Sou.Customer",
-      field: "SouCustomerName",
-      searchType: "dropdown",
-      dropdownData: dataCustomer,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
+    // {
+    //   label: "Sou.Customer",
+    //   field: "SouCustomerName",
+    //   searchType: "dropdown",
+    //   dropdownData: dataCustomer,
+    //   fieldDataKey: "Name",
+    //   fieldLabel: "Name"
+    // },
 
     { label: "Remark", field: "Remark", searchType: "input" },
     {
@@ -310,17 +310,17 @@ const DocumentSearchSTGT = props => {
     }
   ];
   const dataReject = [
-    {
-      field: "souAreaCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Sou. Area",
-      dataDropDow: AreaMasterQuery,
-      placeholder: "Sou. Area",
-      fieldLabel: ["Code", "Name"]
-      //required: true
-      //disabled: true
-    },
+    // {
+    //   field: "souAreaCode",
+    //   type: "dropdow",
+    //   typeDropdow: "search",
+    //   name: "Sou. Area",
+    //   dataDropDow: AreaMasterQuery,
+    //   placeholder: "Sou. Area",
+    //   fieldLabel: ["Code", "Name"]
+    //   //required: true
+    //   //disabled: true
+    // },
     {
       field: "desAreaCode",
       type: "dropdow",
