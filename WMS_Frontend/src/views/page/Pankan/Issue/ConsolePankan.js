@@ -144,6 +144,7 @@ const ConsolePankan = (props) => {
     const [onClickPick, setonClickPick] = useState();
     const [onClickDoc, setonClickDoc] = useState();
     const [basepick, setbasepick] = useState();
+    const [barCodeboxConsole, setbarCodeboxConsole] = useState();
 
 
     const Customer = {
@@ -164,7 +165,7 @@ const ConsolePankan = (props) => {
             setissueDoc({
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "Document",
-                q: "[{ 'f': 'Des_Customer_ID', c: '=', 'v': " + customerIds + " },{ 'f': 'DocumentType_ID', c: '=', 'v': '1002' }]",
+                q: "[{ 'f': 'Des_Customer_ID', c: '=', 'v': " + customerIds + " },{ 'f': 'DocumentType_ID', c: '=', 'v': '1002' },{ 'f': 'EventStatus', c: '=', 'v': '11' }]",
                 f: "ID,Code,Name,Remark",
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
@@ -263,7 +264,6 @@ const ConsolePankan = (props) => {
                 setonClickDoc(true)
                 datasSourse.push(datas)
                 setdatasSourse([...datasSourse])
-                console.log(datasSourse)
                 setreload({})
             }
            
@@ -313,10 +313,25 @@ const ConsolePankan = (props) => {
     };
 
     const onChangeEditorBarcodeConsole = (e) => {
-        if (e !== null || e !== undefined) {
-            setbarcodePick(e)
+        if (e.length < 8) {
+            setbarCodeboxConsole(e)
+        } else {
+            setbarcodeConsole(e)
         }
     }
+
+
+    const onChangeEditorpickingConsole = (e) => {
+         setbarcodeConsole(e)
+        
+
+    };
+
+    const onChangeEditorQtyConsole = (e) => {
+        setqtyconsole(e)
+
+    };
+
 
     const Column = [
         { Header: "Pack Item", accessor: 'pacItem' },
@@ -338,16 +353,17 @@ const ConsolePankan = (props) => {
             setStateDialogErr(true)
 
         } else {
-            console.log(barcodePicks)
-            console.log(barcodePicks.length)
+
             let baseCode = null
             let SkuCodes = null
             if (barcodePicks.length < 8) {
-                setbasepick(barcodePicks)
+                let barCodes = barcodePicks.toUpperCase()
+                console.log(barCodes)
+                setbasepick(barCodes)
 
                 let datasPick = {
                     "docID": docIds,
-                    "scanCode": barcodePicks,
+                    "scanCode": barcodePicks.toUpperCase(),
                     "baseConso": "",
                     "basePick": "",
                     "scanQty": qtypick,
@@ -414,18 +430,8 @@ const ConsolePankan = (props) => {
 
     };
 
-    const onChangeEditorpickingConsole = (e) => {
-        setbarcodeConsole(e)
-
-    };
-
-    const onChangeEditorQtyConsole = (e) => {
-        setqtyconsole(e)
-
-    };
-
     const onclickConsole = () => {
-        if (barcodeConsole === undefined) {
+        if (barcodeConsole !== undefined) {
             setMsgDialogErr("Barcode invalid")
             setStateDialogErr(true)
 
@@ -435,21 +441,48 @@ const ConsolePankan = (props) => {
 
         } else {
 
-            Axios.post(window.apipath + '/v2/TransferPanKanAPI').then((res) => {
+            let barCodeBox = barCodeboxConsole
+            Axios.get(
+                window.apipath + "/v2/CheckConsolidateBoxAPI?basecode=" + barCodeBox + "&getMapSto=true&_token=" +
+                localStorage.getItem("Token")
+            ).then(res => {
+                console.log(res)
                 if (res.data._result.status === 1) {
-                    let datas = res.data
-                    setNewStorageObjConsole(<AmListSTORenderer
-                        dataSrc={datas}
-
-                    />)
                 } else {
-
-
+                    setStateDialogErr(true)
+                 setMsgDialogErr(res.data._result.message)
                 }
             })
-
-
         }
+
+        //    let datasConsole = {
+        //        "docID": docIds,
+        //        "scanCode": barcodeConsole,
+        //        "baseConso": "",
+        //        "basePick":"",
+        //        "scanQty": qtyconsole,
+
+        //    }
+
+        //    console.log(datasConsole)
+        //    Axios1.post(window.apipath + '/v2/PickAndConsoAPI', datasConsole).then((res) => {
+        //        if (res.data._result.status === 1) {
+        //            let datas = res.data
+        //            GetDocument();
+        //            setNewStorageObjPick(<AmListSTORenderer
+        //                dataSrc={datas.sto}
+
+        //            />);
+
+        //        } else {
+        //            setStateDialogErr(true)
+        //            setMsgDialogErr(res.data._result.message)
+
+        //        }
+        //    })
+
+
+        //}
 
 
     };
@@ -655,7 +688,7 @@ const ConsolePankan = (props) => {
                              <div style={{ marginLeft: "10px" }}><LabelH>Console : </LabelH></div>
                              <InputDiv>
                                  <AmInput
-                                     id={"picking"}
+                                     id={"Console"}
                                      style={{ width: "200px" }}
                                      placeholder={"Input Base"}
                                      //validate={true}
