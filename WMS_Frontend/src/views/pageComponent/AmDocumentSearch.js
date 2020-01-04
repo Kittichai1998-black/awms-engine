@@ -391,8 +391,8 @@ const AmDocumentSearch = props => {
       console.log(desAreaLocationCode);
       Axios.post(window.apipath + props.apiReject, {
         docIDs: docID,
-        desAreaID: 1,
-        souAreaID: 1,
+        desAreaID: 16,
+        souAreaID: null,
         desAreaLocationID: desAreaLocationCode
       }).then(res => {
         console.log(res);
@@ -575,13 +575,7 @@ const AmDocumentSearch = props => {
             ddlMinWidth={270}
             valueData={valueText1[cols.field]}
             queryApi={dataDropDow}
-            defaultValue={
-              cols.field === "souAreaCode"
-                ? 1
-                : cols.field === "desAreaCode"
-                ? 2
-                : null
-            }
+            defaultValue={16}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
               onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
             }
@@ -679,7 +673,7 @@ const AmDocumentSearch = props => {
     setDialog(false);
     setDialogRejectworking(false);
     setDialogReject(false);
-    setSelection([]);
+    //setSelection([]);
   };
   //======================================================================
   const [queryLoc, setQueryLoc] = useState([]);
@@ -768,6 +762,7 @@ const AmDocumentSearch = props => {
     setSelection([]);
     setRemark("");
     setDesAreaLocationCode("");
+    setDialogRejectworking(false);
   };
   function allTrue(obj) {
     for (var o in obj) if (obj[o].EventStatus === 31) return false;
