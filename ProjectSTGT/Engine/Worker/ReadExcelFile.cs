@@ -54,7 +54,7 @@ namespace ProjectSTGT.Engine.Worker
             excelData.worksheet.ForEach(data =>
             {
                 var docItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-                data.rows.Skip(1).ToList().ForEach(row =>
+                data.rows.FindAll(row => !string.IsNullOrWhiteSpace(row.cells[0])).Skip(1).ToList().ForEach(row =>
                 {
                     //var status = AMWUtil.Common.EnumUtil.GetValueEnum<StorageObjectEventStatus>(row.cells[6]);
                     docItems.Add(new CreateGRDocument.TReq.ReceiveItem()

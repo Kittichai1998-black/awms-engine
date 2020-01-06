@@ -171,7 +171,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
                         upd_stolist.Add(new TUpdateSTO()
                         {
                             id = sto.id.Value,
@@ -190,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        eventStatus_rootSto = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        eventStatus_rootSto = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
                         RemoveOPTEventSTO(sto.id.Value, sto.options, this.BuVO);
                     }
                     upd_stolist.Add(new TUpdateSTO()
@@ -233,7 +233,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, StorageObjectEventStatus.PICKING,
                             EntityStatus.ACTIVE, eventStatus, this.BuVO);
                         RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, this.BuVO);
