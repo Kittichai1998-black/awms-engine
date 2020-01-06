@@ -786,7 +786,7 @@ const AmDocumentSearch = props => {
     }
   };
   const onReject = () => {
-    console.log(selection);
+    //console.log(selection);
 
     if (selection.length !== 0) {
       setDialog(true);
