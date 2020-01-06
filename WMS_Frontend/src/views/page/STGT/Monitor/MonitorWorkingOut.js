@@ -10,13 +10,13 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 //type time,datetime,datelog
 const headercol1 = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PackName", Header: "Product", sortable: false },
+    { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Product", Header: "Product", sortable: false },
     // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
     // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 const headercol2 = [
@@ -101,7 +101,7 @@ export default props => {
         return () => {
             connection.stop()
         }
-    }, [])
+    }, [valueDD])
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
@@ -110,8 +110,8 @@ export default props => {
 
     const optionsArea = [
         { value: 'DASHBOARD_WORKING_OUT_ALL', label: 'All Area' },
-        { value: 'DASHBOARD_WORKING_IN_LD', label: 'Loading Area' },
-        { value: 'DASHBOARD_WORKING_IN_PD', label: 'Production Area' }
+        { value: 'DASHBOARD_WORKING_OUT_LD', label: 'Loading Area' },
+        { value: 'DASHBOARD_WORKING_OUT_PD', label: 'Production Area' }
     ]
 
     const dropdown = {
