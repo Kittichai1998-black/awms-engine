@@ -95,11 +95,14 @@ namespace ProjectSTGT.Engine.Received
                     var saleorder = ObjectUtil.QryStrGetValue(docItems.Options, "saleorder");
                     var strCNoptions = _carton_no + "-" + ((Int32.Parse(_carton_no) + Decimal.ToInt32(docItems.Quantity.Value)) - 1).ToString();
                     var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, OptionVOConst.OPT_CARTON_NO, strCNoptions);
-                    optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, "saleorder", saleorder);
-                    optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
+                        optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, "saleorder", saleorder);
+                        //optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
+                    var optionsNewBase = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
 
+                    stos.options = optionsNewBase;
                     stos.mapstos[0].options = optionsNew;
                     //AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, "carton_no", strCNoptions);
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos, this.BuVO);
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos.mapstos[0], this.BuVO);
 
 
