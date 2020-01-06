@@ -14,7 +14,7 @@ const DocumentViewGRSTGT = props => {
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
-      { label: "Source Customer", values: "SouCustomerName" },
+      { label: "", values: "" },
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
