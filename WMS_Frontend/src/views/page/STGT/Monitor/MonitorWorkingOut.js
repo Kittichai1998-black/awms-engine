@@ -16,6 +16,8 @@ const headercol1 = [
     // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
     // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+    { accessor: "OrderNo", Header: "SI", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
     { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
