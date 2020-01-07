@@ -9,8 +9,11 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../../components/function/CoreFunction'
 
 //type time,datetime,datelog
-const headercol1 = [
-    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+const headercoltest1 = [
+    {
+        accessor: "ActualTime", Header: "Time", className: 'center', width: 100,
+        type: "time", sortable: false, style: { textAlign: "center" }
+    },
     { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
     { accessor: "PackName", Header: "Product", sortable: false },
@@ -19,21 +22,32 @@ const headercol1 = [
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
     { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
-
 const headercol2 = [
+    { accessor: "TIME", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    { accessor: "TaskName", Header: "Task", width: 130, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
+    // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Product", Header: "Product", sortable: false },
+    { accessor: "OrderNo", Header: "Order No.", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
+    // { accessor: "Remark", Header: "Remark", sortable: false },
+    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+]
+const headercol1 = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PackName", Header: "Product", sortable: false },
+    { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Product", Header: "Product", sortable: false },
     // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
     // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 export default props => {
 
-    const [Hub, setHub] = useState(["DASHBOARD_WORKING_IN_LS", "DASHBOARD_WORKING_OUT_LD"])
+    const [Hub, setHub] = useState(["DASHBOARD_OUT", "DASHBOARD_IN"])
     const [data, setData] = useState([
         [ //row
             { //col 
@@ -41,8 +55,8 @@ export default props => {
                 table: [
                     { //table in col
                         data: [],
-                        headercol: headercol1,
-                        title: "Inbound"
+                        headercol: headercoltest1,
+                        title: "Outbound"
                     }
                 ]
             }
@@ -53,8 +67,8 @@ export default props => {
                 table: [
                     { //table in col
                         data: [],
-                        headercol: headercol2,
-                        title: "Outbound"
+                        headercol: headercoltest1,
+                        title: "Inbound"
                     }
                 ]
             }
@@ -102,7 +116,7 @@ export default props => {
         return () => {
             connection.stop()
         }
-    }, [])
+    }, [Hub])
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
@@ -147,7 +161,7 @@ export default props => {
     return (
         <AmPageDashboard
             time={time}
-            dropdown={dropdown}
+            // dropdown={dropdown}
             coltable={data}
         />
     )
