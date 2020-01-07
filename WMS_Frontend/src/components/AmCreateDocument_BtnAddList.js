@@ -81,18 +81,18 @@ const SearchInput = withStyles(theme => ({
         inputRef={keywordRef}
         onKeyUp={onKeyUp}
         {...other}
-        // InputProps={{
-        //     inputProps: {
-        //         className: classes.input,
-        //     },
-        //     endAdornment: (
-        //         <InputAdornment position="end">
-        //             <IconButton className={classes.iconButton} size="small" aria-label="Search" onClick={onHandleClick}>
-        //                 <SearchIcon fontSize="small" />
-        //             </IconButton>
-        //         </InputAdornment>
-        //     ),
-        // }}
+      // InputProps={{
+      //     inputProps: {
+      //         className: classes.input,
+      //     },
+      //     endAdornment: (
+      //         <InputAdornment position="end">
+      //             <IconButton className={classes.iconButton} size="small" aria-label="Search" onClick={onHandleClick}>
+      //                 <SearchIcon fontSize="small" />
+      //             </IconButton>
+      //         </InputAdornment>
+      //     ),
+      // }}
       />
     </div>
   );
@@ -156,6 +156,7 @@ const BtnAddList = props => {
   const [totalSize, setTotalSize] = useState(0);
 
   useEffect(() => {
+    setDataSelect([])
     if (open) {
       const dataHeader = props.headerCreate
         .reduce((arr, el) => arr.concat(el), [])
@@ -196,7 +197,7 @@ const BtnAddList = props => {
           setData([...res.data.datas]);
           setTotalSize(res.data.counts);
           let data = props.dataCheck || [];
-          setDefaultSelect([...data]);
+          setDefaultSelect([...dataSelect, ...data]);
         }
       });
     }
@@ -299,7 +300,7 @@ const BtnAddList = props => {
             defaultSelection={defaultSelect}
             data={data}
             columns={props.columns}
-            pageSize={20}
+            pageSize={props.queryApi.l || 20}
             sort={sort =>
               setSort({ field: sort.id, order: sort.sortDirection })
             }
@@ -309,11 +310,11 @@ const BtnAddList = props => {
             selection={true}
             selectionType="checkbox"
             getSelection={data => setDataSelect(data)}
-            // renderCustomButtonBTMRight={
-            //     <div style={{ paddingTop: "10px" }}>
-            //         <AmButton style={{ margin: "5px" }} styleType="add" onClick={() => { props.onSubmit(dataSelect); setOpen(false); }}>OK</AmButton>
-            //     </div>
-            // }
+          // renderCustomButtonBTMRight={
+          //     <div style={{ paddingTop: "10px" }}>
+          //         <AmButton style={{ margin: "5px" }} styleType="add" onClick={() => { props.onSubmit(dataSelect); setOpen(false); }}>OK</AmButton>
+          //     </div>
+          // }
           />
         </DialogContent>
         <DialogActions>
@@ -321,7 +322,7 @@ const BtnAddList = props => {
             //จำนวนข้อมูลทั้งหมด
             totalSize={totalSize}
             //จำนวนข้อมูลต่อหน้า
-            pageSize={20}
+            pageSize={props.queryApi.l || 20}
             //return หน้าที่ถูกกด : function
             onPageChange={page => setPage(page)}
           />
