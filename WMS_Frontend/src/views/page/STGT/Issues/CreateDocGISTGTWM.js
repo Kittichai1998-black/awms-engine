@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+
 import {
   apicall,
   createQueryString
@@ -15,12 +16,12 @@ export default props => {
   const [dataHeader, setDataHeader] = useState([]);
   const [table, setTable] = useState(null);
 
-  const PalletCode = {
+  const view_sto = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
     q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+      "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -51,8 +52,8 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "SI",
-      accessor: "OrderNo",
+      Header: "Order No.",
+      accessor: "orderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -63,7 +64,7 @@ export default props => {
   ];
 
   const addList = {
-    queryApi: PalletCode,
+    queryApi: view_sto,
     columns: columsFindpopUpPALC,
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
@@ -142,7 +143,7 @@ export default props => {
     }
   }, [dataHeader]);
 
-  
+
 
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -160,8 +161,7 @@ export default props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f:
-      "ID,Code,Name,UnitCode,BaseUnitCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -198,7 +198,7 @@ export default props => {
       accessor: "palletcode",
       type: "findPopUp",
       idddl: "palletcode",
-      queryApi: PalletCode,
+      queryApi: view_sto,
       fieldLabel: ["palletcode"],
       columsddl: columsFindpopUpPALC
     },
@@ -212,22 +212,20 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "SI", accessor: "OrderNo", type: "input" },
+    { Header: "Order No.", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
       accessor: "unitType",
-      type: "dropdown",
-      fieldLabel: ["Code"],
-      idddl: "unitType"
+      type: "text"
     }
   ];
 
   const columns = [
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "SI", accessor: "OrderNo", width: 100 },
+    { Header: "SKU Item", accessor: "SKUItems" },
+    { Header: "Order No.", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
