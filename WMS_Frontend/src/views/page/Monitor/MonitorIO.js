@@ -17,7 +17,7 @@ export default props => {
         const search = httpToObject.parse(location.search)
 
         if (search.IOType && search.IOType === "IN") {
-            if (location.pathname === "/dashboard/inbound") {
+            if (location.pathname === "/monitor/inbound") {
                 dashboard = 'DASHBOARD_IN';
                 document.title = "Inbound Progress : AMW";
             } else {
@@ -25,7 +25,7 @@ export default props => {
             }
         }
         if (search.IOType && search.IOType === "OUT") {
-            if (location.pathname === "/dashboard/outbound") {
+            if (location.pathname === "/monitor/outbound") {
                 dashboard = 'DASHBOARD_OUT';
                 document.title = "Outbound Progress : AMW";
             } else {

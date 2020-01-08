@@ -187,13 +187,13 @@ let routes = [
     exact: true
   },
   {
-    path: "/dashboard/inbound",
+    path: "/monitor/inbound",
     name: "Inbound Progress",
     compoment: MonitorIO,
     exact: true
   },
   {
-    path: "/dashboard/outbound",
+    path: "/monitor/outbound",
     name: "Outbound Progress",
     compoment: MonitorIO,
     exact: true
