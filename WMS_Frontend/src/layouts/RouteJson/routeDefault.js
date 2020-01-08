@@ -386,7 +386,7 @@ let routes = [
     exact: true
   },
   {
-    path: "/report/location_summary",
+    path: "/warehouse/location_summary",
     name: "Location Summary",
     compoment: LocationSummary,
     exact: true
