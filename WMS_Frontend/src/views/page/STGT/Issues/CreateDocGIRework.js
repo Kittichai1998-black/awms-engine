@@ -52,7 +52,7 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "Order No.",
+      Header: "SI",
       accessor: "orderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
@@ -70,7 +70,7 @@ export default props => {
       { accessor: "palletcode", placeholder: "Pallet Code" },
       { accessor: "Code", placeholder: "Reorder" },
       { accessor: "LocationCode", placeholder: "Location" },
-      { accessor: "remark", placeholder: "Remark" }
+      // { accessor: "remark", placeholder: "Remark" }
     ]
   }
 
@@ -213,7 +213,7 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "Order No.", accessor: "orderNo", type: "input" },
+    { Header: "SI", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
@@ -225,8 +225,8 @@ export default props => {
   const columns = [
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order No.", accessor: "orderNo", width: 100 },
+    { Header: "Reorder", accessor: "SKUItems" },
+    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
