@@ -950,6 +950,7 @@ const AmCreateDocument = (props) => {
                 reload={props.reload ? props.reload : reload}
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 sortable={false}
+                pageSize={200}
             />
 
             {/* Btn CREATE */}
