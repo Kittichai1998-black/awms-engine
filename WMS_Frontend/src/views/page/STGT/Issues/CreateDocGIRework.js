@@ -42,7 +42,7 @@ export default props => {
       width: 95,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
-    { Header: "SKU Items", accessor: "SKUItems", width: 350 },
+    { Header: "Reorder", accessor: "SKUItems", width: 350 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -204,7 +204,7 @@ export default props => {
       columsddl: columsFindpopUpPALC
     },
     {
-      Header: "SKU Item",
+      Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
