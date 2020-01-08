@@ -14,16 +14,13 @@ const DocumentViewGRSTGT = props => {
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
-      { label: "", values: "" },
+      { label: "Movement Type", values: "MovementName" },
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
+  
     ],
     [
       { label: "Source Warehouse", values: "SouWarehouseName" },
       { label: "Destination Warehouse", values: "DesWarehouseName" }
-    ],
-    [
-      { label: "Movement Type", values: "MovementName" },
-      { label: "", values: "" }
     ],
     [
       {
