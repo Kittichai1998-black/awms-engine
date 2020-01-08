@@ -161,8 +161,7 @@ export default props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f:
-      "ID,Code,Name,UnitCode,BaseUnitCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
