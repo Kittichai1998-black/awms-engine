@@ -295,15 +295,8 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
-             
-                if (
-                    Path[1] === row.Name
-                        .replace(' ', '')
-                        .replace(' ', '')
-                        .toLowerCase()
-                ) {
+                if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1]==="dashboard") {
                     row.WebPages.map(res => {
-                      
                         if (res.PathLV2 === Path[2]) {
                            name = t(res.pageName.trim());
                              //name = res.pageName;
@@ -359,26 +352,17 @@ const Default = props => {
     const Route_1 = () => {
         if (Path[1] === "") {
         } else {
+            if(Path[1]==="dashboard" && window.project==="STGT"){
+                return <Typography color="textPrimary"  style={  matches ? ({fontSize:'0.8rem'}) : ({fontSize:'1rem'})}>
+                      {t('Monitor')}
+                      </Typography>
+            }
             return routes.map((x, idx) => {
-               
                 if (x.text.toString().toLowerCase() === Path[1]) {
-                    return <div
-                        key={idx}
-                        style={{
-                            float: "left",
-                            lineHeight: "29px",
-                            marginLeft: "5px"
-                        }}
-                    >
-                        <Typography color="textPrimary"  style={
-                            matches ? (
-                                 {fontSize:'0.8rem'}
-                             ) : (
-                                 {fontSize:'1rem'}
-                             )  
-                        }>
-                            {t(x.text)}
-                        </Typography>
+                    return <div  key={idx} style={{ float: "left",lineHeight: "29px",marginLeft: "5px"}}>
+                    <Typography color="textPrimary"  style={  matches ? ({fontSize:'0.8rem'}) : ({fontSize:'1rem'})}>
+                       {t(x.text)}
+                      </Typography>
                     </div>
                 }
             });
