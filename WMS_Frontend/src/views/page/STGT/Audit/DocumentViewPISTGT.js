@@ -34,7 +34,7 @@ const DocumentViewPISTGT = props => {
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 100, accessor: "locationcode", Header: "Location" },
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
-    { accessor: "SKUMaster_Name", Header: "Name" },
+    { accessor: "SKUMaster_Name", Header: "Brand" },
     {
       width: 130,
       accessor: "qtyrandom",
@@ -54,7 +54,7 @@ const DocumentViewPISTGT = props => {
     },
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Reorder" },
-    { accessor: "packName", Header: "Name" },
+    { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty", type: "number" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
@@ -69,7 +69,7 @@ const DocumentViewPISTGT = props => {
     },
     { width: 120, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Reorder" },
-    { accessor: "packName", Header: "Name" },
+    { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty", type: "number" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }

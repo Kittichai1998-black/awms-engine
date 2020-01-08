@@ -34,7 +34,7 @@ const DocumentViewGRSTGT = props => {
 
   const columns = [
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
-    { accessor: "SKUMaster_Name", Header: "Name" },
+    { accessor: "SKUMaster_Name", Header: "Brand" },
     { width: 130, accessor: "OrderNo", Header: "SI" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
@@ -49,7 +49,7 @@ const DocumentViewGRSTGT = props => {
     },
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Reorder" },
-    { accessor: "packName", Header: "Name" },
+    { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
@@ -59,8 +59,8 @@ const DocumentViewGRSTGT = props => {
     //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
     { width: 100, accessor: "code ", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Reorder" },
-    { accessor: "packName", Header: "Name" },
-    { width: 125, accessor: "นrderNo", Header: "SI" },
+    { accessor: "packName", Header: "Brand" },
+    { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
