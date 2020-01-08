@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+
 import {
   apicall,
   createQueryString
@@ -20,7 +21,7 @@ export default props => {
     t: "PalletSto",
     q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+      "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -51,8 +52,8 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "Order No",
-      accessor: "OrderNo",
+      Header: "Order No.",
+      accessor: "orderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -142,7 +143,7 @@ export default props => {
     }
   }, [dataHeader]);
 
-  
+
 
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -212,14 +213,12 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "Order No", accessor: "OrderNo", type: "input" },
+    { Header: "Order No.", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
       accessor: "unitType",
-      type: "dropdown",
-      fieldLabel: ["Code"],
-      idddl: "unitType"
+      type: "text"
     }
   ];
 
@@ -227,7 +226,7 @@ export default props => {
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
     { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order No", accessor: "OrderNo", width: 100 },
+    { Header: "Order No.", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
