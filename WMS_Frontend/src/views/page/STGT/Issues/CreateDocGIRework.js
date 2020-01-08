@@ -19,7 +19,7 @@ export default props => {
   const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
-    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    q: '[{ "f": "Status", "c":"<", "v": 2}]', //เงื่อนไข '[{ "f": "EventStatus", "c":"=", "v": "12"}]'
     f:
       "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
     g: "",
