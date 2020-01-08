@@ -1984,7 +1984,7 @@ const AmProcessQueue = props => {
                                                             ? warehouseID
                                                             : ""
                                                 }
-                                                disabled={props.Defaulwarehouse ? true : btnBack? true: false}
+                                                //disabled={props.Defaulwarehouse ? true : btnBack? true: false}
                                                 onChange={onHandleChangeDDLWarehouse}
                                                 ddlType={"search"} //รูปแบบ Dropdown
                                             />

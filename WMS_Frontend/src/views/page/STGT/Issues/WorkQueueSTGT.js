@@ -20,7 +20,7 @@ const WorkQueueSTGT = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "LD,PD"}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -93,6 +93,7 @@ const WorkQueueSTGT = (props) => {
 
     const DefaulSorting = [{
         By: "Carton No",
+        value: "Carton No",
         ID: 0,
         Order: "FIFO"
     }]
@@ -109,7 +110,7 @@ const WorkQueueSTGT = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:14 },
 
     ];
 
@@ -126,7 +127,7 @@ const WorkQueueSTGT = (props) => {
             apiwarehouse={Warehouse}
             advanceCondition={true}
             //fullPallets={true}
-           // receives={true}
+            // receives={true}
             priolity={Priolity}
             DocType={1002}
             docType={"issue"}
@@ -140,6 +141,8 @@ const WorkQueueSTGT = (props) => {
             StatusfromDescustomer={true}
             apidetail={"/issue/detail?docID="}
             apiResConfirm={"/issue/managequeue"}
+            Defaulwarehouse={1}
+            
         ></AmProcessQueue>
 
     </div>)

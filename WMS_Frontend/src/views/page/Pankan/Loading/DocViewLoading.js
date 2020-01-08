@@ -27,6 +27,7 @@ import {
 } from "reactstrap";
 import PropType from "prop-types";
 import AmButton from "../../../../components/AmButton";
+import pdfMake from "pdfmake/build/pdfmake";
 import { useTranslation } from "react-i18next";
 
 const styles = theme => ({
@@ -332,12 +333,22 @@ const DetailDocumentLD = props => {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
-  };
+    };
+
+
+    const ExportPDF = () => {
+
+    }
   return (
     <div>
       {getHeader()}
       <br />
-      <br />
+          <br />        
+              <div style={{ marginLeft: "92%", width: "100px" }}>
+                  <AmButton styleType="info" onClick={ExportPDF}>
+                      {t("Export PDF")}
+                  </AmButton>
+          </div>
       {typeDoc ? (
         <Table columns={columns} pageSize={100} data={data} sortable={false} />
       ) : null}
