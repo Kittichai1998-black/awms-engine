@@ -12,10 +12,12 @@ const headercol1 = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
     { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "Product", Header: "Product", sortable: false },
+    { accessor: "Product", Header: "Reorder", sortable: false },
     // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
     // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+    { accessor: "OrderNo", Header: "SI", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
     { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
