@@ -60,6 +60,7 @@ const ReceiveFromCustomer = props => {
       placeholder: "Select Customer",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
+      defaultValue: 1,
       required: true
     }
   ];
