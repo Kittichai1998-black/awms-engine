@@ -34,11 +34,11 @@ export default (props) => {
     ]
 
     const columnsDetail = [
-        { "width": 150, "accessor": "PackMaster_Code", "Header": "Code" },
+        { "width": 150, "accessor": "code", "Header": "Code" },
         { "width": 150, "accessor": "PackMaster_Code", "Header": "Item" },
-        { "accessor": "packName", "PackMaster_Name": "Issue Code" },
-        { "width": 110, "accessor": "Quantity", "Header": "Qty" },
-        { "width": 60, "accessor": "UnitType_Code", "Header": "Unit" }
+        { "accessor": "packName", "PackMaster_Name": "Issue Dcument" },
+        { "width": 110, "accessor": "packQty", "Header": "Qty" },
+        { "width": 60, "accessor": "packUnitCode", "Header": "Unit" }
     ]
 
   
@@ -80,7 +80,7 @@ export default (props) => {
             openSOU={true}
             openDES={false}
             //optionDocItems={optionDocItems} 
-            columnsDetailSOU={columnsDetail}
+           columnsDetailSOU={columnsDetail}
             //columnsDetailDES={columnsDetailDES}
             columns={columns}
             typeDoc={"loading"}

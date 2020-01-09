@@ -9,7 +9,7 @@ export default (props) => {
     const TextHeader = [
         [
             { label: "Document No", values: "Code" },
-            { label: "Document Date", values: "documentDate", type: "date" }
+            { label: "Document Date", values: "DocumentDate", type: "date" }
         ],
         [            
             { label: "Action Time", values: "ActionTime", type: "dateTime" },
