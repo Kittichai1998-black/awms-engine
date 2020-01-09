@@ -68,6 +68,7 @@ const CreateDocumentLD = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [dataCreate, setdataCreate] = useState([]);
     const [docIds, setdocIds] = useState();
+    const [docItems, setdocItems] = useState([])
 
 
 
@@ -256,7 +257,12 @@ const CreateDocumentLD = (props) => {
     const onHandleDDLChangeDoc = (value, dataObject, field) => {
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {
+                console.log(value)
                 setdocIds(value)
+                let docItem = {
+                    "issuedDocID": value
+                    }
+                docItems.push(docItem)
                 setactiontimes(dataObject.ActionTime)     
                 if (dataObject !== null) {
                     onChangeEditor(field, value, dataObject[field], dataObject.ActionTime, "Doccode", dataObject.Code)
@@ -300,7 +306,6 @@ const CreateDocumentLD = (props) => {
         setDatacreateDoc();
     }
     const onChangeEditor = (field, rowdata, value, actiontimes, pair, dataPair) => {
-        console.log(rowdata)
         if (addData) {
             if (editData) {
                 editData[field] = value;
@@ -348,28 +353,18 @@ const CreateDocumentLD = (props) => {
     const setDatacreateDoc = () => {
         if (dataSource !== [] || dataSource !== undefined) {
             console.log(dataSource)
-            let docItems = []
+            //let docItems = []
             let BaseSto = {}
             let Items = {}
             dataSource.map((x, idx) => {
                 console.log(x)
-                //BaseSto = {
-                //    "baseCode": x.base !== undefined ? x.base : null,
-                //    "quantity": null,
-                //    "isRegisBaseCode": null,
-                //    "isRegisBaseCode": null
-
-                //}
-          
                 Items = {
-                    " issuedDocID": docIds
-
-
+                    " issuedDocID": docItems
                 }
-                docItems.push(Items)
 
+                //docItems.push(Items)
             })
-          
+            console.log(docItems)
             dataCreate["docItems"] = docItems
             //dataCreate["BaseSto"] = BaseSto
         }

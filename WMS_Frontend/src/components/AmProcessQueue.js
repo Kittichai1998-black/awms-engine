@@ -1693,16 +1693,32 @@ const AmProcessQueue = props => {
                                                     //setsumBase();
                                                     //setsumBaseMax();
                                                     var dataTBCon = [];
-                                                    var dataSorceTBs = {
-                                                        SKU: x.pstoCode,
-                                                        Pallet: x.rstoCode,
-                                                        Batch: x.pstoBatch,
-                                                        Lot: x.pstoLot,
-                                                        OrderNo: x.pstoOrderNo,
-                                                        BaseQuantity: x.pickBaseQty + "/" + x.pstoBaseQty,
-                                                        Unit: x.pstoBaseUnitCode,
-                                                        StatusData: 1
-                                                    };
+                                                    var dataSorceTBs = {}
+                                                    if (window.project === "STGT") {
+                                                        dataSorceTBs = {
+                                                            SKU: x.pstoCode + ":" + x.pstoName ,
+                                                            Pallet: x.rstoCode,
+                                                            Batch: x.pstoBatch,
+                                                            Lot: x.pstoLot,
+                                                            OrderNo: x.pstoOrderNo,
+                                                            BaseQuantity: x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                            Unit: x.pstoBaseUnitCode,
+                                                            StatusData: 1
+                                                        };
+
+                                                    } else {
+                                                        dataSorceTBs = {
+                                                            SKU: x.pstoCode,
+                                                            Pallet: x.rstoCode,
+                                                            Batch: x.pstoBatch,
+                                                            Lot: x.pstoLot,
+                                                            OrderNo: x.pstoOrderNo,
+                                                            BaseQuantity: x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                            Unit: x.pstoBaseUnitCode,
+                                                            StatusData: 1
+                                                        };
+                                                    }
+                                                    
                                                     dataTBCon.push(dataSorceTBs);
                                                     datasConfirms.push(dataSorceTBs);
                                                     dataTBs.push(dataSorceTBs);
@@ -1714,17 +1730,34 @@ const AmProcessQueue = props => {
                                                         //setsumBaseMax();
 
                                                         var dataTBConLock = [];
-                                                        var dataSorceTBsLock = {
-                                                            SKU: x.pstoCode,
-                                                            Pallet: x.rstoCode,
-                                                            Batch: x.pstoBatch,
-                                                            Lot: x.pstoLot,
-                                                            OrderNo: x.pstoOrderNo,
-                                                            BaseQuantity:
-                                                                x.pickBaseQty + "/" + x.pstoBaseQty,
-                                                            Unit: x.pstoBaseUnitCode,
-                                                            StatusData: 2
-                                                        };
+                                                        var dataSorceTBsLock
+                                                        if (window.project === "STGT") {
+                                                            dataSorceTBsLock = {
+                                                                SKU: x.pstoCode + ":" + x.pstoName,                                           
+                                                                Pallet: x.rstoCode,
+                                                                Batch: x.pstoBatch,
+                                                                Lot: x.pstoLot,
+                                                                OrderNo: x.pstoOrderNo,
+                                                                BaseQuantity:
+                                                                    x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                                Unit: x.pstoBaseUnitCode,
+                                                                StatusData: 2
+                                                            };
+                                                        } else {
+                                                        dataSorceTBsLock = {
+                                                                SKU: x.pstoCode,
+                                                                Pallet: x.rstoCode,
+                                                                Batch: x.pstoBatch,
+                                                                Lot: x.pstoLot,
+                                                                OrderNo: x.pstoOrderNo,
+                                                                BaseQuantity:
+                                                                    x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                                Unit: x.pstoBaseUnitCode,
+                                                                StatusData: 2
+                                                            };
+
+                                                        }
+                                                     
                                                         dataTBConLock.push(dataSorceTBsLock);
                                                         datasConfirmsLock.push(dataSorceTBsLock);
                                                         dataTBs.push(dataSorceTBsLock);

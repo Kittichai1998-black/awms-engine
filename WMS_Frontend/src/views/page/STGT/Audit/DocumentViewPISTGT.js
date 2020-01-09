@@ -33,15 +33,15 @@ const DocumentViewPISTGT = props => {
   const columns = [
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 100, accessor: "locationcode", Header: "Location" },
-    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
-    { accessor: "SKUMaster_Name", Header: "SKU Name" },
+    { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
+    { accessor: "SKUMaster_Name", Header: "Brand" },
     {
       width: 130,
       accessor: "qtyrandom",
       Header: "Counting (%)",
       type: "number"
     },
-    { width: 130, accessor: "OrderNo", Header: "Order No" },
+    { width: 130, accessor: "OrderNo", Header: "SI" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
@@ -53,9 +53,9 @@ const DocumentViewPISTGT = props => {
       Cell: e => getStatusAD(e.original)
     },
     { width: 100, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No" },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
+    { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty", type: "number" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -68,9 +68,9 @@ const DocumentViewPISTGT = props => {
       Cell: e => getStatusAD(e.original)
     },
     { width: 120, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No" },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
+    { width: 125, accessor: "orderNo", Header: "SI" },
     { width: 110, accessor: "_packQty", Header: "Qty", type: "number" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];

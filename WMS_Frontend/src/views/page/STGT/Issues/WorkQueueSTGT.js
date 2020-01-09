@@ -77,16 +77,15 @@ const WorkQueueSTGT = (props) => {
         all: "",
     }
 
-    const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
-    { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
-    { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
-        { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
+    const columnCondition = [
+    { Header: "SI", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+    { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
+    { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'Sorting', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
         { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
     ];
@@ -100,11 +99,9 @@ const WorkQueueSTGT = (props) => {
   
 
     const columnConfirm = [
-        { Header: 'SKU', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Batch', accessor: 'Batch', },
-        { Header: 'Lot', accessor: 'Lot', },
-        { Header: "Order", accessor: 'OrderNo', },
+        { Header: "SI", accessor: 'OrderNo', },
+        { Header: 'Reorder', accessor: 'SKU', width: 350 },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
