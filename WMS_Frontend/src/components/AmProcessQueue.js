@@ -1696,8 +1696,7 @@ const AmProcessQueue = props => {
                                                     var dataSorceTBs = {}
                                                     if (window.project === "STGT") {
                                                         dataSorceTBs = {
-                                                            SKU: x.pstoCode,
-                                                            SKUName: x.pstoName,
+                                                            SKU: x.pstoCode + ":" + x.pstoName ,
                                                             Pallet: x.rstoCode,
                                                             Batch: x.pstoBatch,
                                                             Lot: x.pstoLot,
@@ -1734,8 +1733,7 @@ const AmProcessQueue = props => {
                                                         var dataSorceTBsLock
                                                         if (window.project === "STGT") {
                                                             dataSorceTBsLock = {
-                                                                SKU: x.pstoCode,
-                                                                SKUName: x.pstoName,
+                                                                SKU: x.pstoCode + ":" + x.pstoName,                                           
                                                                 Pallet: x.rstoCode,
                                                                 Batch: x.pstoBatch,
                                                                 Lot: x.pstoLot,

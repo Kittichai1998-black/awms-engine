@@ -133,7 +133,7 @@ const WorkQueueSTGTCounting = (props) => {
     const columnConfirm = [
         { Header: 'Pallet', accessor: 'Pallet', },
         { Header: "SI", accessor: 'OrderNo', },
-        { Header: 'Reorder', accessor: 'SKU', width: 200 },
+        { Header: 'Reorder', accessor: 'SKU', width: 350 },
        /* { Header: 'Batch', accessor: 'Batch', },
         { Header: 'Lot', accessor: 'Lot', },*/
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },

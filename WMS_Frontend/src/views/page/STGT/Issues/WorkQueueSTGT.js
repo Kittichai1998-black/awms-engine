@@ -101,7 +101,7 @@ const WorkQueueSTGT = (props) => {
     const columnConfirm = [
         { Header: 'Pallet', accessor: 'Pallet', },
         { Header: "SI", accessor: 'OrderNo', },
-        { Header: 'Reorder', accessor: 'SKU', width: 200 },
+        { Header: 'Reorder', accessor: 'SKU', width: 350 },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
