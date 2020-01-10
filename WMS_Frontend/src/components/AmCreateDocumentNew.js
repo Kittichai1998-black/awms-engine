@@ -937,9 +937,10 @@ const AmCreateDocument = (props) => {
                             dataCheck={dataCheck}
                         /> : null}
 
-                        <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
+                        {props.add === false ?null:<AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
                             {t('Add')}
-                        </AmButton>
+                        </AmButton>}
+                        
                     </div>
                 </Grid>
             </Grid>

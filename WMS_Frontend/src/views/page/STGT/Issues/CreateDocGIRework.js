@@ -69,10 +69,10 @@ export default props => {
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
       { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "LocationCode", placeholder: "Location" }
       // { accessor: "remark", placeholder: "Remark" }
     ]
-  }
+  };
 
   //get api set dataWarehouse
   useEffect(() => {
@@ -138,12 +138,11 @@ export default props => {
           createDocType={"issue"}
           history={props.history}
           apiRes={apiRes}
+          add={false}
         />
       );
     }
   }, [dataHeader]);
-
-
 
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -161,7 +160,8 @@ export default props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f:
+      "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
