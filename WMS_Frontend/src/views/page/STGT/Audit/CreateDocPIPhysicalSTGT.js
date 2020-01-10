@@ -168,9 +168,9 @@ const CreateDocPIPhysicalSTGT = props => {
         placeholder: "SI"
       },
       { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "Size", placeholder: "Size" },
-      { accessor: "LocationCode", placeholder: "Location" },
-      { accessor: "remark", placeholder: "Remark" }
+      //{ accessor: "Size", placeholder: "Size" },
+      { accessor: "LocationCode", placeholder: "Location" }
+      //{ accessor: "remark", placeholder: "Remark" }
     ]
   };
 
