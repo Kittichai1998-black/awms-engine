@@ -72,6 +72,7 @@ const CreateDocumentGI = (props) => {
     const [baseIDs, setbaseIDs] = useState();
     const [skubyBase, setskubyBase] = useState({});
     const [dataCreate, setdataCreate] = useState([]);
+    const [qtyBase, setqtyBase] = useState([]);
 
     //useEffect(() => {
     //    setParentStorageObjects({
@@ -88,15 +89,12 @@ const CreateDocumentGI = (props) => {
     //}, [skuIDs, units])
 
     useEffect(() => {
-        console.log("SKU Master By Pallet")
-        console.log(baseIDs)
-        console.log(skubyBase)
         if (baseIDs !== undefined) {
             setskubyBase({
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "BstoAndPsto",
                 q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs + ' "}]',
-                f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode,pstoCode as skuCode,pstoCode as Code",
+                f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode,pstoCode as skuCode,pstoCode as Code,pstoQuantity as Quantity",
                 g: "",
                 s: "[{'f':'bstoID','od':'asc'}]",
                 sk: 0,
@@ -171,7 +169,7 @@ const CreateDocumentGI = (props) => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "BstoAndPsto",
         q: '[{ "f": "bstoStatus", "c":"=", "v": 1}]',
-        f: "bstoID,bstoCode,pstoCode,pstoName,bstoCode as BaseCode",
+        f: "bstoID,bstoCode,pstoCode,pstoName,bstoCode as BaseCode,pstoQuantity as Quantity",
         g: "",
         s: "[{'f':'bstoID','od':'asc'}]",
         sk: 0,
@@ -237,7 +235,7 @@ const CreateDocumentGI = (props) => {
     const columnsModifi = [
         { Header: "Base", accessor: 'BaseCode' },
         { Header: "SKU Items", accessor: 'SKUItems', },
-    { Header: "Quantity", accessor: 'quantity' },
+    { Header: "Quantity", accessor: 'Quantity' },
     { Header: "Unit", accessor: 'unitType', },
     { Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => { setEditData(e); setDialog(true); setTitle("Edit") }}>Edit</AmButton>, },
     {
@@ -356,23 +354,34 @@ const CreateDocumentGI = (props) => {
             }
         },
         {
-            "field": "quantity",
+            "field": "Quantity",
             "component": (condition, cols, key) => {
                 return (
                     <div key={key} style={{ display: "inline-block" }}>
                         <FormInline>
+                            <LabelH>Quantity: </LabelH>
+                            <InputDiv>
+                                {<label>{qtyBase}</label>}
+                            </InputDiv>
+                        </FormInline>
+                    </div>
+                    )
+                    {/*<div key={key} style={{ display: "inline-block" }}>
+                        <FormInline>
                             <LabelH>Quantity : </LabelH>
                             <InputDiv>
                                 <AmInput style={{ width: "300px" }}
-                                    defaultValue={""}
+                                    defaultValue={qtyBase}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele.value, ele) }}
                                 />
                             </InputDiv>
                         </FormInline>
-                    </div>
-                )
-            }
+                    </div >*/}
+                    
+                
+}
+            
         },
         {
             "field": "unitType",
@@ -423,7 +432,7 @@ const CreateDocumentGI = (props) => {
             }
         },
         {
-            "field": "quantity",
+            "field": "Quantity",
             "component": (condition, cols, key) => {
                 return (
                     <div key={key} style={{ display: "inline-block" }}>
@@ -459,15 +468,12 @@ const CreateDocumentGI = (props) => {
 
 
     const onHandleDDLChangeBse = (value, dataObject, field) => {
-        console.log(value)
-        console.log(dataObject)
-        console.log(skubyBase)
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {               
-                    setbaseIDs(value)
-
+                setbaseIDs(value)
+          
                 //onChangeEditor(field, value, dataObject.BaseCode, "bstoCode", dataObject[field])
-                onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, "Code", dataObject.Code)
+                onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, dataObject.Quantity, "Code", dataObject.Code)
             }
         } else { }
     }
@@ -475,11 +481,17 @@ const CreateDocumentGI = (props) => {
     const onHandleDDLChangeSKU = (value, dataObject, field) => {
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {
+                if (dataObject.Quantity !== undefined || dataObject.Quantity !== null ) {
+                    let qtys = dataObject.Quantity
+                    var StrQty = qtys.toString();
+                    setqtyBase(StrQty)
+                }
                 setskuIDs(dataObject.ID)
                 setunits(dataObject.UnitTypeCode)
                 setskuCodes(dataObject.Code)
+
                 if (dataObject !== null) {
-                    onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, "Code", dataObject.Code)
+                    onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, dataObject.Quantity, "Code", dataObject.Code)
                 }
             }
         } else { }
@@ -513,12 +525,14 @@ const CreateDocumentGI = (props) => {
         setDataSource(dataSource);
         setDatacreateDoc();
     }
-    const onChangeEditor = (field, rowdata, value, UnitCode, pair, dataPair) => {
+    const onChangeEditor = (field, rowdata, value, UnitCode, Quantity,pair, dataPair) => {
         if (addData) {
             if (editData) {
                 editData[field] = value;
                 if (field === "SKUItems") {
                     UnitCode ? editData["unitType"] = UnitCode : delete editData["unitType"]
+                    Quantity ? editData["Quantity"] = Quantity : delete editData["Quantity"]
+
                 }
                 if (pair) {
                     editData[pair] = dataPair;
@@ -532,6 +546,7 @@ const CreateDocumentGI = (props) => {
                 addData[field] = value;
                 if (field === "SKUItems") {
                     UnitCode ? addData["unitType"] = UnitCode : delete addData["unitType"]
+                    Quantity ? addData["Quantity"] = Quantity : delete addData["Quantity"]
                 }
                 if (pair) {
                     addData[pair] = dataPair;
@@ -544,6 +559,7 @@ const CreateDocumentGI = (props) => {
                 let editRowX = editData.original ? { ...editData.original } : { ...editData };
                 if (field === "SKUItems") {
                     UnitCode ? editRowX["unitType"] = UnitCode : delete editRowX["unitType"]
+                    Quantity ? editRowX["Quantity"] = Quantity : delete editRowX["Quantity"]
                 }
 
                 if (pair) {

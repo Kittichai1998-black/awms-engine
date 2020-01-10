@@ -1571,8 +1571,6 @@ const AmProcessQueue = props => {
                     }
                     let processQueuesz = null
 
-
-
                     if (window.project === "AAI") {
                         let processQueues = {
                             docID: a.DataDocumentID,
