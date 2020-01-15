@@ -107,11 +107,11 @@ const CreateDocPIPhysicalSTGT = props => {
       style: { textAlign: "center" }
     },
     { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
-    // {
-    //   Header: "Size",
-    //   accessor: "Size",
-    //   width: 50
-    // },
+    {
+      Header: "Size",
+      accessor: "Size",
+      width: 50
+    },
     {
       Header: "Carton No",
       accessor: "Carton",
@@ -135,13 +135,13 @@ const CreateDocPIPhysicalSTGT = props => {
       accessor: "BaseUnitCode",
       width: 70,
       style: { textAlign: "center" }
+    },
+    {
+      Header: "Remark",
+      accessor: "remark",
+      width: 110,
+      style: { textAlign: "center" }
     }
-    // {
-    //   Header: "Remark",
-    //   accessor: "remark",
-    //   width: 110,
-    //   style: { textAlign: "center" }
-    // }
   ];
 
   const PalletCode = {
@@ -150,7 +150,7 @@ const CreateDocPIPhysicalSTGT = props => {
     q:
       '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97,96,98"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Options",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -168,9 +168,9 @@ const CreateDocPIPhysicalSTGT = props => {
         placeholder: "SI"
       },
       { accessor: "Code", placeholder: "Reorder" },
-      //{ accessor: "Size", placeholder: "Size" },
-      { accessor: "LocationCode", placeholder: "Location" }
-      //{ accessor: "remark", placeholder: "Remark" }
+      { accessor: "Size", placeholder: "Size" },
+      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "remark", placeholder: "Remark" }
     ]
   };
 
