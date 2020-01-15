@@ -158,7 +158,7 @@ const AmLocationSummary = props => {
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
                                 } else if (yi && xi) {
-                                    let percen = dataFil.length / (level.length - 1) * 100,
+                                    let percen = groupBy(dataFil, "Code").length / (level.length - 1) * 100,
                                         row
                                     // cssBg = `rgba(210, 105, 30, ${color})`
                                     countPalletBank += dataFil.length

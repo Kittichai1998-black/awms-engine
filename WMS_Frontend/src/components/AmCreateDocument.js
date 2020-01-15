@@ -213,6 +213,7 @@ const AmCreateDocument = (props) => {
                 key: key,
             }
         })
+      
         createDocumentData[key] = value
         setcreateDocumentData(createDocumentData)
     }

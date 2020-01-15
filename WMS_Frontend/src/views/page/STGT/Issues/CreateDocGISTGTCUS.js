@@ -29,45 +29,24 @@ export default props => {
     }
 
     const columsFindpopUpPALC = [
-        {
-            Header: "Pallet Code",
-            accessor: "palletcode",
-            width: 110,
-            Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-        },
-        {
-            Header: "SRM Line",
-            accessor: "srmLine",
-            width: 95,
-            Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-        },
-        { Header: "SKU Items", accessor: "SKUItems", width: 350 },
+        { Header: "Pallet Code", accessor: "palletcode", width: 110, style: { textAlign: "center" } },
+        { Header: "SRM Line", accessor: "srmLine", width: 95, style: { textAlign: "center" } },
+        { Header: "Reorder", accessor: "SKUItems", width: 350 },
         // { Header: "SKU Code", accessor: 'Code', width: 110 },
         // { Header: "SKU Name", accessor: 'Name', width: 170 },
-        {
-            Header: "Location",
-            accessor: "LocationCode",
-            width: 90,
-            Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-        },
-        {
-            Header: "Order No",
-            accessor: "OrderNo",
-            width: 100,
-            Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-        },
+        { Header: "Location", accessor: "LocationCode", width: 90, style: { textAlign: "center" } },
+        { Header: "SI", accessor: "orderNo", width: 100, style: { textAlign: "center" } },
         // { Header: 'Batch', accessor: 'Batch' },
 
         { Header: "Quantity", accessor: "Quantity", width: 90 },
         { Header: "Unit", accessor: "BaseUnitCode", width: 70 }
     ];
 
-    const PalletCode = {
+    const view_sto = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PalletSto",
         q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f:
-            "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+        f: "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
         g: "",
         s: "[{'f':'ID','od':'ASC'}]",
         sk: 0,
@@ -76,13 +55,13 @@ export default props => {
     };
 
     const addList = {
-        queryApi: PalletCode,
+        queryApi: view_sto,
         columns: columsFindpopUpPALC,
         search: [
             { accessor: "palletcode", placeholder: "Pallet Code" },
             { accessor: "Code", placeholder: "Reorder" },
             { accessor: "LocationCode", placeholder: "Location" },
-            { accessor: "remark", placeholder: "Remark" }
+            // { accessor: "remark", placeholder: "Remark" }
         ]
     }
 
@@ -104,35 +83,12 @@ export default props => {
                     { label: "Document Date", type: "date", key: "documentDate" }
                 ],
                 [
-                    {
-                        label: "Movement Type",
-                        type: "labeltext",
-                        key: "movementTypeID",
-                        texts: "FG_TRANSFER_CUS",
-                        valueTexts: "1012"
-                    },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012" },
                     { label: "Action Time", type: "dateTime", key: "actionTime" }
                 ],
                 [
-                    {
-                        label: "Source Warehouse",
-                        type: "labeltext",
-                        key: "souWarehouseID",
-                        texts: dataWarehouse.Name,
-                        valueTexts: dataWarehouse.ID
-                    },
-                    {
-                        label: "Destination Customer",
-                        type: "dropdown",
-                        key: "desCustomerID",
-                        queryApi: view_Customer,
-                        // accessor:"Name",
-                        fieldLabel: ["Code", "Name"],
-                        defaultValue: 1
-
-                        // texts: dataWarehouse.Name,
-                        // valueTexts: dataWarehouse.ID
-                    }
+                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: dataWarehouse.Name, valueTexts: dataWarehouse.ID },
+                    { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: view_Customer, fieldLabel: ["Code", "Name"], defaultValue: 1 }
                 ],
                 [
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW" },
@@ -164,8 +120,7 @@ export default props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "SKUMaster",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:
-            "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -185,60 +140,28 @@ export default props => {
         all: ""
     };
 
-
-
     const columsFindpopUpSKU = [
-        {
-            Header: "Code",
-            accessor: "Code",
-            fixed: "left",
-            width: 100,
-            sortable: true
-        },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true }
+        { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
     ];
 
     const columnEdit = [
-        {
-            Header: "Pallet Code",
-            accessor: "palletcode",
-            type: "findPopUp",
-            idddl: "palletcode",
-            queryApi: PalletCode,
-            fieldLabel: ["palletcode"],
-            columsddl: columsFindpopUpPALC
-        },
-        {
-            Header: "SKU Item",
-            accessor: "SKUItems",
-            type: "findPopUp",
-            pair: "skuCode",
-            idddl: "skuitems",
-            queryApi: SKUMaster,
-            fieldLabel: ["SKUItems"],
-            columsddl: columsFindpopUpSKU
-        },
-        { Header: "Order No", accessor: "OrderNo", type: "input" },
+        { Header: "Pallet Code", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
+        { Header: "Reorder", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindpopUpSKU },
+        { Header: "SI", accessor: "orderNo", type: "input" },
         { Header: "Quantity", accessor: "quantity", type: "inputNum" },
-        {
-            Header: "Unit",
-            accessor: "unitType",
-            type: "dropdown",
-            fieldLabel: ["Code"],
-            idddl: "unitType"
-        }
+        { Header: "Unit", accessor: "unitType", type: "text" }
     ];
 
     const columns = [
         { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-        { Header: "SKU Item", accessor: "SKUItems" },
-        { Header: "Order No", accessor: "OrderNo", width: 100 },
+        { Header: "Reorder", accessor: "SKUItems" },
+        { Header: "SI", accessor: "orderNo", width: 100 },
         { Header: "Quantity", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType", width: 70 }
     ];
-
-
 
     const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
     const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด

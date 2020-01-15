@@ -17,7 +17,7 @@ export default props => {
         const search = httpToObject.parse(location.search)
 
         if (search.IOType && search.IOType === "IN") {
-            if (location.pathname === "/dashboard/inbound") {
+            if (location.pathname === "/monitor/inbound") {
                 dashboard = 'DASHBOARD_IN';
                 document.title = "Inbound Progress : AMW";
             } else {
@@ -25,7 +25,7 @@ export default props => {
             }
         }
         if (search.IOType && search.IOType === "OUT") {
-            if (location.pathname === "/dashboard/outbound") {
+            if (location.pathname === "/monitor/outbound") {
                 dashboard = 'DASHBOARD_OUT';
                 document.title = "Outbound Progress : AMW";
             } else {
@@ -36,16 +36,16 @@ export default props => {
     }, [props.location, localStorage.getItem('Lang')]);
 
     const headercol1 = [
-        {
-            accessor: "ActualTime", Header: "Time", className: 'center', width: 100,
-            type: "time", sortable: false, style: { textAlign: "center" }
-        },
+        { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+        // { accessor: "Cur_AreaLocation_Code", Header: "Gate", width: 60, sortable: false, style: { textAlign: "center" } },
         { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
         { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-        { accessor: "PackName", Header: "Product", sortable: false },
+        { accessor: "PackName", Header: "Reorder", sortable: false },
         // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
         // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
         // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
+        { accessor: "OrderNo", Header: "SI", width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
         { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
     ]
 

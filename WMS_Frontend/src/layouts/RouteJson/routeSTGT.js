@@ -61,10 +61,10 @@ const DocumentViewPISTGT = Loadable({
   loader: () => import("../../views/page/STGT/Audit/DocumentViewPISTGT"),
   loading: Loading
 });
-// const ReceiveFromCustomer = Loadable({
-//   loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
-//   loading: Loading
-// });
+const ReceiveFromCustomer = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
+  loading: Loading
+});
 // const ReceiveFromWarehouse = Loadable({
 //   loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
 //   loading: Loading
@@ -242,7 +242,12 @@ const routes = [
     compoment: StorageObject,
     exact: true
   },
-  // { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: ReceiveFromCustomer, exact: true },
+  {
+    path: "/receive/receiveforcustomer",
+    name: "Customers Return",
+    compoment: ReceiveFromCustomer,
+    exact: true
+  },
   {
     path: "/issue/managequeue",
     name: "base5",

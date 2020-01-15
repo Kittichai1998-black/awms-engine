@@ -773,16 +773,27 @@ const AmDocumentSearch = props => {
   const onCheckReject = () => {
     console.log(selection);
 
-    var check = allTrue(selection);
-    console.log(check);
-    if (check === true) {
-      setDialogRejectworking(true);
+    if (selection.length !== 0) {
+      var check = allTrue(selection);
+      console.log(check);
+      if (check === true) {
+        setDialogRejectworking(true);
+      } else {
+        setDialogReject(true);
+      }
     } else {
-      setDialogReject(true);
+      setOpenWarning(true);
     }
-    //setDialogReject(true);
   };
+  const onReject = () => {
+    //console.log(selection);
 
+    if (selection.length !== 0) {
+      setDialog(true);
+    } else {
+      setOpenWarning(true);
+    }
+  };
   // end add by ple
   return (
     <div>
@@ -897,7 +908,8 @@ const AmDocumentSearch = props => {
               onClick={() => {
                 //onClickReject();
                 //FuncRanderRemark();
-                setDialog(true);
+                onReject();
+                //setDialog(true);
               }}
               style={{ marginRight: "5px" }}
               styleType="delete"

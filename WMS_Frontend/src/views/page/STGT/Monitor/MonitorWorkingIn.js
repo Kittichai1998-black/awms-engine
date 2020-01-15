@@ -1,4 +1,5 @@
 import * as signalR from '@aspnet/signalr';
+
 // import Axios from 'axios'
 import React, { useState, useEffect } from 'react'
 
@@ -9,15 +10,16 @@ import AmPageDashboard from '../../../../components/AmPageDashboard';
 
 //type time,datetime,datelog
 const headercol1 = [
-    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Gate", Header: "Gate", width: 70, sortable: false },
+    { accessor: "TIME", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
+    { accessor: "TaskName", Header: "Task", width: 130, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
     // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PalletCode", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "PackName", Header: "Product", width: 550, sortable: false },
-    { accessor: "Qty", Header: "Qty", width: 90, sortable: false },
-    { accessor: "Remark", Header: "Remark", sortable: false },
+    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Product", Header: "Reorder", sortable: false },
+    { accessor: "OrderNo", Header: "SI", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
+    // { accessor: "Remark", Header: "Remark", sortable: false },
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
+    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
 
 const headercol2 = [
@@ -102,7 +104,7 @@ export default props => {
         return () => {
             connection.stop()
         }
-    }, [])
+    }, [valueDD])
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment

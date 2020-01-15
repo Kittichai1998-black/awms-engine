@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+
 import {
   apicall,
   createQueryString
@@ -18,9 +19,9 @@ export default props => {
   const PalletCode = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PalletSto",
-    q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    q: '[{ "f": "Status", "c":"<", "v": 2}]', //เงื่อนไข '[{ "f": "EventStatus", "c":"=", "v": "12"}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
+      "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -41,7 +42,7 @@ export default props => {
       width: 95,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
-    { Header: "SKU Items", accessor: "SKUItems", width: 350 },
+    { Header: "Reorder", accessor: "SKUItems", width: 350 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -51,8 +52,8 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "Order No",
-      accessor: "OrderNo",
+      Header: "SI",
+      accessor: "orderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -68,10 +69,10 @@ export default props => {
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
       { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "LocationCode", placeholder: "Location" },
-      { accessor: "remark", placeholder: "Remark" }
+      { accessor: "LocationCode", placeholder: "Location" }
+      // { accessor: "remark", placeholder: "Remark" }
     ]
-  }
+  };
 
   //get api set dataWarehouse
   useEffect(() => {
@@ -137,12 +138,11 @@ export default props => {
           createDocType={"issue"}
           history={props.history}
           apiRes={apiRes}
+          add={false}
         />
       );
     }
   }, [dataHeader]);
-
-  
 
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -161,7 +161,7 @@ export default props => {
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f:
-      "ID,Code,Name,UnitCode,BaseUnitCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+      "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -203,7 +203,7 @@ export default props => {
       columsddl: columsFindpopUpPALC
     },
     {
-      Header: "SKU Item",
+      Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -212,22 +212,20 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "Order No", accessor: "OrderNo", type: "input" },
+    { Header: "SI", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
       accessor: "unitType",
-      type: "dropdown",
-      fieldLabel: ["Code"],
-      idddl: "unitType"
+      type: "text"
     }
   ];
 
   const columns = [
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order No", accessor: "OrderNo", width: 100 },
+    { Header: "Reorder", accessor: "SKUItems" },
+    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];

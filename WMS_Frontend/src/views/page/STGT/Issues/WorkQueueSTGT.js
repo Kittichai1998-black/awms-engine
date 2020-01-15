@@ -20,7 +20,7 @@ const WorkQueueSTGT = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "LD,PD"}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -77,39 +77,37 @@ const WorkQueueSTGT = (props) => {
         all: "",
     }
 
-    const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
-    { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
-    { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
-        { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
+    const columnCondition = [
+    { Header: "SI", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+    { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
+    { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'Sorting', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
         { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
     ];
 
     const DefaulSorting = [{
         By: "Carton No",
+        value: "Carton No",
         ID: 0,
         Order: "FIFO"
     }]
   
 
     const columnConfirm = [
-        { Header: 'SKU', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Batch', accessor: 'Batch', },
-        { Header: 'Lot', accessor: 'Lot', },
-        { Header: "Order", accessor: 'OrderNo', },
+        { Header: "SI", accessor: 'OrderNo', },
+        { Header: 'Reorder', accessor: 'SKU', width: 350 },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues:14 },
 
     ];
 
@@ -126,7 +124,7 @@ const WorkQueueSTGT = (props) => {
             apiwarehouse={Warehouse}
             advanceCondition={true}
             //fullPallets={true}
-           // receives={true}
+            // receives={true}
             priolity={Priolity}
             DocType={1002}
             docType={"issue"}
@@ -140,6 +138,8 @@ const WorkQueueSTGT = (props) => {
             StatusfromDescustomer={true}
             apidetail={"/issue/detail?docID="}
             apiResConfirm={"/issue/managequeue"}
+            Defaulwarehouse={1}
+            
         ></AmProcessQueue>
 
     </div>)

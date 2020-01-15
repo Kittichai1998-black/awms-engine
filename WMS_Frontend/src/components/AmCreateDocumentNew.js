@@ -12,7 +12,7 @@ import AmEditorTable from '../components/table/AmEditorTable'
 import AmFindPopup from '../components/AmFindPopup'
 import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
-import { apicall } from '../components/function/CoreFunction2'
+import { apicall, Clone } from '../components/function/CoreFunction2'
 import BtnAddList from './AmCreateDocument_BtnAddList'
 import { getUnique } from './function/ObjectFunction'
 
@@ -91,9 +91,10 @@ const AmCreateDocument = (props) => {
     const rem = [
         {
             Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => {
-                setEditData(e.original);
+                setEditData(Clone(e.original));
                 setDialog(true);
                 setTitle("Edit")
+                setAddData(false);
                 // let unitArr = [{ label: e.original.UnitCode, value: e.original.UnitCode }]
                 // if (e.original.UnitCode !== e.original.BaseUnitCode)
                 //     unitArr.push({ label: e.original.BaseUnitCode, value: e.original.BaseUnitCode })
@@ -160,7 +161,9 @@ const AmCreateDocument = (props) => {
         let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode"),
             indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch"),
             indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity"),
-            indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "orderNo")
+            indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "orderNo"),
+            indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType"),
+            indexSKUItems = props.columnEdit.findIndex(x => x.accessor === "SKUItems")
 
         //CaseByCase
         if (field === "palletcode") {
@@ -180,13 +183,18 @@ const AmCreateDocument = (props) => {
                 editData.orderNo = data.orderNo
 
 
-
+                // if (indexSKUItems !== -1)
+                //     setTimeout(() => {
+                //         ref.current[indexSKUItems].current.value = data.SKUItems
+                //     }, 1);
                 if (indexBatch !== -1)
                     ref.current[indexBatch].current.value = data.Batch
                 if (indexQuantity !== -1)
                     ref.current[indexQuantity].current.value = data.Quantity
                 if (indexOrderNo !== -1)
                     ref.current[indexOrderNo].current.value = data.orderNo
+                if (indexUnitType !== -1)
+                    ref.current[indexUnitType].current.textContent = data.BaseUnitCode
             } else {
                 delete editData.ID
             }
@@ -210,10 +218,14 @@ const AmCreateDocument = (props) => {
                 editData.skuCode = data.Code
                 editData.unitType = data.UnitTypeCode
                 editData.skuName = data.Name
+                if (indexUnitType !== -1)
+                    ref.current[indexUnitType].current.textContent = data.UnitTypeCode
             } else {
                 delete editData.skuCode
                 delete editData.unitType
                 delete editData.skuName
+                if (indexUnitType !== -1)
+                    ref.current[indexUnitType].current.textContent = ""
             }
 
 
@@ -227,13 +239,13 @@ const AmCreateDocument = (props) => {
             // setDataUnit(unitArr)
         }
         setReload({})
-        setEditData(editData)
+        // setEditData(editData)
     }
 
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            var chkData = dataSource.filter(x => {
+            let chkData = dataSource.filter(x => {
                 return x.ID === rowdata.ID
             })
             if (chkData.length > 0) {
@@ -264,15 +276,15 @@ const AmCreateDocument = (props) => {
                     dataSource.push(editData)
                 }
             }
+            setDataCheck(dataSource);
+            setDataSource(dataSource);
         }
         setEditData({})
         setAddDataID(addDataID - 1);
-        setAddData(false)
         setDialog(false)
-        // setDataUnit()
-        // setUnitCodes();
-        setDataCheck(dataSource);
-        setDataSource(dataSource);
+        // // setDataUnit()
+        // // setUnitCodes();
+
     }
 
     const editorListcolunm = () => {
@@ -406,7 +418,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "text") {
             return (<FormInline>
                 <LabelH>{Header}</LabelH>
-                <label>{texts}</label >
+                <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
             </FormInline>
             )
         }
@@ -451,7 +463,7 @@ const AmCreateDocument = (props) => {
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
                     //style={style ? style : { width: "300px" }}
-                    
+
                     onChange={(e) => {
                         if (obj.search)
                             props.addList.search.find(x => x.accessor === key).defaultValue = e
@@ -873,7 +885,7 @@ const AmCreateDocument = (props) => {
                 SKUItems: x.SKUItems,
                 batch: x.Batch || x.batch,
                 quantity: x.Quantity || x.quantity,
-                unitType: x.BaseUnitCode,
+                unitType: x.BaseUnitCode || x.unitType,
                 skuCode: x.Code || x.skuCode,
                 skuName: x.Name || x.skuName,
                 orderNo: x.orderNo,
@@ -925,9 +937,10 @@ const AmCreateDocument = (props) => {
                             dataCheck={dataCheck}
                         /> : null}
 
-                        <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
+                        {props.add === false ?null:<AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
                             {t('Add')}
-                        </AmButton>
+                        </AmButton>}
+                        
                     </div>
                 </Grid>
             </Grid>
@@ -938,6 +951,7 @@ const AmCreateDocument = (props) => {
                 reload={props.reload ? props.reload : reload}
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 sortable={false}
+                pageSize={200}
             />
 
             {/* Btn CREATE */}

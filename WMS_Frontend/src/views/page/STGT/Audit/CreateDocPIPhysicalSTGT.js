@@ -1,11 +1,12 @@
-import React, { Component, useState, useEffect } from "react";
-import AmCreateDocument from "../../../../components/AmCreateDocument";
+import React, { useState, useEffect } from "react";
+import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
-import axios from "axios";
-import Clone from "../../../../components/function/Clone";
+import queryString from "query-string";
+// import axios from "axios";
+// import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
 const CreateDocPIPhysicalSTGT = props => {
@@ -39,7 +40,7 @@ const CreateDocPIPhysicalSTGT = props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: "FG_PHYSICAL_COUNT_WM",
+            texts: "FG_PHYSICAL_COUNT_WM ",
             valueTexts: "1041"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
@@ -62,7 +63,7 @@ const CreateDocPIPhysicalSTGT = props => {
         ],
         [
           { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
-          { label: "Remark", type: "input", key: "remark" }
+          { label: "Remark", type: "input", key: "remark", search: true }
         ]
         //[{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },{ label: "", type: "", key: "",texts: "" },]
       ];
@@ -74,6 +75,7 @@ const CreateDocPIPhysicalSTGT = props => {
     if (dataTest.length > 0) {
       setTable(
         <AmCreateDocument
+          addList={addList}
           headerCreate={dataTest}
           columns={columns}
           columnEdit={columnEdit}
@@ -85,6 +87,92 @@ const CreateDocPIPhysicalSTGT = props => {
       );
     }
   }, [dataTest]);
+
+  const getCarton = value => {
+    var qryStr = queryString.parse(value.Options);
+    return qryStr["carton_no"];
+  };
+
+  const columsFindpopUpPALC = [
+    {
+      Header: "Pallet Code",
+      accessor: "palletcode",
+      width: 110,
+      style: { textAlign: "center" }
+    },
+    {
+      Header: "SI",
+      accessor: "orderNo",
+      width: 70,
+      style: { textAlign: "center" }
+    },
+    { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
+    // {
+    //   Header: "Size",
+    //   accessor: "Size",
+    //   width: 50
+    // },
+    {
+      Header: "Carton No",
+      accessor: "Carton",
+      width: 100,
+      Cell: e => getCarton(e.original)
+    },
+    {
+      Header: "Location",
+      accessor: "LocationCode",
+      width: 90,
+      style: { textAlign: "center" }
+    },
+    {
+      Header: "Quantity",
+      accessor: "Quantity",
+      width: 90,
+      style: { textAlign: "center" }
+    },
+    {
+      Header: "Unit",
+      accessor: "BaseUnitCode",
+      width: 70,
+      style: { textAlign: "center" }
+    }
+    // {
+    //   Header: "Remark",
+    //   accessor: "remark",
+    //   width: 110,
+    //   style: { textAlign: "center" }
+    // }
+  ];
+
+  const PalletCode = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "PalletSto",
+    q:
+      '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97,96,98"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    f:
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Options",
+    g: "",
+    s: "[{'f':'ID','od':'ASC'}]",
+    sk: 0,
+    l: 20,
+    all: ""
+  };
+
+  const addList = {
+    queryApi: PalletCode,
+    columns: columsFindpopUpPALC,
+    search: [
+      { accessor: "palletcode", placeholder: "Pallet Code" },
+      {
+        accessor: "orderNo",
+        placeholder: "SI"
+      },
+      { accessor: "Code", placeholder: "Reorder" },
+      //{ accessor: "Size", placeholder: "Size" },
+      { accessor: "LocationCode", placeholder: "Location" }
+      //{ accessor: "remark", placeholder: "Remark" }
+    ]
+  };
 
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -135,22 +223,25 @@ const CreateDocPIPhysicalSTGT = props => {
 
   const columsFindpopUp = [
     {
-      Header: "Code",
+      Header: "Reorder",
       accessor: "Code",
       fixed: "left",
       width: 130,
       sortable: true
     },
-    {
-      Header: "Name",
-      accessor: "Name",
-      width: 200,
-      sortable: true
-    }
+    { Header: "Brand", accessor: "Name", width: 200, sortable: true }
   ];
 
   const columnEdit = [
-    { Header: "Pallet Code", accessor: "palletcode", type: "input" },
+    {
+      Header: "Pallet Code",
+      accessor: "palletcode",
+      type: "findPopUp",
+      idddl: "palletcode",
+      queryApi: PalletCode,
+      fieldLabel: ["palletcode"],
+      columsddl: columsFindpopUpPALC
+    },
     {
       Header: "Location",
       accessor: "locationcode",
@@ -161,8 +252,9 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
+    { Header: "SI", accessor: "orderNo", type: "input" },
     {
-      Header: "SKU Item",
+      Header: "Reorder/Brand",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -171,20 +263,22 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "OrderNO", accessor: "orderNo", type: "input" },
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
       type: "inputNum",
       TextInputnum: "%"
-    }
+    },
+    { Header: "Unit", accessor: "unitType", type: "unitType" }
   ];
 
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
+    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
-    { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order NO", accessor: "orderNo", width: 100 },
+    // { Header: "Reorder", accessor: "SKUItems" },
+    { Header: "Reorder", accessor: "skuCode" },
+    { Header: "Brand", accessor: "skuName" },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
@@ -192,12 +286,7 @@ const CreateDocPIPhysicalSTGT = props => {
   const apicreate = "/v2/CreateADDocAPI/"; //API ���ҧ Doc
   const apiRes = "/counting/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
 
-  return (
-    <div>
-      {table}
-      <div />
-    </div>
-  );
+  return table;
 };
 
 export default CreateDocPIPhysicalSTGT;

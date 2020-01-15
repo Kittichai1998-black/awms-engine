@@ -11,10 +11,10 @@ const DocumentQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
     q:
-        '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+        '[{ "f": "Status", "c":"=", "v": 3},{ "f": "EventStatus", "c":"=", "v": 32},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
     f: "ID, Code",
     g: "",
-    s: "[{'f':'ID','od':'asc'}]",
+    s: "[{'f':'ID','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""

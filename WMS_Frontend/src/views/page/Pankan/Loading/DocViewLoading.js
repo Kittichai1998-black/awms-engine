@@ -27,6 +27,7 @@ import {
 } from "reactstrap";
 import PropType from "prop-types";
 import AmButton from "../../../../components/AmButton";
+import pdfMake from "pdfmake/build/pdfmake";
 import { useTranslation } from "react-i18next";
 
 const styles = theme => ({
@@ -95,9 +96,7 @@ const DetailDocumentLD = props => {
   const [header, setHeader] = useState(props.header);
   const [dataHeader, setDataHeader] = useState([]);
   const [columns, setColumns] = useState(props.columns);
-  const [columnsDetailSOU, setColumnsDetailSOU] = useState(
-    props.columnsDetailSOU
-  );
+
   const [columnsDetailDES, setColumnsDetailDES] = useState(
     props.columnsDetailDES
   );
@@ -109,15 +108,22 @@ const DetailDocumentLD = props => {
   const [dataDetailSOU, setDataDetailSOU] = useState([]);
     const [dataDetailDES, setDataDetailDES] = useState([]);
     const [DocIssueID, setDocIssueID] = useState([]);
+    const [datasoure, setdatasoure] = useState([]);
   const [activeTab, setActiveTab] = useState("1");
   const dataTable = [];
   const dataTableDetailSOU = [];
     const dataTableDetailDES = [];
-	
+
+    const columnsDetailSOUs = [
+        { "width": 150, "accessor": "code", "Header": "Code" },
+        {  "accessor": "Item", "Header": "Item" },
+        {  "accessor": "IssueCode", "Header": "Issue Document" },
+        { "width": 110, "accessor": "packQty", "Header": "Qty" },
+        { "width": 60, "accessor": "packUnitCode", "Header": "Unit" }
+    ]
 
   useEffect(() => {
     getData();
-    console.log(props.optionDocItems);
   }, []);
 
   const getData = () => {
@@ -132,7 +138,6 @@ const DetailDocumentLD = props => {
         "&getMapSto=true&_token=" +
         localStorage.getItem("Token")
     ).then(res => {
-        console.log(res)
 
       if (res.data._result.status === 1) {
         setDataHeader(res.data.document);
@@ -167,7 +172,6 @@ const DetailDocumentLD = props => {
             qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
           row.locationcode =
                 qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
-            console.log(row)
           dataTable.push({
             ...row,
             _qty:
@@ -190,7 +194,6 @@ const DetailDocumentLD = props => {
         //============================================================================
 
           res.data.sou_bstos.forEach(rowDetail => {
-              console.log(rowDetail)
           rowDetail.eventStatusDoc = res.data.document["eventStatus"];
 
           var qryStr = queryString.parse(rowDetail.Options);
@@ -220,13 +223,6 @@ const DetailDocumentLD = props => {
         res.data.des_bstos.forEach(rowDetail => {
           rowDetail.eventStatusDoc = res.data.document["eventStatus"];
 
-          // var options = ""
-          // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-          // rowDetail.options = options;
-
-          // === getOption ===
-          //var qryStr = queryString.parse(rowDetail.options)
-          //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
           var qryStr = queryString.parse(rowDetail.Options);
           if (optionDesBstos) {
             optionDesBstos.forEach(x => {
@@ -236,12 +232,7 @@ const DetailDocumentLD = props => {
                   : qryStr[x.optionName];
             });
           }
-          if (window.project === "AAI") {
-            rowDetail.tanum =
-              qryStr.tanum === "undefined" ? null : qryStr.tanum;
-            rowDetail.btanr =
-              qryStr.btanr === "undefined" ? null : qryStr.btanr;
-          }
+      
           dataTableDetailDES.push({
             ...rowDetail,
             _packQty:
@@ -255,7 +246,26 @@ const DetailDocumentLD = props => {
           });
         });
 
-        //============================================================================
+        
+          dataTableDetailSOU.forEach((x) => {
+              dataTable.forEach((y) => {
+                  console.log(x)
+                  console.log(y)
+                let datas = {
+                      "code": x.code,
+                      "Item": x.packCode  +":"+ x.packName,
+                    "IssueCode": y.Code,
+                    "packQty": x.packQty,
+                    "packUnitCode": x.packUnitCode
+                 }
+
+                  datasoure.push(datas)
+              })
+              console.log(datasoure)
+             
+             
+          })
+
         // console.log(dataTable);
         setData(dataTable);
         setDataDetailSOU(dataTableDetailSOU);
@@ -332,15 +342,29 @@ const DetailDocumentLD = props => {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
-  };
+    };
+
+
+    const ExportPDF = () => {
+
+    }
+
+  
+
   return (
     <div>
       {getHeader()}
       <br />
-      <br />
+          <br />        
+              <div style={{ marginLeft: "92%", width: "100px" }}>
+                  <AmButton styleType="info" onClick={ExportPDF}>
+                      {t("Export PDF")}
+                  </AmButton>
+          </div>
       {typeDoc ? (
-        <Table columns={columns} pageSize={100} data={data} sortable={false} />
-      ) : null}
+      <Table columns={columns} pageSize={100} data={data} sortable={false} />
+              ) : null
+          }
 
       <br />
       <br />
@@ -378,9 +402,9 @@ const DetailDocumentLD = props => {
 
                   {typeDoc ? (
                     <Table
-                      columns={columnsDetailSOU}
+                      columns={columnsDetailSOUs}
                       pageSize={100}
-                      data={dataDetailSOU}
+                      data={datasoure}
                       sortable={false}
                     />
                   ) : null}
@@ -407,9 +431,9 @@ const DetailDocumentLD = props => {
       ) : props.openSOU === true ? (
         typeDoc ? (
           <Table
-            columns={columnsDetailSOU}
-            pageSize={100}
-            data={dataDetailSOU}
+            columns={columnsDetailSOUs}
+                          pageSize={100}
+                          data={datasoure}
             sortable={false}
           />
         ) : null
@@ -424,7 +448,8 @@ const DetailDocumentLD = props => {
         ) : null
       ) : (
         ""
-      )}
+                      )
+          }
       <br />
       {props.buttonBack === true ? (
         <AmButton styleType="default" onClick={buttonBack}>

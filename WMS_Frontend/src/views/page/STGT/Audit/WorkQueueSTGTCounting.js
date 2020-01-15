@@ -20,7 +20,7 @@ const WorkQueueSTGTCounting = (props) => {
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "LD,PD"}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -120,28 +120,28 @@ const WorkQueueSTGTCounting = (props) => {
 
     const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
     { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
-    { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
+    { Header: "SI", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+    { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
     const columnSort = [
-        { Header: 'Order ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
+        { Header: 'SI ', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
         { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
 
     ]; 
     const columnConfirm = [
-        { Header: 'SKU', accessor: 'SKU', width: 200 },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Batch', accessor: 'Batch', },
-        { Header: 'Lot', accessor: 'Lot', },
-        { Header: "Order", accessor: 'OrderNo', },
+        { Header: "SI", accessor: 'OrderNo', },
+        { Header: 'Reorder', accessor: 'SKU', width: 350 },
+       /* { Header: 'Batch', accessor: 'Batch', },
+        { Header: 'Lot', accessor: 'Lot', },*/
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValue: 8 },
+        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues: 14 },
 
     ];
 
@@ -174,6 +174,7 @@ const WorkQueueSTGTCounting = (props) => {
             dataSort={false}
             apiResConfirm={"/counting/managequeue"}
             apidetail={"/counting/detail?docID="}
+            Defaulwarehouse={1}
 
         ></AmProcessQueue>
 
