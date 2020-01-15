@@ -549,7 +549,8 @@ const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,pla
       <AmDate
         id={field}
         TypeDate={"date"}
-        style={{width:"200px"}}
+        width="200px"
+        //style={{width:"200px"}}
         onChange={(value)=>onChangeFilterDateTime(value, colsField, "dateFrom")}
         FieldID={"dateFrom"} >
       </AmDate>
@@ -559,7 +560,8 @@ const FuncFilterSetEle = (key,field,type,name,condition,colsField,fieldLabel,pla
       <AmDate
        id={field}
         TypeDate={"date"}
-        style={{width:"200px"}}
+        width="200px"
+        //style={{width:"200px"}}
         onChange={(value)=>onChangeFilterDateTime(value, colsField, "dateTo")}
         FieldID={"dateTo"} >
       </AmDate>
