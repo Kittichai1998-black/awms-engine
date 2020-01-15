@@ -122,7 +122,7 @@ const WorkQueueSTGT = (props) => {
             DefaulSorting={DefaulSorting}
             history={props.history}
             apiwarehouse={Warehouse}
-            advanceCondition={true}
+            advanceCondition={false}
             //fullPallets={true}
             // receives={true}
             priolity={Priolity}
