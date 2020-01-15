@@ -107,11 +107,11 @@ const CreateDocPIPhysicalSTGT = props => {
       style: { textAlign: "center" }
     },
     { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
-    {
-      Header: "Size",
-      accessor: "Size",
-      width: 50
-    },
+    // {
+    //   Header: "Size",
+    //   accessor: "Size",
+    //   width: 50
+    // },
     {
       Header: "Carton No",
       accessor: "Carton",
@@ -135,13 +135,13 @@ const CreateDocPIPhysicalSTGT = props => {
       accessor: "BaseUnitCode",
       width: 70,
       style: { textAlign: "center" }
-    },
-    {
-      Header: "Remark",
-      accessor: "remark",
-      width: 110,
-      style: { textAlign: "center" }
     }
+    // {
+    //   Header: "Remark",
+    //   accessor: "remark",
+    //   width: 110,
+    //   style: { textAlign: "center" }
+    // }
   ];
 
   const PalletCode = {
@@ -150,7 +150,7 @@ const CreateDocPIPhysicalSTGT = props => {
     q:
       '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97,96,98"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Options",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -168,9 +168,9 @@ const CreateDocPIPhysicalSTGT = props => {
         placeholder: "SI"
       },
       { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "Size", placeholder: "Size" },
-      { accessor: "LocationCode", placeholder: "Location" },
-      { accessor: "remark", placeholder: "Remark" }
+      //{ accessor: "Size", placeholder: "Size" },
+      { accessor: "LocationCode", placeholder: "Location" }
+      //{ accessor: "remark", placeholder: "Remark" }
     ]
   };
 
@@ -232,6 +232,45 @@ const CreateDocPIPhysicalSTGT = props => {
     { Header: "Brand", accessor: "Name", width: 200, sortable: true }
   ];
 
+  // const columnEdit = [
+  //   {
+  //     Header: "Pallet Code",
+  //     accessor: "palletcode",
+  //     type: "findPopUp",
+  //     idddl: "palletcode",
+  //     queryApi: PalletCode,
+  //     fieldLabel: ["palletcode"],
+  //     columsddl: columsFindpopUpPALC
+  //   },
+  //   {
+  //     Header: "Location",
+  //     accessor: "locationcode",
+  //     type: "findPopUp",
+  //     pair: "locationcode",
+  //     idddl: "locationcode",
+  //     queryApi: AreaLocationMaster,
+  //     fieldLabel: ["Code", "Name"],
+  //     columsddl: columsFindpopUp
+  //   },
+  //   { Header: "SI", accessor: "orderNo", type: "input" },
+  //   {
+  //     Header: "Reorder/Brand",
+  //     accessor: "SKUItems",
+  //     type: "findPopUp",
+  //     pair: "skuCode",
+  //     idddl: "skuitems",
+  //     queryApi: SKUMaster,
+  //     fieldLabel: ["Code", "Name"],
+  //     columsddl: columsFindpopUp
+  //   },
+  //   {
+  //     Header: "Counting (%)",
+  //     accessor: "qtyrandom",
+  //     type: "inputNum",
+  //     TextInputnum: "%"
+  //   },
+  //   { Header: "Unit", accessor: "unitType", type: "unitType" }
+  // ];
   const columnEdit = [
     {
       Header: "Pallet Code",
@@ -252,15 +291,14 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
     {
-      Header: "Reorder/Brand",
+      Header: "Reorder",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
       idddl: "skuitems",
       queryApi: SKUMaster,
-      fieldLabel: ["Code", "Name"],
+      fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUp
     },
     {
@@ -269,9 +307,12 @@ const CreateDocPIPhysicalSTGT = props => {
       type: "inputNum",
       TextInputnum: "%"
     },
-    { Header: "Unit", accessor: "unitType", type: "unitType" }
+    {
+      Header: "Unit",
+      accessor: "unitType",
+      type: "text"
+    }
   ];
-
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
     { Header: "SI", accessor: "orderNo", width: 100 },
