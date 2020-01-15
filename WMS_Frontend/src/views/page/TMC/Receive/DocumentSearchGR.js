@@ -6,12 +6,16 @@ import {
 import AmDocumentSearch from "../../../pageComponent/AmDocumentSearch";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import DocView from "../../../pageComponent/DocumentView";
-import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import AmDocumentStatus from "../../../../components/AmDocumentStatus";
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import IconButton from "@material-ui/core/IconButton";
+import ErrorIcon from "@material-ui/icons/Error";
+import queryString from "query-string";
+import AmPopup from "../../../../components/AmPopup";
 const Axios = new apicall();
 
 //======================================================================
-const DocumentSearchGISTA = props => {
+const DocumentSearchGR = props => {
   useEffect(() => {
     getData();
   }, []);
@@ -19,6 +23,13 @@ const DocumentSearchGISTA = props => {
   const [dataMovementType, setDataMovementType] = useState();
   const [dataCustomer, setDataCustomer] = useState();
   const [dataWarehouse, setDataWarehouse] = useState();
+  const [previewError, setPreviewError] = useState(false);
+  const [previewWarning, setPreviewWarning] = useState(false);
+  const [previewInfo, setPreviewInfo] = useState(false);
+  const [textError, setTextError] = useState("");
+  const [textWarning, setTextWarning] = useState("");
+  const [typePopup, setTypePopup] = useState("");
+
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "MovementType",
@@ -41,6 +52,18 @@ const DocumentSearchGISTA = props => {
     l: 100,
     all: ""
   };
+  const AreaLocationMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaLocationMaster",
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v": 16}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Warehouse",
@@ -52,7 +75,17 @@ const DocumentSearchGISTA = props => {
     l: 100,
     all: ""
   };
-
+  const AreaMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaMaster",
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 16}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const getData = () => {
     Axios.get(createQueryString(MovementTypeQuery)).then(res => {
       setDataMovementType(res.data.datas);
@@ -65,7 +98,11 @@ const DocumentSearchGISTA = props => {
     });
   };
 
-  const getStatusCode = statusCode => {
+  const getStatusCode = (statusCode, dataRow) => {
+    var qryStrOptions = queryString.parse(dataRow.Options);
+    //console.log(qryStrOptions);
+    //console.log(qryStrOptions._error);
+
     const DocumentEventStatus = [
       { status: "NEW", code: 10 },
       { status: "WORKING", code: 11 },
@@ -75,11 +112,61 @@ const DocumentSearchGISTA = props => {
       { status: "REJECTING", code: 23 },
       { status: "REJECTED", code: 24 },
       { status: "CLOSING", code: 31 },
-      { status: "CLOSED", code: 32 },
-      { status: "WAIT_FOR_WORKED", code: 812 }
+      { status: "CLOSED", code: 32 }
     ];
     let status = DocumentEventStatus.find(x => x.code === statusCode).code;
-    return <AmDocumentStatus key={status} statusCode={status} />;
+
+    var Statusdisplay = (
+      <div style={{ textAlign: "center" }}>
+        <AmDocumentStatus key={status} statusCode={status} />{" "}
+        {qryStrOptions._error !== undefined ||
+        qryStrOptions._info !== undefined ||
+        qryStrOptions._warning !== undefined ? (
+          <IconButton
+            aria-label="error"
+            size="small"
+            aria-label="info"
+            style={{ marginLeft: "3px" }}
+          >
+            <ErrorIcon
+              fontSize="small"
+              style={{ color: "#E53935" }}
+              onClick={() =>
+                handleClickOpenDialog(
+                  qryStrOptions._error,
+                  qryStrOptions._info,
+                  qryStrOptions._warning,
+                  typePopup
+                )
+              }
+            />
+          </IconButton>
+        ) : null}
+      </div>
+    );
+    return Statusdisplay;
+  };
+  const handleClickOpenDialog = (
+    datatextError,
+    datatextinfo,
+    datatextwarning,
+    datatypePopup
+  ) => {
+    if (datatextinfo !== "") {
+      setTextError(datatextinfo);
+      setTypePopup("info");
+      setPreviewInfo(true);
+    } else if (datatextwarning !== "") {
+      setTextWarning(datatextwarning);
+      setTypePopup("warning");
+      setPreviewWarning(true);
+    } else if (datatextError !== "") {
+      setTextError(datatextError);
+      setTypePopup("error");
+      setPreviewError(true);
+    }
+
+    //setPreview(true);
   };
 
   const DocumentEventStatusSearch = [
@@ -88,17 +175,16 @@ const DocumentSearchGISTA = props => {
     { label: "WORKED", value: 12 },
     { label: "REJECTED", value: 24 },
     { label: "CLOSING", value: 31 },
-    { label: "CLOSED", value: 32 },
-    { label: "WAIT_FOR_WORKED", value: 812 }
+    { label: "CLOSED", value: 32 }
   ];
 
   const iniCols = [
     {
       Header: "",
       accessor: "EventStatus",
-      width: 50,
+      width: 70,
       fixed: "left",
-      Cell: dataRow => getStatusCode(dataRow.value)
+      Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
     },
     {
       Header: "Doc No.",
@@ -113,6 +199,11 @@ const DocumentSearchGISTA = props => {
       width: 200
     },
     {
+      Header: "Lot",
+      accessor: "Lot",
+      width: 150
+    },
+    {
       Header: "Sou.Warehouse",
       accessor: "SouWarehouseName",
       width: 150
@@ -122,6 +213,12 @@ const DocumentSearchGISTA = props => {
       accessor: "DesWarehouseName",
       width: 150
     },
+    // {
+    //   Header: "Sou.Customer",
+    //   accessor: "SouCustomerName",
+    //   width: 150
+    // },
+
     {
       Header: "Remark",
       accessor: "Remark",
@@ -154,6 +251,7 @@ const DocumentSearchGISTA = props => {
   ];
 
   const search = [
+    { label: "Lot", field: "Lot", searchType: "input" },
     {
       label: "Sou.Warehouse",
       field: "SouWarehouseName",
@@ -170,10 +268,18 @@ const DocumentSearchGISTA = props => {
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
+    // {
+    //   label: "Sou.Customer",
+    //   field: "SouCustomerName",
+    //   searchType: "dropdown",
+    //   dropdownData: dataCustomer,
+    //   fieldDataKey: "Name",
+    //   fieldLabel: "Name"
+    // },
 
     { label: "Remark", field: "Remark", searchType: "input" },
     {
-      label: "Doc.Date From",
+      label: "Doc.Date From ",
       field: "DocumentDate",
       searchType: "datepicker",
       typedate: "date",
@@ -207,14 +313,48 @@ const DocumentSearchGISTA = props => {
       fieldLabel: "Name"
     }
   ];
-
+  const dataReject = [
+    // {
+    //   field: "souAreaCode",
+    //   type: "dropdow",
+    //   typeDropdow: "search",
+    //   name: "Sou. Area",
+    //   dataDropDow: AreaMasterQuery,
+    //   placeholder: "Sou. Area",
+    //   fieldLabel: ["Code", "Name"]
+    //   //required: true
+    //   //disabled: true
+    // },
+    {
+      field: "desAreaCode",
+      type: "dropdow",
+      typeDropdow: "search",
+      name: "Dest. Area",
+      dataDropDow: AreaMasterQuery,
+      placeholder: "Dest. Area",
+      fieldLabel: ["Code", "Name"]
+      //required: true,
+      //disabled: true
+    },
+    {
+      field: "desAreaLocationCode",
+      type: "dropdow",
+      typeDropdow: "search",
+      name: "Dest. AreaLocation",
+      dataDropDow: AreaLocationMasterQuery,
+      placeholder: "Des AreaLocation",
+      fieldLabel: ["Code", "Name"]
+      //required: true,
+      //disabled: true
+    }
+  ];
   const getRedirect = data => {
     //console.log(data.ID)
     return (
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
         {data.Code}
         <AmRediRectInfo
-          api={"/issue/detail?docID=" + data.ID}
+          api={"/receive/detail?docID=" + data.ID}
           history={props.history}
           docID={""}
         >
@@ -226,14 +366,38 @@ const DocumentSearchGISTA = props => {
 
   return (
     <div>
+      <AmPopup
+        content={textError}
+        typePopup={"error"}
+        open={previewError}
+        closeState={e => setPreviewError(e)}
+      />
+      <AmPopup
+        content={textError}
+        typePopup={"info"}
+        open={previewInfo}
+        closeState={e => setPreviewInfo(e)}
+      />
+      <AmPopup
+        content={textWarning}
+        typePopup={"warning"}
+        open={previewWarning}
+        closeState={e => setPreviewWarning(e)}
+      />
       <AmDocumentSearch
         columns={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
-        docTypeCode="1002"
+        docTypeCode="1001"
+        buttonClose={true}
+        buttonReject={true}
+        dataReject={dataReject}
+        apiReject={"/v2/RejectGRDocAPI"}
+        //apiWorking={""}
+        apiClose={"/v2/CloseDocAPI"}
       />
     </div>
   );
 };
 
-export default DocumentSearchGISTA;
+export default DocumentSearchGR;

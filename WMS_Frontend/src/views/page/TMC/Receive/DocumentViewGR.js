@@ -2,24 +2,24 @@ import DocView from "../../../pageComponent/DocumentView";
 import React, { useState, useEffect, useContext } from "react";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
-import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import queryString from "query-string";
 
-const DocumentViewGI = props => {
+const DocumentViewGR = props => {
   const TextHeader = [
     [
       { label: "Document No", values: "Code" },
-      { label: "Document Date", values: "documentDate", type: "date" }
+      { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
       { label: "Movement Type", values: "MovementName" },
-      { label: "Action Time", values: "actionTime", type: "dateTime" }
+      { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
       { label: "Source Warehouse", values: "SouWarehouseName" },
-      { label: "Destination Customer", values: "DesCustomerName" }
+      { label: "Destination Warehouse", values: "DesWarehouseName" }
     ],
     [
       {
@@ -32,10 +32,9 @@ const DocumentViewGI = props => {
   ];
 
   const columns = [
-    { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
     { accessor: "SKUMaster_Name", Header: "SKU Name" },
-    { width: 150, accessor: "Lot", Header: "Lot" },
+    { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -45,9 +44,8 @@ const DocumentViewGI = props => {
       width: 40,
       accessor: "status",
       Header: "Task",
-      Cell: e => getStatusGI(e.original)
+      Cell: e => getStatusGR(e.original)
     },
-
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
@@ -57,23 +55,18 @@ const DocumentViewGI = props => {
   ];
 
   const columnsDetailDES = [
-    {
-      width: 40,
-      accessor: "status",
-      Header: "Task",
-      Cell: e => getStatusGI(e.original)
-    },
-    { width: 100, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
+    //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
+    { width: 100, accessor: "code ", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "Reorder" },
+    { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
-  const optionDocItems = [{ optionName: "palletcode" }];
+  const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
-  const getStatusGI = value => {
+  const getStatusGR = value => {
     //console.log(value)
     if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
     else if (value.status === 0)
@@ -99,15 +92,15 @@ const DocumentViewGI = props => {
         columnsDetailDES={columnsDetailDES}
         columns={columns}
         typeDoc={"received"}
-        typeDocNo={1002}
+        typeDocNo={1001}
         docID={getDocID()}
         header={TextHeader}
         buttonBack={true}
-        linkBack={"/issue/search"}
+        linkBack={"/receive/search"}
         history={props.history}
       />
     </div>
   );
 };
 
-export default DocumentViewGI;
+export default DocumentViewGR;

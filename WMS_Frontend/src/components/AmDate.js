@@ -76,7 +76,7 @@ const AmDate = props => {
   return (
     <form noValidate>
       <TextField
-        style={{ backgroundColor: "white" }}
+        style={{ backgroundColor: "white", width: props.width }}
         id="date"
         type={type}
         disabled={disabled ? disabled : false}

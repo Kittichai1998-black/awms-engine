@@ -5,14 +5,13 @@ import {
 } from "../../../../components/function/CoreFunction";
 import AmDocumentSearch from "../../../pageComponent/AmDocumentSearch";
 import AmIconStatus from "../../../../components/AmIconStatus";
-import DocView from "../../../../views/pageComponent/DocumentView";
-import AmDocumentStatus from "../../../../components/AmDocumentStatus";
+import DocView from "../../../pageComponent/DocumentView";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
-
+import AmDocumentStatus from "../../../../components/AmDocumentStatus";
 const Axios = new apicall();
 
 //======================================================================
-const DocumentSearchSTA = props => {
+const DocumentSearchGI = props => {
   useEffect(() => {
     getData();
   }, []);
@@ -81,7 +80,6 @@ const DocumentSearchSTA = props => {
     ];
     let status = DocumentEventStatus.find(x => x.code === statusCode).code;
     return <AmDocumentStatus key={status} statusCode={status} />;
-    //return <AmIconStatus styleType={status} style={{width:"120px"}}>{status}</AmIconStatus>
   };
 
   const DocumentEventStatusSearch = [
@@ -120,11 +118,10 @@ const DocumentSearchSTA = props => {
       width: 150
     },
     {
-      Header: "Des.Warehouse",
-      accessor: "DesWarehouseName",
+      Header: "Des.Customer",
+      accessor: "DesCusName",
       width: 150
     },
-
     {
       Header: "Remark",
       accessor: "Remark",
@@ -166,17 +163,17 @@ const DocumentSearchSTA = props => {
       fieldLabel: "Name"
     },
     {
-      label: "Des.Warehouse",
-      field: "DesWarehouseName",
+      label: "Des.Cusutomer",
+      field: "DesCustomerName",
       searchType: "dropdown",
-      dropdownData: dataWarehouse,
+      dropdownData: dataCustomer,
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
 
     { label: "Remark", field: "Remark", searchType: "input" },
     {
-      label: "Doc.Date From ",
+      label: "Doc.Date From",
       field: "DocumentDate",
       searchType: "datepicker",
       typedate: "date",
@@ -217,7 +214,7 @@ const DocumentSearchSTA = props => {
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
         {data.Code}
         <AmRediRectInfo
-          api={"/receive/detail?docID=" + data.ID}
+          api={"/issue/detail?docID=" + data.ID}
           history={props.history}
           docID={""}
         >
@@ -233,11 +230,15 @@ const DocumentSearchSTA = props => {
         columns={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
-        docTypeCode="1001"
-        buttonWorking={true}
+        docTypeCode="1002"
+        buttonClose={true}
+        buttonReject={true}
+        apiClose={"/v2/CloseDocAPI"}
+        apiReject={"/v2/RejectedGIDocAPI"}
+        //buttonWorking={true}
       />
     </div>
   );
 };
 
-export default DocumentSearchSTA;
+export default DocumentSearchGI;

@@ -249,40 +249,89 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }, this.BuVO);
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
-            rstos.FindAll(rsto =>
+            //priority queue by doc and dicitem @Anon	
+            var groupRstos = rstos.FindAll(rsto =>
             {
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
                 return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
             }
-            ).ForEach(rsto =>
+            ).GroupBy(x => x.docItems.Select(y => y.docID)).Select(x => new { rstos = x.ToList() }).ToList();
+
+            groupRstos.ForEach(rstoByDoc =>
             {
-                wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
+                var docItemGroup = rstoByDoc.rstos.GroupBy(rsto => rsto.docItems.Select(y => y.docItemID)).Select(rsto => new { rstos = rstos.ToList() }).ToList();
+                docItemGroup.ForEach(rstoByDocID =>
                 {
-                    priority = rsto.priority,
-                    queueID = rsto.workQueueID.Value,
-                    desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
-                    desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
-                    desLocationCode = rsto.desLocationID.HasValue ?
+                    var getWorkQueue = rstoByDocID.rstos.OrderBy(x => x.workQueueID.Value).First();
+                    var getDocItemID = getWorkQueue.docItems.First();
+                    rstoByDocID.rstos.ForEach(rsto =>
+                    {
+                        wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
+                        {
+                            priority = rsto.priority,
+                            queueID = rsto.workQueueID.Value,
+                            desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
+                            desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
+                            desLocationCode = rsto.desLocationID.HasValue ?
                                            ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                            null,
-                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
-                    {
-                        eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
-                        baseCode = rsto.rstoCode,
-                        packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
-                        {
-                            batch = x.pstoBatch,
-                            lot = x.pstoLot,
-                            skuCode = x.pstoCode,
-                            skuQty = x.pickBaseQty
-                        }).ToList()
-                    }
+                            pickSeqGroup = 0,
+                            pickSeqIndex = getDocItemID.docItemID,
 
+                            baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
+                            {
+                                eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
+                                baseCode = rsto.rstoCode,
+                                packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
+                                {
+                                    batch = x.pstoBatch,
+                                    lot = x.pstoLot,
+                                    skuCode = x.pstoCode,
+                                    skuQty = x.pickBaseQty
+                                }).ToList()
+                            }
+
+                        });
+                    });
                 });
             });
 
+            //rstos.FindAll(rsto =>	
+            //{	
+            //    var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);	
+            //    var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);	
+            //    return areaType.groupType == AreaMasterGroupType.STORAGE;	
+            //}	
+            //).ForEach(rsto =>	
+            //{	
+            //    wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()	
+            //    {	
+            //        priority = rsto.priority,	
+            //        queueID = rsto.workQueueID.Value,	
+            //        desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),	
+            //        desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),	
+            //        desLocationCode = rsto.desLocationID.HasValue ?	
+            //                               ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :	
+            //                               null,	
+            //        pickSeqGroup=0,	
+            //        pickSeqIndex=0,	
 
+            //        baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()	
+            //        {	
+            //            eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,	
+            //            baseCode = rsto.rstoCode,	
+            //            packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()	
+            //            {	
+            //                batch = x.pstoBatch,	
+            //                lot = x.pstoLot,	
+            //                skuCode = x.pstoCode,	
+            //                skuQty = x.pickBaseQty	
+            //            }).ToList()	
+            //        }	
+
+            //    });	
+            //});
             var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
             {
