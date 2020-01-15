@@ -199,11 +199,6 @@ const DocumentSearchGR = props => {
       width: 200
     },
     {
-      Header: "Lot",
-      accessor: "Lot",
-      width: 150
-    },
-    {
       Header: "Sou.Warehouse",
       accessor: "SouWarehouseName",
       width: 150
@@ -251,7 +246,6 @@ const DocumentSearchGR = props => {
   ];
 
   const search = [
-    { label: "Lot", field: "Lot", searchType: "input" },
     {
       label: "Sou.Warehouse",
       field: "SouWarehouseName",
@@ -348,6 +342,7 @@ const DocumentSearchGR = props => {
       //disabled: true
     }
   ];
+  const optionDocItems = [{ optionName: "palletcode" }];
   const getRedirect = data => {
     //console.log(data.ID)
     return (

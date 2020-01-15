@@ -8,10 +8,11 @@ import AmIconStatus from "../../../../components/AmIconStatus";
 import DocView from "../../../pageComponent/DocumentView";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import AmDocumentStatus from "../../../../components/AmDocumentStatus";
+
 const Axios = new apicall();
 
 //======================================================================
-const DocumentSearchGI = props => {
+const DocumentSearchPI = props => {
   useEffect(() => {
     getData();
   }, []);
@@ -112,7 +113,6 @@ const DocumentSearchGI = props => {
       accessor: "MovementName",
       width: 200
     },
-
     {
       Header: "Sou.Warehouse",
       accessor: "SouWarehouseName",
@@ -120,9 +120,10 @@ const DocumentSearchGI = props => {
     },
     {
       Header: "Des.Warehouse",
-      accessor: "SouWarehouseName",
+      accessor: "DesWarehouseName",
       width: 150
     },
+
     {
       Header: "Remark",
       accessor: "Remark",
@@ -165,7 +166,7 @@ const DocumentSearchGI = props => {
     },
     {
       label: "Des.Warehouse",
-      field: "SouWarehouseName",
+      field: "DesWarehouseName",
       searchType: "dropdown",
       dropdownData: dataWarehouse,
       fieldDataKey: "Name",
@@ -215,7 +216,7 @@ const DocumentSearchGI = props => {
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
         {data.Code}
         <AmRediRectInfo
-          api={"/issue/detail?docID=" + data.ID}
+          api={"/counting/detail?docID=" + data.ID}
           history={props.history}
           docID={""}
         >
@@ -231,15 +232,14 @@ const DocumentSearchGI = props => {
         columns={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
-        docTypeCode="1002"
-        buttonClose={true}
+        docTypeCode="2004"
         buttonReject={true}
+        apiReject={"/v2/RejectedADDocAPI"}
+        buttonClose={true}
         apiClose={"/v2/CloseDocAPI"}
-        apiReject={"/v2/RejectedGIDocAPI"}
-        //buttonWorking={true}
       />
     </div>
   );
 };
 
-export default DocumentSearchGI;
+export default DocumentSearchPI;

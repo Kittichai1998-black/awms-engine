@@ -42,7 +42,7 @@ export default props => {
       width: 95,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
-    { Header: "Reorder", accessor: "SKUItems", width: 350 },
+    { Header: "SKU Item", accessor: "SKUItems", width: 350 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -52,8 +52,8 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "SI",
-      accessor: "orderNo",
+      Header: "Lot",
+      accessor: "lot",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -69,10 +69,10 @@ export default props => {
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
       { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "LocationCode", placeholder: "Location" },
+      { accessor: "LocationCode", placeholder: "Location" }
       // { accessor: "remark", placeholder: "Remark" }
     ]
-  }
+  };
 
   //get api set dataWarehouse
   useEffect(() => {
@@ -143,8 +143,6 @@ export default props => {
     }
   }, [dataHeader]);
 
-
-
   // const UnitType = {
   //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
   //     t: "UnitType",
@@ -161,7 +159,8 @@ export default props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+    f:
+      "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -203,7 +202,7 @@ export default props => {
       columsddl: columsFindpopUpPALC
     },
     {
-      Header: "Reorder",
+      Header: "SKU Item",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -212,7 +211,7 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
+    { Header: "Lot", accessor: "lot", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
@@ -224,8 +223,8 @@ export default props => {
   const columns = [
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "SI", accessor: "orderNo", width: 100 },
+    { Header: "SKU Item", accessor: "SKUItems" },
+    { Header: "Lot", accessor: "lot", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
