@@ -301,6 +301,7 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUp
     },
+    { Header: "SI", accessor: "orderNo", type: "input" },
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
