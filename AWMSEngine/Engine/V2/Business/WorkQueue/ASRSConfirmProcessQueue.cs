@@ -255,16 +255,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
                 return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
-            }
-            ).GroupBy(x => x.docItems.Select(y => y.docID)).Select(x => new { rstos = x.ToList() }).ToList();
+            }).GroupBy(x => {
+                var docID = x.docItems.Select(y => y.docID).First();
+                return docID;
+            }).Select(x => new { docID = x.Key, rstos = x.ToList() }).ToList();
 
             groupRstos.ForEach(rstoByDoc =>
             {
-                var docItemGroup = rstoByDoc.rstos.GroupBy(rsto => rsto.docItems.Select(y => y.docItemID)).Select(rsto => new { rstos = rstos.ToList() }).ToList();
+                var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
+                int docSeq = 1;
                 docItemGroup.ForEach(rstoByDocID =>
                 {
-                    var getWorkQueue = rstoByDocID.rstos.OrderBy(x => x.workQueueID.Value).First();
-                    var getDocItemID = getWorkQueue.docItems.First();
+                    int seq = 1;
                     rstoByDocID.rstos.ForEach(rsto =>
                     {
                         wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
@@ -276,8 +278,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             desLocationCode = rsto.desLocationID.HasValue ?
                                            ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                            null,
-                            pickSeqGroup = 0,
-                            pickSeqIndex = getDocItemID.docItemID,
+                            pickSeqGroup =  DateTime.Now.ToString("ddMMyyyyHHmmssss") + "_" + docSeq.ToString(),
+                            pickSeqIndex = seq,
 
                             baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                             {
@@ -293,7 +295,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             }
 
                         });
+                        seq++;
                     });
+                    docSeq++;
                 });
             });
 
