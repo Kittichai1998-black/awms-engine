@@ -504,7 +504,8 @@ const AmStorageObjectMulti = props => {
                 </label>
                 <AmDatePicker
                   id={row.field}
-                  style={{ width: "200px" }}
+                  width="200px"
+                  //style={{ width: "200px" }}
                   placeholder={row.placeholder}
                   TypeDate={row.typedate}
                   onChange={value =>

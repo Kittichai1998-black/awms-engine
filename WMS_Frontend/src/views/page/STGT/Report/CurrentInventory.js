@@ -144,9 +144,11 @@ const CurrentInventory = (props) => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'Name', sortable: false },
-        { Header: 'Order No.', accessor: 'OrderNo', width: 70, sortable: false },
+        { Header: 'SI.', accessor: 'OrderNo', width: 70, sortable: false },
+        { Header: 'Reorder', accessor: 'Code', width: 120, sortable: false },
+        { Header: 'Brand', accessor: 'Name', width: 200, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
+        { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
@@ -154,11 +156,11 @@ const CurrentInventory = (props) => {
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
         {
-            Header: 'Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Header: 'Qty', accessor: 'qty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
-        { Header: 'Unit', accessor: 'baseUnitType', width: 70, sortable: false },
+        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
         {
             Header: 'Receiving', accessor: 'baseQty_evt11', width: 70, sortable: false,
             Footer: true,
@@ -250,8 +252,6 @@ const CurrentInventory = (props) => {
                 }
             })
         }
-
-
     ];
 
     const comma = (value) => {

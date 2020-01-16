@@ -214,23 +214,25 @@ const DailySTOIssue = (props) => {
     }
     const columns = [
         { Header: 'Date', accessor: 'createTime', type: 'datetime', width: 130, sortable: false },
-        { Header: 'Pallet', accessor: 'bstoCode', width: 100, sortable: false },
+        { Header: 'Pallet Code', accessor: 'bstoCode', width: 100, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 90, sortable: false },
-        {
-            Header: 'Qty', accessor: 'qty', width: 85, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString())
-        },
-        { Header: 'Unit', accessor: 'unitType', width: 90, sortable: false },
+        { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
+        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
+        { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 90, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
-        { Header: 'Base Unit', accessor: 'baseUnitType', width: 90, sortable: false },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 80, sortable: false },
+        {
+            Header: 'Qty', accessor: 'qty', width: 90, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString())
+        },
+        { Header: 'Unit', accessor: 'unitType', width: 80, sortable: false },
     ];
     const comma = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
