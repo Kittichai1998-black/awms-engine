@@ -228,6 +228,9 @@ const AmProcessQueue = props => {
     const [defaulDDLAreaEmp, setdefaulDDLAreaEmp] = useState();
     const [defaulDDLAreaWip, setdefaulDDLAreaWip] = useState();
 
+    const [checkConditions, setcheckConditions] = useState([])
+    const [statusItem, setstatusItem] = useState([])
+
     //======== AAI============
     const [ref1, setref1] = useState();
     const [refID, setrefID] = useState();
@@ -764,18 +767,59 @@ const AmProcessQueue = props => {
         dataSource[indx][0]["Reject"] = true;
     };
     const onChangCheckboxStatus = (e, indx) => {
-        if (e.checked === true) {
-            let dataCheckStatus = datacheckboxStatus;
-            datacheckboxStatus[e.value] = e.checked;
-            dataSource[indx][0][e.value] = e.checked;
-            setdatacheckboxStatus(dataCheckStatus);
-        } else {
-            let dataCheckStatus = datacheckboxStatus;
-            datacheckboxStatus[e.value] = e.defaultChecked;
-            dataSource[indx][0][e.value] = e.defaultChecked;
-            setdatacheckboxStatus(dataCheckStatus);
+        let getStatusList = [...statusItem];
+        let checkStatusList = getStatusList.find(x => x.idx === indx);
+        if (checkStatusList === null || checkStatusList === undefined) {
+            let checkData = { idx: indx }
+            if (e.value !== undefined) {
+                checkData[e.value] = e.checked === undefined ? e.defaultChecked : e.checked
 
+                let dataCheckStatus = datacheckboxStatus;
+                datacheckboxStatus[e.value] = e.checked === undefined ? e.defaultChecked : e.checked;;
+                setdatacheckboxStatus(dataCheckStatus);
+
+                dataSource[indx][0][e.value] = e.checked === undefined ? e.defaultChecked : e.checked;
+                DataDocumentItem[indx][e.value] = e.checked === undefined ? e.defaultChecked : e.checked;
+            }
+            getStatusList.push(checkData)
+        } else {
+            if (checkStatusList[e.value] === undefined) {
+                checkStatusList[e.value] = e.checked === undefined ? e.defaultChecked : e.checked
+
+                let dataCheckStatus = datacheckboxStatus;
+                datacheckboxStatus[e.value] = e.checked === undefined ? e.defaultChecked : e.checked;;
+                setdatacheckboxStatus(dataCheckStatus);
+
+                dataSource[indx][0][e.value] = e.checked === undefined ? e.defaultChecked : e.checked;
+                DataDocumentItem[indx][e.value] = e.checked === undefined ? e.defaultChecked : e.checked;
+            }
+            else {
+                if (e.checked !== undefined) {
+                    checkStatusList[e.value] = e.checked
+
+                    let dataCheckStatus = datacheckboxStatus;
+                    datacheckboxStatus[e.value] = e.checked;
+                    setdatacheckboxStatus(dataCheckStatus);
+
+                    dataSource[indx][0][e.value] = e.checked;
+                    DataDocumentItem[indx][e.value] = e.checked;
+                }
+            }
         }
+        setDataDocumentItem([...DataDocumentItem])
+        setstatusItem(getStatusList)
+        //if (e.checked === true) {
+        //    let dataCheckStatus = datacheckboxStatus;
+        //    datacheckboxStatus[e.value] = e.checked;
+        //    dataSource[indx][0][e.value] = e.checked;
+        //    setdatacheckboxStatus(dataCheckStatus);
+        //} else {
+        //    let dataCheckStatus = datacheckboxStatus;
+        //    datacheckboxStatus[e.value] = e.defaultChecked;
+        //    dataSource[indx][0][e.value] = e.defaultChecked;
+        //    setdatacheckboxStatus(dataCheckStatus);
+
+        //}
     };
     const onChangeRandom = (e, indx, random) => {
         if (indx === null) indx = 0;
@@ -1603,10 +1647,10 @@ const AmProcessQueue = props => {
                             baseCode: y.palletcode ? y.palletcode : null,
                             skuCode: y.Code ? y.Code : null,
                             priority: y.PriorityDoc ? y.PriorityDoc : 2,
-                            useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
-                            useExpireDate: y.ExpireDate ? y.ExpireDate : false,
-                            useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                            useFullPick:  y.FullPallet ? y.FullPallet : false,
+                            useShelfLifeDate: y.ShelfLifeDate ? true: false,
+                            useExpireDate: y.ExpireDate ? true : false,
+                            useIncubateDate: y.IncubateDate ? true : false,
+                            useFullPick:  y.FullPallet ? true : false,
                             baseQty: y.BaseqtyMax
                                 ? y.BaseqtyMax
                                 : y.BaseQuantity
@@ -1616,6 +1660,7 @@ const AmProcessQueue = props => {
                             eventStatuses: eventStatuses,
                             conditions: conditions,
                             orderBys: orderBys
+                          
                         };
                         processQueuesz = processQueues
                     }
@@ -1628,6 +1673,8 @@ const AmProcessQueue = props => {
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null;
         dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
+        dataConfirmQ["isSetQtyAfterDoneWQ"] = props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true; 
+        //isSetQtyAfterDoneWQ: props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true  
         if (dataConfirmQ !== undefined) {
             Axios1.post(window.apipath + "/v2/process_wq", dataConfirmQ).then(res => {
                 if (res.data._result.status === 1) {
@@ -2254,15 +2301,19 @@ const AmProcessQueue = props => {
                                         }
                                      
                                         if (docDesCustomer !== null && props.StatusfromDescustomer === true) {
+                                            if (props.FullPallet === true)
                                             onChangCheckboxConsFull(null, null, idx);
+
                                             onChangCheckboxConsRecieve(null, null, idx);
 
                                         }
 
                                 
                                         if (docDesWarehouse !== null && props.StatusfromDeswarehouse === true) {
+                                            if (props.FullPallet === true)
                                             onChangCheckboxConsFull(null, null, idx);
-                                              onChangCheckboxConsRecieve(null, null, idx);
+
+                                            onChangCheckboxConsRecieve(null, null, idx);
                                               onChangCheckboxConsQC(null, null, idx);
                                               onChangCheckboxConsReturn(null, null, idx);
                                               onChangCheckboxConsPartail(null, null, idx);
@@ -2628,9 +2679,10 @@ const AmProcessQueue = props => {
                                                                                         <FormInline>
                                                                                             <AmCheckBox
                                                                                                 value="Receive"
-                                                                                                label="Receive"
-                                                                                                defaultChecked={true}
-                                                                                                //checked={true}
+                                                                                                    label="Receive"
+
+                                                                                                    defaultChecked={x.Des_Customer_ID ? true : dataSource[idx][0]["Receive"]}
+                                                                                                    checked={dataSource[idx] !== undefined ? dataSource[idx][0]["Receive"] : false}
                                                                                                 onChange={(e, v) =>
                                                                                                     onChangCheckboxStatus(e, idx)
                                                                                                 }
@@ -2643,8 +2695,8 @@ const AmProcessQueue = props => {
                                                                                                 <AmCheckBox
                                                                                                     value="Return"
                                                                                                     label="Returns"
-                                                                                                    defaultChecked={false}
-                                                                                                    //checked={true}
+                                                                                                    defaultChecked={x.Des_Customer_ID ? false : dataSource[idx][0]["Returns"] ? dataSource[idx][0]["Returns"] : null}
+                                                                                                    checked={dataSource[idx] !== undefined ? dataSource[idx][0]["Returns"] : false}
                                                                                                     onChange={(e, v) =>
                                                                                                         onChangCheckboxStatus(e, idx)
                                                                                                     }
@@ -2654,8 +2706,8 @@ const AmProcessQueue = props => {
                                                                                                 <AmCheckBox
                                                                                                     value="Partial"
                                                                                                     label="Partial"
-                                                                                                    defaultChecked={false}
-                                                                                                    //checked={true}
+                                                                                                    defaultChecked={x.Des_Customer_ID ? true : dataSource[idx][0]["Partial"] ? dataSource[idx][0]["Partial"] : null}
+                                                                                                    checked={dataSource[idx] !== undefined ? dataSource[idx][0]["Partial"] : false}
                                                                                                     onChange={(e, v) =>
                                                                                                         onChangCheckboxStatus(e, idx)
                                                                                                     }
