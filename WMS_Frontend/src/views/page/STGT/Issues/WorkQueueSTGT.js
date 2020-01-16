@@ -131,9 +131,9 @@ const WorkQueueSTGT = (props) => {
             status={true}
             random={false}
             dataSortShow={true}
-            FullPallet={true}
-            defaultFullPallete={true}
-            disibleFullPallet={true}
+            FullPallet={false}
+            //defaultFullPallete={false}
+            //disibleFullPallet={false}
             StatusfromDeswarehouse={true}
             StatusfromDescustomer={true}
             apidetail={"/issue/detail?docID="}
