@@ -32,7 +32,7 @@ namespace AWMSModel.Criteria
             public long id;//รหัสพาเลท
             public string baseCode;//รหัสพาเลท
             public List<PackInfo> packInfos;//ข้อมูลสินค้าในพาเลท
-            public class PackInfo 
+            public class PackInfo
             {
                 public string code;
                 public decimal qty;
@@ -50,5 +50,6 @@ namespace AWMSModel.Criteria
                 //public DateTime? maxExpireDate;//วันหมดอายุ สูงสุดจากทั้งหมดใยพาเลท
             }
         }
+        public List<long> docIDs;
     }
 }
