@@ -1660,6 +1660,7 @@ const AmProcessQueue = props => {
                             eventStatuses: eventStatuses,
                             conditions: conditions,
                             orderBys: orderBys
+                          
                         };
                         processQueuesz = processQueues
                     }
@@ -1672,6 +1673,8 @@ const AmProcessQueue = props => {
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null;
         dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
+        dataConfirmQ["isSetQtyAfterDoneWQ"] = props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true; 
+        //isSetQtyAfterDoneWQ: props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true  
         if (dataConfirmQ !== undefined) {
             Axios1.post(window.apipath + "/v2/process_wq", dataConfirmQ).then(res => {
                 if (res.data._result.status === 1) {

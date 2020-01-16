@@ -134,6 +134,7 @@ const WorkQueueSTGT = (props) => {
             FullPallet={false}
             //defaultFullPallete={false}
             //disibleFullPallet={false}
+            QtyAfterDoneWQ={true}
             StatusfromDeswarehouse={true}
             StatusfromDescustomer={true}
             apidetail={"/issue/detail?docID="}
