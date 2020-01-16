@@ -9,7 +9,7 @@ import queryString from "query-string";
 // import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
-const CreateDocPIPhysicalSTGT = props => {
+const CreateDocPI = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
   const [dataMovementType, setDataMovementType] = useState("");
   const [dataTest, setDataTest] = useState([]);
@@ -100,23 +100,14 @@ const CreateDocPIPhysicalSTGT = props => {
       width: 110,
       style: { textAlign: "center" }
     },
+
+    { Header: "SKU Item", accessor: "SKUItems", width: 400 },
+
     {
-      Header: "SI",
-      accessor: "orderNo",
+      Header: "Lot",
+      accessor: "lot",
       width: 70,
       style: { textAlign: "center" }
-    },
-    { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
-    // {
-    //   Header: "Size",
-    //   accessor: "Size",
-    //   width: 50
-    // },
-    {
-      Header: "Carton No",
-      accessor: "Carton",
-      width: 100,
-      Cell: e => getCarton(e.original)
     },
     {
       Header: "Location",
@@ -163,11 +154,12 @@ const CreateDocPIPhysicalSTGT = props => {
     columns: columsFindpopUpPALC,
     search: [
       { accessor: "palletcode", placeholder: "Pallet Code" },
+
+      { accessor: "Code", placeholder: "SKU Item" },
       {
-        accessor: "orderNo",
-        placeholder: "SI"
+        accessor: "lot",
+        placeholder: "Lot"
       },
-      { accessor: "Code", placeholder: "Reorder" },
       //{ accessor: "Size", placeholder: "Size" },
       { accessor: "LocationCode", placeholder: "Location" }
       //{ accessor: "remark", placeholder: "Remark" }
@@ -223,54 +215,15 @@ const CreateDocPIPhysicalSTGT = props => {
 
   const columsFindpopUp = [
     {
-      Header: "Reorder",
+      Header: "Code",
       accessor: "Code",
       fixed: "left",
       width: 130,
       sortable: true
     },
-    { Header: "Brand", accessor: "Name", width: 200, sortable: true }
+    { Header: "Name", accessor: "Name", width: 200, sortable: true }
   ];
 
-  // const columnEdit = [
-  //   {
-  //     Header: "Pallet Code",
-  //     accessor: "palletcode",
-  //     type: "findPopUp",
-  //     idddl: "palletcode",
-  //     queryApi: PalletCode,
-  //     fieldLabel: ["palletcode"],
-  //     columsddl: columsFindpopUpPALC
-  //   },
-  //   {
-  //     Header: "Location",
-  //     accessor: "locationcode",
-  //     type: "findPopUp",
-  //     pair: "locationcode",
-  //     idddl: "locationcode",
-  //     queryApi: AreaLocationMaster,
-  //     fieldLabel: ["Code", "Name"],
-  //     columsddl: columsFindpopUp
-  //   },
-  //   { Header: "SI", accessor: "orderNo", type: "input" },
-  //   {
-  //     Header: "Reorder/Brand",
-  //     accessor: "SKUItems",
-  //     type: "findPopUp",
-  //     pair: "skuCode",
-  //     idddl: "skuitems",
-  //     queryApi: SKUMaster,
-  //     fieldLabel: ["Code", "Name"],
-  //     columsddl: columsFindpopUp
-  //   },
-  //   {
-  //     Header: "Counting (%)",
-  //     accessor: "qtyrandom",
-  //     type: "inputNum",
-  //     TextInputnum: "%"
-  //   },
-  //   { Header: "Unit", accessor: "unitType", type: "unitType" }
-  // ];
   const columnEdit = [
     {
       Header: "Pallet Code",
@@ -292,7 +245,7 @@ const CreateDocPIPhysicalSTGT = props => {
       columsddl: columsFindpopUp
     },
     {
-      Header: "Reorder",
+      Header: "SKU Item",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -301,7 +254,7 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUp
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
+    { Header: "Lot", accessor: "lot", type: "input" },
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
@@ -316,11 +269,11 @@ const CreateDocPIPhysicalSTGT = props => {
   ];
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
-    // { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "Reorder", accessor: "skuCode" },
-    { Header: "Brand", accessor: "skuName" },
+    { Header: "SKU Item", accessor: "SKUItems" },
+    // { Header: "SKU Code", accessor: "skuCode" },
+    // { Header: "Brand", accessor: "skuName" },
+    { Header: "Lot", accessor: "lot", width: 100 },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
@@ -331,4 +284,4 @@ const CreateDocPIPhysicalSTGT = props => {
   return table;
 };
 
-export default CreateDocPIPhysicalSTGT;
+export default CreateDocPI;

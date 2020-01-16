@@ -21,6 +21,22 @@ const DocumentSearchGI = Loadable({
   loader: () => import("../../views/page/TMC/Issues/DocumentSearchGI"),
   loading: Loading
 });
+const CreateDocGI = Loadable({
+  loader: () => import("../../views/page/TMC/Issues/CreateDocGI"),
+  loading: Loading
+});
+const CreateDocPI = Loadable({
+  loader: () => import("../../views/page/TMC/Audit/CreateDocPI"),
+  loading: Loading
+});
+const DocumentSearchPI = Loadable({
+  loader: () => import("../../views/page/TMC/Audit/DocumentSearchPI"),
+  loading: Loading
+});
+const DocumentViewPI = Loadable({
+  loader: () => import("../../views/page/TMC/Audit/DocumentViewPI"),
+  loading: Loading
+});
 
 const routes = [
   {
@@ -45,6 +61,36 @@ const routes = [
     path: "/issue/search",
     name: "Search GI",
     compoment: DocumentSearchGI,
+    exact: true
+  },
+  {
+    path: "/issue/search",
+    name: "Search GI",
+    compoment: DocumentSearchGI,
+    exact: true
+  },
+  {
+    path: "/issue/create",
+    name: "base5",
+    compoment: CreateDocGI,
+    exact: true
+  },
+  {
+    path: "/counting/search",
+    name: "base5",
+    compoment: DocumentSearchPI,
+    exact: true
+  },
+  {
+    path: "/counting/detail",
+    name: "base5",
+    compoment: DocumentViewPI,
+    exact: true
+  },
+  {
+    path: "/counting/createPhysical",
+    name: "base5",
+    compoment: CreateDocPI,
     exact: true
   }
 ];

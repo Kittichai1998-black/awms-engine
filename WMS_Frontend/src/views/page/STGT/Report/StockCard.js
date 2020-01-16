@@ -193,21 +193,23 @@ const StockCard = (props) => {
     const columns = [
         { Header: 'Date', accessor: 'CreateTime', type: 'datetime', width: 130, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrder', width: 80, sortable: false },
+        { Header: 'SI.', accessor: 'pstoOrder', width: 70, sortable: false },
+        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
+        { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
+        { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },
         {
-            Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
+            Header: 'Issue', accessor: 'creditBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         {
-            Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false,
+            Header: 'Receive', accessor: 'debitBaseQuantity', width: 80, sortable: false,
             Footer: true,
             "Cell": (e) => comma(e.value.toString())
         },
         { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
-        { Header: 'Description', accessor: 'Description', width: 200, sortable: false },
+        { Header: 'Description', accessor: 'Description', width: 250, sortable: false },
 
     ];
 
