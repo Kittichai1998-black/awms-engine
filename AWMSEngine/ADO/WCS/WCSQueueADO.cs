@@ -21,7 +21,7 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
-                public long? pickSeqGroup;
+                public string pickSeqGroup;
                 public long? pickSeqIndex;
 
                 public baseinfo baseInfo;
