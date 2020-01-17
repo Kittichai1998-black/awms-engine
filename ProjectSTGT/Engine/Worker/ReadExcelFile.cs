@@ -67,9 +67,9 @@ namespace ProjectSTGT.Engine.Worker
                     });
                 });
 
-                var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => new { sku = key.Key, docItems = key.ToList() }).ToList();
+                //var gDocItems = docItems.GroupBy(docItem => new { docItem.skuCode }).Select(key => new { sku = key.Key, docItems = key.ToList() }).ToList();
 
-                gDocItems.ForEach(x =>
+                docItems.ForEach(x =>
                 {
                     var doc = new CreateGRDocument.TReq();
 
@@ -78,8 +78,7 @@ namespace ProjectSTGT.Engine.Worker
                     doc.documentDate = DateTime.Now;
                     doc.eventStatus = DocumentEventStatus.NEW;
                     doc.movementTypeID = AMWUtil.Common.EnumUtil.GetValueEnum<MovementType>(movementType);
-                    doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>();
-                    doc.receiveItems = x.docItems;
+                    doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {x };
 
                     var createGRDoc = new CreateGRDocument();
                     var res = createGRDoc.Execute(this.Logger, this.BuVO, doc);

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class DoneQ : BaseEngine<DoneQ.TReq, List<long>>
+    public class DoneQ : BaseQueue<DoneQ.TReq, WorkQueueCriteria>
     {
 
         public class TReq
@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private ams_Warehouse _warehouse;
         private ams_AreaMaster _area;
 
-        protected override List<long> ExecuteEngine(TReq reqVO)
+        protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             this.InitDataASRS(reqVO);
 
@@ -52,11 +52,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             this.UpdateStorageObjectLocation(reqVO, queueTrx);
 
-            this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
+            var workQ = this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
 
             var docs = GetDocument(reqVO.queueID.Value);
-
-            return docs;
+            
+            workQ.docIDs = docs;
+            return workQ;
         }
 
         private void InitDataASRS(TReq reqVO)
@@ -88,8 +89,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return mapsto;
         }
 
-        private void UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
+        private WorkQueueCriteria UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
         {
+            WorkQueueCriteria workQueueRes = new WorkQueueCriteria();
             var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
             //List<TDocItems> docItems = docItemss.Select(x => new TDocItems { ID = x.ID, Document_ID = x.Document_ID, Quantity = x.Quantity, BaseQuantity = x.BaseQuantity, DocItemStos = x.DocItemStos }).Distinct().ToList();
@@ -98,7 +100,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             if (queueTrx.Des_Warehouse_ID == _warehouse.ID.Value)
             {
-                stos = ManageWQ(reqVO, queueTrx, docItems, stos);
+                workQueueRes = ManageWQ(reqVO, queueTrx, docItems, stos);
 
                 if (queueTrx.IOType == IOType.INPUT)
                 {
@@ -126,7 +128,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     }
                 }
-
+                return workQueueRes;
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Warehouse Invalid");
             }
 
         }
@@ -374,7 +380,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
             return docItems;
         }
-        private StorageObjectCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
+        private WorkQueueCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
             {
@@ -400,11 +406,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             stoID = queueTrx.StorageObject_ID.Value,
                             stoType = StorageObjectType.BASE
                         };
-                        var res = getArea.Execute(this.Logger, this.BuVO, treq);
-                        return res.mapsto;
+                        getArea.Execute(this.Logger, this.BuVO, treq);
+                        
                     }
                 }
-                return stos;
+                var workQueue = this.GenerateResponse(stos, queueTrx);
+                return workQueue;
             }
             else
             {
