@@ -172,6 +172,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
             disto.Des_StorageObject_ID = stoIDIssued;
             disto.Status = EntityStatus.ACTIVE;
+            disto.Quantity = issuedSto.qty;
+            disto.BaseQuantity = issuedSto.baseQty;
             return disto;
         }
         private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
@@ -243,8 +245,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     var qtyIssue = docItem.Quantity;//1500
                     var baseqtyIssue = docItem.BaseQuantity;
-                    decimal? sumDiSTOQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumQty;
-                    decimal? sumDiSTOBaseQty = sumDisto.Find(x => x.stoID == docItem.DocItemStos.First().Sou_StorageObject_ID).sumBaseQty;
+                    decimal? sumDiSTOQty = sumDisto.Sum(x => x.sumQty); 
+                    decimal? sumDiSTOBaseQty = sumDisto.Sum(x => x.sumBaseQty);
                     stoList.ForEach(sto =>
                     {
                         var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id).ToList();
