@@ -96,5 +96,7 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "AUTHEN_LDAP")]
         AUTHENLDAP = 38,
 
+        [EnumValueAttribute(ValueString = "ADQRB01")]
+        EXEWM_AllowDoneQReuseBase,
     }
 }
