@@ -24,7 +24,7 @@ const CreateDocGRRaw = props => {
       if (row.data.datas.length > 0) {
         setOpenError(true);
         setTextError("Document is Working");
-        setTimeout(() => props.history.push("/receive/search"), 1000);
+        // setTimeout(() => props.history.push("/receive/search"), 1000);
       }
     });
     //==========================================================
@@ -172,7 +172,12 @@ const CreateDocGRRaw = props => {
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
-
+  const onHandleSetError = status => {
+    setOpenError(status);
+    if (status === false) {
+      props.history.push("/receive/search");
+    }
+  };
   const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
   const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
   return (
@@ -182,8 +187,10 @@ const CreateDocGRRaw = props => {
       <AmDialogs
         typePopup={"error"}
         onAccept={e => {
-          setOpenError(e);
+          onHandleSetError(e);
+          //setOpenError(e);
         }}
+        timeOut={5000}
         open={openError}
         content={textError}
       ></AmDialogs>
