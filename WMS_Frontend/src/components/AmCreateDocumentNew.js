@@ -1,4 +1,5 @@
 import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
 import React, { useState, useRef, createRef } from "react";
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
@@ -79,7 +80,7 @@ const AmCreateDocument = (props) => {
     }, {})
     const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
 
-    const [valueText, setValueText] = useState({});
+    // const [valueText, setValueText] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
     const [stateDialog, setStateDialog] = useState(false);
@@ -111,7 +112,7 @@ const AmCreateDocument = (props) => {
         }
     ];
 
-    const columns = props.columns !== undefined ? props.columns.concat(rem) : null
+    const columns = props.columns.concat(rem)
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
@@ -123,7 +124,7 @@ const AmCreateDocument = (props) => {
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
         setdataDDLHead({
-            ...valueText, [inputID]: {
+            [inputID]: {
                 value: value,
                 dataObject: dataObject,
                 fieldDataKey: fieldDataKey,
@@ -137,7 +138,7 @@ const AmCreateDocument = (props) => {
     //เช็ตค่าที่หัวของหน้าใน Findpopup
     const onHandleChangeFindpopup = (value, dataObject, inputID, fieldDataKey, pair, key) => {
         setvalueFindPopup({
-            ...valueText, [inputID]: {
+            [inputID]: {
                 value: value,
                 dataObject: dataObject,
                 fieldDataKey: fieldDataKey,
@@ -969,5 +970,15 @@ const AmCreateDocument = (props) => {
         </div>
     )
 }
+AmCreateDocument.propTypes = {
+    addList: PropTypes.object,
+    headerCreate: PropTypes.isRequired,
+    columns: PropTypes.isRequired,
+    columnEdit: PropTypes.isRequired,
+    apicreate: PropTypes.isRequired,
+    apiRes: PropTypes.isRequired,
+    history: PropTypes.isRequired,
+    createDocType: PropTypes.isRequired,
+};
 
 export default AmCreateDocument;
