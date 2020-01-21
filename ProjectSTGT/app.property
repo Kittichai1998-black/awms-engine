@@ -13,7 +13,7 @@ logger.filename = {RefID}.{Date}.log
 #------------------------------------
 worker.names = dashboard,readfile
 worker.dashboard.classname  = AWMSEngine.WorkerService.CommonDashboardWorker
-worker.readfile.classname  = ProjectSTGT.Engine.WM.ReadExcelFile
+worker.readfile.classname  = ProjectSTGT.Engine.Worker.ReadExcelFileWorker
 
 #------------------------------------
 hub.names = dashboard
