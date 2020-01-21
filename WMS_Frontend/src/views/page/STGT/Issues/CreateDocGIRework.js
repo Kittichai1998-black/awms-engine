@@ -25,7 +25,7 @@ export default props => {
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
-    l: 100,
+    l: 50,
     all: ""
   };
 
