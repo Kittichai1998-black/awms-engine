@@ -254,8 +254,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     if (docItem == null)
                                         throw new AMWException(Logger, AMWExceptionCode.V1001, "Document of " + reqVO.baseCode + " Not Found.");
 
-                                    docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, null) };
-                                    docItems.Add(docItem);
+                                    docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, docItem.ID.Value) };
+                                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(docItem.DocItemStos, BuVO);
+                                    //docItems.Add(docItem);
 
                                 }
                                 else
@@ -264,16 +265,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 }
                             });
 
-                           
-                                //get Document
-                                //var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
-                                //    DocumentTypeID.GOODS_RECEIVED, BuVO);
 
-                                //docItemLists.ForEach(di =>
-                                //{
-                                //    docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
-                                //});
-                             
+                            //get Document
+                            var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
+                                DocumentTypeID.GOODS_RECEIVED, BuVO);
+
+                            docItemLists.ForEach(di =>
+                            {
+                                docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
+                            });
+
                         }
                     }
 
