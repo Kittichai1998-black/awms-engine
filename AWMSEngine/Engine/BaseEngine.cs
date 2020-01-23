@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine
             this.BuVO = buVO;
             TRes resVO = null;
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
-            long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
+            //long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
             //long dbLogActionID = 0;
             //var resultStatus = new { status = -1,code="", message = "", logref = "", techmessage = "" };
             try

@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static AWMSEngine.Engine.V2.Business.WorkQueue.ASRSConfirmProcessQueue;
 
 namespace ProjectSTGT.Engine.WM
 {
