@@ -52,6 +52,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public long pickBaseUnitID;
 
                 public bool useFullPick;
+
             }
             public long? workQueueID;
             public int priority;
@@ -77,14 +78,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public long desAreaID;
             public long? desLocationID;
 
-
+            public StorageObjectEventStatus? stoDoneSouEventStatus;
+            public StorageObjectEventStatus? stoDoneDesEventStatus;
         }
+
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
+
             StorageObjectEventStatus stoNextEventStatus;
+
             if (docs.First().DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                 stoNextEventStatus = StorageObjectEventStatus.PICKING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
@@ -172,7 +177,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 //New GI For Multi SKU
                 var pickFullBases = x.docItems.FindAll(docItem => docItem.useFullPick == true).Select(docItem => docItem.bstoID).Distinct().ToList();
-                if(pickFullBases.Count > 0)
+                if (pickFullBases.Count > 0)
                 {
                     var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
                     var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
@@ -180,7 +185,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var groupSTOLeft = listSTOLeft.GroupBy(sto => new { sto.BaseCode, sto.BaseUnit })
                     .Select(sto => new { sto.Key.BaseCode, sto.Key.BaseUnit, StorageObject = sto.ToList() }).ToList();
 
-                    groupSTOLeft.ForEach(gsto => {
+                    groupSTOLeft.ForEach(gsto =>
+                    {
                         var createGI = new CreateGIDocument();
                         var res = createGI.Execute(this.Logger, this.BuVO, new CreateGIDocument.TReq
                         {
@@ -229,9 +235,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             }, this.BuVO);
                         });
                     });
-                }                
+                }
 
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus,true, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, 
+                    null, 
+                    EntityStatus.ACTIVE, 
+                    stoNextEventStatus, 
+                    true, 
+                    x.stoDoneSouEventStatus, 
+                    x.stoDoneDesEventStatus, 
+                    this.BuVO);
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
@@ -255,7 +268,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
                 return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
-            }).GroupBy(x => {
+            }).GroupBy(x =>
+            {
                 var docID = x.docItems.Select(y => y.docID).First();
                 return docID;
             }).Select(x => new { docID = x.Key, rstos = x.ToList() }).ToList();
@@ -278,7 +292,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             desLocationCode = rsto.desLocationID.HasValue ?
                                            ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                            null,
-                            pickSeqGroup =  DateTime.Now.ToString("ddMMyyyyHHmmssss") + "_" + docSeq.ToString(),
+                            pickSeqGroup = DateTime.Now.ToString("ddMMyyyyHHmmssss") + "_" + docSeq.ToString(),
                             pickSeqIndex = seq,
 
                             baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
@@ -349,49 +363,62 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
             var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
-            reqVO.processResults.ForEach(
-                x => x.processResultItems.ForEach(
-                    y =>
+            reqVO.processResults.ForEach(x =>
+            {
+                StorageObjectEventStatus? stoDoneSouEventStatus = null;
+                StorageObjectEventStatus? stoDoneDesEventStatus = null;
+                var doc = ADO.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
+                var statusSTO = Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
+                if (statusSTO != null)
+                {
+                    stoDoneSouEventStatus = statusSTO.stoDoneSouEventStatus;
+                    stoDoneDesEventStatus = statusSTO.stoDoneDesEventStatus;
+                }
+
+                x.processResultItems.ForEach(y =>
+                {
+                    y.pickStos.ForEach(z => { AddRootStoProcess(z, false); });
+                    if (y.lockStos != null)
+                        y.lockStos.ForEach(z => { AddRootStoProcess(z, true); });
+                    void AddRootStoProcess(SPOutSTOProcessQueueCriteria z, bool lockOnly)
                     {
-                        y.pickStos.ForEach(z => { AddRootStoProcess(z, false); });
-                        if (y.lockStos != null)
-                            y.lockStos.ForEach(z => { AddRootStoProcess(z, true); });
-                        void AddRootStoProcess(SPOutSTOProcessQueueCriteria z, bool lockOnly)
+                        var doc = docs.First(a => a.ID == x.docID);
+                        var rsto = rstoProcs.FirstOrDefault(a => a.rstoID == z.rstoID);
+                        if (rsto != null)
                         {
-                            var doc = docs.First(a => a.ID == x.docID);
-                            var rsto = rstoProcs.FirstOrDefault(a => a.rstoID == z.rstoID);
-                            if (rsto != null)
+                            rsto.lockOnly = lockOnly;
+                            rsto.docItems.Add(new RootStoProcess.DocItem()
                             {
-                                rsto.lockOnly = lockOnly;
-                                rsto.docItems.Add(new RootStoProcess.DocItem()
-                                {
-                                    docID = x.docID,
-                                    docItemID = y.docItemID,
+                                docID = x.docID,
+                                docItemID = y.docItemID,
 
-                                    bstoID = z.bstoID,
-                                    bstoCode = z.bstoCode,
-                                    pstoID = z.pstoID,
-                                    pstoCode = z.pstoCode,
+                                bstoID = z.bstoID,
+                                bstoCode = z.bstoCode,
+                                pstoID = z.pstoID,
+                                pstoCode = z.pstoCode,
 
-                                    pickQty = z.pickQty,
-                                    pickBaseQty = z.pickBaseQty,
-                                    pickUnitID = z.pstoUnitID,
-                                    pickBaseUnitID = z.pstoBaseUnitID,
+                                pickQty = z.pickQty,
+                                pickBaseQty = z.pickBaseQty,
+                                pickUnitID = z.pstoUnitID,
+                                pickBaseUnitID = z.pstoBaseUnitID,
 
-                                    useFullPick = z.useFullPick
-                                });
-                                //rsto.pstoQty += z.pstoQty;
-                                //rsto.pstoBaseQty += z.pstoBaseQty;
-                                rsto.priority = (rsto.priority > y.priority ? rsto.priority : y.priority);
-                            }
-                            else
+                                useFullPick = z.useFullPick,
+                            });
+
+                            rsto.stoDoneSouEventStatus = stoDoneSouEventStatus;
+                            rsto.stoDoneDesEventStatus = stoDoneDesEventStatus;
+                            //rsto.pstoQty += z.pstoQty;
+                            //rsto.pstoBaseQty += z.pstoBaseQty;
+                            rsto.priority = (rsto.priority > y.priority ? rsto.priority : y.priority);
+                        }
+                        else
+                        {
+                            rstoProcs.Add(new RootStoProcess()
                             {
-                                rstoProcs.Add(new RootStoProcess()
-                                {
-                                    lockOnly = lockOnly,
-                                    //docID = x.docID,
-                                    //docItemID = y.docItemID,
-                                    docItems = new List<RootStoProcess.DocItem>() {
+                                lockOnly = lockOnly,
+                                //docID = x.docID,
+                                //docItemID = y.docItemID,
+                                docItems = new List<RootStoProcess.DocItem>() {
                                         new RootStoProcess.DocItem()
                                         {
                                             docID = x.docID,
@@ -408,25 +435,26 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                             pickBaseUnitID = z.pstoBaseUnitID,
 
                                         }},
-                                    priority = y.priority,
+                                priority = y.priority,
 
-                                    rstoID = z.rstoID,
-                                    rstoCode = z.rstoCode,
+                                rstoID = z.rstoID,
+                                rstoCode = z.rstoCode,
 
-                                    warehouseID = z.warehouseID,
-                                    areaID = z.areaID,
-                                    locationID = z.locationID,
+                                warehouseID = z.warehouseID,
+                                areaID = z.areaID,
+                                locationID = z.locationID,
 
-                                    souWarehouseID = z.warehouseID,
-                                    souAreaID = z.areaID,
+                                souWarehouseID = z.warehouseID,
+                                souAreaID = z.areaID,
 
-                                    desWarehouseID = desWM.ID.Value,
-                                    desAreaID = desAM.ID.Value,
-                                    desLocationID = desALM == null ? null : desALM.ID,
-                                });
-                            }
+                                desWarehouseID = desWM.ID.Value,
+                                desAreaID = desAM.ID.Value,
+                                desLocationID = desALM == null ? null : desALM.ID,
+                            });
                         }
-                    }));
+                    }
+                });
+            });
             return rstoProcs;
         }
         private void ValidateDocAndInitDisto(List<amt_Document> docs)
