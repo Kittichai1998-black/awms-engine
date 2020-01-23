@@ -515,6 +515,16 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public List<amt_DocumentItemStorageObject> ListDistoByWorkQueue(long workQueueID, VOCriteria buVO)
+        {
+            var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
+                new SQLConditionCriteria("WorkQueue_ID", workQueueID, SQLOperatorType.EQUALS),
+            }, buVO);
+
+            return disto;
+        }
+
         public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)
         {
             return ListItemBySTO(storageObjectIDs, null, buVO);

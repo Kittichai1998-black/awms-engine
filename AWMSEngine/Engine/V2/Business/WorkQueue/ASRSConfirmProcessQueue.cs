@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         public class TReq : ASRSProcessQueue.TRes
         {
-            public bool isSetQtyAfterDoneWQ = false;
+            public bool isSetQtyAfterDoneWQ = true;
         }
         public class TRes
         {

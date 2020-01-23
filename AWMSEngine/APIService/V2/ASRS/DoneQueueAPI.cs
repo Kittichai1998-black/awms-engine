@@ -23,7 +23,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, resDoneQ);
+            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, resDoneQ.docIDs);
             this.CommitTransaction();
 
             this.BeginTransaction();
@@ -34,7 +34,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
             this.CommitTransaction();
 
-            return resClosed;
+            return resDoneQ;
         }
          
     }

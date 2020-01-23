@@ -96,7 +96,7 @@ namespace ProjectSTGT.Engine.Received
                     var strCNoptions = _carton_no + "-" + ((Int32.Parse(_carton_no) + Decimal.ToInt32(docItems.Quantity.Value)) - 1).ToString();
                     var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.mapstos[0].options, OptionVOConst.OPT_CARTON_NO, strCNoptions);
                         optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, "saleorder", saleorder);
-                        //optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
+                        optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsNew, OptionVOConst.OPT_DOCITEM_ID, docItems.ID);
                     var optionsNewBase = AMWUtil.Common.ObjectUtil.QryStrSetValue(stos.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneDesStatus);
 
                     stos.options = optionsNewBase;
@@ -106,67 +106,15 @@ namespace ProjectSTGT.Engine.Received
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos.mapstos[0], this.BuVO);
 
 
-                    if (reqVO.action == VirtualMapSTOActionType.ADD)
-                    {
-                        var mapDisto = this.MappingDisto(stos, docItems, reqVO);
-                    }
+                  
                 }
-                else
-                {
-                    if (reqVO.action == VirtualMapSTOActionType.REMOVE)
-                    {
-                        this.RemoveDisto(reqVO);
-                    }
-                }
+            
             }
 
             return stos;
 
-
         }
-        private List<amt_DocumentItemStorageObject> MappingDisto(StorageObjectCriteria sto, amt_DocumentItem docItem, ScanMapStoNoDoc.TReq reqVO)
-        {
-            var DocItemsMapStos = new List<amt_DocumentItemStorageObject>();
-            var DocItemsMap = new List<amt_DocumentItemStorageObject>();
-
-            DocItemsMap.Add(new amt_DocumentItemStorageObject()
-            {
-                DocumentItem_ID = docItem.ID,
-                DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                WorkQueue_ID = null,
-                Sou_StorageObject_ID = sto.mapstos[0].id.Value,
-                Des_StorageObject_ID = sto.mapstos[0].id.Value,
-                Quantity = docItem.Quantity,
-                UnitType_ID = docItem.UnitType_ID.Value,
-                BaseQuantity = docItem.BaseQuantity,
-                BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                Status = EntityStatus.INACTIVE
-
-            });
-            DocItemsMapStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(DocItemsMap, this.BuVO);
-
-            return DocItemsMapStos;
-        }
-
-        private List<amt_DocumentItemStorageObject> RemoveDisto(ScanMapStoNoDoc.TReq reqVO)
-        {
-
-            var getSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                new KeyValuePair<string, object>[] {
-                new KeyValuePair<string,object>("ParentStorageObject_ID",reqVO.rootID),
-                  }, this.BuVO).FindAll(y => y.EventStatus == StorageObjectEventStatus.REMOVED).Select(data => data.ID).ToArray();
-
-
-
-            var res = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                   new SQLConditionCriteria[] {
-                   new SQLConditionCriteria("Sou_StorageObject_ID",getSto, SQLOperatorType.EQUALS),
-                  }, this.BuVO).Find(y => y.Status == EntityStatus.INACTIVE);
-
-            var updateDisto = AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(res.ID.Value, EntityStatus.REMOVE, this.BuVO);
-
-            return null;
-        }
+       
         private string getDoneStatus(string statusOption)
         {
             var statusOptions = statusOption.ToLower();

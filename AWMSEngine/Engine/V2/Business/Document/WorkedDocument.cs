@@ -65,12 +65,29 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                             }
                                         }
                                     });
-                                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, this.BuVO);
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                     {
                                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
                                         RemoveOPTDocument(x, docs.Options, this.BuVO);
                                         docLists.Add(x);
+                                    }
+                                    else
+                                    {   //กรณีที่มีdocitem เป็น working แต่ไม่มีผูกกับ disto ให้อัพเดทเป็น workedอัตโนมัติ
+                                        listItem.ForEach(docItem => { 
+                                            if(docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos == null || docItem.DocItemStos.Count() == 0)
+                                            {
+                                                docItem.EventStatus = DocumentEventStatus.WORKED;
+                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                            }
+                                        });
+                                        
+                                        if (listItem.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
+                                        {
+                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                                            RemoveOPTDocument(x, docs.Options, this.BuVO);
+                                            docLists.Add(x);
+                                        }
                                     }
                                 }
                             }

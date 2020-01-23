@@ -7,75 +7,27 @@ import {
   createQueryString
 } from "../../../../components/function/CoreFunction";
 import DocView from "../../../pageComponent/DocumentView"; //css
-
+import AmDialogs from "../../../../components/AmDialogs";
 // import Axios from 'axios'
 const Axios = new apicall();
-
-export default props => {
+const CreateDocGRRaw = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
   const [dataHeader, setDataHeader] = useState([]);
   const [table, setTable] = useState(null);
-
-  const PalletCode = {
-    queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "PalletSto",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]', //เงื่อนไข '[{ "f": "EventStatus", "c":"=", "v": "12"}]'
-    f:
-      "ID,PalletCode as palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo",
-    g: "",
-    s: "[{'f':'ID','od':'ASC'}]",
-    sk: 0,
-    l: 50,
-    all: ""
-  };
-
-  const columsFindpopUpPALC = [
-    {
-      Header: "Pallet Code",
-      accessor: "palletcode",
-      width: 110,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    {
-      Header: "SRM Line",
-      accessor: "srmLine",
-      width: 95,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    { Header: "Reorder", accessor: "SKUItems", width: 350 },
-    // { Header: "SKU Code", accessor: 'Code', width: 110 },
-    // { Header: "SKU Name", accessor: 'Name', width: 170 },
-    {
-      Header: "Location",
-      accessor: "LocationCode",
-      width: 90,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    {
-      Header: "SI",
-      accessor: "orderNo",
-      width: 100,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
-    // { Header: 'Batch', accessor: 'Batch' },
-
-    { Header: "Quantity", accessor: "Quantity", width: 90 },
-    { Header: "Unit", accessor: "BaseUnitCode", width: 70 }
-  ];
-
-  const addList = {
-    queryApi: PalletCode,
-    columns: columsFindpopUpPALC,
-    search: [
-      { accessor: "palletcode", placeholder: "Pallet Code" },
-      { accessor: "Code", placeholder: "Reorder" },
-      { accessor: "LocationCode", placeholder: "Location" }
-      // { accessor: "remark", placeholder: "Remark" }
-    ]
-  };
-
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState("");
   //get api set dataWarehouse
   useEffect(() => {
+    //==========================================================
+    Axios.get(createQueryString(DocumentQuery)).then(row => {
+      //console.log(row.data.datas.length);
+      if (row.data.datas.length > 0) {
+        setOpenError(true);
+        setTextError("Document is Working");
+        // setTimeout(() => props.history.push("/receive/search"), 1000);
+      }
+    });
+    //==========================================================
     Axios.get(createQueryString(WarehouseQuery)).then(row => {
       if (row.data.datas && row.data.datas.length > 0) {
         setDataWarehouse(row.data.datas[0]);
@@ -96,8 +48,8 @@ export default props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: "FG_REWORK_WM",
-            valueTexts: "1061"
+            texts: "RAW_TRANSFER",
+            valueTexts: "4010"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
@@ -130,31 +82,18 @@ export default props => {
     if (dataHeader.length > 0) {
       setTable(
         <AmCreateDocument
-          addList={addList}
+          //addList={addList}
           headerCreate={dataHeader}
           columns={columns}
           columnEdit={columnEdit}
           apicreate={apicreate}
-          createDocType={"issue"}
+          createDocType={"receive"}
           history={props.history}
           apiRes={apiRes}
-          add={false}
         />
       );
     }
   }, [dataHeader]);
-
-  // const UnitType = {
-  //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  //     t: "UnitType",
-  //     q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-  //     f: "ID,Code,Name",
-  //     g: "",
-  //     s: "[{'f':'ID','od':'ASC'}]",
-  //     sk: 0,
-  //     l: 100,
-  //     all: ""
-  // }
 
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -181,6 +120,19 @@ export default props => {
     all: ""
   };
 
+  const DocumentQuery = {
+    queryString: window.apipath + "/v2/SelectDatatrxAPI/",
+    t: "Document",
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "Status", "c":"in", "v": "0,1"},{ "f": "MovementType_ID", "c":"=", "v":4010}]',
+    f: "ID,Code,Status,MovementType_ID",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
+
   const columsFindpopUpSKU = [
     {
       Header: "Code",
@@ -194,16 +146,7 @@ export default props => {
 
   const columnEdit = [
     {
-      Header: "Pallet Code",
-      accessor: "palletcode",
-      type: "findPopUp",
-      idddl: "palletcode",
-      queryApi: PalletCode,
-      fieldLabel: ["palletcode"],
-      columsddl: columsFindpopUpPALC
-    },
-    {
-      Header: "Reorder",
+      Header: "SKU Item",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -212,7 +155,7 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
+    { Header: "Lot", accessor: "lot", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
@@ -224,14 +167,34 @@ export default props => {
   const columns = [
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "SI", accessor: "orderNo", width: 100 },
+    { Header: "SKU Item", accessor: "SKUItems" },
+    { Header: "Lot", accessor: "lot", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
-
-  const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-  const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
-
-  return table;
+  const onHandleSetError = status => {
+    setOpenError(status);
+    if (status === false) {
+      props.history.push("/receive/search");
+    }
+  };
+  const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
+  const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+  return (
+    <div>
+      {" "}
+      {table}
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          onHandleSetError(e);
+          //setOpenError(e);
+        }}
+        timeOut={5000}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+    </div>
+  );
 };
+export default CreateDocGRRaw;

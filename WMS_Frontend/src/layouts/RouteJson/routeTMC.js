@@ -17,6 +17,14 @@ const DocumentViewGI = Loadable({
   loader: () => import("../../views/page/TMC/Issues/DocumentViewGI"),
   loading: Loading
 });
+const CreateDocGRRaw = Loadable({
+  loader: () => import("../../views/page/TMC/Receive/CreateDocGRRaw"),
+  loading: Loading
+});
+const CreateDocGRFG = Loadable({
+  loader: () => import("../../views/page/TMC/Receive/CreateDocGRFG"),
+  loading: Loading
+});
 const DocumentSearchGI = Loadable({
   loader: () => import("../../views/page/TMC/Issues/DocumentSearchGI"),
   loading: Loading
@@ -52,15 +60,21 @@ const routes = [
     exact: true
   },
   {
-    path: "/issue/detail",
-    name: "GI View",
-    compoment: DocumentViewGI,
+    path: "/receive/createRaw",
+    name: "Create GR",
+    compoment: CreateDocGRRaw,
     exact: true
   },
   {
-    path: "/issue/search",
-    name: "Search GI",
-    compoment: DocumentSearchGI,
+    path: "/receive/create",
+    name: "Create GR",
+    compoment: CreateDocGRFG,
+    exact: true
+  },
+  {
+    path: "/issue/detail",
+    name: "GI View",
+    compoment: DocumentViewGI,
     exact: true
   },
   {
