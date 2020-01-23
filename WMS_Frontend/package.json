@@ -20,7 +20,7 @@
     "material-ui-pickers": "^2.2.4",
     "material-ui-time-picker": "^1.1.0",
     "moment": "^2.24.0",
-    "pdfmake": "^0.1.57",
+    "pdfmake": "^0.1.63",
     "query-string": "^6.4.0",
     "react": "^16.11.0",
     "react-bootstrap": "^1.0.0-beta.6",

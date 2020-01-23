@@ -3,7 +3,7 @@ import moment from "moment";
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import _ from 'lodash';
-import Ambutton from "../../components/AmButton"
+import AmButton from "../../../../components/AmButton"
 
 // import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 
@@ -13,9 +13,9 @@ import {
     createMuiTheme
 } from "@material-ui/core/styles";
 import Axios from "axios";
-import Table from "../../components/table/AmTable";
+import Table from "../../../../components/table/AmTable";
 import queryString from "query-string";
-import DocumentEventStatus from "../../components/AmStatus";
+import DocumentEventStatus from "../../../../components/AmStatus";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import classnames from "classnames";
 import {
@@ -28,7 +28,6 @@ import {
     Col
 } from "reactstrap";
 import PropType from "prop-types";
-import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
@@ -135,6 +134,14 @@ const AmDocumentViewPDFLD = props => {
 
     const [dataDetailExport, setdataDetailExport] = useState();
 
+    const columnsDetailSOUs = [
+        { "width": 150, "accessor": "code", "Header": "Code" },
+        { "accessor": "Item", "Header": "Item" },
+        { "accessor": "IssueCode", "Header": "Issue Document" },
+        { "width": 110, "accessor": "packQty", "Header": "Qty" },
+        { "width": 60, "accessor": "packUnitCode", "Header": "Unit" }
+    ]
+
     useEffect(() => {
         getData();
         console.log(props.optionDocItems);
@@ -146,7 +153,7 @@ const AmDocumentViewPDFLD = props => {
         Axios.get(
             window.apipath +
             "/v2/GetDocAPI/?docTypeID=" +
-            props.typeDocNo +
+            1012 +
             "&docID=" +
             docID +
             "&getMapSto=true&_token=" +
@@ -181,21 +188,7 @@ const AmDocumentViewPDFLD = props => {
                         });
                     }
 
-                    if (window.project === "AAI") {
-                        row.lenum = qryStr.lenum === "undefined" ? null : qryStr.lenum;
-                        row.posnr = qryStr.rosnr === "undefined" ? null : qryStr.posnr;
-                        row.matnr = qryStr.matnr === "undefined" ? null : qryStr.matnr;
-                        row.charg = qryStr.charg === "undefined" ? null : qryStr.charg;
-                        row.lgtyp = qryStr.lgtyp === "undefined" ? null : qryStr.lgtyp;
-                        row.lgbtr = qryStr.lgbtr === "undefined" ? null : qryStr.lgbtr;
-                        row.lgpla = qryStr.lgpla === "undefined" ? null : qryStr.lgpla;
-                        row.bestq_ur =
-                            qryStr.bestq_ur === "undefined" ? null : qryStr.bestq_ur;
-                        row.bastq_qi =
-                            qryStr.bastq_qi === "undefined" ? null : qryStr.bastq_qi;
-                        row.bastq_blk =
-                            qryStr.bastq_blk === "undefined" ? null : qryStr.bastq_blk;
-                    }
+                
 
                     row.palletcode =
                         qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
@@ -225,13 +218,6 @@ const AmDocumentViewPDFLD = props => {
 
                 res.data.sou_bstos.forEach(rowDetail => {
                     rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-                    // var options = ""
-                    // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-                    // rowDetail.options = options;
-
-                    // === getOption ===
-                    //var qryStr = queryString.parse(rowDetail.options)
-                    //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
                     var qryStr = queryString.parse(rowDetail.Options);
                     if (optionSouBstos) {
                         optionSouBstos.forEach(x => {
@@ -240,13 +226,6 @@ const AmDocumentViewPDFLD = props => {
                                     ? null
                                     : qryStr[x.optionName];
                         });
-                    }
-
-                    if (window.project === "AAI") {
-                        rowDetail.tanum =
-                            qryStr.tanum === "undefined" ? null : qryStr.tanum;
-                        rowDetail.btanr =
-                            qryStr.btanr === "undefined" ? null : qryStr.btanr;
                     }
 
                     dataTableDetailSOU.push({
@@ -264,14 +243,6 @@ const AmDocumentViewPDFLD = props => {
 
                 res.data.des_bstos.forEach(rowDetail => {
                     rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-
-                    // var options = ""
-                    // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-                    // rowDetail.options = options;
-
-                    // === getOption ===
-                    //var qryStr = queryString.parse(rowDetail.options)
-                    //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
                     var qryStr = queryString.parse(rowDetail.Options);
                     if (optionDesBstos) {
                         optionDesBstos.forEach(x => {
@@ -281,12 +252,7 @@ const AmDocumentViewPDFLD = props => {
                                     : qryStr[x.optionName];
                         });
                     }
-                    if (window.project === "AAI") {
-                        rowDetail.tanum =
-                            qryStr.tanum === "undefined" ? null : qryStr.tanum;
-                        rowDetail.btanr =
-                            qryStr.btanr === "undefined" ? null : qryStr.btanr;
-                    }
+
                     dataTableDetailDES.push({
                         ...rowDetail,
                         _packQty:
@@ -380,367 +346,16 @@ const AmDocumentViewPDFLD = props => {
     };
 
     const ExportPDF = () => {
-
-        var datas = dataDetailExport.document
-        if (datas !== null || datas !== undefined) {
-            var dataDocumentItem = dataDetailExport.sou_bstos
-            var statusDoc = datas.Status
-            var Docstatus = ''
-            let dataDocumentItemTB;
-            let dataSort = [];
-            let datasItem = {}
-            let DocDate = moment(datas.DocumentDate).format("DD/MM/YYYY");
-            let ActionDates = moment(datas.Actiontime).format("DD/MM/YYYY HH:mm:ss");
-            if (statusDoc === 1) {
-                Docstatus = 'WORKING'
-            } else if (statusDoc === 2) {
-                Docstatus = 'WORKED'
-            } else if (statusDoc === 3) {
-                Docstatus = 'CLOSED'
-            } else if (statusDoc === 0) {
-                Docstatus = 'NEW'
-            } else {
-                Docstatus = ''
-            }
-            var movementType = null
-            var SouWarehouse = null
-            var DesWare = null
-            var DesWarehouse = null
-            var Descus = null
-            var Remark = null
-            var Units = null
-
-            console.log(datas)
-            if (datas.MovementName === null || datas.MovementName === undefined) {
-                movementType = ''
-            } else {
-                movementType = datas.MovementName
-            }
-
-            if (datas.SouWarehouseName === null || datas.SouWarehouseName === undefined) {
-                SouWarehouse = ''
-            } else {
-                SouWarehouse = datas.SouWarehouseName
-            }
-            if (datas.DesWarehouseName === null || datas.DesWarehouseName === undefined) {
-                DesWare = ''
-            } else {
-                DesWare = datas.DesWarehouseName
-            }
-            if (datas.DesCustomerName === null || datas.DesCustomerName === undefined) {
-                Descus = ''
-            } else {
-                Descus = datas.DesCustomerName
-            }
-            if (datas.Remark === null || datas.Remark === undefined) {
-                Remark = ''
-            } else {
-                Remark = datas.Remark
-            }
-
-            if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
-                dataDocumentItem.map((item, idx) => {
-                    console.log(item)
-                    var qryStr1 = queryString.parse(item.sou_options)
-                    var catonNo = qryStr1["carton_no"]
-                    var Remarks = qryStr1["remark"]
-                    // console.log(item)
-                    // console.log(catonNo)
-                    // console.log(Remarks)
-                    datasItem = {
-                        "No": idx + 1,
-                        "Status": 'Pass',
-                        "PalletCode": item.code,
-                        "Reorder": item.packCode.padStart(15, '0'),
-                        "Brand": item.packName,
-                        "Size": item.skuType,
-                        "CartonNo": catonNo,
-                        "Qty": item.distoQty,
-                        "Unit": item.packUnitCode,
-                        "Remark": Remarks === undefined || Remarks === null ? null : Remarks,
-
-                    }
-                    Units = item.packUnitCode
-                    dataSort.push(datasItem)
-                })
-
-            }
-            let dataSortGrouby = _.orderBy(dataSort, ['Reorder', 'Size', 'CartonNo'], ['asc', 'asc', 'asc']);
-            let sumQtys = _.sumBy(dataSort, 'Qty')
-            console.log(sumQtys)
-            let pageLeght = Math.ceil(dataSortGrouby.length / 15)
-            console.log(dataSortGrouby)
-            dataDocumentItemTB = dataSortGrouby.map((x, idx) => {
-                return [idx + 1,
-                x.Status,
-                x.PalletCode,
-                x.Reorder.replace(/^0+/, ''),
-                x.Brand,
-                x.Size,
-                x.CartonNo,
-                x.Qty,
-                x.Unit,
-                x.Remark
-                ];
-            })
-
-            let dataArr = [];
-
-            for (var i = 0; i < pageLeght; i++) {
-                var data = dataDocumentItemTB.filter(x => { return x[0] <= (15 * (i + 1)) }).filter(x => x[0] >= ((i * 15) + 1));
-                dataArr.push(data);
-            }
-            var docDefinition
-            let docDefinitionpage = []
-            let contents = []
-
-            dataArr.forEach((x, idx) => {
-
-                let pages = idx + 1
-                docDefinition = [
-
-                    { text: 'Loading Shipment Report', style: 'headers', alignment: 'center' },
-
-                    { text: pages + '/' + pageLeght, style: 'col7', alignment: 'right' },
-                    { text: 'SRITANG GLOVES(THAILAND) PUBLIC COMPANY LIMITED', style: 'col7', alignment: 'left' },
-
-                    {
-                        columns: [
-                            { width: '20%', text: "SI." + dataDetailExport.sou_bstos[0].orderNo, style: 'col8' },
-                            { width: '40%', text: '' },
-                            { width: '20%', text: 'Docment Date :', style: 'col8' },
-                            { width: '40%', text: DocDate, style: 'col8' }
-                        ],
-                        columnGap: 10
-                    },
-                    {
-                        columns: [
-                            { width: '20%', text: 'MovementType :', style: 'col1' },
-                            { width: '40%', text: movementType, style: 'col1' },
-                            { width: '20%', text: 'Action Time :', style: 'col1' },
-                            { width: '40%', text: ActionDates, style: 'col1' }
-                        ],
-                        columnGap: 10
-                    },
-                    {
-                        columns: [
-                            { width: '20%', text: 'Source Warehouse :', style: 'col1' },
-                            { width: '40%', text: SouWarehouse, style: 'col1' },
-                            { width: '20%', text: 'Destinaton Warehouse :', style: 'col1' },
-                            { width: '40%', text: DesWare, style: 'col1' },
-                        ],
-                        columnGap: 10
-                    },
-                    {
-                        columns: [
-                            { width: '20%', text: 'Document Status :', style: 'col1' },
-                            { width: '40%', text: Docstatus, style: 'col1' },
-                            { width: '20%', text: 'Destinaton Customer :', style: 'col1' },
-                            { width: '40%', text: Descus, style: 'col1' },
-                        ],
-                        columnGap: 10
-                    },
-                    {
-                        columns: [
-                            { width: '20%', text: 'Remark :', style: 'col1s' },
-                            { width: '40%', text: Remark, style: 'col1s' },
-                        ],
-                        columnGap: 10
-                    },
-
-                    {
-                        style: 'tableFooter',
-
-                        table: {
-                            headerRows: 1,
-                            widths: [30, 70, '*', '*', 500, 70, '*', '*', '*', '*',],
-                            header: {
-                                fontSize: 26,
-                                alignment: 'center'
-
-                            },
-                            anotherStyle: {
-                                italics: true,
-                                fontSize: 26,
-                                alignment: 'right',
-                            },
-
-                            body: [
-
-                                ['No.', 'Status', 'Pallet Code', 'Reorder', 'Brand', 'Size', 'Carton No.', 'Qty', 'Unit', 'Remark'],
-                                ...dataArr[idx]
-
-                            ]
-                        }
-                    },
-                    //{
-                    //    columns: [
-                    //        {
-                    //            width: '70%', text: '',
-                    //            style: 'col5', alignment: 'left'
-                    //        },
-                    //        { width: '1%', text: '', style: 'col4' },
-                    //        { width: '40%', text: 'By ______________________________________________', style: 'col4' },
-                    //        { width: '1%', text: datas.Remark, style: 'col4' },
-                    //    ],
-                    //    columnGap: 10
-                    //},
-                    //{
-                    //    columns: [
-                    //        {
-                    //            width: '80%', text: 'Referent Document : SH1.EP.WI.15.001,SH3.EP.WI.15.001,ST1.WH.WI.15.002,SSI.EP.WI.15.001,SS1.EP.WI.15.001,SH4.EP.WI.15.001',
-                    //            style: 'col5', alignment: 'left'
-                    //        },
-                    //        { width: '1%', text: '', style: 'col4' },
-                    //        { width: '40%', text: 'Section Warehoouse', style: 'col6' },
-                    //        { width: '1%', text: datas.Remark, style: 'col4' },
-                    //    ],
-                    //    columnGap: 10
-                    //},
-                    //{
-                    //    text: '',
-                    //    pageBreak: "after"
-                    //},
-
-                ]
-
-                if (docDefinition !== [])
-                    contents.push(docDefinition)
-
-            })
-
-
-            var conpage = contents.map((x, idx) => {
-                console.log(idx)
-                if (contents[idx] !== [])
-                    return conpage = contents[idx]
-
-            })
-
-            if (conpage !== []) {
-
-                docDefinition = {
-
-                    pageSize: { width: 1684, height: 1190 },
-                    content: [
-                        conpage,
-                        {
-                            style: 'tableFooters',
-                            table: {
-                                heights: 20,
-                                widths: [140, 140, 140],
-                                body: [
-                                    ['Total', sumQtys, Units],
-
-                                ]
-                            }
-                        }
-                    ],
-
-
-
-
-                    footer: {
-                        columns: [
-                            {
-                                width: '60%',
-                                hight: 100,
-                                text: 'Reference Document : SH1.EP.WI.15.001,SH3.EP.WI.15.001,ST1.WH.WI.15.002,SSI.EP.WI.15.001,SS1.EP.WI.15.001,SH4.EP.WI.15.001',
-                                style: 'footers', alignment: 'left'
-
-                            },
-                            {
-                                text: 'By _________________________________________  Section Warehouse    ',
-                                style: 'footer', hight: 100,
-                                pageBreak: "after"
-                            },
-
-
-                        ]
-                    },
-
-
-
-                    // pageBreak: "after",
-
-
-                    styles: {
-                        col1: {
-                            fontSize: 25,
-                            bold: true,
-                            margin: [0, 0, 0, 10]
-
-                        },
-                        col1s: {
-                            fontSize: 25,
-                            bold: true,
-                            margin: [0, 10, 0, 40]
-
-                        },
-                        col2: {
-                            fontSize: 25,
-                            margin: [0, 10, 0, 10]
-                        },
-                        col3: {
-                            fontSize: 25,
-                            font: 'THSarabunNew',
-                            margin: [0, 0, 0, 10]
-                        },
-                        col4: {
-                            fontSize: 25, margin: [0, 40, 0, 10]
-                        },
-                        col5: {
-                            fontSize: 20, margin: [0, 40, 0, 10]
-                        },
-                        col6: {
-                            fontSize: 25, margin: [0, 0, 0, 0]
-                        },
-                        col7: {
-                            fontSize: 20, margin: [0, 0, 0, 0]
-                        },
-                        col8: {
-                            fontSize: 25,
-                            bold: true,
-                            margin: [0, 40, 0, 10]
-
-                        },
-                        headers: {
-                            fontSize: 36,
-                            bold: true,
-                            margin: [10, 10, 10, 10]
-                        },
-                        tableFooter: {
-                            fontSize: 25,
-                            margin: [0, 0, 0, 0]
-                        },
-                        tableFooters: {
-                            fontSize: 25,
-                            margin: [1005, 0, 0, 60]
-                        },
-                        footers: {
-                            fontSize: 20,
-                            margin: [40, 0, 0, 0]
-                        },
-                        footer: {
-                            fontSize: 25,
-                            margin: [10, 0, 0, 10]
-
-                        }
-                    },
-                    defaultStyle: {
-                        font: 'THSarabunNew',
-                        bold: true,
-
-                    }
-                };
-
-
-            }
-
-        }
-
+        var docDefinition = {
+            content: [
+                { text: 'สวัสดีประเทศไทย reat pdf demo ', fontSize: 15,font: 'THSarabunNew'},
+             
+            ],
+            //defaultStyle: {
+            //    font: 'THSarabunNew',
+            //}
+        };
         pdfMake.createPdf(docDefinition).open()
-
 
     }
 
@@ -752,17 +367,12 @@ const AmDocumentViewPDFLD = props => {
             {console.log(dataHeader)}
             <br />
             <br />
-            {
-                (dataHeader.MovementName === "FG_TRANSFER_CUS" || dataHeader.MovementName === "FG_TRANSFER_WM") ?
-                    (dataHeader.EventStatus === 32 || dataHeader.EventStatus === 11) ?
+
                         <div style={{ marginLeft: "92%", width: "100px" }}>
                             <AmButton styleType="info" onClick={ExportPDF}>
                                 {t("Export PDF")}
                             </AmButton>
-                        </div> : null
-
-                    : null
-            }
+                        </div> 
 
 
             {typeDoc ? (
