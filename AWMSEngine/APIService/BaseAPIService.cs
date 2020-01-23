@@ -100,6 +100,8 @@ namespace AWMSEngine.APIService
             long dbLogID = 0;
             string token = null;
             string apiKey = null;
+            ams_APIKey apiKeyInfo = null;
+
             try
             {
                 //------GET token || apikey
@@ -114,7 +116,6 @@ namespace AWMSEngine.APIService
 
                 //-------CREATE FILE LOGGING
                 amt_Token tokenInfo = null; 
-                ams_APIKey apiKeyInfo = null;
                 if (!string.IsNullOrWhiteSpace(token))
                 {
                     tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
@@ -164,16 +165,36 @@ namespace AWMSEngine.APIService
 
                 //-----------START DB LOGGING
                 this.APIServiceID = apiService.ID.Value;
-                dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
-                    this.APIServiceID,
-                    this.GetType().Name,
-                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
-                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
-                    System.Environment.MachineName,
-                    this.RequestVO,
-                    this.BuVO);
-                this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
+
+                if (apiKeyInfo != null)
+                {
+                    if (apiKeyInfo.IsLogging)
+                    {
+                        dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
+                        this.APIServiceID,
+                        this.GetType().Name,
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
+                        System.Environment.MachineName,
+                        this.RequestVO,
+                        this.BuVO);
+                        this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
+                    }
+                }
+                else
+                {
+                    dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
+                        this.APIServiceID,
+                        this.GetType().Name,
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
+                        System.Environment.MachineName,
+                        this.RequestVO,
+                        this.BuVO);
+                    this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
+                }
 
                 //-----------VALIDATE PERMISSION
                 this.Permission(token, tokenInfo, apiKey, apiKeyInfo);
@@ -238,16 +259,37 @@ namespace AWMSEngine.APIService
                         string _message = result.message;
                         string _stacktrace = result.stacktrace;
 
-                        this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                        if (apiKeyInfo != null)
                         {
-                            ADO.LogingADO.GetInstant().PutSendAPIEvent(x, this.BuVO);
-                        });
-                        this.FinalDBLog.documentOptionMessages.ForEach(x =>
-                        {
-                            ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
-                        });
+                            if (apiKeyInfo.IsLogging)
+                            {
+                                this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                                {
+                                    ADO.LogingADO.GetInstant().PutSendAPIEvent(x, this.BuVO);
+                                });
+                                this.FinalDBLog.documentOptionMessages.ForEach(x =>
+                                {
+                                    ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
+                                });
 
-                        ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+                                ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+                            }
+                        }
+                        else
+                        {
+                            this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                            {
+                                ADO.LogingADO.GetInstant().PutSendAPIEvent(x, this.BuVO);
+                            });
+                            this.FinalDBLog.documentOptionMessages.ForEach(x =>
+                            {
+                                ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
+                            });
+
+                            ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+                        }
+
+
 
                         string _response_str = ObjectUtil.Json(response);
                         this.Logger.LogInfo("response=" + _response_str);

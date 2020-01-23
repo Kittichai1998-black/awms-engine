@@ -98,5 +98,8 @@ namespace AWMSModel.Constant.EnumConst
 
         [EnumValueAttribute(ValueString = "ADQRB01")]
         EXEWM_AllowDoneQReuseBase,
+
+        [EnumValueAttribute(ValueString = "CUSTOMSTOES")]
+        EXEWM_CUSTOM_STO_EVENTSTATUS,
     }
 }

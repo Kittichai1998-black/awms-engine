@@ -26,8 +26,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 if(wq.IOType == IOType.INPUT && (wq.Status == EntityStatus.ACTIVE || wq.Status == EntityStatus.INACTIVE))
                 {
-                    var sto = RejectStorageObject(wq);
-                    RejectDocument(reqVO, sto);
+                    var distos = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(reqVO.wqID, this.BuVO);
+                    var sto = RejectStorageObject(wq, distos);
+                    RejectDocument(sto, distos);
 
                     wq.Status = EntityStatus.REMOVE;
                     wq.EventStatus = WorkQueueEventStatus.REMOVED;
@@ -46,9 +47,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
         }
 
-        private void RejectDocument(TReq reqVO, StorageObjectCriteria sto)
+        private void RejectDocument(StorageObjectCriteria sto, List<amt_DocumentItemStorageObject> distos)
         {
-            var distos = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(reqVO.wqID, this.BuVO);
             var docItemIDs = new List<long>();
             distos.ForEach(disto =>
             {
@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
         }
 
-        private StorageObjectCriteria RejectStorageObject(SPworkQueue wq)
+        private StorageObjectCriteria RejectStorageObject(SPworkQueue wq, List<amt_DocumentItemStorageObject> distos)
         {
             var sto = ADO.StorageObjectADO.GetInstant().Get(wq.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             var stoPacks = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
@@ -95,16 +95,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             stoPacks.ForEach(stoPack =>
             {
                 var getOldEvent = ObjectUtil.QryStrGetValue(stoPack.options, "_old_event_status");
-                if (string.IsNullOrEmpty(getOldEvent))
+                var getDocItem = distos.Find(disto => disto.Sou_StorageObject_ID == stoPack.id);
+                if (getDocItem.DocumentItem_ID.HasValue)
                 {
-                    stoPack.eventStatus = StorageObjectEventStatus.REMOVED;
-                }
-                else
-                {
-                    stoPack.eventStatus = AMWUtil.Common.EnumUtil.GetValueEnum<StorageObjectEventStatus>(getOldEvent);
-                }
+                    if (string.IsNullOrEmpty(getOldEvent))
+                    {
+                        stoPack.eventStatus = StorageObjectEventStatus.REMOVED;
+                    }
+                    else
+                    {
+                        stoPack.eventStatus = AMWUtil.Common.EnumUtil.GetValueEnum<StorageObjectEventStatus>(getOldEvent);
+                    }
 
-                ADO.StorageObjectADO.GetInstant().PutV2(stoPack, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().PutV2(stoPack, this.BuVO);
+                }
             });
 
             if (stoPacks.TrueForAll(stoPack => stoPack.eventStatus == StorageObjectEventStatus.REMOVED))
