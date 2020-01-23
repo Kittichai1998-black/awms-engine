@@ -133,6 +133,7 @@ const AmDocumentViewPDFLD = props => {
     const dataTableDetailDES = [];
 
     const [dataDetailExport, setdataDetailExport] = useState();
+    const [head1, sethead1] = useState("มูลนิธิยุวพัฒน์")
 
     const columnsDetailSOUs = [
         { "width": 150, "accessor": "code", "Header": "Code" },
@@ -346,14 +347,27 @@ const AmDocumentViewPDFLD = props => {
     };
 
     const ExportPDF = () => {
+        console.log(dataDetailExport)
+        var descus = dataDetailExport.document.DesCustomerName
+        var doccode = dataDetailExport.document.Code
+        var docdate = dataDetailExport.document.ModifyTime
+        console.log(descus)
+        //var head1 = "มูลนิธิยุวพัฒน์"
+        sethead1("มูลนิธิยุวพัฒน์");
+       
         var docDefinition = {
             content: [
-                { text: 'สวัสดีประเทศไทย reat pdf demo ', fontSize: 15,font: 'THSarabunNew'},
-             
+                { text: 'มูลนิธิยุวพัฒน์' + head1, fontSize: 15 },
+                { text: 'ใบขออนุญาตนำสินค้าร่วมปันออกนอกคลังปันกัน', fontSize: 15 },
+                { text: 'สาขาที่ส่ง' + descus  , fontSize: 15 },
+                { text: 'เลขที่เอกสาร' + doccode, fontSize: 15 },
+                { text: 'วันที่นำออก' + docdate, fontSize: 15 },
+
+
             ],
-            //defaultStyle: {
-            //    font: 'THSarabunNew',
-            //}
+            defaultStyle: {
+                font: 'THSarabunNew',
+            }
         };
         pdfMake.createPdf(docDefinition).open()
 
