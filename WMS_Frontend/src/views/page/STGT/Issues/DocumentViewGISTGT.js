@@ -1,4 +1,4 @@
-import DocView from "../../../pageComponent/DocumentView";
+import DocView from "../../../pageComponent/AmDocumentViewPDF";
 import React, { useState, useEffect, useContext } from "react";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";

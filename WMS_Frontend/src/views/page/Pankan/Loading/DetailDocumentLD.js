@@ -2,7 +2,7 @@ import queryString from 'query-string'
 import React from "react";
 
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
-import DocView from "../../Pankan/Loading/DocViewLoading";//css
+import DocView from "../../Pankan/Loading/AmDocumentViewPDFLD";//css
 
 export default (props) => {
 
