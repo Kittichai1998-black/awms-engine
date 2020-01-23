@@ -131,6 +131,10 @@ const ReportStorageObject = Loadable({
   loader: () => import("../../views/page/STGT/Report/StorageObject"),
   loading: Loading
 });
+const CreateDocGIEmpty = Loadable({
+  loader: () => import("../../views/page/STGT/Issues/CreateDocGIEmpty"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/issue/search",
@@ -246,6 +250,12 @@ const routes = [
     path: "/receive/receiveforcustomer",
     name: "Customers Return",
     compoment: ReceiveFromCustomer,
+    exact: true
+  },
+  {
+    path: "/issue/createEmpWm",
+    name: "base5",
+    compoment: CreateDocGIEmpty,
     exact: true
   },
   {
