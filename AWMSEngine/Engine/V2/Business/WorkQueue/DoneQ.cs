@@ -53,6 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.UpdateStorageObjectLocation(reqVO, queueTrx);
 
             var workQ = this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
+            
 
             var docs = GetDocument(reqVO.queueID.Value);
             
@@ -141,6 +142,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                        
                     }
                 }
+
+                var resUpLoc = this.ExectProject<TReq, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, reqVO);
+
                 return workQueueRes;
             }
             else

@@ -17,9 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ADO\SCADAApi\" />
     <Folder Include="APIService\" />
-    <Folder Include="Engine\" />
   </ItemGroup>
 
 </Project>
