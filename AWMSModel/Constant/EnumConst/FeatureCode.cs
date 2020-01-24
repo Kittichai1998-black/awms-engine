@@ -101,5 +101,8 @@ namespace AWMSModel.Constant.EnumConst
 
         [EnumValueAttribute(ValueString = "CUSTOMSTOES")]
         EXEWM_CUSTOM_STO_EVENTSTATUS,
+
+        [EnumValueAttribute(ValueString = "UPLOCAPI")]
+        EXEWM_SEND_LOCATION_API,
     }
 }
