@@ -19,8 +19,8 @@ namespace ProjectPanKan.APIService.WM
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = ObjectUtil.DynamicToModel<TransferMasterFromFileServer.TReq>(this.RequestVO);
-            var res = new TransferMasterFromFileServer().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<GetDocLoadByID.TReq>(this.RequestVO);
+            var res = new GetDocLoadByID().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }
