@@ -67,8 +67,8 @@
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
     <Compile Remove="Engine\V2\ClosedDocument.cs" />
     <Compile Remove="Engine\V2\ClosingDocument.cs" />
-    <Compile Remove="JobService\PostGRDoc311ToSAPJob.cs" />
-    <Compile Remove="JobService\PostGRDocPackage321ToSAPJob.cs" />
+    <Compile Remove="ScheduleService\PostGRDoc311ToSAPJob.cs" />
+    <Compile Remove="ScheduleService\PostGRDocPackage321ToSAPJob.cs" />
   </ItemGroup>
 
   <ItemGroup>

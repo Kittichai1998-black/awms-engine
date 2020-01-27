@@ -149,7 +149,17 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_BaseMasterType> _BaseMasterTypes;
         public List<ams_BaseMasterType> BaseMasterTypes { get => this._BaseMasterTypes ?? this.LoadBaseMasterType(); }
 
+        private List<ams_WorkerService> _WorkerService;
+        public List<ams_WorkerService> WorkerService { get => this._WorkerService ?? this.LoadWorkerService(); }
+
+        private List<ams_ScheduleService> _ScheduleService;
+        public List<ams_ScheduleService> ScheduleService { get => this._ScheduleService ?? this.LoadScheduleService(); }
+
+        private List<ams_HubService> _HubService;
+        public List<ams_HubService> HubService { get => this._HubService ?? this.LoadHubService(); }
+
         private static StaticValueManager instant;
+
 
         public static StaticValueManager GetInstant()
         {
@@ -159,7 +169,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         private StaticValueManager()
         {
-            this.LoadAll();
+            //this.LoadAll();
         }
         public void LoadAll()
         {
@@ -276,6 +286,19 @@ namespace AWMSEngine.ADO.StaticValue
         {
             return this._BaseMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_BaseMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
+        public List<ams_WorkerService> LoadWorkerService(VOCriteria buVO = null)
+        {
+            return this._WorkerService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_WorkerService>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public List<ams_ScheduleService> LoadScheduleService(VOCriteria buVO = null)
+        {
+            return this._ScheduleService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ScheduleService>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public List<ams_HubService> LoadHubService(VOCriteria buVO = null)
+        {
+            return this._HubService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_HubService>("status", 1, buVO ?? new VOCriteria()));
+        }
+
         public void ClearStaticByTableName(string tableName)
         {
             if (tableName.StartsWith("ams_"))
@@ -307,6 +330,9 @@ namespace AWMSEngine.ADO.StaticValue
                     this._PackUnitConverts = null;
                     this._PackMasterEmptyPallets = null;
                 }
+                else if (tableName == typeof(ams_ScheduleService).Name) this._ScheduleService = null;
+                else if (tableName == typeof(ams_WorkerService).Name) this._WorkerService = null;
+                else if (tableName == typeof(ams_HubService).Name) this._HubService = null;
             }
         }
 
