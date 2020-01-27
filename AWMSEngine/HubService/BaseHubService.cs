@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.HubService
 {
-    public abstract class BaseHubService : BaseHubService
+    public abstract class BaseHubService : Hub
     {
         private static List<ams_HubService> _HubServiceSetup = new List<ams_HubService>();
         public static void AddHubServiceSetup(ams_HubService hubService)
