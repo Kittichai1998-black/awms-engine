@@ -28,16 +28,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public DateTime actualTime;
 
         }
-        public class TDocItems
+        public class TReqandWorkQueue
         {
-            public long? ID;
-            public long Document_ID;
-            public decimal? Quantity;
-            public decimal? BaseQuantity;
-            public List<amt_DocumentItemStorageObject> DocItemStos;
-
+            public WorkQueueCriteria workQ;
+            public TReq reqVO;
+            public long? docID;
         }
-
         private ams_AreaLocationMaster _location;
         private ams_Warehouse _warehouse;
         private ams_AreaMaster _area;
@@ -53,7 +49,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.UpdateStorageObjectLocation(reqVO, queueTrx);
 
             var workQ = this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
-            
 
             var docs = GetDocument(reqVO.queueID.Value);
             
@@ -143,7 +138,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 }
 
-                var resUpLoc = this.ExectProject<TReq, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, reqVO);
+                var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { workQ = workQueueRes, reqVO = reqVO, docID = docs.ID.Value });
 
                 return workQueueRes;
             }

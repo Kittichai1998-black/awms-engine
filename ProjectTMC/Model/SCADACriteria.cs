@@ -11,7 +11,8 @@ namespace ProjectTMC.Model
         {
             public string PalletCode;
             public string LocationCode;
-            public string Quantity;
+            public string PackCode;
+            public decimal Quantity;
         }
     }
 }

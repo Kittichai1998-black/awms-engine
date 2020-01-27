@@ -12,12 +12,14 @@ namespace ProjectTMC.ADO.SCADAApi
     {
         public class SCADAResponse
         {
-            public object datas;
+            public dynamic datas;
+            public int status;
+            public string message;
+            public string stacktrace;
         }
 
-        public SCADAResponse SendLocation(SCADA_UpdateLocation_REQ reqVO, VOCriteria buVO)
+        public SCADAResponse SendLocation(SCADA_SendLocation_REQ reqVO, VOCriteria buVO)
         {
-            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var res = this.SendJson<SCADAResponse>("SCADA_CONNECT", reqVO, null, buVO);
             return res;
         }
