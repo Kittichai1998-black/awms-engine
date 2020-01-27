@@ -267,8 +267,6 @@ const AmDocumentViewPDFLD = props => {
                     });
                 });
 
-                //============================================================================
-                // console.log(dataTable);
                 setData(dataTable);
                 setDataDetailSOU(dataTableDetailSOU);
                 setDataDetailDES(dataTableDetailDES);

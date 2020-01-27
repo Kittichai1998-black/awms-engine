@@ -157,9 +157,9 @@ const CreateDocGIEmpty = props => {
       width: 90,
       style: { textAlign: "center" }
     },
-    {
+   {
       Header: "Unit",
-      accessor: "BaseUnitCode",
+      accessor: "UnitType",
       width: 70,
       style: { textAlign: "center" }
     },
@@ -312,7 +312,7 @@ const CreateDocGIEmpty = props => {
       columsddl: columsFindpopUp
     },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
-    { Header: "Unit", accessor: "unitType", type: "unitType" }
+    { Header: "Unit", accessor: "unitTypeCode", type: "unitType" }
   ];
 
   const columns = [
