@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.HubService
 {
-    public class CommonMessageHub : Hub
+    public class CommonMessageHub : BaseHubService
     {
         public async Task JsonMsg(string method, object msg)
         {
