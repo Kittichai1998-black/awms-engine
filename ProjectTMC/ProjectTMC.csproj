@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
     <ProjectReference Include="..\AWMSEngine\AWMSEngine.csproj" />
     <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
@@ -14,10 +18,6 @@
     <None Update="app.property">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="APIService\" />
   </ItemGroup>
 
 </Project>
