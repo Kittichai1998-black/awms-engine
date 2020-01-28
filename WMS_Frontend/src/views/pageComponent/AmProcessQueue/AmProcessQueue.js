@@ -14,7 +14,7 @@ import AmDropdown from '../../../components/AmDropdown';
 
 const ProcessQueue = (props) => {
   return <div>xxxx
-  <AmDropdown
+  {/* <AmDropdown
     id={field}
     placeholder={placeholder}
     fieldDataKey={fieldDataKey}
@@ -26,7 +26,7 @@ const ProcessQueue = (props) => {
     valueData={valueText2[field]} 
     queryApi={dataDropDow}
     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChangeFilter(value, dataObject, inputID, fieldDataKey,condition,colsField)}
-    ddlType={typeDropdow}/>
+    ddlType={typeDropdow}/> */}
   </div>
 }
   
