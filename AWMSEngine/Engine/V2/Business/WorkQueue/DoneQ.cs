@@ -30,9 +30,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         public class TReqandWorkQueue
         {
-            public WorkQueueCriteria workQ;
             public TReq reqVO;
-            public long? docID;
+            public WorkQueueCriteria workQ;
+            public amt_Document document;
         }
         private ams_AreaLocationMaster _location;
         private ams_Warehouse _warehouse;
@@ -137,8 +137,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                        
                     }
                 }
-
-                var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { workQ = workQueueRes, reqVO = reqVO, docID = docs.ID.Value });
+               
+                    var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { reqVO = reqVO, workQ = workQueueRes, document = docs });
+                
 
                 return workQueueRes;
             }
