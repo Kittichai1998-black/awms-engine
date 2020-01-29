@@ -64,6 +64,7 @@
     <Compile Remove="Engine\V1\Business\Received\RejectedGRDocument.cs" />
     <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
     <Compile Remove="Engine\V1\Validation\BuVORequiredFields.cs" />
+    <Compile Remove="Engine\V2\Business\Issued\ProcessQueueIssue.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
     <Compile Remove="Engine\V2\ClosedDocument.cs" />
     <Compile Remove="Engine\V2\ClosingDocument.cs" />
