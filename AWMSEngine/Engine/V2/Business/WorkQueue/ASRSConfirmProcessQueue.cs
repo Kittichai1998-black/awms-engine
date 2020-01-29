@@ -213,7 +213,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
                 }, this.BuVO);
 
-            WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
+            //WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             //priority queue by doc and dicitem @Anon	
             //find for send wcs
             var groupRstos = rstos.FindAll(rsto =>

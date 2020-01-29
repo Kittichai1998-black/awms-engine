@@ -11,8 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="Z.Expressions.Eval" Version="2.9.56" />
   </ItemGroup>
 
   <ItemGroup>
