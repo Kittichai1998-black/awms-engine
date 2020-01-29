@@ -14,5 +14,12 @@ namespace ProjectTMC.Model
             public string PackCode;
             public decimal Quantity;
         }
+
+        public class SCADA_SendConfirm_REQ
+        {
+            public string PalletCode;
+            public string PackCode;
+            public decimal Quantity;
+        }
     }
 }
