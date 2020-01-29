@@ -11,7 +11,7 @@ using AMWUtil.Exception;
 
 namespace AWMSEngine.ADO.StaticValue
 {
-    public class StaticValueManager : IStaticValueManager
+    public partial class StaticValueManager : IStaticValueManager
     {
         private List<ams_Feature> _Features;
         public List<ams_Feature> Features { get => this._Features ?? this.LoadFeature(); }
@@ -24,94 +24,15 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Branch> _Branchs;
         public List<ams_Branch> Branchs { get => this._Branchs ?? this.LoadBranch(); }
-        public ams_Branch GetBranch(long? branchID, long? warehouseID, long? areaID,
-            string branchCode, string warehouseCode, string areaCode)
-        {
-            ams_Branch b = null;
-            ams_Warehouse w = GetWarehouse(warehouseID, areaID, warehouseCode, areaCode);
-            if (branchID.HasValue || !string.IsNullOrEmpty(branchCode) || w != null)
-            {
-                b = this.Branchs.FirstOrDefault(x =>
-                x.ID == branchID ||
-                (!branchID.HasValue && x.Code == branchCode) ||
-                (!branchID.HasValue && string.IsNullOrWhiteSpace(branchCode) && w != null && x.ID == w.Branch_ID));
-                if (b == null)
-                    throw new Exception("รหัส branch ไม่ถูกต้อง");
-                else if (w != null && w.Branch_ID != b.ID)
-                    throw new Exception("รหัส Warehouses ไม่สัมพันธ์กับ Branch");
-            }
-
-            return b;
-        }
-
+        
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses ?? this.LoadWarehouse(); }
-        public ams_Warehouse GetWarehouse(long? warehouseID, long? areaID,
-            string warehouseCode, string areaCode)
-        {
-            ams_Warehouse w = null;
-            ams_AreaMaster a = GetAreaMaster(areaID, areaCode);
-            if (warehouseID.HasValue || !string.IsNullOrEmpty(warehouseCode) || a != null)
-            {
-                w = this.Warehouses.FirstOrDefault(x =>
-                x.ID == warehouseID ||
-                (!warehouseID.HasValue && x.Code == warehouseCode) ||
-                (!warehouseID.HasValue && string.IsNullOrWhiteSpace(warehouseCode) && w != null && x.ID == a.Warehouse_ID));
-                if (w == null)
-                    throw new Exception("รหัส Warehouses ไม่ถูกต้อง");
-                else if (a != null && a.Warehouse_ID != w.ID)
-                    throw new Exception("รหัส Area ไม่สัมพันธ์กับ Warehouses");
-            }
-
-            return w;
-        }
-        public string GetWarehousesCode(long id)
-        {
-            return this.Warehouses.First(x => x.ID == id).Code;
-        }
-
+        
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters ?? this.LoadAreaMaster(); }
-        public ams_AreaMaster GetAreaMaster(long areaID)
-        {
-            return this.GetAreaMaster(areaID, null);
-        }
-        public ams_AreaMaster GetAreaMaster(string areaCode)
-        {
-            return this.GetAreaMaster(null, areaCode);
-        }
-        public ams_AreaMaster GetAreaMaster(long? areaID, string areaCode)
-        {
-            ams_AreaMaster a = null;
-            if (areaID.HasValue || !string.IsNullOrEmpty(areaCode))
-            {
-                a = this.AreaMasters.FirstOrDefault(x =>
-                x.ID == areaID ||
-                (!areaID.HasValue && x.Code == areaCode));
-                if (a == null)
-                    throw new Exception("รหัส Area ไม่ถูกต้อง");
-            }
-
-            return a;
-        }
-        public string GetAreaMasterCode(long id)
-        {
-            return this.AreaMasters.First(x => x.ID == id).Code;
-        }
-
-        /*private List<ams_AreaMasterType> _AreaMasterTypes;
+        
+        private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes ?? this.LoadAreaMasterType(); }
-        public string GetAreaMasterTypesCode(long id)
-        {
-            return this.AreaMasterTypes.First(x => x.ID == id).Code;
-        }
-        public ams_AreaMasterType GetAreaMaterTypeByAreaID(long areaID)
-        {
-            var area = this.AreaMasters.FirstOrDefault(x => x.ID == areaID);
-            if (area == null)
-                throw new Exception("AreaID Not Found");
-            return this.AreaMasterTypes.Find(x => x.ID == area.AreaMasterType_ID);
-        }*/
 
         private List<ams_AreaRoute> _AreaRoutes;
         public List<ams_AreaRoute> AreaRoutes { get => this._AreaRoutes ?? this.LoadAreaRoute(); }
@@ -182,123 +103,7 @@ namespace AWMSEngine.ADO.StaticValue
             }
         }
 
-        public List<ams_Feature> LoadFeature(VOCriteria buVO = null)
-        {
-            return this._Features = ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, buVO ?? new VOCriteria());
-        }
-        public List<ams_Config> LoadConfig(VOCriteria buVO = null)
-        {
-            return this._Configs = ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, buVO ?? new VOCriteria());
-        }
-        public List<ams_ObjectSize> LoadObjectSize(VOCriteria buVO = null)
-        {
-            this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
-            var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
-            this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID && _ObjectSizes.Any(z=> z.ID == y.InnerObjectSize_ID)));
-            return this._ObjectSizes;
-        }
-        public List<amv_PackUnitConvert> LoadPackUnitConvert(VOCriteria buVO = null)
-        {
-            return this._PackUnitConverts = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<amv_PackUnitConvert>(new SQLConditionCriteria[] { }, buVO ?? new VOCriteria()));
-        }
-        public List<ams_UnitType> LoadUnitType(VOCriteria buVO = null)
-        {
-            return this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_AreaMaster> LoadAreaMaster(VOCriteria buVO = null)
-        {
-            return this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_AreaRoute> LoadAreaRoute(VOCriteria buVO = null)
-        {
-            return this._AreaRoutes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, buVO ?? new VOCriteria()));
-        }
-        /*public List<ams_AreaMasterType> LoadAreaMasterType(VOCriteria buVO = null)
-        {
-            return this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, buVO ?? new VOCriteria()));
-        }*/
-        public List<ams_Warehouse> LoadWarehouse(VOCriteria buVO = null)
-        {
-            return this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_Branch> LoadBranch(VOCriteria buVO = null)
-        {
-            return this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_Customer> LoadCustomer(VOCriteria buVO = null)
-        {
-            return this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_Supplier> LoadSupplier(VOCriteria buVO = null)
-        {
-            return this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_PackMasterType> LoadPackMasterType(VOCriteria buVO = null)
-        {
-            return this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_APIService> LoadAPIService(VOCriteria buVO = null)
-        {
-            return this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_SKUMasterType> LoadSKUMasterType(VOCriteria buVO = null)
-        {
-            return this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_Transport> LoadTransport(VOCriteria buVO = null)
-        {
-            return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_PackMaster> LoadPackMasterEmptyPallets(VOCriteria buVO = null)
-        {
-            var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMP", buVO ?? new VOCriteria()).FirstOrDefault();
-            if (packtype != null)
-            {
-                this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("PackMasterType_ID", packtype.ID.Value,
-                            SQLOperatorType.EQUALS, SQLConditionType.AND)
-                      }, buVO ?? new VOCriteria()));
-            }
-            else
-            {
-                this._PackMasterEmptyPallets = new List<ams_PackMaster>();
-            }
-            return this._PackMasterEmptyPallets;
-        }
-        public List<ams_SKUMaster> LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
-        {
-            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault();
-            if (skutype != null)
-            {
-                this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("SKUMasterType_ID",
-                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
-                            SQLOperatorType.EQUALS, SQLConditionType.AND)
-                      }, buVO ?? new VOCriteria()));
-            }
-            else
-            {
-                this._SKUMasterEmptyPallets = new List<ams_SKUMaster>();
-            }
-            return this._SKUMasterEmptyPallets;
-        }
-        public List<ams_BaseMasterType> LoadBaseMasterType(VOCriteria buVO = null)
-        {
-            return this._BaseMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_BaseMasterType>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_WorkerService> LoadWorkerService(VOCriteria buVO = null)
-        {
-            return this._WorkerService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_WorkerService>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_ScheduleService> LoadScheduleService(VOCriteria buVO = null)
-        {
-            return this._ScheduleService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ScheduleService>("status", 1, buVO ?? new VOCriteria()));
-        }
-        public List<ams_HubService> LoadHubService(VOCriteria buVO = null)
-        {
-            return this._HubService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_HubService>("status", 1, buVO ?? new VOCriteria()));
-        }
-
+        
         public void ClearStaticByTableName(string tableName)
         {
             if (tableName.StartsWith("ams_"))

@@ -256,7 +256,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             WCSQueueADO.TReq req = new WCSQueueADO.TReq()
             {
                 queueOut = _pickStos
-                .Where(x => this.StaticValue.GetAreaMaster(x.areaID).AreaMasterType_ID == AreaMasterTypeID.STORAGE_ASRS)
+                .Where(x => this.StaticValue.GetAreaMasterGroupType(x.areaID) == AreaMasterGroupType.STORAGE_AUTO)
                 .Select(x => new WCSQueueADO.TReq.queueout()
                 {
                     queueID = null,
