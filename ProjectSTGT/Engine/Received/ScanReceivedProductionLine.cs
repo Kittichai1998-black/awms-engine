@@ -51,7 +51,7 @@ namespace ProjectSTGT.Engine.Received
                       }, this.BuVO).FirstOrDefault();
 
                 if (getBase == null) //เป็น pack
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Please scan pallet fro remove");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Please scan pallet for remove");
 
 
             }
