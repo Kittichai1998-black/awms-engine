@@ -102,7 +102,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
             foreach (var rsto in rstos)
             {
-                if (!rsto.lockOnly)
+                //create model workqueue
+                if (!rsto.lockOnly && this.StaticValue.GetAreaMasterGroupType(rsto.areaID) == AreaMasterGroupType.STORAGE_AUTO)
                 {
                     var wq = new SPworkQueue()
                     {
@@ -263,11 +264,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             //priority queue by doc and dicitem @Anon	
+            //find for send wcs
             var groupRstos = rstos.FindAll(rsto =>
             {
-                var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
-                //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
-                return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
+                return StaticValue.GetAreaMasterGroupType(rsto.souAreaID) == AreaMasterGroupType.STORAGE_AUTO;
             }).GroupBy(x =>
             {
                 var docID = x.docItems.Select(y => y.docID).First();
@@ -350,10 +350,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             //    });	
             //});
-            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
-            if (wcsRes._result.resultcheck == 0)
+            if (wcQueue.queueOut.Count > 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
+                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
+                if (wcsRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
+                }
             }
         }
 
