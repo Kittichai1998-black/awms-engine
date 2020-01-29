@@ -21,8 +21,6 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
-                public string pickSeqGroup;
-                public long? pickSeqIndex;
 
                 public baseinfo baseInfo;
                 public class baseinfo
@@ -30,6 +28,8 @@ namespace AWMSEngine.ADO.QueueApi
                     public string baseCode;
                     public StorageObjectEventStatus eventStatus;
                     public List<packinfo> packInfos;
+                    public string pickSeqGroup;
+                    public long? pickSeqIndex;
                     public class packinfo
                     {
                         public string skuCode;

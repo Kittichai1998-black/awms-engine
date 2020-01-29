@@ -28,60 +28,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public List<amt_Document> docGRCrossDocks;
         }
 
-        public class RootStoProcess
-        {
-            public List<DocItem> docItems;
-            public class DocItem
-            {
-                public long docID;
-                public long docItemID;
-
-                public long bstoID;
-                public string bstoCode;
-
-                public long pstoID;
-                public string pstoCode;
-                public string pstoBatch;
-                public string pstoLot;
-                public string pstoOrderNo;
-                public string pstoOptions;
-
-                public decimal pickQty;
-                public long pickUnitID;
-                public decimal pickBaseQty;
-                public long pickBaseUnitID;
-
-                public bool useFullPick;
-
-            }
-            public long? workQueueID;
-            public int priority;
-
-            public long rstoID;
-            public string rstoCode;
-
-            public bool lockOnly = false;
-            //public decimal pstoQty;
-            //public long pstoUnitID;
-
-            //public decimal pstoBaseQty;
-            //public long pstoBaseUnitID;
-
-            public long warehouseID;
-            public long areaID;
-            public long? locationID;
-
-            public long souWarehouseID;
-            public long souAreaID;
-
-            public long desWarehouseID;
-            public long desAreaID;
-            public long? desLocationID;
-
-            public StorageObjectEventStatus? stoDoneSouEventStatus;
-            public StorageObjectEventStatus? stoDoneDesEventStatus;
-        }
-
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
@@ -102,7 +48,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
             foreach (var rsto in rstos)
             {
-                if (!rsto.lockOnly)
+                //create model workqueue
+                if (!rsto.lockOnly && this.StaticValue.GetAreaMasterGroupType(rsto.areaID) == AreaMasterGroupType.STORAGE_AUTO)
                 {
                     var wq = new SPworkQueue()
                     {
@@ -257,63 +204,74 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
         {
-            var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
-                new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
-            }, this.BuVO);
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
+            var groupQueueWcs = Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
+            if (groupQueueWcs == null)
+            {
+                var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
+                }, this.BuVO);
+
+            //WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             //priority queue by doc and dicitem @Anon	
+            //find for send wcs
             var groupRstos = rstos.FindAll(rsto =>
             {
-                var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
-                //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
-                return area.AreaMasterType_ID.Value == AreaMasterTypeID.STORAGE_ASRS;
+                return StaticValue.GetAreaMasterGroupType(rsto.souAreaID) == AreaMasterGroupType.STORAGE_AUTO;
             }).GroupBy(x =>
             {
                 var docID = x.docItems.Select(y => y.docID).First();
                 return docID;
             }).Select(x => new { docID = x.Key, rstos = x.ToList() }).ToList();
 
-            groupRstos.ForEach(rstoByDoc =>
-            {
-                var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
-                int docSeq = 1;
-                docItemGroup.ForEach(rstoByDocID =>
+                groupRstos.ForEach(rstoByDoc =>
                 {
-                    int seq = 1;
-                    rstoByDocID.rstos.ForEach(rsto =>
+                    var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
+                    int docSeq = 1;
+                    docItemGroup.ForEach(rstoByDocID =>
                     {
-                        wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
+                        int seq = 1;
+                        rstoByDocID.rstos.ForEach(rsto =>
                         {
-                            priority = rsto.priority,
-                            queueID = rsto.workQueueID.Value,
-                            desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
-                            desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
-                            desLocationCode = rsto.desLocationID.HasValue ?
-                                           ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
-                                           null,
-                            pickSeqGroup = DateTime.Now.ToString("ddMMyyyyHHmmssss") + "_" + docSeq.ToString(),
-                            pickSeqIndex = seq,
-
-                            baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
+                            wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
                             {
-                                eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
-                                baseCode = rsto.rstoCode,
-                                packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
-                                {
-                                    batch = x.pstoBatch,
-                                    lot = x.pstoLot,
-                                    skuCode = x.pstoCode,
-                                    skuQty = x.pickBaseQty
-                                }).ToList()
-                            }
+                                priority = rsto.priority,
+                                queueID = rsto.workQueueID.Value,
+                                desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
+                                desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
+                                desLocationCode = rsto.desLocationID.HasValue ?
+                                               ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
+                                               null,
 
+                                baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
+                                {
+                                    eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
+                                    baseCode = rsto.rstoCode,
+                                    pickSeqGroup = "0",
+                                    pickSeqIndex = 0,
+                                    packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
+                                    {
+                                        batch = x.pstoBatch,
+                                        lot = x.pstoLot,
+                                        skuCode = x.pstoCode,
+                                        skuQty = x.pickBaseQty,
+                                    }).ToList()
+                                }
+
+                            });
+                            seq++;
                         });
-                        seq++;
+                        docSeq++;
                     });
-                    docSeq++;
                 });
-            });
+            }
+            else
+            {
+                wcQueue = groupQueueWcs;
+            }
+            //priority queue by doc and dicitem @Anon	
+            
 
             //rstos.FindAll(rsto =>	
             //{	
@@ -350,10 +308,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             //    });	
             //});
-            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
-            if (wcsRes._result.resultcheck == 0)
+            if (wcQueue.queueOut.Count > 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
+                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
+                if (wcsRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
+                }
             }
         }
 

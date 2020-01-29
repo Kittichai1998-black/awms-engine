@@ -77,6 +77,11 @@ const ReceiveProductionLine = Loadable({
   loader: () => import("../../views/page/STGT/Receive/ReceiveProductionLine"),
   loading: Loading
 });
+const ReceiveProductionLineManual = Loadable({
+  loader: () =>
+    import("../../views/page/STGT/Receive/ReceiveProductionLineManual"),
+  loading: Loading
+});
 const StorageObject = Loadable({
   loader: () => import("../../views/page/STGT/Warehouse/StorageObject"),
   loading: Loading
@@ -135,6 +140,7 @@ const CreateDocGIEmpty = Loadable({
   loader: () => import("../../views/page/STGT/Issues/CreateDocGIEmpty"),
   loading: Loading
 });
+
 const routes = [
   {
     path: "/issue/search",
@@ -182,6 +188,12 @@ const routes = [
     path: "/receive/productionLine",
     name: "Search GR",
     compoment: ReceiveProductionLine,
+    exact: true
+  },
+  {
+    path: "/receive/productionLineManual",
+    name: "Search GR",
+    compoment: ReceiveProductionLineManual,
     exact: true
   },
   {

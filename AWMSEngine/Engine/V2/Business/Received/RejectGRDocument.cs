@@ -209,7 +209,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                 if (baseSto.eventStatus == StorageObjectEventStatus.RECEIVING)
                                 {
                                     var area = StaticValueManager.GetInstant().AreaMasters.Find(x => x.ID == baseSto.areaID);
-                                    if (area.AreaMasterType_ID == AreaMasterTypeID.MACHINE_GATE || area == null)
+                                    if (this.StaticValue.GetAreaMasterGroupType(area.AreaMasterType_ID) == AreaMasterGroupType.MACHINE || area == null)
                                     {
                                         ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(baseSto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.REJECTED, this.BuVO);
                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
@@ -258,7 +258,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var area = StaticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
                 //return areaType.ID == 10;
-                return area.AreaMasterType_ID == AreaMasterTypeID.STORAGE_ASRS;
+                return this.StaticValue.GetAreaMasterGroupType(area.AreaMasterType_ID) == AreaMasterGroupType.STORAGE_AUTO;
             }
             ).ForEach(rsto =>
             {

@@ -6,10 +6,9 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum AreaMasterGroupType
     {
-        STORAGE_ASRS = 1,
-        STORAGE_MANUAL = 4,
-        GATE = 2,
-        STAGING = 3,
-        MACHINE = 5
+        STORAGE_AUTO = 1,
+        MACHINE = 2,
+        STORAGE_MANUAL = 3,
+        STATION = 4
     }
 }

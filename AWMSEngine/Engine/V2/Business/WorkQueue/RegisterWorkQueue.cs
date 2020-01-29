@@ -381,14 +381,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
-                        Sou_AreaMasterType_ID = area.AreaMasterType_ID.Value,
+                        Sou_AreaMasterType_ID = area.AreaMasterType_ID,
                         //Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
                         //Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
                         Sou_AreaMaster_ID = area.ID.Value,
                         Sou_AreaMaster_Code = area.Code,
                         Sou_AreaLocationMaster_ID = location.ID,
                         Sou_AreaLocationMaster_Code = location.Code,
-                        Des_AreaMasterType_ID = desArea.AreaMasterType_ID.Value,
+                        Des_AreaMasterType_ID = desArea.AreaMasterType_ID,
                         //Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
                         //Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
                         Des_AreaMaster_ID = desArea.ID.Value,

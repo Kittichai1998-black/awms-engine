@@ -96,6 +96,10 @@ const CountingAdj = Loadable({
   loader: () => import("../../views/page/MRK/Counting/CountingAdj"),
   loading: Loading
 });
+const TestProcessQueueV2 = Loadable({
+  loader: () => import("../../views/page/TestProcessQueueV2"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/counting/manualcounting",
@@ -204,6 +208,12 @@ const routes = [
     path: "/testdashboard",
     name: "TestRedirect",
     compoment: testDashboard,
+    exact: true
+  },
+  {
+    path: "/tpcq",
+    name: "TestProcessQueue ",
+    compoment: TestProcessQueueV2,
     exact: true
   }
   // { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }

@@ -70,9 +70,9 @@ namespace AMWUtil.Logger
         {
             return GetLogger(Guid.NewGuid().ToString(), serviceName);
         }
-        public static AMWLogger GetLogger(dynamic refID, dynamic serviceName)
+        public static AMWLogger GetLogger(string logName, dynamic serviceName)
         {
-            return GetLogger(refID.ToString(), serviceName.ToString());
+            return GetLogger(logName, serviceName.ToString());
         }
         public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
         {
@@ -86,7 +86,6 @@ namespace AMWUtil.Logger
                 dicMapKey.Add("{MachineName}", System.Environment.MachineName);
                 dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
                 dicMapKey.Add("{LogName}", logName);
-                dicMapKey.Add("{RefID}", logName);
                 dicMapKey.Add("{ServiceName}", serviceName);
 
                 logManager.LogUri = logManager.LogUriFormat.EndsWith("/") || logUriFormat.EndsWith("\\") ? logUriFormat : logUriFormat + "/";

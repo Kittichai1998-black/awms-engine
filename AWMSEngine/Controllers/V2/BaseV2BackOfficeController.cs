@@ -57,8 +57,8 @@ namespace AWMSEngine.Controllers.V2
             }
             var database = new { server = dbServer, status = dbStatus };
 
-            var workers = Startup.WorkerControllers;
-            var scheduler = Startup.SchedulerControllers;
+            //var workers = Startup.WorkerControllers;
+            //var scheduler = Startup.SchedulerControllers;
 
             return new
             {
