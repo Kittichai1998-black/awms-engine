@@ -217,7 +217,12 @@ export default props => {
     },
     { Header: "SI", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
-    { Header: "Unit", accessor: "unitType", type: "text" }
+    { Header: "Unit", accessor: "unitType", type: "text" },
+
+  // { Header: "Base Qty", accessor: "Quantity", type: "text" },
+    // { Header: "Base Unit", accessor: "BaseUnitCode", type: "text" },
+    { Header: "Sale Quantity", accessor: "SaleQuantity", type: "text" },
+    { Header: "Sale Unit", accessor: "UnitCode", type: "text" }
   ];
 
   const columns = [
@@ -226,7 +231,12 @@ export default props => {
     { Header: "Reorder", accessor: "SKUItems" },
     { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
-    { Header: "Unit", accessor: "unitType", width: 70 }
+    { Header: "Unit", accessor: "unitType", width: 70 },
+
+    // { Header: "Base Qty", accessor: "Quantity", width: 90 },
+    // { Header: "Base Unit", accessor: "BaseUnitCode", width: 90 },
+    { Header: "Sale Quantity", accessor: "SaleQuantity", width: 110 },
+    { Header: "Sale Unit", accessor: "UnitCode", width: 90 }
   ];
 
   const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
