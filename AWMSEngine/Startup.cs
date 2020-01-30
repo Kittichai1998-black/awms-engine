@@ -97,7 +97,7 @@ namespace AWMSEngine
 
         private void SetUpWorker(IServiceCollection services)
         {
-            var workers = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService;
+            /*var workers = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService;
             foreach (var wk in workers)
             {
                 BaseWorkerService.AddJobWorkerSetup(wk);
@@ -107,7 +107,8 @@ namespace AWMSEngine
                 MethodInfo m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService", new Type[] { typeof(IServiceCollection) });
                 var m2 = m1.MakeGenericMethod(t);
                 IServiceCollection w = (IServiceCollection)m2.Invoke(null, new object[] { services });
-            }
+            }*/
+            services.AddHostedService<StartupWorkerService>();
         }
         private void SetUpHub(IApplicationBuilder app)
         {
@@ -117,8 +118,6 @@ namespace AWMSEngine
             {
                 foreach (var hb in hubs)
                 {
-                    BaseHubService.AddHubServiceSetup(hb);
-
                     string hubURL = hb.Url;
                     string hubClassName = hb.FullClassName;
                     var t = AMWUtil.Common.ClassType.GetClassType(hubClassName);

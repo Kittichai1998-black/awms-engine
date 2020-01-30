@@ -12,11 +12,15 @@ using AWMSEngine.Engine.V2.Business.Received;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System.Dynamic;
+using AWMSEngine.WorkerService;
+using AWMSEngine.HubService;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ProjectSTGT.Engine.Worker
 {
-    public class ReadExcelFileWorker : BackgroundService
+    public class ReadExcelFileWorker : BaseWorkerService
     {
+
         public class TRes
         {
             public string skuCode;
@@ -29,28 +33,15 @@ namespace ProjectSTGT.Engine.Worker
             public string remark;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public ReadExcelFileWorker(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
         {
-            var tsk = Task.Run(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var createGRDoc = new ProjectSTGT.APIService.ReadExcelAPI();
-                        var obj = new { apikey = "FREE01" };
-                        var res = createGRDoc.Execute(obj);
-                    }
-                    catch (Exception ex)
-                    {
-                    }
-                    finally
-                    {
-                        Thread.Sleep(10000);
-                    }
-                }
-            });
-            return tsk;
+        }
+
+        protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
+        {
+            var createGRDoc = new ProjectSTGT.APIService.ReadExcelAPI();
+            var obj = new { apikey = "FREE01" };
+            var res = createGRDoc.Execute(obj);
         }
     }
 }
