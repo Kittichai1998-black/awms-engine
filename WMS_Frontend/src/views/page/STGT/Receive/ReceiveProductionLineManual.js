@@ -77,15 +77,15 @@ const ReceiveProductionLineManual = props => {
       clearInput: true,
       required: true
     },
-    {
-      field: "amount",
-      type: "number",
-      name: "Quantity",
-      placeholder: "Quantity",
-      clearInput: true,
-      required: true,
-      disabled: true
-    },
+    // {
+    //   field: "amount",
+    //   type: "number",
+    //   name: "Quantity",
+    //   placeholder: "Quantity",
+    //   clearInput: true,
+    //   required: true,
+    //   disabled: true
+    // },
     {
       field: SC.OPT_REMARK,
       type: "input",

@@ -14,7 +14,7 @@ namespace AWMSEngine.WorkerService
 {
     public class CommonDashboardWorker : BaseWorkerService
     {
-        public CommonDashboardWorker(ILogger<CommonDashboardWorker> logger, IHubContext<CommonMessageHub> commonHub) : base(logger, commonHub)
+        public CommonDashboardWorker(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
         {
         }
 
