@@ -95,17 +95,28 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                                     //var tanumlists = new List<string>();
                                     docs.DocumentItems.ForEach(docItem =>
                                     {
-                                        var WorkQueueLists3 = docItem.DocItemStos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                                        //var WorkQueueLists3 = docItem.DocItemStos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                                        var WorkQueueLists3 = docItem.DocItemStos.GroupBy(grp => grp.WorkQueue_ID).Select(y => new { wqID = y.Key, DiSTO = y.ToList() }).ToList();
                                         WorkQueueLists3.ForEach(wq =>
                                         {
-                                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                                            var reqScada = new SCADA_SendConfirm_REQ()
+                                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.wqID.Value, buVO);
+
+                                            wq.DiSTO.ForEach(dis =>
                                             {
-                                                PalletCode = queue.StorageObject_Code,
-                                                PackCode = docItem.Code,
-                                                Quantity = docItem.Quantity.Value
-                                            };
-                                            inReqList.Add(reqScada);
+                                                var stoPack = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(dis.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, buVO);
+                                                if (stoPack == null)
+                                                    throw new AMWException(logger, AMWExceptionCode.V1001, "Pack Not Found");
+
+                                                var reqScada = new SCADA_SendConfirm_REQ()
+                                                {
+                                                    PalletCode = queue.StorageObject_Code,
+                                                    PackCode = stoPack.code,
+                                                    Quantity = dis.BaseQuantity
+                                                };
+                                                inReqList.Add(reqScada);
+                                            });
+
+                                               
                                         });
                                     });
                                     var resSCADA = SendDataToSCADA(inReqList, docs.ID.Value, buVO);
@@ -273,7 +284,19 @@ namespace ProjectTMC.Engine.Business.WorkQueue
         }
         private TRes SendDataToSCADA(List<dynamic> req, long? docID, VOCriteria buVO)
         {
-            var res = SCADAInterfaceADO.GetInstant().SendToSCADA(req, buVO);
+            var inReqG = req.Select(x => (SCADA_SendConfirm_REQ)x).GroupBy(x => new
+            {
+                PalletCode = x.PalletCode,
+                PackCode = x.PackCode 
+              
+            }).Select(x =>
+            {
+                var x2 = AMWUtil.Common.ObjectUtil.DynamicToModel<SCADA_SendConfirm_REQ>(x.Key);
+                x2.Quantity = x.Sum(y => y.Quantity);
+                return x2;
+            }).ToList();
+
+            var res = SCADAInterfaceADO.GetInstant().SendToSCADA(inReqG, buVO);
             if (res._result.status == 1) // success
             {
 
