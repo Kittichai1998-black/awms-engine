@@ -13,38 +13,26 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.WorkerService
 {
-    public abstract class BaseWorkerService : BackgroundService
+    public abstract class BaseWorkerService
     {
-        protected readonly IHubContext<CommonMessageHub> CommonMsgHub;
-
-        private static List<ams_WorkerService> _JobWorkerSetup = new List<ams_WorkerService>();
-        public static void AddJobWorkerSetup(ams_WorkerService jobWorker)
-        {
-            _JobWorkerSetup.Add(jobWorker);
-        }
         protected long WorkerServiceID { get; set; }
-
-        private static readonly object _LockGetJobWorkerID = new object();
+        protected readonly IHubContext<CommonMessageHub> CommonMsgHub;
 
         protected abstract void ExecuteEngine(Dictionary<string,string> options, VOCriteria buVO);
 
-        public BaseWorkerService(ILogger<CommonDashboardWorker> logger, IHubContext<CommonMessageHub> commonHub)
+        public BaseWorkerService(long workerServiceID, IHubContext<CommonMessageHub> commonHub)
         {
             this.CommonMsgHub = commonHub;
-            lock (_LockGetJobWorkerID)
-            {
-                this.WorkerServiceID = _JobWorkerSetup.First(x => x.FullClassName == this.GetType().FullName).ID.Value;
-                _JobWorkerSetup.RemoveAll(x => x.ID == this.WorkerServiceID);
-            }
+            this.WorkerServiceID = workerServiceID;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task ExecuteAsync()
         {
             VOCriteria buVO = new VOCriteria();
             var logger = AMWLoggerManager.GetLogger("worker." + this.WorkerServiceID, this.GetType().Name);
             buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
             logger.LogInfo("######START######");
-            while (!stoppingToken.IsCancellationRequested)
+            while (true)
             { 
                 var job = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
 
@@ -72,7 +60,7 @@ namespace AWMSEngine.WorkerService
                     await Task.Delay(job.SleepMS);
                 }
             }
-            logger.LogInfo("######STOP######");
+            logger.LogInfo("######REMOVE######");
         }
     }
 }

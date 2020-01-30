@@ -453,8 +453,7 @@ const AmDocumentViewPDF = props => {
             } else {
                 Remark = datas.Remark
             }
-            let dataSortGroubySI = _.groupBy(dataDocumentItem, ['orderNo'])
-            console.log(dataSortGroubySI)
+
             if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
                 dataDocumentItem.map((item, idx) => {
                     console.log(item)
@@ -482,14 +481,34 @@ const AmDocumentViewPDF = props => {
                 })
 
             }
-        
+
+            let DataDocumentGroupbySI = [];
             let dataSortGrouby = _.orderBy(dataSort, ['Reorder', 'Size', 'CartonNo'], ['asc', 'asc', 'asc']);
-            let sumQtys = _.sumBy(dataSort, 'Qty')
-       
-            let pageLeght = Math.ceil(dataSortGrouby.length / 15)
-            //console.log(dataSortGrouby)
-            dataDocumentItemTB = dataSortGrouby.map((x, idx) => {
-                console.log(x)
+            let dataSortGroubySI = _.chain(dataSortGrouby).groupBy("SI").value();
+            let sumQtys = null
+            let dataExport = []
+            let dataPDFbySI = null
+            let indxSI = null
+            dataSortGrouby.forEach((i, index) => {
+                var filterSI = dataSortGrouby.filter(
+                    x => x['SI'] === dataSortGrouby[index]['SI'])
+               // console.log(filterSI.length)
+
+                let NoSI = dataSortGrouby[index]['SI']
+                let NoSIs = dataSortGrouby[index +1]['SI']
+                let NoSIint = parseInt(NoSI);
+                let NoSIints = parseInt(NoSIs);
+                console.log(NoSIint)
+                console.log(NoSIints)            
+                if (NoSIint !== NoSIints) {
+                    indxSI = i.SI
+                    dataPDFbySI = dataSortGroubySI[indxSI]
+                    console.log(dataPDFbySI)
+                } 
+                console.log(dataPDFbySI)
+                console.log(indxSI)
+                sumQtys = _.sumBy(dataPDFbySI, 'Qty')
+                dataDocumentItemTB = dataSortGroubySI[NoSI].map((x, idx) => {
                 return [idx + 1,
                 x.Status,
                  x.PalletCode,
@@ -502,8 +521,15 @@ const AmDocumentViewPDF = props => {
                 x.Unit,
                 x.Remark
                 ];
-            })
+                })
 
+                dataExport.push(dataDocumentItemTB)
+            })
+            //console.log(dataExport)
+            //console.log(dataDocumentItemTB)
+            //let sumQtys = _.sumBy(dataSort, 'Qty')
+            
+            let pageLeght = Math.ceil(dataSortGrouby.length / 15)
             let dataArr = [];
 
             for (var i = 0; i < pageLeght; i++) {
