@@ -52,8 +52,10 @@ const DocumentViewGISTGT = props => {
     { width: 150, accessor: "packCode", Header: "Reorder" },
     { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "orderNo", Header: "SI" },
-    { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 110, accessor: "_packQty", Header: "Base Qty" },
+    { width: 80, accessor: "packUnitCode", Header: "Base Unit" },
+    { width: 120, accessor: "_packQtyConvert", Header: "Qty" },
+    { width: 60, accessor: "distoUnitCodeConvert", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
