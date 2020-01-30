@@ -47,8 +47,8 @@ const ReceiveProductionLineManual = props => {
     placeholder: "Select Area",
     fieldLabel: ["Code", "Name"],
     fieldDataKey: "ID",
-    defaultValue: 13,
-    customQ: "{ 'f': 'ID', 'c':'=', 'v': 13}"
+    defaultValue: 17,
+    customQ: "{ 'f': 'ID', 'c':'in', 'v': '13,17'}"
   };
 
   const inputItem = [
