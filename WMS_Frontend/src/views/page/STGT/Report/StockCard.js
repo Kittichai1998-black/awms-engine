@@ -52,7 +52,7 @@ input {
 
 const LabelH = styled.label`
     // font-weight: bold;
-    width: 100px; 
+    width: 140px; 
 `;
 
 
@@ -129,7 +129,7 @@ const StockCard = (props) => {
     };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
-            <FormInline><LabelH>{t('Reorder')} : </LabelH>
+            <FormInline><LabelH>{t('Reorder (Item Code)')} : </LabelH>
                 <AmInput
                     id={"packCode"}
                     type="input"
@@ -139,7 +139,7 @@ const StockCard = (props) => {
                 />
             </FormInline>
             <FormInline>
-                <LabelH>{t("SI.")} : </LabelH>
+                <LabelH>{t("SI (Order No.)")} : </LabelH>
                 <AmInput
                     id={"orderNo"}
                     type="input"

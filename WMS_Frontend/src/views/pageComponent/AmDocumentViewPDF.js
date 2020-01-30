@@ -161,12 +161,15 @@ const AmDocumentViewPDF = props => {
 
                 res.data.document.documentItems.forEach(row => {
                     var sumQty = 0;
+                    var sumQtyConvert = 0;
                     res.data.sou_bstos
                         .filter(y => y.docItemID == row.ID)
                         .forEach(y => {
                             sumQty += y.distoQty;
+                            sumQtyConvert += y.distoQtyConvert
                         });
                     row._sumQtyDisto = sumQty;
+                    row._sumQtyDistoConvert = sumQtyConvert;
 
                     // === getOption === DocItem
 
@@ -217,7 +220,11 @@ const AmDocumentViewPDF = props => {
                                         ? row._sumQtyDisto +
                                         " / " +
                                         (row.Quantity === null ? " - " : row.Quantity)
-                                        : null
+                                        : null,
+                      _qtyConvert:
+                            typeDoc === "issued"
+                                 ? row._sumQtyDisto +" / " + (row.Quantity === null ? "-" : row.Quantity)
+                                 : null                 
                     });
                 });
 
@@ -258,7 +265,10 @@ const AmDocumentViewPDF = props => {
                                     ? rowDetail.packQty
                                     : typeDoc === "audit"
                                         ? rowDetail.distoQty
-                                        : null
+                                        : null,
+                      _packQtyConvert : typeDoc === "issued"
+                      ? rowDetail.distoQtyConvert + " / " + rowDetail.distoQtyMaxConvert :null
+
                     });
                 });
 
