@@ -10,17 +10,64 @@ namespace ProjectTMC.ADO.SCADAApi
 {
     public class SCADAInterfaceADO : BaseAPIAccess<SCADAInterfaceADO>
     {
-        public class SCADAResponse
+         
+        public class TRes
         {
-            public dynamic datas;
-            public int status;
-            public string message;
-            public string stacktrace;
-        }
+            public dynamic dataScada;
+            public Result _result;
 
-        public SCADAResponse SendLocation(SCADA_SendLocation_REQ reqVO, VOCriteria buVO)
+            public class Result
+            {
+                public int status;
+                public string message;
+            }
+        }
+        public TRes SendToSCADA(dynamic reqVO, VOCriteria buVO)
         {
-            var res = this.SendJson<SCADAResponse>("SCADA_CONNECT", reqVO, null, buVO);
+            var res = new TRes();
+            var resScada = this.SendJson<dynamic>("SCADA_CONNECT", reqVO, null, buVO);
+            if(resScada.scada_status2 == 1)//case success
+            {
+                res.dataScada = resScada;
+                res._result = new TRes.Result()
+                {
+                    message = "SUCCESS",
+                    status = 1
+                };
+            }
+            else//case error
+            {
+                res.dataScada = resScada;
+                res._result = new TRes.Result()
+                {
+                    message = "Cannot connect to Scada.",
+                    status = 0
+                };
+            }
+            return res;
+        }
+        public TRes SendToSCADA(List<dynamic> reqVO, VOCriteria buVO)
+        {
+            var res = new TRes();
+            var resScada = this.SendJson<dynamic>("SCADA_CONNECT", reqVO, null, buVO);
+            if (resScada.scada_status2 == 1)//case success
+            {
+                res.dataScada = resScada;
+                res._result = new TRes.Result()
+                {
+                    message = "SUCCESS",
+                    status = 1
+                };
+            }
+            else//case error
+            {
+                res.dataScada = resScada;
+                res._result = new TRes.Result()
+                {
+                    message = "Cannot connect to Scada.",
+                    status = 0
+                };
+            }
             return res;
         }
     }

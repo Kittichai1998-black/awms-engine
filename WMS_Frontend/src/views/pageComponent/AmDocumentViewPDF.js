@@ -402,6 +402,7 @@ const AmDocumentViewPDF = props => {
             } else {
                 Docstatus = ''
             }
+            var DocCode = null
             var movementType = null
             var SouWarehouse = null
             var DesWare = null
@@ -410,11 +411,16 @@ const AmDocumentViewPDF = props => {
             var Remark = null
             var Units = null
            
-            console.log(datas)
             if (datas.MovementName === null || datas.MovementName === undefined) {
                 movementType = ''
             } else {
                 movementType = datas.MovementName
+            }
+
+            if (datas.Code === null || datas.Code === undefined) {
+                DocCode = ''
+            } else {
+                DocCode = datas.Code
             }
 
             if (datas.SouWarehouseName === null || datas.SouWarehouseName === undefined) {
@@ -441,23 +447,23 @@ const AmDocumentViewPDF = props => {
             if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
                 dataDocumentItem.map((item, idx) => {
                     console.log(item)
+                    console.log(item.skuType)
                     var qryStr1 = queryString.parse(item.sou_options)
                     var catonNo = qryStr1["carton_no"]
                     var Remarks = qryStr1["remark"]
-                    // console.log(item)
-                    // console.log(catonNo)
-                    // console.log(Remarks)
+
                     datasItem = {
                         "No": idx + 1,
                         "Status": 'Pass',
-                        "PalletCode": item.code,
+                        "PalletCode": item.code === undefined || item.code === null ? '' : item.code,
+                        "SI": item.orderNo === undefined || item.orderNo === null ? '' : item.orderNo,
                         "Reorder": item.packCode.padStart(15, '0'),
-                        "Brand": item.packName,
-                        "Size": item.skuType,
-                        "CartonNo": catonNo,
-                        "Qty": item.distoQty,
-                        "Unit": item.packUnitCode,
-                        "Remark": Remarks === undefined || Remarks === null ?null:Remarks,
+                        "Brand": item.packName === undefined || item.packName === null ? '' : item.packName ,
+                        "Size": item.skuType === undefined || item.skuType === null ? '' : item.skuType,
+                        "CartonNo": catonNo === undefined || catonNo === null ? '' : catonNo ,
+                        "Qty": item.distoQty === undefined || item.distoQty === null ? '' : item.distoQty,
+                        "Unit": item.packUnitCode === undefined || item.packUnitCode === null ? '' : item.packUnitCode,
+                        "Remark": Remarks === undefined || Remarks === null ? '' :Remarks,
 
                     }
                     Units = item.packUnitCode
@@ -465,15 +471,38 @@ const AmDocumentViewPDF = props => {
                 })
 
             }
+
+            let DataDocumentGroupbySI = [];
             let dataSortGrouby = _.orderBy(dataSort, ['Reorder', 'Size', 'CartonNo'], ['asc', 'asc', 'asc']);
-            let sumQtys = _.sumBy(dataSort, 'Qty')
-            console.log(sumQtys)
-            let pageLeght = Math.ceil(dataSortGrouby.length / 15)
-            console.log(dataSortGrouby)
-            dataDocumentItemTB = dataSortGrouby.map((x, idx) => {
+            let dataSortGroubySI = _.chain(dataSortGrouby).groupBy("SI").value();
+            let sumQtys = null
+            let dataExport = []
+            let dataPDFbySI = null
+            let indxSI = null
+            dataSortGrouby.forEach((i, index) => {
+                var filterSI = dataSortGrouby.filter(
+                    x => x['SI'] === dataSortGrouby[index]['SI'])
+               // console.log(filterSI.length)
+
+                let NoSI = dataSortGrouby[index]['SI']
+                let NoSIs = dataSortGrouby[index +1]['SI']
+                let NoSIint = parseInt(NoSI);
+                let NoSIints = parseInt(NoSIs);
+                console.log(NoSIint)
+                console.log(NoSIints)            
+                if (NoSIint !== NoSIints) {
+                    indxSI = i.SI
+                    dataPDFbySI = dataSortGroubySI[indxSI]
+                    console.log(dataPDFbySI)
+                } 
+                console.log(dataPDFbySI)
+                console.log(indxSI)
+                sumQtys = _.sumBy(dataPDFbySI, 'Qty')
+                dataDocumentItemTB = dataSortGroubySI[NoSI].map((x, idx) => {
                 return [idx + 1,
                 x.Status,
-                x.PalletCode,
+                 x.PalletCode,
+                 x.SI,
                 x.Reorder.replace(/^0+/, ''),
                 x.Brand,
                 x.Size,
@@ -482,8 +511,15 @@ const AmDocumentViewPDF = props => {
                 x.Unit,
                 x.Remark
                 ];
-            })
+                })
 
+                dataExport.push(dataDocumentItemTB)
+            })
+            //console.log(dataExport)
+            //console.log(dataDocumentItemTB)
+            //let sumQtys = _.sumBy(dataSort, 'Qty')
+            
+            let pageLeght = Math.ceil(dataSortGrouby.length / 15)
             let dataArr = [];
 
             for (var i = 0; i < pageLeght; i++) {
@@ -493,9 +529,9 @@ const AmDocumentViewPDF = props => {
             var docDefinition
             let docDefinitionpage = []
             let contents = []
-
+           
             dataArr.forEach((x, idx) => {
-            
+                console.log(dataArr)
                 let pages = idx + 1
                 docDefinition = [
 
@@ -506,8 +542,8 @@ const AmDocumentViewPDF = props => {
 
                     {
                         columns: [
-                            { width: '20%', text: "SI." + dataDetailExport.sou_bstos[0].orderNo, style: 'col8' },
-                            { width: '40%', text: '' },
+                            { width: '20%', text: "Document No." , style: 'col8' },
+                            { width: '40%', text: DocCode, style: 'col8' },
                             { width: '20%', text: 'Docment Date :', style: 'col8' },
                             { width: '40%', text: DocDate, style: 'col8' }
                         ],
@@ -553,7 +589,7 @@ const AmDocumentViewPDF = props => {
 
                         table: {
                             headerRows: 1,
-                            widths: [30, 70, '*', '*', 500, 70, '*', '*', '*', '*',],
+                            widths: [30, 70, '*','*' ,'*', 500, 70, 120, 120, 120, '*',],
                             header: {
                                 fontSize: 26,
                                 alignment: 'center'
@@ -567,7 +603,7 @@ const AmDocumentViewPDF = props => {
 
                             body: [
 
-                                ['No.', 'Status', 'Pallet Code', 'Reorder', 'Brand', 'Size', 'Carton No.', 'Qty', 'Unit', 'Remark'],
+                                ['No.', 'Status', 'Pallet Code','SI', 'Reorder', 'Brand', 'Size', 'Carton No.', 'Qty', 'Unit', 'Remark'],
                                 ...dataArr[idx]
 
                             ]
@@ -628,7 +664,7 @@ const AmDocumentViewPDF = props => {
                             style: 'tableFooters',
                             table: {
                                 heights: 20,
-                                widths: [140, 140,140],
+                                widths: [120, 120,120],
                                 body: [
                                     ['Total', sumQtys, Units],
                            
@@ -715,7 +751,7 @@ const AmDocumentViewPDF = props => {
                         },
                         tableFooters: {
                             fontSize: 25,
-                            margin: [1005, 0, 0, 60]
+                            margin: [1088, 0, 0, 40]
                         },
                         footers: {
                             fontSize: 20,
