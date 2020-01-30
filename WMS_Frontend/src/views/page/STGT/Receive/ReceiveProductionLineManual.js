@@ -73,7 +73,7 @@ const ReceiveProductionLineManual = props => {
       field: "cartonNo",
       type: "input",
       name: "Carton No.",
-      placeholder: "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15",
+      placeholder: "ex. 1",
       clearInput: true,
       required: true
     },
@@ -457,14 +457,14 @@ const ReceiveProductionLineManual = props => {
           // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
           let qryStr1 = queryString.stringify(qryStrOpt);
           let uri_opt = decodeURIComponent(qryStr1);
-          // console.log(uri_opt);
-          const strCopy = uri_opt.split("-");
-          // console.log(strCopy[0]);
+          //console.log(uri_opt);
+          //const strCopy = uri_opt.split("-");
+          //console.log(strCopy[0]);
           dataScan = {
             allowSubmit: true,
             orderNo: orderNo,
             scanCode: skuCode,
-            options: cartonNo === "0" ? null : strCopy[0],
+            options: cartonNo === "0" ? null : uri_opt,
             validateSKUTypeCodes: ["FG"]
           };
           // if (reqValue.action != 2) {
