@@ -37,7 +37,7 @@ namespace AWMSEngine.ScheduleService
                 {
                     var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);
                     this.ExecuteEngine(options, buVO);
-                    logger.LogInfo("ON");
+                    //logger.LogInfo("ON");
                 }
                 else
                 {
@@ -51,7 +51,7 @@ namespace AWMSEngine.ScheduleService
             }
             finally
             {
-                logger.LogInfo("#####END######");
+                logger.LogInfo("#####REMOVE######");
             }
 
             return Task.CompletedTask;

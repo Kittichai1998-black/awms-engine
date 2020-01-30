@@ -28,7 +28,6 @@ namespace ProjectSTGT.Engine.WorkQueue
                 var area = staticValue.AreaMasters.First(x => x.ID == rsto.souAreaID);
                 //var areaType = StaticValue.AreaMasterTypes.First(x => x.ID == area.AreaMasterType_ID);
                 return staticValue.GetAreaMasterGroupType(area.AreaMasterType_ID) == AreaMasterGroupType.STORAGE_AUTO;
-
             }).GroupBy(x =>
             {
                 var docID = x.docItems.Select(y => y.docID).First();
