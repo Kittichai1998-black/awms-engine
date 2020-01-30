@@ -197,22 +197,22 @@ const StorageObject = props => {
   };
   const primarySearch = [
     {
-      label: "Pallet",
+      label: "Pallet Code",
       field: "Pallet",
       searchType: "input",
-      placeholder: "Pallet"
+      placeholder: "Pallet Code"
     },
     {
-      label: "SI.",
+      label: "SI (Order No.)",
       field: "OrderNo",
       searchType: "input",
-      placeholder: "SI."
+      placeholder: "SI (Order No.)"
     },
     {
-      label: "Reorder",
+      label: "Reorder (Item Code)",
       field: "SKU_Code",
       searchType: "input",
-      placeholder: "Reorder"
+      placeholder: "Reorder (Item Code)"
     }
   ];
 
