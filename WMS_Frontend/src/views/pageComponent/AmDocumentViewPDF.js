@@ -488,17 +488,15 @@ const AmDocumentViewPDF = props => {
                 let NoSIs = dataSortGrouby[index +1]['SI']
                 let NoSIint = parseInt(NoSI);
                 let NoSIints = parseInt(NoSIs);
-                console.log(NoSIint)
-                console.log(NoSIints)            
-                if (NoSIint !== NoSIints) {
-                    indxSI = i.SI
-                    dataPDFbySI = dataSortGroubySI[indxSI]
-                    console.log(dataPDFbySI)
-                } 
-                console.log(dataPDFbySI)
-                console.log(indxSI)
+                console.log(NoSI)
+                //if (NoSIint !== NoSIints) {
+                //    indxSI = i.SI
+                //    dataPDFbySI = dataSortGroubySI[indxSI]
+                //    console.log(dataPDFbySI)
+                //} 
+                
                 sumQtys = _.sumBy(dataPDFbySI, 'Qty')
-                dataDocumentItemTB = dataSortGroubySI[NoSI].map((x, idx) => {
+                dataDocumentItemTB = dataSortGroubySI[i.SI].map((x, idx) => {
                 return [idx + 1,
                 x.Status,
                  x.PalletCode,
