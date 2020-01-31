@@ -73,17 +73,6 @@ export default props => {
         // ]
     ])
 
-    const location = window.location;
-    const lastUrl = location.pathname.split("/")[2]
-    let defaultValueDD = ""
-    if (lastUrl === "1") {
-        defaultValueDD = "DASHBOARD_WORKING_IN_LS"
-    } else if (lastUrl === "2") {
-        defaultValueDD = "DASHBOARD_WORKING_IN_PS"
-    } else {
-        defaultValueDD = "DASHBOARD_WORKING_IN_ALL"
-    }
-
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
