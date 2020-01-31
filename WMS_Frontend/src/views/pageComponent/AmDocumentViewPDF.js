@@ -162,14 +162,30 @@ const AmDocumentViewPDF = props => {
                 res.data.document.documentItems.forEach(row => {
                     var sumQty = 0;
                     var sumQtyConvert = 0;
+                    var qtyConvert = 0;
+                    var unitConvert = row.UnitType_Code;
                     res.data.sou_bstos
                         .filter(y => y.docItemID == row.ID)
                         .forEach(y => {
+                            //console.log(y)
                             sumQty += y.distoQty;
-                            sumQtyConvert += y.distoQtyConvert
+                            if( y.distoQtyConverts[1] != undefined){
+                                sumQtyConvert += y.distoQtyConverts[1]["qty"]
+                                //console.log(y.packCode)                              
+                                // qtyConvert = y.distoQtyConverts[1]["qtyMax"]  
+                                unitConvert = y.distoQtyConverts[1]["unit"]
+                            }
+                            if(y.packCode === "000000000"){
+                                //console.log(row.Quantity)
+                                qtyConvert = row.BaseQuantity
+                                unitConvert = row.UnitType_Code
+                            }
                         });
+                        //console.log(unitConvert)
                     row._sumQtyDisto = sumQty;
                     row._sumQtyDistoConvert = sumQtyConvert;
+                    //row.qtyConvert = qtyConvert
+                    row.unitConvert = unitConvert
 
                     // === getOption === DocItem
 
@@ -184,47 +200,32 @@ const AmDocumentViewPDF = props => {
                         });
                     }
 
-                    if (window.project === "AAI") {
-                        row.lenum = qryStr.lenum === "undefined" ? null : qryStr.lenum;
-                        row.posnr = qryStr.rosnr === "undefined" ? null : qryStr.posnr;
-                        row.matnr = qryStr.matnr === "undefined" ? null : qryStr.matnr;
-                        row.charg = qryStr.charg === "undefined" ? null : qryStr.charg;
-                        row.lgtyp = qryStr.lgtyp === "undefined" ? null : qryStr.lgtyp;
-                        row.lgbtr = qryStr.lgbtr === "undefined" ? null : qryStr.lgbtr;
-                        row.lgpla = qryStr.lgpla === "undefined" ? null : qryStr.lgpla;
-                        row.bestq_ur =
-                            qryStr.bestq_ur === "undefined" ? null : qryStr.bestq_ur;
-                        row.bastq_qi =
-                            qryStr.bastq_qi === "undefined" ? null : qryStr.bastq_qi;
-                        row.bastq_blk =
-                            qryStr.bastq_blk === "undefined" ? null : qryStr.bastq_blk;
-                    }
-
                     row.palletcode =
                         qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
                     row.locationcode =
                         qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
-
+//console.log(row.unitConvert)
                     dataTable.push({
                         ...row,
                         _qty:
                             typeDoc === "issued"
                                 ? row._sumQtyDisto +
                                 " / " +
-                                (row.Quantity === null ? "-" : row.Quantity)
+                                (row.BaseQuantity === null ? "-" : row.BaseQuantity)
                                 : typeDoc === "received"
                                     ? row._sumQtyDisto +
                                     " / " +
-                                    (row.Quantity === null ? " - " : row.Quantity)
+                                    (row.BaseQuantity === null ? " - " : row.BaseQuantity)
                                     : typeDoc === "loading"
                                         ? row._sumQtyDisto +
                                         " / " +
-                                        (row.Quantity === null ? " - " : row.Quantity)
+                                        (row.BaseQuantity === null ? " - " : row.BaseQuantity)
                                         : null,
-                      _qtyConvert:
+                        _qtyConvert:
                             typeDoc === "issued"
-                                 ? row._sumQtyDisto +" / " + (row.Quantity === null ? "-" : row.Quantity)
-                                 : null                 
+                                 ? row._sumQtyDistoConvert +" / " + (row.Quantity === null ? "-" : row.Quantity)
+                                 : null,
+                        _unitConvert:  typeDoc === "issued" ?row.unitConvert :null     
                     });
                 });
 
@@ -456,8 +457,8 @@ const AmDocumentViewPDF = props => {
 
             if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
                 dataDocumentItem.map((item, idx) => {
-                    console.log(item)
-                    console.log(item.skuType)
+                    //console.log(item)
+                    //console.log(item.skuType)
                     var qryStr1 = queryString.parse(item.sou_options)
                     var catonNo = qryStr1["carton_no"]
                     var Remarks = qryStr1["remark"]
