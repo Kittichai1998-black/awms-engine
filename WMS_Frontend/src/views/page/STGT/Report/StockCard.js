@@ -98,6 +98,8 @@ const StockCard = (props) => {
         Axios.get(pathGetAPI).then((rowselect1) => {
             if (rowselect1) {
                 if (rowselect1.data._result.status !== 0) {
+                    console.log(rowselect1.data.datas);
+                    
                     setdatavalue(rowselect1.data.datas)
                     setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
                 }
@@ -209,6 +211,8 @@ const StockCard = (props) => {
             "Cell": (e) => comma(e.value.toString())
         },
         { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
+        { Header: 'Sale Quantity', accessor: 'Quantity', width: 110, sortable: false },
+        { Header: 'Sale Unit', accessor: 'UnitType', width: 90, sortable: false },
         { Header: 'Description', accessor: 'Description', width: 250, sortable: false },
 
     ];

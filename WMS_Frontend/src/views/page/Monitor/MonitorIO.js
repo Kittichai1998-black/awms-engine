@@ -13,24 +13,24 @@ export default props => {
     // const { t } = useTranslation()
     let dashboard = "";
     useEffect(() => {
-        var location = props.location;
+        var location = window.location;
         const search = httpToObject.parse(location.search)
 
         if (search.IOType && search.IOType === "IN") {
-            if (location.pathname === "/monitor/inbound") {
+            // if (location.pathname === "/monitor/inbound") {
                 dashboard = 'DASHBOARD_IN';
                 document.title = "Inbound Progress : AMW";
-            } else {
-                window.location.replace("/404");
-            }
+            // } else {
+            //     window.location.replace("/404");
+            // }
         }
         if (search.IOType && search.IOType === "OUT") {
-            if (location.pathname === "/monitor/outbound") {
+            // if (location.pathname === "/monitor/outbound") {
                 dashboard = 'DASHBOARD_OUT';
                 document.title = "Outbound Progress : AMW";
-            } else {
-                window.location.replace("/404");
-            }
+            // } else {
+            //     window.location.replace("/404");
+            // }
         }
 
     }, [props.location, localStorage.getItem('Lang')]);
