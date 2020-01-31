@@ -34,7 +34,18 @@ const headercol2 = [
 
 export default props => {
 
-    const [valueDD, setValueDD] = useState('DASHBOARD_WORKING_OUT_ALL')
+    const location = window.location;
+    const lastUrl = location.pathname.split("/")[2]
+    let defaultValueDD = ""
+    if (lastUrl === "1") {
+        defaultValueDD = "DASHBOARD_WORKING_OUT_LD"
+    } else if (lastUrl === "2") {
+        defaultValueDD = "DASHBOARD_WORKING_OUT_PD"
+    } else {
+        defaultValueDD = "DASHBOARD_WORKING_OUT_ALL"
+    }
+
+    const [valueDD, setValueDD] = useState(defaultValueDD)
     const [data, setData] = useState([
         [ //row
             { //col 
@@ -61,6 +72,17 @@ export default props => {
         //     }
         // ]
     ])
+
+    const location = window.location;
+    const lastUrl = location.pathname.split("/")[2]
+    let defaultValueDD = ""
+    if (lastUrl === "1") {
+        defaultValueDD = "DASHBOARD_WORKING_IN_LS"
+    } else if (lastUrl === "2") {
+        defaultValueDD = "DASHBOARD_WORKING_IN_PS"
+    } else {
+        defaultValueDD = "DASHBOARD_WORKING_IN_ALL"
+    }
 
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
@@ -129,7 +151,7 @@ export default props => {
                 ddlMinWidth={230} //กำหนดความกว้างของกล่อง dropdown
                 // queryApi={dataMovementType}
                 data={optionsArea} //request {value,label}
-                defaultValue={'DASHBOARD_WORKING_OUT_ALL'} //value เรื่มต้น
+                defaultValue={defaultValueDD} //value เรื่มต้น
                 onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
                 ddlType={"search"} //รูปแบบ Dropdown 
             />
