@@ -164,7 +164,13 @@ const AmCreateDocument = (props) => {
             indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity"),
             indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "orderNo"),
             indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType"),
-            indexSKUItems = props.columnEdit.findIndex(x => x.accessor === "SKUItems")
+            indexSKUItems = props.columnEdit.findIndex(x => x.accessor === "SKUItems"),
+
+            // indexBQuantity = props.columnEdit.findIndex(x => x.accessor === "Quantity"),
+            // indexBUnit = props.columnEdit.findIndex(x => x.accessor === "BaseUnitCode"),
+            indexSQuantity = props.columnEdit.findIndex(x => x.accessor === "SaleQuantity"),
+            indexSUnit = props.columnEdit.findIndex(x => x.accessor === "UnitCode")
+
 
         //CaseByCase
         if (field === "palletcode") {
@@ -183,6 +189,11 @@ const AmCreateDocument = (props) => {
 
                 editData.orderNo = data.orderNo
 
+                editData.Quantity = data.Quantity
+                editData.BaseUnitCode = data.BaseUnitCode
+                editData.SaleQuantity = data.SaleQuantity
+                editData.UnitCode = data.UnitCode
+
 
                 // if (indexSKUItems !== -1)
                 //     setTimeout(() => {
@@ -196,6 +207,16 @@ const AmCreateDocument = (props) => {
                     ref.current[indexOrderNo].current.value = data.orderNo
                 if (indexUnitType !== -1)
                     ref.current[indexUnitType].current.textContent = data.BaseUnitCode
+
+                // if (indexBQuantity !== -1)
+                //     ref.current[indexBQuantity].current.textContent = data.Quantity
+                // if (indexBUnit !== -1)
+                //     ref.current[indexBUnit].current.textContent = data.BaseUnitCode
+                if (indexSQuantity !== -1)
+                    ref.current[indexSQuantity].current.textContent = data.SaleQuantity
+                if (indexSUnit !== -1)
+                    ref.current[indexSUnit].current.textContent = data.UnitCode
+
             } else {
                 delete editData.ID
             }
@@ -219,14 +240,40 @@ const AmCreateDocument = (props) => {
                 editData.skuCode = data.Code
                 editData.unitType = data.UnitTypeCode
                 editData.skuName = data.Name
+
+                editData.Quantity = data.Quantity
+                editData.BaseUnitCode = data.BaseUnitCode
+                editData.SaleQuantity = data.SaleQuantity
+                editData.UnitCode = data.UnitCode
                 if (indexUnitType !== -1)
                     ref.current[indexUnitType].current.textContent = data.UnitTypeCode
+                // if (indexBQuantity !== -1)
+                //     ref.current[indexBQuantity].current.textContent = data.Quantity
+                // if (indexBUnit !== -1)
+                //     ref.current[indexBUnit].current.textContent = data.BaseUnitCode
+                if (indexSQuantity !== -1)
+                    ref.current[indexSQuantity].current.textContent = data.SaleQuantity
+                if (indexSUnit !== -1)
+                    ref.current[indexSUnit].current.textContent = data.UnitCode
             } else {
                 delete editData.skuCode
                 delete editData.unitType
                 delete editData.skuName
+
+                delete editData.Quantity
+                delete editData.BaseUnitCode
+                delete editData.SaleQuantity
+                delete editData.UnitCode
                 if (indexUnitType !== -1)
                     ref.current[indexUnitType].current.textContent = ""
+                // if (indexBQuantity !== -1)
+                //     ref.current[indexBQuantity].current.textContent = ""
+                // if (indexBUnit !== -1)
+                //     ref.current[indexBUnit].current.textContent = ""
+                if (indexSQuantity !== -1)
+                    ref.current[indexSQuantity].current.textContent = ""
+                if (indexSUnit !== -1)
+                    ref.current[indexSUnit].current.textContent = ""
             }
 
 
@@ -892,7 +939,9 @@ const AmCreateDocument = (props) => {
                 orderNo: x.orderNo,
                 UnitCode: x.UnitCode,
                 BaseUnitCode: x.BaseUnitCode,
-                locationcode: x.LocationCode || x.locationcode
+                locationcode: x.LocationCode || x.locationcode,
+                Quantity: x.Quantity,
+                SaleQuantity: x.SaleQuantity
             };
             // ['Batch', 'Quantity', 'UnitCode'].forEach(e => delete y[e]);
             if (props.createDocType === "audit")
@@ -938,10 +987,10 @@ const AmCreateDocument = (props) => {
                             dataCheck={dataCheck}
                         /> : null}
 
-                        {props.add === false ?null:<AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
+                        {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
                             {t('Add')}
                         </AmButton>}
-                        
+
                     </div>
                 </Grid>
             </Grid>

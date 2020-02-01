@@ -24,9 +24,10 @@ const CustomerQuery = {
   l: 100,
   all: ""
 };
-const ReceiveFromCustomer = props => {
+const ReceiveProductionLineManual = props => {
   const {} = props;
-
+  // setInputItemx(true);
+  // console.log("sdhaus");
   const inputWarehouse = {
     visible: true,
     field: "warehouseID",
@@ -46,24 +47,9 @@ const ReceiveFromCustomer = props => {
     placeholder: "Select Area",
     fieldLabel: ["Code", "Name"],
     fieldDataKey: "ID",
-    defaultValue: 13,
+    defaultValue: 17,
     customQ: "{ 'f': 'ID', 'c':'in', 'v': '13,17'}"
   };
-
-  const inputSource = [
-    {
-      field: SC.OPT_SOU_CUSTOMER_ID,
-      type: "dropdown",
-      typeDropdown: "search",
-      name: "Sou.Customer",
-      dataDropDown: CustomerQuery,
-      placeholder: "Select Customer",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "ID",
-      defaultValue: 1,
-      required: true
-    }
-  ];
 
   const inputItem = [
     {
@@ -87,58 +73,45 @@ const ReceiveFromCustomer = props => {
       field: "cartonNo",
       type: "input",
       name: "Carton No.",
-      placeholder: "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15",
+      placeholder: "ex. 1",
       clearInput: true,
       required: true
     },
-    {
-      field: "amount",
-      type: "number",
-      name: "Quantity",
-      placeholder: "Quantity",
-      clearInput: true,
-      required: true,
-      disabled: true
-    },
+    // {
+    //   field: "amount",
+    //   type: "number",
+    //   name: "Quantity",
+    //   placeholder: "Quantity",
+    //   clearInput: true,
+    //   required: true,
+    //   disabled: true
+    // },
     {
       field: SC.OPT_REMARK,
       type: "input",
       name: "Remark",
       placeholder: "Remark"
-    },
-    {
-      field: SC.OPT_DONE_DES_EVENT_STATUS,
-      type: "radiogroup",
-      name: "Status",
-      fieldLabel: [{ value: "96", label: "RETURN" }],
-      defaultValue: { value: "96", disabled: true }
     }
   ];
 
   const inputFirst = [
-    {
-      field: SC.OPT_REMARK,
-      type: "input",
-      name: "Remark",
-      placeholder: "Remark",
-      isFocus: true
-    },
-    {
-      field: SC.OPT_DONE_DES_EVENT_STATUS,
-      type: "radiogroup",
-      name: "Status",
-      fieldLabel: [{ value: "96", label: "RETURN" }],
-      defaultValue: { value: "96", disabled: true }
-    },
     {
       field: "scanCode",
       type: "input",
       name: "Scan Pallet",
       placeholder: "Scan Pallet",
       required: true,
-      clearInput: true
+      clearInput: true,
+      isFocus: true
+    },
+    {
+      field: SC.OPT_REMARK,
+      type: "input",
+      name: "Remark",
+      placeholder: "Remark"
     }
   ];
+
   const [showDialog, setShowDialog] = useState(null);
   const [stateDialog, setStateDialog] = useState(false);
   const [msgDialog, setMsgDialog] = useState("");
@@ -222,6 +195,9 @@ const ReceiveFromCustomer = props => {
     return oldValue;
   }
   async function onBeforePost(reqValue, storageObj, curInput) {
+    //setInputItemx(true);
+    console.log(curInput);
+    console.log(reqValue);
     var resValuePost = null;
     var dataScan = {};
     if (reqValue) {
@@ -271,11 +247,11 @@ const ReceiveFromCustomer = props => {
             }
           }
         } else {
-          if (curInput === "orderNo") {
-            orderNo = null;
-            console.log("orderNo null");
-            alertDialogRenderer("SI (Order No.) must be value.", "error", true);
-          }
+          // if (curInput === "orderNo") {
+          //   orderNo = null;
+          //   console.log("orderNo null");
+          //   alertDialogRenderer("SI (Order No.) must be value.", "error", true);
+          // }
         }
         if (reqValue.cartonNo && reqValue.cartonNo.trim().length !== 0) {
           reqValue.cartonNo = reqValue.cartonNo.trim();
@@ -468,7 +444,7 @@ const ReceiveFromCustomer = props => {
           let eleAmount = document.getElementById("amount");
           if (eleAmount) {
             eleAmount.value = newQty;
-            reqValue["amount"] = newQty;
+            reqValue["amount"] = 1;
           }
         }
 
@@ -481,7 +457,9 @@ const ReceiveFromCustomer = props => {
           // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
           let qryStr1 = queryString.stringify(qryStrOpt);
           let uri_opt = decodeURIComponent(qryStr1);
-
+          //console.log(uri_opt);
+          //const strCopy = uri_opt.split("-");
+          //console.log(strCopy[0]);
           dataScan = {
             allowSubmit: true,
             orderNo: orderNo,
@@ -489,17 +467,17 @@ const ReceiveFromCustomer = props => {
             options: cartonNo === "0" ? null : uri_opt,
             validateSKUTypeCodes: ["FG"]
           };
-          if (reqValue.action != 2) {
-            //ไม่ใช่เคสลบ
-            if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
-              alertDialogRenderer(
-                "Please select source customer before.",
-                "error",
-                true
-              );
-              dataScan.allowSubmit = false;
-            }
-          }
+          // if (reqValue.action != 2) {
+          //   //ไม่ใช่เคสลบ
+          //   if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
+          //     alertDialogRenderer(
+          //       "Please select source customer before.",
+          //       "error",
+          //       true
+          //     );
+          //     dataScan.allowSubmit = false;
+          //   }
+          // }
           resValuePost = { ...reqValue, ...dataScan };
         } else {
           if (rootID === null) {
@@ -510,6 +488,8 @@ const ReceiveFromCustomer = props => {
             );
           } else {
             if (reqValue.action === 2) {
+              console.log("sdhaus");
+
               if (storageObj.code === reqValue.scanCode) {
                 resValuePost = { ...reqValue, allowSubmit: true };
               } else {
@@ -531,6 +511,12 @@ const ReceiveFromCustomer = props => {
                     true
                   );
                 }
+
+                alertDialogRenderer(
+                  "Please scan pallet for remove",
+                  "error",
+                  true
+                );
                 resValuePost = { ...reqValue, allowSubmit: false };
               }
             } else {
@@ -571,7 +557,6 @@ const ReceiveFromCustomer = props => {
       <AmMappingPallet2
         showWarehouseDDL={inputWarehouse}
         showAreaDDL={inputArea}
-        sourceCreate={inputSource}
         // headerCreate={inputHeader} //input header
         itemCreate={inputItem} //input scan pallet
         FirstScans={inputFirst}
@@ -581,12 +566,13 @@ const ReceiveFromCustomer = props => {
         customOptions={customOptions}
         showOptions={true}
         setVisibleTabMenu={[null, "Add", "Remove"]}
-        setMovementType={"1012"}
+        //setMovementType={"1012"}
         autoDoc={true}
         autoPost={false}
+        apiCreate={"/v2/ScanReceivedProductionLineAPI"}
         showOldValue={onOldValue}
       />
     </div>
   );
 };
-export default ReceiveFromCustomer;
+export default ReceiveProductionLineManual;

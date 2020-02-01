@@ -13,17 +13,6 @@ import * as SC from "../../../../constant/StringConst";
 
 // const Axios = new apicall()
 
-const CustomerQuery = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "Customer",
-  q: '[{ "f": "Status", "c":"<", "v": 2}]',
-  f: "*",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  l: 100,
-  all: ""
-};
 const CustomerReturnPalletByBarcode = props => {
   const {} = props;
 

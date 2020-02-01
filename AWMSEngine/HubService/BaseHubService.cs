@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -10,21 +11,16 @@ namespace AWMSEngine.HubService
 {
     public abstract class BaseHubService : Hub
     {
-        private static List<ams_HubService> _HubServiceSetup = new List<ams_HubService>();
-        public static void AddHubServiceSetup(ams_HubService hubService)
-        {
-            _HubServiceSetup.Add(hubService);
-        }
-        protected long HubServiceID { get; set; }
-        private static readonly object _LockGetHubServiceID = new object();
+        protected ams_HubService HubService { get; set; }
 
         public BaseHubService()
         {
-            lock (_LockGetHubServiceID)
-            {
-                this.HubServiceID = _HubServiceSetup.First(x => x.FullClassName == this.GetType().FullName).ID.Value;
-                _HubServiceSetup.RemoveAll(x => x.ID == this.HubServiceID);
-            }
+            this.HubService = StaticValueManager.GetInstant().HubService.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
+            //lock (_LockGetHubServiceID)
+            //{
+            //    this.HubServiceID = _HubServiceSetup.First(x => x.FullClassName == this.GetType().FullName).ID.Value;
+            //    _HubServiceSetup.RemoveAll(x => x.ID == this.HubServiceID);
+            //}
         }
     }
 }

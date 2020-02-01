@@ -145,7 +145,6 @@ const AmDocumentViewPDFLD = props => {
 
     useEffect(() => {
         getData();
-        console.log(props.optionDocItems);
     }, []);
 
     const getData = () => {
@@ -345,28 +344,213 @@ const AmDocumentViewPDFLD = props => {
     };
 
     const ExportPDF = () => {
-        console.log(dataDetailExport)
         var descus = dataDetailExport.document.DesCustomerName
         var doccode = dataDetailExport.document.Code
         var docdate = dataDetailExport.document.ModifyTime
-        console.log(descus)
+        let dataSort = [];
+        let datasItem = {}
+        let dataDocumentItemTB;
         //var head1 = "มูลนิธิยุวพัฒน์"
         sethead1("มูลนิธิยุวพัฒน์");
-       
-        var docDefinition = {
-            content: [
-                { text: 'มูลนิธิยุวพัฒน์' + head1, fontSize: 15 },
-                { text: 'ใบขออนุญาตนำสินค้าร่วมปันออกนอกคลังปันกัน', fontSize: 15 },
-                { text: 'สาขาที่ส่ง' + descus  , fontSize: 15 },
-                { text: 'เลขที่เอกสาร' + doccode, fontSize: 15 },
-                { text: 'วันที่นำออก' + docdate, fontSize: 15 },
+
+        if (dataDetailExport !== undefined || dataDetailExport !== null) {
+            var dataDetailDocumentSou = dataDetailExport.sou_bstos
+            var dataDetailDocumentDes = dataDetailExport.des_bstos
+            dataDetailDocumentSou.forEach((x, idx) => {
+
+                dataDetailDocumentDes.forEach((y, idxs) => {
+                    datasItem = {
+                        'No.': idx + 1,
+                        'Item': x.packCode + ":" + x.packName,
+                        'Qty': x.packQty,
+                        'Unit': x.distoBaseUnitCode,
+                        'Remark': y.code
+                    }
+                    dataSort.push(datasItem)
+                })
 
 
-            ],
-            defaultStyle: {
-                font: 'THSarabunNew',
-            }
-        };
+            })
+
+        }
+        let dataSortGrouby = _.orderBy(dataSort, ['Iem'], ['asc']);
+        let pageLeght = Math.ceil(dataSortGrouby.length / 20)
+        dataDocumentItemTB = dataSortGrouby.map((x, idx) => {
+            console.log(x)
+            return [idx + 1,
+            x.Item,
+            x.Qty,
+            x.Unit,
+            x.Remark
+            ];
+        })
+        let dataArr = [];
+        for (var i = 0; i < pageLeght; i++) {
+            var data = dataDocumentItemTB.filter(x => { return x[0] <= (15 * (i + 1)) }).filter(x => x[0] >= ((i * 15) + 1));
+            dataArr.push(data);
+        }
+        var docDefinition
+        let docDefinitionpage = [];
+        let contents = [];
+
+        dataArr.forEach((x, idx) => {
+            console.log(dataArr)
+            let pages = idx + 1
+            docDefinition = [
+                { text: 'PANKAN', fontSize: 20, alignment: 'center', bold: true, },
+                { text: 'Loading Document', fontSize: 20, alignment: 'center', bold: true, },
+                //{ text: 'สาขาที่ส่ง' + descus  , fontSize: 15 },
+                //{ text: 'เลขที่เอกสาร' + doccode, fontSize: 15 },
+                //{ text: 'วันที่นำออก' + docdate, fontSize: 15 },
+                {
+                    columns: [
+                        { width: '20%', text: 'Des Customer :', style: 'col1' },
+                        { width: '40%', text: descus, style: 'col1' },
+                        { width: '20%', text: 'DocumentCode:', style: 'col1' },
+                        { width: '40%', text: doccode, style: 'col1' }
+                        //{ text: 'Des Customer' + descus, fontSize: 18 },
+                        //{ text: 'DocumentCode' + doccode, fontSize: 18 },
+
+                    ],
+                    columnGap: 1
+                },
+                {
+                    columns: [
+                        { width: '20%', text: '', style: 'col1' },
+                        { width: '40%', text: '', style: 'col1' },
+                        { width: '20%', text: 'Date Loading:', style: 'col1' },
+                        { width: '40%', text: docdate, style: 'col1' }
+                        //{ text: 'Date Loading' + docdate, fontSize: 18 },
+                    ],
+                    columnGap: 10
+                },
+                {
+                    columns: [
+                        { width: '20%', text: 'List Isse ......................', style: 'col1' },
+                        // { text: 'List Isse ......................', fontSize: 15 },
+                    ],
+                    columnGap: 10
+                },
+                {
+                    style: 'tableFooter',
+
+                    table: {
+                        headerRows: 1,
+                        widths: [30, '*', '*', '*', '*'],
+                        header: {
+                            fontSize: 18,
+                            alignment: 'center'
+
+                        },
+                        anotherStyle: {
+                            italics: true,
+                            fontSize: 18,
+                            alignment: 'right',
+                        },
+
+                        body: [
+
+                            ['No.', 'Item', 'Qty', 'Unit', 'Remark'],
+                            //...dataArr[idx]
+
+
+                        ]
+                    }
+                },
+            ]
+
+            if (docDefinition !== [])
+                contents.push(docDefinition)
+
+        })
+
+        var conpage = contents.map((x, idx) => {
+            if (contents[idx] !== [])
+                return conpage = contents[idx]
+
+        })
+  
+        if (conpage !== []) {
+
+            docDefinition = {
+                pageSize: { width: 1190, height: 1684 },
+                content: [
+                    conpage,
+
+                ],
+                styles: {
+                    col1: {
+                        fontSize: 18,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+
+                    },
+                    col1s: {
+                        fontSize: 25,
+                        bold: true,
+                        margin: [0, 10, 0, 40]
+
+                    },
+                    col2: {
+                        fontSize: 25,
+                        margin: [0, 10, 0, 10]
+                    },
+                    col3: {
+                        fontSize: 25,
+                        font: 'THSarabunNew',
+                        margin: [0, 0, 0, 10]
+                    },
+                    col4: {
+                        fontSize: 25, margin: [0, 40, 0, 10]
+                    },
+                    col5: {
+                        fontSize: 20, margin: [0, 40, 0, 10]
+                    },
+                    col6: {
+                        fontSize: 25, margin: [0, 0, 0, 0]
+                    },
+                    col7: {
+                        fontSize: 18, margin: [0, 0, 0, 0]
+                    },
+                    col8: {
+                        fontSize: 20,
+                        bold: true,
+                        margin: [0, 40, 0, 10]
+
+                    },
+                    headers: {
+                        fontSize: 20,
+                        bold: true,
+                        margin: [10, 10, 10, 10]
+                    },
+                    tableFooter: {
+                        fontSize: 18,
+                        margin: [0, 0, 0, 0]
+                    },
+                    tableFooters: {
+                        fontSize: 18,
+                        margin: [1005, 0, 0, 60]
+                    },
+                    footers: {
+                        fontSize: 18,
+                        margin: [40, 0, 0, 0]
+                    },
+                    footer: {
+                        fontSize: 18,
+                        margin: [10, 0, 0, 10]
+
+                    }
+                },
+                defaultStyle: {
+                    font: 'THSarabunNew',
+                    bold: true,
+
+                }
+            };
+
+        
+    }
+
         pdfMake.createPdf(docDefinition).open()
 
     }
@@ -376,7 +560,6 @@ const AmDocumentViewPDFLD = props => {
     return (
         <div>
             {getHeader()}
-            {console.log(dataHeader)}
             <br />
             <br />
 

@@ -6,17 +6,15 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum AreaMasterTypeID
     {
-        STORAGE_ASRS = 10,
-        STORAGE_MANUAL = 11,
 
-        MACHINE_GATE = 20,
-        MACHINE_MOVE = 21,
+        STO_ASRS = 10,
+        STO_STAGING = 11,
+        MC_GATE = 20,
+        MC_RGV = 21,
+        MC_CRANE = 22,
+        MC_CONVEYOR = 23,
+        STA_PICK = 30,
+        STA_CONSO = 31
 
-        STATION_UNPACK = 30,
-        STATION_PICKING = 31,
-        STATION_CONSOLIDATE = 32,
-
-        STAGING_RECEIVE = 40,
-        STAGING_SHIPPING = 41,
     }
 }
