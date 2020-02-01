@@ -419,7 +419,7 @@ const AmDocumentViewPDF = props => {
             var DesWarehouse = null
             var Descus = null
             var Remark = null
-            var Units = null
+            var Units = []
            
             if (datas.MovementName === null || datas.MovementName === undefined) {
                 movementType = ''
@@ -455,14 +455,14 @@ const AmDocumentViewPDF = props => {
             }
 
             if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
-                dataDocumentItem.map((item, idx) => {
+                dataSort = dataDocumentItem.map((item, idx) => {
                     console.log(item)
                     console.log(item.skuType)
                     var qryStr1 = queryString.parse(item.sou_options)
                     var catonNo = qryStr1["carton_no"]
                     var Remarks = qryStr1["remark"]
 
-                    datasItem = {
+                    return {
                         "No": idx + 1,
                         "Status": 'Pass',
                         "PalletCode": item.code === undefined || item.code === null ? '' : item.code,
@@ -476,8 +476,7 @@ const AmDocumentViewPDF = props => {
                         "Remark": Remarks === undefined || Remarks === null ? '' :Remarks,
 
                     }
-                    Units = item.packUnitCode
-                    dataSort.push(datasItem)
+                   //Units = item.packUnitCode
                 })
 
             }
@@ -489,60 +488,69 @@ const AmDocumentViewPDF = props => {
             let dataExport = []
             let dataPDFbySI = null
             let indxSI = null
-            dataSortGrouby.forEach((i, index) => {
-                var filterSI = dataSortGrouby.filter(
-                    x => x['SI'] === dataSortGrouby[index]['SI'])
-               // console.log(filterSI.length)
-
-                let NoSI = dataSortGrouby[index]['SI']
-                let NoSIs = dataSortGrouby[index +1]['SI']
-                let NoSIint = parseInt(NoSI);
-                let NoSIints = parseInt(NoSIs);
-                console.log(NoSI)
-                //if (NoSIint !== NoSIints) {
-                //    indxSI = i.SI
-                //    dataPDFbySI = dataSortGroubySI[indxSI]
-                //    console.log(dataPDFbySI)
-                //} 
-                
-                sumQtys = _.sumBy(dataPDFbySI, 'Qty')
-                dataDocumentItemTB = dataSortGroubySI[i.SI].map((x, idx) => {
-                return [idx + 1,
-                x.Status,
-                 x.PalletCode,
-                 x.SI,
-                x.Reorder.replace(/^0+/, ''),
-                x.Brand,
-                x.Size,
-                x.CartonNo,
-                x.Qty,
-                x.Unit,
-                x.Remark
-                ];
-                })
-
-                dataExport.push(dataDocumentItemTB)
-            })
-            //console.log(dataExport)
-            //console.log(dataDocumentItemTB)
-            //let sumQtys = _.sumBy(dataSort, 'Qty')
+             let Unit = null
             
+
+            for (var i in dataSortGroubySI) {
+                Unit = dataSortGroubySI[i].map((x, idx) => {
+                    return x.Unit
+                })               
+                sumQtys = _.sumBy(dataSortGroubySI[i], 'Qty')
+                dataDocumentItemTB = dataSortGroubySI[i].map((x,idx) => {
+                    return [idx + 1,
+                    x.Status,
+                    x.PalletCode,
+                    x.SI,
+                    x.Reorder.replace(/^0+/, ''),
+                    x.Brand,
+                    x.Size,
+                    x.CartonNo,
+                    x.Qty,
+                    x.Unit,
+                    x.Remark
+                    ]
+               
+                });
+
+              
+
+                Units.push(Unit)
+                dataExport.push(dataDocumentItemTB)
+
+            }
+            console.log(dataSortGrouby.length)
             let pageLeght = Math.ceil(dataSortGrouby.length / 15)
             let dataArr = [];
+            dataExport.forEach((x, idx) => {
 
-            for (var i = 0; i < pageLeght; i++) {
-                var data = dataDocumentItemTB.filter(x => { return x[0] <= (15 * (i + 1)) }).filter(x => x[0] >= ((i * 15) + 1));
-                dataArr.push(data);
-            }
+                //Units = dataExport[idx]['Unit']
+                for (var i = 0; i < pageLeght; i++) {
+                    var data = dataExport[idx].filter(x => { return x[0] <= (15 * (i + 1)) }).filter(x => x[0] >= ((i * 15) + 1));
+                    dataArr.push(data);
+                }
+            })
+
+            //for (var i = 0; i < pageLeght; i++) {
+            //    var data = dataExport[0].filter(x => { return x[0] <= (15 * (i + 1)) }).filter(x => x[0] >= ((i * 15) + 1));
+            //    dataArr.push(data);
+            //}
             var docDefinition
+            var columnsFoot
+            var columnsFoots
             let docDefinitionpage = []
             let contents = []
-           
+            let foolters = []
+            let foolters2 = []
+            //let pageLeghts = dataArr.length
+            //let pageLeght = 3
+            console.log(dataArr.length)
+           // let pageLeght = 4
+                //Math.ceil(dataArr.length + 1)
             dataArr.forEach((x, idx) => {
                 console.log(dataArr)
                 let pages = idx + 1
                 docDefinition = [
-
+                  
                     { text: 'Loading Shipment Report', style: 'headers', alignment: 'center' },
 
                     { text: pages + '/' + pageLeght, style: 'col7', alignment: 'right' },
@@ -550,7 +558,7 @@ const AmDocumentViewPDF = props => {
 
                     {
                         columns: [
-                            { width: '20%', text: "Document No." , style: 'col8' },
+                            { width: '20%', text: "Document No.", style: 'col8' },
                             { width: '40%', text: DocCode, style: 'col8' },
                             { width: '20%', text: 'Docment Date :', style: 'col8' },
                             { width: '40%', text: DocDate, style: 'col8' }
@@ -597,7 +605,7 @@ const AmDocumentViewPDF = props => {
 
                         table: {
                             headerRows: 1,
-                            widths: [30, 70, '*','*' ,'*', 500, 70, 120, 120, 120, '*',],
+                            widths: [30, 70, '*', '*', '*', 500, 70, 120, 120, 120, '*',],
                             header: {
                                 fontSize: 26,
                                 alignment: 'center'
@@ -611,45 +619,68 @@ const AmDocumentViewPDF = props => {
 
                             body: [
 
-                                ['No.', 'Status', 'Pallet Code','SI', 'Reorder', 'Brand', 'Size', 'Carton No.', 'Qty', 'Unit', 'Remark'],
+                                ['No.', 'Status', 'Pallet Code', 'SI', 'Reorder', 'Brand', 'Size', 'Carton No.', 'Qty', 'Unit', 'Remark'],
                                 ...dataArr[idx]
 
                             ]
                         }
                     },
-                    //{
-                    //    columns: [
-                    //        {
-                    //            width: '70%', text: '',
-                    //            style: 'col5', alignment: 'left'
-                    //        },
-                    //        { width: '1%', text: '', style: 'col4' },
-                    //        { width: '40%', text: 'By ______________________________________________', style: 'col4' },
-                    //        { width: '1%', text: datas.Remark, style: 'col4' },
-                    //    ],
-                    //    columnGap: 10
-                    //},
-                    //{
-                    //    columns: [
-                    //        {
-                    //            width: '80%', text: 'Referent Document : SH1.EP.WI.15.001,SH3.EP.WI.15.001,ST1.WH.WI.15.002,SSI.EP.WI.15.001,SS1.EP.WI.15.001,SH4.EP.WI.15.001',
-                    //            style: 'col5', alignment: 'left'
-                    //        },
-                    //        { width: '1%', text: '', style: 'col4' },
-                    //        { width: '40%', text: 'Section Warehoouse', style: 'col6' },
-                    //        { width: '1%', text: datas.Remark, style: 'col4' },
-                    //    ],
-                    //    columnGap: 10
-                    //},
-                    //{
-                    //    text: '',
-                    //    pageBreak: "after"
-                    //},
+                         {
+                        style: 'tableFooters',
+                        table: {
+                            heights: 20,
+                            widths: [120, 120, 120],
+                            body: [
+                                ['Total', sumQtys, Units[idx][0]],
+                  
+
+                            ]
+            
+                        },
+                     pageBreak: "after"
+                    },
+                      
+                    {
+                     
+                        
+                        
+                        
+                    }
+
+                ]
+
+                columnsFoot = [
+                    {
+                        width: '40%',
+                       hight: 100,
+                        text: 'Reference Document : SH1.EP.WI.15.001,SH3.EP.WI.15.001,ST1.WH.WI.15.002,SSI.EP.WI.15.001,SS1.EP.WI.15.001,SH4.EP.WI.15.001',
+                        style: 'footers',
+                        alignment: 'left'
+
+                    },
+          
+
+                ]
+
+                columnsFoots = [
+                    {
+                        text: 'By _________________________________________  Section Warehouse    ',
+                        style: 'footer',
+                        hight: 100,
+                        //pageBreak: "after"
+                    },
+
 
                 ]
 
                 if (docDefinition !== [])
-                contents.push(docDefinition)
+                    contents.push(docDefinition)
+
+                if (foolters !== [])
+                    foolters.push(columnsFoot)
+
+                if (foolters2 !== [])
+                    foolters2.push(columnsFoots)
 
             })
 
@@ -668,45 +699,13 @@ const AmDocumentViewPDF = props => {
                     pageSize: { width: 1684, height: 1190 },
                     content: [
                         conpage,
-                        {
-                            style: 'tableFooters',
-                            table: {
-                                heights: 20,
-                                widths: [120, 120,120],
-                                body: [
-                                    ['Total', sumQtys, Units],
-                           
-                                ]
-                            }
-                        }
                     ],
 
 
-                 
-
                     footer: {
-                        columns: [
-                            {
-                                width: '60%',
-                                hight: 100,
-                                text: 'Reference Document : SH1.EP.WI.15.001,SH3.EP.WI.15.001,ST1.WH.WI.15.002,SSI.EP.WI.15.001,SS1.EP.WI.15.001,SH4.EP.WI.15.001',
-                                style: 'footers', alignment: 'left'
-
-                            },
-                            {
-                                text: 'By _________________________________________  Section Warehouse    ',
-                                style: 'footer', hight: 100,
-                                pageBreak: "after" 
-                            },
-                            
-                            
-                        ]
+                        columns: [foolters, foolters2]
                     },
                     
-               
-                
-                   // pageBreak: "after",
-                   
 
                     styles: {
                         col1: {
@@ -767,7 +766,7 @@ const AmDocumentViewPDF = props => {
                         },
                         footer: {
                             fontSize: 25,
-                            margin: [10, 0, 0, 10]
+                            margin: [100, 0, 0, 0]
 
                         }
                     },
