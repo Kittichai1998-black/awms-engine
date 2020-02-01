@@ -29,7 +29,18 @@ namespace AWMSEngine.Engine.V2.Business
             }
             public List<bsto> sou_bstos;
             public List<bsto> des_bstos;
+
+            public class QtyConvert
+            {
+                public decimal qty;
+                public decimal qtyMax;
+                public string unit;
+            }
+
+
         }
+
+
         public class bsto
         {
             public long id;
@@ -74,9 +85,16 @@ namespace AWMSEngine.Engine.V2.Business
             public string distoUnitCode;
             public decimal distoBaseQtyMax;
             public decimal distoQtyMax;
+            public List<TRes.QtyConvert> distoQtyConverts;
+            public decimal distoQtyMaxConvertFirst { get => distoQtyConverts.First().qtyMax; }
+            public decimal distoQtyConvertFirst { get => distoQtyConverts.First().qty; }
+            public string distoUnitConvertFirst { get => distoQtyConverts.First().unit; }
+
 
             public long distoBaseUnitID;
             public string distoBaseUnitCode;
+            public string distoUnitCodeConvert;
+
 
             public int areaID;
             public string areaCode;
@@ -110,7 +128,19 @@ namespace AWMSEngine.Engine.V2.Business
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
                 },
                 this.BuVO);
-            doc.documentItems = docItems;
+
+            foreach(var data in docItems)
+            {          
+                if(data.Code != "000000000")
+                {
+                    var result = StaticValue.ConvertToALlUnitBySKU(data.SKUMaster_ID.Value, data.Quantity.Value, data.UnitType_ID.Value);
+                    data.Quantity = result[1].newQty;
+                }
+                 
+            }
+
+           
+            doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
             if (reqVO.getMapSto && doc.documentItems.Count != 0)
@@ -120,8 +150,33 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
+
+                    var packCovert = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("SKUMaster_ID",pack.SKUMaster_ID, SQLOperatorType.EQUALS),
+                        },
+                        this.BuVO);
+
+                    var packBaseConvert = packCovert.Find(x => x.UnitType_ID != x.BaseUnitType_ID);
+
+                    var x = StaticValue.ConvertToALlUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQty, bs.distoBaseUnitID);
+                    var Listpack = new List<TRes.QtyConvert>();
+
+                    foreach (var p in x)
+                    {
+                        var qtyMax = StaticValue.ConvertToNewUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQtyMax, bs.distoBaseUnitID, p.newUnitType_ID);
+                        Listpack.Add(new TRes.QtyConvert()
+                        {
+                            qty = p.newQty,
+                            qtyMax = qtyMax.newQty,
+                            unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == p.newUnitType_ID).Code
+
+                        });
+                    }
                     sou_sto.Add(new bsto
                     {
+
                         id = bs.sou_id,
                         objectType = bs.sou_objectType,
 
@@ -129,7 +184,7 @@ namespace AWMSEngine.Engine.V2.Business
                         packID = bs.sou_packID,
                         packCode = bs.sou_packCode,
                         packName = bs.sou_packName,
-                        skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x=> x.ID == sku.SKUMasterType_ID).Code,
+                        skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID).Code,
 
                         packQty = bs.sou_packQty,
                         packUnitID = bs.sou_packUnitID,
@@ -161,11 +216,19 @@ namespace AWMSEngine.Engine.V2.Business
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
                         distoUnitCode = bs.distoUnitCode,
+                        //distoQtyConvert = bs.sou_packCode == "000000000" ? bs.distoQty : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQty, pack.BaseUnitType_ID, packBaseConvert.UnitType_ID).newQty,
+                        //distoQtyMaxConvert = bs.sou_packCode == "000000000" ? bs.distoQtyMax : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQtyMax, pack.BaseUnitType_ID , packBaseConvert.UnitType_ID).newQty,
+                        distoUnitCodeConvert = bs.sou_packCode == "000000000" ? bs.distoUnitCode : StaticValue.UnitTypes.FirstOrDefault(x => x.ID == packBaseConvert.UnitType_ID).Code,
+                        distoQtyConverts = Listpack,
+
+
+
 
                         distoBaseQty = bs.distoBaseQty,
                         distoBaseQtyMax = bs.distoBaseQtyMax,
                         distoBaseUnitID = bs.distoBaseUnitID,
                         distoBaseUnitCode = bs.distoBaseUnitCode,
+
 
                         areaID = bs.areaID,
                         areaCode = bs.areaCode,
@@ -176,7 +239,7 @@ namespace AWMSEngine.Engine.V2.Business
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
                         options = bs.options
-                        
+
 
                     });
 
@@ -221,6 +284,7 @@ namespace AWMSEngine.Engine.V2.Business
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
                         distoUnitCode = bs.distoUnitCode,
+                        distoQtyConverts = Listpack,
 
                         distoBaseQty = bs.distoBaseQty,
                         distoBaseQtyMax = bs.distoBaseQtyMax,

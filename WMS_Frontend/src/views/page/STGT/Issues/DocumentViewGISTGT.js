@@ -36,8 +36,10 @@ const DocumentViewGISTGT = props => {
     { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Brand" },
     { width: 130, accessor: "OrderNo", Header: "SI" },
-    { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 120, accessor: "_qty", Header: "Base Qty" },
+    { width: 100, accessor: "UnitType_Name", Header: "Base Unit" },
+    { width: 120, accessor: "_qtyConvert", Header: "Qty" },
+    { width: 70, accessor: "_unitConvert", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
@@ -52,10 +54,46 @@ const DocumentViewGISTGT = props => {
     { width: 150, accessor: "packCode", Header: "Reorder" },
     { accessor: "packName", Header: "Brand" },
     { width: 125, accessor: "orderNo", Header: "SI" },
-    { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 110, accessor: "_packQty", Header: "Base Qty" },
+    { width: 80, accessor: "packUnitCode", Header: "Base Unit" },
+    {
+      width: 120,
+      accessor: "_packQtyConvert",
+      Header: "Qty",
+      Cell: e => getQtyConvert(e.original)
+    },
+    {
+      width: 60,
+      accessor: "distoUnitCodeConvert",
+      Header: "Unit",
+      Cell: e => getUnitConvert(e.original)
+    }
   ];
 
+  const getUnitConvert = value => {
+    var result = null;
+    if (value.distoQtyConverts[1] !== undefined) {
+      result = value.distoQtyConverts[1]["unit"];
+    }
+    if (value.packCode === "000000000") {
+      result = value.packUnitCode;
+    }
+    return result;
+  };
+  const getQtyConvert = value => {
+    var result = null;
+    if (value.distoQtyConverts[1] !== undefined) {
+      result =
+        value.distoQtyConverts[1]["qty"] +
+        " / " +
+        value.distoQtyConverts[1]["qtyMax"];
+    }
+    if (value.packCode === "000000000") {
+      result = value._packQty;
+    }
+
+    return result;
+  };
   const columnsDetailDES = [
     {
       width: 40,

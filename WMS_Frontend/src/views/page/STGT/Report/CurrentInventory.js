@@ -51,7 +51,7 @@ input {
 `;
 const LabelH = styled.label`
     // font-weight: bold;
-    width: 100px; 
+    width: 140px; 
 `;
 
 
@@ -108,7 +108,7 @@ const CurrentInventory = (props) => {
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
             <FormInline>
-                <LabelH>{t('SKU Code')} : </LabelH>
+                <LabelH>{t('Reorder (Item Code)')} : </LabelH>
                 <AmInput
                     id={"packCode"}
                     type="input"
@@ -118,7 +118,7 @@ const CurrentInventory = (props) => {
                 />
             </FormInline>
             <FormInline>
-                <LabelH>{t('SKU Name')} : </LabelH>
+                <LabelH>{t('Reorder (Item Name)')} : </LabelH>
                 <AmInput
                     id={"packName"}
                     type="input"
@@ -128,7 +128,7 @@ const CurrentInventory = (props) => {
                 />
             </FormInline>
             <FormInline>
-                <LabelH>{t("Order No.")} : </LabelH>
+                <LabelH>{t("SI (Order No.)")} : </LabelH>
                 <AmInput
                     id={"orderNo"}
                     type="input"

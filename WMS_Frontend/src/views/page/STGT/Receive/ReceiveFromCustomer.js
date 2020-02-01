@@ -47,7 +47,7 @@ const ReceiveFromCustomer = props => {
     fieldLabel: ["Code", "Name"],
     fieldDataKey: "ID",
     defaultValue: 13,
-    customQ: "{ 'f': 'ID', 'c':'=', 'v': 13}"
+    customQ: "{ 'f': 'ID', 'c':'in', 'v': '13,17'}"
   };
 
   const inputSource = [

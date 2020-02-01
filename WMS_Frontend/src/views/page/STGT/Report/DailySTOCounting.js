@@ -51,7 +51,7 @@ input {
 
 const LabelH = styled.label`
     // font-weight: bold;
-    width: 100px; 
+    width: 140px; 
 `;
 
 const DailySTOReceive = (props) => {
@@ -139,7 +139,7 @@ const DailySTOReceive = (props) => {
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
             <FormInline>
-                <LabelH>{t('SKU Code')} : </LabelH>
+                <LabelH>{t('Reorder (Item Code)')} : </LabelH>
                 <AmInput
                     id={"packCode"}
                     type="input"
@@ -149,7 +149,7 @@ const DailySTOReceive = (props) => {
                 />
             </FormInline>
             <FormInline>
-                <LabelH>{t("Order No.")} : </LabelH>
+                <LabelH>{t("SI (Order No.)")} : </LabelH>
                 <AmInput
                     id={"orderNo"}
                     type="input"

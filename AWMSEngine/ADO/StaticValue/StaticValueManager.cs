@@ -269,6 +269,12 @@ namespace AWMSEngine.ADO.StaticValue
             return this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, newUnitTypeID);
         }
 
+        public List<ConvertUnitCriteria> ConvertToALlUnitBySKU(long skuID, decimal oldQty, long oldUnitTypeID)
+        {
+            var packConverts = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID);
+            var res = packConverts.Select(x => ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, x.UnitType_ID)).ToList();
+            return res;
+        }
 
     }
 }
