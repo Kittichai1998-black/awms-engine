@@ -144,8 +144,8 @@ const CurrentInventory = (props) => {
         return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
     }
     const columns = [
-        { Header: 'SI.', accessor: 'OrderNo', width: 70, sortable: false },
-        { Header: 'Reorder', accessor: 'Code', width: 120, sortable: false },
+        { Header: 'SI (Order No)', accessor: 'OrderNo', width: 70, sortable: false },
+        { Header: 'Reorder (Item Code)', accessor: 'Code', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'Name', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },

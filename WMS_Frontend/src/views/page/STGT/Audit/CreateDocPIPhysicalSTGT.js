@@ -93,20 +93,20 @@ const CreateDocPIPhysicalSTGT = props => {
     return qryStr["carton_no"];
   };
 
-  const columsFindpopUpPALC = [
+    const columsFindpopUpPALC = [
+        {
+            Header: "SI (Order No)",
+            accessor: "orderNo",
+            width: 70,
+            style: { textAlign: "center" }
+        },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
       width: 110,
       style: { textAlign: "center" }
-    },
-    {
-      Header: "SI",
-      accessor: "orderNo",
-      width: 70,
-      style: { textAlign: "center" }
-    },
-    { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
+    },   
+      { Header: "Reorder (Item Code)", accessor: "SKUItems", width: 400 },
     // {
     //   Header: "Size",
     //   accessor: "Size",
@@ -161,13 +161,13 @@ const CreateDocPIPhysicalSTGT = props => {
   const addList = {
     queryApi: PalletCode,
     columns: columsFindpopUpPALC,
-    search: [
-      { accessor: "palletcode", placeholder: "Pallet Code" },
-      {
-        accessor: "orderNo",
-        placeholder: "SI"
-      },
-      { accessor: "Code", placeholder: "Reorder" },
+      search: [
+          {
+              accessor: "orderNo",
+              placeholder: "SI (Order No)"
+          },
+      { accessor: "palletcode", placeholder: "Pallet Code" }, 
+          { accessor: "Code", placeholder: "Reorder (Item Code)" },
       //{ accessor: "Size", placeholder: "Size" },
       { accessor: "LocationCode", placeholder: "Location" }
       //{ accessor: "remark", placeholder: "Remark" }
@@ -223,7 +223,7 @@ const CreateDocPIPhysicalSTGT = props => {
 
   const columsFindpopUp = [
     {
-      Header: "Reorder",
+          Header: "Reorder (Item Code)",
       accessor: "Code",
       fixed: "left",
       width: 130,
@@ -271,7 +271,8 @@ const CreateDocPIPhysicalSTGT = props => {
   //   },
   //   { Header: "Unit", accessor: "unitType", type: "unitType" }
   // ];
-  const columnEdit = [
+    const columnEdit = [
+    { Header: "SI (Order No)", accessor: "orderNo", type: "input" },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
@@ -292,7 +293,7 @@ const CreateDocPIPhysicalSTGT = props => {
       columsddl: columsFindpopUp
     },
     {
-      Header: "Reorder",
+        Header: "Reorder (Item Code)",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -301,7 +302,6 @@ const CreateDocPIPhysicalSTGT = props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUp
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
@@ -314,12 +314,12 @@ const CreateDocPIPhysicalSTGT = props => {
       type: "text"
     }
   ];
-  const columns = [
+    const columns = [
+    { Header: "SI (Order No)", accessor: "orderNo", width: 100 },
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-    { Header: "SI", accessor: "orderNo", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
     // { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "Reorder", accessor: "skuCode" },
+      { Header: "Reorder (Item Code)", accessor: "skuCode" },
     { Header: "Brand", accessor: "skuName" },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
