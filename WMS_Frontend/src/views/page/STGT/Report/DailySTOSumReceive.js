@@ -219,8 +219,8 @@ const DailySTOSumReceive = (props) => {
     const columns = [
         { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD-MM-YYYY', width: 90, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
-        { Header: 'SI.', accessor: 'pstoOrderNo', width: 70, sortable: false },
-        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'SI (Order No)', accessor: 'pstoOrderNo', width: 70, sortable: false },
+        { Header: 'Reorder (Item Code)', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },

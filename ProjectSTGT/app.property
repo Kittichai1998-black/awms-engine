@@ -19,3 +19,13 @@ worker.readfile.classname  = ProjectSTGT.Engine.Worker.ReadExcelFileWorker
 hub.names = dashboard
 hub.dashboard.classname  = AWMSEngine.HubService.CommonMessageHub
 hub.dashboard.url = /dashboard
+
+#------------------------------------
+ldap.host = ad.sritranggroup.com
+ldap.port = 389
+ldap.version = 3
+ldap.starttls = false
+#use {username} for username from input
+ldap.binddn = {username}@sritranggroup.com
+#ldap.bindpw = ~OpkLxq4
+ldap.basedn = ou=STA User,dc=ad,dc=sritranggroup,dc=com

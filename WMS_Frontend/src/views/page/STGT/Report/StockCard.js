@@ -210,8 +210,8 @@ const StockCard = (props) => {
     const columns = [
         { Header: 'Date', accessor: 'CreateTime', type: 'datetime', width: 130, sortable: false },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
-        { Header: 'SI.', accessor: 'pstoOrder', width: 70, sortable: false },
-        { Header: 'Reorder', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'SI (Order No)', accessor: 'pstoOrder', width: 70, sortable: false },
+        { Header: 'Reorder (Item Code)', accessor: 'pstoCode', width: 120, sortable: false },
         { Header: 'Brand', accessor: 'pstoName', width: 200, sortable: false },
         { Header: 'Size', accessor: 'skuTypeCode', width: 70, sortable: false },
         { Header: 'Carton No.', accessor: 'cartonNo', sortable: false },
