@@ -11,6 +11,7 @@ import AmInput from "../../../../components/AmInput";
 import AmDate from '../../../../components/AmDate';
 import AmDropdown from '../../../../components/AmDropdown';
 import { useTranslation } from 'react-i18next'
+import { getUnique } from '../../../../components/function/ObjectFunction'
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -91,21 +92,35 @@ const StockCard = (props) => {
             + "&spname=DAILY_STOCKCARD";
     }
     const onGetDocument = () => {
-
         let pathGetAPI = onGetALL() +
             "&page=" + (page === undefined || null ? 0 : page)
             + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
         Axios.get(pathGetAPI).then((rowselect1) => {
             if (rowselect1) {
                 if (rowselect1.data._result.status !== 0) {
-                    console.log(rowselect1.data.datas);
-                    
-                    setdatavalue(rowselect1.data.datas)
+                    let gruopData = getUnique(rowselect1.data.datas, "SkuID").reduce((text, el) => text + `${el.SkuID || ""}-${el.OrderNo || ""}-${el.Batch || ""}-${el.Lot || ""},`, "")
+                    gruopData = gruopData.slice(0, -1);
+                    let path2 = window.apipath + "/v2/GetSPReportAPI?"
+                        + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+                        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
+                        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+                        + "&movementType=" + (valueText.movementType === undefined || valueText.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+                        + "&groupData=" + gruopData
+                        + "&spname=DAILY_STOCKCARD2"
                     setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
+                    Axios.get(path2).then(res => {
+                        if (res.data._result.status !== 0)
+                            rowselect1.data.datas.unshift({
+                                creditBaseQuantity: res.data.datas[0].Credit,
+                                debitBaseQuantity: res.data.datas[0].Debit,
+                                Balance: res.data.datas[0].Balance,
+                                StyleStatus: "success"
+                            })
+                    })
+                    setdatavalue(rowselect1.data.datas)
                 }
             }
         });
-
     }
 
     const getValue = (value, inputID) => {
@@ -203,15 +218,15 @@ const StockCard = (props) => {
         {
             Header: 'Issue', accessor: 'creditBaseQuantity', width: 80, sortable: false,
             Footer: true,
-            "Cell": (e) => comma(e.value.toString())
+            Cell: (e) => e.value ? comma(e.value.toString()) : ""
         },
         {
             Header: 'Receive', accessor: 'debitBaseQuantity', width: 80, sortable: false,
             Footer: true,
-            "Cell": (e) => comma(e.value.toString())
+            Cell: (e) => e.value ? comma(e.value.toString()) : ""
         },
         { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false },
-        { Header: 'Sale Quantity', accessor: 'Quantity', width: 110, sortable: false },
+        { Header: 'Sale Quantity', accessor: 'Quantity', width: 110, sortable: false, Cell: (e) => e.value ? comma(e.value.toString()) : "" },
         { Header: 'Sale Unit', accessor: 'UnitType', width: 90, sortable: false },
         { Header: 'Description', accessor: 'Description', width: 250, sortable: false },
 
