@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.General
                     );
 
                 if (!ldapRes)
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login False");
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login Fail");
                 else
                 {
                     amt_Token tokenModel = ADO.TokenADO.GetInstant().Register(

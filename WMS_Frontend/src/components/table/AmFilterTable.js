@@ -72,13 +72,25 @@ const AmFilterTable = props => {
             {t("Search")}
           </AmButton>
         </div>
-      ) : null}
+      ) : <div style={{ display: 'inline', float: 'right' }}>
+          <AmButton
+            id='Filter_Search'
+            styleType='confirm'
+            onClick={() => {
+              props.onAccept(true, props.extensionSearch);
+              setToggle(false);
+            }}
+          >
+            {t("Search")}
+          </AmButton>
+          </div>
+        }
       <div style={{ clear: 'both' }} />
       <Collapse in={toggle}>
         <Paper elevation={4} className={classes.paper}>
-          {props.extensionSearch.map((row, idx) => {
+          {props.extensionSearch ? props.extensionSearch.map((row, idx) => {
             return row.component(props.defaultCondition, row, idx);
-          })}
+          }) : null}
         </Paper>
       </Collapse>
     </div>
