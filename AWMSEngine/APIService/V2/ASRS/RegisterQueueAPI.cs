@@ -9,7 +9,7 @@ using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.APIService.ASRS
+namespace AWMSEngine.APIService.V2.ASRS
 {
     public class RegisterQueueAPI : BaseAPIService
     {
