@@ -105,6 +105,8 @@ namespace AWMSEngine.Engine.V2.Business
             public int branchID;
             public string branchCode;
             public string options;
+            public DateTime? modifyTimeSTO;
+            public DateTime? createTimeSTO;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -238,7 +240,10 @@ namespace AWMSEngine.Engine.V2.Business
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
-                        options = bs.options
+                        options = bs.options,
+                        modifyTimeSTO = bs.ModifyTime,
+                        createTimeSTO = bs.CreateTime
+
 
 
                     });
@@ -299,7 +304,10 @@ namespace AWMSEngine.Engine.V2.Business
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
-                        options = bs.options
+                        options = bs.options,
+
+                        modifyTimeSTO = bs.ModifyTime,
+                        createTimeSTO = bs.CreateTime
                     });
 
                 });
