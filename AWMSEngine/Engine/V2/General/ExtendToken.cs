@@ -7,23 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
-    public class RemoveToken : BaseEngine<RemoveToken.TReqModel, amt_Token_status>
+    public class ExtendToken : BaseEngine<ExtendToken.TReqModel,amt_Token_ext>
     {
         public class TReqModel
         {
             public string Token;
-            public string SecretKey;
+            public string ExtendKey;
         }
 
-        protected override amt_Token_status ExecuteEngine(RemoveToken.TReqModel reqVO)
+        protected override amt_Token_ext ExecuteEngine(TReqModel reqVO)
         {
-            var tokenModel = ADO.TokenADO.GetInstant().Remove(
+            var tokenModel = ADO.TokenADO.GetInstant().Extend(
                 reqVO.Token,
-                reqVO.SecretKey,
-                0,
-                this.BuVO);
+                reqVO.ExtendKey,
+                0, this.BuVO);
 
             return tokenModel;
         }

@@ -165,7 +165,18 @@ const testMasterV2 = Loadable({
   loader: () => import("../../views/page/testMasterV2"),
   loading: Loading
 });
-
+const APIServiceLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/APIServiceLog"),
+  loading: Loading
+});
+const SendAPILog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/SendAPILog"),
+  loading: Loading
+});
+const StorageObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/StorageObjectLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -389,6 +400,24 @@ let routes = [
     path: "/warehouse/location_summary",
     name: "Location Summary",
     compoment: LocationSummary,
+    exact: true
+  },
+  {
+    path: "/warehouse/apiservicelog",
+    name: "API Service Log",
+    compoment: APIServiceLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/sendapilog",
+    name: "Send API Log",
+    compoment: SendAPILog,
+    exact: true
+  },
+  {
+    path: "/warehouse/storageobjectlog",
+    name: "Storage Object Log",
+    compoment: StorageObjectLog,
     exact: true
   }
 ];

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.Engine.General;
+using AWMSEngine.Engine.V2.General;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.APIService.ASRS
+namespace AWMSEngine.APIService.V2.ASRS
 {
     public class GetLocationInfoAPI : BaseAPIService
     {

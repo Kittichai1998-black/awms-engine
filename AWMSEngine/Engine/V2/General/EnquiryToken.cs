@@ -9,7 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
     public class EnquiryToken : BaseEngine<EnquiryToken.TReqModle, amt_Token_status>
     {

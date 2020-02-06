@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AWMSEngine.Common;
 using Microsoft.AspNetCore.Mvc;
-using AWMSEngine.Engine.General;
+using AWMSEngine.Engine.V2.General;
 
-namespace AWMSEngine.APIService.Permission
+namespace AWMSEngine.APIService.V2.Permission
 { 
     public class ListMenuAPI : BaseAPIService
     {

@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO) :
                 mapsto;
 
-            new Engine.Validation.ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, validMapsto);
+            new Engine.V2.Validation.ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, validMapsto);
         }
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria sto, SPworkQueue queueTrx)
