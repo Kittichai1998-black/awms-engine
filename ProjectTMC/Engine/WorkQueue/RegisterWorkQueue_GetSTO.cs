@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.Business.Received;
+using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -18,10 +19,14 @@ namespace ProjectTMC.Engine.WorkQueue
         RegisterWorkQueue.TReq,
         StorageObjectCriteria
         >
+
+
     {
+  
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
-
+            StorageObjectCriteria stos = new StorageObjectCriteria();
+            //var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
             {
                 if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
@@ -41,39 +46,115 @@ namespace ProjectTMC.Engine.WorkQueue
                     {
                         Code = reqVO.baseCode,
                         Name = "Pallet",
-                        BaseMasterType_ID = 1,
+                        BaseMasterType_ID = 6,
                         Description = "",
-                        ObjectSize_ID = 16,
+                        ObjectSize_ID = 3,
                         Status = EntityStatus.ACTIVE,
-                        UnitType_ID = 98,
+                        UnitType_ID = 2,
                         WeightKG = reqVO.weight
                     });
                 }
+                //==========================================================
+               
 
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {
-                    if(reqVO.areaCode == "")
-                                             
-                    if(mappingPallet.qty == 3)
-                    {
-
-                    }
-                    else if(mappingPallet.qty < 3)
-                    {
+                    stos = this.mapPallet(logger, reqVO, buVO);
 
 
-                    }
-                    else
-                    {
-                        throw new AMWException(logger, AMWExceptionCode.V1001, "qty is greater than 3");
-                    }
-                   
                 }
                 //=========================================================
             }
 
-            return null;
+            return stos;
 
         }
+        private StorageObjectCriteria mapPallet(AMWLogger logger, RegisterWorkQueue.TReq dataMap, VOCriteria buVO)
+        {
+            // Map data to Table StorageObject
+            var mapsto = new StorageObjectCriteria();
+
+            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+
+            var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == dataMap.warehouseCode);
+            if (Warehouses == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + dataMap.warehouseCode + "'");
+
+            var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == dataMap.areaCode && x.Warehouse_ID == Warehouses.ID);
+            if (area == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + dataMap.areaCode + "'");
+
+            mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(dataMap.baseCode,
+                null, null, false, true, buVO);
+
+            var location = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string,object>("Code",dataMap.locationCode),
+                        new KeyValuePair<string,object>("AreaMaster_ID",area.ID.Value),
+                        new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, buVO).FirstOrDefault();
+
+            if (location == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + dataMap.locationCode + "'");
+
+            if (mapsto == null)
+            {
+
+                var palletList = new List<PalletDataCriteriaV2>();
+                palletList.Add(new PalletDataCriteriaV2()
+                {
+                    options = dataMap.mappingPallets[0].options,
+                    code = dataMap.baseCode,
+                    qty = 1,
+                    unit = null,
+                    orderNo = null,
+                    batch = null,
+                    lot = null,
+                    prodDate = dataMap.mappingPallets[0].prodDate,
+                    forCustomerCode = dataMap.mappingPallets[0].forCustomerCode
+
+
+                });
+
+                foreach (var row in dataMap.mappingPallets)
+                {
+                    palletList.Add(new PalletDataCriteriaV2()
+                    {
+                        options = row.options,
+                        code = row.code,
+                        qty = row.qty,
+                        unit = row.unit,
+                        orderNo = row.orderNo,
+                        batch = row.batch,
+                        lot = row.lot,
+                        prodDate = row.prodDate,
+                        //movingType = row.movingType
+                    });
+                }
+
+                var reqMapping = new WCSMappingPalletV2.TReq()
+                {
+                    actualWeiKG = dataMap.weight,
+                    warehouseCode = dataMap.warehouseCode,
+                    areaCode = dataMap.areaCode,
+                    palletData = palletList
+                };
+
+                mapsto = new WCSMappingPalletV2().Execute(logger, buVO, reqMapping);
+            }
+
+            mapsto.weiKG = dataMap.weight;
+            mapsto.lengthM = dataMap.length;
+            mapsto.heightM = dataMap.height;
+            mapsto.widthM = dataMap.width;
+            mapsto.warehouseID = Warehouses.ID.Value;
+            mapsto.areaID = area.ID.Value;
+            mapsto.parentID = location.ID.Value;
+            mapsto.parentType = StorageObjectType.LOCATION;
+
+            return mapsto;
+        }
+
+
     }
 }
