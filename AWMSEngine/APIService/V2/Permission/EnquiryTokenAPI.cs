@@ -1,4 +1,4 @@
-﻿using AWMSEngine.Engine.General;
+﻿using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.Permission
+namespace AWMSEngine.APIService.V2.Permission
 {
     public class EnquiryTokenAPI : BaseAPIService
     {

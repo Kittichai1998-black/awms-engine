@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.Received;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.APIService.ASRS
+namespace AWMSEngine.APIService.V2.ASRS
 {
     public class MappingEmptyPalletToLocationAPI : BaseAPIService
     {

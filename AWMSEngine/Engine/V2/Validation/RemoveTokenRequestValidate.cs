@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Validation
+namespace AWMSEngine.Engine.V2.Validation
 {
-    public class EnquiryTokenRequestValidate : BaseEngine<NullCriteria, NullCriteria>
+    public class RemoveTokenRequestValidate : BaseEngine<NullCriteria, NullCriteria>
     {
         protected override NullCriteria ExecuteEngine(NullCriteria reqVO)
         {

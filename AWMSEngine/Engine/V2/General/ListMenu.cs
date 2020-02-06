@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
     public class ListMenu : BaseEngine<ListMenu.TReqModel, ListMenu.TResModel>
     {

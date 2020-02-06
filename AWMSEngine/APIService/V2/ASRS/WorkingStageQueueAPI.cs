@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.APIService.ASRS
+namespace AWMSEngine.APIService.V2.ASRS
 {
     public class WorkingStageQueueAPI : BaseAPIService
     {

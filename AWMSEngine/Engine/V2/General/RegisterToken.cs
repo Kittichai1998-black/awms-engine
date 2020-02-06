@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
     public class RegisterToken : BaseEngine<RegisterToken.TReqModel, amt_Token>
     {
