@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AWMSModel.Criteria;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
     public class InsertSql : BaseEngine<InsertSql.TReqModel, NullCriteria>
     {

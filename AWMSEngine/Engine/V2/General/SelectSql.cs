@@ -14,7 +14,7 @@ using AMWUtil.Common;
 using AWMSModel.Criteria;
 using AMWUtil.Exception;
 
-namespace AWMSEngine.Engine.General
+namespace AWMSEngine.Engine.V2.General
 {
     public class SelectSql : BaseEngine<SelectSql.TReqModel, SelectSql.TResModel>
     {

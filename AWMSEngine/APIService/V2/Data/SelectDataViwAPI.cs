@@ -1,4 +1,4 @@
-﻿using AWMSEngine.Engine.General;
+﻿using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.Data
+namespace AWMSEngine.APIService.V2.Data
 {
-    public class SelectDataMstAPI : BaseAPIService
+    public class SelectDataViwAPI : BaseAPIService
     {
-        public SelectDataMstAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+
+        public SelectDataViwAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
@@ -20,7 +21,7 @@ namespace AWMSEngine.APIService.Data
             var res1= new SelectSql().Execute(this.Logger, this.BuVO,
                 new SelectSql.TReqModel()
                 {
-                    table_prefix = "ams_",
+                    table_prefix = "amv_",
                     t = this.RequestVO.t,
                     ft = this.RequestVO.ft,
                     f = this.RequestVO.f,

@@ -71,8 +71,6 @@
     <Compile Remove="Engine\V1\Business\Received\ClosedGRDocument.cs" />
     <Compile Remove="Engine\V1\Business\Received\ClosingGRDocSAP.cs" />
     <Compile Remove="Engine\V1\Business\Received\RejectedGRDocument.cs" />
-    <Compile Remove="Engine\V1\Business\Received\WCSMappingPallet.cs" />
-    <Compile Remove="Engine\V1\Business\Received\WCSMappingPalletV2.cs" />
     <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
     <Compile Remove="Engine\V2\Business\Issued\ProcessQueueIssue.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />

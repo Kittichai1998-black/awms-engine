@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 using AWMSEngine.Common;
 using AMWUtil.Common;
 using Microsoft.AspNetCore.Mvc;
-using AWMSEngine.Engine.General;
+using AWMSEngine.Engine.V2.General;
 
-namespace AWMSEngine.APIService.Data
+namespace AWMSEngine.APIService.V2.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
