@@ -29,7 +29,13 @@ export default props => {
     all: ""
   };
 
-  const columsFindpopUpPALC = [
+    const columsFindpopUpPALC = [
+        {
+            Header: "SI (Order No)",
+            accessor: "orderNo",
+            width: 100,
+            Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
+        },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
@@ -42,7 +48,7 @@ export default props => {
       width: 95,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
-    { Header: "Reorder", accessor: "SKUItems", width: 350 },
+    { Header: "Reorder (Item Code)", accessor: "SKUItems", width: 350 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -51,12 +57,7 @@ export default props => {
       width: 90,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
-    {
-      Header: "SI",
-      accessor: "orderNo",
-      width: 100,
-      Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
-    },
+   
     // { Header: 'Batch', accessor: 'Batch' },
 
     { Header: "Base Qty", accessor: "Quantity", width: 90 },
@@ -194,7 +195,8 @@ export default props => {
     { Header: "Name", accessor: "Name", width: 250, sortable: true }
   ];
 
-  const columnEdit = [
+    const columnEdit = [
+    {Header: "SI (Order No)", accessor: "orderNo", type: "input" },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
@@ -205,7 +207,7 @@ export default props => {
       columsddl: columsFindpopUpPALC
     },
     {
-      Header: "Reorder",
+        Header: "Reorder (Item Code)",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -214,7 +216,6 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
     { Header: "Base Qty", accessor: "quantity", type: "inputNum" },
     { Header: "Base Unit", accessor: "unitType", type: "text" },
     { Header: "Qty", accessor: "SaleQuantity", type: "text" },
@@ -222,10 +223,10 @@ export default props => {
   ];
 
   const columns = [
-    { id: "row", Cell: row => row.index + 1, width: 35 },
+      { id: "row", Cell: row => row.index + 1, width: 35 },
+      { Header: "SI (Order No)", accessor: "orderNo", width: 100 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
-    { Header: "Reorder", accessor: "SKUItems" },
-    { Header: "SI", accessor: "orderNo", width: 100 },
+      { Header: "Reorder (Item Code)", accessor: "SKUItems" },
     { Header: "Base Qty", accessor: "quantity", width: 90 },
     { Header: "Base Unit", accessor: "unitType", width: 70 },
     { Header: "Qty", accessor: "SaleQuantity", width: 110 },

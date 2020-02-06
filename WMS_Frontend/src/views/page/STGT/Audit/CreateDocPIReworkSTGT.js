@@ -149,7 +149,8 @@ const CreateDocPIReworkSTGT = props => {
     }
   ];
 
-  const columnEdit = [
+    const columnEdit = [
+    { Header: "SI (Order No)", accessor: "orderNo", type: "input" },
     { Header: "Pallet Code", accessor: "palletcode", type: "input" },
     {
       Header: "Location",
@@ -162,7 +163,7 @@ const CreateDocPIReworkSTGT = props => {
       columsddl: columsFindpopUp
     },
     {
-      Header: "SKU Item",
+        Header: "Reorder (Item Code)",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -171,7 +172,7 @@ const CreateDocPIReworkSTGT = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "OrderNO", accessor: "orderNo", type: "input" },
+     
     {
       Header: "Counting (%)",
       accessor: "qtyrandom",
@@ -180,11 +181,11 @@ const CreateDocPIReworkSTGT = props => {
     }
   ];
 
-  const columns = [
+    const columns = [
+    { Header: "SI (Order No)", accessor: "orderNo", width: 100 },
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
     { Header: "Location", accessor: "locationcode", width: 100 },
-    { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order NO", accessor: "orderNo", width: 100 },
+    { Header: "Reorder (Item Code)", accessor: "SKUItems" },
     { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];

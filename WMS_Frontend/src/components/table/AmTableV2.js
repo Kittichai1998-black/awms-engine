@@ -74,13 +74,19 @@ const SortDirection = {
   ASC: "asc"
 };
 
-const useColumns = props => {
+const useColumns = (props, tableRef) => {
   const [columns, setColumns] = useState([]);
   const [selection, setSelection] = useState([]);
+  const [tableWidth, setTableWidth] = useState(null)
   const [selectionAll, setSelectionAll] = useState({
     select: false,
     reset: false
   });
+
+  useEffect(()=> {
+    setTableWidth(tableRef.current.offsetWidth)
+    //console.log(tableRef.current.offsetWidth)
+  }, [tableRef])
 
   useEffect(() => {
     if (selection.length > 0) {
@@ -125,6 +131,18 @@ const useColumns = props => {
   }, [selectionAll, props.data]);
 
   useEffect(() => {
+    manageColumns();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    props.columns,
+    props.selection,
+    props.selectionType,
+    props.primaryKey,
+    selectionAll,
+    selection
+  ]);
+
+  const manageColumns = () => {
     let getColumns = [...props.columns];
 
     if (props.rowNumber) {
@@ -134,6 +152,7 @@ const useColumns = props => {
         filterable: false,
         fixed: "left",
         sortable: false,
+        style:{"maxWidth":"40px"},
         Cell: e => {
           let numrow = 0;
           if (props.currentPage !== undefined) {
@@ -217,15 +236,7 @@ const useColumns = props => {
     }
 
     setColumns([...getColumns]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    props.columns,
-    props.selection,
-    props.selectionType,
-    props.primaryKey,
-    selectionAll,
-    selection
-  ]);
+  }
 
   const addSelection = (rowData, check) => {
     if (check) {
@@ -245,7 +256,9 @@ const AmTableMaster = props => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState();
   const [sort, setSort] = useState();
-  const columnsNselection = useColumns(props);
+  const tableRef = useRef(null);
+  const columnsNselection = useColumns(props, tableRef);
+
 
   const { columns, selection } = columnsNselection;
 
@@ -347,7 +360,7 @@ const AmTableMaster = props => {
         return (
           <TableHeadCell
             id={`th_${idx}`}
-            style={{ minWidth: row.width, ...fixedStyle }}
+            style={{ minWidth: row.width, ...fixedStyle, ...row.style }}
             key={idx}
             rowData={row}
           >
@@ -532,7 +545,7 @@ const AmTableMaster = props => {
       <div
         style={{ width: "100%", maxHeight: props.maxHeight, overflow: "auto" }}
       >
-        <Table>
+        <Table style={{width:props.width}} ref={tableRef}>
           <TableHead>{renderheader()}</TableHead>
           <TableBody>{renderBody()}</TableBody>
           <TableFoot>{renderFooter()}</TableFoot>
@@ -559,7 +572,8 @@ AmTableMaster.propTypes = {
   renderCustomBtmLeft: PropTypes.any,
   maxHeight: PropTypes.string,
   sort: PropTypes.func,
-  rowNumber: PropTypes.bool
+  rowNumber: PropTypes.bool,
+  witth: PropTypes.string
 };
 
 AmTableMaster.defaultProps = {

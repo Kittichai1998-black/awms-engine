@@ -50,7 +50,7 @@ const WorkQueueSTGT = (props) => {
 
     const ordersDDL = [
         { label: 'Carton No', value: 'Carton No' },
-        { label: 'Order No', value: 'Order No' },
+        { label: 'SI (Order No)', value: 'Order No' },
         { label: 'Createtime', value: 'Createtime' }, 
       
     ];
@@ -78,7 +78,7 @@ const WorkQueueSTGT = (props) => {
     }
 
     const columnCondition = [
-    { Header: "SI", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
+        { Header: "SI (Order No)", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
     { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
     { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
@@ -99,9 +99,9 @@ const WorkQueueSTGT = (props) => {
   
 
     const columnConfirm = [
+        { Header: "SI (Order No)", accessor: 'OrderNo', },
         { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: "SI", accessor: 'OrderNo', },
-        { Header: 'Reorder', accessor: 'SKU', width: 350 },
+        { Header: 'Reorder (Item Code)', accessor: 'SKU', width: 350 },
         { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
         { Header: "Unit", accessor: 'Unit', },
     ];

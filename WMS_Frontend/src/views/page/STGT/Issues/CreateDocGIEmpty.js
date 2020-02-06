@@ -114,21 +114,22 @@ const CreateDocGIEmpty = props => {
   //     }
   // },[dataTest,props.location.search])
 
-  const columsFindpopUpPALC = [
+    const columsFindpopUpPALC = [
+        {
+            Header: "SI (Order No)",
+            accessor: "orderNo",
+            width: 70,
+            style: { textAlign: "center" }
+        },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
       width: 110,
       style: { textAlign: "center" }
     },
-    {
-      Header: "SI",
-      accessor: "orderNo",
-      width: 70,
-      style: { textAlign: "center" }
-    },
+
     // { Header: 'SRM Line', accessor: 'srmLine', width: 95, Cell: (e) => <div style={{ textAlign: "center" }}>{e.value}</div> },
-    { Header: "Reorder/Brand", accessor: "SKUItems", width: 400 },
+        { Header: "Reorder (Item Code)", accessor: "SKUItems", width: 400 },
     // { Header: "SKU Code", accessor: 'Code', width: 110 },
     // { Header: "SKU Name", accessor: 'Name', width: 170 },
     {
@@ -197,13 +198,13 @@ const CreateDocGIEmpty = props => {
   const addList = {
     queryApi: PalletCode,
     columns: columsFindpopUpPALC,
-    search: [
+      search: [
+          {
+              accessor: "orderNo",
+              placeholder: "SI (Order No)"
+          },
       { accessor: "palletcode", placeholder: "Pallet Code" },
-      {
-        accessor: "orderNo",
-        placeholder: "SI"
-      },
-      { accessor: "Code", placeholder: "Reorder" },
+      { accessor: "Code", placeholder: "Reorder (Item Code)" },
       { accessor: "Size", placeholder: "Size" },
       { accessor: "LocationCode", placeholder: "Location" },
       { accessor: "remark", placeholder: "Remark" }
@@ -290,7 +291,8 @@ const CreateDocGIEmpty = props => {
     { Header: "Brand", accessor: "Name", width: 200, sortable: true }
   ];
 
-  const columnEdit = [
+    const columnEdit = [
+        { Header: "SI (Order No)", accessor: "orderNo", type: "input" },
     {
       Header: "Pallet Code",
       accessor: "palletcode",
@@ -300,7 +302,6 @@ const CreateDocGIEmpty = props => {
       fieldLabel: ["palletcode"],
       columsddl: columsFindpopUpPALC
     },
-    { Header: "SI", accessor: "orderNo", type: "input" },
     {
       Header: "Reorder/Brand",
       accessor: "SKUItems",
@@ -315,11 +316,11 @@ const CreateDocGIEmpty = props => {
     { Header: "Unit", accessor: "unitTypeCode", type: "unitType" }
   ];
 
-  const columns = [
+    const columns = [
+        { Header: "SI (Order No)", accessor: "orderNo", width: 100 },
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
-    { Header: "SI", accessor: "orderNo", width: 100 },
     // { Header: "Reorder/Brand", accessor: "SKUItems" },
-    { Header: "Reorder", accessor: "skuCode" },
+        { Header: "Reorder (Item Code)", accessor: "skuCode" },
     { Header: "Brand", accessor: "skuName" },
     { Header: "Quantity", accessor: "quantity", width: 70 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
