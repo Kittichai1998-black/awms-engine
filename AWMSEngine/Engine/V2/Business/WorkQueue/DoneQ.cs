@@ -167,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private amt_DocumentItemStorageObject UpdateSTOFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
         {
             var updSto = new StorageObjectCriteria();
-            updSto = sto.Clone();
+            updSto = sto;
             updSto.qty = 0;
             updSto.baseQty = 0;
             updSto.mapstos = null;
@@ -300,7 +300,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                    //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
                                    //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
                                     var updSto = new StorageObjectCriteria();
-                                    updSto = sto.Clone();
+                                    updSto = sto;
                                     updSto.baseQty -= remainQty.Value;  //1000 - 500 = เหลือของ 500
                                     updSto.qty -= remainBaseQty.Value;
 
@@ -371,7 +371,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 else
                                 {
                                     var updSto = new StorageObjectCriteria();
-                                    updSto = sto.Clone();
+                                    updSto = sto;
                                     updSto.baseQty -= disto.BaseQuantity.Value;
                                     updSto.qty -= disto.Quantity.Value;
 
