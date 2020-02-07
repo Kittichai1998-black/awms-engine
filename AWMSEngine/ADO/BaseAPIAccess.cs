@@ -21,14 +21,23 @@ namespace AWMSEngine.ADO
         public T SendJson<T>(string apiConfigName, object datas, BasicAuthentication authentication, VOCriteria buVO)
             where T : class, new()
         {
-            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
-
-            var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
             List<HttpResultModel> outResults = new List<HttpResultModel>();
-            var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
-            outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
-            buVO.FinalLogSendAPIEvent.AddRange(outResults);
-            return res;
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            try
+            {
+                var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
+                var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
+                return res;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
+                buVO.FinalLogSendAPIEvent.AddRange(outResults);
+            }
         }
         public T SendJson<T>(string apiConfigName, object datas, VOCriteria buVO)
             where T : class, new()
