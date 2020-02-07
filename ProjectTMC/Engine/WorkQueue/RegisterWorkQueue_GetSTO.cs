@@ -48,7 +48,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         Name = "Pallet",
                         BaseMasterType_ID = 6,
                         Description = "",
-                        ObjectSize_ID = 3,
+                        ObjectSize_ID = 4,
                         Status = EntityStatus.ACTIVE,
                         UnitType_ID = 2,
                         WeightKG = reqVO.weight
