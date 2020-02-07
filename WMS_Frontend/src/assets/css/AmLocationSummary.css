@@ -1,6 +1,6 @@
 #divTableTopView .HoverTable:not(:first-child):hover,
 #divTableSideView .HoverTable:not(:first-child):hover {
-  background-color: blue !important;
+  background-color: Aqua !important;
   cursor: pointer;
 }
 #divTableTopView tr:not(:first-child) td:nth-last-child(2) {
@@ -51,7 +51,7 @@
 }
 #divTableTopView tr.active,
 #divTableTopView tr.active td:first-child {
-  background-color: blue;
+  background-color: Aqua;
 }
 
 .list,

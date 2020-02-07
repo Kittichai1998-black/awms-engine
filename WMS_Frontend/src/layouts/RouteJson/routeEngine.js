@@ -100,6 +100,10 @@ const TestProcessQueueV2 = Loadable({
   loader: () => import("../../views/page/TestProcessQueueV2"),
   loading: Loading
 });
+const TableV2 = Loadable({
+  loader: () => import("../../views/page/TableInDev"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/counting/manualcounting",
@@ -214,6 +218,12 @@ const routes = [
     path: "/tpcq",
     name: "TestProcessQueue ",
     compoment: TestProcessQueueV2,
+    exact: true
+  },
+  {
+    path: "/tbid",
+    name: "TableV2",
+    compoment: TableV2,
     exact: true
   }
   // { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }

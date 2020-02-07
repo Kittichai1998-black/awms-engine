@@ -102,8 +102,8 @@ const StorageObject = props => {
       Cell: e => getStatus(e.original)
     },
     { Header: "Pallet Code", accessor: "Pallet", width: 110 },
-    { Header: "SI.", accessor: "OrderNo", width: 120 },
-    { Header: "Reorder", accessor: "SKU_Code", width: 200 },
+      { Header: "SI (Order No)", accessor: "OrderNo", width: 120 },
+      { Header: "Reorder (Item Code)", accessor: "SKU_Code", width: 200 },
     { Header: "Brand", accessor: "SKU_Name", width: 300 },
     { Header: "Size", accessor: "skuType", width: 100 },
     { Header: "Carton No.", accessor: "Carton_No", width: 120 },

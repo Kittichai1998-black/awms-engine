@@ -71,12 +71,28 @@ const AmReport = (props) => {
         }
         return null;
     }
+    const checkStatus = (rowInfo) => {
+        let classStatus = ""
+        if (rowInfo && rowInfo.row) {
+            classStatus = rowInfo.original.StyleStatus;
+            // if (rowInfo.original.Status === 3) {
+            //     classStatus = "normal"
+            // } else if (rowInfo.original.Status === 1 || rowInfo.original.Status === 0) {
+            //     classStatus = "working"
+            // }
+        }
+        if (classStatus)
+            return { className: classStatus }
+        else
+            return {}
+    }
     return (
         <div>
             <div style={{ marginBottom: '10px' }}>
                 {bodyHeadReport}
             </div>
             <Table
+                getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                 onRowClick={() => null}
                 data={dataSrc}
                 columns={columnTable}

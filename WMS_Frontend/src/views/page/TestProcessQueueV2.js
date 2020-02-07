@@ -3,10 +3,12 @@ import AmProcessQueue from "../pageComponent/AmProcessQueue/AmProcessQueue";
 
 const ProcessQueue = () => {
   const columnsDocument = [{"accessor":"Code", "Header":"Code", "sortable":true}];
-  const colDocumentItem = [{"accessor":"Code", "Header":"Code", "sortable":false, "width":100},
-  {"accessor":"Name", "Header":"Name", "sortable":false, "width":100},
-  {"accessor":"Qty", "Header":"Qty", "sortable":false, "width":100},
-  {"accessor":"Unit", "Header":"Unit", "sortable":false, "width":100},];
+  const colDocumentItem = [
+    {"accessor":"Code", "Header":"Code", "sortable":false, "width":400},
+    {"accessor":"Name", "Header":"Name", "sortable":false, "width":400},
+    {"accessor":"Qty", "Header":"Qty", "sortable":false, "width":60},
+    {"accessor":"Unit", "Header":"Unit", "sortable":false, "width":60},
+];
   
   const documentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",

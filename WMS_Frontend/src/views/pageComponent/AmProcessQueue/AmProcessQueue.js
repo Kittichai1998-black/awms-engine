@@ -143,7 +143,7 @@ const ProcessQueueDetail = (props) => {
       columns={props.documentItemDetail}
       data={[]}
       sortable={false}
-      rowNumber={false}
+      rowNumber={true}
     />detail
   </>
 }
