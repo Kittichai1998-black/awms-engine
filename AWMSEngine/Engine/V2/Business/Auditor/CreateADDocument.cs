@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             public string remark;
             public string ref1;
             public string ref2;
-            public MovementType movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -147,7 +147,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 Ref2 = reqVO.ref2,
 
                 DocumentType_ID = DocumentTypeID.AUDIT,
-                MovementType_ID = reqVO.movementTypeID,
+                DocumentProcessType_ID = reqVO.documentProcessTypeID,
                 EventStatus = reqVO.eventStatus,
 
                 Remark = reqVO.remark,
