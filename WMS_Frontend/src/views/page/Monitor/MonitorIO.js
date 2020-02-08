@@ -1,7 +1,7 @@
 import * as signalR from '@aspnet/signalr';
 
 // import Axios from 'axios'
-import httpToObject from 'query-string'
+import queryString from 'query-string'
 // import Moment from 'moment'
 import React, { useState, useEffect } from 'react'
 // import { useTranslation } from 'react-i18next'
@@ -13,21 +13,21 @@ export default props => {
     // const { t } = useTranslation()
     let dashboard = "";
     useEffect(() => {
-        var location = window.location;
-        const search = httpToObject.parse(location.search)
-
-        if (search.IOType && search.IOType === "IN") {
+        // var location = window.location;
+        // const search = queryString.parse(location.search)
+        let UrlSplit = window.location.pathname.split('/')[2]
+        if (UrlSplit === "receiving") {
             // if (location.pathname === "/monitor/inbound") {
-                dashboard = 'DASHBOARD_IN';
-                document.title = "Inbound Progress : AMW";
+            dashboard = 'DASHBOARD_IN';
+            document.title = "receiving Progress : AMW";
             // } else {
             //     window.location.replace("/404");
             // }
         }
-        if (search.IOType && search.IOType === "OUT") {
+        if (UrlSplit === "issuing") {
             // if (location.pathname === "/monitor/outbound") {
-                dashboard = 'DASHBOARD_OUT';
-                document.title = "Outbound Progress : AMW";
+            dashboard = 'DASHBOARD_OUT';
+            document.title = "issuing Progress : AMW";
             // } else {
             //     window.location.replace("/404");
             // }
@@ -46,8 +46,8 @@ export default props => {
         // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
         // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
         // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    
-        
+
+
         { accessor: "DocumentCode", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
     ]
 

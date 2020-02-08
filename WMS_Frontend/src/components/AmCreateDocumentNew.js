@@ -16,6 +16,7 @@ import AmTable from '../components/table/AmTable'
 import { apicall, Clone } from '../components/function/CoreFunction2'
 import BtnAddList from './AmCreateDocument_BtnAddList'
 import { getUnique } from './function/ObjectFunction'
+import LabelT from './AmLabelMultiLanguage'
 
 const Axios = new apicall()
 
@@ -34,11 +35,6 @@ input {
     align-items: stretch;
     
   }
-`;
-
-const LabelH = styled.label`
-font-weight: bold;
-  width: 200px;
 `;
 
 const InputDiv = styled.div`
@@ -355,7 +351,7 @@ const AmCreateDocument = (props) => {
         if (type === "input") {
             return (
                 <FormInline>
-                    <LabelH>{Header} : </LabelH>
+                    <LabelT append=" : ">{Header}</LabelT>
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
                             inputRef={ref.current[index]}
@@ -371,7 +367,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "inputNum") {
             return (
                 <FormInline>
-                    <LabelH>{Header} : </LabelH>
+                    <LabelT append=" : ">{Header}</LabelT>
                     <InputDiv>
                         <FormInline>{TextInputnum ? (
                             <FormInline>
@@ -382,7 +378,7 @@ const AmCreateDocument = (props) => {
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
-                                    <labelH>{TextInputnum}</labelH>
+                                    <LabelT>{TextInputnum}</LabelT>
                                 </div>
                             </FormInline>
                         ) : (
@@ -400,7 +396,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "dropdown") {
             return (
                 <FormInline>
-                    <LabelH>{Header} : </LabelH>
+                    <LabelT append=" : ">{Header}</LabelT>
                     <InputDiv>
                         <AmDropdown
                             id={idddl}
@@ -425,7 +421,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "findPopUp") {
             return (
                 <FormInline>
-                    <LabelH>{Header} : </LabelH>
+                    <LabelT append=" : ">{Header}</LabelT>
                     <InputDiv>
                         <AmFindPopup
                             popupref={ref.current[index]}
@@ -449,7 +445,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "unitType") {
             return (
                 <FormInline>
-                    <LabelH>{Header} : </LabelH>
+                    <LabelT append=" : ">{Header}</LabelT>
                     <InputDiv>
                         {<label>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
                     </InputDiv>
@@ -465,7 +461,7 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "text") {
             return (<FormInline>
-                <LabelH>{Header}</LabelH>
+                <LabelT append=" : ">{Header}</LabelT>
                 <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
             </FormInline>
             )
@@ -580,11 +576,11 @@ const AmCreateDocument = (props) => {
             return (
                 <Grid key={xindex} container>
                     {x.map((y, yindex) => {
-                        let syn = y.label ? " :" : "";
+                        let syn = y.label ? " : " : "";
                         return (
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
-                                    <LabelH>{t(y.label) + syn}</LabelH>
+                                    <LabelT append={syn} code={y.CodeTranslate}>{y.label}</LabelT>
                                     {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
                                 </FormInline></div>
                             </Grid>

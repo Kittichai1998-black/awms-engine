@@ -137,6 +137,7 @@ namespace AMWUtil.DataAccess
         public SqlConnection CreateConnection()
         {
             SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
             return conn;
         }
         public SqlTransaction CreateTransaction(string transName = null)
