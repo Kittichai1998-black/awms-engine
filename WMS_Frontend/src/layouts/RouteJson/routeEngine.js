@@ -4,6 +4,7 @@ import React from "react";
 function Loading() {
   return <div>Loading...</div>;
 }
+
 const Test1 = Loadable({
   loader: () => import("../../views/page/TableExample"),
   loading: Loading
@@ -104,128 +105,39 @@ const TableV2 = Loadable({
   loader: () => import("../../views/page/TableInDev"),
   loading: Loading
 });
+const GR_Create = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
+  loading: Loading
+});
+
 const routes = [
-  {
-    path: "/counting/manualcounting",
-    name: "base5",
-    compoment: CountingAdj,
-    exact: true
-  },
+  { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/doc/gr/list", name: "base1", compoment: Test1, exact: true },
   { path: "/doc/gi/list", name: "base2", compoment: Test2, exact: true },
   { path: "/doc/gi/create", name: "base3", compoment: Test3, exact: true },
-  {
-    path: "/sys/sto/checkpallet",
-    name: "base4",
-    compoment: Test444,
-    exact: true
-  },
+  { path: "/sys/sto/checkpallet", name: "base4", compoment: Test444, exact: true },
   { path: "/Testpage/Dia/Ra", name: "base5", compoment: Testpage, exact: true },
   { path: "/testreport", name: "base5", compoment: TestReport, exact: true },
   { path: "/reportstc", name: "base5", compoment: ReportStc, exact: true },
   { path: "/wm/sto/test7", name: "base5", compoment: test7, exact: true },
-  {
-    path: "/wm/sto/testCrateDoc",
-    name: "base5",
-    compoment: CreateDoc,
-    exact: true
-  },
-  {
-    path: "/wm/sto/DocumentSearch",
-    name: "DocumentSearch",
-    compoment: DocumentSearch,
-    exact: true
-  },
-  {
-    path: "/wm/sto/testMaster",
-    name: "base5",
-    compoment: testMaster,
-    exact: true
-  },
-  {
-    path: "/wm/sto/scan",
-    name: "Scanbarcode",
-    compoment: Scanbarcode,
-    exact: true
-  },
-  {
-    path: "/wm/sto/Checkbox",
-    name: "Scanbarcode",
-    compoment: Checkbox,
-    exact: true
-  },
-  {
-    path: "/wm/sto/Testprocess",
-    name: "TestProcess",
-    compoment: TestProcess,
-    exact: true
-  },
-  {
-    path: "/wm/sto/testMaster",
-    name: "base5",
-    compoment: testMaster,
-    exact: true
-  },
-  {
-    path: "/wm/sto/Warehouse",
-    name: "base5",
-    compoment: StorageObjectExample,
-    exact: true
-  },
-  {
-    path: "/counting/detail",
-    name: "base5",
-    compoment: DocumentViewPISTA,
-    exact: true
-  },
-  {
-    path: "/receive/receiveforcustomer",
-    name: "Customers Return Pallet",
-    compoment: mappingReturnPallet,
-    exact: true
-  },
-  {
-    path: "/receive/receivemptypallet",
-    name: "Mapping Empty Pallet",
-    compoment: mappingEmptyPallet,
-    exact: true
-  },
-  {
-    path: "/issue/pickingreturn",
-    name: "Picking Return",
-    compoment: pickingReturn,
-    exact: true
-  },
-  {
-    path: "/warehouse/checkpallet",
-    name: "Scan Pallet Information",
-    compoment: ScanPalletInfo,
-    exact: true
-  },
-  {
-    path: "/wm/sto/TestAmRedi",
-    name: "TestRedirect",
-    compoment: TestAmRedirectInfo,
-    exact: true
-  },
-  {
-    path: "/testdashboard",
-    name: "TestRedirect",
-    compoment: testDashboard,
-    exact: true
-  },
-  {
-    path: "/tpcq",
-    name: "TestProcessQueue ",
-    compoment: TestProcessQueueV2,
-    exact: true
-  },
-  {
-    path: "/tbid",
-    name: "TableV2",
-    compoment: TableV2,
-    exact: true
-  }
+  { path: "/wm/sto/testCrateDoc", name: "base5", compoment: CreateDoc, exact: true },
+  { path: "/wm/sto/DocumentSearch", name: "DocumentSearch", compoment: DocumentSearch, exact: true },
+  { path: "/wm/sto/testMaster", name: "base5", compoment: testMaster, exact: true },
+  { path: "/wm/sto/scan", name: "Scanbarcode", compoment: Scanbarcode, exact: true },
+  { path: "/wm/sto/Checkbox", name: "Scanbarcode", compoment: Checkbox, exact: true },
+  { path: "/wm/sto/Testprocess", name: "TestProcess", compoment: TestProcess, exact: true },
+  { path: "/wm/sto/testMaster", name: "base5", compoment: testMaster, exact: true },
+  { path: "/wm/sto/Warehouse", name: "base5", compoment: StorageObjectExample, exact: true },
+  { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTA, exact: true },
+  { path: "/receive/receiveforcustomer", name: "Customers Return Pallet", compoment: mappingReturnPallet, exact: true },
+  { path: "/receive/receivemptypallet", name: "Mapping Empty Pallet", compoment: mappingEmptyPallet, exact: true },
+  { path: "/receive/create", name: "Create GR", compoment: GR_Create, exact: true },
+  { path: "/issue/pickingreturn", name: "Picking Return", compoment: pickingReturn, exact: true },
+  { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
+  { path: "/wm/sto/TestAmRedi", name: "TestRedirect", compoment: TestAmRedirectInfo, exact: true },
+  { path: "/testdashboard", name: "TestRedirect", compoment: testDashboard, exact: true },
+  { path: "/tpcq", name: "TestProcessQueue ", compoment: TestProcessQueueV2, exact: true },
+  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true }
   // { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
 ];
 
