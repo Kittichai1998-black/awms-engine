@@ -94,17 +94,24 @@ namespace ProjectTMC.Engine.WorkQueue
                 {
                     //Get Doc
                     amt_Document docGR = new amt_Document();
-                    if (reqVO.areaCode == "SA")
+                    List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
+                    if (reqVO.areaCode == "R")
                     {
                         //Inbound Zone
                         docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                            new SQLConditionCriteria[] {
-                           new SQLConditionCriteria("MovementType_ID",4011, SQLOperatorType.EQUALS),
-                           new SQLConditionCriteria("EventStatus","10",SQLOperatorType.EQUALS)
+                           new SQLConditionCriteria("MovementType_ID",4010, SQLOperatorType.EQUALS),
+                           new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
                          }, buVO).FirstOrDefault();
 
-                    
-                    }else if (reqVO.areaCode == "FS")
+                         docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                            new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
+                         }, buVO);
+
+                    }
+                    else if (reqVO.areaCode == "FS")
                     {
                         //Outbound Zone
                          docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
@@ -112,8 +119,14 @@ namespace ProjectTMC.Engine.WorkQueue
                            new SQLConditionCriteria("MovementType_ID",5011, SQLOperatorType.EQUALS),
                            new SQLConditionCriteria("EventStatus","10",SQLOperatorType.EQUALS)
                          }, buVO).FirstOrDefault();
-                    }
 
+                        docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                            new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
+                        }, buVO);
+                    }
+                    docGR.DocumentItems = docGRItems;
                     docItems.AddRange(docGR.DocumentItems);
                 }
             }
