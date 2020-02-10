@@ -144,7 +144,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             souWarehouseID = this.StaticValue.Warehouses.First(wh => wh.ID == x.souWarehouseID).ID,
                             souAreaMasterID = this.StaticValue.Warehouses.First(wh => wh.ID == x.souAreaID).Branch_ID,
                             desAreaMasterID = null,
-                            movementTypeID = MovementType.FG_TRANSFER_WM,
+                            movementTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
                             lot = null,
                             batch = null,
                             documentDate = DateTime.Now,

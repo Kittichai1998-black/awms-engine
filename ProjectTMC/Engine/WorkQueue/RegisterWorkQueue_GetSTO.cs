@@ -27,8 +27,7 @@ namespace ProjectTMC.Engine.WorkQueue
         {
             StorageObjectCriteria stos = new StorageObjectCriteria();
             //var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-            if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
-            {
+           
                 if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
                     throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
 
@@ -54,16 +53,46 @@ namespace ProjectTMC.Engine.WorkQueue
                         WeightKG = reqVO.weight
                     });
                 }
-                //==========================================================
-               
+            //==========================================================
 
+            if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
+            {
                 foreach (var mappingPallet in reqVO.mappingPallets)
-                {
-                    stos = this.mapPallet(logger, reqVO, buVO);
+                {//Check Qty
+                    if (reqVO.areaCode == "R")
+                    {
+                        //Inbound Zone
+                        if(mappingPallet.qty <= 3)
+                        {
+                            stos = this.mapPallet(logger, reqVO, buVO);
+                        }
+                        else
+                        {
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                        }
+                      
 
+                    }
+                    else if (reqVO.areaCode == "FS")
+                    {
+                        //Outbound Zone
+                        if (mappingPallet.qty <= 16)
+                        {
+                            stos = this.mapPallet(logger, reqVO, buVO);
+                        }
+                        else
+                        {
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                        }
+                    }
 
                 }
                 //=========================================================
+            }
+            else
+            {
+                //No mappingPallets
+
             }
 
             return stos;
@@ -109,11 +138,7 @@ namespace ProjectTMC.Engine.WorkQueue
                     unit = null,
                     orderNo = null,
                     batch = null,
-                    lot = null,
-                    prodDate = dataMap.mappingPallets[0].prodDate,
-                    forCustomerCode = dataMap.mappingPallets[0].forCustomerCode
-
-
+                    lot = null
                 });
 
                 foreach (var row in dataMap.mappingPallets)
@@ -127,8 +152,6 @@ namespace ProjectTMC.Engine.WorkQueue
                         orderNo = row.orderNo,
                         batch = row.batch,
                         lot = row.lot,
-                        prodDate = row.prodDate,
-                        //movingType = row.movingType
                     });
                 }
 

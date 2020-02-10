@@ -112,7 +112,7 @@ namespace AWMSEngine.Engine.V2.Business.Loading
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
-                DocumentType_ID = DocumentTypeID.GOODS_LOADING,
+                DocumentType_ID = DocumentTypeID.LOADING,
 
                 Remark = reqVO.remark,
 

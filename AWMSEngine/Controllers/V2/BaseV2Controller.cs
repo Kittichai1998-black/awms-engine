@@ -63,26 +63,41 @@ namespace AWMSEngine.Controllers.V2
 
         private dynamic ExecuteAPI(string serviceCode, string method, bool isAuthen, dynamic jsonObj)
         {
-            var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
-            var serviceMst = getStatic.FirstOrDefault(x => x.Code.ToUpper().Trim() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
-            
-            if (serviceMst != null)
+           try
             {
-                Type type = ClassType.GetClassType(serviceMst.FullClassName.Trim());//Type.GetType(className.FullClassName);
-                var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { (ControllerBase)this, (int)serviceMst.ID.Value, isAuthen });
-                var res = getInstanct.Execute(jsonObj);
-                return res;
+                var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
+                var serviceMst = getStatic.FirstOrDefault(x => x.Code.ToUpper().Trim() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
+
+                if (serviceMst != null)
+                {
+                    Type type = ClassType.GetClassType(serviceMst.FullClassName.Trim());//Type.GetType(className.FullClassName);
+                    var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { (ControllerBase)this, (int)serviceMst.ID.Value, isAuthen });
+                    var res = getInstanct.Execute(jsonObj);
+                    return res;
+                }
+                else
+                    return new
+                    {
+                        _result = new
+                        {
+                            status = 0,
+                            code = AMWUtil.Exception.AMWExceptionCode.S0001.ToString(),
+                            message = "service config is not found"
+                        }
+                    };
             }
-            else
+            catch(Exception ex)
+            { 
                 return new
                 {
                     _result = new
                     {
                         status = 0,
-                        code = AMWUtil.Exception.AMWExceptionCode.S0001.ToString(),
-                        message = "service is not found"
+                        code = AMWUtil.Exception.AMWExceptionCode.U0000.ToString(),
+                        message = ex.Message
                     }
                 };
+            }
         }
     }
 }

@@ -198,13 +198,13 @@ let routes = [
     exact: true
   },
   {
-    path: "/monitor/inbound",
+    path: "/monitor/receiving",
     name: "Inbound Progress",
     compoment: MonitorIO,
     exact: true
   },
   {
-    path: "/monitor/outbound",
+    path: "/monitor/issuing",
     name: "Outbound Progress",
     compoment: MonitorIO,
     exact: true

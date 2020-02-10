@@ -51,7 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TempMVTDocItems
         {
             public amt_DocumentItem docItem;
-            public MovementType mvt;
+            public DocumentProcessTypeID processID;
             public long? parentDocID;
         }
 
@@ -587,10 +587,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
             var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
-            MovementType mvtDoc = new MovementType();
+            DocumentProcessTypeID mvtDoc = new DocumentProcessTypeID();
             if (mvt != null && mvt.Length > 0)
             {
-                mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), mvt);
+                mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), mvt);
             }
 
             //auto create new Document 
@@ -630,7 +630,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 if (mvt == null || mvt.Length == 0)
                 {
                     var movementtype = sto_skuType.GroupType.GetValueInt().ToString() + "011";
-                    mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), movementtype);
+                    mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), movementtype);
                     if (mvtDoc.Equals(null))
                     {
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Movement Type isn't match.");
@@ -645,7 +645,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 tempDocItems.Add(new TempMVTDocItems()
                 {
-                    mvt = mvtDoc,
+                    processID = mvtDoc,
                     parentDocID = string.IsNullOrWhiteSpace(parentDocID_opt) ? 0 : long.Parse(parentDocID_opt),
                     docItem = new amt_DocumentItem()
                     {
@@ -678,7 +678,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
 
             var res_DI = tempDocItems.GroupBy(
-                p => new { p.mvt, p.parentDocID }, (key, g) => new { MVTCode = key.mvt, ParentDocID = key.parentDocID, DocItems = g.Select(y => y.docItem).ToList() });
+                p => new { p.processID, p.parentDocID }, (key, g) => new { MVTCode = key.processID, ParentDocID = key.parentDocID, DocItems = g.Select(y => y.docItem).ToList() });
             foreach (var di in res_DI)
             {
                 amt_Document doc = new amt_Document()
@@ -703,7 +703,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     DocumentDate = DateTime.Now,
                     ActionTime = DateTime.Now,
-                    MovementType_ID = di.MVTCode,
+                    DocumentProcessType_ID = di.MVTCode,
                     RefID = null,
                     Ref1 = null,
                     Ref2 = null,
