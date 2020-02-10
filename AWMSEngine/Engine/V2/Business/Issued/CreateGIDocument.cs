@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string forCustomerCode;
             public string batch;
             public string lot;
-            public MovementType movementTypeID;
+            public DocumentProcessTypeID movementTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -159,7 +159,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
 
                     docTypeId = DocumentTypeID.GOODS_ISSUED,
                     eventStatus = reqVO.eventStatus,
-                    movementTypeID = reqVO.movementTypeID,
+                    documentProcessTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.issueItems.Select(

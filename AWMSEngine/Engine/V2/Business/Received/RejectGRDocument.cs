@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     grDoc.ParentDocument_ID = grDoc.ID;
                     grDoc.ID = null;
-                    grDoc.MovementType_ID = MovementType.STO_REJECT;
+                    grDoc.DocumentProcessType_ID = DocumentProcessTypeID.STO_REJECT;
                     grDoc.DocumentType_ID = DocumentTypeID.GOODS_ISSUED;
                     grDoc.EventStatus = DocumentEventStatus.WORKING;
                     grDoc.Status = EntityStatus.ACTIVE;

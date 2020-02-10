@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Constant.EnumConst
 {
-    public enum MovementType
+    public enum DocumentProcessTypeID
     {
 
         /// new MVT

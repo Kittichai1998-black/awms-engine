@@ -77,7 +77,7 @@ namespace ProjectSTGT.Engine.WM
                     doc.desWarehouseCode = "WH001";
                     doc.documentDate = DateTime.Now;
                     doc.eventStatus = DocumentEventStatus.NEW;
-                    doc.movementTypeID = AMWUtil.Common.EnumUtil.GetValueEnum<MovementType>(movementType);
+                    doc.movementTypeID = AMWUtil.Common.EnumUtil.GetValueEnum<DocumentProcessTypeID>(movementType);
                     doc.receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {x };
 
                     var createGRDoc = new CreateGRDocument();

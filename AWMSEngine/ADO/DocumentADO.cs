@@ -95,7 +95,7 @@ namespace AWMSEngine.ADO
                 param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
 
                 param.Add("@transport_ID", doc.Transport_ID);
-                param.Add("@MovementType_ID", doc.MovementType_ID);
+                param.Add("@DocumentProcessType_ID", doc.DocumentProcessType_ID);
                 param.Add("@actionTime", doc.ActionTime);
                 param.Add("@documentDate", doc.DocumentDate);
                 param.Add("@options", doc.Options);
@@ -300,7 +300,7 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
-        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, MovementType movementTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, DocumentProcessTypeID movementTypeID, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
