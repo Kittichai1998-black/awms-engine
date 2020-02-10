@@ -52,46 +52,6 @@ namespace ProjectTMC.Engine.WorkQueue
         {
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
 
-
-            foreach (var mappingPallet in reqVO.mappingPallets)
-            {
-                var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-                var mapstoTree = mapsto.ToTreeList();
-                var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
-
-                if (mapsto.eventStatus == StorageObjectEventStatus.AUDITED || mapsto.eventStatus == StorageObjectEventStatus.AUDITING)
-                {
-                    var listDoc = AWMSEngine.ADO.DocumentADO.GetInstant()
-                        .ListBySTO(mapstoTree.FindAll(x => x.type == StorageObjectType.PACK)
-                        .Select(x => x.id.Value).ToList(), DocumentTypeID.AUDIT, buVO);
-
-                    var listDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(listDoc.FirstOrDefault().ID.Value, buVO);
-
-                    var mapstoPack = mapstoTree.FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-
-                    listDocItem.ForEach(docItem =>
-                    {
-                        docItem.DocItemStos.ForEach(disto =>
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value,
-                                disto.Sou_StorageObject_ID,
-                                Convert.ToDecimal(mappingPallet.qty) - mapstoPack.qty,
-                                Convert.ToDecimal(mappingPallet.qty) - mapstoPack.qty,
-                                EntityStatus.ACTIVE, buVO);
-                        });
-                    });
-
-                    var pack = reqVO.mappingPallets.FirstOrDefault(y => mapstoPack.code == y.code);
-                    mapstoPack.qty = Convert.ToDecimal(pack.qty);
-                    mapstoPack.baseQty = Convert.ToDecimal(pack.qty);
-
-                    AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(mapstoPack, buVO);
-
-                    return listDocItem;
-
-                }
-                else
-                {
                     //Get Doc
                     amt_Document docGR = new amt_Document();
                     List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
@@ -100,7 +60,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         //Inbound Zone
                         docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                            new SQLConditionCriteria[] {
-                           new SQLConditionCriteria("MovementType_ID",4010, SQLOperatorType.EQUALS),
+                           new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
                            new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
                          }, buVO).FirstOrDefault();
 
@@ -116,7 +76,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         //Outbound Zone
                          docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                            new SQLConditionCriteria[] {
-                           new SQLConditionCriteria("MovementType_ID",5011, SQLOperatorType.EQUALS),
+                           new SQLConditionCriteria("DocumentProcessType_ID",5011, SQLOperatorType.EQUALS),
                            new SQLConditionCriteria("EventStatus","10",SQLOperatorType.EQUALS)
                          }, buVO).FirstOrDefault();
 
@@ -128,9 +88,8 @@ namespace ProjectTMC.Engine.WorkQueue
                     }
                     docGR.DocumentItems = docGRItems;
                     docItems.AddRange(docGR.DocumentItems);
-                }
-            }
-            return docItems;
+                    var listDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docGR.ID.Value, buVO);
+            return listDocItem;
         }
 
     }
