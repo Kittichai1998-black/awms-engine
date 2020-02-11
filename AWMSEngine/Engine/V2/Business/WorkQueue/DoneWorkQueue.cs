@@ -1,8 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
-using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.Engine.General;
+using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -11,11 +10,10 @@ using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class DoneQ : BaseQueue<DoneQ.TReq, WorkQueueCriteria>
+    public class DoneWorkQueue : BaseQueue<DoneWorkQueue.TReq, WorkQueueCriteria>
     {
 
         public class TReq

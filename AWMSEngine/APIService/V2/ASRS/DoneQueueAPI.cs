@@ -18,8 +18,8 @@ namespace AWMSEngine.APIService.V2.ASRS
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            DoneQ.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneQ.TReq>(this.RequestVO);
-            var resDoneQ = new DoneQ().Execute(this.Logger, this.BuVO, req);
+            DoneWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneWorkQueue.TReq>(this.RequestVO);
+            var resDoneQ = new DoneWorkQueue().Execute(this.Logger, this.BuVO, req);
             this.CommitTransaction();
 
             this.BeginTransaction();

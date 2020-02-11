@@ -1,17 +1,13 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.APIService.V2.ASRS;
-using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Document
 {

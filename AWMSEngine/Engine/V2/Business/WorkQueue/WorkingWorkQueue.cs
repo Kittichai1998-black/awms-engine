@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class WorkingStageQueue : BaseQueue<WorkingStageQueue.TReq, WorkQueueCriteria>
+    public class WorkingWorkQueue : BaseQueue<WorkingWorkQueue.TReq, WorkQueueCriteria>
     {
         public class TReq
         {

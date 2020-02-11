@@ -14,7 +14,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var regQueue = new RegisterWorkQueue();
             var resRegQueue = regQueue.Execute(this.Logger, this.BuVO, reqVO);
 
-            var workingData = new WorkingStageQueue.TReq()
+            var workingData = new WorkingWorkQueue.TReq()
             {
                 warehouseCode = reqVO.warehouseCode,
                 actualTime = DateTime.Now,
@@ -23,10 +23,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 locationCode = reqVO.desLocationCode,
                 queueID = resRegQueue.queueID
             };
-            var workingQueue = new WorkingStageQueue();
+            var workingQueue = new WorkingWorkQueue();
             var resWorkingQueue = workingQueue.Execute(this.Logger, this.BuVO, workingData);
 
-            var doneData = new DoneQ.TReq()
+            var doneData = new DoneWorkQueue.TReq()
             {
                 warehouseCode = resWorkingQueue.desWarehouseCode,
                 actualTime = DateTime.Now,
@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 locationCode = resWorkingQueue.desLocationCode,
                 queueID = resWorkingQueue.queueID
             };
-            var doneQueue = new DoneQ();
+            var doneQueue = new DoneWorkQueue();
             var resDone = doneQueue.Execute(this.Logger, this.BuVO, doneData);
 
             var workedDocument = new Document.WorkedDocument();
