@@ -14,9 +14,9 @@ using AWMSModel.Constant.EnumConst;
 
 namespace ProjectTMC.Engine.WorkQueue
 {
-    public class DoneQ_SendLocation : IProjectEngine<DoneQ.TReqandWorkQueue, WorkQueueCriteria>
+    public class DoneQ_SendLocation : IProjectEngine<DoneWorkQueue.TReqandWorkQueue, WorkQueueCriteria>
     {
-        public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneQ.TReqandWorkQueue data)
+        public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneWorkQueue.TReqandWorkQueue data)
         {
 
             var reqVO = data.reqVO;
