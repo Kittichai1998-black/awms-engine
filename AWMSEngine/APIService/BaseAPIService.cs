@@ -58,10 +58,10 @@ namespace AWMSEngine.APIService
 
         private class _GetKey
         {
-            public string token { get; set; }
-            public string _token { get; set; }
-            public string apikey { get; set; }
-            public string _apikey { get; set; }
+            public string token;
+            public string _token;
+            public string apikey;
+            public string _apikey;
         }
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)

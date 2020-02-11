@@ -25,9 +25,10 @@ namespace AMWUtil.DataAccess
             if (parameter == null) return string.Empty;
             return string.Join(" , ", parameter.ParameterNames.ToList().Select(x =>
             {
-                string v = parameter.Get<string>(x);
+                object v = parameter.Get<object>(x);
                 if(v == null)
                     return string.Format("@{0}=NULL", x);
+
                 return string.Format("@{0}='{1}'", x, v);
             }));
         }
