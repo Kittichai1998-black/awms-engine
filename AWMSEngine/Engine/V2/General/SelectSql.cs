@@ -21,15 +21,15 @@ namespace AWMSEngine.Engine.V2.General
         public class TReqModel
         {
             public string table_prefix;
-            public string t;
-            public string q;
-            public string f;
-            public string g;
-            public string s;
-            public string sk;
-            public string l;
+            public string t;//table
+            public string q;//where query
+            public string f;//select field
+            public string g;//group
+            public string s;//sort
+            public string sk;//skip
+            public string l;//limit
             public string ft;
-            public bool? isCounts;
+            public bool? isCounts;//display count
         }
         public class TResModel
         {

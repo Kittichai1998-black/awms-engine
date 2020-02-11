@@ -59,6 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="APIService\V2\Report\" />
     <Folder Include="Engine\V2\Business\Loading\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
