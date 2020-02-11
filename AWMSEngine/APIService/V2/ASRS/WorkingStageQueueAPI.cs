@@ -16,8 +16,8 @@ namespace AWMSEngine.APIService.V2.ASRS
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<WorkingStageQueue.TReq>(this.RequestVO);
-            var res = new WorkingStageQueue().Execute(this.Logger, this.BuVO, req);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<WorkingWorkQueue.TReq>(this.RequestVO);
+            var res = new WorkingWorkQueue().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

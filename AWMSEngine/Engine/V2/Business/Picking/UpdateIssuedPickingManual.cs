@@ -1,16 +1,9 @@
 ﻿using AMWUtil.Common;
-using AMWUtil.DataAccess.Http;
-using AMWUtil.Exception;
-using AWMSEngine.APIService.Doc;
-using AWMSEngine.Engine.Business.Issued;
 using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Picking
 {
