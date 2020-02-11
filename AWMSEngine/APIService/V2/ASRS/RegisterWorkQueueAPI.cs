@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class RegisterQueueAPI : BaseAPIService
+    public class RegisterWorkQueueAPI : BaseAPIService
     {
-        public RegisterQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public RegisterWorkQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

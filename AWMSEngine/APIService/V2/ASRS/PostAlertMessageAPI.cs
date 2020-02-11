@@ -11,9 +11,9 @@ using AWMSEngine.Engine.V2.General;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class WMSAlertAPI : BaseAPIService
+    public class PostAlertMessageAPI : BaseAPIService
     {
-        public WMSAlertAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public PostAlertMessageAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

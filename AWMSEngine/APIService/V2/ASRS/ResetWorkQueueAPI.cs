@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class ResetQueueAPI : BaseAPIService
+    public class ResetWorkQueueAPI : BaseAPIService
     {
-        public ResetQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public ResetWorkQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
