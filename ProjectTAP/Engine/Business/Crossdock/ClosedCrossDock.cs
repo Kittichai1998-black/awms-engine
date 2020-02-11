@@ -18,7 +18,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
 
             if (getGRDoc == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Cross Dock Document Not Found");
-            if (getGRDoc.MovementType_ID != MovementType.FG_CROSSDOCK_CUS)
+            if (getGRDoc.DocumentProcessType_ID != DocumentProcessTypeID.FG_CROSSDOCK_CUS)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "This Document is not Cross Dock Document");
 
             var getGIDoc = DocumentADO.Get(getGRDoc.ParentDocument_ID.Value, this.BuVO);

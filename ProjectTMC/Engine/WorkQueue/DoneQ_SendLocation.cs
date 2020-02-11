@@ -22,7 +22,7 @@ namespace ProjectTMC.Engine.WorkQueue
             var reqVO = data.reqVO;
             var workQueue_Criteria = data.workQ;
             var document = data.document;
-            if (document.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+            if (document.DocumentProcessType_ID != DocumentProcessTypeID.EPL_TRANSFER_WM)
             {
                 var updateLocreq = new SCADA_SendLocation_REQ()
                 {
