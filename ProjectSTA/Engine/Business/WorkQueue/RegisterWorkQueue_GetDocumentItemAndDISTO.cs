@@ -147,7 +147,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             }
 
             var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
-            MovementType mvtDoc = mvt != null && mvt.Length > 0 ? (MovementType)Enum.Parse(typeof(MovementType), mvt) : MovementType.FG_TRANSFER_WM;
+            DocumentProcessTypeID mvtDoc = mvt != null && mvt.Length > 0 ? (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), mvt) : DocumentProcessTypeID.FG_TRANSFER_WM;
 
             var pstos = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
             if (pstos == null || pstos.Count() == 0)
@@ -209,7 +209,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     if (packH.options != null && packH.options.Length > 0)
                     {
                         
-                            if (mvtDoc == MovementType.FG_TRANSFER_CUS)
+                            if (mvtDoc == DocumentProcessTypeID.FG_TRANSFER_CUS)
                             {   //customer return
                                 //doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
                                 //เช็ค่า Sou_Customer_ID จาก options
@@ -222,11 +222,11 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     doc.Sou_Customer_ID = checkCusID.ID.Value;
                                 }
                             }
-                            else if (mvtDoc == MovementType.WIP_TRANSFER_WM)
+                            else if (mvtDoc == DocumentProcessTypeID.WIP_TRANSFER_WM)
                             {
                                 //doc.MovementType_ID = MovementType.WIP_TRANSFER_WM;
                             }
-                            else if (mvtDoc == MovementType.FG_PICK_RETURN_WM)
+                            else if (mvtDoc == DocumentProcessTypeID.FG_PICK_RETURN_WM)
                             {   //picking return
                                 List<amt_DocumentItem> tempDocItems = new List<amt_DocumentItem>();
 
@@ -262,7 +262,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 }
                 else
                 {
-                    doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
+                    doc.DocumentProcessType_ID= DocumentProcessTypeID.EPL_TRANSFER_WM;
                     doc.Sou_Warehouse_ID = warehouse.ID.Value;
                     doc.Sou_Branch_ID = branch.ID.Value;
 
