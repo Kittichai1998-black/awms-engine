@@ -95,7 +95,7 @@ namespace AWMSEngine.ADO
                 param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
 
                 param.Add("@transport_ID", doc.Transport_ID);
-                param.Add("@MovementType_ID", doc.MovementType_ID);
+                param.Add("@DocumentProcessType_ID", doc.DocumentProcessType_ID);
                 param.Add("@actionTime", doc.ActionTime);
                 param.Add("@documentDate", doc.DocumentDate);
                 param.Add("@options", doc.Options);
@@ -141,8 +141,7 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@linkDocumentID", docItem.LinkDocument_ID);
-            param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
+            param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
@@ -300,7 +299,7 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
-        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, MovementType movementTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, DocumentProcessTypeID movementTypeID, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
@@ -312,7 +311,14 @@ namespace AWMSEngine.ADO
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
             if (souAreaMasterID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_AreaMaster_ID", souAreaMasterID, SQLOperatorType.EQUALS));
-           
+
+            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            return res;
+        }
+        public List<amt_Document> ListDocs(List<long> docIDs, VOCriteria buVO)
+        {
+            var whares = new List<SQLConditionCriteria>();
+            whares.Add(new SQLConditionCriteria("ID", string.Join(',', docIDs.ToArray()), SQLOperatorType.IN));
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
@@ -676,7 +682,7 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public List<amt_Document> ListAndRelationSupper(List<long> childDocumentIDs, VOCriteria buVO)
+        /*public List<amt_Document> ListAndRelationSupper(List<long> childDocumentIDs, VOCriteria buVO)
         {
             var baseDocs = new List<amt_Document>();
             childDocumentIDs.ToList().ForEach(docID => {
@@ -701,7 +707,7 @@ namespace AWMSEngine.ADO
             });
 
             return docHs;
-        }
+        }*/
 
         public amt_Document Put(amt_Document doc, VOCriteria buVO)
         {
@@ -724,7 +730,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@ID", docItem.ID);
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@linkDocumentID", docItem.LinkDocument_ID);
+            param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);

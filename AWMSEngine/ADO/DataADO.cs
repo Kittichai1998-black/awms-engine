@@ -146,10 +146,6 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public object Get(long? distoLD, object p1, object p2, bool v1, bool v2, VOCriteria buVO)
-        {
-            throw new NotImplementedException();
-        }
 
         public int CountBy<T>(SQLConditionCriteria[] wheres, VOCriteria buVO)
              where T : IEntityModel
@@ -258,24 +254,41 @@ namespace AWMSEngine.ADO
             string commOrderBy = string.Empty;
 
             int iField = 0;
-            if(wheres!=null)
-                foreach (var w in wheres)
+            commWhere = GenerateWhereString(wheres.ToList(), commWhere);
+            string GenerateWhereString(List<SQLConditionCriteria> wheres,string commWhere)
+            {
+                if (wheres != null && wheres.Count > 0)
                 {
-                    commWhere += string.Format("{3} {0} {1} {2} ",
-                                            w.field,
-                                            w.operatorType.Attribute<ValueAttribute>().Value,
-                                            w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
-                                            w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
-                                                string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
+                    commWhere += " ( ";
+                    foreach (var w in wheres)
+                    {
+                        if (w.whereGroups != null && w.whereGroups.Count > 0)
+                        {
+                            commWhere = GenerateWhereString(w.whereGroups, commWhere);
+                        }
+                        else
+                        {
+                            commWhere += string.Format("{3} {0} {1} {2} ",
+                                                    w.field,
+                                                    w.operatorType.Attribute<ValueAttribute>().Value,
+                                                    w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
+                                                    iField == 0 ? string.Empty :
+                                                        w.conditionLeft == SQLConditionType.NONE ? "AND" : w.conditionLeft.Attribute<ValueAttribute>().Value);
 
-                    object v = null;
-                    if (w.value == null) v = null;
-                    else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
-                    else if (w.value is string && (w.operatorType == SQLOperatorType.IN || w.operatorType == SQLOperatorType.NOTIN)) v = w.value.ToString().Split(",");
-                    else v = w.value;
-                    param.Add(w.field + iField, v);
-                    iField++;
+                            object v = null;
+                            if (w.value == null) v = null;
+                            else if (w.value is string && (w.operatorType == SQLOperatorType.LIKE || w.operatorType == SQLOperatorType.NOTLIKE)) v = w.value.ToString().Replace('*', '%');
+                            else if (w.value is string && (w.operatorType == SQLOperatorType.IN || w.operatorType == SQLOperatorType.NOTIN)) v = w.value.ToString().Split(",");
+                            else v = w.value;
+                            param.Add(w.field + iField, v);
+                            iField++;
+                        }
+                    }
+                    commWhere += " ) ";
                 }
+                return commWhere;
+            }
+            
             if (orderBys != null)
                 foreach (var o in orderBys)
                 {

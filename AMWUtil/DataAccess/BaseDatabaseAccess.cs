@@ -28,6 +28,7 @@ namespace AMWUtil.DataAccess
                 object v = parameter.Get<object>(x);
                 if(v == null)
                     return string.Format("@{0}=NULL", x);
+
                 return string.Format("@{0}='{1}'", x, v);
             }));
         }
@@ -137,6 +138,7 @@ namespace AMWUtil.DataAccess
         public SqlConnection CreateConnection()
         {
             SqlConnection conn = new SqlConnection(ConnectionString);
+            conn.Open();
             return conn;
         }
         public SqlTransaction CreateTransaction(string transName = null)

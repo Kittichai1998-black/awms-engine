@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
 
-namespace AWMSEngine.APIService.V2.ASRS
+namespace AWMSEngine.APIService.V2.Document
 {
     
     public class ClosedDocumentAPI : BaseAPIService

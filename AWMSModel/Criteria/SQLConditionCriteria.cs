@@ -10,6 +10,7 @@ namespace AWMSModel.Criteria
 {
     public class SQLConditionCriteria
     {
+        public List<SQLConditionCriteria> whereGroups;
         public string field;
         public object value;
         public SQLOperatorType operatorType;
@@ -29,10 +30,11 @@ namespace AWMSModel.Criteria
             this.operatorType = operatorType;
             this.conditionLeft = conditionLeft;
         }
-        public SQLConditionCriteria(string field, object value, string operatorType, string conditionLeft = null)
+        public SQLConditionCriteria(string field, object value, string operatorType, string conditionLeft = null, List<SQLConditionCriteria> whereGroups = null)
         {
             this.field = field;
             this.value = value;
+            this.whereGroups = whereGroups;
             operatorType = operatorType == null ? string.Empty : operatorType.ToLower();
             conditionLeft = conditionLeft == null ? string.Empty : conditionLeft.ToLower();
             this.operatorType = AMWUtil.Common.EnumUtil.List<SQLOperatorType>()

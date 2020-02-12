@@ -19,9 +19,9 @@ const StorageObjectLog = (props) => {
     
     const [query, setQuery] = useState({
         queryString: window.apipath + "/v2/SelectDataLogAPI",
-        t: "SendAPIEvent",
+        t: "StorageObjectEvent",
         q: '',
-        f: "LogRefID,APIService_Module,APIName,ResultMessage,StartTime",
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
@@ -69,14 +69,14 @@ const StorageObjectLog = (props) => {
         if (datetime) {
           if (datetime["dateFrom"]) {
             let createObj = {};
-            createObj.f = 'StartTime';
+            createObj.f = 'LogTime';
             createObj.v = datetime["dateFrom"];
             createObj.c = ">=";
             filterDatas.push(createObj);
           }
           if (datetime["dateTo"]) {
             let createObj = {};
-            createObj.f = 'StartTime';
+            createObj.f = 'LogTime';
             createObj.v = datetime["dateTo"];
             createObj.c = "<=";
             filterDatas.push(createObj);
@@ -133,20 +133,133 @@ const StorageObjectLog = (props) => {
           width: 150,
         },
         {
-          Header: "APIService Module",
-          accessor: "APIService_Module",
+          Header: "Code",
+          accessor: "Code",
         },
         {
-          Header: "API Name",
-          accessor: "APIName",
+          Header: "Name",
+          accessor: "Name",
         },
         {
-          Header: "Result",
-          accessor: "ResultMessage",
+          Header: "Area Code",
+          accessor: "AreaMaster_Code",
         },
         {
-          Header: "Start Time",
-          accessor: "StartTime",
+          Header: "Location Code",
+          accessor: "AreaLocationMaster_Code",
+        },
+        {
+          Header: "Parent StoObj Code",
+          accessor: "ParentStorageObject_Code",
+        },
+        {
+          Header: "Base Code",
+          accessor: "BaseMaster_Code",
+        },
+        {
+          Header: "Pack Code",
+          accessor: "PackMaster_Code",
+        },
+        {
+          Header: "For Customer",
+          accessor: "For_Customer_ID",
+        },
+        {
+          Header: "Object Type",
+          accessor: "ObjectType",
+        },
+        {
+          Header: "WeigthKG",
+          accessor: "WeigthKG",
+        },
+        {
+          Header: "QTY",
+          accessor: "Quantity",
+        },
+        {
+          Header: "Unit",
+          accessor: "UnitType_Code",
+        },
+        {
+          Header: "Qty",
+          accessor: "Quantity",
+        },
+        {
+          Header: "Unit",
+          accessor: "UnitType_Code",
+        },
+        {
+          Header: "Base Qty",
+          accessor: "BaseQuantity",
+        },
+        {
+          Header: "Base Unit",
+          accessor: "BaseUnitType_Code",
+        },
+        {
+          Header: "Order No",
+          accessor: "OrderNo",
+        },
+        {
+          Header: "Batch",
+          accessor: "Batch",
+        },
+        {
+          Header: "Lot",
+          accessor: "Lot",
+        },
+        {
+          Header: "Expiry Date",
+          accessor: "ExpiryDate",
+          type:"datetime"
+        },
+        {
+          Header: "Product Date",
+          accessor: "ProductDate",
+          type:"datetime"
+        },
+        {
+          Header: "RefID",
+          accessor: "RefID",
+        },
+
+        {
+          Header: "Ref1",
+          accessor: "Ref1",
+        },
+        {
+          Header: "Ref2",
+          accessor: "Ref2",
+        },
+        {
+          Header: "Event Status",
+          accessor: "EventStatus",
+        },
+        {
+          Header: "Status",
+          accessor: "Status",
+        },
+        {
+          Header: "Create By",
+          accessor: "CreateBy_Name",
+        },
+        {
+          Header: "Create Time",
+          accessor: "CreateTime",
+          type:"datetime"
+        },
+        {
+          Header: "Modify By",
+          accessor: "ModifyBy_Name",
+        },
+        {
+          Header: "Modify Time",
+          accessor: "ModifyTime",
+          type:"datetime"
+        },
+        {
+          Header: "Log Time",
+          accessor: "LogTime",
           width: 200,
           type:"datetime"
         },

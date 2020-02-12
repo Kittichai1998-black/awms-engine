@@ -35,7 +35,7 @@ namespace ProjectPanKan.Engine.Business
             if (distoLD.GroupBy(x => x.LinkDocument_ID).Any(x => x.Count() > 1))
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Loading ID : " + reqVO.docID + " / LinkDocument_ID Dupplicate");
 
-            var rootStoInLoad = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListBaseInDoc(reqVO.docID, null, DocumentTypeID.GOODS_LOADING, this.BuVO);
+            var rootStoInLoad = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListBaseInDoc(reqVO.docID, null, DocumentTypeID.LOADING, this.BuVO);
             List<TRes.DataItem> rootStoInIssueds = new List<TRes.DataItem>();
 
             foreach (var docStos in distoLD)

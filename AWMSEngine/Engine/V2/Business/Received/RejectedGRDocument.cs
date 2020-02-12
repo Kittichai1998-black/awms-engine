@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Received
 {
-    public class RejectGRDocument : BaseEngine<RejectGRDocument.TDocReq, List<long>>
+    public class RejectedGRDocument : BaseEngine<RejectedGRDocument.TDocReq, List<long>>
     {
 
         public class RootStoProcess
@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     grDoc.ParentDocument_ID = grDoc.ID;
                     grDoc.ID = null;
-                    grDoc.MovementType_ID = MovementType.STO_REJECT;
+                    grDoc.DocumentProcessType_ID = DocumentProcessTypeID.STO_REJECT;
                     grDoc.DocumentType_ID = DocumentTypeID.GOODS_ISSUED;
                     grDoc.EventStatus = DocumentEventStatus.WORKING;
                     grDoc.Status = EntityStatus.ACTIVE;
@@ -97,7 +97,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     {
                         x.EventStatus = DocumentEventStatus.WORKING;
                         x.Status = EntityStatus.ACTIVE;
-                        x.ParentDocumentItem_ID = x.ID;
+                        x.RefDocumentItem_ID = x.ID;
                         x.ID = null;
                     });
 
@@ -131,7 +131,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                         x.distos.ForEach(disto =>
                         {
-                            var doci = resDocument.DocumentItems.Find(doci => doci.ParentDocumentItem_ID == disto.DocumentItem_ID);
+                            var doci = resDocument.DocumentItems.Find(doci => doci.RefDocumentItem_ID == disto.DocumentItem_ID);
                             if (doci.DocItemStos == null)
                                 doci.DocItemStos = new List<amt_DocumentItemStorageObject>();
 

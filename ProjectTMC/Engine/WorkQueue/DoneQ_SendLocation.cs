@@ -14,15 +14,15 @@ using AWMSModel.Constant.EnumConst;
 
 namespace ProjectTMC.Engine.WorkQueue
 {
-    public class DoneQ_SendLocation : IProjectEngine<DoneQ.TReqandWorkQueue, WorkQueueCriteria>
+    public class DoneQ_SendLocation : IProjectEngine<DoneWorkQueue.TReqandWorkQueue, WorkQueueCriteria>
     {
-        public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneQ.TReqandWorkQueue data)
+        public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneWorkQueue.TReqandWorkQueue data)
         {
 
             var reqVO = data.reqVO;
             var workQueue_Criteria = data.workQ;
             var document = data.document;
-            if (document.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+            if (document.DocumentProcessType_ID != DocumentProcessTypeID.EPL_TRANSFER_WM)
             {
                 var updateLocreq = new SCADA_SendLocation_REQ()
                 {

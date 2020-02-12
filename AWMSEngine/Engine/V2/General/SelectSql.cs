@@ -21,15 +21,15 @@ namespace AWMSEngine.Engine.V2.General
         public class TReqModel
         {
             public string table_prefix;
-            public string t;
-            public string q;
-            public string f;
-            public string g;
-            public string s;
-            public string sk;
-            public string l;
+            public string t;//table
+            public string q;//where query
+            public string f;//select field
+            public string g;//group
+            public string s;//sort
+            public string sk;//skip
+            public string l;//limit
             public string ft;
-            public bool? isCounts;
+            public bool? isCounts;//display count
         }
         public class TResModel
         {
@@ -42,13 +42,24 @@ namespace AWMSEngine.Engine.V2.General
             List<SQLConditionCriteria> whares = new List<SQLConditionCriteria>();
             if(reqVO.q != null)
             {
-                dynamic get_where = JsonConvert.DeserializeObject<dynamic>(reqVO.q);
-                foreach (var q in get_where)
+                dynamic q = JsonConvert.DeserializeObject<dynamic>(reqVO.q);
+                whares = GenerateWheres(q);
+                List<SQLConditionCriteria> GenerateWheres(dynamic q)
                 {
-                    SQLConditionCriteria w = new SQLConditionCriteria((string)q.f, (string)q.v, (string)q.c, (string)q.o);
-                    whares.Add(w);
+                    if (q == null) return null;
+                    List<SQLConditionCriteria> res = new List<SQLConditionCriteria>();
+                    foreach (var _q in q)
+                    {
+                        List<SQLConditionCriteria> whereGroups = GenerateWheres(_q.q);
+                        SQLConditionCriteria w = new SQLConditionCriteria((string)_q.f, (string)_q.v, (string)_q.c, (string)_q.o, whereGroups);
+                        res.Add(w);
+                    }
+                    return res;
                 }
+
             }
+
+
 
             List<SQLOrderByCriteria> orders = new List<SQLOrderByCriteria>();
             if (reqVO.s != null)
