@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class WorkingStageQueueAPI : BaseAPIService
+    public class WorkingWorkQueueAPI : BaseAPIService
     {
-        public WorkingStageQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WorkingWorkQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

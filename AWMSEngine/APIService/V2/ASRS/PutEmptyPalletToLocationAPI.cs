@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class MappingEmptyPalletToLocationAPI : BaseAPIService
+    public class PutEmptyPalletToLocationAPI : BaseAPIService
     {
-        public MappingEmptyPalletToLocationAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public PutEmptyPalletToLocationAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

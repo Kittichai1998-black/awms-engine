@@ -16,6 +16,7 @@ import AmFindPopup from "../../../components/AmFindPopup";
 import styled from 'styled-components';
 import AmTableV2 from '../../../components/table/AmTableV2';
 import {ProcessQueueContext, ProcessQueueProvider} from './ProcessQueueContext';
+var Axios = new apicall();
 
 const FormInline = styled.div`
 display: flex;
@@ -33,7 +34,6 @@ input {
     
   }
 `;
-
 
 const ProcessQueueHeader = (props) => {
   const { documents, warehouse } = useContext(ProcessQueueContext);
@@ -56,8 +56,6 @@ const ProcessQueueHeader = (props) => {
   }
 
   return <div>
-    {console.log(warehouse)}
-    {console.log(documents)}
   {props.warehouse === undefined || props.warehouse === "" ? <FormInline>
       <label style={{"width":100}}>Warehouse : </label>
       <AmDropdown
@@ -100,44 +98,56 @@ const ProcessQueueHeader = (props) => {
   </div>
 }
 
-ProcessQueueHeader.propTypes = {
-  /**
-   * ข้อมูลที่จะแสดง
-   ** value : Array Object
-  */
-  dataSource:PropTypes.array.isRequired,
-  /**
-   * รูปแบบของหัวตารางเลือกเอกสาร
-   ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]
-  */
-  documentPopup:PropTypes.array.isRequired,
-  /**
-   * เลือกรูปแบบการโปรเสทแบบ 1 เอกสารหรือหลายเอกสาร
-   ** value? : true || false
-  */
-  processSingle:PropTypes.bool,
-  /**
-  * ส่งข้อมูลเอกสารที่เลือกกลับให้ผู้เรียกใช้งาน
-  * ** value : function()
-  */
-  selectionDocument:PropTypes.func.isRequired,
-  /**
-  * Default ID ของ Warehosue
-  * ** value : 1
-  */
-  warehouse:PropTypes.number,
-  /**
-  * QueryString สำหรับแสดงข้อมูลเอกสาร
-  * ** value : queryString: window.apipath + "/v2/SelectDataTrxAPI/" ...
-  */
-  documentQuery:PropTypes.string
-}
-ProcessQueueHeader.defaultProps = {
-  processSingle:false
+const useDocumentData = (docGroup ,docID) => {
+  const [docData, setDocData] = useState({})
+  const [docs, setDocs] = useState([])
+
+  useEffect(()=>{
+    if(docID !== undefined){
+      var newDocID = docID.find(x=> !docs.map(doc => doc.ID).includes(x.ID))
+      if(newDocID !== undefined){
+        const documentItemQuery = {
+          queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+          t: "DocumentItem",
+          q:
+            '[{ "f": "Status", "c":"<", "v": 2},{ "f": "Document_ID", "c":"=", "v": ' + newDocID.ID + '}]',
+          f: "*",
+          g: "",
+          s: "[{'f':'ID','od':'asc'}]",
+          sk: 0,
+          l: 100,
+          all: ""
+        };
+        Axios.get(createQueryString(documentItemQuery)).then(res => {
+          setDocData({docID:docID, docItems:res.data.datas});
+          console.log(res)
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docID])
+  
+  useEffect(()=>{
+    if(docGroup !== undefined){
+      var getDocs = [...docGroup];
+      getDocs.push(docData);
+      setDocs(getDocs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docData])
+
+  return docs;
 }
 
 const ProcessQueueDetail = (props) => {
   const { documents, warehouse } = useContext(ProcessQueueContext);
+  const documentData = useDocumentData(documentData, documents.documentsValue)
+
+
+  useEffect(()=>{
+    console.log(documents)
+  },[documents]);
+  
   return <>
     <AmTableV2 
       columns={props.documentItemDetail}
@@ -181,4 +191,39 @@ ProcessQueue.propTypes = {
 ProcessQueue.defaultProps = {
 }
   
+ProcessQueueHeader.propTypes = {
+  /**
+   * ข้อมูลที่จะแสดง
+   ** value : Array Object
+  */
+  dataSource:PropTypes.array.isRequired,
+  /**
+   * รูปแบบของหัวตารางเลือกเอกสาร
+   ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]
+  */
+  documentPopup:PropTypes.array.isRequired,
+  /**
+   * เลือกรูปแบบการโปรเสทแบบ 1 เอกสารหรือหลายเอกสาร
+   ** value? : true || false
+  */
+  processSingle:PropTypes.bool,
+  /**
+  * ส่งข้อมูลเอกสารที่เลือกกลับให้ผู้เรียกใช้งาน
+  * ** value : function()
+  */
+  selectionDocument:PropTypes.func.isRequired,
+  /**
+  * Default ID ของ Warehosue
+  * ** value : 1
+  */
+  warehouse:PropTypes.number,
+  /**
+  * QueryString สำหรับแสดงข้อมูลเอกสาร
+  * ** value : queryString: window.apipath + "/v2/SelectDataTrxAPI/" ...
+  */
+  documentQuery:PropTypes.string
+}
+ProcessQueueHeader.defaultProps = {
+  processSingle:false
+}
 export default ProcessQueue;

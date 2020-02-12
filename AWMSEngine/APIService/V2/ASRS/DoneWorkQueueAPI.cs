@@ -9,9 +9,9 @@ using AWMSEngine.Engine.V2.Business.Document;
 namespace AWMSEngine.APIService.V2.ASRS
 {
     
-    public class DoneQueueAPI : BaseAPIService
+    public class DoneWorkQueueAPI : BaseAPIService
     {
-        public DoneQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneWorkQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

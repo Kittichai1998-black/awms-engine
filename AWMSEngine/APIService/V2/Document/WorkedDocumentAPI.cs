@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
 
-namespace AWMSEngine.APIService.V2.ASRS
+namespace AWMSEngine.APIService.V2.Document
 {
     
-    public class ClosingDocumentAPI : BaseAPIService
+    public class WorkedDocumentAPI : BaseAPIService
     {
-        public ClosingDocumentAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WorkedDocumentAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
@@ -24,10 +24,10 @@ namespace AWMSEngine.APIService.V2.ASRS
         {
             this.BeginTransaction();
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
             this.CommitTransaction();
  
-            return resClosing;
+            return resWorked;
         }
          
     }
