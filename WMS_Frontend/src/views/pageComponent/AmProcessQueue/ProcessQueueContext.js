@@ -60,7 +60,6 @@ const DocumentsAction = () => {
     const [documentsData, documentsDispatch] = useReducer(documentsReducer, initialState)
     const addDocument = (payload) => documentsDispatch({"type":"ADDDOC", payload})
     const clearDocument = (payload) => documentsDispatch({"type":"CLEARDOC", payload})
-    console.log(documentsData)
     const documentsValue = documentsData.documents;
 
     return {documentsValue, addDocument, clearDocument}
