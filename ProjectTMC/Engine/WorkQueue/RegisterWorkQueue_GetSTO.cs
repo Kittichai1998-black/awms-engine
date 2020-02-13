@@ -51,6 +51,7 @@ namespace ProjectTMC.Engine.WorkQueue
                     Status = EntityStatus.ACTIVE,
                     UnitType_ID = 2,
                     WeightKG = reqVO.weight
+
                 });
             }
             //==========================================================
