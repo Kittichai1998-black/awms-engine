@@ -9,7 +9,7 @@ import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
 
-const StorageObjectLog = (props) => {
+const WorkQueueLog = (props) => {
   const { t } = useTranslation();
 
   const [filterData, setFilterData] = useState([]);
@@ -19,7 +19,7 @@ const StorageObjectLog = (props) => {
 
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
-    t: "StorageObjectEvent",
+    t: "WorkQueueEvent",
     q: '',
     f: "*",
     g: "",
@@ -139,111 +139,83 @@ const StorageObjectLog = (props) => {
       width: 150,
     },
     {
-      Header: "Code",
-      accessor: "Code",
-    },
-    {
-      Header: "Name",
-      accessor: "Name",
-    },
-    {
-      Header: "Area Code",
-      accessor: "AreaMaster_Code",
-    },
-    {
-      Header: "Location Code",
-      accessor: "AreaLocationMaster_Code",
-    },
-    {
-      Header: "Parent StoObj Code",
-      accessor: "ParentStorageObject_Code",
-    },
-    {
-      Header: "Base Code",
-      accessor: "BaseMaster_Code",
-    },
-    {
-      Header: "Pack Code",
-      accessor: "PackMaster_Code",
-    },
-    {
-      Header: "For Customer",
-      accessor: "For_Customer_ID",
-    },
-    {
-      Header: "Object Type",
-      accessor: "ObjectType",
-    },
-    {
-      Header: "WeigthKG",
-      accessor: "WeigthKG",
-    },
-    {
-      Header: "QTY",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
-      Header: "Qty",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
-      Header: "Base Qty",
-      accessor: "BaseQuantity",
-    },
-    {
-      Header: "Base Unit",
-      accessor: "BaseUnitType_Code",
-    },
-    {
-      Header: "Order No",
-      accessor: "OrderNo",
-    },
-    {
-      Header: "Batch",
-      accessor: "Batch",
-    },
-    {
-      Header: "Lot",
-      accessor: "Lot",
-    },
-    {
-      Header: "Expiry Date",
-      accessor: "ExpiryDate",
-      type: "datetime"
-    },
-    {
-      Header: "Product Date",
-      accessor: "ProductDate",
-      type: "datetime"
-    },
-    {
       Header: "RefID",
       accessor: "RefID",
     },
-
     {
-      Header: "Ref1",
-      accessor: "Ref1",
+      Header: "IOType",
+      accessor: "IOType",
     },
     {
-      Header: "Ref2",
-      accessor: "Ref2",
+      Header: "Parent_WorkQueue_ID",
+      accessor: "[Parent_WorkQueue_ID",
     },
     {
-      Header: "Event Status",
+      Header: "Document Code",
+      accessor: "Document_Code",
+    },
+    {
+      Header: "StorageObject Code",
+      accessor: "StorageObject_Code",
+    },
+    {
+      Header: "Sou_Warehouse",
+      accessor: "Sou_Warehouse_Code",
+    },
+    {
+      Header: "Sou_Area",
+      accessor: "Sou_Area_Code",
+    },
+    {
+      Header: "Sou_AreaLocation",
+      accessor: "Sou_AreaLocation_Code",
+    },
+    {
+      Header: "Des_Warehouse",
+      accessor: "Des_Warehouse_Code",
+    },
+    {
+      Header: "Des_Area",
+      accessor: "Des_Area_Code",
+    },
+    {
+      Header: "Des_AreaLocation",
+      accessor: "Des_AreaLocation_Code",
+    },
+    {
+      Header: "Warehouse",
+      accessor: "Warehouse_Code",
+    },
+    {
+      Header: "Area",
+      accessor: "Area_Code",
+    },
+    {
+      Header: "Location",
+      accessor: "AreaLocation_Code",
+    },
+    {
+      Header: "EventStatus",
       accessor: "EventStatus",
     },
     {
       Header: "Status",
       accessor: "Status",
+    },
+    {
+      Header: "ActualTime",
+      accessor: "ActualTime",
+      type: "datetime"
+    },
+    {
+      Header: "StartTime",
+      accessor: "StartTime",
+      type: "datetime"
+    },
+    {
+      Header: "EndTime",
+      accessor: "EndTime",
+      type: "datetime"
     },
     {
       Header: "Create By",
@@ -280,4 +252,4 @@ const StorageObjectLog = (props) => {
   </>
 }
 
-export default StorageObjectLog;
+export default WorkQueueLog;

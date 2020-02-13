@@ -177,6 +177,10 @@ const StorageObjectLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/StorageObjectLog"),
   loading: Loading
 });
+const WorkQueueLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -418,6 +422,12 @@ let routes = [
     path: "/warehouse/storageobjectlog",
     name: "Storage Object Log",
     compoment: StorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/workqueuelog",
+    name: "Work Queue Log",
+    compoment: WorkQueueLog,
     exact: true
   }
 ];

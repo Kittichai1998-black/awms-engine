@@ -9,7 +9,7 @@ import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
 
-const StorageObjectLog = (props) => {
+const DocumentLog = (props) => {
   const { t } = useTranslation();
 
   const [filterData, setFilterData] = useState([]);
@@ -19,7 +19,7 @@ const StorageObjectLog = (props) => {
 
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
-    t: "StorageObjectEvent",
+    t: "DocumentEvent",
     q: '',
     f: "*",
     g: "",
@@ -139,72 +139,68 @@ const StorageObjectLog = (props) => {
       width: 150,
     },
     {
-      Header: "Code",
+      Header: "Document Code",
       accessor: "Code",
     },
     {
-      Header: "Name",
-      accessor: "Name",
+      Header: "ParentDocument ID",
+      accessor: "ParentDocument_ID",
     },
     {
-      Header: "Area Code",
-      accessor: "AreaMaster_Code",
+      Header: "DocumentType",
+      accessor: "DocumentType_ID",
     },
     {
-      Header: "Location Code",
-      accessor: "AreaLocationMaster_Code",
+      Header: "Sou_Customer",
+      accessor: "Sou_Customer_Code",
     },
     {
-      Header: "Parent StoObj Code",
-      accessor: "ParentStorageObject_Code",
+      Header: "Sou_Supplier",
+      accessor: "Sou_Supplier_Code",
     },
     {
-      Header: "Base Code",
-      accessor: "BaseMaster_Code",
+      Header: "Sou_Branch",
+      accessor: "Sou_Branch_Code",
     },
     {
-      Header: "Pack Code",
-      accessor: "PackMaster_Code",
+      Header: "Sou_Warehouse",
+      accessor: "Sou_Warehouse_Code",
     },
     {
-      Header: "For Customer",
+      Header: "Sou_Area",
+      accessor: "Sou_AreaMaster_Code",
+    },
+    {
+      Header: "Des_Customer",
+      accessor: "Des_Customer_Code",
+    },
+    {
+      Header: "Des_Supplier",
+      accessor: "Des_Supplier_Code",
+    },
+    {
+      Header: "Des_Branch",
+      accessor: "Des_Branch_Code",
+    },
+    {
+      Header: "Des_Warehouse",
+      accessor: "Des_Warehouse_Code",
+    },
+    {
+      Header: "Des_Area",
+      accessor: "Des_AreaMaster_Code",
+    },
+    {
+      Header: "For_Customer_ID",
       accessor: "For_Customer_ID",
     },
     {
-      Header: "Object Type",
-      accessor: "ObjectType",
+      Header: "Transport_ID",
+      accessor: "Transport_ID",
     },
     {
-      Header: "WeigthKG",
-      accessor: "WeigthKG",
-    },
-    {
-      Header: "QTY",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
-      Header: "Qty",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
-      Header: "Base Qty",
-      accessor: "BaseQuantity",
-    },
-    {
-      Header: "Base Unit",
-      accessor: "BaseUnitType_Code",
-    },
-    {
-      Header: "Order No",
-      accessor: "OrderNo",
+      Header: "Document Process Type",
+      accessor: "DocumentProcessType_Code",
     },
     {
       Header: "Batch",
@@ -215,20 +211,27 @@ const StorageObjectLog = (props) => {
       accessor: "Lot",
     },
     {
-      Header: "Expiry Date",
-      accessor: "ExpiryDate",
+      Header: "Options",
+      accessor: "Options",
+    },
+    {
+      Header: "Remark",
+      accessor: "Remark" 
+    },
+    {
+      Header: "ActionTime",
+      accessor: "ActionTime",
       type: "datetime"
     },
     {
-      Header: "Product Date",
-      accessor: "ProductDate",
+      Header: "DocumentDate",
+      accessor: "DocumentDate",
       type: "datetime"
     },
     {
       Header: "RefID",
       accessor: "RefID",
     },
-
     {
       Header: "Ref1",
       accessor: "Ref1",
@@ -238,7 +241,7 @@ const StorageObjectLog = (props) => {
       accessor: "Ref2",
     },
     {
-      Header: "Event Status",
+      Header: "EventStatus",
       accessor: "EventStatus",
     },
     {
@@ -280,4 +283,4 @@ const StorageObjectLog = (props) => {
   </>
 }
 
-export default StorageObjectLog;
+export default DocumentLog;
