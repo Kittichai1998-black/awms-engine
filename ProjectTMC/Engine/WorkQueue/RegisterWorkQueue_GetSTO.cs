@@ -65,6 +65,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         if (mappingPallet.qty <= 3)
                         {
                             stos = this.mapPallet(logger, reqVO, null, buVO);
+                            this.mapDisto(logger, stos, buVO);
                         }
                         else
                         {
@@ -79,6 +80,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         if (mappingPallet.qty <= 16)
                         {
                             stos = this.mapPallet(logger, reqVO, null, buVO);
+                            this.mapDisto(logger, stos, buVO);
                         }
                         else
                         {
@@ -165,7 +167,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "R"?3:(dataMap.areaCode == "FS"?16:row.Quantity),
+                            qty = dataMap.areaCode == "R" ? 3 : (dataMap.areaCode == "FS" ? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,
@@ -190,7 +192,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         });
                     }
                 }
-                var reqMapping = new WCSMappingPalletV2.TReq()
+                var reqMapping = new MappingPallet.TReq()
                 {
                     actualWeiKG = dataMap.weight,
                     warehouseCode = dataMap.warehouseCode,
@@ -198,7 +200,10 @@ namespace ProjectTMC.Engine.WorkQueue
                     palletData = palletList
                 };
 
-                mapsto = new WCSMappingPalletV2().Execute(logger, buVO, reqMapping);
+                //ams_PackMaster pm = AWMSEngine.ADO.MasterADO.GetInstant().GetPackMasterByPack(dataMap., buVO);
+               
+
+                mapsto = new MappingPallet().Execute(logger, buVO, reqMapping);
             }
 
             mapsto.weiKG = dataMap.weight;
