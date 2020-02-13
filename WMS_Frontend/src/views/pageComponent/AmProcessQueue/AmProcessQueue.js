@@ -129,7 +129,7 @@ const useDocumentData = (docGroup ,docID) => {
   
   useEffect(()=>{
     if(docGroup !== undefined){
-      var getDocs = [...docGroup];
+      var getDocs = [...docGroup].filter(x => x.ID !== docData.ID);
       getDocs.push(docData);
       setDocs(getDocs);
     }
@@ -140,9 +140,12 @@ const useDocumentData = (docGroup ,docID) => {
 }
 
 const ProcessQueueDetail = (props) => {
-  const { documents, warehouse } = useContext(ProcessQueueContext);
-  const documentData = useDocumentData(documentData, documents.documentsValue)
+  const { documents, warehouse, uniqueKey } = useContext(ProcessQueueContext);
+  const documentData = useDocumentData(documentData, documents.documentsValue)  
 
+  useEffect(()=>{
+    //uniqueKey.setUnique(props.uniqueKey)
+  },[uniqueKey, props.uniqueKey]);
 
   useEffect(()=>{
     console.log(documents)

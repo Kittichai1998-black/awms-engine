@@ -9,7 +9,7 @@ import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
 
-const StorageObjectLog = (props) => {
+const DocumentItemStorageObjectLog = (props) => {
   const { t } = useTranslation();
 
   const [filterData, setFilterData] = useState([]);
@@ -19,7 +19,7 @@ const StorageObjectLog = (props) => {
 
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
-    t: "StorageObjectEvent",
+    t: "DocumentItemStorageObjectEvent",
     q: '',
     f: "*",
     g: "",
@@ -280,4 +280,4 @@ const StorageObjectLog = (props) => {
   </>
 }
 
-export default StorageObjectLog;
+export default DocumentItemStorageObjectLog;
