@@ -5,6 +5,7 @@ export const ProcessQueueContext = React.createContext({})
 const initialState = {
     "documents":[],
     "warehouse":null,
+    "uniqueKey":"ID"
 }
 
 const documentsReducer = (state, action) => {
@@ -12,7 +13,7 @@ const documentsReducer = (state, action) => {
         case "ADDDOC": {
             let docData = [...state.documents];
             let distinctDocData = docData.filter(doc => {
-                return doc.ID !== action.payload
+                return doc.ID !== action.payload.ID
             });
             distinctDocData.push(action.payload);
             return {
@@ -48,10 +49,29 @@ const warehouseReducer = (state, action) => {
       }
 }
 
+const uniqueKeyReducer = (state, action) => {
+    switch (action.type) {
+        case "SETUNIQUE": {
+            return {
+                ...state,                
+                "uniqueKey" : action.payload
+              }
+        }
+        case "CLEARUNIQUE" : {
+            return {
+                ...state,                
+                "uniqueKey" : null
+              }
+        }
+        default : {}
+      }
+}
+
 export const ProcessQueueProvider = ({children}) => {
     const documents = DocumentsAction();
     const warehouse = WarehouseAction();
-    return <ProcessQueueContext.Provider value={{documents, warehouse}}>
+    const uniqueKey = UniqueAction();
+    return <ProcessQueueContext.Provider value={{documents, warehouse, uniqueKey}}>
         {children}
     </ProcessQueueContext.Provider>
 }
@@ -72,4 +92,13 @@ const WarehouseAction = () => {
     const warehouseValue = warehouseData.warehouse;
 
     return {warehouseValue, setWarehouse, clearWarehouse}
+}
+
+const UniqueAction = () => {
+    const [uniqueKey, uniqueKeyDispatch] = useReducer(uniqueKeyReducer, initialState)
+    const setUnique = (payload) => uniqueKeyDispatch({"type":"SETUNIQUE", payload})
+    const clearUnique = (payload) => uniqueKeyDispatch({"type":"CLEARUNIQUE", payload})
+    const uniqueValue = uniqueKey.uniqueKey;
+
+    return {uniqueValue, setUnique, clearUnique}
 }
