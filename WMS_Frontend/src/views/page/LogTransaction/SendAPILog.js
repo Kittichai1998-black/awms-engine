@@ -92,7 +92,7 @@ const SendAPILog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
@@ -113,7 +113,7 @@ const SendAPILog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker

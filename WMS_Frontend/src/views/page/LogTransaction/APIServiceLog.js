@@ -98,11 +98,11 @@ const APIServiceLog = (props) => {
           <label
             style={{
               padding: "0 0 0 20px",
-              width: "200px",
+              width: "140px",
               paddingTop: "10px"
             }}
           >
-            {t("Service")} :{" "}
+            {t("API Service")} :{" "}
           </label>
           <AmDropdown
             width="200px"
@@ -110,11 +110,11 @@ const APIServiceLog = (props) => {
             placeholder={"Select Service"}
             value={selection}
             data={[
-              { "label": "RegisterQueue", "value": 20 },
-              { "label": "DoneQueue", "value": 16 },
-              { "label": "WorkingQueue", "value": 26 },
-              { "label": "ProcessQueue", "value": 92 },
-              { "label": "ProcessQueue", "value": 93 },
+              { "label": "Register Work Queue", "value": 13 },
+              { "label": "Process Queue", "value": 88 },
+              { "label": "Confirm Process Queue", "value": 89 },
+              { "label": "Working Work Queue", "value": 16 },
+              { "label": "Done Work Queue", "value": 9 },
             ]}
             ddlType="normal"
             onChange={value => {
@@ -131,7 +131,7 @@ const APIServiceLog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
@@ -152,7 +152,7 @@ const APIServiceLog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker
