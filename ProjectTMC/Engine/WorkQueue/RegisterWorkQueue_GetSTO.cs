@@ -60,7 +60,7 @@ namespace ProjectTMC.Engine.WorkQueue
             {
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {//Check Qty
-                    if (reqVO.areaCode == "R")
+                    if (reqVO.areaCode == "G01")
                     {
                         //Inbound Zone
                         if (mappingPallet.qty <= 3)
@@ -75,7 +75,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
 
                     }
-                    else if (reqVO.areaCode == "FS")
+                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
                     {
                         //Outbound Zone
                         if (mappingPallet.qty <= 16)
@@ -168,7 +168,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "R" ? 3 : (dataMap.areaCode == "FS" ? 16 : row.Quantity),
+                            qty = dataMap.areaCode == "G01" ? 3 : (dataMap.areaCode == "G05" || dataMap.areaCode == "G06" ? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,
