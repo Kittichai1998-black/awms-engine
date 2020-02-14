@@ -6,6 +6,7 @@ import AmDropdown from "../../../components/AmDropdown";
 import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
+import moment from "moment";
 
 const Axios = new apicall();
 
@@ -20,10 +21,10 @@ const DocumentItemLog = (props) => {
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentItemEvent",
-    q: '',
+    q: '[{"f":"LogTime","v":' + moment().format("YYYY-MM-DDT00:00") + ',"c":">="},{"f":"LogTime","v":' + moment().add(1, 'days').format("YYYY-MM-DDT00:00") + ',"c":"<="}]',
     f: "*",
     g: "",
-    s: "[{'f':'ID','od':'desc'}]",
+    s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
@@ -50,11 +51,13 @@ const DocumentItemLog = (props) => {
   };
 
   const onChangeFilterDateTime = (value, field, type) => {
-    //console.log(value + field + type)
+    // console.log(value)
+    // console.log(field + " : " + type)
     let datetimeRange = datetime;
     if (value === null || value === undefined) {
       delete datetimeRange[type];
     } else {
+
       datetimeRange["field"] = field;
       if (type === "dateFrom") datetimeRange[type] = value.fieldDataKey + ":00";
       if (type === "dateTo")
@@ -95,12 +98,14 @@ const DocumentItemLog = (props) => {
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateFrom"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateFrom")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -114,18 +119,20 @@ const DocumentItemLog = (props) => {
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateTo"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateTo")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
     }
   }];
-  
+
   const columns = [
     {
       Header: "Log Time",
@@ -139,68 +146,45 @@ const DocumentItemLog = (props) => {
       width: 150,
     },
     {
+      Header: "RefDocumentItem ID",
+      accessor: "RefDocumentItem_ID",
+      width: 150,
+    },
+    {
       Header: "Document Code",
       accessor: "Code",
     },
     {
-      Header: "ParentDocument ID",
-      accessor: "ParentDocument_ID",
+      Header: "SKU Code",
+      accessor: "SKUMaster_Code",
     },
     {
-      Header: "DocumentType",
-      accessor: "DocumentType_ID",
+      Header: "Pack Code",
+      accessor: "PackMaster_Code",
     },
     {
-      Header: "Sou_Customer",
-      accessor: "Sou_Customer_Code",
+      Header: "Code",
+      accessor: "Code",
     },
     {
-      Header: "Sou_Supplier",
-      accessor: "Sou_Supplier_Code",
+      Header: "Quantity",
+      accessor: "Quantity",
     },
     {
-      Header: "Sou_Branch",
-      accessor: "Sou_Branch_Code",
+      Header: "UnitType",
+      accessor: "UnitType_Code",
     },
     {
-      Header: "Sou_Warehouse",
-      accessor: "Sou_Warehouse_Code",
+      Header: "Base Quantity",
+      accessor: "BaseQuantity",
     },
     {
-      Header: "Sou_Area",
-      accessor: "Sou_AreaMaster_Code",
+      Header: "Base UnitType",
+      accessor: "BaseUnitType_Code",
     },
     {
-      Header: "Des_Customer",
-      accessor: "Des_Customer_Code",
-    },
-    {
-      Header: "Des_Supplier",
-      accessor: "Des_Supplier_Code",
-    },
-    {
-      Header: "Des_Branch",
-      accessor: "Des_Branch_Code",
-    },
-    {
-      Header: "Des_Warehouse",
-      accessor: "Des_Warehouse_Code",
-    },
-    {
-      Header: "Des_Area",
-      accessor: "Des_AreaMaster_Code",
-    },
-    {
-      Header: "For_Customer_ID",
-      accessor: "For_Customer_ID",
-    },
-    {
-      Header: "Transport_ID",
-      accessor: "Transport_ID",
-    },
-    {
-      Header: "Document Process Type",
-      accessor: "DocumentProcessType_Code",
+      Header: "Order No.",
+      accessor: "OrderNo",
     },
     {
       Header: "Batch",
@@ -215,17 +199,13 @@ const DocumentItemLog = (props) => {
       accessor: "Options",
     },
     {
-      Header: "Remark",
-      accessor: "Remark" 
-    },
-    {
-      Header: "ActionTime",
-      accessor: "ActionTime",
+      Header: "ProductionDate",
+      accessor: "ProductionDate",
       type: "datetime"
     },
     {
-      Header: "DocumentDate",
-      accessor: "DocumentDate",
+      Header: "ExpireDate",
+      accessor: "ExpireDate",
       type: "datetime"
     },
     {
@@ -239,6 +219,10 @@ const DocumentItemLog = (props) => {
     {
       Header: "Ref2",
       accessor: "Ref2",
+    },
+    {
+      Header: "Item No",
+      accessor: "ItemNo",
     },
     {
       Header: "EventStatus",

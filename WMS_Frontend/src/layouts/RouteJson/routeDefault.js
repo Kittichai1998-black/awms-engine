@@ -181,6 +181,18 @@ const WorkQueueLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
   loading: Loading
 });
+const DocumentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentLog"),
+  loading: Loading
+});
+const DocumentItemLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentItemLog"),
+  loading: Loading
+});
+const DocumentItemStorageObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -422,6 +434,24 @@ let routes = [
     path: "/warehouse/storageobjectlog",
     name: "Storage Object Log",
     compoment: StorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/documentlog",
+    name: "Document Log",
+    compoment: DocumentLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/docitemlog",
+    name: "Document Item Log",
+    compoment: DocumentItemLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/docitemstolog",
+    name: "Document Item Storage Object Log",
+    compoment: DocumentItemStorageObjectLog,
     exact: true
   },
   {

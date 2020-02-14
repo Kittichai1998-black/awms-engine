@@ -6,6 +6,7 @@ import AmDropdown from "../../../components/AmDropdown";
 import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
+import moment from "moment";
 
 const Axios = new apicall();
 
@@ -20,10 +21,11 @@ const DocumentItemStorageObjectLog = (props) => {
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentItemStorageObjectEvent",
-    q: '',
-    f: "*",
+    q: '[{"f":"LogTime","v":' + moment().format("YYYY-MM-DDT00:00") + ',"c":">="},{"f":"LogTime","v":' + moment().add(1, 'days').format("YYYY-MM-DDT00:00") + ',"c":"<="}]',
+    f: "*, concat(Sou_StorageObject_ID, ':' ,Sou_StorageObject_Code) as Sou_StorageObject," +
+      "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject",
     g: "",
-    s: "[{'f':'ID','od':'desc'}]",
+    s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
@@ -95,12 +97,14 @@ const DocumentItemStorageObjectLog = (props) => {
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateFrom"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateFrom")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -114,12 +118,14 @@ const DocumentItemStorageObjectLog = (props) => {
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateTo"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateTo")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -139,107 +145,44 @@ const DocumentItemStorageObjectLog = (props) => {
       width: 150,
     },
     {
-      Header: "Code",
-      accessor: "Code",
+      Header: "DocumentType ID",
+      accessor: "DocumentType_ID",
     },
     {
-      Header: "Name",
-      accessor: "Name",
+      Header: "WorkQueue ID",
+      accessor: "WorkQueue_ID",
     },
     {
-      Header: "Area Code",
-      accessor: "AreaMaster_Code",
+      Header: "DocumentItem ID",
+      accessor: "DocumentItem_ID",
     },
     {
-      Header: "Location Code",
-      accessor: "AreaLocationMaster_Code",
+      Header: "Sou_StorageObjec",
+      accessor: "Sou_StorageObject",
     },
     {
-      Header: "Parent StoObj Code",
-      accessor: "ParentStorageObject_Code",
+      Header: "Des_StorageObject",
+      accessor: "Des_StorageObject",
     },
     {
-      Header: "Base Code",
-      accessor: "BaseMaster_Code",
-    },
-    {
-      Header: "Pack Code",
-      accessor: "PackMaster_Code",
-    },
-    {
-      Header: "For Customer",
-      accessor: "For_Customer_ID",
-    },
-    {
-      Header: "Object Type",
-      accessor: "ObjectType",
-    },
-    {
-      Header: "WeigthKG",
-      accessor: "WeigthKG",
-    },
-    {
-      Header: "QTY",
+      Header: "Quantity",
       accessor: "Quantity",
     },
     {
-      Header: "Unit",
+      Header: "UnitType",
       accessor: "UnitType_Code",
     },
     {
-      Header: "Qty",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
-      Header: "Base Qty",
+      Header: "Base Quantity",
       accessor: "BaseQuantity",
     },
     {
-      Header: "Base Unit",
+      Header: "Origin Base Quantity",
+      accessor: "OriginBaseQuantity",
+    },
+    {
+      Header: "BaseUnitType",
       accessor: "BaseUnitType_Code",
-    },
-    {
-      Header: "Order No",
-      accessor: "OrderNo",
-    },
-    {
-      Header: "Batch",
-      accessor: "Batch",
-    },
-    {
-      Header: "Lot",
-      accessor: "Lot",
-    },
-    {
-      Header: "Expiry Date",
-      accessor: "ExpiryDate",
-      type: "datetime"
-    },
-    {
-      Header: "Product Date",
-      accessor: "ProductDate",
-      type: "datetime"
-    },
-    {
-      Header: "RefID",
-      accessor: "RefID",
-    },
-
-    {
-      Header: "Ref1",
-      accessor: "Ref1",
-    },
-    {
-      Header: "Ref2",
-      accessor: "Ref2",
-    },
-    {
-      Header: "Event Status",
-      accessor: "EventStatus",
     },
     {
       Header: "Status",

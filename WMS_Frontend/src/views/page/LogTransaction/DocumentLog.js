@@ -6,6 +6,7 @@ import AmDropdown from "../../../components/AmDropdown";
 import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
+import moment from "moment";
 
 const Axios = new apicall();
 
@@ -20,10 +21,10 @@ const DocumentLog = (props) => {
   const [query, setQuery] = useState({
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentEvent",
-    q: '',
+    q: '[{"f":"LogTime","v":' + moment().format("YYYY-MM-DDT00:00") + ',"c":">="},{"f":"LogTime","v":' + moment().add(1, 'days').format("YYYY-MM-DDT00:00") + ',"c":"<="}]',
     f: "*",
     g: "",
-    s: "[{'f':'ID','od':'desc'}]",
+    s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
@@ -95,12 +96,14 @@ const DocumentLog = (props) => {
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateFrom"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateFrom")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -114,12 +117,14 @@ const DocumentLog = (props) => {
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateTo"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateTo")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
           />
         </div>
       );

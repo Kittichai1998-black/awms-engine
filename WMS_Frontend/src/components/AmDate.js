@@ -25,18 +25,24 @@ const AmDate = props => {
   useEffect(() => {
     if (props.defaultValue === true) {
       const dataReturndefault = {};
-      if (type === "time") {
+      if (props.defaultValueDateTime !== null || props.defaultValueDateTime !== undefined) {
         dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = TimeNow;
-        dataReturndefault.fieldDataObject = TimeNow;
+        dataReturndefault.fieldDataKey = props.defaultValueDateTime;
+        dataReturndefault.fieldDataObject = props.defaultValueDateTime;
         props.onChange(dataReturndefault);
       } else {
-        dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = DateNow;
-        dataReturndefault.fieldDataObject = DateNow;
-        props.onChange(dataReturndefault);
+        if (type === "time") {
+          dataReturndefault.fieldID = fieldID;
+          dataReturndefault.fieldDataKey = TimeNow;
+          dataReturndefault.fieldDataObject = TimeNow;
+          props.onChange(dataReturndefault);
+        } else {
+          dataReturndefault.fieldID = fieldID;
+          dataReturndefault.fieldDataKey = DateNow;
+          dataReturndefault.fieldDataObject = DateNow;
+          props.onChange(dataReturndefault);
+        }
       }
-
       //props.onChange(type === "time"?TimeNow:DateNow);
     }
   }, []);
@@ -81,10 +87,9 @@ const AmDate = props => {
         type={type}
         disabled={disabled ? disabled : false}
         defaultValue={
-          props.defaultValue === true
-            ? type === "time"
-              ? TimeNow
-              : DateNow
+          props.defaultValue === true ?
+            (props.defaultValueDateTime !== undefined && props.defaultValueDateTime !== null) ? props.defaultValueDateTime :
+              type === "time" ? TimeNow : DateNow
             : ""
         }
         //defaultValue={type === "time"?TimeNow:DateNow}
