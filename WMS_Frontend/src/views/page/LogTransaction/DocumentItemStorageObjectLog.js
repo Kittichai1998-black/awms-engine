@@ -18,10 +18,10 @@ const DocumentItemStorageObjectLog = (props) => {
   const [datetime, setDatetime] = useState({});
   const [selection, setSelection] = useState();
 
-  const [query, setQuery] = useState({
+  const query={
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentItemStorageObjectEvent",
-    q: '[{"f":"LogTime","v":' + moment().format("YYYY-MM-DDT00:00") + ',"c":">="},{"f":"LogTime","v":' + moment().add(1, 'days').format("YYYY-MM-DDT00:00") + ',"c":"<="}]',
+    q: '',
     f: "*, concat(Sou_StorageObject_ID, ':' ,Sou_StorageObject_Code) as Sou_StorageObject," +
       "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject",
     g: "",
@@ -29,7 +29,7 @@ const DocumentItemStorageObjectLog = (props) => {
     sk: 0,
     l: 100,
     all: ""
-  });
+  };
 
   const onChangeFilter = (condition, field, value) => {
     let obj = [...filterData];
@@ -85,7 +85,13 @@ const DocumentItemStorageObjectLog = (props) => {
       }
     }
     getQuery.q = JSON.stringify(filterDatas);
-    setQuery(getQuery)
+    Axios.get(createQueryString(getQuery)).then(res => {
+      if (res) {
+        if (res.data._result.status !== 0) {
+          setDataSource(res.data.datas)
+        }
+      }
+    });
   };
 
   const filterItem = [{
@@ -207,13 +213,10 @@ const DocumentItemStorageObjectLog = (props) => {
       type: "datetime"
     },
   ]
-
   useEffect(() => {
-    Axios.get(createQueryString(query)).then(res => {
-      setDataSource(res.data.datas)
-    });
-  }, [query]);
-
+    onHandleFilterConfirm();
+  }, [datetime])
+ 
   return <>
     <AmFilterTable
       primarySearch={filterItem}

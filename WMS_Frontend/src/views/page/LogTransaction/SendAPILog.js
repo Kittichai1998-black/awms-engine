@@ -18,17 +18,17 @@ const SendAPILog = (props) => {
   const [datetime, setDatetime] = useState({});
   const [selection, setSelection] = useState();
 
-  const [query, setQuery] = useState({
+  const query = {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "SendAPIEvent",
-    q: '[{"f":"StartTime","v":' + moment().format("YYYY-MM-DDT00:00") + ',"c":">="},{"f":"StartTime","v":' + moment().add(1, 'days').format("YYYY-MM-DDT00:00") + ',"c":"<="}]',
+    q: '',
     f: "LogRefID,APIService_Module,APIName,ResultMessage,StartTime,EndTime",
     g: "",
     s: "[{'f':'ID','od':'desc'},{'f':'StartTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
-  });
+  };
 
   const onChangeFilter = (condition, field, value) => {
     let obj = [...filterData];
@@ -84,7 +84,14 @@ const SendAPILog = (props) => {
       }
     }
     getQuery.q = JSON.stringify(filterDatas);
-    setQuery(getQuery)
+    // setQuery(getQuery)
+    Axios.get(createQueryString(getQuery)).then(res => {
+      if (res) {
+        if (res.data._result.status !== 0) {
+          setDataSource(res.data.datas)
+        }
+      }
+    });
   };
 
   const filterItem = [{
@@ -162,12 +169,10 @@ const SendAPILog = (props) => {
       type: "datetime"
     }
   ]
-
   useEffect(() => {
-    Axios.get(createQueryString(query)).then(res => {
-      setDataSource(res.data.datas)
-    });
-  }, [query]);
+    onHandleFilterConfirm();
+  }, [datetime])
+ 
 
   return <>
     <AmFilterTable
