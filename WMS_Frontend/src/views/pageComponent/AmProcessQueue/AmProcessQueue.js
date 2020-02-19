@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
 import PropTypes from "prop-types"
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -16,6 +16,8 @@ import AmFindPopup from "../../../components/AmFindPopup";
 import styled from 'styled-components';
 import AmTableV2 from '../../../components/table/AmTableV2';
 import {ProcessQueueContext, ProcessQueueProvider} from './ProcessQueueContext';
+import { CardBody } from "reactstrap";
+import { Card, Grid } from "@material-ui/core";
 var Axios = new apicall();
 
 const FormInline = styled.div`
@@ -39,6 +41,7 @@ const ProcessQueueHeader = (props) => {
   const { documents, warehouse } = useContext(ProcessQueueContext);
   const [document, setDocument] = useState([]);
   const [documentSelection, setDocumentSelection] = useState({});
+  const documentDetail = props.documentDetail;
   
   useEffect(()=>{
     warehouse.setWarehouse(props.warehouse === undefined || props.warehouse === "" ? null : props.warehouse);
@@ -94,6 +97,26 @@ const ProcessQueueHeader = (props) => {
         disabled={documentSelection["ID"] === null || documentSelection["ID"] === undefined} 
         onClick={() => documents.addDocument(documentSelection)}>Add</AmButton>
     </FormInline>
+    {
+      props.documentDetail !== undefined && documentSelection["ID"] !== undefined ? 
+      <Card style={{width:"99%"}}>
+        <CardBody>
+          <Grid container>
+            {documentDetail.field.map((f, idx)=> {
+              console.log(documentDetail.columns)
+              const calColumns = 12 / documentDetail.columns;
+              const renderColumns = [];
+              for(let i = 0; i < documentDetail.columns; i++){
+                renderColumns.push(<Grid item  xs={calColumns}>XX</Grid>)
+              }
+              return renderColumns
+            })}
+            {console.log(props.documentDetail)}
+          </Grid>
+        </CardBody>
+      </Card>
+      : null
+    }
     
   </div>
 }
@@ -168,6 +191,7 @@ return <>
     <ProcessQueueHeader 
         documentPopup={props.documentPopup}
         documentQuery={props.documentQuery}
+        documentDetail={props.documentDetail}
       />
     <ProcessQueueDetail documentItemDetail={props.documentItemDetail}/>
   </ProcessQueueProvider>
@@ -190,6 +214,15 @@ ProcessQueue.propTypes = {
    ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]
   */
   documentItemDetail : PropTypes.array.isRequired,
+  /**
+  * รูปแบบของหัวตารางเลือกเอกสารสำหรับแสดงข้อมูลเอกสาร
+  * ** value : {
+    columns:2, //จำนวน grid ต่อบรรทัด
+    field:[
+      {"accessor":"Code", "label":"Code"}
+    ]
+  */
+  documentDetail:PropTypes.object
 }
 ProcessQueue.defaultProps = {
 }
@@ -224,7 +257,16 @@ ProcessQueueHeader.propTypes = {
   * QueryString สำหรับแสดงข้อมูลเอกสาร
   * ** value : queryString: window.apipath + "/v2/SelectDataTrxAPI/" ...
   */
-  documentQuery:PropTypes.string
+  documentQuery:PropTypes.string,
+  /**
+  * รูปแบบของหัวตารางเลือกเอกสารสำหรับแสดงข้อมูลเอกสาร
+  * ** value : {
+    columns:2, //จำนวน grid ต่อบรรทัด
+    field:[
+      {"accessor":"Code", "label":"Code"}
+    ]
+  */
+  documentDetail:PropTypes.object
 }
 ProcessQueueHeader.defaultProps = {
   processSingle:false
