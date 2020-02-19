@@ -374,16 +374,20 @@ const FindPopup = (props) => {
     }
     const modifySelect = () => {
         let queryStrEdit = Clone(queryApi);
+        let defaultSel = [];
         let newSel = [];
+
         if (queryStrEdit.q) {
-            newSel = JSON.parse(queryStrEdit.q)
+            defaultSel = JSON.parse(queryStrEdit.q)
         }
+    // q: '[{"q":[{ "f": "ID", "c":"like", "v": "%aa%"},{ "o": "or","f": "Code", "c":"like", "v": "%aa%"}]}, { "f": "Status", "c":"<", "v": 2}]',
 
         columns.map((item, index) => {
             if (item.accessor !== "") {
                 if (index === 0) {
                     newSel.push({
-                        "o": "and", "f": item.accessor,
+                        // "o": "and", 
+                        "f": item.accessor,
                         "c": "like", "v": encodeURIComponent(keywordSub)
                     })
                 } else {
@@ -394,7 +398,9 @@ const FindPopup = (props) => {
                 }
             }
         })
-        queryStrEdit.q = JSON.stringify(newSel);
+        
+        defaultSel.unshift({"q": newSel})
+        queryStrEdit.q = JSON.stringify(defaultSel);
         setQuery(queryStrEdit)
         getData(createQueryString(queryStrEdit));
     }

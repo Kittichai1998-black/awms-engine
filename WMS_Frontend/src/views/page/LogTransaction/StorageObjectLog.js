@@ -6,6 +6,7 @@ import AmDropdown from "../../../components/AmDropdown";
 import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
+import moment from "moment";
 
 const Axios = new apicall();
 
@@ -17,17 +18,17 @@ const StorageObjectLog = (props) => {
   const [datetime, setDatetime] = useState({});
   const [selection, setSelection] = useState();
 
-  const [query, setQuery] = useState({
+  const query = {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "StorageObjectEvent",
     q: '',
     f: "*",
     g: "",
-    s: "[{'f':'ID','od':'desc'}]",
+    s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
-  });
+  };
 
   const onChangeFilter = (condition, field, value) => {
     let obj = [...filterData];
@@ -83,7 +84,13 @@ const StorageObjectLog = (props) => {
       }
     }
     getQuery.q = JSON.stringify(filterDatas);
-    setQuery(getQuery)
+    Axios.get(createQueryString(getQuery)).then(res => {
+      if (res) {
+        if (res.data._result.status !== 0) {
+          setDataSource(res.data.datas)
+        }
+      }
+    });
   };
 
   const filterItem = [{
@@ -91,16 +98,18 @@ const StorageObjectLog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateFrom"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateFrom")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -110,16 +119,18 @@ const StorageObjectLog = (props) => {
     component: (condition, rowC, idx) => {
       return (
         <div key={idx} style={{ display: "inline-flex" }}>
-          <label style={{ padding: "10px 0 0 20px", width: "200px" }}>
+          <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
           <AmDatePicker
+            FieldID={"dateTo"}
             width="200px"
             TypeDate={"datetime-local"}
             onChange={value =>
               onChangeFilterDateTime(value, rowC.field, "dateTo")
             }
             defaultValue={true}
+            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
           />
         </div>
       );
@@ -264,13 +275,10 @@ const StorageObjectLog = (props) => {
       type: "datetime"
     },
   ]
-
   useEffect(() => {
-    Axios.get(createQueryString(query)).then(res => {
-      setDataSource(res.data.datas)
-    });
-  }, [query]);
-
+    onHandleFilterConfirm();
+  }, [datetime])
+ 
   return <>
     <AmFilterTable
       primarySearch={filterItem}
