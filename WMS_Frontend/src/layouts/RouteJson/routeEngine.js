@@ -118,11 +118,32 @@ const GR_Search = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_Search"),
   loading: Loading
 });
+const GI_Create = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Create"),
+  loading: Loading
+});
+const GI_Detail = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Detail"),
+  loading: Loading
+});
+const GI_Search = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Search"),
+  loading: Loading
+});
+const GI_WorkQueue = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_WorkQueue"),
+  loading: Loading
+});
 
 const routes = [
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+
+  { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
+  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
+  { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
+  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/doc/gr/list", name: "base1", compoment: Test1, exact: true },

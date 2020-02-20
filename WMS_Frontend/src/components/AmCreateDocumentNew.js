@@ -36,12 +36,17 @@ input {
     
   }
 `;
+const LabelTStyle = {
+    "font-weight": "bold",
+    width: "200px"
+}
+
 
 const InputDiv = styled.div`
-    margin: 5px;
-    @media (max-width: 800px) {
-        margin: 0;
-    }
+margin: 5px;
+@media(max - width: 800px) {
+    margin: 0;
+}
 `;
 
 const cols = [
@@ -352,7 +357,7 @@ const AmCreateDocument = (props) => {
 
             return (
                 <FormInline>
-                    <LabelT append=" : " code={Header}>{Header}</LabelT>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
                             inputRef={ref.current[index]}
@@ -368,7 +373,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "inputNum") {
             return (
                 <FormInline>
-                    <LabelT append=" : " code={Header}>{Header}</LabelT>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <FormInline>{TextInputnum ? (
                             <FormInline>
@@ -397,7 +402,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "dropdown") {
             return (
                 <FormInline>
-                    <LabelT append=" : " code={Header}>{Header}</LabelT>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <AmDropdown
                             id={idddl}
@@ -422,7 +427,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "findPopUp") {
             return (
                 <FormInline>
-                    <LabelT append=" : " code={Header}>{Header}</LabelT>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <AmFindPopup
                             popupref={ref.current[index]}
@@ -446,7 +451,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "unitType") {
             return (
                 <FormInline>
-                    <LabelT append=" : " code={Header}>{Header}</LabelT>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         {<label>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
                     </InputDiv>
@@ -462,7 +467,7 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "text") {
             return (<FormInline>
-                <LabelT append=" : " code={Header}>{Header}</LabelT>
+                <LabelT style={LabelTStyle}>{Header} :</LabelT>
                 <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
             </FormInline>
             )
@@ -581,7 +586,7 @@ const AmCreateDocument = (props) => {
                         return (
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
-                                    <LabelT append={syn} code={y.label}>{y.label}</LabelT>
+                                    <LabelT style={LabelTStyle}>{y.label + syn}</LabelT>
                                     {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
                                 </FormInline></div>
                             </Grid>
