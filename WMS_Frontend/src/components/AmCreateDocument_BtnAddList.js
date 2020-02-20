@@ -332,9 +332,7 @@ const BtnAddList = props => {
               props.onSubmit(dataSelect);
               setOpen(false);
             }}
-          >
-            OK
-          </AmButton>
+          >Add</AmButton>
         </DialogActions>
       </Dialog>
     </AmAux>

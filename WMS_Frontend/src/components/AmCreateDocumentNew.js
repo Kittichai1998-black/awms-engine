@@ -96,15 +96,14 @@ const AmCreateDocument = (props) => {
                 // if (e.original.UnitCode !== e.original.BaseUnitCode)
                 //     unitArr.push({ label: e.original.BaseUnitCode, value: e.original.BaseUnitCode })
                 // setDataUnit(unitArr)
-            }}>{t("Edit")
-                }</AmButton>,
+            }}>Edit</AmButton>,
         },
         {
             Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
                 () => {
                     onHandleDelete(e.original.ID, e.original, e);
                     //setReload({});
-                }}>{t("Remove")}</AmButton>,
+                }}>Remove</AmButton>,
         }
     ];
 
@@ -349,9 +348,11 @@ const AmCreateDocument = (props) => {
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index) => {
 
         if (type === "input") {
+            console.log(Header);
+
             return (
                 <FormInline>
-                    <LabelT append=" : ">{Header}</LabelT>
+                    <LabelT append=" : " code={Header}>{Header}</LabelT>
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
                             inputRef={ref.current[index]}
@@ -367,7 +368,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "inputNum") {
             return (
                 <FormInline>
-                    <LabelT append=" : ">{Header}</LabelT>
+                    <LabelT append=" : " code={Header}>{Header}</LabelT>
                     <InputDiv>
                         <FormInline>{TextInputnum ? (
                             <FormInline>
@@ -396,7 +397,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "dropdown") {
             return (
                 <FormInline>
-                    <LabelT append=" : ">{Header}</LabelT>
+                    <LabelT append=" : " code={Header}>{Header}</LabelT>
                     <InputDiv>
                         <AmDropdown
                             id={idddl}
@@ -421,7 +422,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "findPopUp") {
             return (
                 <FormInline>
-                    <LabelT append=" : ">{Header}</LabelT>
+                    <LabelT append=" : " code={Header}>{Header}</LabelT>
                     <InputDiv>
                         <AmFindPopup
                             popupref={ref.current[index]}
@@ -445,7 +446,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "unitType") {
             return (
                 <FormInline>
-                    <LabelT append=" : ">{Header}</LabelT>
+                    <LabelT append=" : " code={Header}>{Header}</LabelT>
                     <InputDiv>
                         {<label>{editData !== {} && editData !== null ? editData[accessor] : ""}</label>}
                     </InputDiv>
@@ -461,7 +462,7 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "text") {
             return (<FormInline>
-                <LabelT append=" : ">{Header}</LabelT>
+                <LabelT append=" : " code={Header}>{Header}</LabelT>
                 <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
             </FormInline>
             )
@@ -580,7 +581,7 @@ const AmCreateDocument = (props) => {
                         return (
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
-                                    <LabelT append={syn} code={y.CodeTranslate}>{y.label}</LabelT>
+                                    <LabelT append={syn} code={y.label}>{y.label}</LabelT>
                                     {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
                                 </FormInline></div>
                             </Grid>
@@ -978,14 +979,12 @@ const AmCreateDocument = (props) => {
                             queryApi={props.addList.queryApi}
                             columns={props.addList.columns}
                             search={props.addList.search}
-                            textBtn={t("Add List")}
+                            textBtn={t("Add Item List")}
                             onSubmit={(data) => { setDataSource(setFormatData(data)); setDataCheck(data); }}
                             dataCheck={dataCheck}
                         /> : null}
 
-                        {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
-                            {t('Add')}
-                        </AmButton>}
+                        {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >Add Item</AmButton>}
 
                     </div>
                 </Grid>
@@ -1006,9 +1005,7 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
-                        <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                            {t('Create')}
-                        </AmButton>
+                        <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>Create</AmButton>
                     </div>
                 </Grid>
             </Grid>

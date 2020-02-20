@@ -24,7 +24,7 @@ const AmEditiorTable = (props) => {
 
         } else {
 
-            return 'OK';
+            return 'Add';
         }
 
     }

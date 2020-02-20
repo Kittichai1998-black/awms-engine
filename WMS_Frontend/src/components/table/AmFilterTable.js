@@ -54,13 +54,10 @@ const AmFilterTable = props => {
             id='Filter_Advanced'
             styleType='confirm_clear'
             onClick={() => setToggle(!toggle)}
-          >
-            {t("Advanced Search")}
-            {/* Advanced Search{' '} */}
-            <ExpandLessIcon
+            append={ <ExpandLessIcon
               className={toggle ? classes.expand : classes.collapse}
-            />
-          </AmButton>
+            />}
+          >Advanced Search</AmButton>
           <AmButton
             id='Filter_Search'
             styleType='confirm'

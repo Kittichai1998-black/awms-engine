@@ -105,12 +105,25 @@ const TableV2 = Loadable({
   loader: () => import("../../views/page/TableInDev"),
   loading: Loading
 });
+
 const GR_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
   loading: Loading
 });
+const GR_Detail = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Detail"),
+  loading: Loading
+});
+const GR_Search = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Search"),
+  loading: Loading
+});
 
 const routes = [
+  { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+  { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
+  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/doc/gr/list", name: "base1", compoment: Test1, exact: true },
   { path: "/doc/gi/list", name: "base2", compoment: Test2, exact: true },
@@ -131,7 +144,6 @@ const routes = [
   { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTA, exact: true },
   { path: "/receive/receiveforcustomer", name: "Customers Return Pallet", compoment: mappingReturnPallet, exact: true },
   { path: "/receive/receivemptypallet", name: "Mapping Empty Pallet", compoment: mappingEmptyPallet, exact: true },
-  { path: "/receive/create", name: "Create GR", compoment: GR_Create, exact: true },
   { path: "/issue/pickingreturn", name: "Picking Return", compoment: pickingReturn, exact: true },
   { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
   { path: "/wm/sto/TestAmRedi", name: "TestRedirect", compoment: TestAmRedirectInfo, exact: true },
