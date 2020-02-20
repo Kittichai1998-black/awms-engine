@@ -1,8 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
+
 import {
     red,
     purple,
@@ -18,6 +19,7 @@ import {
     brown,
     orange
 } from '@material-ui/core/colors';
+import { useTranslation } from 'react-i18next'
 
 // 1. We define the styles.
 const styles = theme => ({
@@ -25,7 +27,7 @@ const styles = theme => ({
         fontWeight: '600',
         color: '#fff',
         textTransform: 'none',
-        lineHeight: 1.75, 
+        lineHeight: 1.75,
         width: 'auto',
         // minWidth: '130px',
         fontFamily: [
@@ -371,7 +373,9 @@ function ButtonStyle(props) {
         onClick,
         onMouseDown,
         onMouseUp,
+        append,
         ...other } = props;
+    const { t } = useTranslation();
     const handleMouseDown = (event) => {
         if (onMouseDown)
             onMouseDown(null, null, event.target, event)
@@ -395,7 +399,9 @@ function ButtonStyle(props) {
             onMouseUp={handleMouseUp}
             {...other}
         >
-            {children}
+            {t(children)}
+            {append}
+
         </Button>
     );
 }
