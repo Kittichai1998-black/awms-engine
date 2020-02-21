@@ -28,6 +28,7 @@ import {
 import PropType from "prop-types";
 import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
+import LabelT from '../../components/AmLabelMultiLanguage'
 
 const styles = theme => ({
   button: {
@@ -82,10 +83,11 @@ const FormInline = styled.div`
   }
 `;
 
-const LabelH = styled.label`
-  font-weight: bold;
-  width: 200px;
-`;
+const LabelH = {
+  "font-weight": "bold",
+  width: "200px"
+}
+
 
 const DocumentView = props => {
   const { t } = useTranslation();
@@ -124,12 +126,12 @@ const DocumentView = props => {
     // console.log(props.typeDocNo);
     Axios.get(
       window.apipath +
-        "/v2/GetDocAPI/?docTypeID=" +
-        props.typeDocNo +
-        "&docID=" +
-        docID +
-        "&getMapSto=true&_token=" +
-        localStorage.getItem("Token")
+      "/v2/GetDocAPI/?docTypeID=" +
+      props.typeDocNo +
+      "&docID=" +
+      docID +
+      "&getMapSto=true&_token=" +
+      localStorage.getItem("Token")
     ).then(res => {
       console.log(
         "docID : " + props.docID,
@@ -190,17 +192,17 @@ const DocumentView = props => {
             _qty:
               typeDoc === "issued"
                 ? row._sumQtyDisto +
-                  " / " +
-                  (row.Quantity === null ? "-" : row.Quantity)
+                " / " +
+                (row.Quantity === null ? "-" : row.Quantity)
                 : typeDoc === "received"
-                ? row._sumQtyDisto +
+                  ? row._sumQtyDisto +
                   " / " +
                   (row.Quantity === null ? " - " : row.Quantity)
-                : typeDoc === "loading"
-                ? row._sumQtyDisto +
-                  " / " +
-                  (row.Quantity === null ? " - " : row.Quantity)
-                : null
+                  : typeDoc === "loading"
+                    ? row._sumQtyDisto +
+                    " / " +
+                    (row.Quantity === null ? " - " : row.Quantity)
+                    : null
           });
         });
 
@@ -238,10 +240,10 @@ const DocumentView = props => {
               typeDoc === "issued"
                 ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
                 : typeDoc === "received"
-                ? rowDetail.packQty
-                : typeDoc === "audit"
-                ? rowDetail.distoQty
-                : null
+                  ? rowDetail.packQty
+                  : typeDoc === "audit"
+                    ? rowDetail.distoQty
+                    : null
           });
         });
 
@@ -276,10 +278,10 @@ const DocumentView = props => {
               typeDoc === "issued"
                 ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
                 : typeDoc === "received"
-                ? rowDetail.packQty
-                : typeDoc === "audit"
-                ? rowDetail.distoQty
-                : null
+                  ? rowDetail.packQty
+                  : typeDoc === "audit"
+                    ? rowDetail.distoQty
+                    : null
           });
         });
 
@@ -345,7 +347,7 @@ const DocumentView = props => {
                 style={{ paddingLeft: "20px", paddingTop: "10px" }}
               >
                 <FormInline>
-                  <LabelH>{t(y.label) + syn}</LabelH>
+                  <LabelT style={LabelH}>{y.label + syn}</LabelT>
                   <label>{getDataHeater(y.type, y.values)}</label>
                 </FormInline>
               </Grid>
@@ -451,8 +453,8 @@ const DocumentView = props => {
           />
         ) : null
       ) : (
-        ""
-      )}
+              ""
+            )}
       <br />
       {props.buttonBack === true ? (
         <AmButton styleType="default" onClick={buttonBack}>

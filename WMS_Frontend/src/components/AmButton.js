@@ -388,6 +388,16 @@ function ButtonStyle(props) {
         if (onClick)
             onClick(null, null, event.target, event)
     }
+
+    let textInitial
+    if (Array.isArray(children)) {
+        textInitial = children.join("")
+    } else {
+        textInitial = children
+    }
+    let findColon = textInitial.split(":")
+    let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim(), text.trim() ? text.trim() + " - Not Translate" : "") + " : ", "")
+    textShow = textShow.substring(0, textShow.length - 2);
     return (
         <Button
             className={classNames(
@@ -399,7 +409,7 @@ function ButtonStyle(props) {
             onMouseUp={handleMouseUp}
             {...other}
         >
-            {t(children)}
+            {textShow}
             {append}
 
         </Button>

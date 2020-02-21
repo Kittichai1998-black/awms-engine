@@ -7,7 +7,7 @@ import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
-const GR_Detail = props => {
+const GI_Detail = props => {
   const TextHeader = [
     [
       { label: "Document No.", values: "Code" },
@@ -81,15 +81,15 @@ const GR_Detail = props => {
       columnsDetailSOU={columnsDetailSOU}
       columnsDetailDES={columnsDetailDES}
       columns={columns}
-      typeDoc={"received"}
-      typeDocNo={1001}
+      typeDoc={"issued"}
+      typeDocNo={1002}
       docID={getDocID()}
       header={TextHeader}
       buttonBack={true}
-      linkBack={"/receive/search"}
+      linkBack={"/issue/search"}
       history={props.history}
     />
   );
 };
 
-export default GR_Detail;
+export default GI_Detail;

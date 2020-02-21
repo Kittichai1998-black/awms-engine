@@ -6,7 +6,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import Collapse from '@material-ui/core/Collapse';
 import Paper from '@material-ui/core/Paper';
 import AmButton from '../AmButton';
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 
 const styles = theme => ({
   root: {
@@ -36,7 +36,7 @@ const styles = theme => ({
 });
 
 const AmFilterTable = props => {
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
   const [toggle, setToggle] = useState(false);
   const { classes } = props;
   return (
@@ -65,9 +65,7 @@ const AmFilterTable = props => {
               props.onAccept(true, props.extensionSearch);
               setToggle(false);
             }}
-          >
-            {t("Search")}
-          </AmButton>
+          >Search</AmButton>
         </div>
       ) : <div style={{ display: 'inline', float: 'right' }}>
           <AmButton
@@ -77,9 +75,7 @@ const AmFilterTable = props => {
               props.onAccept(true, props.extensionSearch);
               setToggle(false);
             }}
-          >
-            {t("Search")}
-          </AmButton>
+          >Search</AmButton>
           </div>
         }
       <div style={{ clear: 'both' }} />
