@@ -396,7 +396,7 @@ function ButtonStyle(props) {
         textInitial = children
     }
     let findColon = textInitial.split(":")
-    let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim()) + " : ", "")
+    let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim(), text.trim() ? text.trim() + " - Not Translate" : "") + " : ", "")
     textShow = textShow.substring(0, textShow.length - 2);
     return (
         <Button

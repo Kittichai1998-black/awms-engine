@@ -984,7 +984,7 @@ const AmCreateDocument = (props) => {
                             queryApi={props.addList.queryApi}
                             columns={props.addList.columns}
                             search={props.addList.search}
-                            textBtn={t("Add Item List")}
+                            textBtn="Add Item List"
                             onSubmit={(data) => { setDataSource(setFormatData(data)); setDataCheck(data); }}
                             dataCheck={dataCheck}
                         /> : null}
