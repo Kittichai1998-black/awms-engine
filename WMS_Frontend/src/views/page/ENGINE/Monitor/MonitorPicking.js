@@ -6,7 +6,7 @@ import queryString from 'query-string'
 import React, { useState, useEffect } from 'react'
 // import { useTranslation } from 'react-i18next'
 
-import AmPageDashboard from '../../../components/AmPageDashboard';
+import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../components/function/CoreFunction'
 
 export default props => {

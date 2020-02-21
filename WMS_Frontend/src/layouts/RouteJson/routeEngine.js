@@ -134,8 +134,14 @@ const GI_WorkQueue = Loadable({
   loader: () => import("../../views/page/ENGINE/GI/GI_WorkQueue"),
   loading: Loading
 });
+const MonitorPicking = Loadable({
+  loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
+  loading: Loading
+});
 
 const routes = [
+  { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
+
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
