@@ -6,7 +6,9 @@ import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus"
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
-
+import AmRedirectLog from "../../../../components/AmRedirectLog";
+import AmRedirectLogSto from "../../../../components/AmRedirectLogSto";
+import AmRedirectLogWQ from "../../../../components/AmRedirectLogWQ";
 const DocumentViewGI = props => {
   const TextHeader = [
     [
@@ -53,7 +55,13 @@ const DocumentViewGI = props => {
     { accessor: "packName", Header: "SKU Name" },
     { width: 125, accessor: "lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" },
+    {
+      width: 100,
+      accessor: "",
+      Header: "Log ",
+      Cell: e => getRedirect(e.original)
+    }
   ];
 
   const columnsDetailDES = [
@@ -85,7 +93,47 @@ const DocumentViewGI = props => {
     var ID = values.docID.toString();
     return ID;
   };
-
+  const getRedirect = data => {
+    console.log(data);
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px",
+          direction: "rtl"
+        }}
+      >
+        {data.Code}
+        <AmRedirectLog
+          api={"/warehouse/docitemlog?DocItemID=" + data.docItemID}
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLog>
+        <AmRedirectLogSto
+          api={
+            "/warehouse/docitemstolog?PalletStoID=" +
+            data.id +
+            "&PackStoID=" +
+            data.packID
+          }
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLogSto>
+        <AmRedirectLogWQ
+          api={"/warehouse/workqueuelog?WQID=" + data.workQueueID}
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLogWQ>
+      </div>
+    );
+  };
   //received
   //issued
   return (

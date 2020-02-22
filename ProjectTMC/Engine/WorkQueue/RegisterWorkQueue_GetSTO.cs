@@ -60,7 +60,7 @@ namespace ProjectTMC.Engine.WorkQueue
             {
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {//Check Qty
-                    if (reqVO.areaCode == "G01")
+                    if (reqVO.areaCode == "R")
                     {
                         //Inbound Zone
                         if (mappingPallet.qty <= 3)
