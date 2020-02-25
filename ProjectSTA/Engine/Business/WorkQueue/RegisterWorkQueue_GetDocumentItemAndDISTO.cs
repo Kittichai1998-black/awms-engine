@@ -175,7 +175,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
                 DocumentDate = DateTime.Now,
                 ActionTime = DateTime.Now,
-                MovementType_ID = mvtDoc,
+                //MovementType_ID = mvtDoc,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,

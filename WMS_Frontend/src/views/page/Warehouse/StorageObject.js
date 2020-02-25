@@ -8,6 +8,7 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+import AmRedirectLogSto from "../../../components/AmRedirectLogSto";
 const Axios = new apicall();
 
 //======================================================================
@@ -123,8 +124,40 @@ const StorageObject = props => {
       width: 150,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
+    },
+    {
+      width: 60,
+      accessor: "",
+      Header: "Log ",
+      Cell: e => getRedirectLog(e.original)
     }
   ];
+  const getRedirectLog = data => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px"
+        }}
+      >
+        {data.Code}
+        <AmRedirectLogSto
+          api={
+            "/warehouse/docitemstolog?PalletStoID=" +
+            data.ID +
+            "&PackStoID=" +
+            parseInt(data.PackID)
+          }
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLogSto>
+      </div>
+    );
+  };
+
   const getNumberQty = value => {
     return parseInt(value.Qty);
   };

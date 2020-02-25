@@ -138,6 +138,10 @@ const MonitorPicking = Loadable({
   loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
   loading: Loading
 });
+const DownloadLog = Loadable({
+  loader: () => import("../../views/page/ENGINE/DownloadLog"),
+  loading: Loading
+});
 
 const routes = [
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
@@ -151,8 +155,10 @@ const routes = [
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
   { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
+  { path: "/download_log", name: "Download Log File", compoment: DownloadLog, exact: true },
+
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
-  { path: "/doc/gr/list", name: "base1", compoment: Test1, exact: true },
+  { path: "/test", name: "base1", compoment: Test1, exact: true },
   { path: "/doc/gi/list", name: "base2", compoment: Test2, exact: true },
   { path: "/doc/gi/create", name: "base3", compoment: Test3, exact: true },
   { path: "/sys/sto/checkpallet", name: "base4", compoment: Test444, exact: true },
