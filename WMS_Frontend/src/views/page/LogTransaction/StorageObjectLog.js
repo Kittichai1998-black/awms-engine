@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
+import queryString from "query-string";
 
 const Axios = new apicall();
 
@@ -83,6 +84,26 @@ const StorageObjectLog = (props) => {
         filterDatas.push(createObj);
       }
     }
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
+
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      filterDatas.unshift({ "q": newSel })
+    }
     getQuery.q = JSON.stringify(filterDatas);
     Axios.get(createQueryString(getQuery)).then(res => {
       if (res) {
@@ -101,16 +122,26 @@ const StorageObjectLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateFrom"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateFrom")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -122,16 +153,26 @@ const StorageObjectLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateTo"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateTo")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -143,6 +184,11 @@ const StorageObjectLog = (props) => {
       accessor: "LogTime",
       width: 200,
       type: "datetime"
+    },
+    {
+      Header: "ID",
+      accessor: "ID",
+      width: 60
     },
     {
       Header: "LogRef",
@@ -278,7 +324,7 @@ const StorageObjectLog = (props) => {
   useEffect(() => {
     onHandleFilterConfirm();
   }, [datetime])
- 
+
   return <>
     <AmFilterTable
       primarySearch={filterItem}

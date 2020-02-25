@@ -59,6 +59,7 @@ const AmDate = props => {
         props.onChange(dataReturn);
       }
     } else if (tDate === "datetime-local") {
+      console.log(text)
       if (text === null) {
         props.onChange(null);
       } else {

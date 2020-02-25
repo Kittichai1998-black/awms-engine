@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
+import queryString from "query-string";
 
 const Axios = new apicall();
 
@@ -16,7 +17,6 @@ const DocumentLog = (props) => {
   const [filterData, setFilterData] = useState([]);
   const [dataSource, setDataSource] = useState([]);
   const [datetime, setDatetime] = useState({});
-  const [selection, setSelection] = useState();
 
   const query = {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
@@ -30,28 +30,8 @@ const DocumentLog = (props) => {
     all: ""
   };
 
-  const onChangeFilter = (condition, field, value) => {
-    let obj = [...filterData];
-    if (value === "") {
-      obj = obj.filter(x => x.f !== field);
-    } else {
-      let row = obj.find(x => x.f === field);
-      if (row === null || row === undefined) {
-        obj.push(
-          {
-            f: field, c: "=", v: value
-          }
-        )
-      }
-      else {
-        row.v = value
-      }
-    }
-    setFilterData(obj)
-  };
 
   const onChangeFilterDateTime = (value, field, type) => {
-    //console.log(value + field + type)
     let datetimeRange = datetime;
     if (value === null || value === undefined) {
       delete datetimeRange[type];
@@ -83,6 +63,26 @@ const DocumentLog = (props) => {
         filterDatas.push(createObj);
       }
     }
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
+
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      filterDatas.unshift({ "q": newSel })
+    }
     getQuery.q = JSON.stringify(filterDatas);
     // setQuery(getQuery)
     Axios.get(createQueryString(getQuery)).then(res => {
@@ -102,16 +102,26 @@ const DocumentLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateFrom"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateFrom")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -123,16 +133,25 @@ const DocumentLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateTo"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateTo")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+            />}
         </div>
       );
     }
@@ -144,6 +163,11 @@ const DocumentLog = (props) => {
       accessor: "LogTime",
       width: 200,
       type: "datetime"
+    },
+    {
+      Header: "ID",
+      accessor: "ID",
+      width: 60
     },
     {
       Header: "LogRef",
@@ -228,7 +252,7 @@ const DocumentLog = (props) => {
     },
     {
       Header: "Remark",
-      accessor: "Remark" 
+      accessor: "Remark"
     },
     {
       Header: "ActionTime",
@@ -282,7 +306,7 @@ const DocumentLog = (props) => {
   useEffect(() => {
     onHandleFilterConfirm();
   }, [datetime])
- 
+
 
   return <>
     <AmFilterTable

@@ -419,43 +419,43 @@ let routes = [
     exact: true
   },
   {
-    path: "/warehouse/apiservicelog",
+    path: "/log/apiservicelog",
     name: "API Service Log",
     compoment: APIServiceLog,
     exact: true
   },
   {
-    path: "/warehouse/sendapilog",
+    path: "/log/sendapilog",
     name: "Send API Log",
     compoment: SendAPILog,
     exact: true
   },
   {
-    path: "/warehouse/storageobjectlog",
+    path: "/log/storageobjectlog",
     name: "Storage Object Log",
     compoment: StorageObjectLog,
     exact: true
   },
   {
-    path: "/warehouse/documentlog",
+    path: "/log/documentlog",
     name: "Document Log",
     compoment: DocumentLog,
     exact: true
   },
   {
-    path: "/warehouse/docitemlog",
+    path: "/log/docitemlog",
     name: "Document Item Log",
     compoment: DocumentItemLog,
     exact: true
   },
   {
-    path: "/warehouse/docitemstolog",
+    path: "/log/docitemstolog",
     name: "Document Item Storage Object Log",
     compoment: DocumentItemStorageObjectLog,
     exact: true
   },
   {
-    path: "/warehouse/workqueuelog",
+    path: "/log/workqueuelog",
     name: "Work Queue Log",
     compoment: WorkQueueLog,
     exact: true

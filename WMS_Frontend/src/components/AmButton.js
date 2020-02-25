@@ -393,11 +393,13 @@ function ButtonStyle(props) {
     if (Array.isArray(children)) {
         textInitial = children.join("")
     } else {
-        textInitial = children
+        textInitial = children || ""
     }
+
     let findColon = textInitial.split(":")
     let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim(), text.trim() ? text.trim() + " - Not Translate" : "") + " : ", "")
     textShow = textShow.substring(0, textShow.length - 2);
+
     return (
         <Button
             className={classNames(
