@@ -28,7 +28,7 @@ import {
 import PropType from "prop-types";
 import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
-import LabelT from '../../components/AmLabelMultiLanguage'
+import LabelT from "../../components/AmLabelMultiLanguage";
 
 const styles = theme => ({
   button: {
@@ -86,8 +86,7 @@ const FormInline = styled.div`
 const LabelH = {
   "font-weight": "bold",
   width: "200px"
-}
-
+};
 
 const DocumentView = props => {
   const { t } = useTranslation();
@@ -126,12 +125,12 @@ const DocumentView = props => {
     // console.log(props.typeDocNo);
     Axios.get(
       window.apipath +
-      "/v2/GetDocAPI/?docTypeID=" +
-      props.typeDocNo +
-      "&docID=" +
-      docID +
-      "&getMapSto=true&_token=" +
-      localStorage.getItem("Token")
+        "/v2/GetDocAPI/?docTypeID=" +
+        props.typeDocNo +
+        "&docID=" +
+        docID +
+        "&getMapSto=true&_token=" +
+        localStorage.getItem("Token")
     ).then(res => {
       console.log(
         "docID : " + props.docID,
@@ -192,99 +191,100 @@ const DocumentView = props => {
             _qty:
               typeDoc === "issued"
                 ? row._sumQtyDisto +
-                " / " +
-                (row.Quantity === null ? "-" : row.Quantity)
+                  " / " +
+                  (row.Quantity === null ? "-" : row.Quantity)
                 : typeDoc === "received"
-                  ? row._sumQtyDisto +
+                ? row._sumQtyDisto +
                   " / " +
                   (row.Quantity === null ? " - " : row.Quantity)
-                  : typeDoc === "loading"
-                    ? row._sumQtyDisto +
-                    " / " +
-                    (row.Quantity === null ? " - " : row.Quantity)
-                    : null
+                : typeDoc === "loading"
+                ? row._sumQtyDisto +
+                  " / " +
+                  (row.Quantity === null ? " - " : row.Quantity)
+                : null
           });
         });
 
         //============================================================================
+        if (res.data.sou_bstos) {
+          res.data.sou_bstos.forEach(rowDetail => {
+            rowDetail.eventStatusDoc = res.data.document["eventStatus"];
+            // var options = ""
+            // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
+            // rowDetail.options = options;
 
-        res.data.sou_bstos.forEach(rowDetail => {
-          rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-          // var options = ""
-          // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-          // rowDetail.options = options;
+            // === getOption ===
+            //var qryStr = queryString.parse(rowDetail.options)
+            //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+            var qryStr = queryString.parse(rowDetail.Options);
+            if (optionSouBstos) {
+              optionSouBstos.forEach(x => {
+                rowDetail[x.optionName] =
+                  qryStr[x.optionName] === "undefined"
+                    ? null
+                    : qryStr[x.optionName];
+              });
+            }
 
-          // === getOption ===
-          //var qryStr = queryString.parse(rowDetail.options)
-          //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.Options);
-          if (optionSouBstos) {
-            optionSouBstos.forEach(x => {
-              rowDetail[x.optionName] =
-                qryStr[x.optionName] === "undefined"
-                  ? null
-                  : qryStr[x.optionName];
-            });
-          }
+            if (window.project === "AAI") {
+              rowDetail.tanum =
+                qryStr.tanum === "undefined" ? null : qryStr.tanum;
+              rowDetail.btanr =
+                qryStr.btanr === "undefined" ? null : qryStr.btanr;
+            }
 
-          if (window.project === "AAI") {
-            rowDetail.tanum =
-              qryStr.tanum === "undefined" ? null : qryStr.tanum;
-            rowDetail.btanr =
-              qryStr.btanr === "undefined" ? null : qryStr.btanr;
-          }
-
-          dataTableDetailSOU.push({
-            ...rowDetail,
-            _packQty:
-              typeDoc === "issued"
-                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                : typeDoc === "received"
+            dataTableDetailSOU.push({
+              ...rowDetail,
+              _packQty:
+                typeDoc === "issued"
+                  ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                  : typeDoc === "received"
                   ? rowDetail.packQty
                   : typeDoc === "audit"
-                    ? rowDetail.distoQty
-                    : null
-          });
-        });
-
-        res.data.des_bstos.forEach(rowDetail => {
-          rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-
-          // var options = ""
-          // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-          // rowDetail.options = options;
-
-          // === getOption ===
-          //var qryStr = queryString.parse(rowDetail.options)
-          //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.Options);
-          if (optionDesBstos) {
-            optionDesBstos.forEach(x => {
-              rowDetail[x.optionName] =
-                qryStr[x.optionName] === "undefined"
-                  ? null
-                  : qryStr[x.optionName];
+                  ? rowDetail.distoQty
+                  : null
             });
-          }
-          if (window.project === "AAI") {
-            rowDetail.tanum =
-              qryStr.tanum === "undefined" ? null : qryStr.tanum;
-            rowDetail.btanr =
-              qryStr.btanr === "undefined" ? null : qryStr.btanr;
-          }
-          dataTableDetailDES.push({
-            ...rowDetail,
-            _packQty:
-              typeDoc === "issued"
-                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                : typeDoc === "received"
+          });
+        }
+        if (res.data.des_bstos) {
+          res.data.des_bstos.forEach(rowDetail => {
+            rowDetail.eventStatusDoc = res.data.document["eventStatus"];
+
+            // var options = ""
+            // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
+            // rowDetail.options = options;
+
+            // === getOption ===
+            //var qryStr = queryString.parse(rowDetail.options)
+            //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+            var qryStr = queryString.parse(rowDetail.Options);
+            if (optionDesBstos) {
+              optionDesBstos.forEach(x => {
+                rowDetail[x.optionName] =
+                  qryStr[x.optionName] === "undefined"
+                    ? null
+                    : qryStr[x.optionName];
+              });
+            }
+            if (window.project === "AAI") {
+              rowDetail.tanum =
+                qryStr.tanum === "undefined" ? null : qryStr.tanum;
+              rowDetail.btanr =
+                qryStr.btanr === "undefined" ? null : qryStr.btanr;
+            }
+            dataTableDetailDES.push({
+              ...rowDetail,
+              _packQty:
+                typeDoc === "issued"
+                  ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                  : typeDoc === "received"
                   ? rowDetail.packQty
                   : typeDoc === "audit"
-                    ? rowDetail.distoQty
-                    : null
+                  ? rowDetail.distoQty
+                  : null
+            });
           });
-        });
-
+        }
         //============================================================================
         // console.log(dataTable);
         setData(dataTable);
@@ -453,8 +453,8 @@ const DocumentView = props => {
           />
         ) : null
       ) : (
-              ""
-            )}
+        ""
+      )}
       <br />
       {props.buttonBack === true ? (
         <AmButton styleType="default" onClick={buttonBack}>

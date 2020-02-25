@@ -55,7 +55,7 @@ namespace ProjectTMC.Engine.WorkQueue
                     //Get Doc
                     amt_Document docGR = new amt_Document();
                     List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
-                    if (reqVO.areaCode == "G01")
+                    if (reqVO.areaCode == "R")
                     {
                         //Inbound Zone
                         docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
