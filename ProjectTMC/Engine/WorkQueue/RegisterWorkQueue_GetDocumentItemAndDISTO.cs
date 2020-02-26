@@ -71,7 +71,7 @@ namespace ProjectTMC.Engine.WorkQueue
                          }, buVO);
 
                     }
-                    else if (reqVO.areaCode == "FS")
+                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
                     {
                         //Outbound Zone
                          docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(

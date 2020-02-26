@@ -14,7 +14,7 @@ import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { useTranslation } from 'react-i18next'
 import { apicall } from '../components/function/CoreFunction2'
-import ModalTableAddBySto from './AmCreateDocument_ModalTableAddBySto'
+import ModalTableAddBySto from './AmCreateDocument_BtnAddList'
 const Axios = new apicall()
 
 const FormInline = styled.div`

@@ -128,6 +128,7 @@ const SKUMasterTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI",
     t: "SKUMasterType",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    // q: '[{"q":[{ "f": "ID", "c":"like", "v": "%aa%"},{ "o": "or","f": "Code", "c":"like", "v": "%aa%"}]}, { "f": "Status", "c":"<", "v": 2}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -167,6 +168,13 @@ function Test6(props) {
     const [dataSrc, setDataSrc] = useState([]);
 
     const cols = [
+        {
+            Header: 'ID',
+            accessor: 'ID',
+            fixed: 'left',
+            width: 30,
+            sortable: true,
+        },
         {
             Header: 'Code',
             accessor: 'Code',
@@ -214,10 +222,28 @@ function Test6(props) {
             sortable: true,
         },
     ];
-
-    useEffect(() => {
-        getData(createQueryString(SKUMasterTypeQuery))
-    }, [SKUMasterTypeQuery]);
+    const colsSKUType = [
+        {
+            Header: 'ID',
+            accessor: 'ID',
+            fixed: 'left',
+            width: 100,
+            sortable: true,
+        },
+        {
+            Header: 'Code',
+            accessor: 'Code',
+            sortable: true,
+        },
+        {
+            Header: 'Name',
+            accessor: 'Name',
+            sortable: true,
+        }
+    ];
+    // useEffect(() => {
+    //     getData(createQueryString(SKUMasterTypeQuery))
+    // }, [SKUMasterTypeQuery]);
     async function getData(qryString) {
         const res = await Axios.get(qryString).then(res => res)
         setDataSrc(res.data.datas)
@@ -400,7 +426,24 @@ function Test6(props) {
                     width={200}
                     onChange={onHandleChange} />
             </FormInline>
-
+            <br />
+            <FormInline>
+                <label>SKU Type</label>
+                <AmFindPopup
+                    id="txtSKUType"
+                    // disabled
+                    required={true}
+                    placeholder="Select SKU Type"
+                    fieldDataKey="ID"
+                    fieldLabel={["Code"]}
+                    // value={valueText.txtUnitType.value} //ใช้เมื่อต้องการเปลี่ยน value จากหน้า frontโดยตรง
+                    // defaultValue={2}
+                    labelTitle="Search of SKU Type"
+                    queryApi={SKUMasterTypeQuery}
+                    columns={colsSKUType}
+                    width={200}
+                    onChange={onHandleChange} />
+            </FormInline>
             <br />
             <label>== Dropdown ==</label>
             {/* Dropdown ส่งค่าoptionlist ได้ 3 แบบ ผ่าน props
@@ -561,7 +604,7 @@ function Test6(props) {
                 ddlMinWidth={300}
                 // ddlMaxWidth={350}
                 // value={valueText.ddlSKUType2.value}
-                defaultValue={[34, 35]}
+                defaultValue={[45]}
                 returnDefaultValue={true}
                 queryApi={SKUMasterTypeQuery}  //ส่ง querystring ไป
                 // data={dataSrc}  //ส่ง data ที่ดังมากจาก db แล้ว

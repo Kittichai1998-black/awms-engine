@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 
 import AmButton from "../AmButton";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 
 const AmEditiorTable = (props) => {
-    const { t } = useTranslation()
+    // const { t } = useTranslation()
     const [open, setOpen] = useState(props.open);
     const [component, setComponent] = useState(null);
 
@@ -24,7 +24,7 @@ const AmEditiorTable = (props) => {
 
         } else {
 
-            return 'OK';
+            return 'Add';
         }
 
     }
@@ -52,8 +52,8 @@ const AmEditiorTable = (props) => {
             bodyDialog={createComponent()}
             dataDialog={props.data}
             maxWidth={props.maxWidth}
-            customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{t(checkStr())}</AmButton>}
-            customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">{t("Cancel")}</AmButton>}
+            customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{checkStr()}</AmButton>}
+            customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">Cancel</AmButton>}
             styleDialog={props.style} />)
     }
 
@@ -71,8 +71,8 @@ const AmEditiorTable = (props) => {
                     bodyDialog={createComponent()}
                     dataDialog={props.data}
                     maxWidth={props.maxWidth}
-                    customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{t(checkStr())}</AmButton>}
-                    customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">{t("Cancel")}</AmButton>}
+                    customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{checkStr()}</AmButton>}
+                    customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">Cancel</AmButton>}
                     styleDialog={props.style} />
             }
         </div>

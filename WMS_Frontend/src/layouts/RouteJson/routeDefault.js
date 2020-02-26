@@ -177,6 +177,22 @@ const StorageObjectLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/StorageObjectLog"),
   loading: Loading
 });
+const WorkQueueLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
+  loading: Loading
+});
+const DocumentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentLog"),
+  loading: Loading
+});
+const DocumentItemLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentItemLog"),
+  loading: Loading
+});
+const DocumentItemStorageObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -403,21 +419,45 @@ let routes = [
     exact: true
   },
   {
-    path: "/warehouse/apiservicelog",
+    path: "/log/apiservicelog",
     name: "API Service Log",
     compoment: APIServiceLog,
     exact: true
   },
   {
-    path: "/warehouse/sendapilog",
+    path: "/log/sendapilog",
     name: "Send API Log",
     compoment: SendAPILog,
     exact: true
   },
   {
-    path: "/warehouse/storageobjectlog",
+    path: "/log/storageobjectlog",
     name: "Storage Object Log",
     compoment: StorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/log/documentlog",
+    name: "Document Log",
+    compoment: DocumentLog,
+    exact: true
+  },
+  {
+    path: "/log/docitemlog",
+    name: "Document Item Log",
+    compoment: DocumentItemLog,
+    exact: true
+  },
+  {
+    path: "/log/docitemstolog",
+    name: "Document Item Storage Object Log",
+    compoment: DocumentItemStorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/log/workqueuelog",
+    name: "Work Queue Log",
+    compoment: WorkQueueLog,
     exact: true
   }
 ];

@@ -51,12 +51,30 @@ namespace ProjectTMC.Engine.WorkQueue
                     Status = EntityStatus.ACTIVE,
                     UnitType_ID = 2,
                     WeightKG = reqVO.weight
+
                 });
             }
             //==========================================================
+            amt_Document docGR = new amt_Document();
+            List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
+
+            //Inbound Zone
+            docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
+                new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
+            }, buVO).FirstOrDefault();
+
+            docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
+            }, buVO);
 
             if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
             {
+               
+
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {//Check Qty
                     if (reqVO.areaCode == "R")
@@ -65,6 +83,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         if (mappingPallet.qty <= 3)
                         {
                             stos = this.mapPallet(logger, reqVO, null, buVO);
+                            this.mapDisto(logger, stos, docGRItems, buVO);
                         }
                         else
                         {
@@ -73,12 +92,13 @@ namespace ProjectTMC.Engine.WorkQueue
 
 
                     }
-                    else if (reqVO.areaCode == "FS")
+                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
                     {
                         //Outbound Zone
                         if (mappingPallet.qty <= 16)
                         {
                             stos = this.mapPallet(logger, reqVO, null, buVO);
+                            this.mapDisto(logger, stos, docGRItems, buVO);
                         }
                         else
                         {
@@ -92,24 +112,9 @@ namespace ProjectTMC.Engine.WorkQueue
             else
             {
                 //No mappingPallets
-                amt_Document docGR = new amt_Document();
-                List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
-
-                    //Inbound Zone
-                    docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
-                        new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
-                    }, buVO).FirstOrDefault();
-
-                    docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
-                        new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
-                    }, buVO);
 
                     stos = this.mapPallet(logger, reqVO, docGRItems, buVO);
-                    this.mapDisto(logger, stos, buVO);
+                    this.mapDisto(logger, stos, docGRItems, buVO);
 
             }
 
@@ -165,7 +170,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "R"?3:(dataMap.areaCode == "FS"?16:row.Quantity),
+                            qty = dataMap.areaCode == "G01" ? 3 : (dataMap.areaCode == "G05" || dataMap.areaCode == "G06" ? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,
@@ -190,7 +195,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         });
                     }
                 }
-                var reqMapping = new WCSMappingPalletV2.TReq()
+                var reqMapping = new MappingPallet.TReq()
                 {
                     actualWeiKG = dataMap.weight,
                     warehouseCode = dataMap.warehouseCode,
@@ -198,7 +203,10 @@ namespace ProjectTMC.Engine.WorkQueue
                     palletData = palletList
                 };
 
-                mapsto = new WCSMappingPalletV2().Execute(logger, buVO, reqMapping);
+                //ams_PackMaster pm = AWMSEngine.ADO.MasterADO.GetInstant().GetPackMasterByPack(dataMap., buVO);
+               
+
+                mapsto = new MappingPallet().Execute(logger, buVO, reqMapping);
             }
 
             mapsto.weiKG = dataMap.weight;
@@ -212,23 +220,28 @@ namespace ProjectTMC.Engine.WorkQueue
 
             return mapsto;
         }
-        private List<amt_DocumentItemStorageObject> mapDisto(AMWLogger logger, StorageObjectCriteria data, VOCriteria buVO)
+        private List<amt_DocumentItemStorageObject> mapDisto(AMWLogger logger, StorageObjectCriteria data, List<amt_DocumentItem> dataDoc, VOCriteria buVO)
         {
             // Map data to Table DocumentStorageObject
             var stoMap = data.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
 
-            var disto = new amt_DocumentItemStorageObject
+            var disto = new List <amt_DocumentItemStorageObject>();
+            foreach (var docItem in dataDoc)
             {
-                ID = null,
-                DocumentItem_ID = null,
-                Sou_StorageObject_ID = stoMap.id.Value,
-                Des_StorageObject_ID = stoMap.id.Value,
-                Quantity = stoMap.qty,
-                BaseQuantity = stoMap.baseQty,
-                UnitType_ID = stoMap.unitID,
-                BaseUnitType_ID = stoMap.baseUnitID,
-                Status = EntityStatus.ACTIVE
+                disto.Add(new amt_DocumentItemStorageObject()
+                {
+                    ID = null,
+                    DocumentItem_ID = docItem.ID,
+                    Sou_StorageObject_ID = stoMap.id.Value,
+                    Des_StorageObject_ID = stoMap.id.Value,
+                    Quantity = stoMap.qty,
+                    BaseQuantity = stoMap.baseQty,
+                    UnitType_ID = stoMap.unitID,
+                    BaseUnitType_ID = stoMap.baseUnitID,
+                    Status = EntityStatus.ACTIVE
+                });
             };
+
 
             AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
 

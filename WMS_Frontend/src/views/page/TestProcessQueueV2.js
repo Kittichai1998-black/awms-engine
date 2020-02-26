@@ -8,7 +8,7 @@ const ProcessQueue = () => {
     {"accessor":"Name", "Header":"Name", "sortable":false, "width":400},
     {"accessor":"Qty", "Header":"Qty", "sortable":false, "width":60},
     {"accessor":"Unit", "Header":"Unit", "sortable":false, "width":60},
-];
+  ];
   
   const documentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
@@ -23,10 +23,20 @@ const ProcessQueue = () => {
     all: ""
   };
 
+  const documentDetail = {
+    columns:4,
+    field:[
+      {"accessor":"Code", "label":"Code"},{"accessor":"Code", "label":"Code"},
+      {"accessor":"Code", "label":"Code"},{"accessor":"Code", "label":"Code"},
+      {"accessor":"Code", "label":"Code"},{"accessor":"Code", "label":"Code"}
+    ]
+  }
+
   return <AmProcessQueue 
     documentPopup={columnsDocument} 
     documentQuery={documentQuery}
     documentItemDetail={colDocumentItem}
+    documentDetail={documentDetail}
   />
 }
 
