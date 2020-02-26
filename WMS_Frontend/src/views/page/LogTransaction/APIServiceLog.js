@@ -276,7 +276,7 @@ const APIServiceLog = (props) => {
       width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
