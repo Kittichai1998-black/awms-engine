@@ -31,18 +31,30 @@ namespace MyTest2
         [Fact]
         public void Loging()
         {
-            AMWUtil.Logger.AMWLoggerManager.InitInstant(@"D:\logs\{MachineName}\{Date}\", @"{RefID}.{Date}.log");
+            Queue<string> q = new Queue<string>();
+            q.Enqueue("1");
+            q.Enqueue("2");
+            q.Enqueue("3");
+            string a1 = q.Dequeue();
+            q.Enqueue("4");
+            string a2 = q.Dequeue();
+            string a3 = q.Dequeue();
 
-            for (int x = 0; x < 10; x++)
+            AMWUtil.Logger.AMWLoggerManager.InitInstant(@"D:\logs\{MachineName}\{Date}\", @"{LogName}.{Date}.log");
+            //int ii = 0;
+            for (int x = 1; x <= 1000; x++)
+            {
                 Task.Run(() =>
                 {
-                     var log1 = AMWUtil.Logger.AMWLoggerManager.GetLogger("TOKENID000123", "ALL");
-                    for (int i = 0; i < 500; i++)
+                    string ii = DateTime.Now.Ticks.ToString();
+                    var log1 = AMWUtil.Logger.AMWLoggerManager.GetLogger("TOM12", "ALL");
+                    for (int i = 1; i <= 100; i++)
                     {
-                        log1.LogInfo(i + "=Test 1111111111");
-                        //Thread.Sleep(50);
+                        log1.LogInfo(ii +'.'+ i.ToString("000"));
                     }
+                    string ii2 = "xx";
                 });
+            }
 
             Console.ReadKey();
         }
