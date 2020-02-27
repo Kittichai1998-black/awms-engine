@@ -54,11 +54,34 @@ namespace AMWUtil.Logger
                                         sourceFile.Split('\\').Last(),
                                         lineNumber,
                                         message.Replace("\r", string.Empty).Replace("\n", @"\n"));
-            lock (AMWLoggerManager.LogMessagesTMPLock)
+            /*lock (AMWLoggerManager.LogMessagesTMPLock)
             {
                 AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this._FileName, message));
-            }
+            }*/
+
+            lock (AMWLoggerManager.LogMessagesTMPLockSet)
+                AMWLoggerManager.LogQueueMessagesTMP.Enqueue(this._FileName + "," + message);
+            
+            Task.Run(() =>
+            {
+                lock (AMWLoggerManager.LogMessagesTMPLockWrite)
+                {
+                    string d = null;
+                    lock (AMWLoggerManager.LogMessagesTMPLockSet)
+                        d = AMWLoggerManager.LogQueueMessagesTMP.Dequeue();
+                    if (d == null)
+                        return;
+                    string[] msg = d.Split(',', 2);
+                    using (var fw = new StreamWriter(msg[0], true))
+                    {
+                        fw.WriteLine(msg[1]);
+                        fw.Flush();
+                    }
+                }
+                this.Dispose();
+            });
         }
+
 
         public void LogAll(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {

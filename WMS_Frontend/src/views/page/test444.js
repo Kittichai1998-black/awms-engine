@@ -146,6 +146,7 @@ const Test444 = (props) => {
            <AmDate onChange={(e) => {datex(e)}} TypeDate={"date"} FieldID={"xxx"} defaultValue={true}  ></AmDate>
            <AmDate onChange={(e) => {datex1(e)}} TypeDate={"date"} FieldID={"xxx"} ></AmDate>  
            <AmDate onChange={(e) => {datetimex(e)}} TypeDate={"datetime-local"} FieldID={"xxx"} defaultValue={true} ></AmDate>
+           <AmDate onChange={(e) => {datetimex(e)}} TypeDate={"datetime-local"} FieldID={"xxx"} ></AmDate>
            <AmDate onChange={(e) => {timex(e)}} TypeDate={"time"} FieldID={"xxx"}></AmDate>
            
            <br></br>

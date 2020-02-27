@@ -13,7 +13,10 @@ namespace AMWUtil.Logger
     {
         public static List<KeyValuePair<string, string>> LogMessages = new List<KeyValuePair<string, string>>();
         public static List<KeyValuePair<string, string>> LogMessagesTMP = new List<KeyValuePair<string, string>>();
-        public static object LogMessagesTMPLock = new object();
+        public static Queue<string> LogQueueMessagesTMP = new Queue<string>();
+
+        public static object LogMessagesTMPLockSet = new object();
+        public static object LogMessagesTMPLockWrite = new object();
         public static object InitLock = new object();
 
         private static Task LogTask = null;
@@ -51,7 +54,7 @@ namespace AMWUtil.Logger
             //this.Loggers = new List<AMWLogger>();
             this.LogUriFormat = logUriFormat;
             this.LogFileFormat = logFileFormat;
-            this.RunWriteLog();
+            //this.RunWriteLog();
         }
 
 
@@ -110,51 +113,7 @@ namespace AMWUtil.Logger
                 return logger;
 
             }
-        }
-
-        private void RunWriteLog()
-        {
-            if (LogTask == null || LogTask.IsCompleted)
-            {
-                LogTask = Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
-                                   msg.HasValue && msg.Value.Key != null;)
-                            {
-                                //if (!msg.Value.Key.Split('/').Last().ToUpper().StartsWith("FREE") &&
-                                //    !msg.Value.Key.Split('\\').Last().ToUpper().StartsWith("FREE"))
-                                {
-                                    using (var fw = new StreamWriter(msg.Value.Key, true))
-                                    {
-                                        fw.WriteLine(msg.Value.Value);
-                                        fw.Flush();
-                                    }
-                                }
-                                LogMessages.RemoveAt(0);
-                                msg = LogMessages.FirstOrDefault();
-                            }
-                        }
-                        finally
-                        {
-                            Thread.Sleep(200);
-                            lock (LogMessagesTMPLock)
-                            {
-                                if (LogMessagesTMP.Count() > 0)
-                                {
-                                    LogMessages = LogMessagesTMP;
-                                    //LogMessages.AddRange(LogMessagesTMP);
-                                    LogMessagesTMP = new List<KeyValuePair<string, string>>();
-                                }
-                            }
-                        }
-                    }
-
-                });
-            }
+        
         }
 
     }

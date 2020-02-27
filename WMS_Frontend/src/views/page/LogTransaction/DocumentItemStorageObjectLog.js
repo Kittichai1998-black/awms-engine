@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
+import queryString from "query-string";
 
 const Axios = new apicall();
 
@@ -18,12 +19,15 @@ const DocumentItemStorageObjectLog = (props) => {
   const [datetime, setDatetime] = useState({});
   const [selection, setSelection] = useState();
 
-  const query={
+  const query = {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentItemStorageObjectEvent",
     q: '',
     f: "*, concat(Sou_StorageObject_ID, ':' ,Sou_StorageObject_Code) as Sou_StorageObject," +
-      "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject",
+      "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject," +
+      "iif(DocumentType_ID is null, '',concat(DocumentType_ID,':',DocumentType_Code)) as DocumentType," +
+      "concat(UnitType_ID, ':' ,UnitType_Code) as UnitType," +
+      "concat(BaseUnitType_ID, ':' ,BaseUnitType_Code) as BaseUnitType",
     g: "",
     s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
@@ -84,6 +88,26 @@ const DocumentItemStorageObjectLog = (props) => {
         filterDatas.push(createObj);
       }
     }
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
+
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      filterDatas.unshift({ "q": newSel })
+    }
     getQuery.q = JSON.stringify(filterDatas);
     Axios.get(createQueryString(getQuery)).then(res => {
       if (res) {
@@ -102,16 +126,26 @@ const DocumentItemStorageObjectLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateFrom"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateFrom")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -123,16 +157,26 @@ const DocumentItemStorageObjectLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateTo"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateTo")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -142,53 +186,60 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Log Time",
       accessor: "LogTime",
-      width: 200,
+      width: 150,
       type: "datetime"
     },
     {
-      Header: "LogRef",
+      Header: "ID",
+      accessor: "ID",
+      width: 60
+    },
+    {
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
     {
-      Header: "DocumentType ID",
-      accessor: "DocumentType_ID",
+      Header: "Doc.Type",
+      accessor: "DocumentType",
     },
     {
-      Header: "WorkQueue ID",
+      Header: "WQ ID",
       accessor: "WorkQueue_ID",
     },
     {
-      Header: "DocumentItem ID",
+      Header: "Doc.Item ID",
       accessor: "DocumentItem_ID",
     },
     {
-      Header: "Sou_StorageObjec",
+      Header: "Sou_Sto",
       accessor: "Sou_StorageObject",
+      width: 200,
     },
     {
-      Header: "Des_StorageObject",
+      Header: "Des_Sto",
       accessor: "Des_StorageObject",
+      width: 200,
     },
     {
-      Header: "Quantity",
+      Header: "Qty",
       accessor: "Quantity",
     },
     {
-      Header: "UnitType",
-      accessor: "UnitType_Code",
+      Header: "Unit",
+      accessor: "UnitType",
     },
     {
-      Header: "Base Quantity",
+      Header: "Base Qty",
       accessor: "BaseQuantity",
     },
     {
-      Header: "Origin Base Quantity",
+      Header: "Origin Base Qty",
       accessor: "OriginBaseQuantity",
     },
     {
-      Header: "BaseUnitType",
-      accessor: "BaseUnitType_Code",
+      Header: "Base Unit",
+      accessor: "BaseUnitType",
     },
     {
       Header: "Status",
@@ -201,7 +252,8 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Create Time",
       accessor: "CreateTime",
-      type: "datetime"
+      type: "datetime",
+      width: 150,
     },
     {
       Header: "Modify By",
@@ -210,13 +262,14 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Modify Time",
       accessor: "ModifyTime",
-      type: "datetime"
+      type: "datetime",
+      width: 150,
     },
   ]
   useEffect(() => {
     onHandleFilterConfirm();
   }, [datetime])
- 
+
   return <>
     <AmFilterTable
       primarySearch={filterItem}

@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../components/function/CoreFunction';
-import AmDialogs from '../../../components/AmDialogs';
+import { withStyles } from '@material-ui/core/styles';
 import { AmTable, AmFilterTable, AmPagination } from '../../../components/table';
 import AmDropdown from "../../../components/AmDropdown";
 import { useTranslation } from "react-i18next";
 import AmDatePicker from "../../../components/AmDate";
-import AmButton from "../../../components/AmButton";
 import moment from "moment";
+import queryString from "query-string";
+import ReactJson from 'react-json-view'
+import AmRediRectInfo from '../../../components/AmRedirectInfo'
+import Divider from '@material-ui/core/Divider';
+import Typography from "@material-ui/core/Typography";
+import ViewList from '@material-ui/icons/ViewList';
+import PageView from '@material-ui/icons/Pageview';
 
 const Axios = new apicall();
-
+const styles = theme => ({
+  textNowrap: { overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
+});
 const APIServiceLog = (props) => {
   const { t } = useTranslation();
+  const { classes } = props;
 
   const [filterData, setFilterData] = useState([]);
   const [dataSource, setDataSource] = useState([]);
@@ -22,11 +31,11 @@ const APIServiceLog = (props) => {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "APIServiceEvent",
     q: '',
-    f: "LogRefID, APIService_Name, ResultMessage,StartTime,EndTime",
+    f: "ID, LogRefID, APIService_Name,InputText, OutputText, ResultMessage,StartTime,EndTime",
     g: "",
     s: "[{'f':'ID','od':'desc'},{'f':'StartTime','od':'desc'}]",
     sk: 0,
-    l: 100,
+    l: 20,
     all: ""
   };
 
@@ -51,7 +60,6 @@ const APIServiceLog = (props) => {
   };
 
   const onChangeFilterDateTime = (value, field, type) => {
-    //console.log(value + field + type)
     let datetimeRange = datetime;
     if (value === null || value === undefined) {
       delete datetimeRange[type];
@@ -83,7 +91,30 @@ const APIServiceLog = (props) => {
         filterDatas.push(createObj);
       }
     }
+
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
+
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      filterDatas.unshift({ "q": newSel })
+    }
+
     getQuery.q = JSON.stringify(filterDatas);
+    // console.log(getQuery)
     Axios.get(createQueryString(getQuery)).then(res => {
       if (res) {
         if (res.data._result.status !== 0) {
@@ -137,16 +168,26 @@ const APIServiceLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("From Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateFrom"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateFrom")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateFrom")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
@@ -158,41 +199,106 @@ const APIServiceLog = (props) => {
           <label style={{ padding: "10px 0 0 20px", width: "140px" }}>
             {t("To Date")} :{" "}
           </label>
-          <AmDatePicker
-            FieldID={"dateTo"}
-            width="200px"
-            TypeDate={"datetime-local"}
-            onChange={value =>
-              onChangeFilterDateTime(value, rowC.field, "dateTo")
-            }
-            defaultValue={true}
-            defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
-          />
+          {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+            /> :
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, rowC.field, "dateTo")
+              }
+              defaultValue={true}
+              defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+            />
+          }
         </div>
       );
     }
   }];
 
+  const handleCopy = (copy) => {
+    navigator.clipboard.writeText(JSON.stringify(copy.src, null, '\t'))
+  }
+  const showReactJsonView = (name, data) => {
+    return <ReactJson name={name} src={data}
+      displayObjectSize={true} enableClipboard={handleCopy} displayDataTypes={false} indentWidth={2} />
+  }
+  const getIOText = (data) => {
+    if (data.InputText || data.OutputText) {
+
+      var datashow = <div>
+        <Typography variant="h6">{"Input"}</Typography>
+        {data.InputText ? showReactJsonView("Input-Text",JSON.parse(data.InputText))
+                  : <label>Data Not Found.</label>}
+        <br />
+        <Divider />
+        <br />
+        <Typography variant="h6">{"Output"}</Typography>
+        {data.InputText ? showReactJsonView("Output-Text",JSON.parse(data.OutputText))
+          : <label>Data Not Found.</label>}
+      </div>
+      return (
+        <div style={{ display: "flex", maxWidth: '160px' }}>
+          <AmRediRectInfo type={"customdialog"} customIcon={<ViewList style={{ color: "#1a237e" }} />} bodyDialog={datashow} titleDialog="Input / Output" />
+        </div>
+      )
+    } else {
+      return null;
+    }
+  }
+  const getResultMessage = (data) => {
+    if (data.ResultMessage) {
+      if (data.ResultMessage.length > 50) {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}><label className={classes.textNowrap}>{data.ResultMessage}</label>
+            <AmRediRectInfo type={"customdialog"} customIcon={<PageView style={{ color: "#1a237e" }} />} bodyDialog={data.ResultMessage} titleDialog="Result Message" />
+          </div>
+        )
+      } else {
+        return <label>{data.ResultMessage}</label>
+      }
+    } else {
+      return null;
+    }
+  }
   const columns = [
     {
-      Header: "Start Time",
-      accessor: "StartTime",
-      width: 200,
-      type: "datetime"
+      Header: "ID",
+      accessor: "ID",
+      width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
     {
       Header: "APIService",
       accessor: "APIService_Name",
-      width: 150,
+    },
+    {
+      Header: "I/O Text",
+      Cell: (dataRow) => getIOText(dataRow.original),
+      width: 60
     },
     {
       Header: "Result",
       accessor: "ResultMessage",
+      Cell: (dataRow) => getResultMessage(dataRow.original),
+    },
+    {
+      Header: "Start Time",
+      accessor: "StartTime",
+      width: 200,
+      type: "datetime"
     },
     {
       Header: "End Time",
@@ -205,7 +311,7 @@ const APIServiceLog = (props) => {
   useEffect(() => {
     onHandleFilterConfirm();
   }, [datetime])
- 
+
   return <>
     <AmFilterTable
       primarySearch={filterItem}
@@ -215,4 +321,4 @@ const APIServiceLog = (props) => {
   </>
 }
 
-export default APIServiceLog;
+export default withStyles(styles)(APIServiceLog);

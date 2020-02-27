@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { lazy, Suspense, useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import styled from "styled-components";
 import classNames from "classnames";
-import AmButton from "../../../../components/AmButton";
-import AmInput from "../../../../components/AmInput";
+// import AmButton from "../../../../components/AmButton";
+
+// import AmInput from "../../../../components/AmInput";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -25,7 +26,8 @@ import DefaultLayout from "../../../../layouts/defaultLayout";
 import { createQueryString } from '../../../../components/function/CoreFunction';
 import _ from "lodash";
 import Axios from "axios";
-
+const AmButton = React.lazy(() => import('../../../../components/AmButton'));
+const AmInput = React.lazy(() => import('../../../../components/AmInput'));
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -260,118 +262,122 @@ const Login = props => {
             <Grid item xs={12} md={12}>
                 <Grid container direction="row" justify="center" alignItems="center">
                     <Card className={classes.card}>
-                        <CardHeader
-                            classes={{
-                                root: classes.header,
-                                title: classes.title
-                            }}
-                            title="AMS"
-                        />
-                        <CardContent className={classes.content}>
-                            <Grid
-                                container
-                                direction="row"
-                                justify="flex-start"
-                                alignItems="center"
-                                className={classes.subcontent}
-                            >
-                                <Grid item xs={5} sm={4}>
-                                    <Typography
-                                        variant="subtitle1"
-                                        className={classNames(classes.inlineTitle, classes.spacing)}
-                                    >
-                                        <AccountCircle className={classes.spacing} />
-                                        Username:
+                        <Suspense fallback={null}>
+                            <CardHeader
+                                classes={{
+                                    root: classes.header,
+                                    title: classes.title
+                                }}
+                                title="AMS"
+                            />
+                            <CardContent className={classes.content}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="flex-start"
+                                    alignItems="center"
+                                    className={classes.subcontent}
+                                >
+                                    <Grid item xs={5} sm={4}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            className={classNames(classes.inlineTitle, classes.spacing)}
+                                        >
+                                            <AccountCircle className={classes.spacing} />
+                                            Username:
                   </Typography>
-                                </Grid>
-                                <Grid item xs={7} sm={8}>
-                                    <AmInput
-                                        autoFocus={true}
-                                        id="username"
-                                        placeholder="Username"
-                                        // className={classes.input}
-                                        // value={valueForm.username}
-                                        onChange={onHandleChange}
-                                        onKeyPress={(v, o, ele, event) => {
-                                            // setValueForm({
-                                            //     ...valueForm, [ele.id]: v
-                                            // });
-                                            valueForm[ele.id] = v;
-                                            if (event.key === "Enter") {
-                                                onHandleLogin();
-                                            }
-                                        }}
-                                        style={{ width: "100%" }}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Grid
-                                container
-                                direction="row"
-                                justify="flex-start"
-                                alignItems="center"
-                            >
-                                <Grid item xs={5} sm={4}>
-                                    <Typography
-                                        variant="subtitle1"
-                                        className={classNames(classes.inlineTitle, classes.spacing)}
-                                    >
-                                        <VPNKey className={classes.spacing} />
-                                        Password:
-                  </Typography>
-                                </Grid>
-                                <Grid item xs={7} sm={8}>
-                                    <AmInput
-                                        id="password"
-                                        placeholder="Password"
-                                        type={showPassword ? "text" : "password"}
-                                        // className={classes.input}
-                                        InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment
-                                                    position="end"
-                                                    style={{ backgroundColor: "transparent" }}
-                                                >
-                                                    <IconButton
-                                                        className={classes.iconButton}
-                                                        size="small"
-                                                        aria-label="Toggle password visibility"
-                                                        onClick={onHandleClickShowPassword}
-                                                    >
-                                                        {showPassword ? (
-                                                            <VisibilityOff fontSize="small" />
-                                                        ) : (
-                                                                <Visibility fontSize="small" />
-                                                            )}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            )
-                                        }}
-                                        // value={valueForm.password}
-                                        onChange={onHandleChange}
-                                        onKeyPress={(v, o, ele, event) => {
-                                            // setValueForm({
-                                            //     ...valueForm, [ele.id]: v
-                                            // });
-                                            valueForm[ele.id] = v;
-                                            if (event.key === "Enter") {
-                                                onHandleLogin();
-                                            }
-                                        }}
-                                        style={{ width: "100%" }}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                        <CardActions className={classes.action}>
-                            <Typography variant="subtitle2" className={classes.alert}>
-                                {alertmsg}
-                            </Typography>
+                                    </Grid>
+                                    <Grid item xs={7} sm={8}>
 
-                            <AmButton styleType="confirm" onClick={onHandleLogin}>
-                                {"Login"}
-                            </AmButton>
-                        </CardActions>
+                                        <AmInput
+                                            autoFocus={true}
+                                            id="username"
+                                            placeholder="Username"
+                                            // className={classes.input}
+                                            // value={valueForm.username}
+                                            onChange={onHandleChange}
+                                            onKeyPress={(v, o, ele, event) => {
+                                                // setValueForm({
+                                                //     ...valueForm, [ele.id]: v
+                                                // });
+                                                valueForm[ele.id] = v;
+                                                if (event.key === "Enter") {
+                                                    onHandleLogin();
+                                                }
+                                            }}
+                                            style={{ width: "100%" }}
+                                        />
+
+                                    </Grid>
+                                </Grid>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="flex-start"
+                                    alignItems="center"
+                                >
+                                    <Grid item xs={5} sm={4}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            className={classNames(classes.inlineTitle, classes.spacing)}
+                                        >
+                                            <VPNKey className={classes.spacing} />
+                                            Password:
+                  </Typography>
+                                    </Grid>
+                                    <Grid item xs={7} sm={8}>
+                                        <AmInput
+                                            id="password"
+                                            placeholder="Password"
+                                            type={showPassword ? "text" : "password"}
+                                            // className={classes.input}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment
+                                                        position="end"
+                                                        style={{ backgroundColor: "transparent" }}
+                                                    >
+                                                        <IconButton
+                                                            className={classes.iconButton}
+                                                            size="small"
+                                                            aria-label="Toggle password visibility"
+                                                            onClick={onHandleClickShowPassword}
+                                                        >
+                                                            {showPassword ? (
+                                                                <VisibilityOff fontSize="small" />
+                                                            ) : (
+                                                                    <Visibility fontSize="small" />
+                                                                )}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                            // value={valueForm.password}
+                                            onChange={onHandleChange}
+                                            onKeyPress={(v, o, ele, event) => {
+                                                // setValueForm({
+                                                //     ...valueForm, [ele.id]: v
+                                                // });
+                                                valueForm[ele.id] = v;
+                                                if (event.key === "Enter") {
+                                                    onHandleLogin();
+                                                }
+                                            }}
+                                            style={{ width: "100%" }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                            <CardActions className={classes.action}>
+                                <Typography variant="subtitle2" className={classes.alert}>
+                                    {alertmsg}
+                                </Typography>
+
+                                <AmButton styleType="confirm" onClick={onHandleLogin}>
+                                    {"Login"}
+                                </AmButton>
+                            </CardActions>
+                        </Suspense>
                     </Card>
                     {redirect()}
                 </Grid>
