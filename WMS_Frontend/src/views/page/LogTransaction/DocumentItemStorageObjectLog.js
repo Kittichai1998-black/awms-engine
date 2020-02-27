@@ -24,7 +24,10 @@ const DocumentItemStorageObjectLog = (props) => {
     t: "DocumentItemStorageObjectEvent",
     q: '',
     f: "*, concat(Sou_StorageObject_ID, ':' ,Sou_StorageObject_Code) as Sou_StorageObject," +
-      "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject",
+      "concat(Des_StorageObject_ID, ':' ,Des_StorageObject_Code) as Des_StorageObject," +
+      "iif(DocumentType_ID is null, '',concat(DocumentType_ID,':',DocumentType_Code)) as DocumentType," +
+      "concat(UnitType_ID, ':' ,UnitType_Code) as UnitType," +
+      "concat(BaseUnitType_ID, ':' ,BaseUnitType_Code) as BaseUnitType",
     g: "",
     s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
@@ -183,7 +186,7 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Log Time",
       accessor: "LogTime",
-      width: 200,
+      width: 150,
       type: "datetime"
     },
     {
@@ -192,49 +195,51 @@ const DocumentItemStorageObjectLog = (props) => {
       width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
     {
-      Header: "DocumentType ID",
-      accessor: "DocumentType_ID",
+      Header: "Doc.Type",
+      accessor: "DocumentType",
     },
     {
-      Header: "WorkQueue ID",
+      Header: "WQ ID",
       accessor: "WorkQueue_ID",
     },
     {
-      Header: "DocumentItem ID",
+      Header: "Doc.Item ID",
       accessor: "DocumentItem_ID",
     },
     {
-      Header: "Sou_StorageObjec",
+      Header: "Sou_Sto",
       accessor: "Sou_StorageObject",
+      width: 200,
     },
     {
-      Header: "Des_StorageObject",
+      Header: "Des_Sto",
       accessor: "Des_StorageObject",
+      width: 200,
     },
     {
-      Header: "Quantity",
+      Header: "Qty",
       accessor: "Quantity",
     },
     {
-      Header: "UnitType",
-      accessor: "UnitType_Code",
+      Header: "Unit",
+      accessor: "UnitType",
     },
     {
-      Header: "Base Quantity",
+      Header: "Base Qty",
       accessor: "BaseQuantity",
     },
     {
-      Header: "Origin Base Quantity",
+      Header: "Origin Base Qty",
       accessor: "OriginBaseQuantity",
     },
     {
-      Header: "BaseUnitType",
-      accessor: "BaseUnitType_Code",
+      Header: "Base Unit",
+      accessor: "BaseUnitType",
     },
     {
       Header: "Status",
@@ -247,7 +252,8 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Create Time",
       accessor: "CreateTime",
-      type: "datetime"
+      type: "datetime",
+      width: 150,
     },
     {
       Header: "Modify By",
@@ -256,7 +262,8 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "Modify Time",
       accessor: "ModifyTime",
-      type: "datetime"
+      type: "datetime",
+      width: 150,
     },
   ]
   useEffect(() => {

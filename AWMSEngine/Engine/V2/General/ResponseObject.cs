@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine.V2.General
             }
             object resapi = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             res.TryAdd(BusinessVOConst.KEY_RESULT_API, resapi);
-            this.BuVO.Set(BusinessVOConst.KEY_RESPONSE, res);
+            //this.BuVO.Set(BusinessVOConst.KEY_RESPONSE, res);
             return res;
         }
     }
