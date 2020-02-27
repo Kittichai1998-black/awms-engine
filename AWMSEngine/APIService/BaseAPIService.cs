@@ -24,21 +24,24 @@ namespace AWMSEngine.APIService
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
         public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
-        private bool IsAuthenAuthorize { get; set; }
+        public bool IsAuthenAuthorize { get; set; }
+        public bool IsJsonResponse { get; set; }
 
         public AMWLogger Logger { get; set; }
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true)
+        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isJsonResponse = true)
         {
             this.IsAuthenAuthorize = isAuthenAuthorize;
+            this.IsJsonResponse = isJsonResponse;
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
         }
         public BaseAPIService()
         {
             this.IsAuthenAuthorize = false;
+            this.IsJsonResponse = true;
             this.ControllerAPI = null;
             this.APIServiceID = 0;
         }
@@ -66,7 +69,7 @@ namespace AWMSEngine.APIService
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
-            dynamic response = new { };
+            dynamic response = null;
             dynamic result = new ExpandoObject();
             long dbLogID = 0;
             string token = null;
@@ -157,7 +160,11 @@ namespace AWMSEngine.APIService
                 
                 var res = this.ExecuteEngineManual();
 
-                var resAPI = new ResponseObject().Execute(this.Logger, this.BuVO, res);
+                if (this.IsJsonResponse)
+                    response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
+                else
+                    response = res;
+
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
@@ -201,7 +208,7 @@ namespace AWMSEngine.APIService
                 this.BuVO.SqlConnection_Close();
                 try
                 {
-                    response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
+                    //response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
                     if (response == null)
                     {
                         response = new { _result = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESULT_API) };
@@ -240,7 +247,7 @@ namespace AWMSEngine.APIService
 
             }
 
-            if ((int)response._result.status == -1)
+            if (this.IsJsonResponse && (int)response._result.status == -1)
             {
                 this.Logger.LogFatal("############## RETRY_DEADLOCK_TRANSACTION ##############");
                 this.Logger.LogFatal("##############       SLEEP 1000 MS        ##############");
@@ -257,7 +264,7 @@ namespace AWMSEngine.APIService
         //}
 
 
-        private void Permission(string token,amt_Token tokenInfo,string apiKey, ams_APIKey apiKeyInfo)
+        protected void Permission(string token,amt_Token tokenInfo,string apiKey, ams_APIKey apiKeyInfo)
         {
             //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);

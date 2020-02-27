@@ -14,7 +14,7 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_HUB_COMMON = "_HUB_COMMON";
         public const string KEY_REQUEST = "_REQUEST";
         public const string KEY_TEMP = "_TEMP";
-        public const string KEY_RESPONSE = "_RESPONSE";
+        //public const string KEY_RESPONSE = "_RESPONSE";
         public const string KEY_TECHMESSAGE = "_TECHMESSAGE";
         public const string KEY_LANGUAGE_CODE = "_LANGUAGE_CODE";
         public const string KEY_LOGGER = "_LOGGER";
