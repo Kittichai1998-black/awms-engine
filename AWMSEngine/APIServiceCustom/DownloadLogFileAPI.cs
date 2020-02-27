@@ -1,4 +1,5 @@
 ﻿using AWMSEngine.APIServiceCustom;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,10 @@ namespace AWMSEngine.CustomAPIService
 {
     public class DownloadLogFileAPI : BaseAPIServiceCustom
     {
+        public DownloadLogFileAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        {
+        }
+
         private class TReqModel
         {
             public string path;
@@ -24,7 +29,7 @@ namespace AWMSEngine.CustomAPIService
                 throw new Exception("can dowload *.log only");
 
             var stream = AMWUtil.Common.FileUtil.findstr(req.path, req.search);
-            string fileName = search + "." + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".log";
+            string fileName = req.search + "." + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".log";
             return this.ControllerAPI.File(stream.BaseStream, "application/octet-stream", fileName);
         }
     }
