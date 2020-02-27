@@ -24,20 +24,38 @@ namespace AWMSEngine.Controllers.V2
             _hostingEnvironment = hostingEnvironment;
         }
 
-        [HttpGet("log")]
+        [HttpGet("get_log")]
         public async Task<IActionResult> LogDownload(string path)
         {
-            string PATH = @"D:/logs/" + Environment.MachineName + path;
             try
             {
-                if (string.IsNullOrEmpty(PATH))
+                if (string.IsNullOrEmpty(path))
                     throw new Exception("path can't empty");
-                if (!PATH.EndsWith(".log"))
+                if (!path.EndsWith(".log"))
                     throw new Exception("can dowload *.log only");
 
-                var stream = System.IO.File.OpenRead(PATH);
-                string fileName = PATH.Split(new char[] { '\\', '/' }).Last();
+                var stream = System.IO.File.OpenRead(path);
+                string fileName = path.Split(new char[] { '\\', '/' }).Last();
                 return File(stream, "application/octet-stream", fileName); // returns a FileStreamResult
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpGet("find_log")]
+        public async Task<IActionResult> FindLogDownload(string path,string search)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path))
+                    throw new Exception("path can't empty");
+                if (!path.EndsWith(".log"))
+                    throw new Exception("can dowload *.log only");
+
+                var stream = AMWUtil.Common.FileUtil.findstr(path, search);
+                string fileName = search + "." + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".log";
+                return File(stream.BaseStream, "application/octet-stream", fileName);
             }
             catch (Exception ex)
             {
