@@ -224,18 +224,26 @@ const APIServiceLog = (props) => {
     }
   }];
 
-
+  const handleCopy = (copy) => {
+    navigator.clipboard.writeText(JSON.stringify(copy.src, null, '\t'))
+  }
+  const showReactJsonView = (name, data) => {
+    return <ReactJson name={name} src={data}
+      displayObjectSize={true} enableClipboard={handleCopy} displayDataTypes={false} indentWidth={2} />
+  }
   const getIOText = (data) => {
     if (data.InputText || data.OutputText) {
 
       var datashow = <div>
         <Typography variant="h6">{"Input"}</Typography>
-        {data.InputText ? <ReactJson src={JSON.parse(data.InputText)} /> : <label>Data Not Found.</label>}
+        {data.InputText ? showReactJsonView("Input-Text",JSON.parse(data.InputText))
+                  : <label>Data Not Found.</label>}
         <br />
         <Divider />
         <br />
         <Typography variant="h6">{"Output"}</Typography>
-        {data.OutputText ? <ReactJson src={JSON.parse(data.OutputText)} /> : <label>Data Not Found.</label>}
+        {data.InputText ? showReactJsonView("Output-Text",JSON.parse(data.OutputText))
+          : <label>Data Not Found.</label>}
       </div>
       return (
         <div style={{ display: "flex", maxWidth: '160px' }}>
@@ -250,8 +258,8 @@ const APIServiceLog = (props) => {
     if (data.ResultMessage) {
       if (data.ResultMessage.length > 50) {
         return (
-          <div style={{ display: "flex", maxWidth: '160px' }}><label className={classes.textNowrap}>{data.ResultMessage}</label>
-            <AmRediRectInfo type={"customdialog"} customIcon={<PageView fontSize="small" style={{ color: "#1a237e" }} />} bodyDialog={data.ResultMessage} titleDialog="Result Message" />
+          <div style={{ display: "flex", maxWidth: '250px' }}><label className={classes.textNowrap}>{data.ResultMessage}</label>
+            <AmRediRectInfo type={"customdialog"} customIcon={<PageView style={{ color: "#1a237e" }} />} bodyDialog={data.ResultMessage} titleDialog="Result Message" />
           </div>
         )
       } else {
@@ -268,7 +276,7 @@ const APIServiceLog = (props) => {
       width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },

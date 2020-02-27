@@ -81,18 +81,18 @@ const DialogConfirm = props => {
         <DialogActions>
           {props.customAcceptBtn ? (
             props.customAcceptBtn
-          ) : (
-              <AmButton onClick={handleAgree} styleType='confirm_clear'>
-                {props.textConfirm}
-              </AmButton>
-            )}
+          ) : props.textConfirm ? (
+            <AmButton onClick={handleAgree} styleType='confirm_clear'>
+              {props.textConfirm}
+            </AmButton>
+          ) : null}
           {props.customCancelBtn ? (
             props.customCancelBtn
-          ) : (
-              <AmButton onClick={handleClose} styleType='delete_clear'>
-                {props.textCancel}
-              </AmButton>
-            )}
+          ) : props.textCancel ? (
+            <AmButton onClick={handleClose} styleType='delete_clear'>
+              {props.textCancel}
+            </AmButton>
+          ) : null}
         </DialogActions>
       </Dialog>
     </div>

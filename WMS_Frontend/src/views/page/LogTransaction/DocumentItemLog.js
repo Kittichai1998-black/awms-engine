@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../components/function/CoreFunction';
+import { withStyles } from '@material-ui/core/styles';
 import AmDialogs from '../../../components/AmDialogs';
 import { AmTable, AmFilterTable, AmPagination } from '../../../components/table';
 import AmDropdown from "../../../components/AmDropdown";
@@ -8,11 +9,16 @@ import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
 import queryString from "query-string";
+import PageView from '@material-ui/icons/Pageview';
+import AmRediRectInfo from '../../../components/AmRedirectInfo'
 
 const Axios = new apicall();
-
+const styles = theme => ({
+  textNowrap: { overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
+});
 const DocumentItemLog = (props) => {
   const { t } = useTranslation();
+  const { classes } = props;
 
   const [filterData, setFilterData] = useState([]);
   const [dataSource, setDataSource] = useState([]);
@@ -23,7 +29,12 @@ const DocumentItemLog = (props) => {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "DocumentItemEvent",
     q: '',
-    f: "*",
+    f: "*," +
+      "concat(Document_ID, ':' ,Document_Code) as Document," +
+      "concat(SKUMaster_ID, ':' ,SKUMaster_Code) as SKUMaster," +
+      "concat(PackMaster_ID, ':' ,PackMaster_Code) as PackMaster," +
+      "concat(UnitType_ID, ':' ,UnitType_Code) as UnitType," +
+      "concat(BaseUnitType_ID, ':' ,BaseUnitType_Code) as BaseUnitType",
     g: "",
     s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
@@ -180,11 +191,26 @@ const DocumentItemLog = (props) => {
     }
   }];
 
+  const getMessage = (data, field) => {
+    if (data[field]) {
+      if (data[field].length > 50) {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}><label className={classes.textNowrap}>{data[field]}</label>
+            <AmRediRectInfo type={"customdialog"} customIcon={<PageView style={{ color: "#1a237e" }} />} bodyDialog={data[field]} titleDialog={field} />
+          </div>
+        )
+      } else {
+        return <label>{data[field]}</label>
+      }
+    } else {
+      return null;
+    }
+  }
   const columns = [
     {
       Header: "Log Time",
       accessor: "LogTime",
-      width: 200,
+      width: 150,
       type: "datetime"
     },
     {
@@ -193,45 +219,49 @@ const DocumentItemLog = (props) => {
       width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
     {
-      Header: "RefDocumentItem ID",
+      Header: "RefDoc.Item ID",
       accessor: "RefDocumentItem_ID",
       width: 150,
     },
     {
-      Header: "Document Code",
-      accessor: "Code",
+      Header: "Document",
+      accessor: "Document",
+      width: 150,
     },
     {
       Header: "SKU Code",
-      accessor: "SKUMaster_Code",
+      accessor: "SKUMaster",
+      width: 150,
     },
     {
       Header: "Pack Code",
-      accessor: "PackMaster_Code",
+      accessor: "PackMaster",
+      width: 150,
     },
     {
-      Header: "Code",
+      Header: "DocItemCode",
       accessor: "Code",
+      width: 150,
     },
     {
-      Header: "Quantity",
+      Header: "Qty",
       accessor: "Quantity",
     },
     {
-      Header: "UnitType",
+      Header: "Unit",
       accessor: "UnitType_Code",
     },
     {
-      Header: "Base Quantity",
+      Header: "Base Qty",
       accessor: "BaseQuantity",
     },
     {
-      Header: "Base UnitType",
+      Header: "Base Unit",
       accessor: "BaseUnitType_Code",
     },
     {
@@ -249,15 +279,19 @@ const DocumentItemLog = (props) => {
     {
       Header: "Options",
       accessor: "Options",
+      Cell: (dataRow) => getMessage(dataRow.original, "Options"),
+      width: 150,
     },
     {
       Header: "ProductionDate",
       accessor: "ProductionDate",
+      width: 150,
       type: "datetime"
     },
     {
       Header: "ExpireDate",
       accessor: "ExpireDate",
+      width: 150,
       type: "datetime"
     },
     {
@@ -273,7 +307,7 @@ const DocumentItemLog = (props) => {
       accessor: "Ref2",
     },
     {
-      Header: "Item No",
+      Header: "Item No.",
       accessor: "ItemNo",
     },
     {
@@ -291,6 +325,7 @@ const DocumentItemLog = (props) => {
     {
       Header: "Create Time",
       accessor: "CreateTime",
+      width: 150,
       type: "datetime"
     },
     {
@@ -300,6 +335,7 @@ const DocumentItemLog = (props) => {
     {
       Header: "Modify Time",
       accessor: "ModifyTime",
+      width: 150,
       type: "datetime"
     },
   ]
@@ -316,4 +352,4 @@ const DocumentItemLog = (props) => {
   </>
 }
 
-export default DocumentItemLog;
+export default withStyles(styles)(DocumentItemLog);

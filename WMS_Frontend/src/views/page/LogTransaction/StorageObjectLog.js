@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../components/function/CoreFunction';
+import { withStyles } from '@material-ui/core/styles';
 import AmDialogs from '../../../components/AmDialogs';
 import { AmTable, AmFilterTable, AmPagination } from '../../../components/table';
 import AmDropdown from "../../../components/AmDropdown";
@@ -8,11 +9,16 @@ import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
 import queryString from "query-string";
+import PageView from '@material-ui/icons/Pageview';
+import AmRediRectInfo from '../../../components/AmRedirectInfo'
 
 const Axios = new apicall();
-
+const styles = theme => ({
+  textNowrap: { overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
+});
 const StorageObjectLog = (props) => {
   const { t } = useTranslation();
+  const { classes } = props;
 
   const [filterData, setFilterData] = useState([]);
   const [dataSource, setDataSource] = useState([]);
@@ -23,7 +29,15 @@ const StorageObjectLog = (props) => {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
     t: "StorageObjectEvent",
     q: '',
-    f: "*",
+    f: "*," +
+      "iif(AreaMaster_ID is null, '',concat(AreaMaster_ID,':',AreaMaster_Code)) as AreaMaster," +
+      "iif(AreaLocationMaster_ID is null, '',concat(AreaLocationMaster_ID,':',AreaLocationMaster_Code)) as AreaLocationMaster," +
+      "iif(ParentStorageObject_ID is null, '',concat(ParentStorageObject_ID,':',ParentStorageObject_Code)) as ParentStorageObject," +
+      "iif(PackMaster_ID is null, '',concat(PackMaster_ID,':',PackMaster_Code)) as PackMaster," +
+      "iif(BaseMaster_ID is null, '',concat(BaseMaster_ID,':',BaseMaster_Code)) as BaseMaster," +
+      "concat(UnitType_ID, ':' ,UnitType_Code) as UnitType," +
+      "concat(BaseUnitType_ID, ':' ,BaseUnitType_Code) as BaseUnitType"
+    ,
     g: "",
     s: "[{'f':'LogTime','od':'desc'}]",
     sk: 0,
@@ -177,12 +191,26 @@ const StorageObjectLog = (props) => {
       );
     }
   }];
-
+  const getMessage = (data, field) => {
+    if (data[field]) {
+      if (data[field].length > 50) {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}><label className={classes.textNowrap}>{data[field]}</label>
+            <AmRediRectInfo type={"customdialog"} customIcon={<PageView style={{ color: "#1a237e" }} />} bodyDialog={data[field]} titleDialog={field} />
+          </div>
+        )
+      } else {
+        return <label>{data[field]}</label>
+      }
+    } else {
+      return null;
+    }
+  }
   const columns = [
     {
       Header: "Log Time",
       accessor: "LogTime",
-      width: 200,
+      width: 150,
       type: "datetime"
     },
     {
@@ -191,37 +219,42 @@ const StorageObjectLog = (props) => {
       width: 60
     },
     {
-      Header: "LogRef",
+      Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
     },
     {
       Header: "Code",
       accessor: "Code",
+      width: 150,
     },
     {
       Header: "Name",
       accessor: "Name",
+      width: 200,
     },
     {
-      Header: "Area Code",
-      accessor: "AreaMaster_Code",
+      Header: "Area",
+      accessor: "AreaMaster",
     },
     {
-      Header: "Location Code",
-      accessor: "AreaLocationMaster_Code",
+      Header: "Location",
+      accessor: "AreaLocationMaster",
     },
     {
-      Header: "Parent StoObj Code",
-      accessor: "ParentStorageObject_Code",
+      Header: "Parent Sto",
+      accessor: "ParentStorageObject",
+      width: 150,
     },
     {
-      Header: "Base Code",
-      accessor: "BaseMaster_Code",
+      Header: "Base",
+      accessor: "BaseMaster",
+      width: 150,
     },
     {
-      Header: "Pack Code",
-      accessor: "PackMaster_Code",
+      Header: "Pack",
+      accessor: "PackMaster",
+      width: 150,
     },
     {
       Header: "For Customer",
@@ -236,20 +269,12 @@ const StorageObjectLog = (props) => {
       accessor: "WeigthKG",
     },
     {
-      Header: "QTY",
-      accessor: "Quantity",
-    },
-    {
-      Header: "Unit",
-      accessor: "UnitType_Code",
-    },
-    {
       Header: "Qty",
       accessor: "Quantity",
     },
     {
       Header: "Unit",
-      accessor: "UnitType_Code",
+      accessor: "UnitType",
     },
     {
       Header: "Base Qty",
@@ -257,10 +282,10 @@ const StorageObjectLog = (props) => {
     },
     {
       Header: "Base Unit",
-      accessor: "BaseUnitType_Code",
+      accessor: "BaseUnitType",
     },
     {
-      Header: "Order No",
+      Header: "Order No.",
       accessor: "OrderNo",
     },
     {
@@ -274,11 +299,13 @@ const StorageObjectLog = (props) => {
     {
       Header: "Expiry Date",
       accessor: "ExpiryDate",
+      width: 150,
       type: "datetime"
     },
     {
       Header: "Product Date",
       accessor: "ProductDate",
+      width: 150,
       type: "datetime"
     },
     {
@@ -295,6 +322,12 @@ const StorageObjectLog = (props) => {
       accessor: "Ref2",
     },
     {
+      Header: "Options",
+      accessor: "Options",
+      Cell: (dataRow) => getMessage(dataRow.original, "Options"),
+      width: 150,
+    },
+    {
       Header: "Event Status",
       accessor: "EventStatus",
     },
@@ -309,6 +342,7 @@ const StorageObjectLog = (props) => {
     {
       Header: "Create Time",
       accessor: "CreateTime",
+      width: 150,
       type: "datetime"
     },
     {
@@ -318,6 +352,7 @@ const StorageObjectLog = (props) => {
     {
       Header: "Modify Time",
       accessor: "ModifyTime",
+      width: 150,
       type: "datetime"
     },
   ]
@@ -334,4 +369,4 @@ const StorageObjectLog = (props) => {
   </>
 }
 
-export default StorageObjectLog;
+export default withStyles(styles)(StorageObjectLog);
