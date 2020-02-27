@@ -27,18 +27,19 @@ namespace AWMSEngine.Controllers.V2
         [HttpGet("log")]
         public async Task<IActionResult> LogDownload(string path)
         {
+            string PATH = @"D:/logs/" + Environment.MachineName + path;
             try
             {
-                if (string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(PATH))
                     throw new Exception("path can't empty");
-                if (!path.EndsWith(".log"))
+                if (!PATH.EndsWith(".log"))
                     throw new Exception("can dowload *.log only");
 
-                var stream = System.IO.File.OpenRead(path);
-                string fileName = path.Split(new char[] { '\\', '/' }).Last();
+                var stream = System.IO.File.OpenRead(PATH);
+                string fileName = PATH.Split(new char[] { '\\', '/' }).Last();
                 return File(stream, "application/octet-stream", fileName); // returns a FileStreamResult
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
