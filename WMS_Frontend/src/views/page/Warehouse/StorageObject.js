@@ -144,10 +144,10 @@ const StorageObject = props => {
         {data.Code}
         <AmRedirectLogSto
           api={
-            "/warehouse/docitemstolog?PalletStoID=" +
+            "/log/docitemstolog?id=" +
             data.ID +
-            "&PackStoID=" +
-            parseInt(data.PackID)
+            "&ParentStorageObject_ID=" +
+            data.ID
           }
           history={props.history}
           docID={""}

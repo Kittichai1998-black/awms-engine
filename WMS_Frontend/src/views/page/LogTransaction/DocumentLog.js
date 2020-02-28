@@ -204,6 +204,13 @@ const DocumentLog = (props) => {
       Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.LogRefID} api={'/log/apiservicelog?LogRefID=' + data.original.LogRefID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Document",
@@ -214,6 +221,13 @@ const DocumentLog = (props) => {
       Header: "Parent Doc.",
       accessor: "ParentDocument",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.ParentDocument} api={'/log/documentlog?id=' + data.original.ParentDocument_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Doc.Type",

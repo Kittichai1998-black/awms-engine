@@ -8,6 +8,7 @@ import AmDatePicker from "../../../components/AmDate";
 import AmButton from "../../../components/AmButton";
 import moment from "moment";
 import queryString from "query-string";
+import AmRediRectInfo from '../../../components/AmRedirectInfo'
 
 const Axios = new apicall();
 
@@ -198,6 +199,13 @@ const DocumentItemStorageObjectLog = (props) => {
       Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.LogRefID} api={'/log/apiservicelog?LogRefID=' + data.original.LogRefID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Doc.Type",
@@ -206,20 +214,48 @@ const DocumentItemStorageObjectLog = (props) => {
     {
       Header: "WQ ID",
       accessor: "WorkQueue_ID",
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.WorkQueue_ID} api={'/log/workqueuelog?id=' + data.original.WorkQueue_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Doc.Item ID",
       accessor: "DocumentItem_ID",
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.DocumentItem_ID} api={'/log/docitemlog?id=' + data.original.DocumentItem_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Sou_Sto",
       accessor: "Sou_StorageObject",
       width: 200,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.Sou_StorageObject} api={'/log/storageobjectlog?id=' + data.original.Sou_StorageObject_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Des_Sto",
       accessor: "Des_StorageObject",
       width: 200,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.Des_StorageObject} api={'/log/storageobjectlog?id=' + data.original.Des_StorageObject_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Qty",
