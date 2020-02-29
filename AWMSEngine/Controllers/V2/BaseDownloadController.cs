@@ -54,9 +54,10 @@ namespace AWMSEngine.Controllers.V2
                 if (!path.EndsWith(".log"))
                     throw new Exception("can dowload *.log only");
 
-                var stream = AMWUtil.Common.FileUtil.findstr(path, search);
+                var stream = AMWUtil.Common.FileUtil.findstr2(path, search);
                 string fileName = search + "." + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".log";
-                return File(stream.BaseStream, "application/octet-stream", fileName);
+                
+                return File(stream, "application/octet-stream", fileName);
             }
             catch (Exception ex)
             {

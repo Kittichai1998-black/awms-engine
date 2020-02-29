@@ -12,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import ViewList from '@material-ui/icons/ViewList';
 import PageView from '@material-ui/icons/Pageview';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
 const Axios = new apicall();
 const styles = theme => ({
@@ -185,6 +186,13 @@ const SendAPILog = (props) => {
       );
     }
   }];
+  function JsonIcon(props) {
+    return (
+      <SvgIcon {...props} >
+        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+      </SvgIcon>
+    );
+  }
   const handleCopy = (copy) => {
     navigator.clipboard.writeText(JSON.stringify(copy.src, null, '\t'))
   }
@@ -208,13 +216,18 @@ const SendAPILog = (props) => {
       </div>
       return (
         <div style={{ display: "flex", maxWidth: '160px' }}>
-          <AmRediRectInfo type={"customdialog"} customIcon={<ViewList style={{ color: "#1a237e" }} />} bodyDialog={datashow} titleDialog="Input / Output" />
+          <AmRediRectInfo type={"custom_button_dialog"}
+            startIcon={<JsonIcon fontSize='small' style={{ color: "#1a237e" }} />}
+            textButton='JSON'
+            styleTypeBtn={'confirm_clear'}
+            bodyDialog={datashow} titleDialog="Input / Output" />
         </div>
       )
     } else {
       return null;
     }
   }
+  
   const getResultMessage = (data) => {
     if (data.ResultMessage) {
       if (data.ResultMessage.length > 50) {
@@ -250,14 +263,14 @@ const SendAPILog = (props) => {
       accessor: "APIName",
     },
     {
-      Header: "I/O Text",
-      Cell: (dataRow) => getIOText(dataRow.original),
-      width: 60
-    },
-    {
-      Header: "Result",
+      Header: "Result Message",
       accessor: "ResultMessage",
       Cell: (dataRow) => getResultMessage(dataRow.original),
+    },
+    {
+      Header: "Input/Output",
+      Cell: (dataRow) => getIOText(dataRow.original),
+      width: 90
     },
     {
       Header: "Start Time",

@@ -376,7 +376,7 @@ const DocumentSearchGR = props => {
         }}
       >
         <AmRedirectLogDoc
-          api={"/warehouse/documentlog?DocID=" + data.ID}
+          api={"/log/documentlog?id=" + data.ID}
           history={props.history}
           docID={""}
         >

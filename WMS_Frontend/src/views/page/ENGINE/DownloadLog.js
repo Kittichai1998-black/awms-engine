@@ -65,7 +65,7 @@ export default (props) => {
 
     const DownloadFile = (e) => {
         if (e.isLeaf) {
-            const file_path = window.apipath + "/download/log?apikey=" + localStorage.getItem("Token") + "&path=/" + e.file + "/" + e.textOriginal;
+            const file_path = window.apipath + "/download/get_log?apikey=" + localStorage.getItem("Token") + "&path=/" + e.file + "/" + e.textOriginal;
             const a = document.createElement('A');
             a.href = file_path;
             a.download = file_path.substr(file_path.lastIndexOf('/') + 1);

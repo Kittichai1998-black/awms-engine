@@ -222,16 +222,37 @@ const DocumentItemLog = (props) => {
       Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.LogRefID} api={'/log/apiservicelog?LogRefID=' + data.original.LogRefID} />
+          </div>
+        )
+      }
     },
     {
       Header: "RefDoc.Item ID",
       accessor: "RefDocumentItem_ID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.RefDocumentItem_ID} api={'/log/documentlog?id=' + data.original.Document_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Document",
       accessor: "Document",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.Document} api={'/log/documentlog?id=' + data.original.Document_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "SKU Code",

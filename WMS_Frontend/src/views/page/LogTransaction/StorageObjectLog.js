@@ -222,6 +222,13 @@ const StorageObjectLog = (props) => {
       Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.LogRefID} api={'/log/apiservicelog?LogRefID=' + data.original.LogRefID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Code",
@@ -245,6 +252,13 @@ const StorageObjectLog = (props) => {
       Header: "Parent Sto",
       accessor: "ParentStorageObject",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.ParentStorageObject} api={'/log/storageobjectlog?id=' + data.original.ParentStorageObject_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Base",
