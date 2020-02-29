@@ -24,47 +24,53 @@ namespace AWMSEngine.Engine.V2.Business.LogFile
         }
         public class TRes
         {
-            public List<string> readFilelog;
+            public string readFilelog;
+
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            //var APIServiceEvent = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<aml_APIServiceEvent>(
-            //    new KeyValuePair<string, object>[] {
-            //        new KeyValuePair<string,object>("LogRefID",reqVO.LogRefID),
-            //    }, this.BuVO).FirstOrDefault();
-            //if (APIServiceEvent == null)
-                //throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+            var APIServiceEvent = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<aml_APIServiceEvent>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("LogRefID",reqVO.LogRefID),
+                }, this.BuVO).FirstOrDefault();
+            if (APIServiceEvent == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "LogRefID Not Found");
 
-            //var startTime = APIServiceEvent.StartTime;
-            //var startDate = startTime.ToISODateString();
-            //var startDateString = startDate.Split("-");
-            //var dateString = "";
+            var startTime = APIServiceEvent.StartTime;
+            var startDate = startTime.ToISODateString();
+            var startDateString = startDate.Split("-");
+            var dateString = "";
 
-            //foreach(var d in startDateString)
-            //{
-            //    dateString = dateString + d;
-            //}
+            foreach (var d in startDateString)
+            {
+                dateString = dateString + d;
+            }
 
-            //var nameDir = dateString;
+            var nameDir = dateString;
             //var directoryPath = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "DIRECTORY_PATH").DataValue;
 
-            var getDir = new DirectoryInfo("D:/logs/BDF01-AMW618311/20200224");
-            var getFile = getDir.GetFiles();
-            List<string> groups = new List<string>();
-            foreach (var file in getFile)
-                {
-                var x = AMWUtil.Common.FileUtil.findstr(file.ToString(), reqVO.LogRefID);
+            var getDir = new DirectoryInfo("D:/logs/BDF01-AMW618311/" + nameDir);
+            //string groups = new List<string>();
+            res.readFilelog = getDir.ToString();
 
-                var x2 =x.ReadToEnd();
+            //var getFile = getDir.GetFiles();
+            //List<string> groups = new List<string>();
+            //foreach (var file in getFile)
+            //{
+            //    var x = AMWUtil.Common.FileUtil.findstr(file.ToString(), reqVO.LogRefID);
 
-                //groups.Add(x2);
+            //    var x2 = x.ReadToEnd();
 
-            }
-            res.readFilelog = groups;
+            //    groups.Add(file.ToString());
+
+            //}
+
+
+
             return res;
-            
-        } 
+
+        }
     }
 }
