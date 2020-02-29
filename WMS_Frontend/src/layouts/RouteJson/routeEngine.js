@@ -142,10 +142,6 @@ const DownloadLog = Loadable({
   loader: () => import("../../views/page/ENGINE/DownloadLog"),
   loading: Loading
 });
-const DownloadLogByRef = Loadable({
-  loader: () => import("../../views/page/ENGINE/DownloadLogByRef"),
-  loading: Loading
-});
 
 const routes = [
   {
@@ -193,12 +189,6 @@ const routes = [
     path: "/download_log",
     name: "Download Log File",
     compoment: DownloadLog,
-    exact: true
-  },
-  {
-    path: "/download_logByRef",
-    name: "Download Log File",
-    compoment: DownloadLogByRef,
     exact: true
   },
 
