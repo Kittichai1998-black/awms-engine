@@ -30,7 +30,7 @@ namespace AWMSEngine.CustomAPIService
 
             var stream = AMWUtil.Common.FileUtil.findstr(req.path, req.search);
             string fileName = req.search + "." + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".log";
-            return this.ControllerAPI.File(stream.BaseStream, "application/octet-stream", fileName);
+            return this.ControllerAPI.File(stream, "application/octet-stream", fileName);
         }
     }
 }

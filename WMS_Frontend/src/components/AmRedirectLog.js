@@ -6,7 +6,7 @@ import AmDialogConfirm from "./AmDialogConfirm";
 import AmToolTip from "./AmToolTip";
 
 const AmRedirectLog = props => {
-  const { api, titleDialog, bodyDialog, textLink, type } = props;
+  const { api, titleDialog, bodyDialog, textLink, type, title } = props;
   const [openDialogCon, setopenDialogCon] = useState(false);
   const PageDetail = () => {
     if (api) {
@@ -30,7 +30,7 @@ const AmRedirectLog = props => {
         </Link>
       ) : type === "dialog" ? (
         <div>
-          <AmToolTip title={"Log DocItem"} placement={"top"}>
+          <AmToolTip title={title} placement={"top"}>
             <IconButton
               size="small"
               aria-label="info"
@@ -49,17 +49,17 @@ const AmRedirectLog = props => {
           </AmToolTip>
         </div>
       ) : (
-            <AmToolTip title={"Log DocItem"} placement={"top"}>
-              <IconButton
-                size="small"
-                aria-label="info"
-                onClick={PageDetail}
-                style={{ marginLeft: "3px" }}
-              >
-                <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
-              </IconButton>
-            </AmToolTip>
-          )}
+        <AmToolTip title={title} placement={"top"}>
+          <IconButton
+            size="small"
+            aria-label="info"
+            onClick={PageDetail}
+            style={{ marginLeft: "3px" }}
+          >
+            <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
+          </IconButton>
+        </AmToolTip>
+      )}
     </div>
   );
 };
