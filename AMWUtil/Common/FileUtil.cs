@@ -45,7 +45,7 @@ namespace AMWUtil.Common
                 {
                     using (StreamReader sr = new StreamReader(readFileName))
                     {
-                        while (sr.EndOfStream)
+                        while (!sr.EndOfStream)
                         {
                             string txt = sr.ReadLine();
                             if (Regex.IsMatch(txt, search))
@@ -55,8 +55,9 @@ namespace AMWUtil.Common
                 }
             }
 
-            var res = new FileStream(fileNameTmp, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-            return res;
+            //var res = new FileStream(dirName+fileNameTmp, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+            var res = System.IO.File.OpenRead(dirName + fileNameTmp);
+            return res;//res;
         }
     }
 }
