@@ -6,8 +6,6 @@ import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus"
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import AmRedirectLog from "../../../../components/AmRedirectLog";
-import AmRedirectLogSto from "../../../../components/AmRedirectLogSto";
-import AmRedirectLogWQ from "../../../../components/AmRedirectLogWQ";
 import queryString from "query-string";
 
 const DocumentViewGR = props => {
@@ -99,15 +97,15 @@ const DocumentViewGR = props => {
           direction: "rtl"
         }}
       >
-        {data.Code}
         <AmRedirectLog
           api={"/log/docitemlog?id=" + data.docItemID}
           history={props.history}
+          title={"Log Docitem"}
           docID={""}
         >
           {" "}
         </AmRedirectLog>
-        <AmRedirectLogSto
+        <AmRedirectLog
           api={
             "/log/storageobjectlog?id=" +
             data.id +
@@ -116,16 +114,18 @@ const DocumentViewGR = props => {
           }
           history={props.history}
           docID={""}
+          title={"Log Sto"}
         >
           {" "}
-        </AmRedirectLogSto>
-        <AmRedirectLogWQ
+        </AmRedirectLog>
+        <AmRedirectLog
           api={"/log/workqueuelog?id=" + data.workQueueID}
           history={props.history}
           docID={""}
+          title={"Log WQ"}
         >
           {" "}
-        </AmRedirectLogWQ>
+        </AmRedirectLog>
       </div>
     );
   };
