@@ -14,7 +14,7 @@ import {
   createQueryString,
   Clone
 } from "../../../components/function/CoreFunction2";
-
+import AmDialogs from "../../../components/AmDialogs";
 import moment from "moment";
 const axios = new apicall();
 const LabelH = {
@@ -53,6 +53,8 @@ function useWindowSize() {
 }
 
 export default props => {
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState("");
   const [dialog, setDialog] = useState(false);
   const [text, setText] = useState([]);
   const [logRefID, setLogRefID] = useState("");
@@ -160,7 +162,6 @@ export default props => {
     });
   };
   const FuncSetEle = (name, data, cols, placeholder) => {
-    console.log(data);
     return (
       <FormInline>
         {" "}
@@ -181,58 +182,59 @@ export default props => {
   };
   const onHandleEditConfirm = (status, type) => {
     if (status) {
-      console.log(logRefID);
       GetPathFile(logRefID);
     }
     setDialog(false);
   };
   const GetPathFile = e => {
-    console.log(e);
-    var pathName = "";
+    var dateFilelog = "";
     const data = {
       LogRefID: e
     };
-    console.log(data);
-    //https://localhost:44340/download/find_log?path=D:\logs\BDF01-AMW618311\20200224\*.log&search=AJDIXB6Z
 
     axios
       .post(window.apipath + "/v2/DownloadLogFileByRefIDAPI/", data)
       .then(res => {
-        console.log(res.data.readFilelog);
-        console.log(res.data._result.status);
         if (res.data._result.status === 1) {
-          pathName = res.data.readFilelog + "/*.log";
-          console.log(pathName);
-          DownloadFileByRefID(pathName, e);
+          dateFilelog = res.data.dateFilelog;
+          DownloadFileByRefID(dateFilelog, e);
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
         }
       });
   };
 
-  const DownloadFileByRefID = (pathName, LogRefID) => {
-    console.log(pathName);
-    console.log(LogRefID);
+  const DownloadFileByRefID = (dateFilelog, LogRefID) => {
+    const file_path =
+      window.apipath +
+      "/download/find_log?date=" +
+      dateFilelog +
+      "&logfile=*.log&search=" +
+      "\\" +
+      "[" +
+      LogRefID +
+      "\\" +
+      "]";
+    const a = document.createElement("A");
+    a.href = file_path;
+    a.download = file_path.substr(file_path.lastIndexOf("/") + 1);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
-    // const file_path =
-    //   window.apipath +
-    //   "/download/log?apikey=" +
-    //   localStorage.getItem("Token") +
-    //   "&path=/" +
-    //   pathName +
-    //   "/" +
-    //   LogRefID;
-    // const a = document.createElement("A");
-    // a.href = file_path;
-    // a.download = file_path.substr(file_path.lastIndexOf("/") + 1);
-    // document.body.appendChild(a);
-    // a.click();
-    // document.body.removeChild(a);
-  };
-  const onHandleChangeKeyEnter = e => {
-    GetPathFile(e);
-  };
   //================================================================================
   return (
     <div>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      />
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
