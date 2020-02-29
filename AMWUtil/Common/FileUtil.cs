@@ -10,7 +10,7 @@ namespace AMWUtil.Common
 {
     public static class FileUtil
     {
-        public static StreamReader findstr(string path,string search)
+        public static Stream findstr(string path,string search)
         {
             string quote = "\"";
             string fileName = path.Split(new char[] { '\\', '/' }).Last();
@@ -29,8 +29,34 @@ namespace AMWUtil.Common
 
             //string sTest = p.StandardOutput.ReadToEnd();
 
-            return p.StandardOutput;
+            return p.StandardOutput.BaseStream;
 
+        }
+
+        public static Stream findstr2(string path, string search)
+        {
+            string fileName = path.Split(new char[] { '\\', '/' }).Last();
+            string fileNameTmp = search + '.' + DateTime.Now.Ticks.ToString();
+            string dirName = path.Substring(0, path.Length - fileName.Length);
+
+            using (StreamWriter sw = new StreamWriter(dirName + fileNameTmp, false, Encoding.UTF8))
+            {
+                foreach (string readFileName in Directory.GetFiles(dirName, fileName))
+                {
+                    using (StreamReader sr = new StreamReader(readFileName))
+                    {
+                        while (sr.EndOfStream)
+                        {
+                            string txt = sr.ReadLine();
+                            if (Regex.IsMatch(txt, search))
+                                sw.WriteLine(txt);
+                        }
+                    }
+                }
+            }
+
+            var res = new FileStream(fileNameTmp, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+            return res;
         }
     }
 }
