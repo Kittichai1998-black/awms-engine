@@ -124,18 +124,18 @@ const DocumentViewPI = props => {
       >
         {data.Code}
         <AmRedirectLog
-          api={"/warehouse/docitemlog?DocItemID=" + data.docItemID}
+          api={"/log/docitemlog?id=" + data.docItemID}
           history={props.history}
           docID={""}
         >
           {" "}
         </AmRedirectLog>
         <AmRedirectLogSto
-          api={
-            "/warehouse/docitemstolog?PalletStoID=" +
+           api={
+            "/log/storageobjectlog?id=" +
             data.id +
-            "&PackStoID=" +
-            data.packID
+            "&ParentStorageObject_ID=" +
+            data.id
           }
           history={props.history}
           docID={""}
@@ -143,7 +143,7 @@ const DocumentViewPI = props => {
           {" "}
         </AmRedirectLogSto>
         <AmRedirectLogWQ
-          api={"/warehouse/workqueuelog?WQID=" + data.workQueueID}
+          api={"/log/workqueuelog?id=" + data.workQueueID}
           history={props.history}
           docID={""}
         >

@@ -44,7 +44,7 @@ namespace AWMSModel.Criteria
         public T Get<T>(string key, T defaultValue)
         {
             T res = this.Get<T>(key);
-            if (res == default)
+            if (res == null)
                 return defaultValue;
             return res;
         }

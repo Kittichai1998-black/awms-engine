@@ -3,7 +3,7 @@ import SaveIcon from "@material-ui/icons/Payment";
 import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
 import AmDialogConfirm from "./AmDialogConfirm";
-import Tooltip from "@material-ui/core/Tooltip";
+import AmToolTip from "./AmToolTip";
 
 const AmRedirectLogDoc = props => {
   const { api, titleDialog, bodyDialog, textLink, type } = props;
@@ -30,7 +30,7 @@ const AmRedirectLogDoc = props => {
         </Link>
       ) : type === "dialog" ? (
         <div>
-          <Tooltip title="Log Doc">
+          <AmToolTip title={"Log Doc"} placement={"top"}>
             <IconButton
               size="small"
               aria-label="info"
@@ -46,10 +46,10 @@ const AmRedirectLogDoc = props => {
               bodyDialog={bodyDialog}
               textCancel="Close"
             />
-          </Tooltip>
+          </AmToolTip>
         </div>
       ) : (
-        <Tooltip title="Log Doc">
+        <AmToolTip title={"Log Doc"} placement={"top"}>
           <IconButton
             size="small"
             aria-label="info"
@@ -58,7 +58,7 @@ const AmRedirectLogDoc = props => {
           >
             <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
           </IconButton>
-        </Tooltip>
+        </AmToolTip>
       )}
     </div>
   );

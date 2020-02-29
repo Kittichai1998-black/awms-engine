@@ -212,6 +212,13 @@ const WorkQueueLog = (props) => {
       Header: "LogRefID",
       accessor: "LogRefID",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.LogRefID} api={'/log/apiservicelog?LogRefID=' + data.original.LogRefID} />
+          </div>
+        )
+      }
     },
     {
       Header: "RefID",
@@ -221,19 +228,41 @@ const WorkQueueLog = (props) => {
     {
       Header: "IOType",
       accessor: "IOType",
+      width: 60,
+      Cell: (data) => {
+        if(data.original.IOType === 0){
+          return 'IN'
+        }else{
+          return 'OUT'
+        }
+      }
     },
     {
       Header: "Parent WQ ID",
       accessor: "Parent_WorkQueue_ID",
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.Parent_WorkQueue_ID} api={'/log/workqueuelog?id=' + data.original.Parent_WorkQueue_ID} />
+          </div>
+        )
+      }
     },
-    {
-      Header: "Document",
-      accessor: "Document",
-    },
+    // {
+    //   Header: "Document",
+    //   accessor: "Document",
+    // },
     {
       Header: "StorageObject",
       accessor: "StorageObject",
       width: 150,
+      Cell: (data) => {
+        return (
+          <div style={{ display: "flex", maxWidth: '250px' }}>
+            <AmRediRectInfo type="link" textLink={data.original.StorageObject} api={'/log/storageobjectlog?id=' + data.original.StorageObject_ID} />
+          </div>
+        )
+      }
     },
     {
       Header: "Sou_Warehouse",
