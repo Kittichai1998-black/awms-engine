@@ -36,7 +36,7 @@ namespace AMWUtil.Common
         public static Stream findstr2(string path, string search)
         {
             string fileName = path.Split(new char[] { '\\', '/' }).Last();
-            string fileNameTmp = search + '.' + DateTime.Now.Ticks.ToString();
+            string fileNameTmp = DateTime.Now.Ticks.ToString()+".tmp";
             string dirName = path.Substring(0, path.Length - fileName.Length);
 
             using (StreamWriter sw = new StreamWriter(dirName + fileNameTmp, false, Encoding.UTF8))
@@ -55,9 +55,9 @@ namespace AMWUtil.Common
                 }
             }
 
-            //var res = new FileStream(dirName+fileNameTmp, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-            var res = System.IO.File.OpenRead(dirName + fileNameTmp);
-            return res;//res;
+            //var res = System.IO.File.OpenRead(dirName + fileNameTmp);
+            var res = new FileStream(dirName+fileNameTmp, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+            return res;
         }
     }
 }
