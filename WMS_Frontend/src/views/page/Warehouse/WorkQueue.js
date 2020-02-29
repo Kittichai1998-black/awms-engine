@@ -16,6 +16,8 @@ import AmWorkQueueStatus from "../../../components/AmWorkQueueStatus";
 import AmRedirectLogSto from "../../../components/AmRedirectLogSto";
 import AmRediRectInfo from '../../../components/AmRedirectInfo'
 import AmRedirectLogWQ from '../../../components/AmRedirectLogWQ'
+import moment from 'moment';
+import AmDatePicker from "../../../components/AmDate";
 
 const Axios = new apicall();
 
@@ -64,7 +66,7 @@ const LabelH = styled.label`
 const WorkQueue = (props) => {
   const { t } = useTranslation()
   const { classes } = props;
-  const pageSize = 100;
+  const pageSize = 5;
 
   const queryData = {
     queryString: window.apipath + "/v2/SelectDataViwAPI",
@@ -74,7 +76,7 @@ const WorkQueue = (props) => {
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
     sk: 0,
-    l: 100,
+    l: 5,
     all: ""
   };
   const [query, setQuery] = useState(queryData);
@@ -82,17 +84,61 @@ const WorkQueue = (props) => {
   const [datavalue, setDataValue] = useState([]);
   const [page, setPage] = useState(0);
   const [totalSize, setTotalSize] = useState(0);
-  const [sort, setSort] = useState(0);
+  const [sort, setSort] = useState(null);
+  const [exportApi, setExportApi] = useState(null);
+  const [filterData, setFilterData] = useState([]);
+  const [datetime, setDatetime] = useState({});
+
 
   useEffect(() => {
-    onGetData()
-  }, [page])
-
-
+    onGetData();
+    onGetDataExcel();
+  }, [query])
 
   const onGetData = () => {
+    let getQuery = { ...query }
+    let filterDatas = [...filterData];
+    if (datetime) {
+      if (datetime["dateFrom"]) {
+        let createObj = {};
+        createObj.f = datetime.field;
+        createObj.v = datetime["dateFrom"];
+        createObj.c = ">=";
+        filterDatas.push(createObj);
+      }
+      if (datetime["dateTo"]) {
+        let createObj = {};
+        createObj.f = datetime.field;
+        createObj.v = datetime["dateTo"];
+        createObj.c = "<=";
+        filterDatas.push(createObj);
+      }
+    }
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
 
-    Axios.get(createQueryString(query)).then((rowselect1) => {
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      filterDatas.unshift({ "q": newSel })
+    }
+
+    getQuery.q = JSON.stringify(filterDatas);
+    // console.log(getQuery)
+
+    Axios.get(createQueryString(getQuery)).then((rowselect1) => {
       if (rowselect1) {
         if (rowselect1.data._result.status !== 0) {
           setDataValue(rowselect1.data.datas)
@@ -102,14 +148,228 @@ const WorkQueue = (props) => {
     });
   }
   useEffect(() => {
-    console.log(sort)
-
-    if (sort !== 0) {
-      const queryEdit = JSON.parse(JSON.stringify(query));
-      queryEdit.s = '[{"f":"' + sort.field + '", "od":"' + sort.order + '"}]';
+    if (typeof (page) === "number") {
+      let queryEdit = { ...query }
+      queryEdit.sk = page === 0 ? 0 : page * parseInt(queryEdit.l, 10);
       setQuery(queryEdit)
     }
-  }, [sort])
+  }, [page])
+
+  const onGetDataExcel = () => {
+    let queryEdit = { ...query }
+    queryEdit.sk = 0
+    queryEdit.l = 0
+    setExportApi(createQueryString(queryEdit))
+
+  }
+
+  useEffect(() => {
+    if (sort) {
+      let queryEdit = { ...query }
+      queryEdit.s = "[{'f':'" + sort.field + "','od':'" + sort.order + "'}]";
+      setQuery(queryEdit)
+    }
+  }, [sort]);
+
+  const onChangeFilter = (condition, field, value, type) => {
+    let obj
+    if (filterData.length > 0)
+      obj = [...filterData];
+    else
+      obj = [condition];
+
+    let filterDataList = filterData.filter(x => x.f === field)
+    if (filterDataList.length > 0) {
+      obj.forEach((x, idx) => {
+        if (x.f === field) {
+          if (typeof value === "object" && value !== null) {
+            if (value.length > 0) {
+              x.v = value.join(",")
+              x.c = "in"
+            } else {
+              obj.splice(idx, 1)
+            }
+          }
+          else {
+            if (value) {
+              if (value.toString().includes("*")) {
+                value = value.replace(/\*/g, "%");
+              }
+              x.v = value
+              x.c = "like"
+            } else {
+              obj.splice(idx, 1)
+            }
+          }
+        }
+      })
+
+    } else {
+
+      let createObj = {};
+      createObj.f = field
+      createObj.v = encodeURIComponent(value)
+      createObj.c = "like"
+      obj.push(createObj)
+
+    }
+    console.log(obj)
+    setFilterData(obj)
+  };
+  const onChangeFilterDateTime = (value, field, type) => {
+    let datetimeRange = datetime;
+    console.log(datetimeRange)
+    if (value === null || value === undefined) {
+      delete datetimeRange[type];
+    } else {
+      datetimeRange["field"] = field;
+      if (type === "dateFrom") datetimeRange[type] = value.fieldDataKey + ":00";
+      if (type === "dateTo")
+        datetimeRange[type] = value.fieldDataKey + ":00";
+    }
+    console.log(datetimeRange)
+    setDatetime(datetimeRange)
+
+    // onChangeByDate(datetimeRange);
+  };
+  // useEffect(() => {
+  //   onChangeByDate()
+  // }, [datetime]);
+
+  const onChangeByDate = (datetimes) => {
+    let getQuery = { ...query }
+    let filterDatas = [...filterData];
+    console.log(datetimes)
+    if (datetimes) {
+      if (datetimes["dateFrom"]) {
+        let createObj = {};
+        createObj.f = datetimes.field;
+        createObj.v = datetimes["dateFrom"];
+        createObj.c = ">=";
+        filterDatas.push(createObj);
+      }
+      if (datetimes["dateTo"]) {
+        let createObj = {};
+        createObj.f = datetimes.field;
+        createObj.v = datetimes["dateTo"];
+        createObj.c = "<=";
+        filterDatas.push(createObj);
+      }
+      // getQuery.q = JSON.stringify(filterDatas);
+      console.log(filterDatas)
+      // setQuery(getQuery)
+      setFilterData(filterDatas)
+
+    }
+  }
+  const primarySearch = [
+    {
+      field: "ID",
+      component: (condition, rowC, idx) => {
+        return (
+          <div key={idx} style={{ display: "inline-block" }}>
+            <label style={{ width: "100px", paddingLeft: "20px" }}>{t("WQ ID")} : </label>
+            <AmInput
+              id={rowC.field}
+              placeholder={"Work Queue ID"}
+              style={{ width: "200px" }}
+              type="input"
+              onChangeV2={(value) => { onChangeFilter(condition, rowC.field, value) }}
+            // onKeyPress={(value, obj, element, event) =>
+            //   onChangeFilter(condition, rowC.field, value)
+            // }
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: "StorageObject_Code",
+      component: (condition, rowC, idx) => {
+        return (
+          <div key={idx} style={{ display: "inline-block" }}>
+            <label style={{ width: "100px", paddingLeft: "20px" }}>{t("Pallet")} : </label>
+            <AmInput
+              id={rowC.field}
+              placeholder={"Pallet"}
+              style={{ width: "200px" }}
+              type="input"
+              onChangeV2={(value) => { onChangeFilter(condition, rowC.field, value) }}
+            // onKeyPress={(value, obj, element, event) =>
+            //   onChangeFilter(condition, rowC.field, value)
+            // }
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: "dateFrom",
+      component: (condition, rowC, idx) => {
+        return (
+          <div key={idx} style={{ display: "inline-flex" }}>
+            <label style={{ width: "100px", paddingLeft: "20px" }}>
+              {t("From Date")} :{" "}
+            </label>
+            {/* {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ? */}
+            <AmDatePicker
+              FieldID={"dateFrom"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, "CreateTime", "dateFrom")
+              }
+            />
+            {/* //   :
+            //   <AmDatePicker
+            //     FieldID={"dateFrom"}
+            //     width="200px"
+            //     TypeDate={"datetime-local"}
+            //     onChange={value =>
+            //       onChangeFilter(condition, rowC.field, value, "dateFrom")
+            //     }
+            //     defaultValue={true}
+            //     defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+            //   />
+            // } */}
+          </div>
+        );
+      }
+    },
+    {
+      field: "dateTo",
+      component: (condition, rowC, idx) => {
+        return (
+          <div key={idx} style={{ display: "inline-flex" }}>
+            <label style={{ width: "100px", paddingLeft: "20px" }}>
+              {t("To Date")} :{" "}
+            </label>
+            {/* {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ? */}
+            <AmDatePicker
+              FieldID={"dateTo"}
+              width="200px"
+              TypeDate={"datetime-local"}
+              onChange={value =>
+                onChangeFilterDateTime(value, "CreateTime", "dateTo")
+              }
+            />
+            {/* :
+              <AmDatePicker
+                FieldID={"dateTo"}
+                width="200px"
+                TypeDate={"datetime-local"}
+                onChange={value =>
+                  onChangeFilter(condition, rowC.field, value, "dateTo")
+                }
+                defaultValue={true}
+                // defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+              />
+            } */}
+          </div>
+        );
+      }
+    }
+  ];
   const getRedirectLog = data => {
     return (
       <div
@@ -120,7 +380,6 @@ const WorkQueue = (props) => {
           direction: "rtl"
         }}
       >
-
         <AmRedirectLogSto
           api={
             "/log/storageobjectlog?id=" +
@@ -133,6 +392,7 @@ const WorkQueue = (props) => {
       </div>
     );
   };
+
   const columns = [
     {
       Header: "Status",
@@ -142,10 +402,10 @@ const WorkQueue = (props) => {
       },
       width: 70
     },
+    { Header: "ID", accessor: "ID", width: 70 },
     { Header: "IOType", accessor: "IOType", width: 70 },
     { Header: "RefID", accessor: "RefID", width: 130 },
     { Header: "Pallet No.", accessor: "StorageObject_Code", width: 100 },
-    { Header: "Pack", accessor: "Pack_Name", width: 300 },
     { Header: "Sou.Warehouse", accessor: "Sou_Warehouse_Name", width: 100 },
     { Header: "Sou.Area", accessor: "Sou_Area", width: 100 },
     { Header: "Des.Warehouse", accessor: "Des_Warehouse_Name", width: 100 },
@@ -156,6 +416,7 @@ const WorkQueue = (props) => {
     {
       Header: "Create By",
       accessor: "UserName",
+      sortable: false,
     },
     {
       Header: "Create Time",
@@ -177,25 +438,26 @@ const WorkQueue = (props) => {
     }
   ]
 
-  const customBtnSelect = () => {
-    return <AmButton styleType="confirm" onClick={onGetData} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
-  }
+
   return (
-    <div className={classes.root}>
+    <div>
       <AmReport
         // bodyHeadReport={GetBodyReports()}
+        filterTable={true}
+        primarySearch={primarySearch}
+        onHandleFilterConfirm={onGetData}
         sortable={true}
-        sort={(sort) => setSort({ field: sort.id, order: sort.sortDirection })}
+        sort={(sort) => setSort(sort)}
         columnTable={columns}
         dataTable={datavalue}
         pageSize={pageSize}
         pages={(x) => setPage(x)}
         totalSize={totalSize}
-        renderCustomButton={customBtnSelect()}
         page={true}
-        exportApi={createQueryString(query)}
-        excelFooter={false}
-        fileNameTable={"WorkQueue"}
+        exportData={false}
+      // exportApi={exportApi}
+      // excelFooter={false}
+      // fileNameTable={"WorkQueue"}
       ></AmReport>
     </div>
   )
