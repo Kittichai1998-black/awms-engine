@@ -25,12 +25,10 @@ const AmDate = props => {
   useEffect(() => {
     if (props.defaultValue) {
       const dataReturndefault = {};
-      console.log(typeof props.defaultValue);
       if (typeof props.defaultValue === "string") {
         dataReturndefault.fieldID = fieldID;
         dataReturndefault.fieldDataKey = props.defaultValue;
         dataReturndefault.fieldDataObject = props.defaultValue;
-        console.log(dataReturndefault)
         props.onChange(dataReturndefault);
       } else {
         if (type === "time") {
@@ -61,7 +59,6 @@ const AmDate = props => {
         props.onChange(dataReturn);
       }
     } else if (tDate === "datetime-local") {
-      // console.log(text)
       if (text === null) {
         props.onChange(null);
       } else {
@@ -91,7 +88,7 @@ const AmDate = props => {
         disabled={disabled ? disabled : false}
         defaultValue={
           props.defaultValue ?
-            (typeof props.defaultValue ===  "string") ? props.defaultValue :
+            (typeof props.defaultValue === "string") ? props.defaultValue :
               type === "time" ? TimeNow : DateNow
             : ""
         }
@@ -100,8 +97,6 @@ const AmDate = props => {
           shrink: true
         }}
         onChange={e => {
-          // console.log("d")
-          // console.log(moment(e.target.value).isValid())
 
           if (type === "time") {
             if (e.target.value) {
