@@ -201,7 +201,7 @@ const WorkQueue = Loadable({
 const DownloadLog = Loadable({
   loader: () => import("../../views/page/ENGINE/DownloadLog"),
   loading: Loading
-});
+}); 
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -475,7 +475,6 @@ let routes = [
     compoment: WorkQueue,
     exact: true
   },
-
   {
     path: "/download_log",
     name: "Download Log File",
