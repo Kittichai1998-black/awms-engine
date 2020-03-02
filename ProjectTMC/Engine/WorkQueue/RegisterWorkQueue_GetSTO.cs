@@ -62,13 +62,13 @@ namespace ProjectTMC.Engine.WorkQueue
             docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
+                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.IN)
             }, buVO).FirstOrDefault();
 
             docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
+                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.IN),
             }, buVO);
 
             if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
@@ -92,7 +92,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
 
                     }
-                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
+                    else if (reqVO.areaCode == "F")
                     {
                         //Outbound Zone
                         if (mappingPallet.qty <= 16)
@@ -170,7 +170,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "G01" ? 3 : (dataMap.areaCode == "G05" || dataMap.areaCode == "G06" ? 16 : row.Quantity),
+                            qty = dataMap.areaCode == "R" ? 3 : (dataMap.areaCode == "F"? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,
