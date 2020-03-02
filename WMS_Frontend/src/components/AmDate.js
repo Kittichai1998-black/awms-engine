@@ -25,10 +25,12 @@ const AmDate = props => {
   useEffect(() => {
     if (props.defaultValue) {
       const dataReturndefault = {};
+      console.log(typeof props.defaultValue);
       if (typeof props.defaultValue === "string") {
         dataReturndefault.fieldID = fieldID;
         dataReturndefault.fieldDataKey = props.defaultValue;
         dataReturndefault.fieldDataObject = props.defaultValue;
+        console.log(dataReturndefault)
         props.onChange(dataReturndefault);
       } else {
         if (type === "time") {
@@ -88,8 +90,8 @@ const AmDate = props => {
         type={type}
         disabled={disabled ? disabled : false}
         defaultValue={
-          props.defaultValue === true ?
-            (props.defaultValueDateTime !== undefined && props.defaultValueDateTime !== null) ? props.defaultValueDateTime :
+          props.defaultValue ?
+            (typeof props.defaultValue ===  "string") ? props.defaultValue :
               type === "time" ? TimeNow : DateNow
             : ""
         }
