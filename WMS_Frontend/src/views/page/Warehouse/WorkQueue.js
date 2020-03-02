@@ -66,7 +66,7 @@ const LabelH = styled.label`
 const WorkQueue = (props) => {
   const { t } = useTranslation()
   const { classes } = props;
-  const pageSize = 5;
+  const pageSize = 100;
 
   const queryData = {
     queryString: window.apipath + "/v2/SelectDataViwAPI",
@@ -76,7 +76,7 @@ const WorkQueue = (props) => {
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
     sk: 0,
-    l: 5,
+    l: 100,
     all: ""
   };
   const [query, setQuery] = useState(queryData);
@@ -90,12 +90,10 @@ const WorkQueue = (props) => {
   const [datetime, setDatetime] = useState({});
 
 
-  useEffect(() => {
-    onGetData();
-    onGetDataExcel();
-  }, [query])
+
 
   const onGetData = () => {
+    // console.log("cl")
     let getQuery = { ...query }
     let filterDatas = [...filterData];
     if (datetime) {
@@ -171,7 +169,7 @@ const WorkQueue = (props) => {
     }
   }, [sort]);
 
-  const onChangeFilter = (condition, field, value, type) => {
+  const onChangeFilter = (condition, field, value, type, event) => {
     let obj
     if (filterData.length > 0)
       obj = [...filterData];
@@ -213,12 +211,14 @@ const WorkQueue = (props) => {
       obj.push(createObj)
 
     }
-    console.log(obj)
+    // console.log(obj)
     setFilterData(obj)
+    // if (event && event.key == 'Enter') {
+    //   onGetData();
+    // }
   };
   const onChangeFilterDateTime = (value, field, type) => {
     let datetimeRange = datetime;
-    console.log(datetimeRange)
     if (value === null || value === undefined) {
       delete datetimeRange[type];
     } else {
@@ -227,41 +227,11 @@ const WorkQueue = (props) => {
       if (type === "dateTo")
         datetimeRange[type] = value.fieldDataKey + ":00";
     }
-    console.log(datetimeRange)
+    // console.log(datetimeRange)
     setDatetime(datetimeRange)
 
-    // onChangeByDate(datetimeRange);
   };
-  // useEffect(() => {
-  //   onChangeByDate()
-  // }, [datetime]);
 
-  const onChangeByDate = (datetimes) => {
-    let getQuery = { ...query }
-    let filterDatas = [...filterData];
-    console.log(datetimes)
-    if (datetimes) {
-      if (datetimes["dateFrom"]) {
-        let createObj = {};
-        createObj.f = datetimes.field;
-        createObj.v = datetimes["dateFrom"];
-        createObj.c = ">=";
-        filterDatas.push(createObj);
-      }
-      if (datetimes["dateTo"]) {
-        let createObj = {};
-        createObj.f = datetimes.field;
-        createObj.v = datetimes["dateTo"];
-        createObj.c = "<=";
-        filterDatas.push(createObj);
-      }
-      // getQuery.q = JSON.stringify(filterDatas);
-      console.log(filterDatas)
-      // setQuery(getQuery)
-      setFilterData(filterDatas)
-
-    }
-  }
   const primarySearch = [
     {
       field: "ID",
@@ -275,9 +245,11 @@ const WorkQueue = (props) => {
               style={{ width: "200px" }}
               type="input"
               onChangeV2={(value) => { onChangeFilter(condition, rowC.field, value) }}
-            // onKeyPress={(value, obj, element, event) =>
-            //   onChangeFilter(condition, rowC.field, value)
-            // }
+              // onKeyPress={(value, obj, element, event) => {
+              //   if (event && event.key == 'Enter') {
+              //     onChangeFilter(condition, rowC.field, value, event)
+              //   }
+              // }}
             />
           </div>
         );
@@ -295,9 +267,11 @@ const WorkQueue = (props) => {
               style={{ width: "200px" }}
               type="input"
               onChangeV2={(value) => { onChangeFilter(condition, rowC.field, value) }}
-            // onKeyPress={(value, obj, element, event) =>
-            //   onChangeFilter(condition, rowC.field, value)
-            // }
+              // onKeyPress={(value, obj, element, event) => {
+              //   if (event && event.key == 'Enter') {
+              //     onChangeFilter(condition, rowC.field, value, event)
+              //   }
+              // }}
             />
           </div>
         );
@@ -311,27 +285,27 @@ const WorkQueue = (props) => {
             <label style={{ width: "100px", paddingLeft: "20px" }}>
               {t("From Date")} :{" "}
             </label>
-            {/* {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ? */}
-            <AmDatePicker
-              FieldID={"dateFrom"}
-              width="200px"
-              TypeDate={"datetime-local"}
-              onChange={value =>
-                onChangeFilterDateTime(value, "CreateTime", "dateFrom")
-              }
-            />
-            {/* //   :
-            //   <AmDatePicker
-            //     FieldID={"dateFrom"}
-            //     width="200px"
-            //     TypeDate={"datetime-local"}
-            //     onChange={value =>
-            //       onChangeFilter(condition, rowC.field, value, "dateFrom")
-            //     }
-            //     defaultValue={true}
-            //     defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
-            //   />
-            // } */}
+            {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
+              <AmDatePicker
+                FieldID={"dateFrom"}
+                width="200px"
+                TypeDate={"datetime-local"}
+                onChange={value =>
+                  onChangeFilterDateTime(value, "CreateTime", "dateFrom")
+                }
+              />
+              :
+              <AmDatePicker
+                FieldID={"dateFrom"}
+                width="200px"
+                TypeDate={"datetime-local"}
+                onChange={value =>
+                  onChangeFilterDateTime(value, "CreateTime", "dateFrom")
+                }
+                defaultValue={true}
+                defaultValueDateTime={moment().format("YYYY-MM-DDTHH:mm")}
+              />
+            }
           </div>
         );
       }
@@ -344,27 +318,27 @@ const WorkQueue = (props) => {
             <label style={{ width: "100px", paddingLeft: "20px" }}>
               {t("To Date")} :{" "}
             </label>
-            {/* {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ? */}
-            <AmDatePicker
-              FieldID={"dateTo"}
-              width="200px"
-              TypeDate={"datetime-local"}
-              onChange={value =>
-                onChangeFilterDateTime(value, "CreateTime", "dateTo")
-              }
-            />
-            {/* :
+            {props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0 ?
               <AmDatePicker
                 FieldID={"dateTo"}
                 width="200px"
                 TypeDate={"datetime-local"}
                 onChange={value =>
-                  onChangeFilter(condition, rowC.field, value, "dateTo")
+                  onChangeFilterDateTime(value, "CreateTime", "dateTo")
+                }
+              />
+              :
+              <AmDatePicker
+                FieldID={"dateTo"}
+                width="200px"
+                TypeDate={"datetime-local"}
+                onChange={value =>
+                  onChangeFilterDateTime(value, "CreateTime", "dateTo")
                 }
                 defaultValue={true}
-                // defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+                defaultValueDateTime={moment().format("YYYY-MM-DDTHH:mm")}
               />
-            } */}
+            }
           </div>
         );
       }
@@ -437,7 +411,10 @@ const WorkQueue = (props) => {
       Cell: e => getRedirectLog(e.original)
     }
   ]
-
+  useEffect(() => {
+    onGetData();
+    // onGetDataExcel();
+  }, [query, datetime])
 
   return (
     <div>
