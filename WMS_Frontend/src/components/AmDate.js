@@ -23,12 +23,12 @@ const AmDate = props => {
   const [fieldID, setFieldID] = useState(props.FieldID);
 
   useEffect(() => {
-    if (props.defaultValue === true) {
+    if (props.defaultValue) {
       const dataReturndefault = {};
-      if (props.defaultValueDateTime !== null || props.defaultValueDateTime !== undefined) {
+      if (typeof props.defaultValue === "string") {
         dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = props.defaultValueDateTime;
-        dataReturndefault.fieldDataObject = props.defaultValueDateTime;
+        dataReturndefault.fieldDataKey = props.defaultValue;
+        dataReturndefault.fieldDataObject = props.defaultValue;
         props.onChange(dataReturndefault);
       } else {
         if (type === "time") {
@@ -84,7 +84,7 @@ const AmDate = props => {
     <form noValidate>
       <TextField
         style={{ backgroundColor: "white", width: props.width }}
-        id="date"
+        // id="date"
         type={type}
         disabled={disabled ? disabled : false}
         defaultValue={

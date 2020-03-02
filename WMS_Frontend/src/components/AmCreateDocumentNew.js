@@ -479,7 +479,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDate
                     TypeDate={"date"}
-                    defaultValue={true}
+                    defaultValue
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -494,7 +494,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDate
                     TypeDate={"datetime-local"}
-                    defaultValue={true}
+                    defaultValue
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
