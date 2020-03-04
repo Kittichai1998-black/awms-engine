@@ -25,6 +25,7 @@ import readXlsxFile from 'read-excel-file'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import queryString from "query-string";
 
 const Axios = new apicall()
 //   const createQueryString = (select) => {
@@ -71,10 +72,10 @@ const MasterData = (props) => {
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: props.tableQuery,
-    q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+    q: props.manualConditionViw ? props.manualConditionViw : "[{ 'f': 'Status', c:'<', 'v': 2}]",
     f: "*",
     g: "",
-    s: props.tableQuery === "AreaRoute" || props.tableQuery === "ObjectSizeMap" ? "[{'f':'ID','od':'asc'}] " : "[{'f':'Code','od':'asc'}]",
+    s: props.tableQuery === "AreaRoute" || props.tableQuery === "ObjectSizeMap" || props.tableQuery === "WorkQueue" ? "[{'f':'ID','od':'asc'}] " : "[{'f':'Code','od':'asc'}]",
     sk: 0,
     l: 100,
     all: "",
@@ -83,10 +84,10 @@ const MasterData = (props) => {
   const ExportQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: props.tableQuery,
-    q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+    q: props.manualConditionViw ? props.manualConditionViw : "[{ 'f': 'Status', c:'<', 'v': 2}]",
     f: "*",
     g: "",
-    s: props.tableQuery === "AreaRoute" || props.tableQuery === "ObjectSizeMap" ? "[{'f':'ID','od':'asc'}] " : "[{'f':'Code','od':'asc'}]",
+    s: props.tableQuery === "AreaRoute" || props.tableQuery === "ObjectSizeMap" || props.tableQuery === "WorkQueue" ? "[{'f':'ID','od':'asc'}] " : "[{'f':'Code','od':'asc'}]",
     sk: 0,
     l: 0,
     all: "",
@@ -113,62 +114,63 @@ const MasterData = (props) => {
 
   const FuncSetTable = () => {
     const iniCols = props.iniCols
-    if (props.customUser === true) {
-      iniCols.push(
-        {
-          Header: 'Role',
-          width: 80,
+    if (props.notModifyCol !== true) {
+      if (props.customUser === true) {
+        iniCols.push(
+          {
+            Header: 'Role',
+            width: 80,
+            Cell: (e) =>
+              <AmButton style={{ lineHeight: "1" }} styleType="confirm" onClick={() => { FuncSetEleRole(e); setEditData(e); setTimeout(() => setDialogRole(true), 500) }} >
+                {t('Role')}
+              </AmButton>,
+            sortable: false,
+          }, {
+          Header: 'Edit',
+          width: 100,
           Cell: (e) =>
-            <AmButton style={{ lineHeight: "1" }} styleType="confirm" onClick={() => { FuncSetEleRole(e); setEditData(e); setTimeout(() => setDialogRole(true), 500) }} >
-              {t('Role')}
+            <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "editPass") }} >
+              {t('Password')}
             </AmButton>,
           sortable: false,
         }, {
-        Header: 'Edit',
-        width: 100,
-        Cell: (e) =>
-          <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "editPass") }} >
-            {t('Password')}
-          </AmButton>,
-        sortable: false,
-      }, {
-        Header: 'Edit',
-        width: 80,
-        Cell: (e) =>
-          <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "edit") }} >
-            {t('Info')}
-          </AmButton>,
-        sortable: false,
-      }, {
-        Header: 'Delete',
-        width: 80,
-        Cell: (e) =>
-          <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
-            {t('Delete')}
-          </AmButton>,
-        sortable: false,
-      })
-    } else {
-      iniCols.push({
-        Header: 'Edit',
-        width: 80,
-        Cell: (e) =>
-          <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "edit") }} >
-            {t('Edit')}
-          </AmButton>,
-        sortable: false,
-      }, {
-        Header: 'Delete',
-        width: 80,
-        Cell: (e) =>
-          <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
-            {t('Delete')}
-          </AmButton>,
+          Header: 'Edit',
+          width: 80,
+          Cell: (e) =>
+            <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "edit") }} >
+              {t('Info')}
+            </AmButton>,
+          sortable: false,
+        }, {
+          Header: 'Delete',
+          width: 80,
+          Cell: (e) =>
+            <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
+              {t('Delete')}
+            </AmButton>,
+          sortable: false,
+        })
+      } else {
+        iniCols.push({
+          Header: 'Edit',
+          width: 80,
+          Cell: (e) =>
+            <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "edit") }} >
+              {t('Edit')}
+            </AmButton>,
+          sortable: false,
+        }, {
+          Header: 'Delete',
+          width: 80,
+          Cell: (e) =>
+            <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
+              {t('Delete')}
+            </AmButton>,
 
-        sortable: false,
-      })
+          sortable: false,
+        })
+      }
     }
-
 
     return iniCols
 
@@ -207,7 +209,7 @@ const MasterData = (props) => {
   }
 
   async function FuncSetEleRole(data) {
-
+    console.log("2")
     var defaultRole = []
     const Query = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -326,7 +328,7 @@ const MasterData = (props) => {
   const [idEdit, setiIdEdit] = useState({})
   const [query3, setQuery3] = useState()
   const edit = (e, type) => {
-
+    console.log("3")
     const Query3 = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
       t: props.tableQuery,
@@ -685,6 +687,14 @@ const MasterData = (props) => {
           filterDatas.push(createObj)
         }
       }
+      var datachecknull = filterDatas.filter(x => x.v !== '%')
+      var datacheckLike = datachecknull.filter(x => x.c === 'like')
+      var result = datacheckLike.map(x => {
+        return x.f + '=' + encodeURIComponent(x.v)
+      });
+      var resultfilter = result.join('&');
+      props.history.push(props.history.location.pathname + "?" + resultfilter)
+
       getQuery.q = JSON.stringify(filterDatas);
       setQuery(getQuery)
     }
@@ -1042,9 +1052,46 @@ const MasterData = (props) => {
   useEffect(() => {
   }, [editRow])
 
-
   useEffect(() => {
-    getData(createQueryString(query))
+    getDataFilterURL();
+  }, [])
+
+  const getDataFilterURL = () => {
+
+    if (props.history.location != null && props.history.location.search != null && props.history.location.search.length > 0) {
+      let searchValue = queryString.parse(props.history.location.search);
+      let newSel = [];
+
+      Object.entries(searchValue).forEach(([key, value], index) => {
+        // console.log(`${index}: ${key} = ${value}`);
+        if (index === 0) {
+          newSel.push({
+            "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        } else {
+          newSel.push({
+            "o": "or", "f": key,
+            "c": "like", "v": encodeURIComponent(value)
+          });
+        }
+      });
+      // console.log(newSel)
+      onHandleFilterConfirmURL(newSel)
+    }
+
+  }
+  const onHandleFilterConfirmURL = (obj) => {
+    let getQuery = { ...query };
+    let filterDatas = [...filterData]
+    filterDatas.unshift({ "q": obj })
+    getQuery.q = JSON.stringify(filterDatas);
+    // console.log(getQuery)
+    setQuery(getQuery)
+  }
+  useEffect(() => {
+    if (query !== null)
+      getData(createQueryString(query))
   }, [query])
 
   useEffect(() => {
@@ -1071,9 +1118,11 @@ const MasterData = (props) => {
     setDataSource(res.data.datas)
     setTotalSize(res.data.counts)
     setPackCode("")
-    Axios.get(createQueryString(query2)).then((res) => {
-      setDataSource1(res.data.datas)
-    })
+    if (props.notModifyCol !== true) {
+      Axios.get(createQueryString(query2)).then((res) => {
+        setDataSource1(res.data.datas)
+      })
+    }
 
     let getExcelQuery = Clone(ExportQuery);
     getExcelQuery.q = query.q
@@ -1270,16 +1319,16 @@ const MasterData = (props) => {
         exportData={true}
         //excelData={excelDataSrouce}
         renderCustomButtonB4={<FormInline>
-          {props.dataAdd ? 
-          <AmButton
-            style={{ marginRight: "5px" }}
-            styleType="add"
-            onClick={() => {
-              FuncTest();
-              setAddData(true);
-              setDialog(true)
-            }} >{t("Add")}
-          </AmButton> : null}
+          {props.dataAdd ?
+            <AmButton
+              style={{ marginRight: "5px" }}
+              styleType="add"
+              onClick={() => {
+                FuncTest();
+                setAddData(true);
+                setDialog(true)
+              }} >{t("Add")}
+            </AmButton> : null}
           {props.import == true ? <label style={{
             width: "60px",
             fontWeight: "bolder",

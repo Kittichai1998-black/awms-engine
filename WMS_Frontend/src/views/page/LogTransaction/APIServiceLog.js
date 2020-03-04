@@ -186,8 +186,7 @@ const APIServiceLog = (props) => {
               onChange={value =>
                 onChangeFilterDateTime(value, rowC.field, "dateFrom")
               }
-              defaultValue={true}
-              defaultValueDateTime={moment().format("YYYY-MM-DDT00:00")}
+              defaultValue={moment().format("YYYY-MM-DDT00:00")}
             />
           }
         </div>
@@ -217,8 +216,7 @@ const APIServiceLog = (props) => {
               onChange={value =>
                 onChangeFilterDateTime(value, rowC.field, "dateTo")
               }
-              defaultValue={true}
-              defaultValueDateTime={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
+              defaultValue={moment().add(1, 'days').format("YYYY-MM-DDT00:00")}
             />
           }
         </div>
