@@ -78,6 +78,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "Data of mappingPallets Not Found");
                     }
                 }
+                else
+                {
+                    if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
+                    {
+                        var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                        if (stopacks == null || stopacks.Count == 0)
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+
+                        sto = this.CreateSto(reqVO);
+                    }
+                }
                 // end
                 //if (sto == null)
                 //    throw new AMWException(Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
@@ -201,8 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 };
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 
-                newSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
-                  null, null, false, true, BuVO);
+                newSto = ADO.StorageObjectADO.GetInstant().Get(baseStoID, StorageObjectType.BASE, false, true, BuVO);
             
            
 

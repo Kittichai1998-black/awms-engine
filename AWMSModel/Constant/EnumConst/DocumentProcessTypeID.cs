@@ -221,5 +221,6 @@ namespace AWMSModel.Constant.EnumConst
         STO_CORRECTIONS_CUS = 5102,
         STO_CORRECTIONS_SUP = 5103,
         STO_REJECT = 5350,
+
     }
 }

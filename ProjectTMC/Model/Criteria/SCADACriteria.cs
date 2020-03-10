@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectTMC.Model
+namespace ProjectTMC.Model.Criteria
 {
     public class SCADACriteria
     { 
@@ -21,5 +21,6 @@ namespace ProjectTMC.Model
             public string PackCode;
             public decimal? Quantity;
         }
+
     }
 }
