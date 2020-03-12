@@ -62,8 +62,11 @@ namespace ProjectTMC.Engine.WorkQueue
             docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.IN)
+                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.EQUALS)
             }, buVO).FirstOrDefault();
+
+            if(docGR == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document is not Found");
 
             docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                 new SQLConditionCriteria[] {
@@ -77,7 +80,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {//Check Qty
-                    if (reqVO.areaCode == "R")
+                    if (reqVO.areaCode == "In")
                     {
                         //Inbound Zone
                         if (mappingPallet.qty <= 3)
@@ -92,7 +95,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
 
                     }
-                    else if (reqVO.areaCode == "F")
+                    else if (reqVO.areaCode == "Out")
                     {
                         //Outbound Zone
                         if (mappingPallet.qty <= 16)
@@ -102,7 +105,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         }
                         else
                         {
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 16");
                         }
                     }
 
@@ -170,7 +173,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "R" ? 3 : (dataMap.areaCode == "F"? 16 : row.Quantity),
+                            qty = dataMap.areaCode == "In" ? 3 : (dataMap.areaCode == "Out"  ? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,
