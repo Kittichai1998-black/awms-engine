@@ -15,7 +15,7 @@ using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using ProjectTMC.ADO.SCADAApi;
-using static ProjectTMC.Model.SCADACriteria;
+using static ProjectTMC.Model.Criteria.SCADACriteria;
 using static ProjectTMC.ADO.SCADAApi.SCADAInterfaceADO;
 
 namespace ProjectTMC.Engine.Business.WorkQueue
