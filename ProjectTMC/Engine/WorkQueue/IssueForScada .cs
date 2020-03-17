@@ -67,17 +67,17 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (skuType.GroupType != SKUGroupType.RAW)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : "+ skuType.Code);
 
-                this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "SA2", this.BuVO);
+                //this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "SA2", this.BuVO);
 
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.RAW_TRANSFER, this.BuVO);
 
                 if (docGI == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
 
-                dataProcessQ = this.AutoProcess(docGI,false,"G01", reqVO,this.BuVO);
+                //dataProcessQ = this.AutoProcess(docGI,false,"G01", reqVO,this.BuVO);
 
-                if (dataProcessQ == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
+                //if (dataProcessQ == null)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
 
             }
             else if (reqVO.interface_no == "4.1")
