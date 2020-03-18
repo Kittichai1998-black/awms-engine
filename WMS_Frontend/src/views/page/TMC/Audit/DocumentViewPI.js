@@ -6,6 +6,7 @@ import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus"
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
+import AmRedirectLog from "../../../../components/AmRedirectLog";
 
 const DocumentViewPI = props => {
   const TextHeader = [
@@ -42,7 +43,13 @@ const DocumentViewPI = props => {
       type: "number"
     },
     { width: 130, accessor: "Lot", Header: "Lot" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Name", Header: "Unit" },
+    {
+      width: 100,
+      accessor: "",
+      Header: "Log ",
+      Cell: e => getRedirect(e.original)
+    }
   ];
 
   const columnsDetailSOU = [
@@ -103,7 +110,49 @@ const DocumentViewPI = props => {
     var ID = values.docID.toString();
     return ID;
   };
-
+  const getRedirect = data => {
+    console.log(data);
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px",
+          direction: "rtl"
+        }}
+      >
+        <AmRedirectLog
+          api={"/log/docitemlog?id=" + data.docItemID}
+          history={props.history}
+          title={"Log Docitem"}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLog>
+        <AmRedirectLog
+          api={
+            "/log/storageobjectlog?id=" +
+            data.id +
+            "&ParentStorageObject_ID=" +
+            data.id
+          }
+          history={props.history}
+          docID={""}
+          title={"Log Sto"}
+        >
+          {" "}
+        </AmRedirectLog>
+        <AmRedirectLog
+          api={"/log/workqueuelog?id=" + data.workQueueID}
+          history={props.history}
+          docID={""}
+          title={"Log WQ"}
+        >
+          {" "}
+        </AmRedirectLog>
+      </div>
+    );
+  };
   //received
   //issued
   return (

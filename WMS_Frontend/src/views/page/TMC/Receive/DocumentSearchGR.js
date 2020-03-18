@@ -12,6 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
 import AmPopup from "../../../../components/AmPopup";
+import AmRedirectLogDoc from "../../../../components/AmRedirectLogDoc";
 const Axios = new apicall();
 
 //======================================================================
@@ -242,6 +243,12 @@ const DocumentSearchGR = props => {
       Header: "LastUpdate",
       accessor: "LastUpdate",
       width: 200
+    },
+    {
+      width: 60,
+      accessor: "",
+      Header: "Log",
+      Cell: e => getRedirectLog(e.original)
     }
   ];
 
@@ -358,7 +365,26 @@ const DocumentSearchGR = props => {
       </div>
     );
   };
-
+  const getRedirectLog = data => {
+    //console.log(data);
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px"
+        }}
+      >
+        <AmRedirectLogDoc
+          api={"/log/documentlog?id=" + data.ID}
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLogDoc>
+      </div>
+    );
+  };
   return (
     <div>
       <AmPopup

@@ -36,6 +36,7 @@ import { apicall } from "../components/function/CoreFunction2";
 import { useTranslation } from "react-i18next";
 import queryString from 'query-string'
 import Axios from "axios";
+import LabelT from './AmLabelMultiLanguage'
 
 const Axios1 = new apicall();
 const styles = theme => ({
@@ -97,18 +98,20 @@ const FormInline = styled.div`
   }
 `;
 
-const LabelH = styled.label`
-  font-weight: bold;
-`;
+const LabelH = {
+    "font-weight": "bold"
+}
 
-const LabelHDoc = styled.label`
-  font-weight: bold;
-`;
 
-const LabelHDes = styled.label`
-  font-weight: bold;
-  width: 150px;
-`;
+const LabelHDoc = {
+    "font-weight": "bold"
+}
+
+
+const LabelHDes = {
+    "font-weight": "bold",
+    width: "150px"
+}
 
 const BorderAdd = styled.div`
   display: inline-block;
@@ -123,7 +126,7 @@ const BorderQueu = styled.div`
 `;
 
 
-const BorderGrey= styled.div`
+const BorderGrey = styled.div`
   display: inline-block;
   border: 4px solid #9e9e9e;
   display: block;
@@ -318,10 +321,10 @@ const AmProcessQueue = props => {
     useEffect(() => {
         setdocHeaderdetail(DetailDoc());
     }, [
-            props.detailDocument,
-            dataDetialdoc,
-            detailsdata,
-            props.onChangeDoc,
+        props.detailDocument,
+        dataDetialdoc,
+        detailsdata,
+        props.onChangeDoc,
         localStorage.getItem("Lang")
     ]);
 
@@ -377,7 +380,7 @@ const AmProcessQueue = props => {
     ) => {
         //setDataDocumentItem();
         if (value !== undefined && value !== null && dataObject.Code !== null) {
-          
+
             setdocDesWarehouse(dataObject.deswarehouse)
 
             setdocDesCustomer(dataObject.descustomer)
@@ -445,7 +448,7 @@ const AmProcessQueue = props => {
             queryString: window.apipath + "/v2/SelectDataViwAPI/",
             t: "DocumentItem",
             q: "[{ 'f': 'Document_ID', c:'=', 'v': " + docID + "}]",
-            f:  "*",
+            f: "*",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
             sk: 0,
@@ -502,9 +505,9 @@ const AmProcessQueue = props => {
         setDataSource(dataSource);
         setReload({});
     };
-    const onHandleDeleteSort = (v, o, rowdata, ind,idxsort) => {
+    const onHandleDeleteSort = (v, o, rowdata, ind, idxsort) => {
         let idx = dataSorting[ind].findIndex(x => x.ID === v);
-        dataSorting[ind].splice(idx,1);
+        dataSorting[ind].splice(idx, 1);
         setdataSorting(dataSorting);
         setReload({});
     };
@@ -617,12 +620,12 @@ const AmProcessQueue = props => {
                     chkDataSort[0][row] = editDataSort[row];
                 }
             } else {
-              
+
                 dataSorting[indexBtn].push(rowdata);
-                
-                    setAddDataID(addDataID - 1);
-               }
-            
+
+                setAddDataID(addDataID - 1);
+            }
+
         }
         setReload({});
         setEditDataSort();
@@ -654,37 +657,37 @@ const AmProcessQueue = props => {
     };
 
     const onChangeEditorSort = (field, rowdata, value, pair, dataPair) => {
-            if (addData) {
-                console.log(value)
-                if (editDataSort) {
-                    editDataSort[field] = value;
-                    if (pair) {
-                        editDataSort[pair] = dataPair;
-                    }
-          
-                    setEditDataSort(editDataSort);
-                } else {
-                    let addData = {};
-                    addData["ID"] = addDataID;
-                    addData[field] = value;
-                    if (pair) {
-                        addData[pair] = dataPair;
-                    }
-  
-                    setEditDataSort(addData);
-                }
-            } else {
-                let editRowX = editDataSort.original
-                    ? { ...editDataSort.original }
-                    : { ...editDataSort };
-                editRowX[field] = value;
+        if (addData) {
+            console.log(value)
+            if (editDataSort) {
+                editDataSort[field] = value;
                 if (pair) {
-                    editRowX[pair] = dataPair;
+                    editDataSort[pair] = dataPair;
                 }
 
-                setEditDataSort(editRowX);
+                setEditDataSort(editDataSort);
+            } else {
+                let addData = {};
+                addData["ID"] = addDataID;
+                addData[field] = value;
+                if (pair) {
+                    addData[pair] = dataPair;
+                }
+
+                setEditDataSort(addData);
             }
-        
+        } else {
+            let editRowX = editDataSort.original
+                ? { ...editDataSort.original }
+                : { ...editDataSort };
+            editRowX[field] = value;
+            if (pair) {
+                editRowX[pair] = dataPair;
+            }
+
+            setEditDataSort(editRowX);
+        }
+
     };
 
     //Advance Condition
@@ -932,7 +935,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} : </LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             <AmInput
@@ -954,7 +957,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} : </LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             <AmInput
@@ -973,7 +976,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} :</LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             <AmDropdown
@@ -996,7 +999,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} :</LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             <AmDropdown
@@ -1023,7 +1026,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} : </LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         {
                             <label>
@@ -1055,7 +1058,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} : </LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             {" "}
@@ -1078,7 +1081,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} : </LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             {" "}
@@ -1099,7 +1102,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} :</LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             <AmDropdown
@@ -1134,7 +1137,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelH>{t(Header)} :</LabelH>
+                    <LabelT style={LabelH}>{Header} :</LabelT>
                     <InputDiv>
                         <div>
                             {" "}
@@ -1199,7 +1202,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                    <LabelHDes>{t(Label)} :</LabelHDes>
+                    <LabelT style={LabelHDes}>{Label} :</LabelT>
                     <InputDiv>
                         <AmDropdown
                             id={idddls}
@@ -1207,8 +1210,8 @@ const AmProcessQueue = props => {
                             data={dataDDL}
                             fieldDataKey="value"
                             fieldLabel={["label"]}
-                            width={300} 
-                            ddlMinWidth={300} 
+                            width={300}
+                            ddlMinWidth={300}
                             valueData={valueText[idddls]}
                             //defaultValue={ docDesCustomer && props.StatusfromDescustomer  ? 11 :  null }
                             onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -1230,8 +1233,7 @@ const AmProcessQueue = props => {
             return (
                 <FormInline>
                     {" "}
-                   
-                    <LabelHDes>{t(Label)} :</LabelHDes>
+                    <LabelT style={LabelHDes}>{Label} :</LabelT>
                     <InputDiv>
                         <AmDropdown
                             id={idddls}
@@ -1245,8 +1247,8 @@ const AmProcessQueue = props => {
                             queryApi={queryApi}
                             returnDefaultValue={true}
                             defaultValue={defaultValues ? defaultValues : defaulDDLAreaWare === true || defaulDDLAreaWip === true ? 8
-                                : defaulDDLAreaCus === true || defaulDDLAreaEmp === true ? 11                  
-                             : defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
+                                : defaulDDLAreaCus === true || defaulDDLAreaEmp === true ? 11
+                                    : defaultValues ? defaultValues : defaultValue ? defaultValue : ""}
                             disabled={defaultValue ? true : false}
                             //defaultValue={data ? data : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -1281,7 +1283,7 @@ const AmProcessQueue = props => {
                                 >
                                     <FormInline>
                                         <div style={{ paddingLeft: "10px", width: "200px" }}>
-                                            <LabelH>{t(y.label) + syn}</LabelH>
+                                            <LabelT style={LabelH}>{y.label + syn}</LabelT>
                                         </div>
                                         {getDataDetail(y.type, y.key, y.values)}
                                     </FormInline>
@@ -1303,7 +1305,7 @@ const AmProcessQueue = props => {
                                 >
                                     <FormInline>
                                         <div style={{ paddingLeft: "10px", width: "200px" }}>
-                                            <LabelH>{t(y.label)}</LabelH>
+                                            <LabelT style={LabelH}>{y.label}</LabelT>
                                         </div>
                                         {getDataDetail(y.type, y.key, y.values)}
                                     </FormInline>
@@ -1354,7 +1356,7 @@ const AmProcessQueue = props => {
     };
 
     const addConditions = () => {
-       
+
         var filterDocCode = dataQueue.filter(
             x =>
                 x["DataDocumentCode"] ===
@@ -1364,11 +1366,11 @@ const AmProcessQueue = props => {
             var datasQ = {};
 
             var dataSortXX = [...DataDocumentItem].map((di, idx) => {
-               if (props.DefaulSorting !== undefined) {           
+                if (props.DefaulSorting !== undefined) {
                     let dfaultS = [...dataSorting[idx]];
                     dfaultS["docItemID"] = di.ID;
                     return dfaultS;
-               }
+                }
             });
 
 
@@ -1380,7 +1382,7 @@ const AmProcessQueue = props => {
             datasQ["DataSource"] = [...dataSource];
             datasQ["DataSorting"] = dataSortXX;
             datasQ["DataDocumentCode"] =
-            dataDocument[dataDocument.length - 1].DocumentCode;
+                dataDocument[dataDocument.length - 1].DocumentCode;
             datasQ["DataDocumentID"] = documentID;
             dataQueue.push(datasQ);
             setdatasDoc([...dataQueue]);
@@ -1404,7 +1406,7 @@ const AmProcessQueue = props => {
                 } else if (dataDetialdoc[0][0].values === "WIP_TRANSFER_WM") {
                     setdefaulDDLAreaWip(true)
                 }
-            } else { } 
+            } else { }
 
 
             if (window.project === "AAI") {
@@ -1430,7 +1432,7 @@ const AmProcessQueue = props => {
                 });
             }
 
-            }
+        }
 
     };
 
@@ -1456,7 +1458,7 @@ const AmProcessQueue = props => {
 
 
         } else {
-            
+
             Axios.get(createQueryString(docQuery)).then(res => {
                 console.log("Edit Datas")
                 let docSelection = res.data.datas.filter(x => {
@@ -1489,7 +1491,7 @@ const AmProcessQueue = props => {
         setdetailsdata(doc.DataDocdetail);
         setValue(0);
         setbtnBack(true);
-        
+
     };
 
     const OnclickRemoveAddDocument = (idx) => {
@@ -1520,13 +1522,13 @@ const AmProcessQueue = props => {
                 });
                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
             });
-        } 
+        }
 
     }
 
     const OnclickConfirmQueue = () => {
         dataConfirmQ["processQueues"] = [];
-        datasDoc.forEach((a, idx) => {            
+        datasDoc.forEach((a, idx) => {
             a.DataDocumentItem.forEach(y => {
                 if (y.CheckDocument === true) {
                     var conditions = [];
@@ -1538,25 +1540,25 @@ const AmProcessQueue = props => {
                             (ds, dsIdx) => {
                                 if (props.docType !== "audit") {
                                     ds.forEach((d, idx) => {
-                                    
-                                        if (d.value ==="Carton No") {
-                                              fildNames = "ref2"
+
+                                        if (d.value === "Carton No") {
+                                            fildNames = "ref2"
                                         } else if (d.value === "Order No") {
-                                             fildNames = "orderno"
+                                            fildNames = "orderno"
 
                                         } else if (d.value === "Create time") {
-                                              fildNames = "createtime"
+                                            fildNames = "createtime"
 
-                                        } else  {
+                                        } else {
                                             fildNames = d.value
                                         }
 
-                                        
+
                                         let sort = {
                                             fieldName: "psto." + fildNames,
                                             orderByType: d.Order === "FIFO" ? 0 : 1
                                         };
-                                        
+
                                         orderBys.push(sort);
                                     });
                                 } else {
@@ -1626,7 +1628,7 @@ const AmProcessQueue = props => {
                             useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
                             useExpireDate: y.ExpireDate ? y.ExpireDate : false,
                             useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                            useFullPick:  y.FullPallet ? y.FullPallet : false,
+                            useFullPick: y.FullPallet ? y.FullPallet : false,
                             baseQty: y.BaseqtyMax
                                 ? y.BaseqtyMax
                                 : y.BaseQuantity
@@ -1647,10 +1649,10 @@ const AmProcessQueue = props => {
                             baseCode: y.palletcode ? y.palletcode : null,
                             skuCode: y.Code ? y.Code : null,
                             priority: y.PriorityDoc ? y.PriorityDoc : 2,
-                            useShelfLifeDate: y.ShelfLifeDate ? true: false,
+                            useShelfLifeDate: y.ShelfLifeDate ? true : false,
                             useExpireDate: y.ExpireDate ? true : false,
                             useIncubateDate: y.IncubateDate ? true : false,
-                            useFullPick:  y.FullPallet ? true : false,
+                            useFullPick: y.FullPallet ? true : false,
                             baseQty: y.BaseqtyMax
                                 ? y.BaseqtyMax
                                 : y.BaseQuantity
@@ -1660,7 +1662,7 @@ const AmProcessQueue = props => {
                             eventStatuses: eventStatuses,
                             conditions: conditions,
                             orderBys: orderBys
-                          
+
                         };
                         processQueuesz = processQueues
                     }
@@ -1673,7 +1675,7 @@ const AmProcessQueue = props => {
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null;
         dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
-        dataConfirmQ["isSetQtyAfterDoneWQ"] = props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true; 
+        dataConfirmQ["isSetQtyAfterDoneWQ"] = props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true;
         //isSetQtyAfterDoneWQ: props.QtyAfterDoneWQ ? props.QtyAfterDoneWQ : true  
         if (dataConfirmQ !== undefined) {
             Axios1.post(window.apipath + "/v2/process_wq", dataConfirmQ).then(res => {
@@ -1707,9 +1709,7 @@ const AmProcessQueue = props => {
                                                 paddingBottom: "10px"
                                             }}
                                         >
-                                            <LabelH>
-                                                {t("Document")} : {x.docCode}
-                                            </LabelH>
+                                            <LabelT style={LabelH}>Document : {x.docCode}</LabelT>
                                         </div>
                                     </FormInline>
                                 </div>
@@ -1741,7 +1741,7 @@ const AmProcessQueue = props => {
                                                     var dataSorceTBs = {}
                                                     if (window.project === "STGT") {
                                                         dataSorceTBs = {
-                                                            SKU: x.pstoCode + ":" + x.pstoName ,
+                                                            SKU: x.pstoCode + ":" + x.pstoName,
                                                             Pallet: x.rstoCode,
                                                             Batch: x.pstoBatch,
                                                             Lot: x.pstoLot,
@@ -1763,7 +1763,7 @@ const AmProcessQueue = props => {
                                                             StatusData: 1
                                                         };
                                                     }
-                                                    
+
                                                     dataTBCon.push(dataSorceTBs);
                                                     datasConfirms.push(dataSorceTBs);
                                                     dataTBs.push(dataSorceTBs);
@@ -1778,7 +1778,7 @@ const AmProcessQueue = props => {
                                                         var dataSorceTBsLock
                                                         if (window.project === "STGT") {
                                                             dataSorceTBsLock = {
-                                                                SKU: x.pstoCode + ":" + x.pstoName,                                           
+                                                                SKU: x.pstoCode + ":" + x.pstoName,
                                                                 Pallet: x.rstoCode,
                                                                 Batch: x.pstoBatch,
                                                                 Lot: x.pstoLot,
@@ -1789,7 +1789,7 @@ const AmProcessQueue = props => {
                                                                 StatusData: 2
                                                             };
                                                         } else {
-                                                        dataSorceTBsLock = {
+                                                            dataSorceTBsLock = {
                                                                 SKU: x.pstoCode,
                                                                 Pallet: x.rstoCode,
                                                                 Batch: x.pstoBatch,
@@ -1802,7 +1802,7 @@ const AmProcessQueue = props => {
                                                             };
 
                                                         }
-                                                     
+
                                                         dataTBConLock.push(dataSorceTBsLock);
                                                         datasConfirmsLock.push(dataSorceTBsLock);
                                                         dataTBs.push(dataSorceTBsLock);
@@ -1925,9 +1925,9 @@ const AmProcessQueue = props => {
         setopenDialogClear(true);
         setbodyDailogClear(
             <div style={{ width: "500px", height: "100px" }}>
-                <LabelH>{t("Confirm Clear")}</LabelH>
+                <LabelT style={LabelH}>Confirm Clear</LabelT>
                 <FormInline>
-                    <label>Confirm Clare Data</label>
+                    <LabelT>Confirm Clare Data</LabelT>
                 </FormInline>
             </div>
         );
@@ -2040,7 +2040,7 @@ const AmProcessQueue = props => {
                                                 width: "150px"
                                             }}
                                         >
-                                            <LabelH>Source Warehouse : </LabelH>
+                                            <LabelT style={LabelH}>Source Warehouse : </LabelT>
                                         </div>
                                         <div style={{ marginTop: "10px", marginLeft: "8px" }}>
                                             {" "}
@@ -2076,7 +2076,7 @@ const AmProcessQueue = props => {
                                                 width: "150px"
                                             }}
                                         >
-                                            <LabelH>Document : </LabelH>
+                                            <LabelT style={LabelH}>Document : </LabelT>
                                         </div>
                                         <div style={{ marginTop: "10px", marginLeft: "8px" }}>
                                             {" "}
@@ -2092,7 +2092,7 @@ const AmProcessQueue = props => {
                                                 valueData={valueDocument} //ค่า value ที่เลือก
                                                 //queryApi={apiDoc}
                                                 returnDefaultValue={true}
-                                                defaultValue={btnBack === true  && documentID ? documentID : ""}
+                                                defaultValue={btnBack === true && documentID ? documentID : ""}
                                                 disabled={btnBack === true ? true : false}
                                                 onChange={(value, dataObject) =>
                                                     onHandleChangeDDLDocument(value, dataObject)
@@ -2124,109 +2124,101 @@ const AmProcessQueue = props => {
                             {value === 0 ? (
                                 <div>
                                     {" "}
-                                 
+
                                     {[...DataDocumentItem].map((x, idx) => {
-                                    
+
                                         if (!dataSource[idx]) {
                                             dataSource[idx] = [x];
                                         }
 
                                         if (!dataSorting[idx]) {
                                             if (props.DefaulSorting !== undefined)
-                                            dataSorting[idx] = [...props.DefaulSorting];
+                                                dataSorting[idx] = [...props.DefaulSorting];
                                             //dataSorting[idx] = dataSorting
                                         }
-                                      //return dataSorting[idx].map((yz, idxSort) => {
+                                        //return dataSorting[idx].map((yz, idxSort) => {
 
                                         var columnConditionx = [...columnCondition];
                                         var columnSortx = [...columnSort];
 
-                                            columnConditionx.push(
-                                                {
-                                                    Header: "",
-                                                    width: 110,
-                                                    Cell: e =>
-                                                        e.original.ID < 0 ? (
-                                                            <AmButton
-                                                                style={{ width: 100 }}
-                                                                styleType="info"
-                                                                disable={e.original.ID > 0 ? false : true}
-                                                                onClick={() => {
-                                                                    setEditData(e);
-                                                                    setDialog(true);
-                                                                    setTitle("Edit");
-                                                                    
-                                                                }}
-                                                            >
-                                                                {t("Edit")}
-                                                            </AmButton>
-                                                        ) : null
-                                                },
-                                                {
-                                                    Header: "",
-                                                    width: 110,
-                                                    Cell: e =>
-                                                        e.original.ID < 0 ? (
-                                                            <AmButton
-                                                                style={{ width: 100 }}
-                                                                styleType="delete"
-                                                                disable={e.original.ID > 0 ? false : true}
-                                                                onClick={() => {
-                                                                    onHandleDelete(
-                                                                        e.original.ID,
-                                                                        e.original,
-                                                                        e,
-                                                                        idx
-                                                                    );
-                                                                }}
-                                                            >
-                                                                {t("Remove")}
-                                                            </AmButton>
-                                                        ) : null
-                                                }
-                                            );
-
-                                            columnSortx.push(
-                                                {
-                                                    Header: "",
-                                                    width: 110,
-                                                    Cell: e => (
+                                        columnConditionx.push(
+                                            {
+                                                Header: "",
+                                                width: 110,
+                                                Cell: e =>
+                                                    e.original.ID < 0 ? (
                                                         <AmButton
                                                             style={{ width: 100 }}
                                                             styleType="info"
+                                                            disable={e.original.ID > 0 ? false : true}
                                                             onClick={() => {
-                                                                setEditDataSort(e);
-                                                                setDialogSort(true);
-                                                                setTitleSort("Edit Sort");
-                                                                //setidxSortBtn(idxSort)
+                                                                setEditData(e);
+                                                                setDialog(true);
+                                                                setTitle("Edit");
+
                                                             }}
-                                                        >
-                                                            {t("Edit")}
-                                                        </AmButton>
-                                                    )
-                                                },
-                                                {
-                                                    Header: "",
-                                                    width: 110,
-                                                    Cell: e => (
+                                                        >Edit</AmButton>
+                                                    ) : null
+                                            },
+                                            {
+                                                Header: "",
+                                                width: 110,
+                                                Cell: e =>
+                                                    e.original.ID < 0 ? (
                                                         <AmButton
                                                             style={{ width: 100 }}
                                                             styleType="delete"
+                                                            disable={e.original.ID > 0 ? false : true}
                                                             onClick={() => {
-                                                                onHandleDeleteSort(
+                                                                onHandleDelete(
                                                                     e.original.ID,
                                                                     e.original,
                                                                     e,
                                                                     idx
-                                                                    //idxSort
                                                                 );
                                                             }}
-                                                        >
-                                                            {t("Remove")}
-                                                        </AmButton>
-                                                    )
-                                                }
-                                            );
+                                                        >Remove</AmButton>
+                                                    ) : null
+                                            }
+                                        );
+
+                                        columnSortx.push(
+                                            {
+                                                Header: "",
+                                                width: 110,
+                                                Cell: e => (
+                                                    <AmButton
+                                                        style={{ width: 100 }}
+                                                        styleType="info"
+                                                        onClick={() => {
+                                                            setEditDataSort(e);
+                                                            setDialogSort(true);
+                                                            setTitleSort("Edit Sort");
+                                                            //setidxSortBtn(idxSort)
+                                                        }}
+                                                    >Edit</AmButton>
+                                                )
+                                            },
+                                            {
+                                                Header: "",
+                                                width: 110,
+                                                Cell: e => (
+                                                    <AmButton
+                                                        style={{ width: 100 }}
+                                                        styleType="delete"
+                                                        onClick={() => {
+                                                            onHandleDeleteSort(
+                                                                e.original.ID,
+                                                                e.original,
+                                                                e,
+                                                                idx
+                                                                //idxSort
+                                                            );
+                                                        }}
+                                                    >Remove</AmButton>
+                                                )
+                                            }
+                                        );
 
 
                                         var STqty = qtyInput;
@@ -2234,7 +2226,7 @@ const AmProcessQueue = props => {
                                         var Inqtys = parseInt(x.BaseQuantity, 10);
                                         let qty = _.sum([Inqtys, Inqty]);
 
-                                   
+
                                         if (
                                             x.BaseQuantity !== null &&
                                             !qtyDocItem[idx] &&
@@ -2259,7 +2251,7 @@ const AmProcessQueue = props => {
 
                                             }
                                         }
-                                     
+
                                         if (props.docType === "audit") {
                                             var qtyrandoms = "100";
                                             var es = null;
@@ -2299,24 +2291,24 @@ const AmProcessQueue = props => {
                                                 Onchangepriolity(values, dataObject, idx);
                                             }
                                         }
-                                     
+
                                         if (docDesCustomer !== null && props.StatusfromDescustomer === true) {
                                             if (props.FullPallet === true)
-                                            onChangCheckboxConsFull(null, null, idx);
+                                                onChangCheckboxConsFull(null, null, idx);
 
                                             onChangCheckboxConsRecieve(null, null, idx);
 
                                         }
 
-                                
+
                                         if (docDesWarehouse !== null && props.StatusfromDeswarehouse === true) {
                                             if (props.FullPallet === true)
-                                            onChangCheckboxConsFull(null, null, idx);
+                                                onChangCheckboxConsFull(null, null, idx);
 
                                             onChangCheckboxConsRecieve(null, null, idx);
-                                              onChangCheckboxConsQC(null, null, idx);
-                                              onChangCheckboxConsReturn(null, null, idx);
-                                              onChangCheckboxConsPartail(null, null, idx);
+                                            onChangCheckboxConsQC(null, null, idx);
+                                            onChangCheckboxConsReturn(null, null, idx);
+                                            onChangCheckboxConsPartail(null, null, idx);
 
                                         }
 
@@ -2356,7 +2348,7 @@ const AmProcessQueue = props => {
                                                     onChangCheckboxConsBlock(null, null, idx);
                                                 }
                                             }
-                                         
+
 
                                         }
 
@@ -2365,16 +2357,16 @@ const AmProcessQueue = props => {
                                                 <BorderAdd>
                                                     <Card>
                                                         <FormInline>
-                                                        <AmCheckBox
-                                                            value="checkItem"
-                                                            //label="Receive"
-                                                            //checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
-                                                            defaultChecked={true}
-                                                            //disabled={RecieveFromDoc === true ? true : false}
-                                                            onChange={(e, v) =>
-                                                                onChangCheckboxDocItem(e, idx)
-                                                            }
-                                                        ></AmCheckBox>
+                                                            <AmCheckBox
+                                                                value="checkItem"
+                                                                //label="Receive"
+                                                                //checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                defaultChecked={true}
+                                                                //disabled={RecieveFromDoc === true ? true : false}
+                                                                onChange={(e, v) =>
+                                                                    onChangCheckboxDocItem(e, idx)
+                                                                }
+                                                            ></AmCheckBox>
                                                             {window.project === "STA" ?
                                                                 <AmButton
                                                                     styleType="add_clear"
@@ -2384,7 +2376,7 @@ const AmProcessQueue = props => {
 
                                                                     {x.OrderNo} : {x.Code} :{x.SKUMaster_Name} : {x.SKUMaster_Type}
 
-                                                            <ExpandLessIcon
+                                                                    <ExpandLessIcon
                                                                         className={
                                                                             toggle[idx]
                                                                                 ? classes.expand
@@ -2393,21 +2385,22 @@ const AmProcessQueue = props => {
                                                                     />
                                                                 </AmButton>
 
-                                                              :  <AmButton
-                                                                styleType="add_clear"
-                                                                style={{ marginLeft: "10px" }}
-                                                                onClick={() => onclickToggel(idx)}
-                                                            >
-                                                               
-                                                                {x.Code}: {x.SKUMaster_Name}}
-                                                            <ExpandLessIcon
-                                                                    className={
-                                                                        toggle[idx]
-                                                                            ? classes.expand
-                                                                            : classes.collapse
-                                                                    }
-                                                                />
-                                                            </AmButton> }
+                                                                : <AmButton
+                                                                    styleType="add_clear"
+                                                                    style={{ marginLeft: "10px" }}
+                                                                    onClick={() => onclickToggel(idx)}
+                                                                    append={<ExpandLessIcon
+                                                                        className={
+                                                                            toggle[idx]
+                                                                                ? classes.expand
+                                                                                : classes.collapse
+                                                                        }
+                                                                    />}
+                                                                >
+
+                                                                    {x.Code}: {x.SKUMaster_Name}}
+
+                                                                </AmButton>}
                                                         </FormInline>
                                                         <div style={{ clear: "both" }}></div>
                                                         <Collapse in={toggle[idx]}>
@@ -2424,29 +2417,29 @@ const AmProcessQueue = props => {
                                                                             >
 
                                                                                 {window.project === "STA" ?
-                                                                                    
-                                                                                    <LabelH>
-                                                                                      
-                                                                                        {x.OrderNo} : {x.Code} :{x.SKUMaster_Name} : {x.SKUMaster_Type}
-                                                                                      
-                                                                                    </LabelH>
 
-                                                                                :    <LabelH>
+                                                                                    <label style={LabelH}>
+
+                                                                                        {x.OrderNo} : {x.Code} :{x.SKUMaster_Name} : {x.SKUMaster_Type}
+
+                                                                                    </label>
+
+                                                                                    : <label style={LabelH}>
                                                                                         {x.Code} : {x.SKUMaster_Name}
                                                                                         {palletcode ? (
-                                                                                            <LabelH> / {palletcode}</LabelH>
+                                                                                            <label style={LabelH}> / {palletcode}</label>
                                                                                         ) : null}
                                                                                         {locationcode ? (
-                                                                                            <LabelH> / {locationcode}</LabelH>
+                                                                                            <label style={LabelH}> / {locationcode}</label>
                                                                                         ) : null}
-                                                                                    </LabelH>}
+                                                                                    </label>}
                                                                             </Grid>
-                                                                            <LabelH>{t("Qty")} :</LabelH>{" "}
+                                                                            <LabelT style={LabelH}>Qty :</LabelT>{" "}
                                                                             <label>
-                                                                                
-                                                                               
-                                                                                {x.Quantity === null ? "-" : x.Quantity  } {x.UnitType_Name} (
-                                        {qtyDocItem[idx] === null ? "-" : qtyDocItem[idx] } {x.BaseUnitType_Code})
+
+
+                                                                                {x.Quantity === null ? "-" : x.Quantity} {x.UnitType_Name} (
+                                        {qtyDocItem[idx] === null ? "-" : qtyDocItem[idx]} {x.BaseUnitType_Code})
                                       </label>
                                                                         </Grid>
                                                                     </FormInline>
@@ -2457,7 +2450,7 @@ const AmProcessQueue = props => {
                                                                                 paddingTop: "10px"
                                                                             }}
                                                                         >
-                                                                            <LabelH>{t("Priority")} : </LabelH>
+                                                                            <LabelT style={LabelH}>Priority : </LabelT>
                                                                         </div>
                                                                         <div style={{ marginLeft: "130px" }}>
                                                                             {" "}
@@ -2500,9 +2493,7 @@ const AmProcessQueue = props => {
                                                                                 paddingTop: "10px"
                                                                             }}
                                                                         >
-                                                                            <LabelH>
-                                                                                {t("Advance Condition")} :{" "}
-                                                                            </LabelH>
+                                                                            <LabelT style={LabelH}>Advance Condition : </LabelT>
                                                                             <FormInline>
                                                                                 <div>
                                                                                     {" "}
@@ -2595,10 +2586,10 @@ const AmProcessQueue = props => {
                                                                     ) : null}
                                                                     {props.status === true ? (
                                                                         <FormInline style={{ marginLeft: "15px" }}>
-                                                                            <LabelH>{t("Status")} : </LabelH>
+                                                                            <LabelT style={LabelH}>Status : </LabelT>
                                                                             <FormInline>
 
-                                                                                {props.AllStatus === true ? 
+                                                                                {props.AllStatus === true ?
                                                                                     <div>
                                                                                         <FormInline>
                                                                                             <AmCheckBox
@@ -2634,9 +2625,9 @@ const AmProcessQueue = props => {
                                                                                                 }
                                                                                             >
 
-                                                                                            </AmCheckBox>: null }
+                                                                                            </AmCheckBox> : null}
 
-                                                                                            {props.StatusHold === true? <AmCheckBox
+                                                                                            {props.StatusHold === true ? <AmCheckBox
                                                                                                 value="Hold"
                                                                                                 label="Hold"
                                                                                                 defaultChecked={true}
@@ -2671,27 +2662,27 @@ const AmProcessQueue = props => {
                                                                                             >
 
                                                                                             </AmCheckBox>
-                                                                                       
+
                                                                                         </FormInline>
-                                                                                    </div>     
+                                                                                    </div>
                                                                                     : x.Des_Customer_ID !== null && props.StatusfromDescustomer === true ?
-                                                                                    <div>
-                                                                                        <FormInline>
-                                                                                            <AmCheckBox
-                                                                                                value="Receive"
+                                                                                        <div>
+                                                                                            <FormInline>
+                                                                                                <AmCheckBox
+                                                                                                    value="Receive"
                                                                                                     label="Receive"
 
                                                                                                     defaultChecked={x.Des_Customer_ID ? true : dataSource[idx][0]["Receive"]}
                                                                                                     checked={dataSource[idx] !== undefined ? dataSource[idx][0]["Receive"] : false}
-                                                                                                onChange={(e, v) =>
-                                                                                                    onChangCheckboxStatus(e, idx)
-                                                                                                }
-                                                                                            >
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
                                                                                                 >
+                                                                                                    >
                                               </AmCheckBox>
 
-                                                                                              
-                                                                                            
+
+
                                                                                                 <AmCheckBox
                                                                                                     value="Return"
                                                                                                     label="Returns"
@@ -2714,126 +2705,126 @@ const AmProcessQueue = props => {
                                                                                                 >
 
                                                                                                 </AmCheckBox>
-      
-                                                                                        </FormInline>
-                                                                                    </div>
-                                                                                       
+
+                                                                                            </FormInline>
+                                                                                        </div>
 
 
-                                                                                        : x.Des_Warehouse_ID  !== null && props.StatusfromDeswarehouse === true ?
-                                                                                    <div>
-                                                                                        <FormInline>
-                                                                                            <AmCheckBox
-                                                                                                value="Receive"
-                                                                                                label="Receive"
-                                                                                                defaultChecked={true}
-                                                                                                //checked={true}
-                                                                                                onChange={(e, v) =>
-                                                                                                    onChangCheckboxStatus(e, idx)
-                                                                                                }
-                                                                                            >
-                                                                                                
-                                                                                                    </AmCheckBox>
-                                                                                               
-                                                                         
-                                                                                            <AmCheckBox
-                                                                                                value="QC"
-                                                                                                label="QC"
-                                                                                                checked={true}
-                                                                                                defaultChecked={true}
-                                                                                                onChange={(e, v) =>
-                                                                                                    onChangCheckboxStatus(e, idx)
-                                                                                                }
-                                                                                            >
 
-                                                                                            </AmCheckBox>
-                                                                                            <AmCheckBox
-                                                                                                value="Return"
-                                                                                                label="Returns"
-                                                                                                defaultChecked={true}
-                                                                                                //checked={true}
-                                                                                                onChange={(e, v) =>
-                                                                                                    onChangCheckboxStatus(e, idx)
-                                                                                                }
-                                                                                            >
-
-                                                                                            </AmCheckBox>
-                                                                                            <AmCheckBox
-                                                                                                value="Partial"
-                                                                                                label="Partial"
-                                                                                                defaultChecked={true}
-                                                                                                //checked={true}
-                                                                                                onChange={(e, v) =>
-                                                                                                    onChangCheckboxStatus(e, idx)
-                                                                                                }
-                                                                                            >
-
-                                                                                            </AmCheckBox>
-                                                                                        </FormInline>
-                                                                                    </div>
-                                                                                    : props.receives === true ? (
-                                                                                        <AmCheckBox
-                                                                                            value="Receive"
-                                                                                            label="Receive"
-                                                                                            checked={true}
-                                                                                            onChange={(e, v) =>
-                                                                                                onChangCheckboxConsRecieve(
-                                                                                                    e,
-                                                                                                    v,
-                                                                                                    idx
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            >
-                                          </AmCheckBox>
-                                                                                    ) : (
+                                                                                        : x.Des_Warehouse_ID !== null && props.StatusfromDeswarehouse === true ?
                                                                                             <div>
                                                                                                 <FormInline>
                                                                                                     <AmCheckBox
                                                                                                         value="Receive"
                                                                                                         label="Receive"
-                                                                                                           checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
-                                                                                                                defaultChecked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
-                                                                                                                disabled={RecieveFromDoc === true ? true : false}
+                                                                                                        defaultChecked={true}
+                                                                                                        //checked={true}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
                                                                                                     >
-                                                                                                        >
-                                              </AmCheckBox>
-                                                                                                    <AmCheckBox
-                                                                                                        value="Block"
-                                                                                                        label="Block"
-                                                                                                                checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
-                                                                                                                defaultChecked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
-                                                                                                                disabled={BlockFromDoc === true ? true : false}
-                                                                                                        onChange={(e, v) =>
-                                                                                                            onChangCheckboxStatus(e, idx)
-                                                                                                        }
-                                                                                                    >
-                                                                                                        >
-                                              </AmCheckBox>
+
+                                                                                                    </AmCheckBox>
+
+
                                                                                                     <AmCheckBox
                                                                                                         value="QC"
                                                                                                         label="QC"
-                                                                                                                checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
-                                                                                                                defaultChecked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
-                                                                                                                disabled={QcFromDoc === true ? true : false}
+                                                                                                        checked={true}
+                                                                                                        defaultChecked={true}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
                                                                                                     >
-                                                                                                        >
-                                              </AmCheckBox>
+
+                                                                                                    </AmCheckBox>
+                                                                                                    <AmCheckBox
+                                                                                                        value="Return"
+                                                                                                        label="Returns"
+                                                                                                        defaultChecked={true}
+                                                                                                        //checked={true}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxStatus(e, idx)
+                                                                                                        }
+                                                                                                    >
+
+                                                                                                    </AmCheckBox>
+                                                                                                    <AmCheckBox
+                                                                                                        value="Partial"
+                                                                                                        label="Partial"
+                                                                                                        defaultChecked={true}
+                                                                                                        //checked={true}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxStatus(e, idx)
+                                                                                                        }
+                                                                                                    >
+
+                                                                                                    </AmCheckBox>
                                                                                                 </FormInline>
                                                                                             </div>
-                                                                                        )}
+                                                                                            : props.receives === true ? (
+                                                                                                <AmCheckBox
+                                                                                                    value="Receive"
+                                                                                                    label="Receive"
+                                                                                                    checked={true}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxConsRecieve(
+                                                                                                            e,
+                                                                                                            v,
+                                                                                                            idx
+                                                                                                        )
+                                                                                                    }
+                                                                                                >
+                                                                                                    >
+                                          </AmCheckBox>
+                                                                                            ) : (
+                                                                                                    <div>
+                                                                                                        <FormInline>
+                                                                                                            <AmCheckBox
+                                                                                                                value="Receive"
+                                                                                                                label="Receive"
+                                                                                                                checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                                defaultChecked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                                disabled={RecieveFromDoc === true ? true : false}
+                                                                                                                onChange={(e, v) =>
+                                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                                }
+                                                                                                            >
+                                                                                                                >
+                                              </AmCheckBox>
+                                                                                                            <AmCheckBox
+                                                                                                                value="Block"
+                                                                                                                label="Block"
+                                                                                                                checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                                defaultChecked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                                disabled={BlockFromDoc === true ? true : false}
+                                                                                                                onChange={(e, v) =>
+                                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                                }
+                                                                                                            >
+                                                                                                                >
+                                              </AmCheckBox>
+                                                                                                            <AmCheckBox
+                                                                                                                value="QC"
+                                                                                                                label="QC"
+                                                                                                                checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                                defaultChecked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                                disabled={QcFromDoc === true ? true : false}
+                                                                                                                onChange={(e, v) =>
+                                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                                }
+                                                                                                            >
+                                                                                                                >
+                                              </AmCheckBox>
+                                                                                                        </FormInline>
+                                                                                                    </div>
+                                                                                                )}
                                                                             </FormInline>
                                                                         </FormInline>
                                                                     ) : null}
                                                                     {props.random === true ? (
                                                                         <FormInline style={{ marginLeft: "15px" }}>
-                                                                            <LabelH>{t("Counting")} (%):</LabelH>
+                                                                            <LabelT style={LabelH}>Counting (%):</LabelT>
                                                                             <AmInput
                                                                                 defaultValue={
                                                                                     x.Randoms
@@ -2866,7 +2857,7 @@ const AmProcessQueue = props => {
                                                                                 }}
                                                                             >
                                                                                 {" "}
-                                                                                <LabelH>{t("Sorting")}</LabelH>
+                                                                                <LabelT style={LabelH}>Sorting</LabelT>
                                                                             </div>
                                                                             <AmButton
                                                                                 styleType="add_outline"
@@ -2881,27 +2872,25 @@ const AmProcessQueue = props => {
                                                                                     setindexBtn(idx);
                                                                                     //setidxSortBtn(idxSort)
                                                                                 }}
-                                                                            >
-                                                                                {t("Add Sorting")}
-                                                                            </AmButton>
+                                                                            >Add Sorting</AmButton>
                                                                         </FormInline>
                                                                     ) : null}
                                                                     {props.dataSortShow === true ? (
                                                                         <div style={{ marginTop: "5px" }}>
-                                                                            
+
                                                                             <AmTable
                                                                                 data={dataSorting[idx]}
                                                                                 reload={reload}
                                                                                 columns={columnSortx}
                                                                                 minRows={1}
                                                                                 sortable={false}
-                                                                              
+
                                                                             ></AmTable>
                                                                         </div>
                                                                     ) : null}
                                                                     <FormInline>
                                                                         <div style={{ marginLeft: "15px" }}>
-                                                                            <LabelH>{t("Coditions")}</LabelH>
+                                                                            <LabelT style={LabelH}>Coditions</LabelT>
                                                                         </div>
                                                                         {props.docType !== "audit" ? (
                                                                             <div>
@@ -2918,9 +2907,7 @@ const AmProcessQueue = props => {
                                                                                         setindexBtn(idx);
                                                                                         //setidxSortBtn(idxSort);
                                                                                     }}
-                                                                                >
-                                                                                    {t("Add Conditions")}
-                                                                                </AmButton>
+                                                                                >Add Conditions</AmButton>
                                                                             </div>
                                                                         ) : null}
                                                                     </FormInline>
@@ -2961,9 +2948,7 @@ const AmProcessQueue = props => {
                                     ></Grid>
                                     <Grid item>
                                         <div style={{ marginRight: "10px" }}>
-                                            <AmButton styleType="add" onClick={addConPage}>
-                                                {"Add Queue"}
-                                            </AmButton>
+                                            <AmButton styleType="add" onClick={addConPage}>Add Queue</AmButton>
                                         </div>
                                     </Grid>
                                 </Grid>
@@ -3005,11 +2990,8 @@ const AmProcessQueue = props => {
                                                                     >
                                                                         <div style={{ marginLeft: "15px" }}>
                                                                             <FormInline>
-                                                                             
-                                                                                <LabelHDoc>Document : </LabelHDoc>
-                                                                                <LabelHDoc>
-                                                                                    {x.DataDocumentCode}
-                                                                                </LabelHDoc>
+                                                                                <LabelT style={LabelHDoc}>Document : </LabelT>
+                                                                                <label style={LabelHDoc}>{x.DataDocumentCode}</label>
                                                                                 <AmRediRectInfo
                                                                                     link={false}
                                                                                     textLink={docCodelink}
@@ -3031,14 +3013,12 @@ const AmProcessQueue = props => {
                                                                             styleType="confirm_outline"
                                                                             onClick={() => {
                                                                                 OnclickRemoveAddDocument(
-                                                                                   
+
                                                                                     idx
 
                                                                                 );
                                                                             }}
-                                                                        >
-                                                                            Remove
-                                    </AmButton>
+                                                                        >Remove</AmButton>
 
 
 
@@ -3055,9 +3035,7 @@ const AmProcessQueue = props => {
                                                                                     dataSorts
                                                                                 );
                                                                             }}
-                                                                        >
-                                                                            Edit
-                                    </AmButton>
+                                                                        >Edit</AmButton>
                                                                     </Grid>
                                                                 </Grid>
                                                             </FormInline>
@@ -3087,7 +3065,7 @@ const AmProcessQueue = props => {
                                                                                             width: "200px"
                                                                                         }}
                                                                                     >
-                                                                                        <LabelH>{t(y.label)}</LabelH>
+                                                                                        <LabelT style={LabelH}>{y.label}</LabelT>
                                                                                     </div>
                                                                                     {getDataDetail(
                                                                                         y.type,
@@ -3105,7 +3083,7 @@ const AmProcessQueue = props => {
                                                 </div>
 
                                                 {x.DataDocumentItem.map((y, idxItem) => {
-                                                 
+
                                                     if (
                                                         datasDoc[idx]["DataSource"][idxItem] !== undefined
                                                     )
@@ -3126,21 +3104,21 @@ const AmProcessQueue = props => {
                                                             <BorderQueu>
                                                                 {" "}
                                                                 <Card>
-                                                                 
+
                                                                     {y.CheckDocument === true ?
 
                                                                         <FormInline>
 
-                                                                        <AmCheckBox
+                                                                            <AmCheckBox
 
-                                                                            checked={true}
+                                                                                checked={true}
 
 
                                                                             ></AmCheckBox>
 
 
 
-                                                                            {window.project ==="STA" ?
+                                                                            {window.project === "STA" ?
                                                                                 <AmButton
                                                                                     styleType="info_clear"
                                                                                     style={{ marginLeft: "10px" }}
@@ -3149,7 +3127,7 @@ const AmProcessQueue = props => {
                                                                                             idx + "T" + idxItem
                                                                                         )
                                                                                     }
-                                                                                > { y.OrderNo } : {y.Code} :{y.SKUMaster_Name} : {y.SKUMaster_Type}
+                                                                                > {y.OrderNo} : {y.Code} :{y.SKUMaster_Name} : {y.SKUMaster_Type}
                                                                                     <ExpandLessIcon
                                                                                         className={
                                                                                             toggleQueue[idx + "T" + idxItem]
@@ -3158,24 +3136,24 @@ const AmProcessQueue = props => {
                                                                                         }
                                                                                     />
                                                                                 </AmButton>
-                                                                               : <AmButton
-                                                                                styleType="info_clear"
-                                                                                style={{ marginLeft: "10px" }}
-                                                                                onClick={() =>
-                                                                                    onclickToggelDataQueue(
-                                                                                        idx + "T" + idxItem
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                {y.Code}:{y.SKUMaster_Name}
-                                                                                <ExpandLessIcon
-                                                                                    className={
-                                                                                        toggleQueue[idx + "T" + idxItem]
-                                                                                            ? classes.expand
-                                                                                            : classes.collapse
+                                                                                : <AmButton
+                                                                                    styleType="info_clear"
+                                                                                    style={{ marginLeft: "10px" }}
+                                                                                    onClick={() =>
+                                                                                        onclickToggelDataQueue(
+                                                                                            idx + "T" + idxItem
+                                                                                        )
                                                                                     }
-                                                                                />
-                                                                            </AmButton>}
+                                                                                >
+                                                                                    {y.Code}:{y.SKUMaster_Name}
+                                                                                    <ExpandLessIcon
+                                                                                        className={
+                                                                                            toggleQueue[idx + "T" + idxItem]
+                                                                                                ? classes.expand
+                                                                                                : classes.collapse
+                                                                                        }
+                                                                                    />
+                                                                                </AmButton>}
                                                                         </FormInline>
 
                                                                         : <FormInline> <AmCheckBox
@@ -3205,8 +3183,8 @@ const AmProcessQueue = props => {
                                                                         </FormInline>
 
                                                                     }
-                                                                   
-     
+
+
 
                                                                     <div style={{ clear: "both" }}></div>
                                                                     <Collapse
@@ -3225,37 +3203,37 @@ const AmProcessQueue = props => {
                                                                                                 marginLeft: "15px"
                                                                                             }}
                                                                                         >
-                                                                                            
-                                                                                          
-                                                                                               
+
+
+
                                                                                             {window.project === "STA" ? <div style={{ width: "800px" }}>
-                                                                                                <LabelH >
+                                                                                                <label style={LabelH}>
                                                                                                     {y.OrderNo} : {y.Code} :{y.SKUMaster_Name} : {y.SKUMaster_Type}
-                                                                                            </LabelH> </div>
+                                                                                                </label> </div>
                                                                                                 : <div style={{ width: "800px" }}>
-                                                                                                    < LabelH >
+                                                                                                    <label style={LabelH} >
                                                                                                         {y.Code} : {y.SKUMaster_Name}
-                                                                                                    </LabelH>
+                                                                                                    </label>
                                                                                                     {y.palletcode ?
-                                                                                                        <LabelH>
+                                                                                                        <label style={LabelH}>
                                                                                                             {" "}
                                                                                                             / {y.palletcode}
-                                                                                                        </LabelH>
+                                                                                                        </label>
                                                                                                         : null}
                                                                                                     {y.locationcode ?
-                                                                                                        <LabelH>
+                                                                                                        <label style={LabelH}>
                                                                                                             {" "}
                                                                                                             / {y.locationcode}
-                                                                                                        </LabelH>
+                                                                                                        </label>
                                                                                                         : null}
 
                                                                                                 </div>
-                                                                                                    
-                                                                                                    }
-                                                                                            
-                                                                                              
+
+                                                                                            }
+
+
                                                                                             <div>
-                                                                                                <LabelH>{t("Qty")} :</LabelH>{" "}
+                                                                                                <LabelT style={LabelH}>Qty :</LabelT>{" "}
                                                                                                 <label>
                                                                                                     {y.Quantity === null ? "-" : y.Quantity} {y.UnitType_Name}(
                                                                                                       {y.BaseqtyMax === null ? "-" : y.BaseqtyMax}{" "}
@@ -3271,7 +3249,7 @@ const AmProcessQueue = props => {
                                                                                             }}
                                                                                         >
                                                                                             <div style={{ width: "200px" }}>
-                                                                                                <LabelH>{t("Priority")} :</LabelH>
+                                                                                                <LabelT style={LabelH}>Priority :</LabelT>
                                                                                             </div>
                                                                                             <label
                                                                                                 style={{ marginLeft: "15px" }}
@@ -3290,9 +3268,7 @@ const AmProcessQueue = props => {
                                                                                                 }}
                                                                                             >
                                                                                                 <div style={{ width: "200px" }}>
-                                                                                                    <LabelH>
-                                                                                                        {t("Advance Condition")} :{" "}
-                                                                                                    </LabelH>
+                                                                                                    <LabelT style={LabelH}>Advance Condition : </LabelT>
                                                                                                 </div>
                                                                                                 <label
                                                                                                     style={{ marginLeft: "15px" }}
@@ -3322,7 +3298,7 @@ const AmProcessQueue = props => {
                                                                                                         ? "ExpireDate"
                                                                                                         : ""}
                                                                                                 </label>
-                                                                                              
+
                                                                                             </FormInline>
                                                                                         ) : null}
                                                                                         {props.status === true ? (
@@ -3333,7 +3309,7 @@ const AmProcessQueue = props => {
                                                                                                 }}
                                                                                             >
                                                                                                 <div style={{ width: "200px" }}>
-                                                                                                    <LabelH>{t("Status")} :</LabelH>
+                                                                                                    <LabelT style={LabelH}>Status :</LabelT>
                                                                                                 </div>
 
                                                                                                 <label
@@ -3386,9 +3362,7 @@ const AmProcessQueue = props => {
                                                                                                 }}
                                                                                             >
                                                                                                 <div style={{ width: "200px" }}>
-                                                                                                    <LabelH>
-                                                                                                        {t("Counting")} (%) :{" "}
-                                                                                                    </LabelH>
+                                                                                                    <labelPattern style={LabelH}>Counting (%) : </labelPattern>
                                                                                                 </div>
                                                                                                 <label
                                                                                                     style={{
@@ -3412,7 +3386,7 @@ const AmProcessQueue = props => {
                                                                                                     width: "200px"
                                                                                                 }}
                                                                                             >
-                                                                                                <LabelH>{t("Sorting")}</LabelH>
+                                                                                                <LabelT style={LabelH}>Sorting</LabelT>
                                                                                             </div>
                                                                                         ) : null}
                                                                                         {props.docType !== "audit" ? (
@@ -3437,7 +3411,7 @@ const AmProcessQueue = props => {
                                                                                                 width: "200px"
                                                                                             }}
                                                                                         >
-                                                                                            <LabelH>{t("Coditions")}</LabelH>
+                                                                                            <LabelT style={LabelH}>Coditions</LabelT>
                                                                                         </div>
                                                                                         <div style={{ marginTop: "5px" }}>
                                                                                             <AmTable
@@ -3472,7 +3446,7 @@ const AmProcessQueue = props => {
                                         <Grid container spacing={24}>
                                             <Grid item xs container direction="column" spacing={16}>
                                                 <div style={{ paddingTop: "10px" }}>
-                                                    <LabelHDes>Destination Warehouse :</LabelHDes>{" "}
+                                                    <LabelT style={LabelHDes}>Destination Warehouse :</LabelT>{" "}
                                                     <label>
                                                         {" "}
                                                         {dataConfirmQ["desASRSWarehouseCode"]} :
@@ -3482,36 +3456,35 @@ const AmProcessQueue = props => {
                                             </Grid>
                                             <Grid item>
                                                 <FormInline style={{ marginRight: "10px" }}>
-                                                    {window.project === "STA" && props.docType  !== "audit" ? 
+                                                    {window.project === "STA" && props.docType !== "audit" ?
 
                                                         <FormInline>
                                                             {" "}
-
-                                                            <LabelHDes>Destination Area :</LabelHDes>
+                                                            <LabelT style={LabelHDes}>Destination Area :</LabelT>
                                                             <InputDiv>
 
                                                                 <AmDropdown
                                                                     id="desASRSAreaCode"
                                                                     placeholder="Select"
-                                                                    fieldDataKey="ID" 
-                                                                    fieldLabel={["Code", "Name"]} 
-                                                                    labelPattern=" : " 
-                                                                    width={300} 
-                                                                    ddlMinWidth={300} 
+                                                                    fieldDataKey="ID"
+                                                                    fieldLabel={["Code", "Name"]}
+                                                                    labelPattern=" : "
+                                                                    width={300}
+                                                                    ddlMinWidth={300}
                                                                     //valueData={valueText[idddls]} 
                                                                     queryApi={AreaMaster}
                                                                     returnDefaultValue={true}
                                                                     defaultValue={defaulDDLAreaWare === true ? 8 : defaulDDLAreaWip === true ? 8
-                                                                        : defaulDDLAreaCus === true ? 11 :  defaulDDLAreaEmp === true ? 11 : null }
-                                                                   // disabled={defaultValue ? true : false}
-                                                             
+                                                                        : defaulDDLAreaCus === true ? 11 : defaulDDLAreaEmp === true ? 11 : null}
+                                                                    // disabled={defaultValue ? true : false}
+
                                                                     onChange={(value, dataObject, inputID, fieldDataKey) =>
                                                                         onHandleChangeDDLProcessAPI(
                                                                             value,
                                                                             dataObject,
                                                                             inputID,
                                                                             fieldDataKey
-                                                                      
+
                                                                         )
                                                                     }
                                                                     ddlType={"search"} //�ٻẺ Dropdown
@@ -3519,25 +3492,21 @@ const AmProcessQueue = props => {
                                                             </InputDiv>
                                                         </FormInline>
 
-                                                        :<div>{processDLLs}</div>}
+                                                        : <div>{processDLLs}</div>}
                                                     <AmButton
                                                         style={{ width: "80px", marginLeft: "5px" }}
                                                         styleType="confirm"
                                                         onClick={() => {
                                                             OnclickConfirmQueue();
                                                         }}
-                                                    >
-                                                        Process
-                          </AmButton>
+                                                    >Process</AmButton>
                                                     <AmButton
                                                         style={{ width: "80px", marginLeft: "5px" }}
                                                         styleType="delete"
                                                         onClick={() => {
                                                             OnclickConfirmCleare();
                                                         }}
-                                                    >
-                                                        Clear
-                          </AmButton>
+                                                    >Clear</AmButton>
                                                 </FormInline>
                                             </Grid>
                                         </Grid>{" "}
@@ -3579,9 +3548,7 @@ const AmProcessQueue = props => {
                         onClick={() => {
                             OnConfirmprocess();
                         }}
-                    >
-                        {t("OK")}
-                    </AmButton>
+                    >OK</AmButton>
                 }
                 customCancelBtn={
                     <AmButton
@@ -3589,9 +3556,7 @@ const AmProcessQueue = props => {
                         onClick={() => {
                             setopenDialogCon(false);
                         }}
-                    >
-                        {t("Cancel")}
-                    </AmButton>
+                    >Cancel</AmButton>
                 }
             ></AmDialogConfirm>
             <AmDialogConfirm
@@ -3605,9 +3570,7 @@ const AmProcessQueue = props => {
                         onClick={() => {
                             OnConfirmClear();
                         }}
-                    >
-                        {t("OK")}
-                    </AmButton>
+                    >OK</AmButton>
                 }
                 customCancelBtn={
                     <AmButton
@@ -3615,9 +3578,7 @@ const AmProcessQueue = props => {
                         onClick={() => {
                             setopenDialogClear(false);
                         }}
-                    >
-                        {t("Cancel")}
-                    </AmButton>
+                    >Cancel</AmButton>
                 }
             ></AmDialogConfirm>
         </div>

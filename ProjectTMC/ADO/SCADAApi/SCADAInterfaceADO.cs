@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static ProjectTMC.Model.SCADACriteria;
+using static ProjectTMC.Model.Criteria.SCADACriteria;
 
 namespace ProjectTMC.ADO.SCADAApi
 {
@@ -13,7 +13,7 @@ namespace ProjectTMC.ADO.SCADAApi
          
         public class TRes
         {
-            public dynamic dataScada;
+            public dynamic data;
             public Result _result;
 
             public class Result
@@ -28,7 +28,7 @@ namespace ProjectTMC.ADO.SCADAApi
             var resScada = this.SendJson<dynamic>("SCADA_CONNECT", reqVO, null, buVO);
             if(resScada.scada_status2 == 1)//case success
             {
-                res.dataScada = resScada;
+                res.data = resScada;
                 res._result = new TRes.Result()
                 {
                     message = "SUCCESS",
@@ -37,7 +37,7 @@ namespace ProjectTMC.ADO.SCADAApi
             }
             else//case error
             {
-                res.dataScada = resScada;
+                res.data = resScada;
                 res._result = new TRes.Result()
                 {
                     message = "Cannot connect to Scada.",
@@ -52,7 +52,7 @@ namespace ProjectTMC.ADO.SCADAApi
             var resScada = this.SendJson<dynamic>("SCADA_CONNECT", reqVO, null, buVO);
             if (resScada.scada_status2 == 1)//case success
             {
-                res.dataScada = resScada;
+                res.data = resScada;
                 res._result = new TRes.Result()
                 {
                     message = "SUCCESS",
@@ -61,7 +61,7 @@ namespace ProjectTMC.ADO.SCADAApi
             }
             else//case error
             {
-                res.dataScada = resScada;
+                res.data = resScada;
                 res._result = new TRes.Result()
                 {
                     message = "Cannot connect to Scada.",

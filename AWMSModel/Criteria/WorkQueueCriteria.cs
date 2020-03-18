@@ -36,7 +36,7 @@ namespace AWMSModel.Criteria
             {
                 public string code;
                 public decimal qty;
-                public string unti;
+                public string unit;
                 public decimal baseQty;
                 public string baseUnit;
                 public string batch;

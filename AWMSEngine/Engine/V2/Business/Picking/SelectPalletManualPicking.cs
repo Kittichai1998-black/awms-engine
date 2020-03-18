@@ -177,7 +177,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     batch = x.Batch,
                     destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
                     pickItems = pickItemList,
-                    movement = ADO.DataADO.GetInstant().SelectByID<ams_MovementType>(x.MovementType_ID, this.BuVO).Name,
+                    movement = ADO.DataADO.GetInstant().SelectByID<ams_DocumentProcessType>(x.DocumentProcessType_ID, this.BuVO).Name,
                     createtime = x.CreateTime
 
 

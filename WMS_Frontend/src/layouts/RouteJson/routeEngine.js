@@ -4,6 +4,7 @@ import React from "react";
 function Loading() {
   return <div>Loading...</div>;
 }
+
 const Test1 = Loadable({
   loader: () => import("../../views/page/TableExample"),
   loading: Loading
@@ -100,14 +101,104 @@ const TestProcessQueueV2 = Loadable({
   loader: () => import("../../views/page/TestProcessQueueV2"),
   loading: Loading
 });
+const TableV2 = Loadable({
+  loader: () => import("../../views/page/TableInDev"),
+  loading: Loading
+});
+
+const GR_Create = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
+  loading: Loading
+});
+const GR_Detail = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Detail"),
+  loading: Loading
+});
+const GR_Search = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Search"),
+  loading: Loading
+});
+const GI_Create = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Create"),
+  loading: Loading
+});
+const GI_Detail = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Detail"),
+  loading: Loading
+});
+const GI_Search = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_Search"),
+  loading: Loading
+});
+const GI_WorkQueue = Loadable({
+  loader: () => import("../../views/page/ENGINE/GI/GI_WorkQueue"),
+  loading: Loading
+});
+const MonitorPicking = Loadable({
+  loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
+  loading: Loading
+});
+const DownloadLog = Loadable({
+  loader: () => import("../../views/page/ENGINE/DownloadLog"),
+  loading: Loading
+});
+
 const routes = [
+  {
+    path: "/monitor/picking",
+    name: "Monitor Picking",
+    compoment: MonitorPicking,
+    exact: true
+  },
+
+  {
+    path: "/receive/create",
+    name: "GR Create",
+    compoment: GR_Create,
+    exact: true
+  },
+  {
+    path: "/receive/detail",
+    name: "GR View",
+    compoment: GR_Detail,
+    exact: true
+  },
+  {
+    path: "/receive/search",
+    name: "GR View",
+    compoment: GR_Search,
+    exact: true
+  },
+
+  {
+    path: "/issue/create",
+    name: "GI Create",
+    compoment: GI_Create,
+    exact: true
+  },
+  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
+  { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
+  {
+    path: "/issue/managequeue",
+    name: "GI Manage Queue",
+    compoment: GI_WorkQueue,
+    exact: true
+  },
+
+  {
+    path: "/download_log",
+    name: "Download Log File",
+    compoment: DownloadLog,
+    exact: true
+  },
+
   {
     path: "/counting/manualcounting",
     name: "base5",
     compoment: CountingAdj,
     exact: true
   },
-  { path: "/doc/gr/list", name: "base1", compoment: Test1, exact: true },
+  { path: "/test", name: "base1", compoment: Test1, exact: true },
   { path: "/doc/gi/list", name: "base2", compoment: Test2, exact: true },
   { path: "/doc/gi/create", name: "base3", compoment: Test3, exact: true },
   {
@@ -215,7 +306,8 @@ const routes = [
     name: "TestProcessQueue ",
     compoment: TestProcessQueueV2,
     exact: true
-  }
+  },
+  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true }
   // { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
 ];
 

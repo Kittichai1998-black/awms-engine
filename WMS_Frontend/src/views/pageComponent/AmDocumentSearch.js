@@ -16,6 +16,7 @@ import AmDatePicker from "../../components/AmDate";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import queryString from "query-string";
+import LabelT from '../../components/AmLabelMultiLanguage'
 // const createQueryString = select => {
 //   let queryS =
 //     select.queryString +
@@ -32,10 +33,11 @@ import queryString from "query-string";
 //   return queryS;
 // };
 const Axios = new apicall();
-const LabelH = styled.label`
-  font-weight: bold;
-  width: 200px;
-`;
+const LabelH = {
+  "font-weight": "bold",
+  width: "200px"
+}
+
 
 const InputDiv = styled.div``;
 const FormInline = styled.div`
@@ -539,7 +541,7 @@ const AmDocumentSearch = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH>{t(name)} : </LabelH>
+          <LabelT style={LabelH}>{name} : </LabelT>
           <InputDiv>
             <AmInput
               id={cols.field}
@@ -563,7 +565,7 @@ const AmDocumentSearch = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH>{t(name)} : </LabelH>
+          <LabelT style={LabelH}>{name} : </LabelT>
           <AmDropdown
             disabled={disabled}
             required={required}
@@ -588,7 +590,7 @@ const AmDocumentSearch = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH>{t(name)} : </LabelH>
+          <LabelT style={LabelH}>{name} : </LabelT>
           <AmDropdown
             id={cols.field}
             required={required}
@@ -648,7 +650,7 @@ const AmDocumentSearch = props => {
     return (
       <FormInline>
         {" "}
-        <LabelH>{name} : </LabelH>
+        <LabelT style={LabelH}>{name} : </LabelT>
         <InputDiv>
           <AmInput
             id={cols.field}
@@ -889,8 +891,8 @@ const AmDocumentSearch = props => {
             {t("Close")}
           </AmButton>
         ) : (
-          ""
-        )}
+            ""
+          )}
         {props.buttonReject === true ? (
           props.docTypeCode === "1001" ? (
             <AmButton
@@ -905,22 +907,22 @@ const AmDocumentSearch = props => {
               {t("Reject")}
             </AmButton>
           ) : (
-            <AmButton
-              onClick={() => {
-                //onClickReject();
-                //FuncRanderRemark();
-                onReject();
-                //setDialog(true);
-              }}
-              style={{ marginRight: "5px" }}
-              styleType="delete"
-            >
-              {t("Reject")}
-            </AmButton>
-          )
+              <AmButton
+                onClick={() => {
+                  //onClickReject();
+                  //FuncRanderRemark();
+                  onReject();
+                  //setDialog(true);
+                }}
+                style={{ marginRight: "5px" }}
+                styleType="delete"
+              >
+                {t("Reject")}
+              </AmButton>
+            )
         ) : (
-          ""
-        )}
+            ""
+          )}
         {props.buttonWorking === true ? (
           <AmButton
             onClick={() => {
@@ -933,8 +935,8 @@ const AmDocumentSearch = props => {
             {t("Working")}
           </AmButton>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </div>
       <div>
         <AmPagination

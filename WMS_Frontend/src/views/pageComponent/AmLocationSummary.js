@@ -62,54 +62,56 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         Axios.get(createQueryString(locationSummary)).then((row) => {
-            if (row.data.datas.length)
+            if (row.data._result.status && row.data.datas.length) {
                 setDataAll(row.data.datas)
 
-            let pack = row.data.datas.filter(x => x.bsto_Code),
-                palletLen = getUnique(pack, "bsto_Code").length,
-                palletAll = getUnique(row.data.datas, "Code").length,
-                palletPer = (palletLen / palletAll * 100).toFixed(3),
-                groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
-                groupBankP = groupBy(row.data.datas.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
-                // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
-                // groupLevelP = groupBy(pack.sort((a, b) => (a.Level > b.Level) ? 1 : ((b.Level > a.Level) ? -1 : 0)), "Level"),
-                setFull = (
-                    <Card style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
-                            {/* <div style={{ textAlign: "center" }}>
-                                <b style={{ color: "red" }}>Location : {x[0].Code}</b>
-                            </div> */}
-                            <p style={{ margin: "0px" }}><b>Used Location</b></p>
-                            <p style={{ margin: "0px" }}>Pallet : {palletLen}/{palletAll} {`(${palletPer}%)`}</p>
-                            <p style={{ margin: "0px" }}>Pack : {pack.length}</p>
+                let pack = row.data.datas.filter(x => x.bsto_Code),
+                    palletLen = getUnique(pack, "bsto_Code").length,
+                    palletAll = getUnique(row.data.datas, "Code").length,
+                    palletPer = (palletLen / palletAll * 100).toFixed(3),
+                    groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
+                    groupBankP = groupBy(row.data.datas.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
+                    // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
+                    // groupLevelP = groupBy(pack.sort((a, b) => (a.Level > b.Level) ? 1 : ((b.Level > a.Level) ? -1 : 0)), "Level"),
+                    setFull = (
+                        <Card style={{ margin: "5px" }}>
+                            <CardContent style={{ padding: "5px" }}>
+                                {/* <div style={{ textAlign: "center" }}>
+                                    <b style={{ color: "red" }}>Location : {x[0].Code}</b>
+                                </div> */}
+                                <p style={{ margin: "0px" }}><b>Used Location</b></p>
+                                <p style={{ margin: "0px" }}>Pallet : {palletLen}/{palletAll} {`(${palletPer}%)`}</p>
+                                <p style={{ margin: "0px" }}>Pack : {pack.length}</p>
 
-                            {groupSKUP.length ? (
-                                <Aux>
-                                    <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>SKU Type</b></p>
-                                    {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
-                                </Aux>
-                            ) : null}
+                                {groupSKUP.length ? (
+                                    <Aux>
+                                        <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>SKU Type</b></p>
+                                        {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
+                                    </Aux>
+                                ) : null}
 
-                            {pack.length ? (
-                                <Aux>
-                                    <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>Bank</b></p>
-                                    {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
+                                {pack.length ? (
+                                    <Aux>
+                                        <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>Bank</b></p>
+                                        {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
 
-                                    {/* <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>Bay</b></p>
-                                    {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
+                                        {/* <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>Bay</b></p>
+                                        {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
+    
+                                        <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>Level</b></p>
+                                        {groupLevelP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Level)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
+                                    </Aux>
+                                ) : null}
+                            </CardContent>
+                        </Card>
+                    )
+                setDataFull(setFull)
+            }
 
-                                    <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>Level</b></p>
-                                    {groupLevelP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Level)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
-                                </Aux>
-                            ) : null}
-                        </CardContent>
-                    </Card>
-                )
-            setDataFull(setFull)
         })
     }, [])
 
@@ -137,11 +139,12 @@ const AmLocationSummary = props => {
             // bank.push({})
             // bay.push({})
             // level.push({})
+            console.log(bank);
 
             let bayPercen_10 = (bay.length - 1) * 0.1,
                 padding = "5px",
                 palletLen = (bank.length - 1) * (bay.length - 1),
-                dataT = bank.map((x, xi) => {
+                dataT = bank.sort((a, b) => (a.Bank > b.Bank) ? -1 : ((b.Bank > a.Bank) ? 1 : 0)).map((x, xi) => {
                     let countPalletBank = 0
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
@@ -154,7 +157,7 @@ const AmLocationSummary = props => {
                                 } else if (xi === 0 && yi && yi % bayPercen_10 !== 0 && bayPercen_10 % 1 !== 0) { // header แกน y
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
                                 } else if (yi === 0 && xi) { // header แกน y
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{xi}</td>
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{parseInt(x.Bank)}</td>
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
                                 } else if (yi && xi) {
@@ -232,7 +235,7 @@ const AmLocationSummary = props => {
             topTr = e.currentTarget
 
             let padding = "8px",
-                dataS = level.map((x, xi) => {
+                dataS = level.sort((a, b) => (a.Level > b.Level) ? -1 : ((b.Level > a.Level) ? 1 : 0)).map((x, xi) => {
                     return (
                         <tr key={xi}>{
                             bay.map((y, yi) => {
@@ -243,11 +246,11 @@ const AmLocationSummary = props => {
                                 if (xi === 0 && yi) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{yi}</td>
                                 } else if (yi === 0 && xi) {
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{xi}</td>
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{x.Level}</td>
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Level\Bay</td>
                                 } else {
-                                    let color = dataFil.length ? "red" : null,
+                                    let color = dataFil.length ? "#993300" : null,
                                         cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td
@@ -302,7 +305,7 @@ const AmLocationSummary = props => {
         let chk
 
         if (e.currentTarget.style.border.search("black") !== -1 && e.currentTarget.style.backgroundColor) {
-            e.currentTarget.style.border = "2px solid blue"
+            e.currentTarget.style.border = "2px solid Aqua"
             sideTd.push(e.currentTarget)
             chk = true
         }
@@ -367,7 +370,7 @@ const AmLocationSummary = props => {
     const bgColor = (num) => {
         switch (true) {
             case (num >= 1 && num <= 25):
-                return "#A8F552";
+                return "#00ff00";
             case (num >= 26 && num <= 50):
                 return "yellow"
             case (num >= 51 && num <= 75):

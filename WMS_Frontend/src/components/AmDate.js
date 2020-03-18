@@ -23,20 +23,26 @@ const AmDate = props => {
   const [fieldID, setFieldID] = useState(props.FieldID);
 
   useEffect(() => {
-    if (props.defaultValue === true) {
+    if (props.defaultValue) {
       const dataReturndefault = {};
-      if (type === "time") {
+      if (typeof props.defaultValue === "string") {
         dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = TimeNow;
-        dataReturndefault.fieldDataObject = TimeNow;
+        dataReturndefault.fieldDataKey = props.defaultValue;
+        dataReturndefault.fieldDataObject = props.defaultValue;
         props.onChange(dataReturndefault);
       } else {
-        dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = DateNow;
-        dataReturndefault.fieldDataObject = DateNow;
-        props.onChange(dataReturndefault);
+        if (type === "time") {
+          dataReturndefault.fieldID = fieldID;
+          dataReturndefault.fieldDataKey = TimeNow;
+          dataReturndefault.fieldDataObject = TimeNow;
+          props.onChange(dataReturndefault);
+        } else {
+          dataReturndefault.fieldID = fieldID;
+          dataReturndefault.fieldDataKey = DateNow;
+          dataReturndefault.fieldDataObject = DateNow;
+          props.onChange(dataReturndefault);
+        }
       }
-
       //props.onChange(type === "time"?TimeNow:DateNow);
     }
   }, []);
@@ -77,14 +83,13 @@ const AmDate = props => {
     <form noValidate>
       <TextField
         style={{ backgroundColor: "white", width: props.width }}
-        id="date"
+        // id="date"
         type={type}
         disabled={disabled ? disabled : false}
         defaultValue={
-          props.defaultValue === true
-            ? type === "time"
-              ? TimeNow
-              : DateNow
+          props.defaultValue ?
+            (typeof props.defaultValue === "string") ? props.defaultValue :
+              type === "time" ? TimeNow : DateNow
             : ""
         }
         //defaultValue={type === "time"?TimeNow:DateNow}
@@ -92,8 +97,6 @@ const AmDate = props => {
           shrink: true
         }}
         onChange={e => {
-          // console.log("d")
-          // console.log(moment(e.target.value).isValid())
 
           if (type === "time") {
             if (e.target.value) {

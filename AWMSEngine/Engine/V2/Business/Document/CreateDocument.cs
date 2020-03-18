@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public long? forCustomerID;
             public string forCustomerCode;
             public int? transportID;
-            public MovementType movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public string batch;
             public string lot;
@@ -170,7 +170,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
-                MovementType_ID = reqVO.movementTypeID,
+                DocumentProcessType_ID = reqVO.documentProcessTypeID,
                 Batch = reqVO.batch,
                 Lot = reqVO.lot,
                 Options = reqVO.options,

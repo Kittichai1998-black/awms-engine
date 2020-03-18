@@ -8,6 +8,7 @@ import AmIconStatus from "../../../../components/AmIconStatus";
 import DocView from "../../../pageComponent/DocumentView";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import AmDocumentStatus from "../../../../components/AmDocumentStatus";
+import AmRedirectLogDoc from "../../../../components/AmRedirectLogDoc";
 const Axios = new apicall();
 
 //======================================================================
@@ -151,6 +152,12 @@ const DocumentSearchGI = props => {
       Header: "LastUpdate",
       accessor: "LastUpdate",
       width: 200
+    },
+    {
+      width: 60,
+      accessor: "",
+      Header: "Log",
+      Cell: e => getRedirectLog(e.original)
     }
   ];
 
@@ -224,7 +231,26 @@ const DocumentSearchGI = props => {
       </div>
     );
   };
-
+  const getRedirectLog = data => {
+    //console.log(data);
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px"
+        }}
+      >
+        <AmRedirectLogDoc
+          api={"/log/documentlog?id=" + data.ID}
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLogDoc>
+      </div>
+    );
+  };
   return (
     <div>
       <AmDocumentSearch

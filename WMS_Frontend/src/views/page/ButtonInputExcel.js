@@ -18,6 +18,7 @@ import AmStorageObjectStatus from "../../components/AmStorageObjectStatus";
 import { Typography } from "@material-ui/core";
 import AmInput from "../../components/AmInput";
 import { apicall, createQueryString } from '../../components/function/CoreFunction'
+import SvgIcon from '@material-ui/core/SvgIcon';
 const Axios = new apicall()
 
 const styles = theme => ({
@@ -177,7 +178,13 @@ const useExportExcel = (initialData, querySelect) => {
 
     return { data, onClickLoad };
 };
-
+function JsonIcon(props) {
+    return (
+        <SvgIcon {...props} >
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+        </SvgIcon>
+    );
+}
 function Test5(props) {
 
     const { classes } = props;
@@ -391,8 +398,8 @@ function Test5(props) {
                     {'Test info'}
                 </AmButton>
                 <br />
-                <AmButton styleType="warning" className={classNames(classes.button)}>
-                    <SaveIcon className={classNames(classes.leftIcon)} />
+                <AmButton styleType="warning" className={classNames(classes.button)}
+                    startIcon={<SaveIcon className={classNames(classes.leftIcon)} />}>
                     {'Test warning'}
                 </AmButton>
                 {' - '}
@@ -417,8 +424,8 @@ function Test5(props) {
                 </AmButton>
                 {' - '}
                 <br />
-                <AmButton styleType="default" className={classNames(classes.button)}>
-                    <SaveIcon className={classNames(classes.leftIcon)} />
+                <AmButton styleType="default" className={classNames(classes.button)}
+                    startIcon={<SaveIcon className={classNames(classes.leftIcon)} />}>
                     {'Test default'}
                 </AmButton>
                 {' - '}
@@ -443,8 +450,8 @@ function Test5(props) {
                 </AmButton>
                 {' - '}
                 <br />
-                <AmButton styleType="dark" style={{ lineHeight: 1.5 }}>
-                    <SaveIcon className={classNames(classes.leftIcon)} />
+                <AmButton styleType="dark" style={{ lineHeight: 1.5 }}
+                    startIcon={<SaveIcon className={classNames(classes.leftIcon)} />}>
                     {'Test dark'}
                 </AmButton>
                 {' - '}
@@ -551,6 +558,8 @@ function Test5(props) {
                 <AmCheckBox checked={state.checkedB} value="checkedB" onChange={handleChange('checkedB')} />
                 <AmCheckBox checked={state.checkedF} value="checkedF" styleType="error" onChange={handleChange('checkedF')} /> */}
             </AppWrapper>
+
+            <JsonIcon fontSize='small' style={{ color: "#1a237e" }} />
         </div>
     );
 

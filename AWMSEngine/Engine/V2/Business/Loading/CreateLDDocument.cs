@@ -52,20 +52,10 @@ namespace AWMSEngine.Engine.V2.Business.Loading
             newDoc.DocumentItems = this.NewDocumentItem(reqVO, newDoc);
             var res = ADO.DocumentADO.GetInstant().Create(newDoc, this.BuVO);
 
-            foreach(var docItem in res.DocumentItems)
-            {
-                var MappingLD = MappingDistoLD(new TReq() { docIDs = docItem.LinkDocument_ID.Value });
-            }
-           
 
             return res;
         }
-        
-        protected List<amt_DocumentItemStorageObject> MappingDistoLD(TReq reqVO)
-        {
-            var res = this.ExectProject<TReq, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, reqVO);
-            return null;
-        }
+
         private amt_Document NewDocument(TDocReq reqVO)
         {
             var desCustomer = reqVO.desCustomerID.HasValue ?
@@ -112,7 +102,7 @@ namespace AWMSEngine.Engine.V2.Business.Loading
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
-                DocumentType_ID = DocumentTypeID.GOODS_LOADING,
+                DocumentType_ID = DocumentTypeID.LOADING,
 
                 Remark = reqVO.remark,
 

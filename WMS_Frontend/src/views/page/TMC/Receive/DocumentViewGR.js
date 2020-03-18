@@ -5,6 +5,7 @@ import { Button } from "@material-ui/core";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
+import AmRedirectLog from "../../../../components/AmRedirectLog";
 import queryString from "query-string";
 
 const DocumentViewGR = props => {
@@ -51,7 +52,13 @@ const DocumentViewGR = props => {
     { accessor: "packName", Header: "SKU Name" },
     { width: 125, accessor: "lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" },
+    {
+      width: 100,
+      accessor: "",
+      Header: "Log ",
+      Cell: e => getRedirect(e.original)
+    }
   ];
 
   const columnsDetailDES = [
@@ -79,7 +86,49 @@ const DocumentViewGR = props => {
     var ID = values.docID.toString();
     return ID;
   };
-
+  const getRedirect = data => {
+    console.log(data);
+    return (
+      <div
+        style={{
+          display: "flex",
+          padding: "0px",
+          paddingLeft: "10px",
+          direction: "rtl"
+        }}
+      >
+        <AmRedirectLog
+          api={"/log/docitemlog?id=" + data.docItemID}
+          history={props.history}
+          title={"Log Docitem"}
+          docID={""}
+        >
+          {" "}
+        </AmRedirectLog>
+        <AmRedirectLog
+          api={
+            "/log/storageobjectlog?id=" +
+            data.id +
+            "&ParentStorageObject_ID=" +
+            data.id
+          }
+          history={props.history}
+          docID={""}
+          title={"Log Sto"}
+        >
+          {" "}
+        </AmRedirectLog>
+        <AmRedirectLog
+          api={"/log/workqueuelog?id=" + data.workQueueID}
+          history={props.history}
+          docID={""}
+          title={"Log WQ"}
+        >
+          {" "}
+        </AmRedirectLog>
+      </div>
+    );
+  };
   //received
   //issued
   return (

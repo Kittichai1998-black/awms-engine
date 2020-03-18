@@ -51,7 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TempMVTDocItems
         {
             public amt_DocumentItem docItem;
-            public MovementType mvt;
+            public DocumentProcessTypeID processID;
             public long? parentDocID;
         }
 
@@ -76,6 +76,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     else
                     {
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "Data of mappingPallets Not Found");
+                    }
+                }
+                else
+                {
+                    if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
+                    {
+                        var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                        if (stopacks == null || stopacks.Count == 0)
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+
+                        sto = this.CreateSto(reqVO);
                     }
                 }
                 // end
@@ -171,9 +182,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
 
                 var PackMasterEmptyPallets = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.mappingPallets[0].code, BuVO);
+                if(PackMasterEmptyPallets == null)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Pack : " + reqVO.mappingPallets[0].code + " Not Found.");
 
-                // var PackMasterEmptyPallets = StaticValueManager.GetInstant().SKUMasterEmptyPallets.FirstOrDefault();
-                var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
+            // var PackMasterEmptyPallets = StaticValueManager.GetInstant().SKUMasterEmptyPallets.FirstOrDefault();
+            var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
                 var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == PackMasterEmptyPallets.ObjectSize_ID);
 
                 StorageObjectCriteria packSto = new StorageObjectCriteria()
@@ -199,8 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 };
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 
-                newSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
-                  null, null, false, true, BuVO);
+                newSto = ADO.StorageObjectADO.GetInstant().Get(baseStoID, StorageObjectType.BASE, false, true, BuVO);
             
            
 
@@ -587,10 +599,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
             var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
-            MovementType mvtDoc = new MovementType();
+            DocumentProcessTypeID mvtDoc = new DocumentProcessTypeID();
             if (mvt != null && mvt.Length > 0)
             {
-                mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), mvt);
+                mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), mvt);
             }
 
             //auto create new Document 
@@ -630,7 +642,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 if (mvt == null || mvt.Length == 0)
                 {
                     var movementtype = sto_skuType.GroupType.GetValueInt().ToString() + "011";
-                    mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), movementtype);
+                    mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), movementtype);
                     if (mvtDoc.Equals(null))
                     {
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Movement Type isn't match.");
@@ -645,7 +657,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 tempDocItems.Add(new TempMVTDocItems()
                 {
-                    mvt = mvtDoc,
+                    processID = mvtDoc,
                     parentDocID = string.IsNullOrWhiteSpace(parentDocID_opt) ? 0 : long.Parse(parentDocID_opt),
                     docItem = new amt_DocumentItem()
                     {
@@ -678,7 +690,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
 
             var res_DI = tempDocItems.GroupBy(
-                p => new { p.mvt, p.parentDocID }, (key, g) => new { MVTCode = key.mvt, ParentDocID = key.parentDocID, DocItems = g.Select(y => y.docItem).ToList() });
+                p => new { p.processID, p.parentDocID }, (key, g) => new { MVTCode = key.processID, ParentDocID = key.parentDocID, DocItems = g.Select(y => y.docItem).ToList() });
             foreach (var di in res_DI)
             {
                 amt_Document doc = new amt_Document()
@@ -703,7 +715,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     DocumentDate = DateTime.Now,
                     ActionTime = DateTime.Now,
-                    MovementType_ID = di.MVTCode,
+                    DocumentProcessType_ID = di.MVTCode,
                     RefID = null,
                     Ref1 = null,
                     Ref2 = null,

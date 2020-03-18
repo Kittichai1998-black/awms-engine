@@ -15,7 +15,7 @@ using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using ProjectTMC.ADO.SCADAApi;
-using static ProjectTMC.Model.SCADACriteria;
+using static ProjectTMC.Model.Criteria.SCADACriteria;
 using static ProjectTMC.ADO.SCADAApi.SCADAInterfaceADO;
 
 namespace ProjectTMC.Engine.Business.WorkQueue
@@ -71,8 +71,8 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
                                 RemoveOPTDocument(x, docs.Options, buVO);
 
-                                //call to SAP
-                                if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+                                //call to SAP 
+                                if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED && docs.DocumentProcessType_ID != DocumentProcessTypeID.EPL_TRANSFER_WM)
                                 {//ดัก empty pallet ไม่ต้องยิงไปZWMRF002
 
                                     //var tanumlists = new List<string>();
@@ -89,7 +89,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                                     });
 
                                 }
-                                else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+                                else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED && docs.DocumentProcessType_ID != DocumentProcessTypeID.EPL_TRANSFER_WM)
                                 {
                                     var inReqList = new List<dynamic>();
                                     //var tanumlists = new List<string>();

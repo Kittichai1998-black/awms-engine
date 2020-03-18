@@ -28,6 +28,7 @@ import {
 import PropType from "prop-types";
 import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
+import LabelT from "../../components/AmLabelMultiLanguage";
 
 const styles = theme => ({
   button: {
@@ -82,10 +83,10 @@ const FormInline = styled.div`
   }
 `;
 
-const LabelH = styled.label`
-  font-weight: bold;
-  width: 200px;
-`;
+const LabelH = {
+  "font-weight": "bold",
+  width: "200px"
+};
 
 const DocumentView = props => {
   const { t } = useTranslation();
@@ -205,84 +206,85 @@ const DocumentView = props => {
         });
 
         //============================================================================
+        if (res.data.sou_bstos) {
+          res.data.sou_bstos.forEach(rowDetail => {
+            rowDetail.eventStatusDoc = res.data.document["eventStatus"];
+            // var options = ""
+            // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
+            // rowDetail.options = options;
 
-        res.data.sou_bstos.forEach(rowDetail => {
-          rowDetail.eventStatusDoc = res.data.document["eventStatus"];
-          // var options = ""
-          // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-          // rowDetail.options = options;
+            // === getOption ===
+            //var qryStr = queryString.parse(rowDetail.options)
+            //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+            var qryStr = queryString.parse(rowDetail.Options);
+            if (optionSouBstos) {
+              optionSouBstos.forEach(x => {
+                rowDetail[x.optionName] =
+                  qryStr[x.optionName] === "undefined"
+                    ? null
+                    : qryStr[x.optionName];
+              });
+            }
 
-          // === getOption ===
-          //var qryStr = queryString.parse(rowDetail.options)
-          //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.Options);
-          if (optionSouBstos) {
-            optionSouBstos.forEach(x => {
-              rowDetail[x.optionName] =
-                qryStr[x.optionName] === "undefined"
-                  ? null
-                  : qryStr[x.optionName];
+            if (window.project === "AAI") {
+              rowDetail.tanum =
+                qryStr.tanum === "undefined" ? null : qryStr.tanum;
+              rowDetail.btanr =
+                qryStr.btanr === "undefined" ? null : qryStr.btanr;
+            }
+
+            dataTableDetailSOU.push({
+              ...rowDetail,
+              _packQty:
+                typeDoc === "issued"
+                  ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                  : typeDoc === "received"
+                  ? rowDetail.packQty
+                  : typeDoc === "audit"
+                  ? rowDetail.distoQty
+                  : null
             });
-          }
-
-          if (window.project === "AAI") {
-            rowDetail.tanum =
-              qryStr.tanum === "undefined" ? null : qryStr.tanum;
-            rowDetail.btanr =
-              qryStr.btanr === "undefined" ? null : qryStr.btanr;
-          }
-
-          dataTableDetailSOU.push({
-            ...rowDetail,
-            _packQty:
-              typeDoc === "issued"
-                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                : typeDoc === "received"
-                ? rowDetail.packQty
-                : typeDoc === "audit"
-                ? rowDetail.distoQty
-                : null
           });
-        });
+        }
+        if (res.data.des_bstos) {
+          res.data.des_bstos.forEach(rowDetail => {
+            rowDetail.eventStatusDoc = res.data.document["eventStatus"];
 
-        res.data.des_bstos.forEach(rowDetail => {
-          rowDetail.eventStatusDoc = res.data.document["eventStatus"];
+            // var options = ""
+            // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
+            // rowDetail.options = options;
 
-          // var options = ""
-          // res.data.document.documentItems.filter(y=>y.id == rowDetail.docItemID).forEach(y=>{options=y.options});
-          // rowDetail.options = options;
-
-          // === getOption ===
-          //var qryStr = queryString.parse(rowDetail.options)
-          //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.Options);
-          if (optionDesBstos) {
-            optionDesBstos.forEach(x => {
-              rowDetail[x.optionName] =
-                qryStr[x.optionName] === "undefined"
-                  ? null
-                  : qryStr[x.optionName];
+            // === getOption ===
+            //var qryStr = queryString.parse(rowDetail.options)
+            //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+            var qryStr = queryString.parse(rowDetail.Options);
+            if (optionDesBstos) {
+              optionDesBstos.forEach(x => {
+                rowDetail[x.optionName] =
+                  qryStr[x.optionName] === "undefined"
+                    ? null
+                    : qryStr[x.optionName];
+              });
+            }
+            if (window.project === "AAI") {
+              rowDetail.tanum =
+                qryStr.tanum === "undefined" ? null : qryStr.tanum;
+              rowDetail.btanr =
+                qryStr.btanr === "undefined" ? null : qryStr.btanr;
+            }
+            dataTableDetailDES.push({
+              ...rowDetail,
+              _packQty:
+                typeDoc === "issued"
+                  ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                  : typeDoc === "received"
+                  ? rowDetail.packQty
+                  : typeDoc === "audit"
+                  ? rowDetail.distoQty
+                  : null
             });
-          }
-          if (window.project === "AAI") {
-            rowDetail.tanum =
-              qryStr.tanum === "undefined" ? null : qryStr.tanum;
-            rowDetail.btanr =
-              qryStr.btanr === "undefined" ? null : qryStr.btanr;
-          }
-          dataTableDetailDES.push({
-            ...rowDetail,
-            _packQty:
-              typeDoc === "issued"
-                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                : typeDoc === "received"
-                ? rowDetail.packQty
-                : typeDoc === "audit"
-                ? rowDetail.distoQty
-                : null
           });
-        });
-
+        }
         //============================================================================
         // console.log(dataTable);
         setData(dataTable);
@@ -345,7 +347,7 @@ const DocumentView = props => {
                 style={{ paddingLeft: "20px", paddingTop: "10px" }}
               >
                 <FormInline>
-                  <LabelH>{t(y.label) + syn}</LabelH>
+                  <LabelT style={LabelH}>{y.label + syn}</LabelT>
                   <label>{getDataHeater(y.type, y.values)}</label>
                 </FormInline>
               </Grid>

@@ -1,17 +1,13 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.APIService.V2.ASRS;
-using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Document
 {
@@ -239,6 +235,14 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, this.BuVO);
 
                     }
+                }
+                else
+                {
+                    var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
+                    var stoDes = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, this.BuVO);
+
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, this.BuVO);
                 }
 
 

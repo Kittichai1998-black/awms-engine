@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.PropertyFile;
-using AWMSEngine.JobService;
 using AWMSModel.Constant.StringConst;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

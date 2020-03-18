@@ -8,20 +8,24 @@
   <ItemGroup>
     <Compile Remove="ADO\SAPApi\**" />
     <Compile Remove="APIService\Mst\Ers\**" />
-    <Compile Remove="APIService\V1\API2\**" />
+    <Compile Remove="APIService\V1\**" />
     <Compile Remove="Controllers\V1\**" />
+    <Compile Remove="Engine\V1\**" />
     <Content Remove="ADO\SAPApi\**" />
     <Content Remove="APIService\Mst\Ers\**" />
-    <Content Remove="APIService\V1\API2\**" />
+    <Content Remove="APIService\V1\**" />
     <Content Remove="Controllers\V1\**" />
+    <Content Remove="Engine\V1\**" />
     <EmbeddedResource Remove="ADO\SAPApi\**" />
     <EmbeddedResource Remove="APIService\Mst\Ers\**" />
-    <EmbeddedResource Remove="APIService\V1\API2\**" />
+    <EmbeddedResource Remove="APIService\V1\**" />
     <EmbeddedResource Remove="Controllers\V1\**" />
+    <EmbeddedResource Remove="Engine\V1\**" />
     <None Remove="ADO\SAPApi\**" />
     <None Remove="APIService\Mst\Ers\**" />
-    <None Remove="APIService\V1\API2\**" />
+    <None Remove="APIService\V1\**" />
     <None Remove="Controllers\V1\**" />
+    <None Remove="Engine\V1\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,15 +34,8 @@
     <Compile Remove="APIService\Mst\PutSKUMasterFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSKUMaster_UnitTypeAPI.cs" />
     <Compile Remove="APIService\Mst\PutSupplierFromFileServerCsvAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\CloseGIDocAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\CloseGRDocAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\ClosePIDOCAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\RejectedADDocAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\RejectedGIDocAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\RejectedGRDocAPI.cs" />
-    <Compile Remove="APIService\V1\Doc\RejectedLDDocAPI.cs" />
-    <Compile Remove="APIService\V1\WM\ConfirmQueueIssueAPI.cs" />
-    <Compile Remove="APIService\V1\WM\UpdateIssuedPickingAPI.cs" />
+    <Compile Remove="APIService\V2\ASRS\WCSMappingPalletAPI.cs" />
+    <Compile Remove="APIService\V2\Business\WorkingLDDocAPI.cs" />
     <Compile Remove="Common\RefVO.cs" />
     <Compile Remove="Common\VOManage.cs" />
     <Compile Remove="Controllers\PublicDataMasterController.cs" />
@@ -48,23 +45,8 @@
     <Compile Remove="APIService\WM\GetMstSTOAPI.cs" />
     <Compile Remove="APIService\WM\PutVirtualMapSTOAPI.cs" />
     <Compile Remove="Engine\EngineParamAttr.cs" />
-    <Compile Remove="Engine\V1\Business\Auditor\ClosedPIDocument.cs" />
-    <Compile Remove="Engine\V1\Business\Auditor\ClosingPIDocument.cs" />
-    <Compile Remove="Engine\V1\Business\CheckSendToSAP.cs" />
-    <Compile Remove="Engine\V1\Business\FreeSTO.cs" />
-    <Compile Remove="Engine\V1\Business\Issued\ClosedGIDocument.cs" />
-    <Compile Remove="Engine\V1\Business\Issued\ClosingGIDocument.cs" />
-    <Compile Remove="Engine\V1\Business\Issued\ConfirmQueueIssue.cs" />
-    <Compile Remove="Engine\V1\Business\Issued\UpdateGIDocumentBeforProcessQueue.cs" />
-    <Compile Remove="Engine\V1\Business\MenuResponseObject.cs" />
-    <Compile Remove="Engine\V1\Business\NewSTO.cs" />
-    <Compile Remove="Engine\V1\Business\PutSTO.cs" />
-    <Compile Remove="Engine\V1\Business\Received\ClosedGRDocument.cs" />
-    <Compile Remove="Engine\V1\Business\Received\ClosingGRDocSAP.cs" />
-    <Compile Remove="Engine\V1\Business\Received\RejectedGRDocument.cs" />
-    <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
-    <Compile Remove="Engine\V1\Validation\BuVORequiredFields.cs" />
     <Compile Remove="Engine\V2\Business\Issued\ProcessQueueIssue.cs" />
+    <Compile Remove="Engine\V2\Business\Loading\CreateLDDocument.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
     <Compile Remove="Engine\V2\ClosedDocument.cs" />
     <Compile Remove="Engine\V2\ClosingDocument.cs" />
@@ -74,10 +56,11 @@
 
   <ItemGroup>
     <None Remove="APIService\Mst\tlo3u0z1.r1q~" />
-    <None Remove="Engine\V1\Business\bin.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="APIService\V2\Report\" />
+    <Folder Include="Engine\V2\Business\Loading\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

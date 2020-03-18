@@ -6,6 +6,7 @@ import Clone from '../components/function/Clone'
 import _ from 'lodash';
 // import { useTranslation } from 'react-i18next'
 import { apicall } from '../components/function/CoreFunction2'
+import AmFilterTable from '../components/table/AmFilterTable';
 const Axios = new apicall();
 
 const AmReport = (props) => {
@@ -17,6 +18,10 @@ const AmReport = (props) => {
         pageSize,
         sort,
         sortable,
+        filterTable,
+        primarySearch,
+        extensionSearch,
+        onHandleFilterConfirm,
         page,
         pages,
         exportData,
@@ -71,12 +76,33 @@ const AmReport = (props) => {
         }
         return null;
     }
+    const checkStatus = (rowInfo) => {
+        let classStatus = ""
+        if (rowInfo && rowInfo.row) {
+            classStatus = rowInfo.original.StyleStatus;
+        }
+        if (classStatus)
+            return { className: classStatus }
+        else
+            return {}
+    }
     return (
         <div>
             <div style={{ marginBottom: '10px' }}>
                 {bodyHeadReport}
             </div>
+            {filterTable === true ?
+                <div>
+                    <AmFilterTable
+                        defaultCondition={{ "f": "status", "c": "!=", "v": "2" }}
+                        primarySearch={primarySearch}
+                        extensionSearch={extensionSearch}
+                        onAccept={(status, obj) => onHandleFilterConfirm(status, obj)} />
+                    <br />
+                </div>
+                : null}
             <Table
+                getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                 onRowClick={() => null}
                 data={dataSrc}
                 columns={columnTable}

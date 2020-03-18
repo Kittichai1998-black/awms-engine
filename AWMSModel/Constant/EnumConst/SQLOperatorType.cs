@@ -11,9 +11,9 @@ namespace AWMSModel.Constant.EnumConst
         EQUALS,
         [ValueAttribute("!=")]
         NOTEQUALS,
-        [ValueAttribute("is null")]
+        [ValueAttribute("IS NULL")]
         ISNULL,
-        [ValueAttribute("is not null")]
+        [ValueAttribute("IS NOT NULL")]
         ISNOTNULL,
         [ValueAttribute(">")]
         MORE,
@@ -25,6 +25,8 @@ namespace AWMSModel.Constant.EnumConst
         LESS_EQUALS,
         [ValueAttribute("LIKE")]
         LIKE,
+        [ValueAttribute("NOT LIKE")]
+        NOTLIKE,
         [ValueAttribute("IN")]
         IN,
         [ValueAttribute("NOT IN")]

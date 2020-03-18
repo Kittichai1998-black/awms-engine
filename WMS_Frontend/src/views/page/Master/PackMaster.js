@@ -13,7 +13,7 @@ const PackMaster = props => {
   const UnitTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "UnitType",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ObjectType", "c":"<=", "v": 2}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -47,16 +47,21 @@ const PackMaster = props => {
   };
 
   const colsSKUMaster = [
-    {
-      Header: "ID",
-      accessor: "ID",
-      fixed: "left",
-      width: 100,
-      sortable: true
-    },
+    // {
+    //   Header: "ID",
+    //   accessor: "ID",
+    //   fixed: "left",
+    //   width: 100,
+    //   sortable: true
+    // },
     {
       Header: "Code",
       accessor: "Code",
+      sortable: true
+    },
+    {
+      Header: "Name",
+      accessor: "Name",
       sortable: true
     }
   ];
@@ -76,7 +81,7 @@ const PackMaster = props => {
       placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
       labelTitle:
         "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
-      fieldLabel: ["ID", "Code"]
+      fieldLabel: ["Code","Name"]
     },
     {
       field: "Code",

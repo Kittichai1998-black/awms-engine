@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using AMWUtil.Common;
-using AWMSEngine.APIService.Permission;
+using AWMSEngine.APIService.V2.Permission;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

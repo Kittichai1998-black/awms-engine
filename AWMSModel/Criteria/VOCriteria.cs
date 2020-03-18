@@ -12,77 +12,48 @@ namespace AWMSModel.Criteria
 {
     public class VOCriteria
     {
-        private Dictionary<string, dynamic> VO { get; set; }
+        private Dictionary<string, object> VO { get; set; }
+        
+        public VOCriteria(AMWLogger logger, SqlConnection sqlConnection)
+        {
+            this.VO = new Dictionary<string, object>();
+            this.Logger = logger;
+            this.SqlConnection = sqlConnection;
+            //this.Set(Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
+            //this.Set(Constant.StringConst.BusinessVOConst.KEY_DB_CONNECTION, sqlConnection);
+        }
         public VOCriteria()
         {
-            this.VO = new Dictionary<string, dynamic>();
+            this.VO = new Dictionary<string, object>();
         }
-        public VOCriteria(AMWLogger logger, SqlTransaction sqlTransaction)
-        {
-            this.VO = new Dictionary<string, dynamic>();
-            this.Set(Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
-            this.Set(Constant.StringConst.BusinessVOConst.KEY_DB_TRANSACTION, sqlTransaction);
-        }
-        public VOCriteria(SqlTransaction sqlTransaction)
-        {
-            this.VO = new Dictionary<string, dynamic>();
-            this.Set(Constant.StringConst.BusinessVOConst.KEY_DB_TRANSACTION, sqlTransaction);
-        }
+
         public void Set(string key, dynamic val)
         {
-            if (key.StartsWith("*"))
-                key = key.Substring(1);
             if (!this.VO.ContainsKey(key))
                 this.VO.Add(key, val);
             else
                 this.VO[key] = val;
         }
-        public void SetRang(VOCriteria vo)
-        {
-            foreach(var kv in vo.List())
-            {
-                this.Set(kv.Key, kv.Value);
-            }
-        }
-        public List<KeyValuePair<string,dynamic>> List()
-        {
-            List<KeyValuePair<string, dynamic>> res = new List<KeyValuePair<string, dynamic>>();
-            foreach(string k in this.VO.Keys)
-            {
-                res.Add(new KeyValuePair<string, dynamic>(k, this.VO[k]));
-            }
-            return res;
-        }
+
         public T Get<T>(string key)
         {
-            return this.VO.ContainsKey(key) ? this.VO[key] : null;
-            /*string[] k = key.Split('.', 2);
-            if (this.VO.ContainsKey(k[0]))
-            {
-                if(k.Length == 1)
-                    return this.VO[k[0]];
-                else
-                    return Eval.Execute<T>("return obj." + k[1], new { obj = this.VO[k[0]] });
-            }
-            throw new Exception("VO Key " + key + " not found");*/
+            if (this.VO.ContainsKey(key))
+                return (T)this.VO[key];
+            return default(T);
         }
-        public T Get<T>(string key, T defualt)
+        public T Get<T>(string key, T defaultValue)
         {
-            try
-            {
-                return this.Get<T>(key);
-            }
-            catch
-            {
-                return defualt;
-            }
+            T res = this.Get<T>(key);
+            if (res == null)
+                return defaultValue;
+            return res;
         }
         public string GetString(string key)
         {
             try
             {
                 var res = this.Get<string>(key);
-                return res.ToString();
+                return res;
             }
             catch
             {
@@ -101,28 +72,62 @@ namespace AWMSModel.Criteria
                 return null;
             }
         }
-        public override string ToString()
+
+
+
+        public void SqlTransaction_Begin()
         {
-            Dictionary<string, dynamic> tmps = new Dictionary<string, dynamic>();
-            foreach(string k in this.VO.Keys)
+            var trans = this.SqlConnection.BeginTransaction(this.Logger.LogRefID);
+            this.SqlTransaction = trans;
+        }
+        public void SqlTransaction_Commit()
+        {
+            var trans = this.SqlTransaction;
+            if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
             {
-                if (!k.Equals(BusinessVOConst.KEY_DB_TRANSACTION) &&
-                    !k.Equals(BusinessVOConst.KEY_LOGGER))
-                {
-                    tmps.Add(k, this.VO[k]);
-                }
+                var conn = trans.Connection;
+                trans.Commit();
+                trans.Dispose();
+                this.SqlTransaction = null;
             }
-            return Newtonsoft.Json.JsonConvert.SerializeObject(tmps);
+        }
+        public void SqlTransaction_Rollback()
+        {
+            var trans = this.SqlTransaction;
+            if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
+            {
+                var conn = trans.Connection;
+                trans.Rollback();
+                trans.Dispose();
+                this.SqlTransaction = null;
+            }
+        }
+        public void SqlConnection_Close()
+        {
+            var conn = this.SqlConnection;
+            if (conn != null && conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+                conn.Dispose();
+                this.SqlConnection = null;
+            }
         }
 
-        private SqlTransaction _SqlTransaction;
+        public SqlConnection SqlConnection
+        {
+            get { return this.Get<SqlConnection>(BusinessVOConst.KEY_DB_CONNECTION); }
+            private set { this.Set(BusinessVOConst.KEY_DB_CONNECTION, value); }
+        }
         public SqlTransaction SqlTransaction
         {
-            get { return this.VO.ContainsKey(BusinessVOConst.KEY_DB_TRANSACTION) ? this.Get<SqlTransaction>(BusinessVOConst.KEY_DB_TRANSACTION) : null; }
-            set { this.Set(BusinessVOConst.KEY_DB_TRANSACTION, value); }
+            get { return this.Get<SqlTransaction>(BusinessVOConst.KEY_DB_TRANSACTION); }
+            private set { this.Set(BusinessVOConst.KEY_DB_TRANSACTION, value); }
         }
-        private AMWLogger _Logger;
-        public AMWLogger Logger { get => this.Get<AMWLogger>(BusinessVOConst.KEY_LOGGER); }
+        public AMWLogger Logger { 
+            get => this.Get<AMWLogger>(BusinessVOConst.KEY_LOGGER);
+            private set { this.Set(BusinessVOConst.KEY_LOGGER, value); }
+        }
+
         public List<HttpResultModel> FinalLogSendAPIEvent
         {
             get => this.Get<FinalDatabaseLogCriteria>(BusinessVOConst.KEY_FINAL_DB_LOG).sendAPIEvents;

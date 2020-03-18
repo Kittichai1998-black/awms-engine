@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.Business.Received
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<ReceiveItem> receiveItems;
-            public MovementType movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public class ReceiveItem
             {
@@ -150,7 +150,7 @@ namespace AWMSEngine.Engine.Business.Received
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
                
-                MovementType_ID = reqVO.movementTypeID,
+                DocumentProcessType_ID = reqVO.documentProcessTypeID,
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                 EventStatus = reqVO.eventStatus,
                 

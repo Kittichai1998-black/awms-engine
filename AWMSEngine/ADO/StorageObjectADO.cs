@@ -509,6 +509,24 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<SPOutSTOQty> SumSTOQty(string skuCode,long? packID, long areaID, StorageObjectEventStatus eventStatus, EntityStatus status, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("skuCode", skuCode);
+            param.Add("packID", packID);
+            param.Add("areaID", areaID);
+            param.Add("eventStatus", eventStatus);
+            param.Add("status", status);
+
+            var res = this.Query<SPOutSTOQty>("SP_STO_SUMQTY",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+        public List<SPOutSTOQty> SumSTOQty(long areaID, StorageObjectEventStatus eventStatus, EntityStatus status, VOCriteria buVO) {
+            return this.SumSTOQty(null,null,  areaID,  eventStatus,  status, buVO);
+        }
         public StorageObjectCriteria GetSTONoParent(List<long> stoIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();

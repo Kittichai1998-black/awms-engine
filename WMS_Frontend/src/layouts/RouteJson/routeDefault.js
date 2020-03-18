@@ -165,7 +165,47 @@ const testMasterV2 = Loadable({
   loader: () => import("../../views/page/testMasterV2"),
   loading: Loading
 });
-
+const APIServiceLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/APIServiceLog"),
+  loading: Loading
+});
+const SendAPILog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/SendAPILog"),
+  loading: Loading
+});
+const StorageObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/StorageObjectLog"),
+  loading: Loading
+});
+const WorkQueueLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
+  loading: Loading
+});
+const DocumentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentLog"),
+  loading: Loading
+});
+const DocumentItemLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/DocumentItemLog"),
+  loading: Loading
+});
+const DocumentItemStorageObjectLog = Loadable({
+  loader: () =>
+    import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
+  loading: Loading
+});
+const WorkQueue = Loadable({
+  loader: () => import("../../views/page/Warehouse/WorkQueue"),
+  loading: Loading
+});
+const DownloadLog = Loadable({
+  loader: () => import("../../views/page/ENGINE/DownloadLog"),
+  loading: Loading
+});
+const SearchLog = Loadable({
+  loader: () => import("../../views/page/ENGINE/SearchLog"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -187,13 +227,13 @@ let routes = [
     exact: true
   },
   {
-    path: "/monitor/inbound",
+    path: "/monitor/receiving",
     name: "Inbound Progress",
     compoment: MonitorIO,
     exact: true
   },
   {
-    path: "/monitor/outbound",
+    path: "/monitor/issuing",
     name: "Outbound Progress",
     compoment: MonitorIO,
     exact: true
@@ -389,6 +429,66 @@ let routes = [
     path: "/warehouse/location_summary",
     name: "Location Summary",
     compoment: LocationSummary,
+    exact: true
+  },
+  {
+    path: "/log/apiservicelog",
+    name: "API Service Log",
+    compoment: APIServiceLog,
+    exact: true
+  },
+  {
+    path: "/log/sendapilog",
+    name: "Send API Log",
+    compoment: SendAPILog,
+    exact: true
+  },
+  {
+    path: "/log/storageobjectlog",
+    name: "Storage Object Log",
+    compoment: StorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/log/documentlog",
+    name: "Document Log",
+    compoment: DocumentLog,
+    exact: true
+  },
+  {
+    path: "/log/docitemlog",
+    name: "Document Item Log",
+    compoment: DocumentItemLog,
+    exact: true
+  },
+  {
+    path: "/log/docitemstolog",
+    name: "Document Item Storage Object Log",
+    compoment: DocumentItemStorageObjectLog,
+    exact: true
+  },
+  {
+    path: "/log/workqueuelog",
+    name: "Work Queue Log",
+    compoment: WorkQueueLog,
+    exact: true
+  },
+  {
+    path: "/warehouse/workqueue",
+    name: "Work Queue",
+    compoment: WorkQueue,
+    exact: true
+  },
+  {
+    path: "/download_log",
+    name: "Download Log File",
+    compoment: DownloadLog,
+    exact: true
+  },
+  {
+    path: "/log/searchlog",
+    name: "Search Log",
+    compoment: SearchLog,
     exact: true
   }
 ];
