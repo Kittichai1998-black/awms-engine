@@ -67,7 +67,6 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (skuType.GroupType != SKUGroupType.RAW)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : "+ skuType.Code);
 
-                //this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "SA2", this.BuVO);
 
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.RAW_TRANSFER, this.BuVO);
 
@@ -85,7 +84,6 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (skuType.GroupType != SKUGroupType.WIP)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : " + skuType.Code);
 
-                //this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "OB", this.BuVO);
 
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
 
@@ -270,6 +268,9 @@ namespace ProjectTMC.Engine.WorkQueue
                 {
                     if(resItems.pickStos.Count == 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not in Storage");
+
+                    if (resItems.pickStos.Count < reqVO.qty)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not enough");
 
                 });
             });

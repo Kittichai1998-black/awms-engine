@@ -448,7 +448,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     docItem.ForEach(x =>
                     {
-                        x.DocItemStos.ForEach(disto =>
+                        var stoLists = sto.ToTreeList().FindAll(y => y.type == StorageObjectType.PACK).Select(y=> y.id).ToList();
+                        var disto = x.DocItemStos.FindAll(y => stoLists.Contains(y.Sou_StorageObject_ID));
+                        disto.ForEach(disto =>
                         {
                             disto.WorkQueue_ID = queueTrx.ID.Value;
                             if (disto.Status == EntityStatus.INACTIVE)
