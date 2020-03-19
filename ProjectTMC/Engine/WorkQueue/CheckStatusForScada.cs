@@ -31,7 +31,7 @@ namespace ProjectTMC.Engine.WorkQueue
                 }, this.BuVO).FirstOrDefault();
 
             if(getAPIServiceEvent == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ APIService ที่สัมพันธ์กับ RefID : "+ reqVO.ref_id);
 
 
 

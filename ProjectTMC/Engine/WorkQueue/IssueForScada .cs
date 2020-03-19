@@ -71,12 +71,12 @@ namespace ProjectTMC.Engine.WorkQueue
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.RAW_TRANSFER, this.BuVO);
 
                 if (docGI == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สร้างเอกสารไม่สำเร็จ");
 
                 dataProcessQ = this.AutoProcess(docGI,false,"G01", reqVO,this.BuVO);
 
                 if (dataProcessQ == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Queue ไม่สำเร็จ");
 
             }
             else if (reqVO.interface_no == "4.1")
@@ -88,12 +88,12 @@ namespace ProjectTMC.Engine.WorkQueue
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
 
                 if (docGI == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สร้างเอกสารไม่สำเร็จ");
 
                 dataProcessQ = this.AutoProcess(docGI, false, "G08", reqVO, this.BuVO);
 
                 if (dataProcessQ == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Queue ไม่สำเร็จ");
 
 
             }
@@ -105,12 +105,12 @@ namespace ProjectTMC.Engine.WorkQueue
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "Out", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
 
                 if (docGI == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สร้างเอกสารไม่สำเร็จ");
 
                 dataProcessQ = this.AutoProcess(docGI, true, "G13", reqVO, this.BuVO);
 
                 if (dataProcessQ == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Queue ไม่สำเร็จ");
             }
             else if (reqVO.interface_no != "9.1")
             {
@@ -120,16 +120,16 @@ namespace ProjectTMC.Engine.WorkQueue
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "Out", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
 
                 if (docGI == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สร้างเอกสารไม่สำเร็จ");
 
                 dataProcessQ = this.AutoProcess(docGI, false, "G13", reqVO, this.BuVO);
 
                 if (dataProcessQ == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Queue ไม่สำเร็จ");
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Interface No. Not Match");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Interface No. "+ reqVO.interface_no + " ไม่ถูกต้อง ");
             }
 
             res.doc_code = docGI.Code;
@@ -266,11 +266,12 @@ namespace ProjectTMC.Engine.WorkQueue
             {
                 x.processResultItems.ForEach(resItems =>
                 {
+
                     if(resItems.pickStos.Count == 0)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not in Storage");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า "+ reqVO .sku_code+ " ในคลัง");
 
                     if (resItems.pickStos.Count < reqVO.qty)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not enough");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สินค้า " + reqVO.sku_code + " ไม่พอสำหรับการเบิก");
 
                 });
             });

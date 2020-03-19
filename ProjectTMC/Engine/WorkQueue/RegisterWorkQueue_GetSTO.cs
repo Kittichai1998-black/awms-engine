@@ -29,7 +29,7 @@ namespace ProjectTMC.Engine.WorkQueue
             //var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
             if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่ได้ส่ง baseCode ให้ระบบ ");
 
             var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
@@ -91,7 +91,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         }
                         else
                         {
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "จำนวนที่รับเข้ามีค่ามากกว่า 3");
                         }
 
 
@@ -106,7 +106,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         }
                         else
                         {
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 16");
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "จำนวนที่รับเข้ามีค่ามากกว่า 16");
                         }
                     }
 
@@ -134,11 +134,11 @@ namespace ProjectTMC.Engine.WorkQueue
 
             var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == dataMap.warehouseCode);
             if (Warehouses == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + dataMap.warehouseCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse '" + dataMap.warehouseCode + " ในระบบ'");
 
             var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == dataMap.areaCode && x.Warehouse_ID == Warehouses.ID);
             if (area == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + dataMap.areaCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Area '" + dataMap.areaCode + " ในระบบ'");
 
             mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(dataMap.baseCode,
                 null, null, false, true, buVO);
@@ -151,7 +151,7 @@ namespace ProjectTMC.Engine.WorkQueue
                 }, buVO).FirstOrDefault();
 
             if (location == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + dataMap.locationCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Location '" + dataMap.locationCode + " ในระบบ'");
 
 
             if (mapsto == null)

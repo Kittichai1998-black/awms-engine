@@ -127,19 +127,19 @@ namespace ProjectTMC.Engine.WorkQueue
                 this._locationASRS = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>("G15", BuVO);
             }
             if (_locationASRS == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "Location Code Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบ Location ในระบบ");
 
             this._areaASRS = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.ID == _locationASRS.AreaMaster_ID);
             if (_areaASRS == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "Area Code Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบ Area ในระบบ");
 
             this._warehouseASRS = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.ID == _areaASRS.Warehouse_ID);
             if (_warehouseASRS == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "Warehouse Code Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse ในระบบ");
 
             this._branchASRS = StaticValueManager.GetInstant().Branchs.FirstOrDefault(x => x.ID == _warehouseASRS.Branch_ID);
             if (_branchASRS == null)
-                throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "ไม่พบ Branch ในระบบ");
 
         }
 
@@ -171,7 +171,7 @@ namespace ProjectTMC.Engine.WorkQueue
             var _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(stoBaseCurArea.Code, BuVO);
             if (_base == null)
             { 
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "Pallet : " + stoBaseCurArea.Code + " Not Found.");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีพาเลท : " + stoBaseCurArea.Code );
             }
 
             var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);
@@ -194,7 +194,7 @@ namespace ProjectTMC.Engine.WorkQueue
                 PackMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.sku_code, BuVO);
             }
             if (PackMaster == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "Pack : " + reqVO.sku_code + " Not Found.");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า : " + reqVO.sku_code );
 
 
             /* StorageObjectCriteria baseSto = new StorageObjectCriteria()
@@ -260,7 +260,7 @@ namespace ProjectTMC.Engine.WorkQueue
             {
                 var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                 if (pstoLists == null || pstoLists.Count() == 0)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
+                    throw new AMWException(Logger, AMWExceptionCode.V2001, "ไม่มีข้อมูลของสินค้า");
                 var souWarehouse = new ams_Warehouse();
                 var souBranch = new ams_Branch();
                 var desWarehouse = new ams_Warehouse();
@@ -273,10 +273,10 @@ namespace ProjectTMC.Engine.WorkQueue
                 {
                     ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
                     if (skuMaster == null)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "ไม่พบ SKU ID : " + (long)psto.skuID );
                     ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
                     if (packMaster == null)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "ไม่พบ PackMaster ID " + (long)psto.mstID);
 
                     var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
                     var skutypeg = sto_skuType.GroupType.GetValueInt(); 
@@ -300,7 +300,7 @@ namespace ProjectTMC.Engine.WorkQueue
                     }
                     else
                     {
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Document Process Type isn't match.");
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Document Process Type "+ docProcessTypeID + " ไม่ตรงกัยการรับเข้า");
                     }
 
 
@@ -391,7 +391,7 @@ namespace ProjectTMC.Engine.WorkQueue
             }
             else
             {
-                throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive pallet into ASRS because it has Event Status '" + sto.eventStatus + "'");
+                throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถรับพาเลทเข้าคลังได้เนื่องจากมี EventStatus : '" + sto.eventStatus + "'");
 
             }
         }

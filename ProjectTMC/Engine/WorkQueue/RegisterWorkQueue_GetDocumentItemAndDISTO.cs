@@ -36,12 +36,12 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (sto.eventStatus != StorageObjectEventStatus.AUDITED && sto.eventStatus != StorageObjectEventStatus.AUDITING)
                 {
                     if (docItems.Count() == 0)
-                        throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                        throw new AMWException(logger, AMWExceptionCode.V2001, "ไม่พบเอกสารสำหรับการรับเข้า");
                 }
             }
             else
             {
-                throw new AMWException(logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
+                throw new AMWException(logger, AMWExceptionCode.V2002, "ไม่สามารถรับพาเลท " + reqVO.baseCode + " เข้าคลังได้ เนื่องจาก EventStatus เป็น " + sto.eventStatus );
             }
 
             return docItems;
