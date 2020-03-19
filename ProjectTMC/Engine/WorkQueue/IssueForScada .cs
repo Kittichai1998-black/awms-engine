@@ -64,12 +64,11 @@ namespace ProjectTMC.Engine.WorkQueue
 
             if (reqVO.interface_no == "2.1")
             {
-                if (skuType.GroupType == SKUGroupType.RAW)
+                if (skuType.GroupType != SKUGroupType.RAW)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : "+ skuType.Code);
 
-                this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "SA", this.BuVO);
 
-                docGI = this.createDoc(this.Logger, reqVO, "SRM01", "SA", null, "IP", DocumentProcessTypeID.RAW_TRANSFER, this.BuVO);
+                docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.RAW_TRANSFER, this.BuVO);
 
                 if (docGI == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document unsucessful");
@@ -82,10 +81,9 @@ namespace ProjectTMC.Engine.WorkQueue
             }
             else if (reqVO.interface_no == "4.1")
             {
-                if (skuType.GroupType == SKUGroupType.WIP)
+                if (skuType.GroupType != SKUGroupType.WIP)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : " + skuType.Code);
 
-                this.checkQtyInSto(reqVO.sku_code, reqVO.qty, "OB", this.BuVO);
 
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "SA2", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
 
@@ -101,7 +99,7 @@ namespace ProjectTMC.Engine.WorkQueue
             }
             else if (reqVO.interface_no == "7.1")
             {
-                if (skuType.GroupType == SKUGroupType.WIP)
+                if (skuType.GroupType != SKUGroupType.WIP)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : " + skuType.Code);
 
                 docGI = this.createDoc(this.Logger, reqVO, "SRM02", "Out", "SRM02", "IP", DocumentProcessTypeID.WIP_TRANSFER_WM, this.BuVO);
@@ -114,7 +112,7 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (dataProcessQ == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ProcessQueue unsucessful");
             }
-            else if (reqVO.interface_no == "9.1")
+            else if (reqVO.interface_no != "9.1")
             {
                 if (skuType.GroupType == SKUGroupType.WIP)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type is : " + skuType.Code);
@@ -143,14 +141,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
             return res;
         }
-        private void checkQtyInSto(string skuCode,long qty,string areaCode, VOCriteria buVO)
-        {
-            var AreaID = StaticValue.AreaMasters.First(x => x.Code == areaCode).ID;
-            var qtyinSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().SumSTOQty(skuCode, null, AreaID.Value, StorageObjectEventStatus.RECEIVED, EntityStatus.ACTIVE, this.BuVO).FirstOrDefault();
 
-            if (qty < qtyinSto.Quantity)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Enough");
-        }
             private amt_Document createDoc(AMWLogger logger, TReq reqVO,string souWH,string souArea,string desWH,string desArea,DocumentProcessTypeID movement, VOCriteria buVO)
         {
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
@@ -174,7 +165,7 @@ namespace ProjectTMC.Engine.WorkQueue
                     souWarehouseID = StaticValue.Warehouses.First(x => x.Code == souWH).ID,
                     souAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == souArea).ID,
                     desBranchID = null,
-                    desWarehouseID = StaticValue.Warehouses.First(x => x.Code == desWH).ID,
+                    desWarehouseID = desWH == null? null: StaticValue.Warehouses.First(x => x.Code == desWH).ID,
                     desAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == desArea).ID,
                     movementTypeID = movement,
                     lot = null,
@@ -244,7 +235,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         locationCode = null,
                         baseCode = null,
                         skuCode = docItem.Code,
-                        priority = 1,
+                        priority = 2,
                         useShelfLifeDate = false,
                         useExpireDate = false,
                         useIncubateDate = Inc,
@@ -277,6 +268,9 @@ namespace ProjectTMC.Engine.WorkQueue
                 {
                     if(resItems.pickStos.Count == 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not in Storage");
+
+                    if (resItems.pickStos.Count < reqVO.qty)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU not enough");
 
                 });
             });

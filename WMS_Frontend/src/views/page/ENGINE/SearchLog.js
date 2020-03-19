@@ -224,14 +224,16 @@ const SearchLog = props => {
     {
       Header: "Start Time",
       accessor: "StartTime",
-      width: 150,
-      type: "datetime"
+      width: 200,
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss.SSS"
     },
     {
       Header: "End Time",
       accessor: "EndTime",
-      width: 150,
-      type: "datetime"
+      width: 200,
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss.SSS"
     }
   ];
 

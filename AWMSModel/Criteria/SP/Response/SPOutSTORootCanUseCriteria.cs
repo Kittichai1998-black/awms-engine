@@ -86,8 +86,8 @@ namespace AWMSModel.Criteria.SP.Response
         public int branchID;
         public string branchCode;
         public string options;
-
-
+        public DateTime? ModifyTime;
+        public DateTime? CreateTime;
 
         //public DateTime createTime;
     }

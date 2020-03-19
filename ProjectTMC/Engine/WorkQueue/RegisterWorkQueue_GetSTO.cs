@@ -62,6 +62,7 @@ namespace ProjectTMC.Engine.WorkQueue
             docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED,SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("EventStatus","11",SQLOperatorType.EQUALS)
             }, buVO).FirstOrDefault();
 
