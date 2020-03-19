@@ -243,10 +243,10 @@ namespace ProjectTMC.Engine.WorkQueue
                 objectSizeName = _objSizePack.Name,
                 mstID = PackMaster.ID.Value,
                 areaID = _areaASRS.ID.Value,
-
+                lot = DateTime.Now.ToString("yyyyMMdd")
             };
             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
-
+            //lot genจาก ปีเดือนวัน running number 200110xxx1  run 4หลัก 
             var newSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoBaseCurArea.ID.Value,
                  StorageObjectType.BASE, false, true, BuVO);
             return newSto;
