@@ -79,6 +79,9 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_HubService> _HubService;
         public List<ams_HubService> HubService { get => this._HubService ?? this.LoadHubService(); }
 
+        private List<ams_WaveSeqTemplate> _WaveSeqTemplates;
+        public List<ams_WaveSeqTemplate> WaveSeqTemplates { get => this._WaveSeqTemplates ?? this.LoadWaveSeqTemplates(); }
+
         private static StaticValueManager instant;
 
 
