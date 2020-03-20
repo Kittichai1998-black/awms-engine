@@ -5,9 +5,9 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_WaveSeq : BaseEntitySTD
+    public class ams_WaveSeqTemplate : BaseEntitySTD
     {
-        public long Wave_ID;
+        public DocumentProcessTypeID DocumentProcessType_ID;
         public int Seq;
         public StorageObjectEventStatus Start_StorageObject_EventStatus;
         public StorageObjectEventStatus End_StorageObject_EventStatus;
