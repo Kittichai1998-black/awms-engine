@@ -29,7 +29,7 @@ namespace ProjectTMC.Engine.WorkQueue
             //var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
             if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่ได้ส่ง baseCode ให้ระบบ ");
 
             var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
@@ -62,13 +62,17 @@ namespace ProjectTMC.Engine.WorkQueue
             docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
+                        new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED,SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.EQUALS)
             }, buVO).FirstOrDefault();
+
+            if(docGR == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document is not Found");
 
             docGRItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                 new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Document_ID",docGR.ID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN),
+                        new SQLConditionCriteria("EventStatus","11",SQLOperatorType.IN),
             }, buVO);
 
             if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
@@ -77,7 +81,7 @@ namespace ProjectTMC.Engine.WorkQueue
 
                 foreach (var mappingPallet in reqVO.mappingPallets)
                 {//Check Qty
-                    if (reqVO.areaCode == "R")
+                    if (reqVO.areaCode == "In")
                     {
                         //Inbound Zone
                         if (mappingPallet.qty <= 3)
@@ -87,12 +91,12 @@ namespace ProjectTMC.Engine.WorkQueue
                         }
                         else
                         {
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "จำนวนที่รับเข้ามีค่ามากกว่า 3");
                         }
 
 
                     }
-                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
+                    else if (reqVO.areaCode == "Out")
                     {
                         //Outbound Zone
                         if (mappingPallet.qty <= 16)
@@ -102,7 +106,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         }
                         else
                         {
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Qty is greater than 3");
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "จำนวนที่รับเข้ามีค่ามากกว่า 16");
                         }
                     }
 
@@ -130,11 +134,11 @@ namespace ProjectTMC.Engine.WorkQueue
 
             var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == dataMap.warehouseCode);
             if (Warehouses == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + dataMap.warehouseCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse '" + dataMap.warehouseCode + " ในระบบ'");
 
             var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == dataMap.areaCode && x.Warehouse_ID == Warehouses.ID);
             if (area == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + dataMap.areaCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Area '" + dataMap.areaCode + " ในระบบ'");
 
             mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(dataMap.baseCode,
                 null, null, false, true, buVO);
@@ -147,7 +151,7 @@ namespace ProjectTMC.Engine.WorkQueue
                 }, buVO).FirstOrDefault();
 
             if (location == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + dataMap.locationCode + "'");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "ไม่พบ Location '" + dataMap.locationCode + " ในระบบ'");
 
 
             if (mapsto == null)
@@ -170,7 +174,7 @@ namespace ProjectTMC.Engine.WorkQueue
                         palletList.Add(new PalletDataCriteriaV2()
                         {
                             code = row.Code,
-                            qty = dataMap.areaCode == "G01" ? 3 : (dataMap.areaCode == "G05" || dataMap.areaCode == "G06" ? 16 : row.Quantity),
+                            qty = dataMap.areaCode == "In" ? 3 : (dataMap.areaCode == "Out"  ? 16 : row.Quantity),
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == row.UnitType_ID).Code,
                             orderNo = row.OrderNo,
                             batch = row.Batch,

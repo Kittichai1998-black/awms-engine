@@ -414,7 +414,8 @@ const DocumentSearchGR = props => {
         buttonReject={true}
         dataReject={dataReject}
         apiReject={"/v2/RejectGRDocAPI"}
-        //apiWorking={""}
+        buttonWorking={true}
+        apiWorking={"/v2/WorkingGRDocAPI"}
         apiClose={"/v2/CloseDocAPI"}
       />
     </div>

@@ -59,7 +59,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         code = x.code,
                         qty = x.qty,
-                        unti = x.unitCode,
+                        unit = x.unitCode,
                         baseQty = x.baseQty,
                         baseUnit = x.baseUnitCode,
                         batch = x.batch,

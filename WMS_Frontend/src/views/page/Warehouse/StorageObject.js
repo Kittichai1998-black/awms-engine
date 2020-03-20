@@ -8,7 +8,7 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
-import AmRedirectLogSto from "../../../components/AmRedirectLogSto";
+import AmRedirectLog from "../../../components/AmRedirectLog";
 const Axios = new apicall();
 
 //======================================================================
@@ -142,7 +142,7 @@ const StorageObject = props => {
         }}
       >
         {data.Code}
-        <AmRedirectLogSto
+        <AmRedirectLog
           api={
             "/log/docitemstolog?id=" +
             data.ID +
@@ -151,9 +151,10 @@ const StorageObject = props => {
           }
           history={props.history}
           docID={""}
+          title={"Log DocItemSto"}
         >
           {" "}
-        </AmRedirectLogSto>
+        </AmRedirectLog>
       </div>
     );
   };

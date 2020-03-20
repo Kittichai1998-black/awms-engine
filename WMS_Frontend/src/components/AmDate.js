@@ -23,12 +23,12 @@ const AmDate = props => {
   const [fieldID, setFieldID] = useState(props.FieldID);
 
   useEffect(() => {
-    if (props.defaultValue === true) {
+    if (props.defaultValue) {
       const dataReturndefault = {};
-      if (props.defaultValueDateTime !== null || props.defaultValueDateTime !== undefined) {
+      if (typeof props.defaultValue === "string") {
         dataReturndefault.fieldID = fieldID;
-        dataReturndefault.fieldDataKey = props.defaultValueDateTime;
-        dataReturndefault.fieldDataObject = props.defaultValueDateTime;
+        dataReturndefault.fieldDataKey = props.defaultValue;
+        dataReturndefault.fieldDataObject = props.defaultValue;
         props.onChange(dataReturndefault);
       } else {
         if (type === "time") {
@@ -59,7 +59,6 @@ const AmDate = props => {
         props.onChange(dataReturn);
       }
     } else if (tDate === "datetime-local") {
-      console.log(text)
       if (text === null) {
         props.onChange(null);
       } else {
@@ -84,12 +83,12 @@ const AmDate = props => {
     <form noValidate>
       <TextField
         style={{ backgroundColor: "white", width: props.width }}
-        id="date"
+        // id="date"
         type={type}
         disabled={disabled ? disabled : false}
         defaultValue={
-          props.defaultValue === true ?
-            (props.defaultValueDateTime !== undefined && props.defaultValueDateTime !== null) ? props.defaultValueDateTime :
+          props.defaultValue ?
+            (typeof props.defaultValue === "string") ? props.defaultValue :
               type === "time" ? TimeNow : DateNow
             : ""
         }
@@ -98,8 +97,6 @@ const AmDate = props => {
           shrink: true
         }}
         onChange={e => {
-          // console.log("d")
-          // console.log(moment(e.target.value).isValid())
 
           if (type === "time") {
             if (e.target.value) {

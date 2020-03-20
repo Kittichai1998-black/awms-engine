@@ -36,12 +36,12 @@ namespace ProjectTMC.Engine.WorkQueue
                 if (sto.eventStatus != StorageObjectEventStatus.AUDITED && sto.eventStatus != StorageObjectEventStatus.AUDITING)
                 {
                     if (docItems.Count() == 0)
-                        throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                        throw new AMWException(logger, AMWExceptionCode.V2001, "ไม่พบเอกสารสำหรับการรับเข้า");
                 }
             }
             else
             {
-                throw new AMWException(logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
+                throw new AMWException(logger, AMWExceptionCode.V2002, "ไม่สามารถรับพาเลท " + reqVO.baseCode + " เข้าคลังได้ เนื่องจาก EventStatus เป็น " + sto.eventStatus );
             }
 
             return docItems;
@@ -55,12 +55,13 @@ namespace ProjectTMC.Engine.WorkQueue
                     //Get Doc
                     amt_Document docGR = new amt_Document();
                     List<amt_DocumentItem> docGRItems = new List<amt_DocumentItem>();
-                    if (reqVO.areaCode == "R")
+                    if (reqVO.areaCode == "In")
                     {
                         //Inbound Zone
                         docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                            new SQLConditionCriteria[] {
                            new SQLConditionCriteria("DocumentProcessType_ID",4010, SQLOperatorType.EQUALS),
+                           new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED,SQLOperatorType.EQUALS),
                            new SQLConditionCriteria("EventStatus","10,11",SQLOperatorType.IN)
                          }, buVO).FirstOrDefault();
 
@@ -71,7 +72,7 @@ namespace ProjectTMC.Engine.WorkQueue
                          }, buVO);
 
                     }
-                    else if (reqVO.areaCode == "G05" || reqVO.areaCode == "G06")
+                    else if (reqVO.areaCode == "Out")
                     {
                         //Outbound Zone
                          docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(

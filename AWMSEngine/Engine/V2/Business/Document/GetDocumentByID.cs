@@ -193,6 +193,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     new SQLConditionCriteria[]
                         {
                             new SQLConditionCriteria("DocumentItem_ID",bs.docItemID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status","0,1", SQLOperatorType.IN),
                         },
                     this.BuVO).FirstOrDefault();
 

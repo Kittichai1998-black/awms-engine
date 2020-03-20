@@ -332,7 +332,7 @@ const AmTable = props => {
           fontSize: "14px",
           ...props.style
         }}
-        onSortedChange={sorted => {
+        onSortedChange={sorted => { 
           setData([]);
           props.sort({
             id: sorted[0].id,

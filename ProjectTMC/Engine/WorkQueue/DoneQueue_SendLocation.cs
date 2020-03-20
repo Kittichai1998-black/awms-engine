@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AWMSModel.Criteria;
 using AWMSEngine.Engine;
 using AMWUtil.Logger;
-using static ProjectTMC.Model.SCADACriteria;
+using static ProjectTMC.Model.Criteria.SCADACriteria;
 using static ProjectTMC.ADO.SCADAApi.SCADAInterfaceADO;
 using ProjectTMC.ADO.SCADAApi;
 using AMWUtil.Exception;
@@ -14,7 +14,7 @@ using AWMSModel.Constant.EnumConst;
 
 namespace ProjectTMC.Engine.WorkQueue
 {
-    public class DoneQ_SendLocation : IProjectEngine<DoneWorkQueue.TReqandWorkQueue, WorkQueueCriteria>
+    public class DoneQueue_SendLocation : IProjectEngine<DoneWorkQueue.TReqandWorkQueue, WorkQueueCriteria>
     {
         public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneWorkQueue.TReqandWorkQueue data)
         {

@@ -21,10 +21,12 @@ const CreateDocGRRaw = props => {
     //==========================================================
     Axios.get(createQueryString(DocumentQuery)).then(row => {
       //console.log(row.data.datas.length);
-      if (row.data.datas.length > 0) {
-        setOpenError(true);
-        setTextError("Document is Working");
-        // setTimeout(() => props.history.push("/receive/search"), 1000);
+      if (row.data.datas) {
+        if (row.data.datas.length > 0) {
+          setOpenError(true);
+          setTextError("Document is Working");
+          // setTimeout(() => props.history.push("/receive/search"), 1000);
+        }
       }
     });
     //==========================================================
