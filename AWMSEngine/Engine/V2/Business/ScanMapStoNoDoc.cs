@@ -58,12 +58,12 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 ams_SKUMaster sm = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
                 if (sm == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Found");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี SKU ในระบบ");
 
                 ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
                 SKUGroupType smt_GroupType = smt.GroupType;
                 if (!reqVO.validateSKUTypeCodes.Any(x => x == smt_GroupType.ToString()))
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type Not Match");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type ไม่ถูกต้อง");
             }
         }
         private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.Business
                 skuID = ((ams_PackMaster)obj).SKUMaster_ID;
                 var skuMaster = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(skuID, this.BuVO);
                 if (skuMaster == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU ID: " + skuID + " Not Found");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี SKU ID : " + skuID);
 
                 skuType = this.StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == skuMaster.SKUMasterType_ID);
 
@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.Business
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_AreaLocationMaster)obj).UnitType_ID);
 
             if (trueUnit == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Incorrect UnitType");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Unit Type ไม่ถูกต้อง");
 
 
             var baseUnit = objType == StorageObjectType.PACK ?
@@ -107,7 +107,7 @@ namespace AWMSEngine.Engine.V2.Business
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
             if (!String.IsNullOrEmpty(reqVO.locationCode) && alm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Location : " + reqVO.locationCode);
 
             var res = new StorageObjectCriteria()
             {
@@ -176,7 +176,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (mapsto == null)
                 {
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ : " + reqVO.scanCode);
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     //this.CheckSKUType(reqVO, pm);
 
@@ -209,20 +209,20 @@ namespace AWMSEngine.Engine.V2.Business
                     }
                     else if (pm != null)
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Please scan pallet or box code then scan product code");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "กรุณาแสดงพาเลทหรือกล่อง แล้วแสกนสินค้า");
                     }
                     else
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ : " + reqVO.scanCode);
                     }
                 }
                 else
                 {
                     if (mapsto.warehouseID != reqVO.warehouseID)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse ไม่ถูกต้อง");
                     if (reqVO.action != VirtualMapSTOActionType.SELECT)
                         if (mapsto.areaID != reqVO.areaID)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area ไม่ถูกต้อง");
                 }
 
             }
@@ -235,11 +235,11 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     stoBase = mapsto.ToTreeList().Find(x => x.type == StorageObjectType.BASE && x.id == reqVO.rootID.Value);
                     if (stoBase.id == null)
-                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ " + reqVO.scanCode);
                 }
 
                 if (mapsto == null)
-                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ " + reqVO.scanCode);
 
                 if (reqVO.rootOptions != null)
                 {
@@ -259,10 +259,10 @@ namespace AWMSEngine.Engine.V2.Business
                 }
 
                 if (mapsto.warehouseID != reqVO.warehouseID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse ไม่ถูกต้อง");
 
                 if (mapsto.areaID != reqVO.areaID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area ไม่ถูกต้อง");
 
                 if (reqVO.action == VirtualMapSTOActionType.SELECT)
                 {
@@ -275,7 +275,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (stoBase.id != null)
                     {
                         if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't add product in base that it has status is " + stoBase.eventStatus);
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'เพิ่ม'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น " + stoBase.eventStatus);
 
                     }
 
@@ -288,7 +288,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (stoBase.id != null)
                     {
                         if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + stoBase.eventStatus);
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'ลบ'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น" + stoBase.eventStatus);
                     }
                     this.ActionRemove(reqVO, mapsto);
                     mapsto = this.ADOSto.Get(reqVO.rootID.Value, reqVO.rootType.Value, reqVO.isRoot, true, this.BuVO);
@@ -321,7 +321,7 @@ namespace AWMSEngine.Engine.V2.Business
         {
             ams_SKUMaster sm = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
             if (sm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ SKU");
 
             ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
             SKUGroupType smt_GroupType = smt.GroupType;
@@ -383,9 +383,9 @@ namespace AWMSEngine.Engine.V2.Business
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
             if (alm != null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " can't add location on " + firstMapSto.type);
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " ไม่สามารถเพิ่ม location บน " + firstMapSto.type);
             if (pm == null && bm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ : " + reqVO.scanCode);
 
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
