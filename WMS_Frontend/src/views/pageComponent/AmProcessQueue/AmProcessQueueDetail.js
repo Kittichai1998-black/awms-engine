@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useContext, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types"
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -196,6 +196,7 @@ const useArea = (areaQuery, doc, customArea) => {
             var areaRes = customArea(area, doc[0]);
             setArea(areaRes);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[customArea, doc])
 
     return area;
@@ -218,17 +219,18 @@ const ProcessQueueDetail = (props) => {
     const [dialogText, setDialogText] = useState("")
 
     const [confirmState, setConfirmState] = useState(false)
-    const [areaEnable, setAreaEnable] = useState(props.areaDefault !== undefined ? true : false);
-    
+    const [areaEnable, setAreaEnable] = useState(false);
 
     useEffect(()=> {
         if(props.areaDefault !== undefined)
             if(documents.documentListValue.length > 0){
-                setAreaDefault(props.areaDefault(documents.documentListValue))
+                setAreaDefault(props.areaDefault(documents.documentListValue[0]))
+                setAreaEnable(true)
             }else{
                 setAreaDefault("0")
             }
-    }, [props, documents.documentsValue])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props, documents.documentListValue])
 
     useEffect(() => {
         const onClickDialog = (key, cell) => {
@@ -256,6 +258,7 @@ const ProcessQueueDetail = (props) => {
         var createCustomColumns = {"Header":"Configs", "sortable":false, "width":100, Cell:(x)=> createCustomDialog(x)};
         setColumns([createCustomColumns, ...props.documentItemDetail])
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [processCondition, documents]);
 
     const genDocumentHeader = (doc) => {
@@ -567,23 +570,48 @@ const ProcessQueueDetail = (props) => {
                 processQueueArr.push(processQueue)
             })
         })
-        let processQueueData = {}
-        processQueueData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
-        processQueueData["desASRSLocationCode"] = null;
-        processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
-        processQueueData["processQueues"] = processQueueArr;
 
-        Axios.post(window.apipath + "/v2/process_wq", processQueueData).then(res => {
-            if(res.data._result.status !== 1){
-                setDialogState(!dialogState)
-                setDialogText(res.data._result.message)
-                setDialogType("error")
-            }else{
-                setProcessQueueData(res.data)
-                if(!confirmState)
-                    setConfirmState(true)
-            }
-        });
+        if(areaEnable && IsEmptyObject(areaSelection)){
+            setDialogState(!dialogState)
+            setDialogText("กรุณากรอก Area ปลายทาง")
+            setDialogType("error")
+        }
+        else{
+            let processQueueData = {}
+            processQueueData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+            processQueueData["desASRSLocationCode"] = null;
+            processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
+            processQueueData["processQueues"] = processQueueArr;
+
+            Axios.post(window.apipath + "/v2/process_wq", processQueueData).then(res => {
+                if(res.data._result.status !== 1){
+                    setDialogState(!dialogState)
+                    setDialogText(res.data._result.message)
+                    setDialogType("error")
+                }else{
+                    var process = res.data.processResults.filter(proRes => {
+                        return proRes.processResultItems.find(item => {
+                            return item.pickStos.length > 0
+                        })
+                    })
+
+                    if(process.length === 0){
+                        setDialogState(!dialogState)
+                        setDialogText("ไม่พบสินค้าในเอกสารตามเงื่อนไขการเบิก")
+                        setDialogType("error")
+                    }else{
+                        let createResData = {}
+                        createResData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+                        createResData["desASRSLocationCode"] = null;
+                        createResData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
+                        createResData["processResults"] = process;
+                        setProcessQueueData(res.data)
+                        if(!confirmState)
+                            setConfirmState(true)
+                    }
+                }
+            });
+        }
     };
 
     const Memo = React.memo(({documentData, cols})=> {
@@ -625,16 +653,18 @@ const ProcessQueueDetail = (props) => {
                 columnsConfirm={props.columnsConfirm}
                 onClose={(confirmState, dialogState)=>
                     {
-                        if(confirmState._result === 1){
-                            setDialogState(!dialogState)
-                            setDialogText(confirmState._result.message)
-                            setDialogType("error")
-                        }
-                        else{
-                            documents.clearDocument();
-                            documents.clearWarehouse();
-                        }
+                        if(confirmState !== null){
 
+                            if(confirmState._result === 1){
+                                setDialogState(!dialogState)
+                                setDialogText(confirmState._result.message)
+                                setDialogType("error")
+                            }
+                            else{
+                                documents.clearDocument();
+                                warehouse.clearWarehouse();
+                            }
+                        }
                         setConfirmState(dialogState)
                     }
                 }/>
@@ -693,7 +723,7 @@ const ProcessQueueDetail = (props) => {
                         data={area}
                         zIndex={9999}
                         onChange={(value, dataObject, inputID, fieldDataKey) => {
-                            setAreaSelection(dataObject)
+                            setAreaSelection(dataObject === null ? {} : dataObject)
                             setAreaDefault(value)
                         }}
                         returnDefaultValue={true}
@@ -808,13 +838,14 @@ const ConfirmDialog = (props) => {
     return <AmDialogConfirm
     styleDialog={{maxWidth:"800px"}}
     open={open}
-    close={a => {setOpen(!open);props.onClose(null, false);}}
+    close={a => {setOpen(!open); props.onClose(null, false);}}
     bodyDialog={!IsEmptyObject(data) ? renderProcess() : []}
     customAcceptBtn={
         <AmButton
             styleType="confirm_clear"
             onClick={() => {
-                props.onClose()
+                
+                onClickConfirm();
         }}>OK</AmButton>
     }
     customCancelBtn={
@@ -826,7 +857,6 @@ const ConfirmDialog = (props) => {
             }}>Cancel</AmButton>
     }/>;
 }
-
 
 const ExpansionPanel = withStyles({
     root: {

@@ -100,12 +100,13 @@ const ProcessQueue = () => {
       return areaList
   }
 
-  const customDesAreaDefault = (areaList, doc) => {
+  const customDesAreaDefault = (doc) => {
+    console.log(doc)
     if(doc.document.DocumentProcessType_ID === 1013){
-      return "3"
+      return "13"
     }
     else
-      return "4"
+      return "14"
   }
 
   return <AmProcessQueue 
@@ -117,7 +118,7 @@ const ProcessQueue = () => {
     documentDetail={documentDetail}
     processSingle={false}
     processCondition={processCondition}
-    percenRandom={true}
+    percentRandom={true}
     customDesArea={customDesArea}
     areaDefault={customDesAreaDefault}
     columnsConfirm={columnsConfirm}

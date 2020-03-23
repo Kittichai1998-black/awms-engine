@@ -44,7 +44,7 @@ const ProcessQueue = (props) => {
         />
       <AmProcessQueueDetail documentItemDetail={props.documentItemDetail} 
       processCondition={props.processCondition}
-      percentRandom={props.percenRandom}
+      percentRandom={props.percentRandom}
       areaQuery={props.areaQuery}
       customDesArea={props.customDesArea}
       areaDefault={props.areaDefault}

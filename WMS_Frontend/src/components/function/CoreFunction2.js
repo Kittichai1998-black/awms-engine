@@ -107,7 +107,10 @@ const createQueryString = (select) => {
 }
 
 const IsEmptyObject = (obj) => {
-    return Object.keys(obj).length === 0 && obj.constructor === Object
+    if(typeof(obj) === "object")
+        return Object.keys(obj).length === 0 && obj.constructor === Object
+    else
+        return false;
 }
 
 const Clone = (obj) => {
