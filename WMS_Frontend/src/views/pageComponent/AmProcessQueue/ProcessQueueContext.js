@@ -1,11 +1,15 @@
-import React, {createContext, useReducer} from 'react';
+import React, {createContext, useReducer, useMemo} from 'react';
 
 export const ProcessQueueContext = React.createContext({})
 
 const initialState = {
-    "documents":[],
-    "warehouse":null,
-    "uniqueKey":"ID"
+    "documents":[],    
+    "uniqueKey":"ID",
+    "documentDetail":{},
+    "dialogState":{},
+    "documentList":[],
+    "rowEdit":{},
+    "warehouse":{}
 }
 
 const documentsReducer = (state, action) => {
@@ -21,28 +25,47 @@ const documentsReducer = (state, action) => {
                 "documents" : distinctDocData
               }
         }
+        case "REMOVEDOC" : {
+            let docData = [...state.documents];
+            let distinctDocData = docData.filter(doc => {
+                return doc.ID !== action.payload
+            });
+            return {
+                ...state,                
+                "documents" : distinctDocData
+              }
+        }
+        case "ADDSINGLE" : {
+            return {
+                ...state,
+                "documents" : [action.payload],
+                "documentList" : []
+              }
+        }
         case "CLEARDOC" : {
             return {
-                ...state,                
-                "documents" : []
+                ...state,
+                "documents" : [],
+                "documentList" : []
               }
         }
-        default : {}
-      }
-}
-
-const warehouseReducer = (state, action) => {
-    switch (action.type) {
-        case "ADDWAREHOUSE": {
+        case "ADDDOCLIST" : {
+            let getDocs = [...state["documentList"]].filter(x => {
+                return x.document.ID !== action.payload.document.ID
+            });
+            getDocs.push(action.payload);
             return {
                 ...state,                
-                "warehouse" : action.payload
+                "documentList" : getDocs
               }
         }
-        case "CLEARWAREHOUSE" : {
+        case "REMOVEDOCLIST" : {
+            let getDocs = [...state["documentList"]].filter(x => {
+                return x.document.ID !== action.payload
+            });
             return {
                 ...state,                
-                "warehouse" : null
+                "documentList" : getDocs
               }
         }
         default : {}
@@ -67,31 +90,66 @@ const uniqueKeyReducer = (state, action) => {
       }
 }
 
+const warehouseReducer = (state, action) => {
+    switch (action.type) {
+        case "SETWAREHOUSE": {
+            return {
+                ...state,                
+                "warehouse" : action.payload
+              }
+        }
+        case "CLEARWAREHOUSE" : {
+            return {
+                ...state,                
+                "warehouse" : null
+              }
+        }
+        default : {}
+      }
+}
+
+const docDetailReducer = (state, action) => {
+    switch (action.type) {
+        case "SETDOCDETAIL": {
+            return {
+                ...state,                
+                "documentDetail" : action.payload
+              }
+        }
+        default : {}
+      }
+}
+
 export const ProcessQueueProvider = ({children}) => {
     const documents = DocumentsAction();
-    const warehouse = WarehouseAction();
     const uniqueKey = UniqueAction();
-    return <ProcessQueueContext.Provider value={{documents, warehouse, uniqueKey}}>
+    const documentDetail = DocDetailAction();
+    const warehouse = WarehouseAction();
+    return <ProcessQueueContext.Provider value={{documents, uniqueKey, documentDetail, warehouse}}>
         {children}
     </ProcessQueueContext.Provider>
 }
 
-const DocumentsAction = () => {
-    const [documentsData, documentsDispatch] = useReducer(documentsReducer, initialState)
-    const addDocument = (payload) => documentsDispatch({"type":"ADDDOC", payload})
-    const clearDocument = (payload) => documentsDispatch({"type":"CLEARDOC", payload})
-    const documentsValue = documentsData.documents;
+const DocDetailAction = () => {
+    const [documentDetail, documentDetailDispatch] = useReducer(docDetailReducer, initialState)
+    const setDocumentDetail = (payload) => documentDetailDispatch({"type":"SETDOCDETAIL", payload})
+    const documentDetailValue = documentDetail.documentDetail;
 
-    return {documentsValue, addDocument, clearDocument}
+    return {documentDetailValue, setDocumentDetail}
 }
 
-const WarehouseAction = () => {
-    const [warehouseData, warehouseDispatch] = useReducer(warehouseReducer, initialState)
-    const setWarehouse = (payload) => warehouseDispatch({"type":"ADDWAREHOUSE", payload})
-    const clearWarehouse = (payload) => warehouseDispatch({"type":"CLEARWAREHOUSE", payload})
-    const warehouseValue = warehouseData.warehouse;
+const DocumentsAction = () => {
+    const [documentsData, documentsDispatch] = useReducer(documentsReducer, initialState)
+    const setDocuments = (payload) => documentsDispatch({"type":"ADDDOC", payload})
+    const setDocumentList = (payload) => documentsDispatch({"type":"ADDDOCLIST", payload})
+    const clearDocument = (payload) => documentsDispatch({"type":"CLEARDOC", payload})
+    const removeDocument = (payload) => documentsDispatch({"type":"REMOVEDOC", payload})
+    const removeDocumentList = (payload) => documentsDispatch({"type":"REMOVEDOCLIST", payload})
+    const addSingleDocument = (payload) => documentsDispatch({"type":"ADDSINGLE", payload})
+    const documentsValue = documentsData.documents;
+    const documentListValue = documentsData.documentList;
 
-    return {warehouseValue, setWarehouse, clearWarehouse}
+    return {documentsValue,documentListValue, setDocuments, clearDocument, setDocumentList, removeDocument, removeDocumentList, addSingleDocument}
 }
 
 const UniqueAction = () => {
@@ -101,4 +159,13 @@ const UniqueAction = () => {
     const uniqueValue = uniqueKey.uniqueKey;
 
     return {uniqueValue, setUnique, clearUnique}
+}
+
+const WarehouseAction = () => {
+    const [warehouse, warehouseDispatch] = useReducer(warehouseReducer, initialState)
+    const setWarehouse = (payload) => warehouseDispatch({"type":"SETWAREHOUSE", payload})
+    const clearWarehouse = (payload) => warehouseDispatch({"type":"CLEARWAREHOUSE", payload})
+    const warehouseValue = warehouse.warehouse;
+
+    return {warehouseValue, setWarehouse, clearWarehouse}
 }
