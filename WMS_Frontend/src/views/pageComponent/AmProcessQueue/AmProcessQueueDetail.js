@@ -252,7 +252,8 @@ const ProcessQueueDetail = (props) => {
                 btnObj.push(<ListIcon onClick={() => {onClickDialog("percentRandom", event)}} fontSize="small"/>)
             return btnObj;
         }
-        var createCustomColumns = {"Header":"Configs", "sortable":false, "width":80, Cell:(x)=> createCustomDialog(x)};
+
+        var createCustomColumns = {"Header":"Configs", "sortable":false, "width":100, Cell:(x)=> createCustomDialog(x)};
         setColumns([createCustomColumns, ...props.documentItemDetail])
 
     }, [processCondition, documents]);

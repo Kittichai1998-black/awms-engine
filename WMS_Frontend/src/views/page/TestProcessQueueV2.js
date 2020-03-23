@@ -117,7 +117,7 @@ const ProcessQueue = () => {
     documentDetail={documentDetail}
     processSingle={false}
     processCondition={processCondition}
-    percenRandom={false}
+    percenRandom={true}
     customDesArea={customDesArea}
     areaDefault={customDesAreaDefault}
     columnsConfirm={columnsConfirm}
