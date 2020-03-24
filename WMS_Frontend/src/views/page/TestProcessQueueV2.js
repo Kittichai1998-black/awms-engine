@@ -65,8 +65,8 @@ const ProcessQueue = () => {
         else
           return {"enable":true, "defaultValue":true, "editable":true}
       }},
-      {"field":"Incubated","key":"useIncubateDate", "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}},
-      {"field":"Expire Date","key":"useExpireDate", "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}}
+      {"field":"Incubated","key":"useIncubateDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}},
+      {"field":"Expire Date","key":"useExpireDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}}
     ],
     "eventStatuses":[
       {"field":"Recevied","value":12, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}},
@@ -122,6 +122,7 @@ const ProcessQueue = () => {
     customDesArea={customDesArea}
     areaDefault={customDesAreaDefault}
     columnsConfirm={columnsConfirm}
+    modeDefault={"1"}
   />
 }
 

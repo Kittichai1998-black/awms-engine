@@ -748,7 +748,7 @@ const ConfirmDialog = (props) => {
     useEffect(()=>{
         setOpen(props.open)
     }, [props.open]);
-    
+
     useEffect(()=>{
         setData(props.data)
     }, [props.data]);
@@ -799,7 +799,8 @@ const ConfirmDialog = (props) => {
         </ExpansionPanel></>
     }) : null;
 
-    const renderProcess = () => {return <>
+    const renderProcess = () => {
+        return <>
             <FormInline>
                 <label>Mode : </label>
                 <AmDropdown
@@ -837,26 +838,27 @@ const ConfirmDialog = (props) => {
     }
 
     return <AmDialogConfirm
-    styleDialog={{maxWidth:"800px"}}
-    open={open}
-    close={a => {setOpen(!open); props.onClose(null, false);}}
-    bodyDialog={!IsEmptyObject(data) ? renderProcess() : []}
-    customAcceptBtn={
-        <AmButton
-            styleType="confirm_clear"
-            onClick={() => {
-                
-                onClickConfirm();
-        }}>OK</AmButton>
-    }
-    customCancelBtn={
-        <AmButton
-            styleType="delete_clear"
-            onClick={() => {
-                setOpen(!open)
-                props.onClose(null, false)
-            }}>Cancel</AmButton>
-    }/>;
+        styleDialog={{maxWidth:"800px"}}
+        open={open}
+        close={a => {setOpen(!open); props.onClose(null, false);}}
+        bodyDialog={!IsEmptyObject(data) ? renderProcess() : []}
+        customAcceptBtn={
+            <AmButton
+                styleType="confirm_clear"
+                onClick={() => {
+                    
+                    onClickConfirm();
+            }}>OK</AmButton>
+        }
+        customCancelBtn={
+            <AmButton
+                styleType="delete_clear"
+                onClick={() => {
+                    setOpen(!open)
+                    props.onClose(null, false)
+                }}>Cancel</AmButton>
+        }
+    />;
 }
 
 const ExpansionPanel = withStyles({

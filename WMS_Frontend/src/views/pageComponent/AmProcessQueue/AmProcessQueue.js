@@ -27,7 +27,9 @@ const ProcessQueue = (props) => {
       areaDefault={props.areaDefault}
       columnsConfirm={props.columnsConfirm}
       processUrl={props.processUrl}
-      confirmProcessUrl={props.confirmProcessUrl}/>
+      confirmProcessUrl={props.confirmProcessUrl}
+      modeDefault={props.modeDefault}
+      />
     </ProcessQueueProvider>
   </>
 }
