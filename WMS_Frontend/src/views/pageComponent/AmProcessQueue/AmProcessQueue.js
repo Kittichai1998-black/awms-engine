@@ -1,10 +1,14 @@
-import React from "react";
+import React, {useEffect} from "react";
 import PropTypes from "prop-types"
 import {ProcessQueueProvider} from './ProcessQueueContext';
 import AmProcessQueueHeader from './AmProcessQueueHeader';
 import AmProcessQueueDetail from './AmProcessQueueDetail';
 
 const ProcessQueue = (props) => {
+  useEffect(()=> {
+    console.log(props.confirmProcessUrl)
+  })
+
   return <>
     <ProcessQueueProvider>
       <AmProcessQueueHeader 

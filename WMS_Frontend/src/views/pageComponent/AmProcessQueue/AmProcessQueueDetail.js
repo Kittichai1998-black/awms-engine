@@ -645,7 +645,8 @@ const ProcessQueueDetail = (props) => {
                 content={dialogText}
             />
             
-            <ConfirmDialog 
+            <ConfirmDialog
+                confirmProcessUrl={props.confirmProcessUrl}
                 mode={props.modeDefault} 
                 data={processQueueData} 
                 open={confirmState} 
@@ -747,6 +748,7 @@ const ConfirmDialog = (props) => {
     useEffect(()=>{
         setOpen(props.open)
     }, [props.open]);
+    
     useEffect(()=>{
         setData(props.data)
     }, [props.data]);
