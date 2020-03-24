@@ -1,35 +1,8 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
+import React from "react";
 import PropTypes from "prop-types"
-import { withStyles } from "@material-ui/core/styles";
-import {
-  apicall,
-  createQueryString,
-  Clone
-} from "../../../components/function/CoreFunction2";
-import styled from 'styled-components';
-import {ProcessQueueContext, ProcessQueueProvider} from './ProcessQueueContext';
+import {ProcessQueueProvider} from './ProcessQueueContext';
 import AmProcessQueueHeader from './AmProcessQueueHeader';
 import AmProcessQueueDetail from './AmProcessQueueDetail';
-import { CardBody } from "reactstrap";
-import { Card, Grid } from "@material-ui/core";
-var Axios = new apicall();
-
-const FormInline = styled.div`
-display: flex;
-flex-flow: row wrap;
-align-items: center;
-label {
-  margin: 5px 0 5px 0;
-}
-input {
-    vertical-align: middle;
-}
-@media (max-width: 800px) {
-    flex-direction: column;
-    align-items: stretch;
-    
-  }
-`;
 
 const ProcessQueue = (props) => {
   return <>
@@ -48,7 +21,9 @@ const ProcessQueue = (props) => {
       areaQuery={props.areaQuery}
       customDesArea={props.customDesArea}
       areaDefault={props.areaDefault}
-      columnsConfirm={props.columnsConfirm}/>
+      columnsConfirm={props.columnsConfirm}
+      processUrl={props.processUrl}
+      confirmProcessUrl={props.confirmProcessUrl}/>
     </ProcessQueueProvider>
   </>
 }
@@ -123,9 +98,21 @@ ProcessQueue.propTypes = {
     ** value? : (doc)=> {return value}
    */
    areaDefault:PropTypes.func,
+   /**
+    * Url สำหรับ process queue
+    ** value? : process_wq
+   */
+   processUrl:PropTypes.string,
+   /**
+    * Url สำหรับ confirm process queue
+    ** value? : confirm_process_wq
+   */
+   confirmProcessUrl:PropTypes.string,
 }
 ProcessQueue.defaultProps = {
-  processSingle:false
+  processSingle:false,
+  processUrl:"process_wq",
+  confirmProcessUrl:"confirm_process_wq"
 }
 
 export default ProcessQueue;

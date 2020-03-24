@@ -63,22 +63,22 @@ const ProcessQueue = () => {
         if(c.docItem.Code === 'PJAAN04-0020')
           return {"enable":true, "defaultValue":false, "editable":true}
         else
-          return {"enable":true, "defaultValue":true, "editable":false}
+          return {"enable":true, "defaultValue":true, "editable":true}
       }},
-      {"field":"Incubated","key":"useIncubateDate", "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":false}}},
-      {"field":"Expire Date","key":"useExpireDate", "enable":true, "defaultValue":true, "editable":false, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}}
+      {"field":"Incubated","key":"useIncubateDate", "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}},
+      {"field":"Expire Date","key":"useExpireDate", "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}}
     ],
     "eventStatuses":[
-      {"field":"Recevied","value":12, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":false,"enable":true}}},
+      {"field":"Recevied","value":12, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}},
       {"field":"Hold","value":99, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}},
-      {"field":"Block","value":97, "enable":true, "defaultValue":true, "editable":false, custom:(c)=>{return {"defaultValue":true, "editable":false,"enable":true}}},
-      {"field":"QC","value":98, "enable":true, "defaultValue":true, "editable":false, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}}
+      {"field":"Block","value":97, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}},
+      {"field":"QC","value":98, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}}
     ],
     "orderBys":[
       {"field":"Receive Date", "enable":true, "sortField":"psto.createtime","sortBy":"0", "editable":true,
       custom:(c)=>{return {"value":true, "editable":true, "enable":true, "sortField":"psto.createtime","sortBy":"1",}}},
       {"field":"Batch", "enable":true, "sortField":"psto.batch","sortBy":"0", "editable":true,
-      custom:(c)=>{return {"value":true, "editable":false, "enable":true ,"sortField":"psto.batch","sortBy":"1",}}},
+      custom:(c)=>{return {"value":true, "editable":true, "enable":true ,"sortField":"psto.batch","sortBy":"1",}}},
       {"field":"Lot", "enable":true, "sortField":"psto.lot","sortBy":"0", "editable":true,
       custom:(c)=>{return {"value":true, "editable":true, "enable":true, "sortField":"psto.lot","sortBy":"1",}}}
     ]

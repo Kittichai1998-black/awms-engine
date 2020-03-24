@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types"
-import { withStyles } from "@material-ui/core/styles";
 import {
   apicall,
   createQueryString,
