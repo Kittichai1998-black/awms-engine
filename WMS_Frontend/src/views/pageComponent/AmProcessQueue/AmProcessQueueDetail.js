@@ -364,7 +364,7 @@ const ProcessQueueDetail = (props) => {
                             if(condition.enable){
                                 return <FormInline>
                                 <LabelH>{x.field} : </LabelH>
-                                <CheckboxCustom disabled={x.editable} onClick={event => {
+                                <CheckboxCustom disabled={!x.editable} onClick={event => {
                                     data.docItem[x.key] = event.target.checked;
                                 }} defaultChecked={data.docItem[x.key]}/>
                                 </FormInline>
