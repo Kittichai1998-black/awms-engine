@@ -15,5 +15,7 @@ namespace AWMSModel.Entity
         public DateTime? StartTime;
         public DateTime? EndTime;
         public WaveEventStatus EventStatus;
+
+        public List<amt_WaveSeq> WaveSeq;
     }
 }

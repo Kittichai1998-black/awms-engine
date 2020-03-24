@@ -13,7 +13,7 @@ namespace AWMSEngine.ADO
 {
     public class WaveADO : BaseMSSQLAccess<WaveADO>
     {
-        public long? PUT(amt_Wave wave, VOCriteria buVO)
+        public long? Put(amt_Wave wave, VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
@@ -34,7 +34,7 @@ namespace AWMSEngine.ADO
 
             return res;
         }
-        public long? SEQ_PUT(amt_WaveSeq wave, VOCriteria buVO)
+        public long? PutSeq(amt_WaveSeq wave, VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
@@ -74,6 +74,16 @@ namespace AWMSEngine.ADO
                 buVO.Logger,
                 buVO.SqlTransaction);
             return res;
+        }
+
+        public amt_Wave Get(long waveID, VOCriteria buVO)
+        {
+            var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(waveID, buVO);
+            wave.WaveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("Wave_ID", waveID, SQLOperatorType.EQUALS)
+                }, buVO);
+
+            return wave;
         }
     }
 }
