@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types"
 import { withStyles } from "@material-ui/core/styles";
@@ -583,7 +582,7 @@ const ProcessQueueDetail = (props) => {
             processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
             processQueueData["processQueues"] = processQueueArr;
 
-            Axios.post(window.apipath + "/v2/process_wq", processQueueData).then(res => {
+            Axios.post(window.apipath + "/v2/" + props.processUrl, processQueueData).then(res => {
                 if(res.data._result.status !== 1){
                     setDialogState(!dialogState)
                     setDialogText(res.data._result.message)
@@ -761,7 +760,7 @@ const ConfirmDialog = (props) => {
         confirmData["scheduleTime"] = datetime;
         confirmData["processResults"] = data.processResults;
 
-        Axios.post(window.apipath + "/v2/confirm_process_wq", confirmData).then(res => {
+        Axios.post(window.apipath + "/v2/" + props.confirmProcessUrl, confirmData).then(res => {
             props.onClose(res.data, false);
         });
     }
@@ -950,5 +949,15 @@ const ExpansionPanel = withStyles({
      ** value? : (doc)=> {return value}
     */
     areaDefault:PropTypes.func,
+    /**
+     * Url สำหรับ process queue
+     ** value? : process_wq
+    */
+    processUrl:PropTypes.string,
+    /**
+     * Url สำหรับ confirm process queue
+     ** value? : confirm_process_wq
+    */
+    confirmProcessUrl:PropTypes.string,
   }
 export default ProcessQueueDetail;
