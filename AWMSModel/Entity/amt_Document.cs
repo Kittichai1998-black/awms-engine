@@ -36,6 +36,7 @@ namespace AWMSModel.Entity
         public string Ref1;
         public string Ref2;
 
+        public long? Wave_ID;
         public long? For_Customer_ID;
         public string Batch;
         public string Lot;

@@ -206,6 +206,10 @@ const SearchLog = Loadable({
   loader: () => import("../../views/page/ENGINE/SearchLog"),
   loading: Loading
 });
+const Dash = Loadable({
+  loader: () => import("../../views/page/Dashboard/Dash5"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -489,6 +493,12 @@ let routes = [
     path: "/log/searchlog",
     name: "Search Log",
     compoment: SearchLog,
+    exact: true
+  },
+  {
+    path: "/dashboard/Dash",
+    name: "Dash1",
+    compoment: Dash,
     exact: true
   }
 ];

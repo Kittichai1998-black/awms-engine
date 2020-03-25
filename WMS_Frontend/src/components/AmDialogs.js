@@ -39,6 +39,11 @@ const AmDialogs = props => {
     // console.log(props.content)
   }, [props.content]);
 
+  useEffect(() => {
+    setType(props.typePopup);
+    // console.log(props.content)
+  }, [props.typePopup]);
+
   // useEffect(() => {
   //     handleClick(message)
   // },[]);
