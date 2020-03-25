@@ -23,6 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string desASRSLocationCode;
             public List<ProcessQueueCriteria> processQueues;
             public bool lockNotExistsRandom = false;
+
             public class ProcessQueueCriteria
             {
                 public long docID;

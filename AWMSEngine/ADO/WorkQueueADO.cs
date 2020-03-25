@@ -49,6 +49,15 @@ namespace AWMSEngine.ADO
 
             return queueDocItem;
         }
+        public amt_WorkQueue PUT(amt_WorkQueue wq , VOCriteria buVO)
+        {
+            var spwq = PUT(SPworkQueue.Generate(wq), buVO);
+            wq.ID = spwq.ID;
+            wq.StorageObject_Code = spwq.StorageObject_Code;
+            wq.RefID = spwq.RefID;
+            wq.Seq = spwq.Seq;
+            return wq;
+        }
         public SPworkQueue PUT(SPworkQueue obj, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();

@@ -47,7 +47,7 @@ namespace AWMSModel.Criteria.SP.Request
             {
                 ID = queue.ID,
                 IOType = queue.IOType,
-                Parent_WorkQueue_ID = queue.Parent_WorkQueue_ID,
+                //Parent_WorkQueue_ID = queue.Parent_WorkQueue_ID,
                 StorageObject_ID = queue.StorageObject_ID,
                 StorageObject_Code = queue.StorageObject_Code,
                 Sou_Warehouse_ID = queue.Sou_Warehouse_ID,
@@ -68,7 +68,7 @@ namespace AWMSModel.Criteria.SP.Request
                 Seq = queue.Seq,
                 RefID = queue.RefID,
                 StartTime = queue.StartTime,
-                TargetStartTime = queue.TargetStartTime,
+                //TargetStartTime = queue.TargetStartTime,
                 DocumentItemWorkQueues = null,
             };
             return res;

@@ -21,6 +21,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TReq : ASRSProcessQueue.TRes
         {
             public bool isSetQtyAfterDoneWQ = true;
+            public WaveRunMode waveRunMode;
+            public DateTime? scheduleTime;
         }
         public class TRes
         {
@@ -45,17 +47,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
+
+            this.InsertWave(reqVO);
             //List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
            
-
-
-
-
-
-
-
-
-
 
 
 
@@ -182,14 +177,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         private void InsertWave(TReq reqVO)
         {
-            AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_Wave>(this.BuVO, new amt_Wave()
+            amt_Document doc = new amt_Document();
+            
+            List<ams_WaveSeqTemplate> waveTemplate = new List<ams_WaveSeqTemplate>();
+
+            var WaveID = AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_Wave>(this.BuVO, new amt_Wave()
             {
                 IOType= IOType.OUTPUT,
-                Code = "",
-                Name ="",
-                Description = "",
-                RunMode = 0,
-                RunScheduleTime = null,
+                Code = "Code",
+                Name = "Name",
+                Description = "Description",
+                RunMode = reqVO.waveRunMode,
+                RunScheduleTime = reqVO.scheduleTime,
                 Priority = 2,
                 StartTime = null,
                 EndTime =null,
@@ -197,8 +196,38 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 EventStatus = WaveEventStatus.NEW
             });
 
+            reqVO.processResults.ForEach(x =>
+            {
+                doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
 
+                doc.Wave_ID = WaveID.Value;
+                AWMSEngine.ADO.DocumentADO.GetInstant().Put(doc, this.BuVO);
+             
 
+                waveTemplate = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
+                 new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("DocumentProcessType_ID",doc.DocumentProcessType_ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
+                 }, this.BuVO);
+
+                waveTemplate.ForEach(temp =>
+                {
+                    AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_WaveSeq>(this.BuVO, new amt_WaveSeq()
+                    {
+                        Wave_ID = WaveID.Value,
+                        Seq = temp.Seq,
+                        Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
+                        End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
+                        AutoNextSeq = temp.AutoNextSeq,
+                        StartTime = temp.StartTime,
+                        EndTime = temp.EndTime,
+                        EventStatus = WaveEventStatus.NEW,
+                        Status = EntityStatus.ACTIVE
+
+                    });
+                });
+             
+            });
         }
     }
 }

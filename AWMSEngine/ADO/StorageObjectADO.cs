@@ -17,6 +17,18 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
+        public amt_StorageObject GetParent(long childStoID, VOCriteria buVO)
+        {
+            return ListParent(new long[] { childStoID }, buVO).FirstOrDefault();
+        }
+        public List<amt_StorageObject> ListParent(long[] childStoIDs,VOCriteria buVO)
+        {
+            Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+            parameter.Add("@childStoIDs", string.Join(',', childStoIDs));
+            var res = this.Query<amt_StorageObject>("SP_STO_LIST_PARENT", 
+                CommandType.StoredProcedure, parameter, buVO.Logger, buVO.SqlTransaction, buVO.SqlConnection).ToList();
+            return res;
+        }
         public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
         {
             return UpdateLocationToChild(baseInfo, baseInfo.eventStatus, locationID, buVO);

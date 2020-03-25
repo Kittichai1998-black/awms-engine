@@ -51,7 +51,9 @@ namespace AWMSEngine.Engine.V2.General
                     foreach (var _q in q)
                     {
                         List<SQLConditionCriteria> whereGroups = GenerateWheres(_q.q);
-                        SQLConditionCriteria w = new SQLConditionCriteria((string)_q.f, (string)_q.v, (string)_q.c, (string)_q.o, whereGroups);
+                        SQLConditionCriteria w = (whereGroups != null && whereGroups.Count()>0) ?
+                            new SQLConditionCriteria(whereGroups, (string)_q.o) :
+                            new SQLConditionCriteria((string)_q.f, (string)_q.v, (string)_q.c, (string)_q.o);
                         res.Add(w);
                     }
                     return res;

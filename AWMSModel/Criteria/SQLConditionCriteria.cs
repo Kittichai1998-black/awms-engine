@@ -30,16 +30,23 @@ namespace AWMSModel.Criteria
             this.operatorType = operatorType;
             this.conditionLeft = conditionLeft;
         }
-        public SQLConditionCriteria(string field, object value, string operatorType, string conditionLeft = null, List<SQLConditionCriteria> whereGroups = null)
+        public SQLConditionCriteria(string field, object value, string operatorType, string conditionLeft = null)
         {
             this.field = field;
             this.value = value;
-            this.whereGroups = whereGroups;
             operatorType = operatorType == null ? string.Empty : operatorType.ToLower();
             conditionLeft = conditionLeft == null ? string.Empty : conditionLeft.ToLower();
             this.operatorType = AMWUtil.Common.EnumUtil.List<SQLOperatorType>()
                 .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value.ToLower() == operatorType);
                 
+            this.conditionLeft = AMWUtil.Common.EnumUtil.List<SQLConditionType>()
+                .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value.ToLower() == conditionLeft);
+        }
+        public SQLConditionCriteria(List<SQLConditionCriteria> whereGroups = null, string conditionLeft = null)
+        {
+            this.whereGroups = whereGroups;
+            conditionLeft = conditionLeft == null ? string.Empty : conditionLeft.ToLower();
+
             this.conditionLeft = AMWUtil.Common.EnumUtil.List<SQLConditionType>()
                 .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value.ToLower() == conditionLeft);
         }
