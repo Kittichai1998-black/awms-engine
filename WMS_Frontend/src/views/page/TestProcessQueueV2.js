@@ -10,12 +10,11 @@ const ProcessQueue = () => {
     {"accessor":"UnitType_Name", "Header":"Unit", "sortable":false, "width":80},
   ];
   const columnsConfirm = [
-    {"accessor":"bstoCode", "Header":"BaseCode", "sortable":false},
+    {"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
     {"accessor":"pstoBatch", "Header":"Batch", "sortable":false},
     {"accessor":"pstoLot", "Header":"Lot", "sortable":false, "width":100},
     {"accessor":"pstoOrderNo", "Header":"Order No", "sortable":false, "width":100},
-    {"Header":"Pick Qty", "sortable":false, "width":50, Cell:(e)=> {return <label>{e.original.pickBaseQty + " : " + e.original.pstoBaseQty}</label>}},
-    {"accessor":"pstoBaseQty", "Header":"Qty", "sortable":false, "width":100},
+    {"accessor":"pickQty","Header":"Pick Qty", "sortable":false, "width":100},
   ];
   
   const documentQuery = {
@@ -65,8 +64,8 @@ const ProcessQueue = () => {
         else
           return {"enable":true, "defaultValue":true, "editable":true}
       }},
-      {"field":"Incubated","key":"useIncubateDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}},
-      {"field":"Expire Date","key":"useExpireDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":true,"defaultValue":true, "editable":true}}}
+      {"field":"Incubated","key":"useIncubateDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":false,"defaultValue":true, "editable":true}}},
+      {"field":"Expire Date","key":"useExpireDate", "enable":false, "defaultValue":true, "editable":true, custom:(c)=>{return {"enable":false,"defaultValue":true, "editable":true}}}
     ],
     "eventStatuses":[
       {"field":"Recevied","value":12, "enable":true, "defaultValue":true, "editable":true, custom:(c)=>{return {"defaultValue":true, "editable":true,"enable":true}}},
