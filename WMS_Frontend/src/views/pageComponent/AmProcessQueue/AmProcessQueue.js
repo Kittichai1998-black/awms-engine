@@ -1,10 +1,14 @@
-import React from "react";
+import React, {useEffect} from "react";
 import PropTypes from "prop-types"
 import {ProcessQueueProvider} from './ProcessQueueContext';
 import AmProcessQueueHeader from './AmProcessQueueHeader';
 import AmProcessQueueDetail from './AmProcessQueueDetail';
 
 const ProcessQueue = (props) => {
+  useEffect(()=> {
+    console.log(props.confirmProcessUrl)
+  })
+
   return <>
     <ProcessQueueProvider>
       <AmProcessQueueHeader 
@@ -23,7 +27,10 @@ const ProcessQueue = (props) => {
       areaDefault={props.areaDefault}
       columnsConfirm={props.columnsConfirm}
       processUrl={props.processUrl}
-      confirmProcessUrl={props.confirmProcessUrl}/>
+      confirmProcessUrl={props.confirmProcessUrl}
+      modeDefault={props.modeDefault}
+      waveProcess={props.waveProcess}
+      />
     </ProcessQueueProvider>
   </>
 }
@@ -108,11 +115,17 @@ ProcessQueue.propTypes = {
     ** value? : confirm_process_wq
    */
    confirmProcessUrl:PropTypes.string,
+   /**
+    * ใช้เปิดปิดการเบิกแบบเป็นเก่าหรือแบบ wave
+    ** value? : true | false
+   */
+   waveProcess:PropTypes.bool,
 }
 ProcessQueue.defaultProps = {
   processSingle:false,
   processUrl:"process_wq",
-  confirmProcessUrl:"confirm_process_wq"
+  confirmProcessUrl:"confirm_process_wq",
+  waveProcess:true
 }
 
 export default ProcessQueue;

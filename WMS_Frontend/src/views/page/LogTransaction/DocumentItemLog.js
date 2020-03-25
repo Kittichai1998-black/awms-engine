@@ -209,7 +209,8 @@ const DocumentItemLog = (props) => {
       Header: "Log Time",
       accessor: "LogTime",
       width: 150,
-      type: "datetime"
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss"
     },
     {
       Header: "ID",
@@ -311,7 +312,7 @@ const DocumentItemLog = (props) => {
       Header: "ExpireDate",
       accessor: "ExpireDate",
       width: 150,
-      type: "datetime"
+      type: "datetime",
     },
     {
       Header: "RefID",
@@ -345,7 +346,7 @@ const DocumentItemLog = (props) => {
       Header: "Create Time",
       accessor: "CreateTime",
       width: 150,
-      type: "datetime"
+      type: "datetime",
     },
     {
       Header: "Modify By",
@@ -355,7 +356,7 @@ const DocumentItemLog = (props) => {
       Header: "Modify Time",
       accessor: "ModifyTime",
       width: 150,
-      type: "datetime"
+      type: "datetime",
     },
   ]
   useEffect(() => {
