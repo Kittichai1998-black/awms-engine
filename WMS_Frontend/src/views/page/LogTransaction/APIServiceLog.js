@@ -308,14 +308,16 @@ const APIServiceLog = (props) => {
       Header: "Start Time",
       accessor: "StartTime",
       width: 200,
-      type: "datetime"
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss"
     },
     {
       Header: "End Time",
       accessor: "EndTime",
       width: 200,
-      type: "datetime"
-    }
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss"
+    } 
   ]
 
   useEffect(() => {

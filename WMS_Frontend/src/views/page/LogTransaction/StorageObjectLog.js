@@ -209,7 +209,8 @@ const StorageObjectLog = (props) => {
       Header: "Log Time",
       accessor: "LogTime",
       width: 150,
-      type: "datetime"
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY HH:mm:ss"
     },
     {
       Header: "ID",
