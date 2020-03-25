@@ -748,23 +748,31 @@ const useColumnsConfirm = (cols) => {
 
     useEffect(() => {
         let findCode = cols.find(x=> x.accessor === "bstoCode");
-        if(findCode === null){
+        if(findCode === null || findCode === undefined){
             findCode = {"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200};
-        }
-
-        findCode.Cell = function(row){
-            if(row.original.lvl > 0){
-                let calPadding = row.original.lvl *20
-                return <div style={{display:"inline-block"}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+            findCode.Cell = function(row){
+                if(row.original.lvl > 0){
+                    let calPadding = row.original.lvl *20
+                    return <div style={{display:"inline-block"}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                }
+                else{
+                    return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
+                }
             }
-            else{
-                return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
-            }
+            setColumns([findCode, ...cols])
         }
-        if(findCode === null)
-            setColumns([...cols, findCode])
-        else
+        else{
+            findCode.Cell = function(row){
+                if(row.original.lvl > 0){
+                    let calPadding = row.original.lvl *20
+                    return <div style={{display:"inline-block"}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                }
+                else{
+                    return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
+                }
+            }
             setColumns([...cols])
+        }            
     }, [cols])
 
     return columns;

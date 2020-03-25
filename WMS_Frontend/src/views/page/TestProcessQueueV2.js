@@ -10,13 +10,13 @@ const ProcessQueue = () => {
     {"accessor":"UnitType_Name", "Header":"Unit", "sortable":false, "width":80},
   ];
   const columnsConfirm = [
-    {"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
+    //{"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
     {"accessor":"pstoBatch", "Header":"Batch", "sortable":false},
     {"accessor":"pstoLot", "Header":"Lot", "sortable":false, "width":100},
     {"accessor":"pstoOrderNo", "Header":"Order No", "sortable":false, "width":100},
     {"accessor":"pickQty","Header":"Pick Qty", "sortable":false, "width":100},
   ];
-  
+
   const documentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
     t: "Document",
