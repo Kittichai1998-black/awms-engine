@@ -79,7 +79,7 @@ namespace AWMSEngine.ADO
         public amt_Wave Get(long waveID, VOCriteria buVO)
         {
             var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(waveID, buVO);
-            wave.WaveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
+            wave.WaveSeqs = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("Wave_ID", waveID, SQLOperatorType.EQUALS)
                 }, buVO);
 
