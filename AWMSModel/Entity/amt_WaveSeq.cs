@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_WaveSeq : BaseEntitySTD
+    public class amt_WaveSeq : BaseEntityCreateModify
     {
         public long Wave_ID;
         public int Seq;
