@@ -9,9 +9,9 @@ namespace AWMSModel.Entity
     {
         public int Seq;
         public IOType IOType;
-        public long? Parent_WorkQueue_ID;
-        public long? Document_ID;
-        public long? DocumentItem_ID;
+        //public long? Parent_WorkQueue_ID;
+        //public long? Document_ID;
+        //public long? DocumentItem_ID;
         public long StorageObject_ID;
         public string StorageObject_Code;
         public long Sou_Warehouse_ID;
@@ -25,7 +25,6 @@ namespace AWMSModel.Entity
         public long Area_ID;
         public long? AreaLocation_ID;
 
-        public DateTime? TargetStartTime;
         public DateTime? StartTime;
         public DateTime? EndTime;
         public DateTime? ActualTime;
