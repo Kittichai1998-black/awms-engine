@@ -11,28 +11,25 @@ namespace AWMSModel.Constant.EnumConst
         RECEIVED = 12,
         AUDITING = 13,
         AUDITED = 14,
-        //ISSUING = 15,
-        //ISSUED = 16,
+
+        ALLOCATING = 15,
+        ALLOCATED = 16,
+
         PICKING = 17,
         PICKED = 18,
         CONSOLIDATING = 111,
         CONSOLIDATED = 112,
-        //MOVING = 113,
-        //MOVED = 114,
-        //TRANSFERING = 115,
-        //TRANSFERED = 116,
+        LOADING = 113,
+        LOADED = 114,
 
         REMOVING = 21,
         REMOVED = 22,
         REJECTING = 23,
         REJECTED = 24,
-        CORRECTING = 25,
-        CORRECTED = 26,
 
-        LOADING = 31,
-        LOADED = 32,
-        SHIPPING = 33,
-        SHIPPED = 34,
+        SHIPPING = 31,
+        SHIPPED = 32,
+
 
         RETURN = 96,
         PARTIAL = 97,

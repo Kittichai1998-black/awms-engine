@@ -81,6 +81,11 @@ namespace AWMSEngine.ADO.StaticValue
         {
             return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
         }
+        public List<ams_WaveSeqTemplate> LoadWaveSeqTemplates(VOCriteria buVO = null)
+        {
+            return this._WaveSeqTemplates = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>("status", 1, buVO ?? new VOCriteria()));
+        }
+        
         public List<ams_PackMaster> LoadPackMasterEmptyPallets(VOCriteria buVO = null)
         {
             var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMP", buVO ?? new VOCriteria()).FirstOrDefault();

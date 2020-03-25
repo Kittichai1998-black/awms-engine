@@ -311,7 +311,7 @@ const AmTable = props => {
       <div style={{ clear: "both" }} />
       <ReactTableFixedColumns
         ref={tableRef}
-        loading={loading}
+        loading={props.loading ? loading : false}
         sortable={props.sortable}
         editable={false}
         filterable={false}

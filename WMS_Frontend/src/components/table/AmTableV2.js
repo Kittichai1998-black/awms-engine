@@ -573,7 +573,7 @@ AmTableMaster.propTypes = {
   maxHeight: PropTypes.string,
   sort: PropTypes.func,
   rowNumber: PropTypes.bool,
-  witth: PropTypes.string
+  width: PropTypes.string
 };
 
 AmTableMaster.defaultProps = {

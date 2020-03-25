@@ -19,7 +19,7 @@ const AmEditiorTable = (props) => {
 
     const checkStr = () => {
 
-        if (props.titleText == "Edit") {
+        if (props.titleText === "Edit") {
             return 'Save';
 
         } else {
@@ -31,7 +31,7 @@ const AmEditiorTable = (props) => {
     const generateComponent = (cols) => {
         let comp = cols.map((row, idx) => {
             if (row.component) {
-                let comp2 = row.component(props.data ? props.data.original : {}, row, idx)
+                let comp2 = row.component(props.data ? props.data.original ? props.data.original : props.data : {}, row, idx)
                 return comp2
             }
             else
