@@ -123,6 +123,7 @@ const ProcessQueue = () => {
     areaDefault={customDesAreaDefault}
     columnsConfirm={columnsConfirm}
     modeDefault={"1"}
+    waveProcess={false}
   />
 }
 

@@ -646,6 +646,7 @@ const ProcessQueueDetail = (props) => {
             />
             
             <ConfirmDialog
+                waveProcess={props.waveProcess}
                 confirmProcessUrl={props.confirmProcessUrl}
                 mode={props.modeDefault} 
                 data={processQueueData} 
@@ -758,8 +759,10 @@ const ConfirmDialog = (props) => {
         confirmData["desASRSWarehouseCode"] = data["desASRSWarehouseCode"];
         confirmData["desASRSLocationCode"] = data["desASRSLocationCode"];
         confirmData["desASRSAreaCode"] = data["desASRSAreaCode"];
-        confirmData["waveRunMode"] = mode;
-        confirmData["scheduleTime"] = datetime;
+        if(props.waveProcess){
+            confirmData["waveRunMode"] = mode;
+            confirmData["scheduleTime"] = datetime;
+        }
         confirmData["processResults"] = data.processResults;
 
         Axios.post(window.apipath + "/v2/" + props.confirmProcessUrl, confirmData).then(res => {
@@ -801,7 +804,7 @@ const ConfirmDialog = (props) => {
 
     const renderProcess = () => {
         return <>
-            <FormInline>
+            {props.waveProcess ? <FormInline>
                 <label>Mode : </label>
                 <AmDropdown
                         disabled={props.modeDisabled}
@@ -831,8 +834,7 @@ const ConfirmDialog = (props) => {
                         defaultValue={moment().format("YYYY-MM-DDT00:00")}
                     />
                 </> : null}
-            </FormInline>
-                
+            </FormInline> : null}
             {res}
         </>
     }

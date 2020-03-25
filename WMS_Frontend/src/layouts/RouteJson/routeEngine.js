@@ -101,6 +101,10 @@ const TestProcessQueueV2 = Loadable({
   loader: () => import("../../views/page/TestProcessQueueV2"),
   loading: Loading
 });
+const TestWaveManagement = Loadable({
+  loader: () => import("../../views/page/TestWaveManagement"),
+  loading: Loading
+});
 const TableV2 = Loadable({
   loader: () => import("../../views/page/TableInDev"),
   loading: Loading
@@ -305,6 +309,12 @@ const routes = [
     path: "/tpcq",
     name: "TestProcessQueue ",
     compoment: TestProcessQueueV2,
+    exact: true
+  },
+  {
+    path: "/twmn",
+    name: "TestWaveManagement",
+    compoment: TestWaveManagement,
     exact: true
   },
   { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true }

@@ -29,6 +29,7 @@ const ProcessQueue = (props) => {
       processUrl={props.processUrl}
       confirmProcessUrl={props.confirmProcessUrl}
       modeDefault={props.modeDefault}
+      waveProcess={props.waveProcess}
       />
     </ProcessQueueProvider>
   </>
@@ -114,11 +115,17 @@ ProcessQueue.propTypes = {
     ** value? : confirm_process_wq
    */
    confirmProcessUrl:PropTypes.string,
+   /**
+    * ใช้เปิดปิดการเบิกแบบเป็นเก่าหรือแบบ wave
+    ** value? : true | false
+   */
+   waveProcess:PropTypes.bool,
 }
 ProcessQueue.defaultProps = {
   processSingle:false,
   processUrl:"process_wq",
-  confirmProcessUrl:"confirm_process_wq"
+  confirmProcessUrl:"confirm_process_wq",
+  waveProcess:true
 }
 
 export default ProcessQueue;
