@@ -30,7 +30,8 @@ import AmDatePicker from '../../../components/AmDate';
 import moment from 'moment';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import { FaPallet } from 'react-icons/fa';
+import { FaPallet, FaPercentage } from 'react-icons/fa';
+
 
 var Axios = new apicall();
 
@@ -253,7 +254,7 @@ const ProcessQueueDetail = (props) => {
             if(processCondition.eventStatuses !== undefined)
                 btnObj.push(<ListIcon onClick={() => {onClickDialog("eventStatuses", event)}} fontSize="small"/>)
             if(props.percentRandom)
-                btnObj.push(<ListIcon onClick={() => {onClickDialog("percentRandom", event)}} fontSize="small"/>)
+                btnObj.push(<FaPercentage onClick={() => {onClickDialog("percentRandom", event)}}/>)
             return btnObj;
         }
 
@@ -753,7 +754,8 @@ const useColumnsConfirm = (cols) => {
             findCode.Cell = function(row){
                 if(row.original.lvl > 0){
                     let calPadding = row.original.lvl *20
-                    return <div style={{display:"inline-block"}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                    let calPadding2 = (row.original.lvl - 1) *20
+                    return <div style={{display:"inline-block", paddingLeft:calPadding2}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
                 }
                 else{
                     return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
@@ -763,9 +765,10 @@ const useColumnsConfirm = (cols) => {
         }
         else{
             findCode.Cell = function(row){
-                if(row.original.lvl > 0){
+                if(row.original.lvl > 0){ 
                     let calPadding = row.original.lvl *20
-                    return <div style={{display:"inline-block"}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                    let calPadding2 = (row.original.lvl - 1) *20
+                    return <div style={{display:"inline-block",paddingLeft:calPadding2}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
                 }
                 else{
                     return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
