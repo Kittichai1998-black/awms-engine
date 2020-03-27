@@ -50,8 +50,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             this.InsertWave(reqVO);
             //List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
-           
 
+            var Allocate = new AllocatedDistoWaveSeq();
+
+            var x2 = Allocate.Execute(this.Logger,this.BuVO,new AllocatedDistoWaveSeq.TReq() { 
+                DocItemID = 1,
+                PackStoBaseQty = 1,
+                PackStoID = 1,
+                WaveID = 1
+                       
+            });
 
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
@@ -61,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs };
         }
-
+        
         
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
