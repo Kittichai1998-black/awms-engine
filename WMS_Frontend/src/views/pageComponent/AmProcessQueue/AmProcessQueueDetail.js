@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types"
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -891,7 +891,7 @@ const ConfirmDialog = (props) => {
                         width="200px"
                         TypeDate={"datetime-local"}
                         onChange={value =>
-                            setDatetime(value)
+                            setDatetime(value.fieldDataKey)
                         }
                         defaultValue={moment().format("YYYY-MM-DDT00:00")}
                     />
