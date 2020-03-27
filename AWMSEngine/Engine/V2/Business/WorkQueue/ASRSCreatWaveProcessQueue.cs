@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             var Allocate = new AllocatedDistoWaveSeq();
 
-            var x2 = Allocate.Execute(this.Logger,this.BuVO,new AllocatedDistoWaveSeq.TReq() { 
+            var AllocatedDisto = Allocate.Execute(this.Logger,this.BuVO,new AllocatedDistoWaveSeq.TReq() { 
                 DocItemID = 1,
                 PackStoBaseQty = 1,
                 PackStoID = 1,
