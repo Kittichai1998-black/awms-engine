@@ -236,6 +236,10 @@ const FindPopup = (props) => {
     const [sort, setSort] = useState(0);
 
     useEffect(() => {
+        console.log(dataObjects)
+    }, [dataObjects]);
+
+    useEffect(() => {
         if (defaultValue) {
             setDefaultVal(defaultValue);
             setValueKey(defaultValue)
@@ -405,6 +409,11 @@ const FindPopup = (props) => {
         getData(createQueryString(queryStrEdit));
     }
 
+    useEffect(()=>{
+        if(props.clearText)
+            onHandleClickClear();
+    }, [props.clearText])
+
 
     const onHandleClick = (e) => {
         setKeywordSub(e)
@@ -437,6 +446,9 @@ const FindPopup = (props) => {
         setDefaultVal(null);
         onChange(null, null, id, fieldDataKey)
     }
+
+
+
     const calWidth = (columsList) => {
         let tableWidth = 0;
         columsList.forEach((row) => tableWidth = tableWidth + row.width);

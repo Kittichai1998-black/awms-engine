@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import PropTypes from "prop-types"
 import {
   apicall,
@@ -89,8 +89,9 @@ const ProcessQueueHeader = (props) => {
     const [documentSelection, setDocumentSelection] = useState({});
     const [warehouseID, setWarehouseID] = useState("");
     const [headerHide, setHeaderHide] = useState(true);
-    const document = useDocumentQuery(warehouseID, props.documentQuery, documents.documentsValue)
-    
+    const documentData = useDocumentQuery(warehouseID, props.documentQuery, documents.documentsValue)
+    const [clearText, setClearText] = useState(false);
+
     useEffect(()=>{
       setWarehouseID(props.warehouseDefault === undefined || props.warehouseDefault === "" ? null : props.warehouseDefault);
       documentDetail.setDocumentDetail(props.documentDetail)
@@ -123,6 +124,11 @@ const ProcessQueueHeader = (props) => {
       }
       setDocumentSelection(dataObject === null ? {} : dataObject)
     }
+    
+    useEffect(() => {
+      if(clearText)
+        setClearText(!clearText)
+    }, [clearText])
 
     const genDocumentHeader = () => {
       const renderColumns = [];
@@ -168,16 +174,17 @@ const ProcessQueueHeader = (props) => {
       <FormInline>
         <label style={{"width":100}}>Document : </label>
         <AmFindPopup
-          id={"Document"}
+          id={"DocumentSelection"}
           placeholder={"Document"}
           fieldDataKey={"ID"}
           fieldLabel={["Code"]}
           labelPattern=" : "
           valueData={documentSelection["ID"]}
           labelTitle={"Document"}
-          queryApi={document}
+          queryApi={documentData}
           columns={props.documentPopup}
           width={300}
+          clearText={clearText}
           onChange={(value, dataObject) => onHandleSelectDocument(value, dataObject)}
         />
         {props.processSingle ? null : <AmButton 
@@ -186,7 +193,10 @@ const ProcessQueueHeader = (props) => {
           disabled={documentSelection["ID"] === null || documentSelection["ID"] === undefined} 
           onClick={() => {
             documents.setDocuments(documentSelection);
+            document.getElementById("DocumentSelection").value = "";
+            setDocumentSelection({})
             setHeaderHide(true);
+            setClearText(true);
           }}>Add</AmButton>}
       </FormInline>
       

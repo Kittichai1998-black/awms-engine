@@ -659,8 +659,7 @@ const ProcessQueueDetail = (props) => {
                 onClose={(confirmState, dialogState)=>
                     {
                         if(confirmState !== null){
-
-                            if(confirmState._result === 1){
+                            if(confirmState._result === 0){
                                 setDialogState(!dialogState)
                                 setDialogText(confirmState._result.message)
                                 setDialogType("error")
