@@ -29,9 +29,11 @@ namespace AWMSEngine.ADO
             param.Add("@EventStatus", wave.EventStatus);
             param.Add("@Status", wave.Status);
             param.Add("@ActionBy", buVO.ActionBy);
+            param.Add("@res", null, DbType.Int64, ParameterDirection.Output);
 
-            var res = this.Query<long?>("SP_WAVE_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            this.Execute("SP_WAVE_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
 
+            var res = param.Get<long>("@res"); 
             return res;
         }
         public long? PutSeq(amt_WaveSeq wave, VOCriteria buVO)
@@ -48,10 +50,13 @@ namespace AWMSEngine.ADO
             param.Add("@EventStatus", wave.EventStatus);
             param.Add("@Status", wave.Status);
             param.Add("@ActionBy", buVO.ActionBy);
+            param.Add("@res", null, DbType.Int64, ParameterDirection.Output);
 
-            var res = this.Query<long?>("SP_WAVESEQ_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            this.Execute("SP_WAVESEQ_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
 
+            var res = param.Get<long>("@res");
             return res;
+            
         }
 
         public int UpdateStatusToChild(long waveID,

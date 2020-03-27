@@ -34,8 +34,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 DocumentType_ID = null,
                 Sou_WaveSeq_ID = wave.WaveSeqs.First(x => x.Seq == 1).ID,
                 Sou_StorageObject_ID = reqVO.PackStoID,
-                Des_StorageObject_ID = wave.WaveSeqs.First(x => x.Seq == 2).ID,
-                Des_WaveSeq_ID = reqVO.PackStoID,
+                Des_StorageObject_ID = reqVO.PackStoID,
+                Des_WaveSeq_ID = wave.WaveSeqs.First(x => x.Seq == 2).ID,
                 BaseQuantity = reqVO.PackStoBaseQty,
                 BaseUnitType_ID = psto.BaseUnitType_ID,
                 Quantity = qtyConvert.newQty,
@@ -46,6 +46,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(psto.ParentStorageObject_ID.Value, 
                 null, EntityStatus.ACTIVE, 
                 wave.WaveSeqs.First(x => x.Seq == 1).End_StorageObject_EventStatus, this.BuVO);
+
+
+            var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.DocItemID, this.BuVO);
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+
 
             return disto;
         }
