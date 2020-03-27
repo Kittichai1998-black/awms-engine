@@ -36,31 +36,28 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
 
-            //StorageObjectEventStatus stoNextEventStatus;
-
-            //if (docs.First().DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
-            //    stoNextEventStatus = StorageObjectEventStatus.PICKING;
-            //else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
-            //    stoNextEventStatus = StorageObjectEventStatus.AUDITING;
-            //else
-            //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not " + docs.First().DocumentType_ID + " not Support");
 
             this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
 
-            this.InsertWave(reqVO);
+            var wave = this.InsertWave(reqVO);
             //List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
 
             var Allocate = new AllocatedDistoWaveSeq();
 
-            var AllocatedDisto = Allocate.Execute(this.Logger,this.BuVO,new AllocatedDistoWaveSeq.TReq() { 
-                DocItemID = 1,
-                PackStoBaseQty = 1,
-                PackStoID = 1,
-                WaveID = 1
-                       
-            });
+            rstos.ForEach(rs => rs.docItems.ForEach(docitem =>
+            {
 
+                var AllocatedDisto = Allocate.Execute(this.Logger, this.BuVO, new AllocatedDistoWaveSeq.TReq()
+                {
+                    DocItemID = docitem.docItemID,
+                    PackStoBaseQty = docitem.pickBaseQty,
+                    PackStoID = docitem.pstoID,
+                    WaveID = wave.ID.Value
+
+                });
+
+            }));
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
             var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
@@ -69,8 +66,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs };
         }
-        
-        
+
+
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {
@@ -122,18 +119,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                             rsto.stoDoneSouEventStatus = stoDoneSouEventStatus;
                             rsto.stoDoneDesEventStatus = stoDoneDesEventStatus;
-                            //rsto.pstoQty += z.pstoQty;
-                            //rsto.pstoBaseQty += z.pstoBaseQty;
-                            rsto.priority = (rsto.priority > y.priority ? rsto.priority : y.priority);
+                        //rsto.pstoQty += z.pstoQty;
+                        //rsto.pstoBaseQty += z.pstoBaseQty;
+                        rsto.priority = (rsto.priority > y.priority ? rsto.priority : y.priority);
                         }
                         else
                         {
                             rstoProcs.Add(new RootStoProcess()
                             {
                                 lockOnly = lockOnly,
-                                //docID = x.docID,
-                                //docItemID = y.docItemID,
-                                docItems = new List<RootStoProcess.DocItem>() {
+                            //docID = x.docID,
+                            //docItemID = y.docItemID,
+                            docItems = new List<RootStoProcess.DocItem>() {
                                         new RootStoProcess.DocItem()
                                         {
                                             docID = x.docID,
@@ -183,59 +180,78 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             });
         }
-        private void InsertWave(TReq reqVO)
+        private amt_Wave InsertWave(TReq reqVO)
         {
             amt_Document doc = new amt_Document();
-            
+
             List<ams_WaveSeqTemplate> waveTemplate = new List<ams_WaveSeqTemplate>();
 
-            var WaveID = AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_Wave>(this.BuVO, new amt_Wave()
+            var Wave = new amt_Wave()
             {
-                IOType= IOType.OUTPUT,
+                IOType = IOType.OUTPUT,
                 Code = "Code",
                 Name = "Name",
                 Description = "Description",
                 RunMode = reqVO.waveRunMode,
-                RunScheduleTime = reqVO.scheduleTime,
+                RunScheduleTime = reqVO.waveRunMode == WaveRunMode.SCHEDULE ? reqVO.scheduleTime : null,
                 Priority = 2,
                 StartTime = null,
-                EndTime =null,
+                EndTime = null,
                 Status = EntityStatus.ACTIVE,
                 EventStatus = WaveEventStatus.NEW
-            });
+            };
+            var WaveID = AWMSEngine.ADO.WaveADO.GetInstant().Put(Wave, this.BuVO);
+            if (WaveID == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถสร้าง wave ได้");
 
             reqVO.processResults.ForEach(x =>
-            {
-                doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
+                {
+                    doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
 
-                doc.Wave_ID = WaveID.Value;
-                AWMSEngine.ADO.DocumentADO.GetInstant().Put(doc, this.BuVO);
-             
+                    doc.Wave_ID = WaveID.Value;
+                    AWMSEngine.ADO.DocumentADO.GetInstant().Put(doc, this.BuVO);
 
-                waveTemplate = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
-                 new SQLConditionCriteria[] {
+
+                    waveTemplate = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
+                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",doc.DocumentProcessType_ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
-                 }, this.BuVO);
+                     }, this.BuVO);
 
-                waveTemplate.ForEach(temp =>
-                {
-                    AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_WaveSeq>(this.BuVO, new amt_WaveSeq()
+                    waveTemplate.ForEach(temp =>
                     {
-                        Wave_ID = WaveID.Value,
-                        Seq = temp.Seq,
-                        Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
-                        End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
-                        AutoNextSeq = temp.AutoNextSeq,
-                        StartTime = temp.StartTime,
-                        EndTime = temp.EndTime,
-                        EventStatus = WaveEventStatus.NEW,
-                        Status = EntityStatus.ACTIVE
+                        //AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_WaveSeq>(this.BuVO, new amt_WaveSeq()
+                        //{
+                        //    Wave_ID = WaveID.Value,
+                        //    Seq = temp.Seq,
+                        //    Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
+                        //    End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
+                        //    AutoNextSeq = temp.AutoNextSeq,
+                        //    StartTime = temp.StartTime,
+                        //    EndTime = temp.EndTime,
+                        //    EventStatus = WaveEventStatus.NEW,
+                        //    Status = EntityStatus.ACTIVE
 
+                        //});
+                        var WaveSeq = new amt_WaveSeq()
+                        {
+                            Wave_ID = WaveID.Value,
+                            Seq = temp.Seq,
+                            Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
+                            End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
+                            AutoNextSeq = temp.AutoNextSeq,
+                            StartTime = temp.StartTime,
+                            EndTime = temp.EndTime,
+                            EventStatus = WaveEventStatus.NEW,
+                            Status = EntityStatus.ACTIVE
+                        };
+                        var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
                     });
+
                 });
-             
-            });
+
+            var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
+            return wave;
         }
     }
 }
