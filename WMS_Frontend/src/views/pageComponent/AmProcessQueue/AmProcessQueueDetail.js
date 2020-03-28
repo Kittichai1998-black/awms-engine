@@ -659,14 +659,14 @@ const ProcessQueueDetail = (props) => {
                 onClose={(confirmState, dialogState)=>
                     {
                         if(confirmState !== null){
-                            if(confirmState._result === 0){
+                            if(confirmState._result.status === 0){
                                 setDialogState(!dialogState)
                                 setDialogText(confirmState._result.message)
                                 setDialogType("error")
                             }
                             else{
                                 documents.clearDocument();
-                                warehouse.clearWarehouse();
+                                //warehouse.clearWarehouse();
                                 setDialogState(!dialogState)
                                 setDialogText(confirmState._result.message)
                                 setDialogType("success")
