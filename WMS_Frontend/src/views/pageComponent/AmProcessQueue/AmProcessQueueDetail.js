@@ -666,7 +666,7 @@ const ProcessQueueDetail = (props) => {
                             }
                             else{
                                 documents.clearDocument();
-                                warehouse.clearWarehouse();
+                                //warehouse.clearWarehouse();
                                 setDialogState(!dialogState)
                                 setDialogText(confirmState._result.message)
                                 setDialogType("success")
