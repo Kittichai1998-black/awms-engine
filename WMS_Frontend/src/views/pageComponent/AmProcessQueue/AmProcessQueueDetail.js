@@ -838,7 +838,8 @@ const ConfirmDialog = (props) => {
         confirmData["desASRSAreaCode"] = data["desASRSAreaCode"];
         if(props.waveProcess){
             confirmData["waveRunMode"] = mode;
-            confirmData["scheduleTime"] = datetime;
+            if(mode === 1)
+                confirmData["scheduleTime"] = datetime;
         }
         confirmData["processResults"] = data.processResults;
 
