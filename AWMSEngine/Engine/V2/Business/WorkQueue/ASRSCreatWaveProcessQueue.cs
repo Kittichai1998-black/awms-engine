@@ -28,10 +28,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public List<RootStoProcess> confirmResult;
             public List<amt_Document> docGRCrossDocks;
+            public List<long> CurrentDistoIDs;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
+          
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
@@ -44,6 +46,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
 
             var Allocate = new AllocatedDistoWaveSeq();
+            var AlloDisto = new List<long>();
 
             rstos.ForEach(rs => rs.docItems.ForEach(docitem =>
             {
@@ -57,14 +60,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 });
 
+                AlloDisto.Add(AllocatedDisto.ID.Value);
+
+
             }));
+
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
             var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
 
             //this.WCSSendQueue(rstos);
 
-            return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs };
+            return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs, CurrentDistoIDs = AlloDisto };
         }
 
 
@@ -220,19 +227,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     waveTemplate.ForEach(temp =>
                     {
-                        //AWMSEngine.ADO.DataADO.GetInstant().Insert<amt_WaveSeq>(this.BuVO, new amt_WaveSeq()
-                        //{
-                        //    Wave_ID = WaveID.Value,
-                        //    Seq = temp.Seq,
-                        //    Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
-                        //    End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
-                        //    AutoNextSeq = temp.AutoNextSeq,
-                        //    StartTime = temp.StartTime,
-                        //    EndTime = temp.EndTime,
-                        //    EventStatus = WaveEventStatus.NEW,
-                        //    Status = EntityStatus.ACTIVE
 
-                        //});
                         var WaveSeq = new amt_WaveSeq()
                         {
                             Wave_ID = WaveID.Value,

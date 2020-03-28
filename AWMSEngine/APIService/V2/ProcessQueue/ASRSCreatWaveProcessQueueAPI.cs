@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine.V2.Business.WorkQueue;
+﻿using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,19 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<ASRSCreatWaveProcessQueue.TReq>(this.RequestVO);
             var res = new ASRSCreatWaveProcessQueue().Execute(this.Logger, this.BuVO, req);
             //this.RollbackTransaction();
+
+            if (req.desASRSAreaCode)
+            {
+                var nextDistoWaveSeq = new NextDistoWaveSeq();
+
+                var nextDistoWaveSeqs = nextDistoWaveSeq.Execute(this.Logger, this.BuVO, new NextDistoWaveSeq.TReq()
+                {
+                    DesAreaID = StaticValueManager.GetInstant().AreaMasters.Find(x=>x.Code == req.desASRSAreaCode).ID.Value,
+                    DesLocationID = null,
+                    CurrentDistoIDs = res.CurrentDistoIDs
+                });
+            }
+         
             return res;
         }
     }
