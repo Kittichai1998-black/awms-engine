@@ -21,7 +21,7 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
             var res = new ASRSCreatWaveProcessQueue().Execute(this.Logger, this.BuVO, req);
             //this.RollbackTransaction();
 
-            if (req.desASRSAreaCode)
+            if (req.desASRSAreaCode != null)
             {
                 var nextDistoWaveSeq = new NextDistoWaveSeq();
 
