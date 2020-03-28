@@ -23,7 +23,14 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
 
             if (req.desASRSAreaCode != null)
             {
+                var workingWave = new WorkingWave();
                 var nextDistoWaveSeq = new NextDistoWaveSeq();
+                var doneDistoWaveSeq = new DoneDistoWaveSeq();
+
+                var workingWaves = workingWave.Execute(this.Logger, this.BuVO, new WorkingWave.TReq()
+                {
+
+                });
 
                 var nextDistoWaveSeqs = nextDistoWaveSeq.Execute(this.Logger, this.BuVO, new NextDistoWaveSeq.TReq()
                 {
@@ -31,8 +38,14 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
                     DesLocationID = null,
                     CurrentDistoIDs = res.CurrentDistoIDs
                 });
+
+                var doneDistoWaveSeqs = doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq()
+                {
+
+                });
+
             }
-         
+
             return res;
         }
     }

@@ -43,6 +43,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 Status = EntityStatus.ACTIVE
             }, this.BuVO);
 
+            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+            
             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(psto.ParentStorageObject_ID.Value, 
                 null, EntityStatus.ACTIVE, 
                 wave.WaveSeqs.First(x => x.Seq == 1).End_StorageObject_EventStatus, this.BuVO);
