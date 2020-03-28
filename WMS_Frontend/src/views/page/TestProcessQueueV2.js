@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AmProcessQueue from "../pageComponent/AmProcessQueue/AmProcessQueue";
 
 const ProcessQueue = () => {
@@ -108,7 +108,6 @@ const ProcessQueue = () => {
   }
 
   const customDesAreaDefault = (doc) => {
-    console.log(doc)
     if (doc.document.DocumentProcessType_ID === 1013) {
       return "13"
     }
