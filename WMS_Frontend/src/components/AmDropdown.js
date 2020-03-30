@@ -469,6 +469,7 @@ const DropdownComponent = (props) => {
     }, [valueKey, valueData]);
     useEffect(() => {
         // console.log(value)
+        setValueData(value)
 
         if (optionList) {
             if (optionList.length > 0) {

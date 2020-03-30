@@ -1,136 +1,137 @@
-import React, { useState, useEffect, useContext } from "react";
-import AmProcessQueue from '../../../../components/AmProcessQueue';
-import Axios from 'axios';
+import React from "react";
+import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
 
-const createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        + "&isCounts=true"
-        + "&apikey=free01"
-    return queryS
-}
-const GI_WorkQueue = (props) => {
+const ProcessQueue = () => {
+  const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
+  const colDocumentItem = [
+    { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
+    { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
+    { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
+    { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
+  ];
+  const columnsConfirm = [
+    //{"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
+    { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
+    { "accessor": "pstoLot", "Header": "Lot", "sortable": false, "width": 100 },
+    { "accessor": "pstoOrderNo", "Header": "Order No", "sortable": false, "width": 100 },
+    { "accessor": "pickQty", "Header": "Pick Qty", "sortable": false, "width": 100 },
+  ];
 
-    const AreaMaster = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "LD,PD"}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'desc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
+  const documentQuery = {
+    queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    t: "Document",
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
 
-    const Warehouse = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "Warehouse",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'desc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
+  const warehouseQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "Warehouse",
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
 
-    const orderDDL = [
-        { label: 'FIFO', value: 'FIFO' },
-        { label: 'LIFO', value: 'LIFO' },
-    ];
+  const desAreaQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaMaster",
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
 
-    const ordersDDL = [
-        { label: 'Carton No', value: 'Carton No' },
-        { label: 'SI (Order No)', value: 'Order No' },
-        { label: 'Createtime', value: 'Createtime' },
-    ];
-
-    const Priolity = [
-        { label: 'Very Low', value: '0' },
-        { label: 'Low', value: '1' },
-        { label: 'Normal', value: '2' },
-        { label: 'High', value: '3' },
-        { label: 'Very High', value: '4' },
-        { label: 'Critical', value: '5' },
-    ];
-
-    const Document = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "Document",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
-        f: "ID as value, Code as label, ID, Code",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
-
-    const columnCondition = [
-        { Header: "SI (Order No)", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
-        { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
-    ];
-
-    const columnSort = [
-        { Header: 'Sorting', accessor: 'Order', type: "dropdown", field: 'Order', dataDDL: orderDDL, idddls: "Order" },
-        { Header: 'By', accessor: 'By', type: "dropdown", field: 'By', dataDDL: ordersDDL, idddls: "By" },
-    ];
-
-    const DefaulSorting = [
-        { By: "Carton No", value: "Carton No", ID: 0, Order: "FIFO" }
+  const processCondition = {
+    "conditions": [
+      {
+        "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": true, custom: (c) => {
+          //c.item = manual by docitem , c.document manual by doc
+          if (c.docItem.Code === 'PJAAN04-0020')
+            return { "enable": true, "defaultValue": false, "editable": true }
+          else
+            return { "enable": true, "defaultValue": true, "editable": true }
+        }
+      },
+      { "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true, custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } },
+      { "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true, custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } }
+    ],
+    "eventStatuses": [
+      { "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      { "field": "Hold", "value": 99, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      { "field": "Block", "value": 97, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      { "field": "QC", "value": 98, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } }
+    ],
+    "orderBys": [
+      {
+        "field": "Receive Date", "enable": true, "sortField": "psto.createtime", "sortBy": "0", "editable": true,
+        custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+      },
+      {
+        "field": "Batch", "enable": true, "sortField": "psto.batch", "sortBy": "0", "editable": true,
+        custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
+      },
+      {
+        "field": "Lot", "enable": true, "sortField": "psto.lot", "sortBy": "0", "editable": true,
+        custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
+      }
     ]
+  }
 
-    const columnConfirm = [
-        { Header: "SI (Order No)", accessor: 'OrderNo', },
-        { Header: 'Pallet', accessor: 'Pallet', },
-        { Header: 'Reorder (Item Code)', accessor: 'SKU', width: 350 },
-        { Header: 'Qty', accessor: 'BaseQuantity', Footer: true },
-        { Header: "Unit", accessor: 'Unit', },
-    ];
+  const documentDetail = {
+    columns: 2,
+    field: [
+      { "accessor": "Code", "label": "Code" }, { "accessor": "DocumentProcessType_ID", "label": "DocumentProcessType_ID" },
+    ],
+    fieldHeader: [{ "accessor": "Code", "label": "Code" }, { "accessor": "RefID", "label": "RefID" }]
+  }
 
-    const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValues: 14 },
-    ];
+  const customDesArea = (areaList, doc, warehouse) => {
+    if (doc.document.DocumentProcessType_ID === 1013) {
+      return areaList.filter(x => x.ID === 17 || x.ID === 18)
+    }
+    else
+      return areaList
+  }
 
-    return (
-        <AmProcessQueue
-            orderDDL={orderDDL}
-            ordersDDL={ordersDDL}
-            columnCondition={columnCondition}
-            columnSort={columnSort}
-            columnConfirm={columnConfirm}
-            ProcessQ={ProcessQ}
-            DefaulSorting={DefaulSorting}
-            history={props.history}
-            apiwarehouse={Warehouse}
-            advanceCondition={false}
-            //fullPallets={true}
-            // receives={true}
-            priolity={Priolity}
-            DocType={1002}
-            docType={"issue"}
-            status={true}
-            random={false}
-            dataSortShow={true}
-            FullPallet={false}
-            //defaultFullPallete={false}
-            //disibleFullPallet={false}
-            QtyAfterDoneWQ={true}
-            StatusfromDeswarehouse={true}
-            StatusfromDescustomer={true}
-            apidetail={"/issue/detail?docID="}
-            apiResConfirm={"/issue/managequeue"}
-            Defaulwarehouse={1}
-        />
-    )
+  const customDesAreaDefault = (doc) => {
+    if (doc.document.DocumentProcessType_ID === 1013) {
+      return "13"
+    }
+    else
+      return "14"
+  }
+
+  return <AmProcessQueue
+    documentPopup={columnsDocument}
+    documentQuery={documentQuery}
+    warehouseQuery={warehouseQuery}
+    areaQuery={desAreaQuery}
+    documentItemDetail={colDocumentItem}
+    documentDetail={documentDetail}
+    processSingle={false}
+    processCondition={processCondition}
+    percentRandom={true}
+    customDesArea={customDesArea}
+    areaDefault={customDesAreaDefault}
+    columnsConfirm={columnsConfirm}
+    modeDefault={"1"}
+    waveProcess={true}
+    confirmProcessUrl={"wave_process_wq"}
+  />
 }
 
-export default GI_WorkQueue;
+export default ProcessQueue;
