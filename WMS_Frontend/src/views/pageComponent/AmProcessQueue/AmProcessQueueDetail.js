@@ -28,6 +28,10 @@ import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmDialogConfirm from '../../../components/AmDialogConfirm';
 import AmDatePicker from '../../../components/AmDate';
 import moment from 'moment';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import { FaPallet, FaPercentage } from 'react-icons/fa';
+
 
 var Axios = new apicall();
 
@@ -71,8 +75,9 @@ const DefaultProcessCondition = (doc, con) => {
                             x[y.key] = getCustom.defaultValue;
                     }
                     else{
-                        if(x.enable)
+                        if(y.enable){
                             x[y.key] = y.defaultValue;
+                        }
                         else
                             x[y.key] = false;
                     }
@@ -181,7 +186,7 @@ const useDocumentData = (doc, conditions) => {
     return doc;
 }
 
-const useArea = (areaQuery, doc, customArea) => {
+const useArea = (areaQuery, doc, customArea, warehouse) => {
     const [area, setArea] = useState([])
     
     useEffect(()=> {
@@ -192,7 +197,7 @@ const useArea = (areaQuery, doc, customArea) => {
 
     useEffect(()=> {
         if(customArea !== undefined && doc !== null && doc.length > 0){
-            var areaRes = customArea(area, doc[0]);
+            var areaRes = customArea(area, doc[0], warehouse);
             setArea(areaRes);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -208,7 +213,7 @@ const ProcessQueueDetail = (props) => {
     const [columns, setColumns] = useState()
     const [expanded, setExpanded] = useState([])
     const [dialog, setDialog] = useState({"state":false, data:{}})
-    const area = useArea(props.areaQuery, documents.documentListValue, props.customDesArea)
+    const area = useArea(props.areaQuery, documents.documentListValue, props.customDesArea, warehouse.warehouseValue)
     const [areaDefault, setAreaDefault] = useState()
     const [areaSelection, setAreaSelection] = useState({})
     const [processQueueData, setProcessQueueData] = useState({})
@@ -229,7 +234,7 @@ const ProcessQueueDetail = (props) => {
                 setAreaDefault("0")
             }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props, documents.documentListValue])
+    }, [props, documents.documentListValue, area])
 
     useEffect(() => {
         const onClickDialog = (key, cell) => {
@@ -250,7 +255,7 @@ const ProcessQueueDetail = (props) => {
             if(processCondition.eventStatuses !== undefined)
                 btnObj.push(<ListIcon onClick={() => {onClickDialog("eventStatuses", event)}} fontSize="small"/>)
             if(props.percentRandom)
-                btnObj.push(<ListIcon onClick={() => {onClickDialog("percentRandom", event)}} fontSize="small"/>)
+                btnObj.push(<FaPercentage onClick={() => {onClickDialog("percentRandom", event)}}/>)
             return btnObj;
         }
 
@@ -370,7 +375,7 @@ const ProcessQueueDetail = (props) => {
                                 </FormInline>
                             }
                             else{
-                                return;
+                                return null;
                             }
                         }
                         })
@@ -425,7 +430,7 @@ const ProcessQueueDetail = (props) => {
                                     }}
                                   /></FormInline>
                                 }
-                                else return;                            
+                                else return null;                            
                             }
                         });
                         return obj;
@@ -458,7 +463,7 @@ const ProcessQueueDetail = (props) => {
                                     }}
                                   /></FormInline>
                                 }
-                                else return;                            
+                                else return null;                            
                             }
                         });
                         return obj;
@@ -492,7 +497,7 @@ const ProcessQueueDetail = (props) => {
                                 </FormInline>
                             }
                             else{
-                                return;
+                                return null;
                             }
                         }
                         })
@@ -655,15 +660,17 @@ const ProcessQueueDetail = (props) => {
                 onClose={(confirmState, dialogState)=>
                     {
                         if(confirmState !== null){
-
-                            if(confirmState._result === 1){
+                            if(confirmState._result.status === 0){
                                 setDialogState(!dialogState)
                                 setDialogText(confirmState._result.message)
                                 setDialogType("error")
                             }
                             else{
                                 documents.clearDocument();
-                                warehouse.clearWarehouse();
+                                //warehouse.clearWarehouse();
+                                setDialogState(!dialogState)
+                                setDialogText(confirmState._result.message)
+                                setDialogType("success")
                             }
                         }
                         setConfirmState(dialogState)
@@ -704,11 +711,11 @@ const ProcessQueueDetail = (props) => {
             </Grid>
             <Grid item xs="6">
                 <FormInline style={{marginTop:20, float:"right", clear:"both"}}>
-                    <label style={{marginRight:"10px"}}>Auto Run : </label>
+                    {props.waveProcess ? <><label style={{marginRight:"10px"}}>Auto Run : </label>
                     <CheckboxCustom onClick={event => {
                         event.stopPropagation();
                         setAreaEnable(event.target.checked)
-                    }} checked={areaEnable}/>
+                    }} checked={areaEnable}/></> : null}
                     <label style={{marginRight:"10px"}}>Area : </label>
                     <AmDropdown
                         disabled={!areaEnable ? true : documents.documentListValue.length === 0 ? true : false}
@@ -740,19 +747,90 @@ const ProcessQueueDetail = (props) => {
     </>
 }
 
+const useColumnsConfirm = (cols) => {
+    const [columns, setColumns] = useState(cols);
+
+    useEffect(() => {
+        let findCode = cols.find(x=> x.accessor === "bstoCode");
+        if(findCode === null || findCode === undefined){
+            findCode = {"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200};
+            findCode.Cell = function(row){
+                if(row.original.lvl > 0){
+                    let calPadding = row.original.lvl *20
+                    let calPadding2 = (row.original.lvl - 1) *20
+                    return <div style={{display:"inline-block", paddingLeft:calPadding2}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                }
+                else{
+                    return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
+                }
+            }
+            setColumns([findCode, ...cols])
+        }
+        else{
+            findCode.Cell = function(row){
+                if(row.original.lvl > 0){ 
+                    let calPadding = row.original.lvl *20
+                    let calPadding2 = (row.original.lvl - 1) *20
+                    return <div style={{display:"inline-block",paddingLeft:calPadding2}}><SubdirectoryArrowRightIcon style={{display:"inline-block"}} fontSize={"small"}/><div style={{paddingLeft:calPadding, display:"inline-block"}}><FaPallet/>{row.original.bstoCode}</div></div>
+                }
+                else{
+                    return <div><InsertDriveFileIcon fontSize={"small"}/>{row.original.bstoCode}</div>
+                }
+            }
+            setColumns([...cols])
+        }            
+    }, [cols])
+
+    return columns;
+}
+
+
 const ConfirmDialog = (props) => {
     const [open, setOpen] = useState(props.open);
     const [data, setData] = useState(props.data);
+    const [itemProcess, setItemProcess] = useState([]);
     const [mode, setMode] = useState(props.mode);
     const [datetime, setDatetime] = useState(null);
+    const columns = useColumnsConfirm(props.columnsConfirm);
 
     useEffect(()=>{
         setOpen(props.open)
     }, [props.open]);
 
     useEffect(()=>{
-        setData(props.data)
-    }, [props.data]);
+        if(!IsEmptyObject(data)){
+            let process = {...props.data}.processResults.map(x=> {
+                let objData = {"docCode": x.docCode}
+                let arrPallet = [];
+                x.processResultItems.forEach(processRes=> {
+                    let itemHeader = {}
+                    for(let obj in processRes){
+                        if(obj !== "pickStos"){
+                            if(obj === "docItemCode")
+                                itemHeader["bstoCode"] = processRes[obj]
+                            else if(obj === "baseQty")
+                                itemHeader["pickQty"] = processRes[obj]
+                            else
+                                itemHeader[obj] = processRes[obj]
+
+                            itemHeader.lvl = 0
+                        }
+                    }
+                    arrPallet.push(itemHeader)
+                    
+                    arrPallet = arrPallet.concat(processRes.pickStos.map(y => {return {...y, "lvl":1}}))
+                })
+                objData.processResult = arrPallet;
+                return objData;
+            });
+            setItemProcess(process)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
+
+    useEffect(() => {
+        setData({...props.data})
+    }, [props.data])
 
     const onClickConfirm = () => {
         let confirmData = {};
@@ -761,7 +839,8 @@ const ConfirmDialog = (props) => {
         confirmData["desASRSAreaCode"] = data["desASRSAreaCode"];
         if(props.waveProcess){
             confirmData["waveRunMode"] = mode;
-            confirmData["scheduleTime"] = datetime;
+            if(mode === 1)
+                confirmData["scheduleTime"] = datetime;
         }
         confirmData["processResults"] = data.processResults;
 
@@ -770,35 +849,22 @@ const ConfirmDialog = (props) => {
         });
     }
 
-    const res = !IsEmptyObject(data) ? data.processResults.map(x => {
+    const res = () => itemProcess.length > 0 ? itemProcess.map(x => {
         return <><ExpansionPanel style={{marginBottom:"5px"}}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
             <Typography>{x.docCode}</Typography>
         </ExpansionPanelSummary>
-            {x.processResultItems.map(item => {
-                let getUnit = "";
-                if(item.pickStos.length > 0)
-                    getUnit = item.pickStos[0].pstoBaseUnitCode
-                return <FormInline>
-                    <Grid container>
-                        <Grid item xs="6"><label>Code : {item.docItemCode}</label></Grid>
-                        <Grid item xs="6"><label>Quantity : {item.baseQty + " " + getUnit} </label></Grid>
-                        {item.percentRandom !== null ? <Grid item xs="6"><label>Percent : {item.percentRandom}</label></Grid> : null}
-                    </Grid>
-                    <div style={{width:"100%"}}>
-                        <AmTable 
-                            columns={props.columnsConfirm} 
-                            data={item.pickStos}
-                            loading ={false}
-                            sortable={false}
-                            primaryKey="pstoID"
-                            pageSize={1000}
-                            minRows={3}
-                        />
-                    </div>
-                    
-                </FormInline>
-            })}
+            <div style={{width:"100%"}}>
+                <AmTable 
+                    columns={columns} 
+                    data={x.processResult}
+                    loading ={false}
+                    sortable={false}
+                    primaryKey="pstoID"
+                    pageSize={1000}
+                    minRows={3}
+                />
+            </div>
         </ExpansionPanel></>
     }) : null;
 
@@ -829,13 +895,13 @@ const ConfirmDialog = (props) => {
                         width="200px"
                         TypeDate={"datetime-local"}
                         onChange={value =>
-                            setDatetime(value)
+                            setDatetime(value.fieldDataKey)
                         }
                         defaultValue={moment().format("YYYY-MM-DDT00:00")}
                     />
                 </> : null}
             </FormInline> : null}
-            {res}
+            {res()}
         </>
     }
 

@@ -6,6 +6,7 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum StorageObjectEventStatus
     {
+        NONE = 0,
         NEW = 10,
         RECEIVING = 11,
         RECEIVED = 12,

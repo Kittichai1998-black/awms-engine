@@ -11,7 +11,7 @@ namespace AWMSModel.Entity
         public int Seq;
         public StorageObjectEventStatus Start_StorageObject_EventStatus;
         public StorageObjectEventStatus End_StorageObject_EventStatus;
-        public bool AutoNextSeq;
+        public int AutoNextSeq;
         public DateTime? StartTime;
         public DateTime? EndTime;
         public WaveEventStatus EventStatus;
