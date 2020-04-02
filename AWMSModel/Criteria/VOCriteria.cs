@@ -145,5 +145,13 @@ namespace AWMSModel.Criteria
                 return 0;
             }
         }
+        public string APIRefID
+        {
+            get
+            {
+                var apiRefID = this.Get<string>(BusinessVOConst.KEY_APIREFID);
+                return apiRefID;
+            }
+        }
     }
 }

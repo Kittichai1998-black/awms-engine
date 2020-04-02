@@ -26,15 +26,13 @@ const useWaveList = (waveQuery, waveType) => {
 }
 
 const useWaveColumns = (waveColumns) => {
-    const [columns, setColumns] = useState([]);
+    const [columns, setColumns] = useState(waveColumns);
 
     useEffect(() => {
         let xx = [...waveColumns];
-        xx.push({"accessor":"Code", "Header":"CodeTest", "sortable":false, "width":200})
+        xx.unshift({"accessor":"Code", "Header":"CodeTest", "sortable":false, "width":200})
         setColumns(xx)
-        return () => {
-            setColumns([{"accessor":"Code", "Header":"CodeTest", "sortable":false, "width":200}])
-        }
+        console.log(xx)
     }, [waveColumns])
 
     return columns
@@ -46,7 +44,7 @@ const AmWaveDetail = (props) => {
     const waveColumns = useWaveColumns(props.waveColumns)
     
     useEffect(()=> {
-        console.log(waveColumns)
+        //console.log(waveColumns)
     },[waveColumns])
     //const detailColumns = useDetailColumns(props.detailColumns)
 

@@ -99,7 +99,7 @@ const ProcessQueue = () => {
     fieldHeader: [{ "accessor": "Code", "label": "Code" }, { "accessor": "RefID", "label": "RefID" }]
   }
 
-  const customDesArea = (areaList, doc) => {
+  const customDesArea = (areaList, doc, warehouse) => {
     if (doc.document.DocumentProcessType_ID === 1013) {
       return areaList.filter(x => x.ID === 17 || x.ID === 18)
     }

@@ -16,6 +16,7 @@ namespace AWMSEngine.ADO
             var service = StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@LogRefID", buVO.Logger.LogRefID);
+            param.Add("@APIRefID", buVO.APIRefID);
             param.Add("@Token", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_TOKEN));
             param.Add("@APIKey ", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY));
             param.Add("@APIService_ID ", service != null ? service.ID : null);
@@ -66,14 +67,15 @@ namespace AWMSEngine.ADO
                 }, buVO);
             return doc.ID.Value;
         }
-        public long PutSendAPIEvent(HttpResultModel apiEvt, VOCriteria buVO)
+        public long PutAPIPostBackEvent(HttpResultModel apiEvt, VOCriteria buVO)
         {
             //return 0;
-            var id = ADO.DataADO.GetInstant().Insert<aml_SendAPIEvent>(
+            var id = ADO.DataADO.GetInstant().Insert<aml_APIPostBackEvent>(
                 buVO,
-                new aml_SendAPIEvent()
+                new aml_APIPostBackEvent()
                 {
                     ID = null,
+                    APIRefID = buVO.APIRefID,
                     LogRefID = buVO.Logger.LogRefID,
                     APIService_Module = apiEvt.APIService_Module,
                     APIName = apiEvt.APIName,

@@ -216,6 +216,10 @@ const AmTable = props => {
   }, []);
 
   useEffect(() => {
+    setColumns(createColumn());
+  }, [props.columns]);
+
+  useEffect(() => {
     if (data !== props.data) {
       setLoading(true);
       setData(props.data);
