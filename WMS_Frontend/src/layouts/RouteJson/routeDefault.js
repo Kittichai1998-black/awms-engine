@@ -207,7 +207,7 @@ const SearchLog = Loadable({
   loading: Loading
 });
 const Dash = Loadable({
-  loader: () => import("../../views/page/Dashboard/Dash5"),
+  loader: () => import("../../views/page/Dashboard/Dash6"),
   loading: Loading
 });
 let routes = [

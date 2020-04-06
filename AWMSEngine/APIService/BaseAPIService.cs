@@ -65,6 +65,7 @@ namespace AWMSEngine.APIService
             public string _token;
             public string apikey;
             public string _apikey;
+            public string ref_id;
         }
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)
@@ -87,6 +88,7 @@ namespace AWMSEngine.APIService
 
                     token = !string.IsNullOrWhiteSpace(getKey.token) ? getKey.token : getKey._token;
                     apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
+                    this.BuVO.Set(BusinessVOConst.KEY_APIREFID, getKey.ref_id);
                 }
 
                 //-------CREATE FILE LOGGING
@@ -222,7 +224,7 @@ namespace AWMSEngine.APIService
                         string _stacktrace = result.stacktrace;
                         this.FinalDBLog.sendAPIEvents.ForEach(x =>
                         {
-                            ADO.LogingADO.GetInstant().PutSendAPIEvent(x, this.BuVO);
+                            ADO.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
                         });
                         this.FinalDBLog.documentOptionMessages.ForEach(x =>
                         {

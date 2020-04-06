@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import Clone from "../../../components/function/Clone";
 import Chart from "chart.js";
-import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardChart';
+import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardChart2';
+import Axios from 'axios'
+/*
 const chartConfigs = [
   [
     {
@@ -311,21 +314,128 @@ const chartConfigs = [
   ]
 ];
 
-
+*/
 
 const ChartJS = () => {
 
+  const [chartConfigs, setChartConfigs] = useState([]);
+  const queryAPIs = [
+    [
+      {
+        type: 'bar',
+        title: "ex.bar1",
+        chartName: 'document',
+        spname: 'DASHBOARD_CHART',
+        chart: {}
+      },
+      {
+        type: 'bar',
+        title: "ex.bar2",
+        chartName: 'workqueue',
+        spname: 'DASHBOARD_CHART2',
+        chart: {}
+      }
+    ],
+    // [
+    // {
+    //   type: 'bar',
+    //   title: "ex.bar3",
+    //   chartName: 'document',
+    //   spname: 'DASHBOARD_CHART',
+    //   chart: {}
+    // },
+    // {
+    //   type: 'bar',
+    //   title: "ex.bar4",
+    //   chartName: 'workqueue',
+    //   spname: 'DASHBOARD_CHART2',
+    //   //chart: {}
+    // }
+    // ]
+  ];
+  // spname: '/v2/GetSPReportAPI?&spname=DASHBOARD_CHART'
   useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('This will run after 1 second!')
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    function fecthChart() {
+      let tempData = Clone(queryAPIs);
+
+      const myChart = tempData.map(element => {
+
+        const arrayTemp = element.map((x1) => {
+          const container = {};
+          container.type = x1.type;
+          container.title = x1.title;
+
+          Axios.get(window.apipath + "/v2/GetSPReportAPI?&spname="
+            + x1.spname + "&_token=" + localStorage.getItem("Token")).then(res => {
+              if (res.data.datas) {
+
+                container.chart = {
+                  type: res.data.datas[0].type,
+                  data: {
+                    labels: res.data.datas[0].labels.split(','),
+                    datasets: [JSON.parse(res.data.datas[0].datasets_1)]
+                  },
+                  options: JSON.parse(res.data.datas[0].options)
+                }
+
+              }
+            });
+          return container;
+        });
+        return arrayTemp;
+      });
+      console.log(myChart)
+      setChartConfigs(myChart)
+
+    }
+    fecthChart();
+
+  }, [])
+  /*function fecthChart() {
+    let tempData = Clone(queryAPIs);
+
+    const myChart = tempData.map(element => {
+
+      const arrayTemp = element.map((x1) => {
+        const container = {};
+        container.type = x1.type;
+        container.title = x1.title;
+
+        Axios.get(window.apipath + "/v2/GetSPReportAPI?&spname="
+          + x1.spname + "&_token=" + localStorage.getItem("Token")).then(res => {
+            if (res.data.datas) {
+
+              container.chart = {
+                type: res.data.datas[0].type,
+                data: {
+                  labels: res.data.datas[0].labels.split(','),
+                  datasets: [JSON.parse(res.data.datas[0].datasets_1)]
+                },
+                options: JSON.parse(res.data.datas[0].options)
+              }
+
+            }
+          });
+        return container;
+      });
+      return arrayTemp;
+    });
+    console.log(myChart)
+    // setChartConfigs(myChart)
+    return myChart;
+  }*/
   return (
     <div>
       <AmDashboardChart
         chartConfigs={chartConfigs}
+        // queryAPIs={queryAPIs}
+        delay={10000}
       />
+      {/* <AmDashboardChart
+        chartConfigs={chartConfigs}
+        queryApi={'/v2/GetSPReportAPI?&spname=DASHBOARD_CHART'}
+        delay={5000}
+      /> */}
     </div>
   );
 };

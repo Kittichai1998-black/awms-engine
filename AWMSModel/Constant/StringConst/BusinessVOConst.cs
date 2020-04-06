@@ -9,6 +9,7 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_TOKEN = "_TOKEN";
         public const string KEY_TOKEN_INFO = "_TOKEN_INFO";
         public const string KEY_APIKEY = "_APIKEY";
+        public const string KEY_APIREFID = "_APIREFID";
         public const string KEY_APIKEY_INFO = "_APIKEY_INFO";
 
         public const string KEY_HUB_COMMON = "_HUB_COMMON";
