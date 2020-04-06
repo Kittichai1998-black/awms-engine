@@ -582,7 +582,7 @@ const ProcessQueueDetail = (props) => {
         }
         else{
             let processQueueData = {}
-            processQueueData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+            processQueueData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
             processQueueData["desASRSLocationCode"] = null;
             processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
             processQueueData["processQueues"] = processQueueArr;
@@ -605,7 +605,7 @@ const ProcessQueueDetail = (props) => {
                         setDialogType("error")
                     }else{
                         let createResData = {}
-                        createResData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+                        createResData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
                         createResData["desASRSLocationCode"] = null;
                         createResData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
                         createResData["processResults"] = process;
