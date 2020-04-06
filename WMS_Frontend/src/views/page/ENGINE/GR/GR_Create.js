@@ -90,9 +90,9 @@ export default props => {
     ];
 
     const columnEdit = [
-        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopup, codeTranslate: "Pallet" },
-        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code" },
+        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No.", required: true },
+        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopup, codeTranslate: "Pallet", required: true },
+        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
         // { Header: "Base Qty", accessor: "quantity", type: "inputNum" },
         // { Header: "Base Unit", accessor: "unitType", type: "text" },
         // { Header: "Base Qty", accessor: "Quantity", type: "text" },

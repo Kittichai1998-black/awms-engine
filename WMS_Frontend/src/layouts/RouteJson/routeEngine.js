@@ -142,10 +142,6 @@ const MonitorPicking = Loadable({
   loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
   loading: Loading
 });
-const DownloadLog = Loadable({
-  loader: () => import("../../views/page/ENGINE/DownloadLog"),
-  loading: Loading
-});
 
 const routes = [
   {
@@ -189,12 +185,6 @@ const routes = [
     exact: true
   },
 
-  {
-    path: "/download_log",
-    name: "Download Log File",
-    compoment: DownloadLog,
-    exact: true
-  },
 
   {
     path: "/counting/manualcounting",

@@ -132,14 +132,16 @@ const BaseMaster = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "WeightKG",
@@ -155,7 +157,8 @@ const BaseMaster = props => {
       name: "Base Type",
       dataDropDow: BaseMasterTypeQuery,
       placeholder: "Base Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "ObjectSize_ID",
@@ -164,7 +167,8 @@ const BaseMaster = props => {
       name: "Size",
       dataDropDow: ObjectSizeQuery,
       placeholder: "Size",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "UnitType_ID",
@@ -173,7 +177,8 @@ const BaseMaster = props => {
       name: "Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",

@@ -1,21 +1,22 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+﻿import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import AsyncSelect from 'react-select/lib/Async';
 import classNames from 'classnames';
-import ReactSelect, { components } from 'react-select';
-import { withStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 import { colors } from 'react-select/lib/theme';
-import AmInput from "./AmInput";
+import { grey, red } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { grey, red } from '@material-ui/core/colors';
-import CloseIcon from '@material-ui/icons/Close';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import AsyncSelect from 'react-select/lib/Async';
-import { apicall, createQueryString } from './function/CoreFunction2'
-import NoSsr from '@material-ui/core/NoSsr';
-import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import NoSsr from '@material-ui/core/NoSsr';
+import PropTypes from 'prop-types';
+import ReactSelect, { components } from 'react-select';
+import React, { useState, useEffect, useRef } from 'react';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
+
+import AmInput from "./AmInput";
+import { apicall, createQueryString } from './function/CoreFunction2'
 
 const Axios = new apicall();
 
@@ -182,6 +183,7 @@ const DropDownInputs = withStyles(theme => ({
 }))(props => {
     const { classes, id, placeholder, styleType, valueKey, onHandleClickClear,
         toggleOpen, onHandleDelete, disabled, required, width, ...other } = props;
+
 
     return (
         <div style={{ display: 'inline-flex', alignItems: 'center' }} >
@@ -375,7 +377,8 @@ const DropdownComponent = (props) => {
         fieldLabel,
         labelPattern,
         onChange,
-        ddlType } = props;
+        ddlType,
+        ...other } = props;
     const [isOpen, setOpen] = useState(false);
     const [valueData, setValueData] = useState(null);
     const [optionList, setOptionList] = useState([]);
@@ -422,7 +425,6 @@ const DropdownComponent = (props) => {
                 }
             }
         } else if (data) {
-            //console.log(data)
             var dataOptions = data;
             dataOptions.forEach(datas => {
                 datas.value = datas[fieldDataKey];
@@ -452,7 +454,6 @@ const DropdownComponent = (props) => {
     }, [queryApi, data]);
 
     useEffect(() => {
-        // console.log(defaultValue)
         if (defaultValue) {
             setDefaultVal(defaultValue);
         }
@@ -468,7 +469,6 @@ const DropdownComponent = (props) => {
         }
     }, [valueKey, valueData]);
     useEffect(() => {
-        // console.log(value)
         setValueData(value)
 
         if (optionList) {
@@ -504,7 +504,6 @@ const DropdownComponent = (props) => {
 
             }
         }
-        // console.log(str)
         setValueKey(str);
     }
 
@@ -610,6 +609,7 @@ const DropdownComponent = (props) => {
                                 width={width}
                                 onHandleClickClear={onHandleClickClear}
                                 required={required}
+                                {...other}
                             />
                         }
                     >
