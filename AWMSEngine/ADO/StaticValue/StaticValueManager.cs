@@ -195,7 +195,8 @@ namespace AWMSEngine.ADO.StaticValue
             if (!value.HasValue) return null;
             string fixCode = value is StorageObjectEventStatus ? "STO" :
                                 (value is DocumentEventStatus) ? "DOC" :
-                                (value is WorkQueueEventStatus) ? "Q" : string.Empty;
+                                (value is WorkQueueEventStatus) ? "Q" : 
+                                (value is WaveEventStatus) ? "WAVE" : string.Empty;
             int v = AMWUtil.Common.EnumUtil.GetValueInt(value.Value);
             if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_INACTIVE", v))
                 return EntityStatus.INACTIVE;

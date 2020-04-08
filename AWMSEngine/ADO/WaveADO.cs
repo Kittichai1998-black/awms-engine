@@ -15,6 +15,7 @@ namespace AWMSEngine.ADO
     {
         public long? Put(amt_Wave wave, VOCriteria buVO)
         {
+            var WaveStatus = StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
             param.Add("@IoType", wave.IOType);
@@ -27,7 +28,7 @@ namespace AWMSEngine.ADO
             param.Add("@StartTime", wave.StartTime);
             param.Add("@EndTime", wave.EndTime);
             param.Add("@EventStatus", wave.EventStatus);
-            param.Add("@Status", wave.Status);
+            param.Add("@Status", WaveStatus.Value);
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@res", null, DbType.Int64, ParameterDirection.Output);
 
@@ -38,6 +39,7 @@ namespace AWMSEngine.ADO
         }
         public long? PutSeq(amt_WaveSeq wave, VOCriteria buVO)
         {
+            var WaveStatus = StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
             param.Add("@Wave_ID", wave.Wave_ID);
@@ -48,7 +50,7 @@ namespace AWMSEngine.ADO
             param.Add("@StartTime", wave.StartTime);
             param.Add("@EndTime", wave.EndTime);
             param.Add("@EventStatus", wave.EventStatus);
-            param.Add("@Status", wave.Status);
+            param.Add("@Status", WaveStatus.Value);
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@res", null, DbType.Int64, ParameterDirection.Output);
 
