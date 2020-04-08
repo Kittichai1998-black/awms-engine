@@ -188,14 +188,16 @@ const AreaLocationMaster = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^[0-9\.]+$/
+      validate: /^[0-9\.]+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Gate",
@@ -232,7 +234,8 @@ const AreaLocationMaster = props => {
       name: "Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "ObjectSize_ID",
@@ -241,7 +244,8 @@ const AreaLocationMaster = props => {
       name: "ObjectSize",
       dataDropDow: ObjectSizeQuery,
       placeholder: "ObjectSize",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",

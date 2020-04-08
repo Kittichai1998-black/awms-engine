@@ -33,7 +33,8 @@ const styles = theme => ({
     }
   },
   required: {
-    color: red[600]
+    color: red[600],
+    fontSize: "18px"
   }
 });
 
