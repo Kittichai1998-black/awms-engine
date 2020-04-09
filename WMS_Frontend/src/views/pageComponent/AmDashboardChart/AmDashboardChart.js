@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from 'prop-types';
-import AmChart from './AmChart';
+import AmChartBar from './AmChartBar';
+import AmChartPie from './AmChartPie';
+import AmChartLine from './AmChartLine';
+import AmChartTable from './AmChartTable';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Fullscreen from "react-full-screen";
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -9,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { useTranslation } from 'react-i18next'
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Clone from "../../../components/function/Clone";
+import _ from 'lodash'
 import Moment from 'moment';
 import Axios from 'axios'
 
@@ -16,6 +21,9 @@ const styles = theme => ({
     title: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    paddingGrid:{
+        paddingRight: '15px'
     }
 });
 const useClock = (propsTime, t) => {
@@ -55,25 +63,6 @@ const useClock = (propsTime, t) => {
     return time
 }
 
-function useInterval(callback, delay) {
-    const savedCallback = useRef();
-
-    // Remember the latest function.
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-
-    // Set up the interval.
-    useEffect(() => {
-        function tick() {
-            savedCallback.current();
-        }
-        if (delay !== null) {
-            let id = setInterval(tick, delay);
-            return () => clearInterval(id);
-        }
-    }, [delay]);
-}
 const DashboardChartComponent = (props) => {
     const { t } = useTranslation()
     const timeDefault = {
@@ -83,13 +72,11 @@ const DashboardChartComponent = (props) => {
     const {
         classes,
         time = timeDefault,
+        showTime = false,
         chartConfigs,
-        queryApi,
         delay
     } = props;
-    const [count, setCount] = useState(0);
 
-    const [dataSource, setDataSource] = useState([])
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.35);
     const clock = useClock(time, t)
@@ -98,7 +85,7 @@ const DashboardChartComponent = (props) => {
         width: window.innerWidth,
         height: window.innerHeight
     })
-    const time_show = time ? clock : null
+    const time_show = showTime && time ? clock : null
 
     const [chartCreateShow, setChartCreateShow] = useState(null);
 
@@ -121,45 +108,14 @@ const DashboardChartComponent = (props) => {
         setCalHeight(0.35);
     }
 
-    useInterval(() => {
-        // Your custom logic here
-        setCount(count + 1);
-        if (queryApi) {
-            GetData(queryApi).then(resdata => {
-                if (resdata) {
-                    setDataSource(resdata)
-                }
-            });
-        }
 
-    }, delay);
-    useEffect(() => {
-        console.log(dataSource);
-    }, [dataSource])
-    async function GetData(query) {
-        return await Axios.get(window.apipath + query + "&_token=" + localStorage.getItem("Token")).then(res => {
-            if (res.data.datas) {
-                return res.data.datas;
-            } else {
-                return [];
-            }
-        }).catch(error => {
-            // console.log(error);
-            return [];
-        });
-    }
     const CreateChart = (charts) => {
-        console.log(charts)
 
         return charts.map((row, index) => {
-
             if (row.length === 1) {
                 return (
                     <Grid container key={index}>
-
                         {row.map((x, col) => {
-
-                            console.log("chart" + col.toString())
                             return (
                                 <Grid item md={12} key={col}>
                                     {x.title ? <Typography className={classes.title} gutterBottom>{x.title}</Typography> : null}
@@ -170,14 +126,11 @@ const DashboardChartComponent = (props) => {
                     </Grid>
                 )
             } else {
-                console.log("สร้างmulti-chart" + index.toString())
                 return (
                     <Grid container key={index}>
                         {row.map((x, col) => {
-                            console.log("chart" + col.toString())
-
                             return (
-                                <Grid item md={6} key={col}>
+                                <Grid item md={6} key={col} className={classes.paddingGrid}>
                                     {x.title ? <Typography className={classes.title} gutterBottom>{x.title}</Typography> : null}
                                     {GenerateChart(x)}
                                 </Grid>
@@ -185,7 +138,6 @@ const DashboardChartComponent = (props) => {
                             )
                         })}
                     </Grid>
-
                 )
             }
         });
@@ -193,15 +145,31 @@ const DashboardChartComponent = (props) => {
 
     const GenerateChart = (configs) => {
         if (configs) {
-            return <AmChart
-                chartConfig={configs.chart}
-            />
+            if (configs.type === 'bar' || configs.type === 'horizontalBar') {
+                return <AmChartBar
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'pie' || configs.type === 'doughnut') {
+                return <AmChartPie
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'line') {
+                return <AmChartLine
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'table') {
+                return <AmChartTable
+                    chartConfig={configs}
+                />
+            }
         } else {
             return null;
         }
     }
+
     useEffect(() => {
-        if (chartConfigs) {
+        if (chartConfigs !== undefined && chartConfigs !== null && chartConfigs.length > 0) {
+            console.log(chartConfigs)
             const newChartCreateShow = CreateChart(chartConfigs);
             setChartCreateShow(newChartCreateShow);
         }
@@ -217,7 +185,6 @@ const DashboardChartComponent = (props) => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={6} xl={6}>
                         <Grid container direction="row" justify="flex-end" alignItems="center" >
-                            {/* {dropdown} */}
                             <Grid item >
                                 <IconButton style={{ marginLeft: 5, padding: 4 }} onClick={isFullScreen ? goMin : goFull}>
                                     {isFullScreen ?
@@ -229,7 +196,6 @@ const DashboardChartComponent = (props) => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <h1>ccc{count}</h1>
                 {chartCreateShow}
             </div>
         </Fullscreen>
@@ -239,12 +205,7 @@ const DashboardChartComponent = (props) => {
 
 DashboardChartComponent.propTypes = {
     time: PropTypes.object,
-    chartConfig: PropTypes.object,
     chartConfigs: PropTypes.array.isRequired,
-    queryApi: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object,
-    ]),
     delay: PropTypes.number
 }
 DashboardChartComponent.defaultProps = {
