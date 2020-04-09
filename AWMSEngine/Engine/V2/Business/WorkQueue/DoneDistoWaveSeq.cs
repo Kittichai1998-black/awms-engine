@@ -107,7 +107,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else if (sumQtyByDocItem + pickQty == docItemQty)
                     {
-                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData);
+                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData, waveSeq);
 
                         disto.Quantity = pickQty;
                         disto.BaseQuantity = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
@@ -117,7 +117,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else
                     {
-                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData);
+                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData, waveSeq);
                         disto.Quantity = pickQty;
                         disto.BaseQuantity = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
                         disto.Status = EntityStatus.ACTIVE;
@@ -147,7 +147,26 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     waveSeq.Status = EntityStatus.ACTIVE;
                     ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
 
-                    if(waveSeq.AutoNextSeq == 1)
+                    var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
+                    souSto.ForEach(x =>
+                    {
+                        var bsto = ADO.StorageObjectADO.GetInstant().Get(x, StorageObjectType.PACK, true, true, this.BuVO);
+                        if(bsto != null)
+                        {
+                            var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE);
+                            if(findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                            }
+                        }
+                    });
+
+
+
+
+
+
+                    if (waveSeq.AutoNextSeq == 1)
                     {
                         var nextWaveSeq = new NextDistoWaveSeq();
                         var nextReq = new NextDistoWaveSeq.TReq()
@@ -167,7 +186,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
 
         private StorageObjectCriteria MapPackToBase(amt_StorageObject souPsto, decimal pickQty, amt_DocumentItemStorageObject disto, 
-            StorageObjectCriteria souBsto, StorageObjectCriteria desBsto, ams_AreaLocationMaster location, TReq.DistoList reqData)
+            StorageObjectCriteria souBsto, StorageObjectCriteria desBsto, ams_AreaLocationMaster location, TReq.DistoList reqData, amt_WaveSeq waveSeq)
         {
             if (pickQty == 0)
             {
@@ -207,7 +226,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     newPsto.qty = pickQty;
                     newPsto.parentID = desBsto.id;
                     newPsto.parentType = desBsto.type;
-                    newPsto.eventStatus = StorageObjectEventStatus.PICKED;
+                    newPsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
                     var resStoID = ADO.StorageObjectADO.GetInstant().PutV2(newPsto, this.BuVO);
                     newPsto.id = resStoID;
                     return newPsto;
@@ -219,6 +238,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     updatePsto.parentID = desBsto.id;
                     updatePsto.parentType = desBsto.type;
+                    updatePsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
                     ADO.StorageObjectADO.GetInstant().PutV2(updatePsto, this.BuVO);
 
                     var checkBsto = ADO.StorageObjectADO.GetInstant().Get(souBsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO);
@@ -234,6 +254,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     else
                     {
                         ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(souBsto, location.ID.Value, this.BuVO);
+                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
                     }
                 }
                 return updatePsto;
