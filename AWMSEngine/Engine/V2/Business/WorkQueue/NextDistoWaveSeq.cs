@@ -45,6 +45,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var bsto = ADO.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
                 var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
                 var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
+
+                nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
+                ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+
                 amt_WorkQueue wq = new amt_WorkQueue();
 
                 if(stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_ASRS && stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_STAGING)
