@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js";
 import datalabels from 'chartjs-plugin-datalabels';
-import Axios from 'axios'
-
+import { apicall } from '../../../components/function/CoreFunction'
+const Axios = new apicall();
 
 const GenerateChart = props => {
     const {
@@ -18,7 +18,7 @@ const GenerateChart = props => {
         if (chartContainer && chartContainer.current) {
 
             const res = Axios.get(window.apipath + "/v2/GetSPReportAPI?&spname="
-                + chartConfig.spname + "&_token=" + localStorage.getItem("Token"))
+                + chartConfig.spname)
                 .then(res => {
                     if (res.data.datas) {
 

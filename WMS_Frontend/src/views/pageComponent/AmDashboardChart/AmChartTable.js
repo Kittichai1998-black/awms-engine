@@ -6,7 +6,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Axios from 'axios'
+import { apicall } from '../../../components/function/CoreFunction'
+const Axios = new apicall();
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +37,7 @@ const GenerateChart = props => {
 
   useEffect(() => {
     const res = Axios.get(window.apipath + "/v2/GetSPReportAPI?&spname="
-      + chartConfig.spname + "&_token=" + localStorage.getItem("Token"))
+      + chartConfig.spname)
       .then(res => {
 
         let datas = res.data.datas;
