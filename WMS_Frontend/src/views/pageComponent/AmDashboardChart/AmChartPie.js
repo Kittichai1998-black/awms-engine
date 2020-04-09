@@ -43,7 +43,7 @@ const GenerateChart = props => {
                     if (res.data.datas) {
 
                         let datas = res.data.datas;
-                        console.log(datas)
+                        // console.log(datas)
 
                         let labels = datas.map(e => e.labels)
 

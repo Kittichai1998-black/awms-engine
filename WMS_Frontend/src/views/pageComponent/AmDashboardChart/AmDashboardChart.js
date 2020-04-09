@@ -169,7 +169,7 @@ const DashboardChartComponent = (props) => {
 
     useEffect(() => {
         if (chartConfigs !== undefined && chartConfigs !== null && chartConfigs.length > 0) {
-            console.log(chartConfigs)
+            // console.log(chartConfigs)
             const newChartCreateShow = CreateChart(chartConfigs);
             setChartCreateShow(newChartCreateShow);
         }
