@@ -75,8 +75,9 @@ const DefaultProcessCondition = (doc, con) => {
                             x[y.key] = getCustom.defaultValue;
                     }
                     else{
-                        if(x.enable)
+                        if(y.enable){
                             x[y.key] = y.defaultValue;
+                        }
                         else
                             x[y.key] = false;
                     }
@@ -185,7 +186,7 @@ const useDocumentData = (doc, conditions) => {
     return doc;
 }
 
-const useArea = (areaQuery, doc, customArea) => {
+const useArea = (areaQuery, doc, customArea, warehouse) => {
     const [area, setArea] = useState([])
     
     useEffect(()=> {
@@ -196,7 +197,7 @@ const useArea = (areaQuery, doc, customArea) => {
 
     useEffect(()=> {
         if(customArea !== undefined && doc !== null && doc.length > 0){
-            var areaRes = customArea(area, doc[0]);
+            var areaRes = customArea(area, doc[0], warehouse);
             setArea(areaRes);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,7 +213,7 @@ const ProcessQueueDetail = (props) => {
     const [columns, setColumns] = useState()
     const [expanded, setExpanded] = useState([])
     const [dialog, setDialog] = useState({"state":false, data:{}})
-    const area = useArea(props.areaQuery, documents.documentListValue, props.customDesArea)
+    const area = useArea(props.areaQuery, documents.documentListValue, props.customDesArea, warehouse.warehouseValue)
     const [areaDefault, setAreaDefault] = useState()
     const [areaSelection, setAreaSelection] = useState({})
     const [processQueueData, setProcessQueueData] = useState({})
@@ -233,7 +234,7 @@ const ProcessQueueDetail = (props) => {
                 setAreaDefault("0")
             }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props, documents.documentListValue])
+    }, [props, documents.documentListValue, area])
 
     useEffect(() => {
         const onClickDialog = (key, cell) => {
@@ -581,7 +582,7 @@ const ProcessQueueDetail = (props) => {
         }
         else{
             let processQueueData = {}
-            processQueueData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+            processQueueData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
             processQueueData["desASRSLocationCode"] = null;
             processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
             processQueueData["processQueues"] = processQueueArr;
@@ -604,7 +605,7 @@ const ProcessQueueDetail = (props) => {
                         setDialogType("error")
                     }else{
                         let createResData = {}
-                        createResData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+                        createResData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
                         createResData["desASRSLocationCode"] = null;
                         createResData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
                         createResData["processResults"] = process;
@@ -710,11 +711,11 @@ const ProcessQueueDetail = (props) => {
             </Grid>
             <Grid item xs="6">
                 <FormInline style={{marginTop:20, float:"right", clear:"both"}}>
-                    <label style={{marginRight:"10px"}}>Auto Run : </label>
+                    {props.waveProcess ? <><label style={{marginRight:"10px"}}>Auto Run : </label>
                     <CheckboxCustom onClick={event => {
                         event.stopPropagation();
                         setAreaEnable(event.target.checked)
-                    }} checked={areaEnable}/>
+                    }} checked={areaEnable}/></> : null}
                     <label style={{marginRight:"10px"}}>Area : </label>
                     <AmDropdown
                         disabled={!areaEnable ? true : documents.documentListValue.length === 0 ? true : false}

@@ -17,6 +17,14 @@ namespace AWMSEngine.ADO
             var q = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, buVO);
             return SPworkQueue.Generate(q);
         }
+        public SPworkQueue GetByID(long baseID, VOCriteria buVO)
+        {
+            var q = ADO.DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("StorageObject_ID", baseID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", "0,1", SQLOperatorType.IN)
+                }, buVO).FirstOrDefault();
+            return SPworkQueue.Generate(q);
+        }
         /// <summary>
         /// ไม่ได้ใช้งานแล้ว
         /// </summary>

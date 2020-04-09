@@ -105,14 +105,16 @@ const User = props => {
       type: "input",
       name: "Username",
       placeholder: "Username",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "EmailAddress",

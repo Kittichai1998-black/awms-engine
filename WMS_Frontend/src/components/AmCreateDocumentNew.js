@@ -17,6 +17,7 @@ import { apicall, Clone } from '../components/function/CoreFunction2'
 import BtnAddList from './AmCreateDocument_BtnAddList'
 import { getUnique } from './function/ObjectFunction'
 import LabelT from './AmLabelMultiLanguage'
+// import ValidateInput from './function/ValidateInput'
 
 const Axios = new apicall()
 
@@ -74,6 +75,7 @@ const AmCreateDocument = (props) => {
     const [title, setTitle] = useState("");
     const [dataSource, setDataSource] = useState([]);
     const [reload, setReload] = useState();
+    const [inputError, setInputError] = useState([])
 
     const dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
         arr[el.key] = el.valueTexts || el.defaultValue
@@ -149,7 +151,7 @@ const AmCreateDocument = (props) => {
         setcreateDocumentData(createDocumentData)
     }
 
-    const onChangeEditor = (field, data) => {
+    const onChangeEditor = (field, data, required) => {
         if (addData && Object.getOwnPropertyNames(editData).length === 0) {
             editData["ID"] = addDataID
         }
@@ -237,6 +239,7 @@ const AmCreateDocument = (props) => {
                     ref.current[indexPalletCode].current.value = ""
                 }, 1);
             if (data) {
+                editData.SKUItems = data.SKUItems
                 editData.skuCode = data.Code
                 editData.unitType = data.UnitTypeCode
                 editData.skuName = data.Name
@@ -256,6 +259,7 @@ const AmCreateDocument = (props) => {
                 if (indexSUnit !== -1)
                     ref.current[indexSUnit].current.textContent = data.UnitCode
             } else {
+                delete editData.SKUItems
                 delete editData.skuCode
                 delete editData.unitType
                 delete editData.skuName
@@ -287,49 +291,75 @@ const AmCreateDocument = (props) => {
             // setDataUnit(unitArr)
         }
         setReload({})
-        // setEditData(editData)
+
+        if (required) {
+            if (!editData[field]) {
+                const arrNew = [...new Set([...inputError, field])]
+                setInputError(arrNew)
+            } else {
+                const arrNew = [...inputError]
+                const index = arrNew.indexOf(field);
+                if (index > -1) {
+                    arrNew.splice(index, 1);
+                }
+                setInputError(arrNew)
+            }
+        }
     }
 
 
-    const onHandleEditConfirm = (status, rowdata) => {
+    const onHandleEditConfirm = (status, rowdata,inputError) => {
         if (status) {
-            let chkData = dataSource.filter(x => {
-                return x.ID === rowdata.ID
-            })
-            if (chkData.length > 0) {
-                for (let row in editData) {
-                    if (row === "qtyrandom") {
-                        let editdatas = editData[row].replace("%", "")
-                        chkData[0]["qtyrandom"] = (editdatas + "%")
-                    } else if (row === "SKUItems") {
-                        if (!editData[row])
-                            delete chkData[0]["unitType"]
-                        chkData[0][row] = editData[row]
-                    } else {
-                        chkData[0][row] = editData[row]
+            if (!inputError.length) {
+                let chkData = dataSource.filter(x => {
+                    return x.ID === rowdata.ID
+                })
+                if (chkData.length > 0) {
+                    for (let row in editData) {
+                        if (row === "qtyrandom") {
+                            let editdatas = editData[row].replace("%", "")
+                            chkData[0]["qtyrandom"] = (editdatas + "%")
+                        } else if (row === "SKUItems") {
+                            if (!editData[row])
+                                delete chkData[0]["unitType"]
+                            chkData[0][row] = editData[row]
+                        } else {
+                            chkData[0][row] = editData[row]
+                        }
                     }
                 }
-            }
-            else {
-                if (editData.qtyrandom !== undefined) {
-                    if (editData.qtyrandom > 100) {
-                        setStateDialogErr(true)
-                        setMsgDialog("Random > 100 ")
+                else {
+                    if (editData.qtyrandom !== undefined) {
+                        if (editData.qtyrandom > 100) {
+                            setStateDialogErr(true)
+                            setMsgDialog("Random > 100 ")
+                        } else {
+                            editData["qtyrandom"] = (editData.qtyrandom + "%")
+                            dataSource.push(editData)
+                        }
                     } else {
-                        editData["qtyrandom"] = (editData.qtyrandom + "%")
+                        editData["qtyrandom"] = (0 + "%")
                         dataSource.push(editData)
                     }
-                } else {
-                    editData["qtyrandom"] = (0 + "%")
-                    dataSource.push(editData)
                 }
+                setDataCheck(dataSource);
+                setDataSource(dataSource);
+
+                setEditData({})
+                setAddDataID(addDataID - 1);
+                setDialog(false)
+                setInputError([])
+            } else {
+                setInputError(inputError.map(x => x.accessor))
             }
-            setDataCheck(dataSource);
-            setDataSource(dataSource);
+
+        } else {
+            setInputError([])
+            setEditData({})
+            // setAddDataID(addDataID - 1);
+            setDialog(false)
         }
-        setEditData({})
-        setAddDataID(addDataID - 1);
-        setDialog(false)
+
         // // setDataUnit()
         // // setUnitCodes();
 
@@ -341,8 +371,11 @@ const AmCreateDocument = (props) => {
                 return {
                     "field": row.accessor,
                     "component": (data = null, cols, key) => {
+                        let rowError = inputError.length ? inputError.some(x => {
+                            return x === row.accessor
+                        }) : false
                         return <div key={key}>
-                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel, row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i)}
+                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel, row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i, rowError, row.required)}
                         </div>
                     }
                 }
@@ -350,23 +383,25 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index) => {
-
+    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index, rowError, required) => {
         if (type === "input") {
-            console.log(Header);
-
             return (
                 <FormInline>
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
+
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
                             inputRef={ref.current[index]}
                             defaultValue={editData ? editData[accessor] : ""}
                             validate={true}
                             msgError="Error"
                             regExp={validate ? validate : ""}
-                            onChange={(ele) => { onChangeEditor(cols.field, ele) }}
+                            onChange={(ele) => { onChangeEditor(cols.field, ele, required) }}
                         />
+
                     </InputDiv>
                 </FormInline>
             )
@@ -378,22 +413,28 @@ const AmCreateDocument = (props) => {
                         <FormInline>{TextInputnum ? (
                             <FormInline>
                                 <AmInput
+                                    required={required}
+                                    error={rowError}
+                                    // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
                                     defaultValue={editData !== null && editData !== {} && editData["qtyrandom"] !== undefined ? editData[accessor].replace("%", "") : ""}
                                     style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
-                                    onChange={(ele) => { onChangeEditor(cols.field, ele) }} />
+                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
                                     <LabelT>{TextInputnum}</LabelT>
                                 </div>
                             </FormInline>
                         ) : (
                                 <AmInput
+                                    required={required}
+                                    error={rowError}
+                                    // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
                                     defaultValue={editData ? editData[accessor] : ""}
                                     style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
-                                    onChange={(ele) => { onChangeEditor(cols.field, ele) }} />
+                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
                             )
                         }</FormInline>
                     </InputDiv>
@@ -405,6 +446,9 @@ const AmCreateDocument = (props) => {
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <AmDropdown
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
@@ -418,7 +462,7 @@ const AmCreateDocument = (props) => {
                             // data={dataUnit}
                             // returnDefaultValue={true}
                             defaultValue={editData ? editData[accessor] : ""}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
                     </InputDiv>
@@ -430,6 +474,9 @@ const AmCreateDocument = (props) => {
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
                         <AmFindPopup
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
                             popupref={ref.current[index]}
                             id={idddl}
                             placeholder={placeholder ? placeholder : "Select"}
@@ -443,7 +490,7 @@ const AmCreateDocument = (props) => {
                             columns={columsddl} //array column สำหรับแสดง table
                             width={width ? width : 300}
                             ddlMinWidth={width ? width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required)}
                         />
                     </InputDiv>
                 </FormInline>
@@ -459,11 +506,19 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "dateTime") {
             return (
-                <AmDate
-                    TypeDate={"datetime-local"}
-                    defaultValue={true}
-                    onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject) }}
-                />
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <AmDate
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
+                            TypeDate={"datetime-local"}
+                            defaultValue={true}
+                            onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        />
+                    </InputDiv>
+                </FormInline>
             )
         } else if (type === "text") {
             return (<FormInline>
@@ -965,8 +1020,9 @@ const AmCreateDocument = (props) => {
                 style={{ width: "600px", height: "500px" }}
                 titleText={title}
                 open={dialog}
-                onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+                onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError)}
                 data={editData}
+                objColumnsAndFieldCheck={{ objColumn: props.columnEdit, fieldCheck: "accessor" }}
                 columns={editorListcolunm()}
             />
 
