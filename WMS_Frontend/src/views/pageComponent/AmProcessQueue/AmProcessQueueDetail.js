@@ -681,14 +681,16 @@ const ProcessQueueDetail = (props) => {
                 open={dialog.state} 
                 onAccept={(status, rowdata)=>{
                     setDialog({"state":false, data:{}});
-                    if(rowdata.docItems !== undefined){
-                        let findEdit = rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                        if(status){
-                            rowdata.docItems[findEdit] = rowdata.docItem;
-                        }
-                        else{
-                            rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                            rowdata["docItem"] = rowdata.docItems[findEdit];
+                    if(rowdata !== undefined){
+                        if(rowdata.docItems !== undefined){
+                            let findEdit = rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
+                            if(status){
+                                rowdata.docItems[findEdit] = rowdata.docItem;
+                            }
+                            else{
+                                rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
+                                rowdata["docItem"] = rowdata.docItems[findEdit];
+                            }
                         }
                     }
                 }} 
