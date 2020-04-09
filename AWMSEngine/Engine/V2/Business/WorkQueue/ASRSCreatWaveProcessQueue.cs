@@ -78,9 +78,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {
+            ams_AreaMaster desAM = new ams_AreaMaster();
+            ams_AreaLocationMaster desALM = new ams_AreaLocationMaster();
             var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
-            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
-            var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+
+            if (reqVO.desASRSAreaCode != null)
+            {
+                 desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
+                 desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+            }
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(x =>
             {
@@ -167,7 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 souAreaID = z.areaID,
 
                                 desWarehouseID = desWM.ID.Value,
-                                desAreaID = desAM.ID.Value,
+                                desAreaID = desAM == null?null : desAM.ID,
                                 desLocationID = desALM == null ? null : desALM.ID,
                             });
                         }

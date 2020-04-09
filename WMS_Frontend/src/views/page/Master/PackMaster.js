@@ -179,7 +179,8 @@ const PackMaster = props => {
       type: "inputPackCode",
       name: "Pack Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
@@ -201,7 +202,8 @@ const PackMaster = props => {
       inputType: "number",
       name: "Quantity",
       placeholder: "Quantity",
-      validate: /^[0-9\.]+$/
+      validate: /^[0-9\.]+$/,
+      required: true
     },
     {
       field: "UnitType_ID",
@@ -210,7 +212,8 @@ const PackMaster = props => {
       name: "Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "BaseQuantity",
@@ -218,7 +221,8 @@ const PackMaster = props => {
       inputType: "number",
       name: "Base Quantity",
       placeholder: "Base Quantity",
-      validate: /^[0-9\.]+$/
+      validate: /^[0-9\.]+$/,
+      required: true
     },
     {
       field: "BaseUnitType_ID",
@@ -227,14 +231,16 @@ const PackMaster = props => {
       name: "Base Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Base Unit Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "ItemQty",
       type: "input",
       name: "Item Qty",
       placeholder: "ItemQty",
-      validate: /^[0-9\.]+$/
+      validate: /^[0-9\.]+$/,
+      required: true
     },
     {
       field: "ObjectSize_ID",
@@ -243,7 +249,8 @@ const PackMaster = props => {
       name: "% Weight Verify",
       dataDropDow: ObjectSizeQuery,
       placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",

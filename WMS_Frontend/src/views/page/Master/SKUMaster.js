@@ -147,14 +147,16 @@ const SKUMaster = props => {
       type: "input",
       name: window.project === "TAP" ? "Part NO." : "SKU Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: window.project === "TAP" ? "Part Name" : "SKU Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "SKUMasterType_ID",
@@ -190,7 +192,8 @@ const SKUMaster = props => {
       name: "% Weight Verify",
       dataDropDow: ObjectSizeQuery,
       placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",
