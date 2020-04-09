@@ -97,8 +97,8 @@ export default props => {
         // { Header: "Base Unit", accessor: "unitType", type: "text" },
         // { Header: "Base Qty", accessor: "Quantity", type: "text" },
         // { Header: "Base Unit", accessor: "BaseUnitCode", type: "text" },
-        { Header: "Qty", accessor: "SaleQuantity", type: "text", codeTranslate: "Qty" },
-        { Header: "Unit", accessor: "UnitCode", type: "text", codeTranslate: "Unit" }
+        { Header: "Quantity", accessor: "quantity", type: "inputNum" },
+        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
     ];
 
     const columns = [
@@ -110,8 +110,8 @@ export default props => {
         // { Header: "Base Unit", accessor: "unitType", width: 70 },
         // { Header: "Base Qty", accessor: "Quantity", width: 90 },
         // { Header: "Base Unit", accessor: "BaseUnitCode", width: 90 },
-        { Header: "Qty", accessor: "SaleQuantity", width: 110 },
-        { Header: "Unit", accessor: "UnitCode", width: 90 }
+        { Header: "Qty", accessor: "quantity", width: 110 },
+        { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
