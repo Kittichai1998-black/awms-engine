@@ -42,7 +42,6 @@ const LabelH = styled.label`
 const SearchLog = props => {
   const [resetPage, setResetPage] = useState(false);
   useEffect(() => {
-    console.log(resetPage)
     if (resetPage === true) {
       setResetPage(false);
     }
@@ -52,7 +51,6 @@ const SearchLog = props => {
   const [page, setPage] = useState();
   const [totalSize, setTotalSize] = useState(0);
   const [dataSource, setDataSource] = useState([]);
-
   const [valueText, setValueText] = useState("");
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
