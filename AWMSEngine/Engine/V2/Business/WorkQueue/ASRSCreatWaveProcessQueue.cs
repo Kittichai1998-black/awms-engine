@@ -231,26 +231,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
                      }, this.BuVO);
 
-                    waveTemplate.ForEach(temp =>
-                    {
-
-                        var WaveSeq = new amt_WaveSeq()
-                        {
-                            Wave_ID = WaveID.Value,
-                            Seq = temp.Seq,
-                            Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
-                            End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
-                            AutoNextSeq = temp.AutoNextSeq,
-                            StartTime = temp.StartTime,
-                            EndTime = temp.EndTime,
-                            EventStatus = WaveEventStatus.NEW,
-                            Status = EntityStatus.ACTIVE
-                        };
-                        var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
-                    });
-
                 });
 
+            waveTemplate.ForEach(temp =>
+            {
+
+                var WaveSeq = new amt_WaveSeq()
+                {
+                    Wave_ID = WaveID.Value,
+                    Seq = temp.Seq,
+                    Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
+                    End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
+                    AutoNextSeq = temp.AutoNextSeq,
+                    StartTime = temp.StartTime,
+                    EndTime = temp.EndTime,
+                    EventStatus = WaveEventStatus.NEW,
+                    Status = EntityStatus.ACTIVE
+                };
+                var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
+            });
             var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
             return wave;
         }
