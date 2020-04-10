@@ -484,7 +484,7 @@ let routes = [
     exact: true
   },
   {
-    path: "/download_log",
+    path: "/log/downloadlog",
     name: "Download Log File",
     compoment: DownloadLog,
     exact: true

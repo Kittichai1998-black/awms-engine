@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Clone from "../../../components/function/Clone";
-import Chart from "chart.js";
 import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardChart';
-import Axios from 'axios'
 /*
 const chartConfigs = [
   [
