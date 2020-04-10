@@ -4,7 +4,7 @@ import {
   apicall,
   createQueryString,
   Clone
-} from "../../components/function/CoreFunction2";
+} from "../../components/function/CoreFunction";
 import AmDialogs from "../../components/AmDialogs";
 import AmButton from "../../components/AmButton";
 import AmInput from "../../components/AmInput";
