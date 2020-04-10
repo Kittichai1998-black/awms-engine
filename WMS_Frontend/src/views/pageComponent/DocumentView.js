@@ -117,26 +117,28 @@ const DocumentView = props => {
 
   useEffect(() => {
     getData();
-    console.log(props.optionDocItems);
+    // console.log(props.optionDocItems);
   }, []);
 
   const getData = () => {
     //========================================================================================================
     // console.log(props.typeDocNo);
+    // console.log(props);
+
     Axios.get(
       window.apipath +
-        "/v2/GetDocAPI/?docTypeID=" +
-        props.typeDocNo +
-        "&docID=" +
-        docID +
-        "&getMapSto=true&_token=" +
-        localStorage.getItem("Token")
+      "/v2/GetDocAPI/?docTypeID=" +
+      props.typeDocNo +
+      "&docID=" +
+      docID +
+      "&getMapSto=true&_token=" +
+      localStorage.getItem("Token")
     ).then(res => {
-      console.log(
-        "docID : " + props.docID,
-        "docTypeID : " + props.typeDocNo,
-        res.data
-      );
+      // console.log(
+      //   "docID : " + props.docID,
+      //   "docTypeID : " + props.typeDocNo,
+      //   res.data
+      // );
 
       if (res.data._result.status === 1) {
         setDataHeader(res.data.document);
@@ -191,17 +193,21 @@ const DocumentView = props => {
             _qty:
               typeDoc === "issued"
                 ? row._sumQtyDisto +
+                " / " +
+                (row.Quantity === null ? "-" : row.Quantity)
+                : typeDoc === "shipment"
+                  ? row._sumQtyDisto +
                   " / " +
                   (row.Quantity === null ? "-" : row.Quantity)
-                : typeDoc === "received"
-                ? row._sumQtyDisto +
-                  " / " +
-                  (row.Quantity === null ? " - " : row.Quantity)
-                : typeDoc === "loading"
-                ? row._sumQtyDisto +
-                  " / " +
-                  (row.Quantity === null ? " - " : row.Quantity)
-                : null
+                  : typeDoc === "received"
+                    ? row._sumQtyDisto +
+                    " / " +
+                    (row.Quantity === null ? " - " : row.Quantity)
+                    : typeDoc === "loading"
+                      ? row._sumQtyDisto +
+                      " / " +
+                      (row.Quantity === null ? " - " : row.Quantity)
+                      : null
           });
         });
 
@@ -238,11 +244,13 @@ const DocumentView = props => {
               _packQty:
                 typeDoc === "issued"
                   ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                  : typeDoc === "received"
-                  ? rowDetail.packQty
-                  : typeDoc === "audit"
-                  ? rowDetail.distoQty
-                  : null
+                  : typeDoc === "shipment"
+                    ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                    : typeDoc === "received"
+                      ? rowDetail.packQty
+                      : typeDoc === "audit"
+                        ? rowDetail.distoQty
+                        : null
             });
           });
         }
@@ -277,11 +285,13 @@ const DocumentView = props => {
               _packQty:
                 typeDoc === "issued"
                   ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                  : typeDoc === "received"
-                  ? rowDetail.packQty
-                  : typeDoc === "audit"
-                  ? rowDetail.distoQty
-                  : null
+                  : typeDoc === "shipment"
+                    ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                    : typeDoc === "received"
+                      ? rowDetail.packQty
+                      : typeDoc === "audit"
+                        ? rowDetail.distoQty
+                        : null
             });
           });
         }
@@ -453,8 +463,8 @@ const DocumentView = props => {
           />
         ) : null
       ) : (
-        ""
-      )}
+              ""
+            )}
       <br />
       {props.buttonBack === true ? (
         <AmButton styleType="default" onClick={buttonBack}>
