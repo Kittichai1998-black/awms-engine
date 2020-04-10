@@ -2,15 +2,12 @@ import Grid from "@material-ui/core/Grid";
 import moment from "moment";
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
-
-// import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
-
 import {
   withStyles,
   MuiThemeProvider,
   createMuiTheme
 } from "@material-ui/core/styles";
-import Axios from "axios";
+
 import Table from "../../components/table/AmTable";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";
@@ -29,6 +26,9 @@ import PropType from "prop-types";
 import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
+import { apicall } from '../../components/function/CoreFunction'
+const Axios = new apicall();
+// import Axios from "axios";
 
 const styles = theme => ({
   button: {
@@ -127,12 +127,12 @@ const DocumentView = props => {
 
     Axios.get(
       window.apipath +
-      "/v2/GetDocAPI/?docTypeID=" +
-      props.typeDocNo +
-      "&docID=" +
-      docID +
-      "&getMapSto=true&_token=" +
-      localStorage.getItem("Token")
+        "/v2/GetDocAPI/?docTypeID=" +
+        props.typeDocNo +
+        "&docID=" +
+        docID +
+        "&getMapSto=true&_token=" +
+        localStorage.getItem("Token")
     ).then(res => {
       // console.log(
       //   "docID : " + props.docID,

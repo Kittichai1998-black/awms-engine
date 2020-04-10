@@ -1,9 +1,6 @@
 import Axios from "axios";
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import TreeView from "deni-react-treeview";
-
-// import { apicall } from '../../../components/function/CoreFunction2'
-// import { Clone } from '../../../components/function/CoreFunction2'
 import AmInput from "../../../components/AmInput";
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
@@ -13,7 +10,7 @@ import {
   apicall,
   createQueryString,
   Clone
-} from "../../../components/function/CoreFunction2";
+} from "../../../components/function/CoreFunction";
 import AmDialogs from "../../../components/AmDialogs";
 import moment from "moment";
 const axios = new apicall();
@@ -72,7 +69,7 @@ export default props => {
   }, [dataUse]);
 
   useEffect(() => {
-    Axios.get(window.apipath + "/v2/GetDirectoryLogFile?apikey=FREE01").then(
+    axios.get(window.apipath + "/v2/GetDirectoryLogFile?").then(
       res => {
         if (res.data._result.status) {
           const dataNew = res.data.datas.directory
@@ -88,8 +85,8 @@ export default props => {
 
   const GetFile = e => {
     if (e.expanded && !e.children[0].text) {
-      Axios.get(
-        window.apipath + "/v2/GetDirectoryLogFile?apikey=FREE01&file=/" + e.text
+      axios.get(
+        window.apipath + "/v2/GetDirectoryLogFile?file=/" + e.text
       ).then(res => {
         if (res.data._result.status) {
           const dataNew = [...dataUse];

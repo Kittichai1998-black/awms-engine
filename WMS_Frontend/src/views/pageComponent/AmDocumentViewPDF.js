@@ -12,7 +12,12 @@ import {
     MuiThemeProvider,
     createMuiTheme
 } from "@material-ui/core/styles";
-import Axios from "axios";
+import {
+    apicall,
+    createQueryString
+  } from "../../components/function/CoreFunction";
+const Axios = new apicall();
+// import Axios from "axios";
 import Table from "../../components/table/AmTable";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";

@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         Sou_AreaMaster_ID = rsto.areaID,
                         Sou_AreaLocationMaster_ID = rsto.locationID,
 
-                        Des_AreaMaster_ID = rsto.desAreaID,
+                        Des_AreaMaster_ID = rsto.desAreaID.Value,
                         Des_Warehouse_ID = rsto.desWarehouseID,
                         Des_AreaLocationMaster_ID = rsto.desLocationID,
 
@@ -239,7 +239,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 priority = rsto.priority,
                                 queueID = rsto.workQueueID.Value,
                                 desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
-                                desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
+                                desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID.Value),
                                 desLocationCode = rsto.desLocationID.HasValue ?
                                                ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                                null,

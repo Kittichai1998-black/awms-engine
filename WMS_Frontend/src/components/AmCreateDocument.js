@@ -13,7 +13,7 @@ import AmDialogConfirm from '../components/AmDialogConfirm'
 import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { useTranslation } from 'react-i18next'
-import { apicall } from '../components/function/CoreFunction2'
+import { apicall } from '../components/function/CoreFunction'
 import ModalTableAddBySto from './AmCreateDocument_BtnAddList'
 const Axios = new apicall()
 
