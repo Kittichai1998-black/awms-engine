@@ -1417,7 +1417,8 @@ const MasterData = props => {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-        // UpdateData(rowdata,type); type is add, edit, editPass
+        //UpdateData(rowdata, type);
+        // type is add, edit, editPass
       }
     } else {
       setValueText1([]);
