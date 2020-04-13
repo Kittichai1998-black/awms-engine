@@ -19,7 +19,7 @@ export default props => {
         if (UrlSplit === "receiving") {
             // if (location.pathname === "/monitor/inbound") {
             dashboard = 'DASHBOARD_IN';
-            document.title = "receiving Progress : AMW";
+            document.title = "Receiving Progress : AMW";
             // } else {
             //     window.location.replace("/404");
             // }
@@ -27,7 +27,7 @@ export default props => {
         if (UrlSplit === "issuing") {
             // if (location.pathname === "/monitor/outbound") {
             dashboard = 'DASHBOARD_OUT';
-            document.title = "issuing Progress : AMW";
+            document.title = "Issuing Progress : AMW";
             // } else {
             //     window.location.replace("/404");
             // }
@@ -64,9 +64,17 @@ export default props => {
             }
         ]
     ])
-
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        if (count > 0) {
+            window.loading.onLoaded();
+        }else{
+            window.loading.onLoading();
+        }
+    }, [count])
     useEffect(() => {
         // console.log(dashboard)
+
         let url = window.apipath + '/dashboard'
         let connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
@@ -77,11 +85,12 @@ export default props => {
             .build();
 
         const signalrStart = () => {
+
             connection.start()
                 .then(() => {
                     connection.on(dashboard, res => {
-                        console.log(JSON.parse(res));
-
+                        // console.log(JSON.parse(res));
+                        setCount(count + 1);
                         data[0][0].table[0].headercol = headercol1
                         data[0][0].table[0].data = JSON.parse(res)
                         setData([...data])
