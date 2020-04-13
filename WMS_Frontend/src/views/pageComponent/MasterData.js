@@ -1417,7 +1417,8 @@ const MasterData = props => {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-        // UpdateData(rowdata,type); type is add, edit, editPass
+        //UpdateData(rowdata, type);
+        // type is add, edit, editPass
       }
     } else {
       setValueText1([]);
@@ -1606,91 +1607,12 @@ const MasterData = props => {
         setInputError(arrNew)
       }
     }
-
-    // let cloneEditRow = [];
-    // let cloneData = idEdit[0];
-
-    // if (addData) {
-    //   data2["ID"] = null;
-    //   data2["Revision"] = 1;
-    //   data2["Status"] = 1;
-    //   data2[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     data2["Code"] = packCode;
-    //     data2["Name"] = packName;
-    //   }
-    //   cloneEditRow.push(data2);
-    //   setDataSentToAPI(cloneEditRow);
-    // } else {
-    //   cloneData[field] = value;
-    //   setDataSentToAPI([cloneData]);
-    // }
   };
   //===========================================================
   useEffect(() => {
     setColumns(Clone(columns));
   }, [dataSource, editRow]);
 
-  //===========================================================
-  const UpdateData = (rowdata, type) => {
-    if (props.tableQuery === "User") {
-      if (type === "edit") {
-        dataSentToAPI.forEach(row => {
-          delete row["Password"];
-          delete row["ModifyBy"];
-          delete row["ModifyTime"];
-        });
-      } else {
-        dataSentToAPI.forEach(row => {
-          var guidstr = guid.raw().toUpperCase();
-          var i = 0,
-            strLength = guidstr.length;
-          for (i; i < strLength; i++) {
-            guidstr = guidstr.replace("-", "");
-          }
-          row["password"] =
-            "@@sql_gen_password," + row["password"] + "," + guidstr;
-          row["SaltPassword"] = guidstr;
-
-          delete row["Password"];
-          delete row["ModifyBy"];
-          delete row["ModifyTime"];
-        });
-      }
-    } else {
-      dataSentToAPI.forEach(row => {
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
-    }
-
-    let updjson = {
-      t: props.table,
-      pk: "ID",
-      datas: dataSentToAPI,
-      nr: false,
-      _token: localStorage.getItem("Token")
-    };
-
-    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
-        if (res.data._result.status === 1) {
-          setOpenSuccess(true);
-          getData(createQueryString(query));
-          setPage(0);
-          setResetPage(true);
-          Clear();
-        } else {
-          setOpenError(true);
-          setTextError(res.data._result.message);
-          getData(createQueryString(query));
-          setPage(0);
-          setResetPage(true);
-          Clear();
-        }
-      }
-    });
-  };
   //===========================================================
 
   const Clear = () => {
