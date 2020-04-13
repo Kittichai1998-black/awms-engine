@@ -210,6 +210,7 @@ const Dash = Loadable({
   loader: () => import("../../views/page/Dashboard/ExDashboard"),
   loading: Loading
 });
+
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
