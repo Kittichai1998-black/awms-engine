@@ -1448,7 +1448,7 @@ const MasterData = props => {
   const UpdateData = (rowdata, type) => {
     console.log(rowdata)
 
-    console.log(type)
+
     var dataEditx = {}
 
     if (type === "edit" || type === "editPass") {
