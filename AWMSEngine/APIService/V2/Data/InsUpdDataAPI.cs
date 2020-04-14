@@ -22,6 +22,7 @@ namespace AWMSEngine.APIService.V2.Data
             var res1 = new InsertSql().Execute(this.Logger, this.BuVO, req);
             this.CommitTransaction();
 
+            this.Logger.LogInfo("Clear Static_Value : " + req.t);
             ADO.StaticValue.StaticValueManager.GetInstant().ClearStaticByTableName(req.t);
             /*var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
             Type stManagerType = stManager.GetType();
