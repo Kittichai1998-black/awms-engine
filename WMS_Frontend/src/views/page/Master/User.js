@@ -217,6 +217,7 @@ const User = props => {
         customUser={true}
         dataUser={dataUser}
         columnsEditPassWord={columnsEditPassWord}
+        history={props.history}
       />
     </div>
   );

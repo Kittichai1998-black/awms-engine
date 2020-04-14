@@ -189,6 +189,7 @@ const Permission = props => {
         customPer={true}
         dataUser={dataUser}
         columnsEditAPIKey={columnsEditAPIKey}
+        history={props.history}
       />
     </div>
   );

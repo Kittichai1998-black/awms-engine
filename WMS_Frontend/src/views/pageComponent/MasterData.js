@@ -901,6 +901,7 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleFilterConfirm = (status, obj) => {
+    console.log(props.history.location)
     if (status) {
       let getQuery = Clone(query);
       let filterDatas = [...filterData];
@@ -1412,12 +1413,13 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleEditConfirm = (status, rowdata, arrObjInputError, type) => {
+    console.log(status);
     if (status) {
       if (arrObjInputError.length) {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-        //UpdateData(rowdata, type);
+        UpdateData(rowdata, type);
         // type is add, edit, editPass
       }
     } else {
@@ -1432,7 +1434,75 @@ const MasterData = props => {
     }
 
   };
+  //=================================================
+  const UpdateData = (rowdata, type) => {
+    console.log(rowdata)
 
+    console.log(type)
+    var dataEditx = {}
+
+    if (type === "edit" || type === "editPass") {
+
+      console.log(props.dataEdit)
+      props.dataEdit.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
+
+      })
+    } else {
+
+      console.log(props.dataAdd)
+      props.dataAdd.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+      })
+    }
+    if (props.tableQuery === "User") {
+      var guidstr = guid.raw().toUpperCase()
+      var i = 0, strLength = guidstr.length;
+      for (i; i < strLength; i++) {
+
+        guidstr = guidstr.replace('-', '');
+
+      }
+      dataEditx["password"] = "@@sql_gen_password," + dataEditx["password"] + "," + guidstr
+      dataEditx["SaltPassword"] = guidstr
+      dataEditx["Status"] = rowdata["Status"]
+    }
+    console.log(dataEditx)
+    let updjson = {
+      "t": props.table,
+      "pk": "ID",
+      "datas": [dataEditx],
+      "nr": false,
+      "_token": localStorage.getItem("Token")
+    }
+    console.log(updjson)
+    console.log(dataSentToAPI)
+    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          dataEditx = {}
+          setOpenSuccess(true)
+          getData(createQueryString(query))
+          setPage(0);
+
+          setResetPage(true);
+          Clear()
+        } else {
+          dataEditx = {}
+          setOpenError(true)
+          setTextError(res.data._result.message)
+          getData(createQueryString(query))
+          setPage(0);
+          setResetPage(true);
+          Clear()
+        }
+      }
+    })
+  }
   //===========================================================
 
   const onHandleDeleteConfirm = (status, rowdata) => {
@@ -1444,9 +1514,9 @@ const MasterData = props => {
   //===========================================================
   useEffect(() => { }, [editRow]);
 
-  // useEffect(() => {
-  //   getDataFilterURL();
-  // }, []);
+  useEffect(() => {
+    getDataFilterURL();
+  }, []);
 
   const getDataFilterURL = () => {
     if (
@@ -1560,8 +1630,10 @@ const MasterData = props => {
   //===========================================================
 
   const onChangeEditor = (field, rowdata, value, type, inputType, required) => {
-
-    if (field === "WeightKG" || value === "") {
+    console.log(field)
+    console.log(value)
+    if (field === "WeightKG" && value === "") {
+      console.log("xx")
       value = null;
     }
 
@@ -1617,6 +1689,9 @@ const MasterData = props => {
 
   const Clear = () => {
     setEditRow([]);
+    setDialog(false);
+    setDialogEdit(false)
+    setDialogEditPassWord(false)
     setDeleteDataTmp([]);
     setData2({});
     setDataSentToAPI([]);
