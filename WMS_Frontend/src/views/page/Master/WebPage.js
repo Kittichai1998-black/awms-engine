@@ -16,7 +16,7 @@ import AmEntityStatus from "../../../components/AmEntityStatus";
 const Axios = new apicall();
 
 const WebPage = props => {
-  
+
     const EntityEventStatus = [
         { label: "INACTIVE", value: 0 },
         { label: "ACTIVE", value: 1 }
@@ -24,8 +24,7 @@ const WebPage = props => {
     const PermissionQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Permission",
-        q:
-            '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -36,8 +35,7 @@ const WebPage = props => {
     const WebPageGroupQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "WebPageGroup",
-        q:
-            '[{ "f": "Status", "c":"<", "v": 2}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -101,12 +99,14 @@ const WebPage = props => {
             type: "input",
             name: "Path Level 1",
             placeholder: "Path Level 1",
+            required: true
         },
         {
             field: "PathLV2",
             type: "input",
             name: "Path Level 2",
             placeholder: "Path Level 2",
+            required: true
         },
         {
             field: "PathLV3",
@@ -121,14 +121,23 @@ const WebPage = props => {
         //     placeholder: "Description",
         // },
         {
-            field: "WebPageGroup",
+            field: "WebPageGroup_ID",
             type: "dropdow",
             typeDropdow: "search",
-            name: "WebPageGroup",
+            name: "WebPageGroup_ID",
             dataDropDow: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             placeholder: "Web Page Group"
         },
+        // {
+        //     field: "Status",
+        //     type: "status",
+        //     typeDropdow: "normal",
+        //     name: "Status",
+        //     dataDropDow: EntityEventStatus,
+        //     placeholder: "Status",
+
+        // }
     ];
     const columnsEdit = [
         {
@@ -198,14 +207,14 @@ const WebPage = props => {
             fieldLabel: ["Code"],
             placeholder: "Permission"
         },
-        {
-            field: "Status",
-            type: "status",
-            typeDropdow: "normal",
-            name: "Status",
-            dataDropDow: EntityEventStatus,
-            placeholder: "Status"
-        }
+        // {
+        //     field: "Status",
+        //     type: "status",
+        //     typeDropdow: "normal",
+        //     name: "Status",
+        //     dataDropDow: EntityEventStatus,
+        //     placeholder: "Status"
+        // }
     ];
     const primarySearch = [
         {
