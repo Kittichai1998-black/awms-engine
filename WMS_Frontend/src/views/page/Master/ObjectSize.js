@@ -243,9 +243,10 @@ const ObjectSize = props => {
         dataEdit={columnsEdit}
         // customUser={true}
         customPer={true}
-        //dataObjectSize={ObjectSize}
-        //dataObjectSizeNone={ObjectSize2}
-        //columnsEditAPIKey={columnsEditObjectSize}
+        history={props.history}
+      //dataObjectSize={ObjectSize}
+      //dataObjectSizeNone={ObjectSize2}
+      //columnsEditAPIKey={columnsEditObjectSize}
       />
     </div>
   );

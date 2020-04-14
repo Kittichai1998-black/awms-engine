@@ -81,7 +81,7 @@ const PackMaster = props => {
       placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
       labelTitle:
         "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
-      fieldLabel: ["Code","Name"]
+      fieldLabel: ["Code", "Name"]
     },
     {
       field: "Code",
@@ -428,6 +428,7 @@ const PackMaster = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

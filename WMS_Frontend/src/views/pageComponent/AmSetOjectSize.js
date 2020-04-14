@@ -1375,7 +1375,7 @@ const AmSetOjectSize = props => {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-
+        UpdateData(rowdata, type);
         // UpdateData();
       }
 
@@ -1529,39 +1529,51 @@ const AmSetOjectSize = props => {
   }, [dataSource, editRow]);
 
   //===========================================================
-  const UpdateData = () => {
-    if (props.tableQuery === "User") {
-      editData.forEach(row => {
-        var guidstr = guid.raw().toUpperCase();
-        var i = 0,
-          strLength = guidstr.length;
-        for (i; i < strLength; i++) {
-          guidstr = guidstr.replace("-", "");
-        }
-        row["password"] =
-          "@@sql_gen_password," + row["password"] + "," + guidstr;
-        row["SaltPassword"] = guidstr;
+  const UpdateData = (rowdata, type) => {
 
-        delete row["Password"];
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
+
+    // if (props.tableQuery === "ObjectSize") {
+    //   editData.forEach(row => {
+    //     if (row.MaxWeigthKG === "" || row.MaxWeigthKG === undefined) {
+    //       row.MaxWeigthKG = null;
+    //     }
+    //     if (row.MinWeigthKG === "" || row.MinWeigthKG === undefined) {
+    //       row.MinWeigthKG = null;
+    //     }
+    //   });
+
+
+    // }
+    //==================================
+    var dataEditx = {}
+    if (type === "edit") {
+
+      console.log(props.dataEdit)
+      props.dataEdit.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
+
+        if (dataEditx.MaxWeigthKG === "" || dataEditx.MaxWeigthKG === undefined) {
+          dataEditx.MaxWeigthKG = null;
+        }
+        if (dataEditx.MinWeigthKG === "" || dataEditx.MinWeigthKG === undefined) {
+          dataEditx.MinWeigthKG = null;
+        }
+
+      })
     } else {
-      if (props.tableQuery === "ObjectSize") {
-        editData.forEach(row => {
-          if (row.MaxWeigthKG === "" || row.MaxWeigthKG === undefined) {
-            row.MaxWeigthKG = null;
-          }
-          if (row.MinWeigthKG === "" || row.MinWeigthKG === undefined) {
-            row.MinWeigthKG = null;
-          }
-        });
-      }
-      editData.forEach(row => {
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
+
+      console.log(props.dataAdd)
+      props.dataAdd.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+
+      })
     }
+
+    dataEditx["Status"] = 1
 
     let updjson = {
       t: props.table,
@@ -1570,7 +1582,7 @@ const AmSetOjectSize = props => {
       nr: false,
       _token: localStorage.getItem("Token")
     };
-
+    console.log(updjson)
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
