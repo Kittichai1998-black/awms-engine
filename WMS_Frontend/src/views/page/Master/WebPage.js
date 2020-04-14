@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import MasterData from "../../pageComponent/MasterData";
+import AmMasterData from "../../pageComponent/MasterData";
 import AmIconStatus from "../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
 import styled from "styled-components";
@@ -15,11 +16,11 @@ import AmEntityStatus from "../../../components/AmEntityStatus";
 const Axios = new apicall();
 
 const WebPage = props => {
-    const [dataWebpage, setDataWebpage] = useState([]);
+    const [dataPermission, setDataPermission] = useState([]);
 
-    const WebpageQuery = {
+    const PermissionQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "WebPage",
+        t: "Permission",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,Code,Name",
         g: "",
@@ -29,8 +30,8 @@ const WebPage = props => {
         all: ""
     };
     useEffect(() => {
-        Axios.get(createQueryString(WebpageQuery)).then(res => {
-            setDataWebpage(res.data.datas);
+        Axios.get(createQueryString(PermissionQuery)).then(res => {
+            setDataPermission(res.data.datas);
         });
     }, []);
     const EntityEventStatus = [
@@ -50,11 +51,13 @@ const WebPage = props => {
         { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
         { Header: "Name", accessor: "Name", width: 200 },
         { Header: "Seq", accessor: "Seq", width: 50 },
-        { Header: "PathLV1", accessor: "PathLV1", width: 150 },
-        { Header: "PathLV2", accessor: "PathLV2", width: 150 },
-        { Header: "PathLV3", accessor: "PathLV3", width: 150 },
+        { Header: "Path Level 1", accessor: "PathLV1", width: 150 },
+        { Header: "Path Level 2", accessor: "PathLV2", width: 150 },
+        { Header: "Path Level 3", accessor: "PathLV3", width: 150 },
         { Header: "Description", accessor: "Description", width: 150 },
-        { Header: "Update By", accessor: "LastUpdateBy", width: 150 },
+        { Header: "Web Page Group", accessor: "WebPageGroup_Code", width: 150 },
+        { Header: "Permission", accessor: "Permission_Code", width: 150 },
+        { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
             accessor: "LastUpdateTime",
@@ -118,6 +121,7 @@ const WebPage = props => {
             type: "input",
             name: "Code",
             placeholder: "Code",
+            validate: /^.+$/,
             required: true
         },
         {
@@ -125,6 +129,7 @@ const WebPage = props => {
             type: "input",
             name: "Name",
             placeholder: "Name",
+            validate: /^.+$/,
             required: true
         },
         {
@@ -133,6 +138,7 @@ const WebPage = props => {
             // inputType: "number",
             name: "Seq",
             placeholder: "Seq",
+            validate: /^[0-9\.]+$/,
             required: true
         },
         {
@@ -158,6 +164,14 @@ const WebPage = props => {
             type: "input",
             name: "Description",
             placeholder: "Description",
+        },
+        {
+            field: "Status",
+            type: "status",
+            typeDropdow: "normal",
+            name: "Status",
+            dataDropDow: EntityEventStatus,
+            placeholder: "Status"
         },
         {
             field: "Status",
@@ -254,7 +268,7 @@ const WebPage = props => {
     };
     return (
         <div>
-            <MasterData
+            <AmMasterData
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
                 tableQuery={"WebPage"}
@@ -262,9 +276,10 @@ const WebPage = props => {
                 dataAdd={columnsAdd}
                 iniCols={iniCols}
                 dataEdit={columnsEdit}
-            // customUser={true}
-            // dataUser={dataWebpage}
-            // columnsEditPassWord={columnsEditPassWord}
+                // customPer={true}
+                // dataPermission={dataPermission}
+                // columnsEditPassWord={columnsEditPassWord}
+                history={props.history}
             />
         </div>
     );
