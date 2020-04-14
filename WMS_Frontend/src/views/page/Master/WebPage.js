@@ -16,29 +16,35 @@ import AmEntityStatus from "../../../components/AmEntityStatus";
 const Axios = new apicall();
 
 const WebPage = props => {
-    const [dataPermission, setDataPermission] = useState([]);
-
+  
+    const EntityEventStatus = [
+        { label: "INACTIVE", value: 0 },
+        { label: "ACTIVE", value: 1 }
+    ];
     const PermissionQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Permission",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code,Name",
+        q:
+            '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
         l: 100,
         all: ""
     };
-    useEffect(() => {
-        Axios.get(createQueryString(PermissionQuery)).then(res => {
-            setDataPermission(res.data.datas);
-        });
-    }, []);
-    const EntityEventStatus = [
-        { label: "INACTIVE", value: 0 },
-        { label: "ACTIVE", value: 1 }
-    ];
-
+    const WebPageGroupQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "WebPageGroup",
+        q:
+            '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
     const iniCols = [
         {
             Header: "",
@@ -50,13 +56,13 @@ const WebPage = props => {
         },
         { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
         { Header: "Name", accessor: "Name", width: 200 },
-        { Header: "Seq", accessor: "Seq", width: 50 },
-        { Header: "Path Level 1", accessor: "PathLV1", width: 150 },
-        { Header: "Path Level 2", accessor: "PathLV2", width: 150 },
-        { Header: "Path Level 3", accessor: "PathLV3", width: 150 },
-        { Header: "Description", accessor: "Description", width: 150 },
-        { Header: "Web Page Group", accessor: "WebPageGroup_Code", width: 150 },
-        { Header: "Permission", accessor: "Permission_Code", width: 150 },
+        { Header: "Seq No.", accessor: "Seq", width: 70 },
+        { Header: "Path Level 1", accessor: "PathLV1", width: 100 },
+        { Header: "Path Level 2", accessor: "PathLV2", width: 120 },
+        { Header: "Path Level 3", accessor: "PathLV3", width: 120 },
+        // { Header: "Description", accessor: "Description", width: 150 },
+        { Header: "Web Page Group", accessor: "WebPageGroup_Code", width: 170 },
+        { Header: "Permission", accessor: "Permission_Code", width: 300 },
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -86,8 +92,8 @@ const WebPage = props => {
             field: "Seq",
             type: "input",
             inputType: "number",
-            name: "Order No.",
-            placeholder: "Order No.",
+            name: "Seq No.",
+            placeholder: "Seq No.",
             required: true
         },
         {
@@ -108,11 +114,20 @@ const WebPage = props => {
             name: "Path Level 3",
             placeholder: "Path Level 3",
         },
+        // {
+        //     field: "Description",
+        //     type: "input",
+        //     name: "Description",
+        //     placeholder: "Description",
+        // },
         {
-            field: "Description",
-            type: "input",
-            name: "Description",
-            placeholder: "Description",
+            field: "WebPageGroup",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "WebPageGroup",
+            dataDropDow: WebPageGroupQuery,
+            fieldLabel: ["Code", "Name"],
+            placeholder: "Web Page Group"
         },
     ];
     const columnsEdit = [
@@ -159,19 +174,29 @@ const WebPage = props => {
             name: "Path Level 3",
             placeholder: "Path Level 3",
         },
+        // {
+        //     field: "Description",
+        //     type: "input",
+        //     name: "Description",
+        //     placeholder: "Description",
+        // },
         {
-            field: "Description",
-            type: "input",
-            name: "Description",
-            placeholder: "Description",
+            field: "WebPageGroup_ID",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "WebPageGroup",
+            dataDropDow: WebPageGroupQuery,
+            fieldLabel: ["Code", "Name"],
+            placeholder: "Web Page Group"
         },
         {
-            field: "Status",
-            type: "status",
-            typeDropdow: "normal",
-            name: "Status",
-            dataDropDow: EntityEventStatus,
-            placeholder: "Status"
+            field: "Permission_ID",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "Permission",
+            dataDropDow: PermissionQuery,
+            fieldLabel: ["Code"],
+            placeholder: "Permission"
         },
         {
             field: "Status",
@@ -200,8 +225,8 @@ const WebPage = props => {
             field: "Seq",
             type: "input",
             // inputType: "number",
-            name: "Seq",
-            placeholder: "Seq",
+            name: "Seq No.",
+            placeholder: "Seq No.",
             required: true
         },
         {
@@ -223,10 +248,24 @@ const WebPage = props => {
             placeholder: "Path Level 3",
         },
         {
-            field: "Description",
-            type: "input",
-            name: "Description",
-            placeholder: "Description",
+            field: "WebPageGroup_Code",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "WebPageGroup",
+            dataDropDow: WebPageGroupQuery,
+            fieldLabel: ["Code", "Name"],
+            fieldDataKey: "Code",
+            placeholder: "Web Page Group"
+        },
+        {
+            field: "Permission_Code",
+            type: "dropdow",
+            typeDropdow: "search",
+            name: "Permission",
+            dataDropDow: PermissionQuery,
+            fieldLabel: ["Code"],
+            fieldDataKey: "Code",
+            placeholder: "Permission"
         },
         {
             field: "Status",
@@ -276,9 +315,6 @@ const WebPage = props => {
                 dataAdd={columnsAdd}
                 iniCols={iniCols}
                 dataEdit={columnsEdit}
-                // customPer={true}
-                // dataPermission={dataPermission}
-                // columnsEditPassWord={columnsEditPassWord}
                 history={props.history}
             />
         </div>
