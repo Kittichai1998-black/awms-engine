@@ -1744,7 +1744,7 @@ const MasterData = props => {
         //style={{width:"600",height:"300px"}}
         open={dialog}
         onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
-        titleText={addData === true ? "Add" : "Edit"}
+        titleText={"Add"}
         data={editData}
         columns={FuncTest()}
         objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
@@ -1752,7 +1752,7 @@ const MasterData = props => {
       <AmEditorTable
         open={dialogEdit}
         onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "edit")}
-        titleText={addData === true ? "Add" : "Edit"}
+        titleText={"Edit"}
         data={editData}
         columns={FuncTestEdit()}
         objColumnsAndFieldCheck={{ objColumn: props.dataEdit, fieldCheck: "field" }}

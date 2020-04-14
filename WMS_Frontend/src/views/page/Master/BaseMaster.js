@@ -317,12 +317,15 @@ const BaseMaster = props => {
               // required={required}
               // id={cols.field}
               style={{ width: "100px", margin: "0px" }}
-            // placeholder={placeholder}
-            // type="input"
-            // // value={data[cols.field] && data ? data[cols.field] : packCode}
-            // onChange={val => {
-            //   onChangeEditor(cols.field, data, val, "Pack Code", null, required);
-            // }}
+              id={"Code"}
+              style={{ width: "100px", marginLeft: "5px" }}
+              placeholder={"code"}
+              type="input"
+              //value={""}
+              onChange={val => {
+                console.log(val)
+                onChangeEditor("Codefrom", val, true);
+              }}
             />  <LabelH>{" from"} : </LabelH>
             <AmInput
               //required={required}
@@ -333,7 +336,7 @@ const BaseMaster = props => {
               //value={""}
               onChange={val => {
                 console.log(val)
-                onChangeEditor(val, true);
+                onChangeEditor("Codeto", val, true);
               }}
             />
           </FormInline>
@@ -344,27 +347,21 @@ const BaseMaster = props => {
 
 
   };
-
-  const onChangeEditor = (value, required) => {
+  var x1 = []
+  const onChangeEditor = (field, value, required) => {
     //console.log(field)
     console.log(value)
     // let editDataNew = Clone(editData)
+    var x = {}
 
-    // if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
-    //   editDataNew["ID"] = null
-    //   editDataNew["Revision"] = 1;
-    //   editDataNew["Status"] = 1;
-    //   editDataNew[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     editDataNew["Code"] = packCode;
-    //     editDataNew["Name"] = packName;
-    //   }
-    // } else {
-    //   editDataNew[field] = value;
-    // }
 
-    // setEditData(editDataNew);
+    x[field] = value
 
+
+
+    x1 = x
+    console.log(x1)
+    console.log(x)
     // if (required) {
     //   if (!editDataNew[field]) {
     //     const arrNew = [...new Set([...inputError, field])]
