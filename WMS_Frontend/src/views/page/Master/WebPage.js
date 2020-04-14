@@ -58,7 +58,7 @@ const WebPage = props => {
         { Header: "Path Level 1", accessor: "PathLV1", width: 100 },
         { Header: "Path Level 2", accessor: "PathLV2", width: 120 },
         { Header: "Path Level 3", accessor: "PathLV3", width: 120 },
-        // { Header: "Description", accessor: "Description", width: 150 },
+        { Header: "Icon", accessor: "Icon", width: 150 },
         { Header: "Web Page Group", accessor: "WebPageGroup_Code", width: 170 },
         { Header: "Permission", accessor: "Permission_Code", width: 300 },
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
@@ -114,12 +114,12 @@ const WebPage = props => {
             name: "Path Level 3",
             placeholder: "Path Level 3",
         },
-        // {
-        //     field: "Description",
-        //     type: "input",
-        //     name: "Description",
-        //     placeholder: "Description",
-        // },
+        {
+            field: "Icon",
+            type: "input",
+            name: "Icon",
+            placeholder: "Icon",
+        },
         {
             field: "WebPageGroup_ID",
             type: "dropdow",
@@ -128,16 +128,7 @@ const WebPage = props => {
             dataDropDow: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             placeholder: "Web Page Group"
-        },
-        // {
-        //     field: "Status",
-        //     type: "status",
-        //     typeDropdow: "normal",
-        //     name: "Status",
-        //     dataDropDow: EntityEventStatus,
-        //     placeholder: "Status",
-
-        // }
+        }, 
     ];
     const columnsEdit = [
         {
@@ -183,12 +174,12 @@ const WebPage = props => {
             name: "Path Level 3",
             placeholder: "Path Level 3",
         },
-        // {
-        //     field: "Description",
-        //     type: "input",
-        //     name: "Description",
-        //     placeholder: "Description",
-        // },
+        {
+            field: "Icon",
+            type: "input",
+            name: "Icon",
+            placeholder: "Icon",
+        },
         {
             field: "WebPageGroup_ID",
             type: "dropdow",
