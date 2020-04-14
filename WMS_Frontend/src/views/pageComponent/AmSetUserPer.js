@@ -1046,25 +1046,6 @@ const AmSetUserPer = (props) => {
       setValueText1({ SKUMaster_ID: "xxxxxx" })
     }
 
-    // let cloneEditRow = [];
-    // let cloneData = idEdit[0]
-
-    // if (addData) {
-    //   data2["ID"] = null;
-    //   data2["Revision"] = 1;
-    //   data2["Status"] = 1;
-    //   data2[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     data2["Code"] = packCode;
-    //     data2["Name"] = packName;
-    //   }
-    //   cloneEditRow.push(data2)
-    //   setDataSentToAPI(cloneEditRow)
-    // } else {
-    //   cloneData[field] = value;
-    //   setDataSentToAPI([cloneData])
-    // }
-
     let editDataNew = Clone(editData)
 
     if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
@@ -1105,28 +1086,7 @@ const AmSetUserPer = (props) => {
   const UpdateData = (rowdata, type) => {
     console.log(rowdata)
     console.log(props.dataEdit)
-    // if (props.tableQuery === "User") {
-    //   editData.forEach(row => {
-    //     var guidstr = guid.raw().toUpperCase()
-    //     var i = 0, strLength = guidstr.length;
-    //     for (i; i < strLength; i++) {
 
-    //       guidstr = guidstr.replace('-', '');
-
-    //     }
-    //     row["password"] = "@@sql_gen_password," + row["password"] + "," + guidstr
-    //     row["SaltPassword"] = guidstr
-
-    //     delete row["Password"]
-    //     delete row["ModifyBy"]
-    //     delete row["ModifyTime"]
-    //   })
-    // } else {
-    //   editData.forEach(row => {
-    //     delete row["ModifyBy"]
-    //     delete row["ModifyTime"]
-    //   })
-    // }
     var dataEditx = {}
     if (type === "edit") {
       console.log("dfhdfgisudf")

@@ -982,7 +982,7 @@ const MasterData = props => {
     onChangeFilter(condition, colsField, value);
   };
   //=============================================================
-
+  const [customAdd, setCustomAdd] = useState(false);
   const FuncTestSetEle = (
     name,
     type,
@@ -998,6 +998,7 @@ const MasterData = props => {
     required,
     rowError
   ) => {
+
     if (type === "input") {
       return (
         <FormInline>
@@ -1138,6 +1139,15 @@ const MasterData = props => {
           </InputDiv>
         </FormInline>
       );
+    } else if (type === "Custom") {
+      console.log("sdsdfsdf")
+      return (<div  >
+        {" "}
+
+        {props.custompopupAddEle}
+      </div>
+      )
+      // setCustomAdd(true)
     } else if (type === "status" || type === "iotype") {
       return (
         <FormInline>
@@ -1703,6 +1713,8 @@ const MasterData = props => {
   //===========================================================
   return (
     <div>
+      {/* {props.custompopupAddEle} */}
+      {customAdd === true ? props.custompopupAddEle : null}
       <AmFilterTable
         defaultCondition={{ f: "status", c: "!=", v: "2" }}
         primarySearch={FuncFilterPri()}

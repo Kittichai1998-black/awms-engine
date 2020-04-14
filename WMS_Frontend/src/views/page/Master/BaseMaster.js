@@ -4,7 +4,14 @@ import {
   apicall,
   createQueryString
 } from "../../../components/function/CoreFunction";
+import AmInput from "../../../components/AmInput";
 import AmEntityStatus from "../../../components/AmEntityStatus";
+
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const Axios = new apicall();
 
 //======================================================================
@@ -73,6 +80,14 @@ const BaseMaster = props => {
     }
   ];
   const columns = [
+    {
+      field: "Code",
+      type: "Custom",
+      name: "Code",
+      placeholder: "Code",
+      required: true,
+      //Cell: e => setMultiBase(e.original)
+    },
     {
       field: "Code",
       type: "input",
@@ -259,6 +274,37 @@ const BaseMaster = props => {
     }
   ];
 
+  const setMultiBase = () => {
+
+
+    return <ExpansionPanel style={{ width: "100%", marginBottom: "10px" }}>
+      <ExpansionPanelSummary style={{ width: "100%", margin: "0px" }}
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography >Add MultlBase</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Typography>
+          <AmInput
+            // error={rowError}
+            // required={required}
+            // id={cols.field}
+            style={{ width: "270px", margin: "0px" }}
+          // placeholder={placeholder}
+          // type="input"
+          // // value={data[cols.field] && data ? data[cols.field] : packCode}
+          // onChange={val => {
+          //   onChangeEditor(cols.field, data, val, "Pack Code", null, required);
+          // }}
+          />
+        </Typography>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+
+  };
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
       return <AmEntityStatus key={0} statusCode={0} />;
@@ -281,6 +327,7 @@ const BaseMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+        custompopupAddEle={setMultiBase()}
       />
     </div>
   );
