@@ -52,7 +52,7 @@ namespace AWMSModel.Criteria
         public long souAreaID;
 
         public long desWarehouseID;
-        public long desAreaID;
+        public long? desAreaID;
         public long? desLocationID;
 
         public StorageObjectEventStatus? stoDoneSouEventStatus;

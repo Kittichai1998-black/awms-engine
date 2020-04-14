@@ -78,9 +78,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {
+            ams_AreaMaster desAM = new ams_AreaMaster();
+            ams_AreaLocationMaster desALM = new ams_AreaLocationMaster();
             var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
-            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
-            var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+
+            if (reqVO.desASRSAreaCode != null)
+            {
+                 desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
+                 desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+            }
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(x =>
             {
@@ -167,7 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 souAreaID = z.areaID,
 
                                 desWarehouseID = desWM.ID.Value,
-                                desAreaID = desAM.ID.Value,
+                                desAreaID = desAM == null?null : desAM.ID,
                                 desLocationID = desALM == null ? null : desALM.ID,
                             });
                         }
@@ -225,26 +231,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
                      }, this.BuVO);
 
-                    waveTemplate.ForEach(temp =>
-                    {
-
-                        var WaveSeq = new amt_WaveSeq()
-                        {
-                            Wave_ID = WaveID.Value,
-                            Seq = temp.Seq,
-                            Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
-                            End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
-                            AutoNextSeq = temp.AutoNextSeq,
-                            StartTime = temp.StartTime,
-                            EndTime = temp.EndTime,
-                            EventStatus = WaveEventStatus.NEW,
-                            Status = EntityStatus.ACTIVE
-                        };
-                        var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
-                    });
-
                 });
 
+            waveTemplate.ForEach(temp =>
+            {
+
+                var WaveSeq = new amt_WaveSeq()
+                {
+                    Wave_ID = WaveID.Value,
+                    Seq = temp.Seq,
+                    Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
+                    End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
+                    AutoNextSeq = temp.AutoNextSeq,
+                    StartTime = temp.StartTime,
+                    EndTime = temp.EndTime,
+                    EventStatus = WaveEventStatus.NEW,
+                    Status = EntityStatus.ACTIVE
+                };
+                var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
+            });
             var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
             return wave;
         }

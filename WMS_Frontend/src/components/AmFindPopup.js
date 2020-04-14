@@ -217,7 +217,8 @@ const FindPopup = (props) => {
         width,
         placeholder,
         onChange,
-        popupref
+        popupref,
+        ...other
     } = props;
 
     const [open, setOpen] = useState(false);
@@ -236,7 +237,7 @@ const FindPopup = (props) => {
     const [sort, setSort] = useState(0);
 
     useEffect(() => {
-        console.log(dataObjects)
+        // console.log(dataObjects)
     }, [dataObjects]);
 
     useEffect(() => {
@@ -457,7 +458,7 @@ const FindPopup = (props) => {
     return (
         <div>
             <SearchText id={id} popupref={popupref} placeholder={placeholder} styleType={styleType} required={required} value={valueKey} disabled={disabled}
-                onClickOpen={onHandleClickOpen} inputWidth={width} onClickClear={onHandleClickClear} />
+                onClickOpen={onHandleClickOpen} inputWidth={width} onClickClear={onHandleClickClear} {...other} />
             <Dialog
                 onClose={onHandleClickClose}
                 aria-labelledby="customized-dialog-title"

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from 'prop-types';
-import AmChart from './AmChart';
+import AmChartBar from './AmChartBar';
+import AmChartPie from './AmChartPie';
+import AmChartLine from './AmChartLine';
+import AmChartTable from './AmChartTable';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Fullscreen from "react-full-screen";
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -9,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { useTranslation } from 'react-i18next'
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Clone from "../../../components/function/Clone";
+import _ from 'lodash'
 import Moment from 'moment';
 import Axios from 'axios'
 
@@ -16,6 +21,9 @@ const styles = theme => ({
     title: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    paddingGrid:{
+        paddingRight: '15px'
     }
 });
 const useClock = (propsTime, t) => {
@@ -55,7 +63,6 @@ const useClock = (propsTime, t) => {
     return time
 }
 
-
 const DashboardChartComponent = (props) => {
     const { t } = useTranslation()
     const timeDefault = {
@@ -65,7 +72,9 @@ const DashboardChartComponent = (props) => {
     const {
         classes,
         time = timeDefault,
+        showTime = false,
         chartConfigs,
+        delay
     } = props;
 
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -76,10 +85,10 @@ const DashboardChartComponent = (props) => {
         width: window.innerWidth,
         height: window.innerHeight
     })
-    const time_show = time ? clock : null
+    const time_show = showTime && time ? clock : null
 
     const [chartCreateShow, setChartCreateShow] = useState(null);
- 
+
 
     useEffect(() => {
         setTimeout(() => {
@@ -99,18 +108,14 @@ const DashboardChartComponent = (props) => {
         setCalHeight(0.35);
     }
 
+
     const CreateChart = (charts) => {
-        console.log(charts)
 
         return charts.map((row, index) => {
-
             if (row.length === 1) {
                 return (
                     <Grid container key={index}>
-
                         {row.map((x, col) => {
-
-                            console.log("chart" + col.toString())
                             return (
                                 <Grid item md={12} key={col}>
                                     {x.title ? <Typography className={classes.title} gutterBottom>{x.title}</Typography> : null}
@@ -121,14 +126,11 @@ const DashboardChartComponent = (props) => {
                     </Grid>
                 )
             } else {
-                console.log("สร้างmulti-chart" + index.toString())
                 return (
                     <Grid container key={index}>
                         {row.map((x, col) => {
-                            console.log("chart" + col.toString())
-
                             return (
-                                <Grid item md={6} key={col}>
+                                <Grid item md={6} key={col} className={classes.paddingGrid}>
                                     {x.title ? <Typography className={classes.title} gutterBottom>{x.title}</Typography> : null}
                                     {GenerateChart(x)}
                                 </Grid>
@@ -136,39 +138,38 @@ const DashboardChartComponent = (props) => {
                             )
                         })}
                     </Grid>
-
                 )
             }
         });
     };
 
     const GenerateChart = (configs) => {
-        // console.log(configs.customPlugins)
-        // if (configs.type === 'pie' || 'doughnut') {
-        //     return <AmChartPie
-        //         chartConfig={configs.chart} 
-        //     />
-        // } else if (configs.type === 'line') {
-        //     return <AmChartLine
-        //         chartConfig={configs.chart}  
-        //     />
-        // } else if (configs.type === 'bar') {
-        //     return <AmChartBar
-        //         chartConfig={configs.chart}  
-        //     />
-        // } else {
-        //     return null;
-        // }
         if (configs) {
-            return <AmChart
-                chartConfig={configs.chart}
-            />
+            if (configs.type === 'bar' || configs.type === 'horizontalBar') {
+                return <AmChartBar
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'pie' || configs.type === 'doughnut') {
+                return <AmChartPie
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'line') {
+                return <AmChartLine
+                    chartConfig={configs}
+                />
+            } else if (configs.type === 'table') {
+                return <AmChartTable
+                    chartConfig={configs}
+                />
+            }
         } else {
             return null;
         }
     }
+
     useEffect(() => {
-        if (chartConfigs) {
+        if (chartConfigs !== undefined && chartConfigs !== null && chartConfigs.length > 0) {
+            // console.log(chartConfigs)
             const newChartCreateShow = CreateChart(chartConfigs);
             setChartCreateShow(newChartCreateShow);
         }
@@ -184,7 +185,6 @@ const DashboardChartComponent = (props) => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={6} xl={6}>
                         <Grid container direction="row" justify="flex-end" alignItems="center" >
-                            {/* {dropdown} */}
                             <Grid item >
                                 <IconButton style={{ marginLeft: 5, padding: 4 }} onClick={isFullScreen ? goMin : goFull}>
                                     {isFullScreen ?
@@ -205,8 +205,11 @@ const DashboardChartComponent = (props) => {
 
 DashboardChartComponent.propTypes = {
     time: PropTypes.object,
-    chartConfig: PropTypes.object,
-    chartConfigs: PropTypes.array.isRequired
+    chartConfigs: PropTypes.array.isRequired,
+    delay: PropTypes.number
+}
+DashboardChartComponent.defaultProps = {
+    delay: 1000,
 }
 
 export default withStyles(styles)(DashboardChartComponent)

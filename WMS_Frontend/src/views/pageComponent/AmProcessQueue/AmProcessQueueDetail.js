@@ -5,7 +5,7 @@ import {
   apicall,
   createQueryString,
   IsEmptyObject
-} from "../../../components/function/CoreFunction2";
+} from "../../../components/function/CoreFunction";
 import AmDialogs from "../../../components/AmDialogs";
 import AmButton from "../../../components/AmButton";
 import AmInput from "../../../components/AmInput";
@@ -582,7 +582,7 @@ const ProcessQueueDetail = (props) => {
         }
         else{
             let processQueueData = {}
-            processQueueData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+            processQueueData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
             processQueueData["desASRSLocationCode"] = null;
             processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
             processQueueData["processQueues"] = processQueueArr;
@@ -605,7 +605,7 @@ const ProcessQueueDetail = (props) => {
                         setDialogType("error")
                     }else{
                         let createResData = {}
-                        createResData["desASRSWarehouseCode"] = areaEnable ? warehouse.warehouseValue.Code : null;
+                        createResData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
                         createResData["desASRSLocationCode"] = null;
                         createResData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
                         createResData["processResults"] = process;
@@ -681,14 +681,16 @@ const ProcessQueueDetail = (props) => {
                 open={dialog.state} 
                 onAccept={(status, rowdata)=>{
                     setDialog({"state":false, data:{}});
-                    if(rowdata.docItems !== undefined){
-                        let findEdit = rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                        if(status){
-                            rowdata.docItems[findEdit] = rowdata.docItem;
-                        }
-                        else{
-                            rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                            rowdata["docItem"] = rowdata.docItems[findEdit];
+                    if(rowdata !== undefined){
+                        if(rowdata.docItems !== undefined){
+                            let findEdit = rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
+                            if(status){
+                                rowdata.docItems[findEdit] = rowdata.docItem;
+                            }
+                            else{
+                                rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
+                                rowdata["docItem"] = rowdata.docItems[findEdit];
+                            }
                         }
                     }
                 }} 

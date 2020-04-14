@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect, useReducer } from "react";
 import * as SC from '../../../constant/StringConst'
 // import classnames from 'classnames';
-import { apicall, createQueryString } from '../../../components/function/CoreFunction2';
+import { apicall, createQueryString } from '../../../components/function/CoreFunction';
 // import ToListTree from '../../../components/function/ToListTree';
 import AmInput from "../../../components/AmInput";
 import AmButton from "../../../components/AmButton";

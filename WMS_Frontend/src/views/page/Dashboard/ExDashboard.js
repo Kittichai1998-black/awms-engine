@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import Chart from "chart.js";
 import AmDashboardChart from '../../pageComponent/AmDashboardChart/AmDashboardChart';
+/*
 const chartConfigs = [
   [
     {
@@ -311,21 +311,51 @@ const chartConfigs = [
   ]
 ];
 
-
+*/
 
 const ChartJS = () => {
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('This will run after 1 second!')
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const chartConfigs = [
+    [
+      {
+        type: 'bar',
+        title: "ex.bar1",
+        spname: 'DASHBOARD_CHART',
+      },
+      {
+        type: 'doughnut',
+        title: "ex.pie",
+        spname: 'DASHBOARD_CHART2',
+      }
+    ],
+    [
+      {
+        type: 'horizontalBar',
+        title: "ex.horizontalBar",
+        spname: 'DASHBOARD_CHART',
+      },
+
+    ], [
+      {
+        type: 'line',
+        title: "ex.line",
+        spname: 'DASHBOARD_CHART4',
+      },
+      {
+        type: 'table',
+        title: "ex.table",
+        spname: 'DASHBOARD_CHART3',
+      }
+    ]
+  ];
+
   return (
     <div>
       <AmDashboardChart
         chartConfigs={chartConfigs}
+        showTime={true}
       />
+
     </div>
   );
 };

@@ -77,5 +77,45 @@ namespace AWMSEngine.ADO
             disto.ID = param.Get<long>("@resID");
             return disto;
         }
+        public amt_DocumentItemStorageObject Get(long ID, VOCriteria buVO)
+        {
+            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("ID", ID, SQLOperatorType.EQUALS),
+                }, buVO).FirstOrDefault();
+            return distos;
+        }
+
+        public List<amt_DocumentItemStorageObject> GetListDisto(List<long> ID, VOCriteria buVO)
+        {
+            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("ID", string.Join(',', ID), SQLOperatorType.IN),
+                }, buVO);
+            return distos;
+        }
+
+        public List<amt_DocumentItemStorageObject> ListBySouWaveSeq(long souWaveSeqID, VOCriteria buVO)
+        {
+            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Sou_WaveSeq_ID", souWaveSeqID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                }, buVO);
+            return distos;
+        }
+        public List<amt_DocumentItemStorageObject> ListByDesWaveSeq(long desWaveSeqID, VOCriteria buVO)
+        {
+            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Des_WaveSeq_ID", desWaveSeqID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                }, buVO);
+            return distos;
+        }
     }
 }

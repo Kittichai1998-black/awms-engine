@@ -40,6 +40,7 @@ const LabelH = styled.label`
   width: 100px;
 `;
 const SearchLog = props => {
+  const [resetPage, setResetPage] = useState(false);
   useEffect(() => {
     if (resetPage === true) {
       setResetPage(false);
@@ -50,17 +51,16 @@ const SearchLog = props => {
   const [page, setPage] = useState();
   const [totalSize, setTotalSize] = useState(0);
   const [dataSource, setDataSource] = useState([]);
-  const [resetPage, setResetPage] = useState(false);
   const [valueText, setValueText] = useState("");
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
   const getData = () => {
     Axios.get(
       window.apipath +
-        "/v2/GetSPReportAPI?" +
-        "&LogRefID=" +
-        valueText +
-        "&spname=LOG_SEARCH"
+      "/v2/GetSPReportAPI?" +
+      "&LogRefID=" +
+      valueText +
+      "&spname=LOG_SEARCH"
     ).then(res => {
       console.log(res);
       if (res) {

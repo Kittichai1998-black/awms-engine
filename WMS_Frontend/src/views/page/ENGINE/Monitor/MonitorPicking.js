@@ -64,7 +64,14 @@ export default props => {
             }
         ]
     ])
-
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        if (count > 0) {
+            window.loading.onLoaded();
+        }else{
+            window.loading.onLoading();
+        }
+    }, [count])
     useEffect(() => {
         // console.log(dashboard)
         let url = window.apipath + '/dashboard'
@@ -80,8 +87,8 @@ export default props => {
             connection.start()
                 .then(() => {
                     connection.on(dashboard, res => {
-                        console.log(JSON.parse(res));
-
+                        // console.log(JSON.parse(res));
+                        setCount(count + 1);
                         data[0][0].table[0].headercol = headercol1
                         data[0][0].table[0].data = JSON.parse(res)
                         setData([...data])
@@ -94,8 +101,9 @@ export default props => {
         };
 
         connection.onclose((err) => {
+
             if (err) {
-                signalrStart()
+            signalrStart()
             }
         });
 
