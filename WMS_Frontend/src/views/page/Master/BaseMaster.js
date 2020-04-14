@@ -12,10 +12,32 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import styled from "styled-components";
 const Axios = new apicall();
 
 //======================================================================
 const BaseMaster = props => {
+  const LabelH = styled.label`
+  font-weight: bold;
+  width: 100px;
+`;
+
+  const InputDiv = styled.div``;
+  const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
   const BaseMasterTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "BaseMasterType",
@@ -287,23 +309,75 @@ const BaseMaster = props => {
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Typography>
-          <AmInput
-            // error={rowError}
-            // required={required}
-            // id={cols.field}
-            style={{ width: "270px", margin: "0px" }}
-          // placeholder={placeholder}
-          // type="input"
-          // // value={data[cols.field] && data ? data[cols.field] : packCode}
-          // onChange={val => {
-          //   onChangeEditor(cols.field, data, val, "Pack Code", null, required);
-          // }}
-          />
+          <FormInline>
+            {" "}
+            <LabelH>{"Code to"} : </LabelH>
+            <AmInput
+              // error={rowError}
+              // required={required}
+              // id={cols.field}
+              style={{ width: "100px", margin: "0px" }}
+            // placeholder={placeholder}
+            // type="input"
+            // // value={data[cols.field] && data ? data[cols.field] : packCode}
+            // onChange={val => {
+            //   onChangeEditor(cols.field, data, val, "Pack Code", null, required);
+            // }}
+            />  <LabelH>{" from"} : </LabelH>
+            <AmInput
+              //required={required}
+              id={"Code"}
+              style={{ width: "100px", marginLeft: "5px" }}
+              placeholder={"code"}
+              type="input"
+              //value={""}
+              onChange={val => {
+                console.log(val)
+                onChangeEditor(val, true);
+              }}
+            />
+          </FormInline>
+
         </Typography>
       </ExpansionPanelDetails>
     </ExpansionPanel>
 
 
+  };
+
+  const onChangeEditor = (value, required) => {
+    //console.log(field)
+    console.log(value)
+    // let editDataNew = Clone(editData)
+
+    // if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
+    //   editDataNew["ID"] = null
+    //   editDataNew["Revision"] = 1;
+    //   editDataNew["Status"] = 1;
+    //   editDataNew[field] = value;
+    //   if (props.tableQuery === "PackMaster") {
+    //     editDataNew["Code"] = packCode;
+    //     editDataNew["Name"] = packName;
+    //   }
+    // } else {
+    //   editDataNew[field] = value;
+    // }
+
+    // setEditData(editDataNew);
+
+    // if (required) {
+    //   if (!editDataNew[field]) {
+    //     const arrNew = [...new Set([...inputError, field])]
+    //     setInputError(arrNew)
+    //   } else {
+    //     const arrNew = [...inputError]
+    //     const index = arrNew.indexOf(field);
+    //     if (index > -1) {
+    //       arrNew.splice(index, 1);
+    //     }
+    //     setInputError(arrNew)
+    //   }
+    // }
   };
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
