@@ -1469,6 +1469,7 @@ const MasterData = props => {
         dataEditx[y.field] = rowdata[y.field]
       })
     }
+
     if (props.tableQuery === "User") {
       var guidstr = guid.raw().toUpperCase()
       var i = 0, strLength = guidstr.length;
@@ -1479,8 +1480,9 @@ const MasterData = props => {
       }
       dataEditx["password"] = "@@sql_gen_password," + dataEditx["password"] + "," + guidstr
       dataEditx["SaltPassword"] = guidstr
-      dataEditx["Status"] = rowdata["Status"]
+
     }
+    dataEditx["Status"] = 1
     console.log(dataEditx)
     let updjson = {
       "t": props.table,
