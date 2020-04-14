@@ -92,7 +92,8 @@ const AreaRoute = props => {
       typeDropdow: "normal",
       name: "IOType",
       dataDropDow: IOTypeStatus,
-      placeholder: "IOType"
+      placeholder: "IOType",
+      required: true
     },
     {
       field: "Sou_AreaMaster_ID",
@@ -117,7 +118,8 @@ const AreaRoute = props => {
       type: "input",
       name: "Priority",
       placeholder: "Priority",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Status",
@@ -216,6 +218,7 @@ const AreaRoute = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

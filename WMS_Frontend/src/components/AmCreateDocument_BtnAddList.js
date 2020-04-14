@@ -18,7 +18,7 @@ import AmAux from "./AmAux";
 import AmButton from "./AmButton";
 import AmInput from "./AmInput";
 import AmTable from "./table/AmTable";
-import { apicall, createQueryString, Clone } from "./function/CoreFunction2";
+import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 
 // import MaterialTable from './AmCreateDocument_TableNew'

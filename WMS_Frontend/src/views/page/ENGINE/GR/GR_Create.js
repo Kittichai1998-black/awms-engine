@@ -90,15 +90,15 @@ export default props => {
     ];
 
     const columnEdit = [
-        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopup, codeTranslate: "Pallet" },
-        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code" },
+        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No.", required: true },
+        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopup, codeTranslate: "Pallet", required: true },
+        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
         // { Header: "Base Qty", accessor: "quantity", type: "inputNum" },
         // { Header: "Base Unit", accessor: "unitType", type: "text" },
         // { Header: "Base Qty", accessor: "Quantity", type: "text" },
         // { Header: "Base Unit", accessor: "BaseUnitCode", type: "text" },
-        { Header: "Qty", accessor: "SaleQuantity", type: "text", codeTranslate: "Qty" },
-        { Header: "Unit", accessor: "UnitCode", type: "text", codeTranslate: "Unit" }
+        { Header: "Quantity", accessor: "quantity", type: "inputNum" },
+        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
     ];
 
     const columns = [
@@ -110,8 +110,8 @@ export default props => {
         // { Header: "Base Unit", accessor: "unitType", width: 70 },
         // { Header: "Base Qty", accessor: "Quantity", width: 90 },
         // { Header: "Base Unit", accessor: "BaseUnitCode", width: 90 },
-        { Header: "Qty", accessor: "SaleQuantity", width: 110 },
-        { Header: "Unit", accessor: "UnitCode", width: 90 }
+        { Header: "Qty", accessor: "quantity", width: 110 },
+        { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc

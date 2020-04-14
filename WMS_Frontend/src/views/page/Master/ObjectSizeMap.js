@@ -107,7 +107,8 @@ const ObjectSizeMap = props => {
       name: "OuterObjectSize",
       dataDropDow: ObjectSizeQuery,
       placeholder: "OuterObjectSize",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "InnerObjectSize_ID",
@@ -116,7 +117,8 @@ const ObjectSizeMap = props => {
       name: "InnerObjectSize",
       dataDropDow: ObjectSizeQuery,
       placeholder: "InnerObjectSize",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "MinQuantity",
@@ -226,6 +228,7 @@ const ObjectSizeMap = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

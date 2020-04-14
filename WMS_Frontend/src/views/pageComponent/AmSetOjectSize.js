@@ -45,6 +45,7 @@ const FormInline = styled.div`
   }
 `;
 const AmSetOjectSize = props => {
+  const [inputError, setInputError] = useState([])
   const { t } = useTranslation();
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -92,7 +93,7 @@ const AmSetOjectSize = props => {
   };
   //===========================================================
   const [selection, setSelection] = useState();
-  useEffect(() => {}, [selection]);
+  useEffect(() => { }, [selection]);
 
   const FuncSetTable = () => {
     const iniCols = props.iniCols;
@@ -107,7 +108,7 @@ const AmSetOjectSize = props => {
               styleType="confirm"
               onClick={() => {
                 FuncSetEleRole(e);
-                setEditData(e);
+                setEditData(Clone(e.original));
                 setTimeout(() => setDialogRole(true), 500);
               }}
             >
@@ -124,7 +125,7 @@ const AmSetOjectSize = props => {
               style={{ lineHeight: "1" }}
               styleType="info"
               onClick={() => {
-                setEditData(e);
+                setEditData(Clone(e.original));
                 edit(e, "edit");
               }}
             >
@@ -160,8 +161,6 @@ const AmSetOjectSize = props => {
   const [dataObjectType, setDataObjectType] = useState("");
   const [datax, setDatax] = useState([]);
   const FuncGetRole = () => {
-    // console.log(datax)
-    // console.log(objectSize)
     const iniCols = [
       { Header: "Code", accessor: "Code", fixed: "left", width: 250 },
       { Header: "Name", accessor: "Name", width: 250 },
@@ -169,7 +168,6 @@ const AmSetOjectSize = props => {
         Header: "MinQuantity",
         width: 120,
         Cell: e => (
-          //console.log(e)
           <AmInput
             id={"MinQuantity"}
             type="input"
@@ -185,7 +183,6 @@ const AmSetOjectSize = props => {
         Header: "MaxQuantity",
         width: 120,
         Cell: e => (
-          //console.log(e)
           <AmInput
             id={"MaxQuantity"}
             type="input"
@@ -265,7 +262,6 @@ const AmSetOjectSize = props => {
   //================================================================================
   const [objectSize, setObjectSize] = useState([]);
   async function FuncSetEleRole(data) {
-    //console.log(data)
     setDataObjectType(data.original.ObjectType);
     setDataRow(data.original.ID);
     // const ObjectSizeQuery = {
@@ -287,10 +283,8 @@ const AmSetOjectSize = props => {
     await Axios.get(
       window.apipath + "/v2/GetObjectSizeMapAPI?" + "ID=" + data.original.ID
     ).then(rowselect1 => {
-      //console.log(rowselect1)
       if (rowselect1) {
         if (rowselect1.data._result.status !== 0) {
-          //console.log(rowselect1.data.datas)
           rowselect1.data.datas.forEach(x => {
             x.ID = x.ID;
             x.MaxQuantity = x.MaxQuantity;
@@ -327,7 +321,6 @@ const AmSetOjectSize = props => {
         });
       });
     });
-    console.log(defaultRole);
     setDatax(defaultRole);
     setSelection(defaultRole);
     //return randerFunc(defaultRole,iniCols)
@@ -355,8 +348,6 @@ const AmSetOjectSize = props => {
       }
     });
 
-    console.log(rowdata.ID);
-    console.log(selection.ID);
     const Query3 = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
       t: "ObjectSizeMap",
@@ -369,21 +360,15 @@ const AmSetOjectSize = props => {
       l: 100,
       all: ""
     };
-    console.log(selection);
     await Axios.get(createQueryString(Query3))
       .then(res => {
         var row = res.data.datas;
-        console.log(row);
         var datafi = row.map(dataMap => {
-          console.log(dataMap);
           var dataselect = selection.find(list => {
-            console.log(list);
             return list.ID === dataMap.InnerObjectSize_ID;
           });
-          console.log(dataselect);
           if (dataselect) {
             selection.forEach(sel => {
-              console.log(sel);
               if (dataselect.ID === sel.ID) {
                 dataMap.MinQuantity = sel.MinQuantity;
                 dataMap.MaxQuantity = sel.MaxQuantity;
@@ -403,8 +388,6 @@ const AmSetOjectSize = props => {
           });
 
           if (!datafiInsert) {
-            // console.log(row)
-            // console.log(datas)
             return {
               ID: null,
               OuterObjectSize_ID: datas.ID,
@@ -419,7 +402,6 @@ const AmSetOjectSize = props => {
         return datafi.concat(dataselectInsert.filter(x => x !== undefined));
       })
       .then(response => {
-        //console.log(response)
         let updjson = {
           t: "ams_ObjectSizeMap",
           pk: "ID",
@@ -482,11 +464,13 @@ const AmSetOjectSize = props => {
 
   const FuncTest = () => {
     const x = props.dataAdd;
-
     return x.map(y => {
       return {
         field: y.field,
         component: (data = null, cols, key) => {
+          let rowError = inputError.length ? inputError.some(z => {
+            return z === y.field
+          }) : false
           return (
             <div key={key}>
               {FuncTestSetEle(
@@ -501,7 +485,8 @@ const AmSetOjectSize = props => {
                 y.labelTitle,
                 y.fieldLabel,
                 y.validate,
-                y.required
+                y.required,
+                rowError
               )}
             </div>
           );
@@ -516,6 +501,9 @@ const AmSetOjectSize = props => {
       return {
         field: y.field,
         component: (data = null, cols, key) => {
+          let rowError = inputError.length ? inputError.some(z => {
+            return z === y.field
+          }) : false
           return (
             <div key={key}>
               {FuncTestSetEleEdit(
@@ -530,7 +518,9 @@ const AmSetOjectSize = props => {
                 y.labelTitle,
                 y.fieldLabel,
                 y.validate,
-                y.inputType
+                y.inputType,
+                y.required,
+                rowError
               )}
             </div>
           );
@@ -919,7 +909,8 @@ const AmSetOjectSize = props => {
     dataObject,
     inputID,
     fieldDataKey,
-    data
+    data,
+    required
   ) => {
     setValueText1({
       ...valueText1,
@@ -929,7 +920,7 @@ const AmSetOjectSize = props => {
         fieldDataKey: fieldDataKey
       }
     });
-    onChangeEditor(inputID, data, value);
+    onChangeEditor(inputID, data, value, null, null, required);
   };
   //=============================================================
 
@@ -967,7 +958,8 @@ const AmSetOjectSize = props => {
     labelTitle,
     fieldLabel,
     validate,
-    required
+    required,
+    rowError
   ) => {
     if (type === "input") {
       return (
@@ -976,17 +968,18 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              error={rowError}
               id={cols.field}
               required={required}
               validate={true}
-              msgError="Error"
+              // msgError="Error"
               regExp={validate}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              value={data ? data[cols.field] : ""}
+              // value={data ? data[cols.field] : ""}
               onChange={val => {
-                onChangeEditor(cols.field, data, val);
+                onChangeEditor(cols.field, data, val, null, null, required);
               }}
             />
           </InputDiv>
@@ -999,18 +992,19 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              error={rowError}
               autoComplete="off"
               id={cols.field}
               required={required}
               validate={true}
-              msgError="Error"
+              // msgError="Error"
               regExp={validate}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="password"
-              value={data ? data[cols.field] : ""}
+              // value={data ? data[cols.field] : ""}
               onChange={val => {
-                onChangeEditor(cols.field, data, val);
+                onChangeEditor(cols.field, data, val, null, null, required);
               }}
             />
           </InputDiv>
@@ -1022,6 +1016,7 @@ const AmSetOjectSize = props => {
           {" "}
           <LabelH>{t(name)} : </LabelH>
           <AmDropdown
+            error={rowError}
             required={required}
             id={cols.field}
             placeholder={placeholder}
@@ -1034,7 +1029,7 @@ const AmSetOjectSize = props => {
             queryApi={dataDropDow}
             defaultValue={data ? data[cols.field] : ""}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
             ddlType={typeDropdow}
           />
@@ -1045,6 +1040,7 @@ const AmSetOjectSize = props => {
         <FormInline>
           <LabelH>{t(name)} : </LabelH>
           <AmFindPopup
+            error={rowError}
             required={required}
             id={cols.field}
             placeholder={placeholder}
@@ -1058,7 +1054,7 @@ const AmSetOjectSize = props => {
             defaultValue={data ? data[cols.field] : ""}
             width={270}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
           />
         </FormInline>
@@ -1070,14 +1066,15 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              error={rowError}
               required={required}
               id={cols.field}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              value={data[cols.field] && data ? data[cols.field] : packCode}
+              // value={data[cols.field] && data ? data[cols.field] : packCode}
               onChange={val => {
-                onChangeEditor(cols.field, data, val, "Pack Code");
+                onChangeEditor(cols.field, data, val, "Pack Code", null, required);
               }}
             />
           </InputDiv>
@@ -1090,14 +1087,15 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              error={rowError}
               required={required}
               id={cols.field}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              value={data[cols.field] && data ? data[cols.field] : packName}
+              // value={data[cols.field] && data ? data[cols.field] : packName}
               onChange={val => {
-                onChangeEditor(cols.field, data, val, "Pack Name");
+                onChangeEditor(cols.field, data, val, "Pack Name", null, required);
               }}
             />
           </InputDiv>
@@ -1109,6 +1107,7 @@ const AmSetOjectSize = props => {
           {" "}
           <LabelH>{t(name)} : </LabelH>
           <AmDropdown
+            error={rowError}
             id={cols.field}
             required={required}
             placeholder={placeholder}
@@ -1119,7 +1118,7 @@ const AmSetOjectSize = props => {
             data={dataDropDow}
             defaultValue={data ? data[cols.field] : ""}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
             ddlType={typeDropdow}
           />
@@ -1141,7 +1140,10 @@ const AmSetOjectSize = props => {
     labelTitle,
     fieldLabel,
     validate,
-    inputType
+    inputType,
+    required,
+    rowError
+
   ) => {
     if (type === "input") {
       return (
@@ -1150,17 +1152,18 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              error={rowError}
               id={cols.field}
               validate={true}
-              msgError="Error"
+              // msgError="Error"
+              required={required}
               regExp={validate}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type={"input"}
               defaultValue={data ? data[cols.field] : ""}
               onChange={val => {
-                console.log(val);
-                onChangeEditor(cols.field, data, val, "", inputType);
+                onChangeEditor(cols.field, data, val, "", inputType, required);
               }}
             />
           </InputDiv>
@@ -1173,17 +1176,18 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              required={required}
+              error={rowError}
               id={cols.field}
               validate={true}
-              msgError="Error"
+              // msgError="Error"
               regExp={validate}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type={"password"}
               defaultValue={data ? data[cols.field] : ""}
               onChange={val => {
-                console.log(val);
-                onChangeEditor(cols.field, data, val, "", inputType);
+                onChangeEditor(cols.field, data, val, "", inputType, required);
               }}
             />
           </InputDiv>
@@ -1195,6 +1199,8 @@ const AmSetOjectSize = props => {
           {" "}
           <LabelH>{t(name)} : </LabelH>
           <AmDropdown
+            required={required}
+            error={rowError}
             id={cols.field}
             placeholder={placeholder}
             fieldDataKey={"ID"}
@@ -1206,7 +1212,7 @@ const AmSetOjectSize = props => {
             queryApi={dataDropDow}
             defaultValue={data ? data[cols.field] : ""}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
             ddlType={typeDropdow}
           />
@@ -1218,6 +1224,8 @@ const AmSetOjectSize = props => {
           {" "}
           <LabelH>{t(name)} : </LabelH>
           <AmFindPopup
+            required={required}
+            error={rowError}
             id={cols.field}
             placeholder={placeholder}
             fieldDataKey="ID"
@@ -1230,7 +1238,7 @@ const AmSetOjectSize = props => {
             defaultValue={data ? data[cols.field] : ""}
             width={270}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
           />
         </FormInline>
@@ -1245,13 +1253,15 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              required={required}
+              error={rowError}
               id={cols.field}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              value={packCode}
+              // value={packCode}
               onChange={val => {
-                onChangeEditor(cols.field, data, val, "Pack Code");
+                onChangeEditor(cols.field, data, val, "Pack Code", null, required);
               }}
             />
           </InputDiv>
@@ -1267,13 +1277,15 @@ const AmSetOjectSize = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+              required={required}
+              error={rowError}
               id={cols.field}
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              value={packName}
+              // value={packName}
               onChange={val => {
-                onChangeEditor(cols.field, data, val, "Pack Name");
+                onChangeEditor(cols.field, data, val, "Pack Name", null, required);
               }}
             />
           </InputDiv>
@@ -1285,6 +1297,8 @@ const AmSetOjectSize = props => {
           {" "}
           <LabelH>{t(name)} : </LabelH>
           <AmDropdown
+            required={required}
+            error={rowError}
             id={cols.field}
             placeholder={placeholder}
             fieldDataKey={"value"}
@@ -1294,7 +1308,7 @@ const AmSetOjectSize = props => {
             data={dataDropDow}
             defaultValue={data ? data[cols.field] : ""}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
-              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)
+              onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)
             }
             ddlType={typeDropdow}
           />
@@ -1304,7 +1318,7 @@ const AmSetOjectSize = props => {
   };
   //=============================================================
 
-  const onHandleChange = (value, dataObject, inputID, fieldDataKey, data) => {
+  const onHandleChange = (value, dataObject, inputID, fieldDataKey, data, required) => {
     setValueText1({
       ...valueText1,
       [inputID]: {
@@ -1324,7 +1338,7 @@ const AmSetOjectSize = props => {
         setPackName("");
       }
     }
-    onChangeEditor(inputID, data, value);
+    onChangeEditor(inputID, data, value, null, null, required);
   };
   //=============================================================
   const [dataSource, setDataSource] = useState([]);
@@ -1337,7 +1351,7 @@ const AmSetOjectSize = props => {
   const [query, setQuery] = useState(Query);
   const [query2, setQuery2] = useState(Query2);
   const [editRow, setEditRow] = useState([]);
-  const [editData, setEditData] = useState();
+  const [editData, setEditData] = useState({});
   const [deleteData, setDeleteData] = useState();
   const [deleteDataTmp, setDeleteDataTmp] = useState([]);
   const [addData, setAddData] = useState(false);
@@ -1347,25 +1361,36 @@ const AmSetOjectSize = props => {
   const [dialogRole, setDialogRole] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
   const [data2, setData2] = useState({});
-  const [dataSentToAPI, setDataSentToAPI] = useState([]);
+  // const [dataSentToAPI, setDataSentToAPI] = useState([]);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
   const [excelDataSrouce, setExcelDataSource] = useState([]);
   //===========================================================
 
-  const onHandleEditConfirm = (status, rowdata) => {
+  const onHandleEditConfirm = (status, rowdata, arrObjInputError, type) => {
     if (status) {
-      UpdateData();
+
+      if (arrObjInputError.length) {
+        setInputError(arrObjInputError.map(x => x.field))
+      } else {
+        console.log("is Action");
+        UpdateData(rowdata, type);
+        // UpdateData();
+      }
+
+
+    } else {
+      setValueText1([]);
+      setEditData({});
+      setAddData(false);
+      setDialog(false);
+      setDialogEdit(false);
+      setDialogEditPassWord(false);
+      setPackCode("");
+      setPackName("");
     }
-    setValueText1([]);
-    setEditData();
-    setAddData(false);
-    setDialog(false);
-    setDialogEdit(false);
-    setDialogEditPassWord(false);
-    setPackCode("");
-    setPackName("");
+
   };
 
   //===========================================================
@@ -1377,7 +1402,7 @@ const AmSetOjectSize = props => {
     setDialogDelete(false);
   };
   //===========================================================
-  useEffect(() => {}, [editRow]);
+  useEffect(() => { }, [editRow]);
 
   useEffect(() => {
     getData(createQueryString(query));
@@ -1450,27 +1475,53 @@ const AmSetOjectSize = props => {
   };
   //===========================================================
 
-  const onChangeEditor = (field, rowdata, value, type, inputType) => {
+  const onChangeEditor = (field, rowdata, value, type, inputType, required) => {
     if (inputType === "number" && value == "") {
       value = null;
     }
-    let fil = {};
+    // let fil = {};
 
-    let cloneEditRow = [];
-    let cloneData = idEdit[0];
+    // let cloneEditRow = [];
+    // let cloneData = idEdit[0];
 
-    if (addData) {
-      data2["ID"] = null;
-      data2["Revision"] = 1;
-      data2["Status"] = 1;
-      data2[field] = value;
+    let editDataNew = Clone(editData)
 
-      cloneEditRow.push(data2);
-      setDataSentToAPI(cloneEditRow);
+    if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
+      editDataNew["ID"] = null
+      editDataNew["Revision"] = 1;
+      editDataNew["Status"] = 1;
+      editDataNew[field] = value;
     } else {
-      cloneData[field] = value;
-      setDataSentToAPI([cloneData]);
+      editDataNew[field] = value;
     }
+    setEditData(editDataNew);
+
+    if (required) {
+      if (!editDataNew[field]) {
+        const arrNew = [...new Set([...inputError, field])]
+        setInputError(arrNew)
+      } else {
+        const arrNew = [...inputError]
+        const index = arrNew.indexOf(field);
+        if (index > -1) {
+          arrNew.splice(index, 1);
+        }
+        setInputError(arrNew)
+      }
+    }
+
+    // if (addData) {
+    //   data2["ID"] = null;
+    //   data2["Revision"] = 1;
+    //   data2["Status"] = 1;
+    //   data2[field] = value;
+
+    //   cloneEditRow.push(data2);
+    //   setDataSentToAPI(cloneEditRow);
+    // } else {
+    //   cloneData[field] = value;
+    //   setDataSentToAPI([cloneData]);
+    // }
   };
   //===========================================================
   useEffect(() => {
@@ -1478,48 +1529,60 @@ const AmSetOjectSize = props => {
   }, [dataSource, editRow]);
 
   //===========================================================
-  const UpdateData = () => {
-    if (props.tableQuery === "User") {
-      dataSentToAPI.forEach(row => {
-        var guidstr = guid.raw().toUpperCase();
-        var i = 0,
-          strLength = guidstr.length;
-        for (i; i < strLength; i++) {
-          guidstr = guidstr.replace("-", "");
-        }
-        row["password"] =
-          "@@sql_gen_password," + row["password"] + "," + guidstr;
-        row["SaltPassword"] = guidstr;
+  const UpdateData = (rowdata, type) => {
 
-        delete row["Password"];
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
+
+    // if (props.tableQuery === "ObjectSize") {
+    //   editData.forEach(row => {
+    //     if (row.MaxWeigthKG === "" || row.MaxWeigthKG === undefined) {
+    //       row.MaxWeigthKG = null;
+    //     }
+    //     if (row.MinWeigthKG === "" || row.MinWeigthKG === undefined) {
+    //       row.MinWeigthKG = null;
+    //     }
+    //   });
+
+
+    // }
+    //==================================
+    var dataEditx = {}
+    if (type === "edit") {
+
+      console.log(props.dataEdit)
+      props.dataEdit.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
+
+        if (dataEditx.MaxWeigthKG === "" || dataEditx.MaxWeigthKG === undefined) {
+          dataEditx.MaxWeigthKG = null;
+        }
+        if (dataEditx.MinWeigthKG === "" || dataEditx.MinWeigthKG === undefined) {
+          dataEditx.MinWeigthKG = null;
+        }
+
+      })
     } else {
-      if (props.tableQuery === "ObjectSize") {
-        dataSentToAPI.forEach(row => {
-          if (row.MaxWeigthKG === "" || row.MaxWeigthKG === undefined) {
-            row.MaxWeigthKG = null;
-          }
-          if (row.MinWeigthKG === "" || row.MinWeigthKG === undefined) {
-            row.MinWeigthKG = null;
-          }
-        });
-      }
-      dataSentToAPI.forEach(row => {
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
+
+      console.log(props.dataAdd)
+      props.dataAdd.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+
+      })
     }
+
+    dataEditx["Status"] = 1
 
     let updjson = {
       t: props.table,
       pk: "ID",
-      datas: dataSentToAPI,
+      datas: editData,
       nr: false,
       _token: localStorage.getItem("Token")
     };
-
+    console.log(updjson)
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
@@ -1541,7 +1604,7 @@ const AmSetOjectSize = props => {
     setEditRow([]);
     setDeleteDataTmp([]);
     setData2({});
-    setDataSentToAPI([]);
+    // setDataSentToAPI([]);
     setValueText1([]);
     setPackCode("");
     setPackName("");
@@ -1578,30 +1641,32 @@ const AmSetOjectSize = props => {
         content={textError}
       ></AmDialogs>
       <AmEditorTable
-        renderOptionalText={
-          <span style={{ color: "red" }}>* required field </span>
-        }
+        // renderOptionalText={
+        //   <span style={{ color: "red" }}>* required field </span>
+        // }
         //style={{width:"600",height:"300px"}}
         open={dialog}
-        onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+        onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
         titleText={addData === true ? "Add" : "Edit"}
         data={editData}
         columns={FuncTest()}
+        objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
       />
       <AmEditorTable
         open={dialogEdit}
-        onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+        onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "edit")}
         titleText={addData === true ? "Add" : "Edit"}
         data={editData}
         columns={FuncTestEdit()}
+        objColumnsAndFieldCheck={{ objColumn: props.dataEdit, fieldCheck: "field" }}
       />
-      <AmEditorTable
+      {/* <AmEditorTable
         open={dialogEditPassWord}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         titleText={addData === true ? "Add" : "Edit Password "}
         data={editData}
         columns={FuncTestEditPassWord()}
-      />
+      /> */}
       <AmEditorTable
         open={dialogDelete}
         onAccept={status => onHandleDeleteConfirm(status)}

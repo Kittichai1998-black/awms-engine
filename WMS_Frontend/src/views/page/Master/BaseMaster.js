@@ -4,11 +4,40 @@ import {
   apicall,
   createQueryString
 } from "../../../components/function/CoreFunction";
+import AmInput from "../../../components/AmInput";
 import AmEntityStatus from "../../../components/AmEntityStatus";
+
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import styled from "styled-components";
 const Axios = new apicall();
 
 //======================================================================
 const BaseMaster = props => {
+  const LabelH = styled.label`
+  font-weight: bold;
+  width: 100px;
+`;
+
+  const InputDiv = styled.div``;
+  const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
   const BaseMasterTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "BaseMasterType",
@@ -75,6 +104,14 @@ const BaseMaster = props => {
   const columns = [
     {
       field: "Code",
+      type: "Custom",
+      name: "Code",
+      placeholder: "Code",
+      required: true,
+      //Cell: e => setMultiBase(e.original)
+    },
+    {
+      field: "Code",
       type: "input",
       name: "Code",
       placeholder: "Code",
@@ -132,14 +169,16 @@ const BaseMaster = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "WeightKG",
@@ -155,7 +194,8 @@ const BaseMaster = props => {
       name: "Base Type",
       dataDropDow: BaseMasterTypeQuery,
       placeholder: "Base Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "ObjectSize_ID",
@@ -164,7 +204,8 @@ const BaseMaster = props => {
       name: "Size",
       dataDropDow: ObjectSizeQuery,
       placeholder: "Size",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "UnitType_ID",
@@ -173,7 +214,8 @@ const BaseMaster = props => {
       name: "Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",
@@ -254,6 +296,86 @@ const BaseMaster = props => {
     }
   ];
 
+  const setMultiBase = () => {
+
+
+    return <ExpansionPanel style={{ width: "100%", marginBottom: "10px" }}>
+      <ExpansionPanelSummary style={{ width: "100%", margin: "0px" }}
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography >Add MultlBase</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Typography>
+          <FormInline>
+            {" "}
+            <LabelH>{"Code to"} : </LabelH>
+            <AmInput
+              // error={rowError}
+              // required={required}
+              // id={cols.field}
+              style={{ width: "100px", margin: "0px" }}
+              id={"Code"}
+              style={{ width: "100px", marginLeft: "5px" }}
+              placeholder={"code"}
+              type="input"
+              //value={""}
+              onChange={val => {
+                console.log(val)
+                onChangeEditor("Codefrom", val, true);
+              }}
+            />  <LabelH>{" from"} : </LabelH>
+            <AmInput
+              //required={required}
+              id={"Code"}
+              style={{ width: "100px", marginLeft: "5px" }}
+              placeholder={"code"}
+              type="input"
+              //value={""}
+              onChange={val => {
+                console.log(val)
+                onChangeEditor("Codeto", val, true);
+              }}
+            />
+          </FormInline>
+
+        </Typography>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+
+
+  };
+  var x1 = []
+  const onChangeEditor = (field, value, required) => {
+    //console.log(field)
+    console.log(value)
+    // let editDataNew = Clone(editData)
+    var x = {}
+
+
+    x[field] = value
+
+
+
+    x1 = x
+    console.log(x1)
+    console.log(x)
+    // if (required) {
+    //   if (!editDataNew[field]) {
+    //     const arrNew = [...new Set([...inputError, field])]
+    //     setInputError(arrNew)
+    //   } else {
+    //     const arrNew = [...inputError]
+    //     const index = arrNew.indexOf(field);
+    //     if (index > -1) {
+    //       arrNew.splice(index, 1);
+    //     }
+    //     setInputError(arrNew)
+    //   }
+    // }
+  };
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
       return <AmEntityStatus key={0} statusCode={0} />;
@@ -275,6 +397,8 @@ const BaseMaster = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
+        custompopupAddEle={setMultiBase()}
       />
     </div>
   );

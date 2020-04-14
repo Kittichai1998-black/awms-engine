@@ -65,14 +65,16 @@ const Supplier = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Description",
@@ -150,6 +152,7 @@ const Supplier = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

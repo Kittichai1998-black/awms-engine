@@ -101,14 +101,16 @@ const AreaMaster = props => {
       type: "input",
       name: "Base Type Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Base Type Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Warehouse_ID",
@@ -126,7 +128,8 @@ const AreaMaster = props => {
       name: "AreaMasterType",
       dataDropDow: AreaMasterTypeQuery,
       placeholder: "AreaMasterType",
-      fieldLabel: ["Code", "Name"]
+      fieldLabel: ["Code", "Name"],
+      required: true
     },
     {
       field: "Status",
@@ -222,6 +225,7 @@ const AreaMaster = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

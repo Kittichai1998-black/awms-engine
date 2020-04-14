@@ -99,19 +99,22 @@ const Permission = props => {
       field: "Code",
       type: "input",
       name: "Code",
-      placeholder: "Code"
+      placeholder: "Code",
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
-      placeholder: "Name"
+      placeholder: "Name",
+      required: true
     },
     {
       field: "Description",
       type: "input",
       name: "Description",
-      placeholder: "Description"
+      placeholder: "Description",
+      required: true
     },
     {
       field: "Status",
@@ -186,6 +189,7 @@ const Permission = props => {
         customPer={true}
         dataUser={dataUser}
         columnsEditAPIKey={columnsEditAPIKey}
+        history={props.history}
       />
     </div>
   );

@@ -49,6 +49,7 @@ input {
   }
 `;
 const AmSetUserPer = (props) => {
+  const [inputError, setInputError] = useState([])
   const { t } = useTranslation()
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -96,27 +97,27 @@ const AmSetUserPer = (props) => {
           Header: 'Permission',
           width: 100,
           Cell: (e) =>
-            <AmButton style={{ lineHeight: "1" }} styleType="confirm" onClick={() => { FuncSetEleRole(e); setEditData(e); setTimeout(() => setDialogRole(true), 500) }} >
+            <AmButton style={{ lineHeight: "1" }} styleType="confirm" onClick={() => { FuncSetEleRole(e); setEditData(Clone(e.original)); setTimeout(() => setDialogRole(true), 500) }} >
               {t('Permission')}
             </AmButton>,
           sortable: false,
         }, {
-          Header: 'Edit',
-          width: 80,
-          Cell: (e) =>
-            <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(e); edit(e, "edit") }} >
-              {t('Info')}
-            </AmButton>,
-          sortable: false,
-        }, {
-          Header: 'Delete',
-          width: 80,
-          Cell: (e) =>
-            <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
-              {t('Delete')}
-            </AmButton>,
-          sortable: false,
-        })
+        Header: 'Edit',
+        width: 80,
+        Cell: (e) =>
+          <AmButton style={{ lineHeight: "1" }} styleType="info" onClick={() => { setEditData(Clone(e.original)); edit(e, "edit") }} >
+            {t('Info')}
+          </AmButton>,
+        sortable: false,
+      }, {
+        Header: 'Delete',
+        width: 80,
+        Cell: (e) =>
+          <AmButton style={{ lineHeight: "1" }} styleType="delete" onClick={() => { setDeleteData(e); edit(e, "delete"); }} >
+            {t('Delete')}
+          </AmButton>,
+        sortable: false,
+      })
     }
 
 
@@ -127,7 +128,7 @@ const AmSetUserPer = (props) => {
   const [totalSizePer, setTotalSizePer] = useState(0);
   const [datax, setDatax] = useState([])
   const FuncGetRole = () => {
-  
+
     const iniCols = [
       { Header: 'Code', accessor: 'Code', fixed: 'left', width: 250 },
       { Header: 'Name', accessor: 'Name', width: 250 },
@@ -174,13 +175,13 @@ const AmSetUserPer = (props) => {
     };
     await Axios.get(createQueryString(Query)).then((res) => {
       var row = res.data.datas
-    
+
       row.forEach(x => {
         //defaultRole.push(x.Role_ID)
         defaultRole.push({ "ID": x.Permission_ID })
       })
     })
-   
+
     setDatax(defaultRole)
     //return randerFunc(defaultRole,iniCols)
   }
@@ -319,7 +320,10 @@ const AmSetUserPer = (props) => {
       return {
         "field": y.field,
         "component": (data = null, cols, key) => {
-          return <div key={key}>{FuncTestSetEle(y.name, y.type, data, cols, y.dataDropDow, y.typeDropdow, y.colsFindPopup, y.placeholder, y.labelTitle, y.fieldLabel, y.validate, y.required)}
+          let rowError = inputError.length ? inputError.some(z => {
+            return z === y.field
+          }) : false
+          return <div key={key}>{FuncTestSetEle(y.name, y.type, data, cols, y.dataDropDow, y.typeDropdow, y.colsFindPopup, y.placeholder, y.labelTitle, y.fieldLabel, y.validate, y.required, rowError)}
           </div>
         }
       }
@@ -333,7 +337,10 @@ const AmSetUserPer = (props) => {
       return {
         "field": y.field,
         "component": (data = null, cols, key) => {
-          return <div key={key}>{FuncTestSetEleEdit(y.name, y.type, data, cols, y.dataDropDow, y.typeDropdow, y.colsFindPopup, y.placeholder, y.labelTitle, y.fieldLabel, y.validate, y.inputType)}</div>
+          let rowError = inputError.length ? inputError.some(z => {
+            return z === y.field
+          }) : false
+          return <div key={key}>{FuncTestSetEleEdit(y.name, y.type, data, cols, y.dataDropDow, y.typeDropdow, y.colsFindPopup, y.placeholder, y.labelTitle, y.fieldLabel, y.validate, y.inputType, y.required, rowError)}</div>
         }
       }
     })
@@ -354,13 +361,13 @@ const AmSetUserPer = (props) => {
   //===========================================================
   const FuncFilterPri = () => {
     const x = props.columnsFilterPrimary
-    return x.map(y=>{
-      return { 
-       "field":y.field,
-       "component":(condition, cols, key)=>{
-         return <div key={key} style={{display:"inline-block"}}>{FuncFilterSetEle(key,y.field, y.type, y.name,condition,cols.field,y.fieldLabel,y.placeholder,y.dataDropDow,y.typeDropdow,y.labelTitle,y.colsFindPopup,y.fieldDataKey,y.checkBox)}</div>
+    return x.map(y => {
+      return {
+        "field": y.field,
+        "component": (condition, cols, key) => {
+          return <div key={key} style={{ display: "inline-block" }}>{FuncFilterSetEle(key, y.field, y.type, y.name, condition, cols.field, y.fieldLabel, y.placeholder, y.dataDropDow, y.typeDropdow, y.labelTitle, y.colsFindPopup, y.fieldDataKey, y.checkBox)}</div>
         }
-      } 
+      }
     })
   }
   const FuncFilter = () => {
@@ -583,7 +590,7 @@ const AmSetUserPer = (props) => {
   const [packCode, setPackCode] = useState("");
   const [packName, setPackName] = useState("");
 
-  const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey, data) => {
+  const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey, data, required) => {
     setValueText1({
       ...valueText1, [inputID]: {
         value: value,
@@ -591,7 +598,7 @@ const AmSetUserPer = (props) => {
         fieldDataKey: fieldDataKey,
       }
     });
-    onChangeEditor(inputID, data, value)
+    onChangeEditor(inputID, data, value, null, null, required)
   }
   //=============================================================
 
@@ -609,21 +616,22 @@ const AmSetUserPer = (props) => {
   }
   //=============================================================
 
-  const FuncTestSetEle = (name, type, data, cols, dataDropDow, typeDropdow, colsFindPopup, placeholder, labelTitle, fieldLabel, validate, required) => {
+  const FuncTestSetEle = (name, type, data, cols, dataDropDow, typeDropdow, colsFindPopup, placeholder, labelTitle, fieldLabel, validate, required, rowError) => {
     if (type === "input") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
             id={cols.field}
             required={required}
             validate={true}
-            msgError="Error"
+            // msgError="Error"
             regExp={validate}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="input"
-            value={data ? data[cols.field] : ""}
-            onChange={(val) => { onChangeEditor(cols.field, data, val) }}
+            // value={data ? data[cols.field] : ""}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, null, null, required) }}
           />
         </InputDiv>
       </FormInline>
@@ -631,23 +639,25 @@ const AmSetUserPer = (props) => {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
             autoComplete="off"
             id={cols.field}
             required={required}
             validate={true}
-            msgError="Error"
+            // msgError="Error"
             regExp={validate}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="password"
-            value={data ? data[cols.field] : ""}
-            onChange={(val) => { onChangeEditor(cols.field, data, val) }}
+            // value={data ? data[cols.field] : ""}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, null, null, required) }}
           />
         </InputDiv>
       </FormInline>
     } else if (type === "dropdow") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <AmDropdown
+          error={rowError}
           required={required}
           id={cols.field}
           placeholder={placeholder}
@@ -659,13 +669,14 @@ const AmSetUserPer = (props) => {
           valueData={valueText1[cols.field]}
           queryApi={dataDropDow}
           defaultValue={data ? data[cols.field] : ""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)}
           ddlType={typeDropdow}
         />
       </FormInline>
     } else if (type === "findPopup") {
       return <FormInline><LabelH>{t(name)} : </LabelH>
         <AmFindPopup
+          error={rowError}
           required={required}
           id={cols.field}
           placeholder={placeholder}
@@ -678,20 +689,21 @@ const AmSetUserPer = (props) => {
           columns={colsFindPopup}
           defaultValue={data ? data[cols.field] : ""}
           width={270}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChange(value, dataObject, inputID, fieldDataKey, data, required)}
         />
       </FormInline>
     } else if (type === "inputPackCode") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
             required={required}
             id={cols.field}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="input"
-            value={(data[cols.field] && data ? data[cols.field] : packCode)}
-            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Code") }}
+            // value={(data[cols.field] && data ? data[cols.field] : packCode)}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Code", null, required) }}
           />
         </InputDiv>
       </FormInline>
@@ -699,19 +711,21 @@ const AmSetUserPer = (props) => {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
             required={required}
             id={cols.field}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="input"
-            value={(data[cols.field] && data ? data[cols.field] : packName)}
-            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Name") }}
+            // value={(data[cols.field] && data ? data[cols.field] : packName)}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Name", null, required) }}
           />
         </InputDiv>
       </FormInline>
     } else if (type === "status" || type === "iotype") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <AmDropdown
+          error={rowError}
           id={cols.field}
           required={required}
           placeholder={placeholder}
@@ -721,7 +735,7 @@ const AmSetUserPer = (props) => {
           valueData={valueText1[cols.field]}
           data={dataDropDow}
           defaultValue={data ? data[cols.field] : ""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)}
           ddlType={typeDropdow}
         />
       </FormInline>
@@ -729,20 +743,22 @@ const AmSetUserPer = (props) => {
   }
   //=============================================================
 
-  const FuncTestSetEleEdit = (name, type, data, cols, dataDropDow, typeDropdow, colsFindPopup, placeholder, labelTitle, fieldLabel, validate, inputType) => {
+  const FuncTestSetEleEdit = (name, type, data, cols, dataDropDow, typeDropdow, colsFindPopup, placeholder, labelTitle, fieldLabel, validate, inputType, required, rowError) => {
     if (type === "input") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
+            required={required}
             id={cols.field}
             validate={true}
-            msgError="Error"
+            // msgError="Error"
             regExp={validate}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type={"input"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => {onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "", inputType, required) }}
           />
         </InputDiv>
       </FormInline>
@@ -750,21 +766,25 @@ const AmSetUserPer = (props) => {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
+            required={required}
             id={cols.field}
             validate={true}
-            msgError="Error"
+            // msgError="Error"
             regExp={validate}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type={"password"}
             defaultValue={data ? data[cols.field] : ""}
-            onChange={(val) => {  onChangeEditor(cols.field, data, val, "", inputType) }}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "", inputType, required) }}
           />
         </InputDiv>
       </FormInline>
     } else if (type === "dropdow") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <AmDropdown
+          error={rowError}
+          required={required}
           id={cols.field}
           placeholder={placeholder}
           fieldDataKey={"ID"}
@@ -775,13 +795,15 @@ const AmSetUserPer = (props) => {
           valueData={valueText1[cols.field]}
           queryApi={dataDropDow}
           defaultValue={data ? data[cols.field] : ""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)}
           ddlType={typeDropdow}
         />
       </FormInline>
     } else if (type === "findPopup") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <AmFindPopup
+          error={rowError}
+          required={required}
           id={cols.field}
           placeholder={placeholder}
           fieldDataKey="ID"
@@ -793,7 +815,7 @@ const AmSetUserPer = (props) => {
           columns={colsFindPopup}
           defaultValue={data ? data[cols.field] : ""}
           width={270}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChange(value, dataObject, inputID, fieldDataKey, data, required)}
         />
       </FormInline>
     } else if (type === "inputPackCode") {
@@ -803,12 +825,14 @@ const AmSetUserPer = (props) => {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
+            required={required}
             id={cols.field}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="input"
-            value={packCode}
-            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Code") }}
+            // value={packCode}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Code", null, required) }}
           />
         </InputDiv>
       </FormInline>
@@ -819,18 +843,22 @@ const AmSetUserPer = (props) => {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <InputDiv>
           <AmInput
+            error={rowError}
+            required={required}
             id={cols.field}
             style={{ width: "270px", margin: "0px" }}
             placeholder={placeholder}
             type="input"
-            value={packName}
-            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Name") }}
+            // value={packName}
+            onChange={(val) => { onChangeEditor(cols.field, data, val, "Pack Name", null, required) }}
           />
         </InputDiv>
       </FormInline>
     } else if (type === "status" || type === "iotype") {
       return <FormInline> <LabelH>{t(name)} : </LabelH>
         <AmDropdown
+          error={rowError}
+          required={required}
           id={cols.field}
           placeholder={placeholder}
           fieldDataKey={"value"}
@@ -839,7 +867,7 @@ const AmSetUserPer = (props) => {
           valueData={valueText1[cols.field]}
           data={dataDropDow}
           defaultValue={data ? data[cols.field] : ""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data)}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, data, required)}
           ddlType={typeDropdow}
         />
       </FormInline>
@@ -847,7 +875,7 @@ const AmSetUserPer = (props) => {
   }
   //=============================================================
 
-  const onHandleChange = (value, dataObject, inputID, fieldDataKey, data) => {
+  const onHandleChange = (value, dataObject, inputID, fieldDataKey, data, required) => {
     setValueText1({
       ...valueText1, [inputID]: {
         value: value,
@@ -867,7 +895,7 @@ const AmSetUserPer = (props) => {
       }
 
     }
-    onChangeEditor(inputID, data, value)
+    onChangeEditor(inputID, data, value, null, null, required)
   };
   //=============================================================
   const [dataSource, setDataSource] = useState([]);
@@ -880,7 +908,7 @@ const AmSetUserPer = (props) => {
   const [query, setQuery] = useState(Query);
   const [query2, setQuery2] = useState(Query2)
   const [editRow, setEditRow] = useState([]);
-  const [editData, setEditData] = useState();
+  const [editData, setEditData] = useState({});
   const [deleteData, setDeleteData] = useState();
   const [deleteDataTmp, setDeleteDataTmp] = useState([]);
   const [addData, setAddData] = useState(false);
@@ -890,26 +918,35 @@ const AmSetUserPer = (props) => {
   const [dialogRole, setDialogRole] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
   const [data2, setData2] = useState({});
-  const [dataSentToAPI, setDataSentToAPI] = useState([]);
+  // const [dataSentToAPI, setDataSentToAPI] = useState([]);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
   const [excelDataSrouce, setExcelDataSource] = useState([]);
   //===========================================================
 
-  const onHandleEditConfirm = (status, rowdata) => {
+  const onHandleEditConfirm = (status, rowdata, arrObjInputError, type) => {
 
     if (status) {
-      UpdateData()
+      if (arrObjInputError.length) {
+        setInputError(arrObjInputError.map(x => x.field))
+      } else {
+        console.log("is Action");
+        UpdateData(rowdata, type);
+        // UpdateData();
+      }
+      // UpdateData()
+    } else {
+      setValueText1([])
+      setEditData()
+      setAddData(false)
+      setDialog(false)
+      setDialogEdit(false)
+      setDialogEditPassWord(false)
+      setPackCode("")
+      setPackName("")
     }
-    setValueText1([])
-    setEditData()
-    setAddData(false)
-    setDialog(false)
-    setDialogEdit(false)
-    setDialogEditPassWord(false)
-    setPackCode("")
-    setPackName("")
+
   }
 
   //===========================================================  
@@ -995,7 +1032,7 @@ const AmSetUserPer = (props) => {
   }
   //===========================================================
 
-  const onChangeEditor = (field, rowdata, value, type, inputType) => {
+  const onChangeEditor = (field, rowdata, value, type, inputType, required) => {
 
     if (inputType === "number" && value == "") {
       value = null
@@ -1009,23 +1046,35 @@ const AmSetUserPer = (props) => {
       setValueText1({ SKUMaster_ID: "xxxxxx" })
     }
 
-    let cloneEditRow = [];
-    let cloneData = idEdit[0]
+    let editDataNew = Clone(editData)
 
-    if (addData) {
-      data2["ID"] = null;
-      data2["Revision"] = 1;
-      data2["Status"] = 1;
-      data2[field] = value;
+    if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
+      editDataNew["ID"] = null
+      editDataNew["Revision"] = 1;
+      editDataNew["Status"] = 1;
+      editDataNew[field] = value;
       if (props.tableQuery === "PackMaster") {
-        data2["Code"] = packCode;
-        data2["Name"] = packName;
+        editDataNew["Code"] = packCode;
+        editDataNew["Name"] = packName;
       }
-      cloneEditRow.push(data2)
-      setDataSentToAPI(cloneEditRow)
     } else {
-      cloneData[field] = value;
-      setDataSentToAPI([cloneData])
+      editDataNew[field] = value;
+    }
+
+    setEditData(editDataNew);
+
+    if (required) {
+      if (!editDataNew[field]) {
+        const arrNew = [...new Set([...inputError, field])]
+        setInputError(arrNew)
+      } else {
+        const arrNew = [...inputError]
+        const index = arrNew.indexOf(field);
+        if (index > -1) {
+          arrNew.splice(index, 1);
+        }
+        setInputError(arrNew)
+      }
     }
   }
   //===========================================================
@@ -1034,46 +1083,48 @@ const AmSetUserPer = (props) => {
   }, [dataSource, editRow])
 
   //===========================================================
-  const UpdateData = () => {
-    if (props.tableQuery === "User") {
-      dataSentToAPI.forEach(row => {
-        var guidstr = guid.raw().toUpperCase()
-        var i = 0, strLength = guidstr.length;
-        for (i; i < strLength; i++) {
+  const UpdateData = (rowdata, type) => {
+    console.log(rowdata)
+    console.log(props.dataEdit)
 
-          guidstr = guidstr.replace('-', '');
+    var dataEditx = {}
+    if (type === "edit") {
+      console.log("dfhdfgisudf")
+      console.log(props.dataEdit)
+      props.dataEdit.forEach(y => {
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
 
-        }
-        row["password"] = "@@sql_gen_password," + row["password"] + "," + guidstr
-        row["SaltPassword"] = guidstr
-
-        delete row["Password"]
-        delete row["ModifyBy"]
-        delete row["ModifyTime"]
       })
     } else {
-      dataSentToAPI.forEach(row => {
-        delete row["ModifyBy"]
-        delete row["ModifyTime"]
+
+      props.dataAdd.forEach(y => {
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+        dataEditx["Status"] = 1
       })
     }
-
+    console.log(dataEditx)
     let updjson = {
       "t": props.table,
       "pk": "ID",
-      "datas": dataSentToAPI,
+      "datas": [dataEditx],
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
- 
+    console.log(updjson)
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
           setOpenSuccess(true)
+
+          dataEditx = {}
           getData(createQueryString(query))
           Clear()
         } else {
           setOpenError(true)
+
+          dataEditx = {}
           setTextError(res.data._result.message)
           getData(createQueryString(query))
           Clear()
@@ -1087,7 +1138,10 @@ const AmSetUserPer = (props) => {
     setEditRow([])
     setDeleteDataTmp([])
     setData2({})
-    setDataSentToAPI([])
+    setDialog(false)
+    setDialogRole(false)
+    setDialogEdit(false)
+    // setDataSentToAPI([])
     setValueText1([])
     setPackCode("")
     setPackName("")
@@ -1098,13 +1152,44 @@ const AmSetUserPer = (props) => {
       <AmFilterTable defaultCondition={{ "f": "status", "c": "!=", "v": "2" }} primarySearch={FuncFilterPri()} extensionSearch={FuncFilter()} onAccept={(status, obj) => onHandleFilterConfirm(status, obj)} /><br />
       <AmDialogs typePopup={"success"} onAccept={(e) => { setOpenSuccess(e) }} open={openSuccess} content={"Success"} ></AmDialogs>
       <AmDialogs typePopup={"error"} onAccept={(e) => { setOpenError(e) }} open={openError} content={textError} ></AmDialogs>
-      <AmEditorTable renderOptionalText={<span style={{ color: "red" }}>* required field  </span>}
+      <AmEditorTable
+        // renderOptionalText={<span style={{ color: "red" }}>* required field  </span>}
         //style={{width:"600",height:"300px"}} 
-        open={dialog} onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)} titleText={addData === true ? 'Add' : 'Edit'} data={editData} columns={FuncTest()} />
-      <AmEditorTable open={dialogEdit} onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)} titleText={addData === true ? 'Add' : 'Edit'} data={editData} columns={FuncTestEdit()} />
-      <AmEditorTable open={dialogEditPassWord} onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)} titleText={addData === true ? 'Add' : 'Edit Password '} data={editData} columns={FuncTestEditPassWord()} />
-      <AmEditorTable open={dialogDelete} onAccept={(status) => onHandleDeleteConfirm(status)} titleText={'Confirm Delete'} columns={[]} />
-      <AmEditorTable  open={dialogRole} onAccept={(status, rowdata) => onHandleSetRoleConfirm(status, rowdata)} titleText={'Edit Role'} data={editData} columns={FuncGetRole()} />
+        open={dialog}
+        onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
+        titleText={addData === true ? 'Add' : 'Edit'}
+        data={editData}
+        columns={FuncTest()}
+        objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
+      />
+      <AmEditorTable
+        open={dialogEdit}
+        onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "edit")}
+        titleText={addData === true ? 'Add' : 'Edit'}
+        data={editData}
+        columns={FuncTestEdit()}
+        objColumnsAndFieldCheck={{ objColumn: props.dataEdit, fieldCheck: "field" }}
+      />
+      <AmEditorTable
+        open={dialogEditPassWord}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+        titleText={addData === true ? 'Add' : 'Edit Password '}
+        data={editData}
+        columns={FuncTestEditPassWord()}
+      />
+      <AmEditorTable
+        open={dialogDelete}
+        onAccept={(status) => onHandleDeleteConfirm(status)}
+        titleText={'Confirm Delete'}
+        columns={[]}
+      />
+      <AmEditorTable
+        open={dialogRole}
+        onAccept={(status, rowdata) => onHandleSetRoleConfirm(status, rowdata)}
+        titleText={'Edit Role'}
+        data={editData}
+        columns={FuncGetRole()}
+      />
 
       <Table
         primaryKey="ID"

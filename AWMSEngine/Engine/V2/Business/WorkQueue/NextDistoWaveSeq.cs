@@ -45,6 +45,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var bsto = ADO.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
                 var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
                 var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
+
+                nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
+                ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+
                 amt_WorkQueue wq = new amt_WorkQueue();
 
                 if(stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_ASRS && stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_STAGING)
@@ -84,7 +88,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 DocumentType_ID = currentDisto.DocumentType_ID
             };
 
-            return newNextDisto;
+            var res = ADO.DistoADO.GetInstant().Create(newNextDisto, this.BuVO);
+
+            return res;
         }
 
         public amt_WorkQueue NextWorkQueue(amt_StorageObject bsto, amt_Wave wave, ams_AreaMaster stoArea, ams_AreaMaster desArea, TReq reqVO)
@@ -123,79 +129,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return wq;
         }
-
-        //public amt_DocumentItemStorageObject NextDisto2(amt_Wave wave,amt_WaveSeq nextWaveSeq, amt_DocumentItemStorageObject currentDisto, TReq reqVO)
-        //{
-        //    //List<amt_DocumentItemStorageObject> currentNextDistos = ADO.DistoADO.GetInstant()
-        //    //    .List_bySouWaveSeq_bySouSto(currentDisto.Des_StorageObject_ID.Value, currentDisto.Des_StorageObject_ID.Value, this.BuVO);
-        //    /*if(currentNextDistos.Sum(x=>x.BaseQuantity) + reqVO.NextDistoBaseQty > currentDisto.BaseQuantity)
-        //    {
-        //        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนที่เลือก มากกว่า ที่กำหนด");
-        //    }*/
-
-
-        //    var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
-        //    var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
-
-        //    if(stoArea.AreaMasterType_ID == AreaMasterTypeID.STO_ASRS)
-        //    {
-        //        amt_WorkQueue newWQ = new amt_WorkQueue()
-        //        {
-        //            ID = null,
-        //            ActualTime = null,
-
-        //            RefID = AMWUtil.Common.ObjectUtil.GenUniqID(),
-        //            Seq = 1,
-        //            IOType = IOType.OUTPUT,
-        //            Priority = wave.Priority,
-        //            StorageObject_ID = bsto.ID.Value,
-        //            StorageObject_Code = bsto.Code,
-
-        //            Warehouse_ID = stoArea.Warehouse_ID.Value,
-        //            Area_ID = bsto.AreaMaster_ID.Value,
-        //            AreaLocation_ID = bsto.AreaLocationMaster_ID,
-
-        //            Sou_Warehouse_ID = stoArea.Warehouse_ID.Value,
-        //            Sou_Area_ID = bsto.AreaMaster_ID.Value,
-        //            Sou_AreaLocation_ID = bsto.AreaLocationMaster_ID,
-
-        //            Des_Area_ID = reqVO.DesAreaID,
-        //            Des_AreaLocation_ID = reqVO.DesLocationID,
-        //            Des_Warehouse_ID = desArea.Warehouse_ID.Value,
-
-        //            EventStatus = WorkQueueEventStatus.WORKING,
-        //            Status = EntityStatus.ACTIVE,
-
-        //            StartTime = null,
-        //            EndTime = null,
-        //        };
-        //        ADO.WorkQueueADO.GetInstant().PUT(newWQ, this.BuVO);
-
-        //        amt_WaveSeq next2WaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.Seq == nextWaveSeq.Seq + 1);
-        //        amt_DocumentItemStorageObject newNextDisto = new amt_DocumentItemStorageObject()
-        //        {
-        //            ID = null,
-        //            Sou_WaveSeq_ID = currentDisto.Des_WaveSeq_ID,
-        //            Sou_StorageObject_ID = currentDisto.Des_StorageObject_ID.Value,
-        //            Des_WaveSeq_ID = next2WaveSeq == null ? null : next2WaveSeq.ID,
-        //            Des_StorageObject_ID = null,
-        //            WorkQueue_ID = newWQ.ID,
-        //            Quantity = null,//currentDisto.Quantity * (reqVO.NextDistoBaseQty / currentDisto.BaseQuantity),
-        //            UnitType_ID = currentDisto.UnitType_ID,
-        //            BaseQuantity = null,//reqVO.NextDistoBaseQty,
-        //            BaseUnitType_ID = currentDisto.BaseUnitType_ID,
-        //            Status = EntityStatus.INACTIVE,
-        //            DocumentItem_ID = currentDisto.DocumentItem_ID,
-        //            DocumentType_ID = currentDisto.DocumentType_ID
-        //        };
-
-        //        ADO.DistoADO.GetInstant().Create(newNextDisto, this.BuVO);
-        //    }
-
-
-
-        //    return newNextDisto;
-        //}
     }
 
 }

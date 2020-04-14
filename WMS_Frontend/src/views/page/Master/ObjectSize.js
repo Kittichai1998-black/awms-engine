@@ -117,14 +117,16 @@ const ObjectSize = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType","validate":/^[0-9\.]+$/},
     {
@@ -241,9 +243,10 @@ const ObjectSize = props => {
         dataEdit={columnsEdit}
         // customUser={true}
         customPer={true}
-        //dataObjectSize={ObjectSize}
-        //dataObjectSizeNone={ObjectSize2}
-        //columnsEditAPIKey={columnsEditObjectSize}
+        history={props.history}
+      //dataObjectSize={ObjectSize}
+      //dataObjectSizeNone={ObjectSize2}
+      //columnsEditAPIKey={columnsEditObjectSize}
       />
     </div>
   );

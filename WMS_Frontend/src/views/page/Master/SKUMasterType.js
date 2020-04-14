@@ -101,14 +101,16 @@ const SKUMasterType = props => {
       type: "input",
       name: "SKU Type Code",
       placeholder: "Code",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "SKU Type Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "UnitType_ID",
@@ -221,6 +223,7 @@ const SKUMasterType = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

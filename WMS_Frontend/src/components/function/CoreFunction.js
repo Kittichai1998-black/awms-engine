@@ -109,6 +109,13 @@ const createQueryString = select => {
   return queryS;
 };
 
+const IsEmptyObject = (obj) => {
+  if(typeof(obj) === "object")
+      return Object.keys(obj).length === 0 && obj.constructor === Object
+  else
+      return false;
+}
+
 const Clone = obj => {
   let copy;
 
@@ -195,4 +202,4 @@ function trimObj(obj) {
   );
 }
 
-export { apicall, createQueryString, Clone, DateTimeConverter, FilterURL };
+export { apicall, createQueryString, Clone, DateTimeConverter, FilterURL, IsEmptyObject };

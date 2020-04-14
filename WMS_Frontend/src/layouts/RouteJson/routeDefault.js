@@ -207,7 +207,11 @@ const SearchLog = Loadable({
   loading: Loading
 });
 const Dash = Loadable({
-  loader: () => import("../../views/page/Dashboard/Dash5"),
+  loader: () => import("../../views/page/Dashboard/ExDashboard"),
+  loading: Loading
+});
+const WebPage = Loadable({
+  loader: () => import("../../views/page/Master/WebPage"),
   loading: Loading
 });
 let routes = [
@@ -484,7 +488,7 @@ let routes = [
     exact: true
   },
   {
-    path: "/download_log",
+    path: "/log/downloadlog",
     name: "Download Log File",
     compoment: DownloadLog,
     exact: true
@@ -500,7 +504,13 @@ let routes = [
     name: "Dash1",
     compoment: Dash,
     exact: true
-  }
+  },
+  {
+    path: "/setting/webpage",
+    name: "base5",
+    compoment: WebPage,
+    exact: true
+  },
 ];
 
 export default routes;

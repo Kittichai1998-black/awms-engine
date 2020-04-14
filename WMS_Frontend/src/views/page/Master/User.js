@@ -105,14 +105,16 @@ const User = props => {
       type: "input",
       name: "Username",
       placeholder: "Username",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "Name",
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/
+      validate: /^.+$/,
+      required: true
     },
     {
       field: "EmailAddress",
@@ -215,6 +217,7 @@ const User = props => {
         customUser={true}
         dataUser={dataUser}
         columnsEditPassWord={columnsEditPassWord}
+        history={props.history}
       />
     </div>
   );

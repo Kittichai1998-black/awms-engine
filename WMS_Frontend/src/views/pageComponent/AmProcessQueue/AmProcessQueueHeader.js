@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {
   apicall,
   createQueryString,
-} from "../../../components/function/CoreFunction2";
+} from "../../../components/function/CoreFunction";
 import AmButton from "../../../components/AmButton";
 import AmDropdown from "../../../components/AmDropdown";
 import AmFindPopup from "../../../components/AmFindPopup";

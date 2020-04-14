@@ -217,6 +217,7 @@ const APIKey = props => {
         customUser={true}
         dataUser={dataUser}
         columnsEditAPIKey={columnsEditAPIKey}
+        history={props.history}
       />
     </div>
   );
