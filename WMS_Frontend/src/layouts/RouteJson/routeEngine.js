@@ -109,6 +109,10 @@ const TableV2 = Loadable({
   loader: () => import("../../views/page/TableInDev"),
   loading: Loading
 });
+const TableV3 = Loadable({
+  loader: () => import("../../views/page/TableInDev2"),
+  loading: Loading
+});
 
 const GR_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
@@ -307,7 +311,8 @@ const routes = [
     compoment: TestWaveManagement,
     exact: true
   },
-  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true }
+  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true },
+  { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
   // { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
 ];
 
