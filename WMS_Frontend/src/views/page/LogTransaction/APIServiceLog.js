@@ -248,7 +248,7 @@ const APIServiceLog = (props) => {
         <Divider />
         <br />
         <Typography variant="h6">{"Output"}</Typography>
-        {data.InputText ? showReactJsonView("Output-Text", JSON.parse(data.OutputText))
+        {data.OutputText ? showReactJsonView("Output-Text", JSON.parse(data.OutputText))
           : <label>Data Not Found.</label>}
       </div>
       return (

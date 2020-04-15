@@ -5,10 +5,33 @@ import {
   createQueryString
 } from "../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../components/AmEntityStatus";
+import Checkbox from "@material-ui/core/Checkbox";
+import styled from "styled-components";
 const Axios = new apicall();
 
 //======================================================================
 const BaseMaster = props => {
+  const LabelH = styled.label`
+  font-weight: bold;
+  width: 100px;
+`;
+
+  const InputDiv = styled.div``;
+  const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
   const BaseMasterTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "BaseMasterType",
@@ -47,6 +70,7 @@ const BaseMaster = props => {
     { label: "INACTIVE", value: 0 },
     { label: "ACTIVE", value: 1 }
   ];
+  const [isLoad, setIsLoad] = useState(true);
 
   const iniCols = [
     {
@@ -74,11 +98,32 @@ const BaseMaster = props => {
   ];
   const columns = [
     {
+      field: "Checkbox",
+      type: "checkbox",
+      name: "Checkbox",
+      placeholder: "",
+    },
+    {
+      field: "CodeStart",
+      type: "input",
+      name: "Code Start",
+      placeholder: "Code",
+      disableCustom: true,
+
+    },
+    {
+      field: "CodeEnd",
+      type: "input",
+      name: "Code End",
+      placeholder: "Code",
+      disableCustom: true,
+    },
+    {
       field: "Code",
       type: "input",
       name: "Code",
       placeholder: "Code",
-      required: true
+      disableCustom: true,
     },
     {
       field: "Name",
@@ -259,6 +304,7 @@ const BaseMaster = props => {
     }
   ];
 
+
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
       return <AmEntityStatus key={0} statusCode={0} />;
@@ -270,6 +316,8 @@ const BaseMaster = props => {
       return null;
     }
   };
+
+
   return (
     <div>
       <MasterData
@@ -280,6 +328,11 @@ const BaseMaster = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
+        //======= MultyBase  ========
+        prefix={2}
+        baseLength={10}
+        checked={isLoad}
       />
     </div>
   );

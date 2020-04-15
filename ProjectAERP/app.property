@@ -1,0 +1,20 @@
+﻿database.mssql.connection = Server=awms.automotionworks.com,3002\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_AERP;Max Pool Size=400;Connect Timeout=600;
+
+logger.rootpath = D:/logs/{MachineName}/{Date}/
+logger.filename = {LogName}.{Date}.log
+
+#------------------------------------
+#job.names = close_gr
+#job.close_gr.classname = ProjectSTA.Engine.JobService.CloseGRDocJobServicecs
+#job.close_gr.cronex = * 0/1 * * * ?
+#job.close_gr.data = 
+
+
+#------------------------------------
+worker.names = dashboard
+worker.dashboard.classname  = AWMSEngine.WorkerService.CommonDashboardWorker
+
+#------------------------------------
+hub.names = dashboard
+hub.dashboard.classname  = AWMSEngine.HubService.CommonMessageHub
+hub.dashboard.url = /dashboard

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Table from "../../components/table/AmTable";
-
+import Checkbox from "@material-ui/core/Checkbox";
 // import DocView from "../../views/pageComponent/DocumentView";
 import Pagination from "../../components/table/AmPagination";
 import AmEditorTable from "../../components/table/AmEditorTable";
@@ -27,9 +27,7 @@ import guid from "guid";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import readXlsxFile from "read-excel-file";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
+
 import queryString from "query-string";
 
 const Axios = new apicall();
@@ -124,11 +122,17 @@ const MasterData = props => {
   };
   //===========================================================
   const [resetPage, setResetPage] = useState(false);
+  const [checked, setChecked] = useState(false);
   useEffect(() => {
     if (resetPage === true) {
       setResetPage(false);
     }
   }, [resetPage]);
+
+  // useEffect(() => {
+  //   console.log(props.checked)
+  //   setEditData({})
+  // }, [props.checked]);
 
   const FuncSetTable = () => {
     const iniCols = props.iniCols;
@@ -498,7 +502,9 @@ const MasterData = props => {
                   y.fieldLabel,
                   y.validate,
                   y.required,
-                  rowError
+                  rowError,
+                  y.disable,
+                  y.disableCustom
                 )}
               </div>
             );
@@ -901,6 +907,7 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleFilterConfirm = (status, obj) => {
+    console.log(props.history.location)
     if (status) {
       let getQuery = Clone(query);
       let filterDatas = [...filterData];
@@ -981,7 +988,7 @@ const MasterData = props => {
     onChangeFilter(condition, colsField, value);
   };
   //=============================================================
-
+  const [customAdd, setCustomAdd] = useState(false);
   const FuncTestSetEle = (
     name,
     type,
@@ -995,8 +1002,11 @@ const MasterData = props => {
     fieldLabel,
     validate,
     required,
-    rowError
+    rowError,
+    disable,
+    disableCustom
   ) => {
+
     if (type === "input") {
       return (
         <FormInline>
@@ -1004,6 +1014,7 @@ const MasterData = props => {
           <LabelH>{t(name)} : </LabelH>
           <InputDiv>
             <AmInput
+
               // id={cols.field}
               error={rowError}
               required={required}
@@ -1013,12 +1024,38 @@ const MasterData = props => {
               style={{ width: "270px", margin: "0px" }}
               placeholder={placeholder}
               type="input"
-              // value={data ? data[cols.field] : ""}
+              //value={checkEvent ? "" : data[cols.field]}
+              disabled={
+                disableCustom ? (
+                  cols.field === "Code" ? !checkEvent : checkEvent
+                ) : disable
+              }
+              value={data ? data[cols.field] : ""}
               onChange={val => {
-                onChangeEditor(cols.field, data, val, null, null, required);
+                onChangeEditor(cols.field, data, val, null, null, required, checkEvent);
               }}
             />
           </InputDiv>
+        </FormInline>
+      );
+    } if (type === "checkbox") {
+      return (
+        <FormInline>
+          {" "}
+          <LabelH>{t(name)} : </LabelH>
+          <Checkbox onClick={event => {
+            setCheckEvent(!event.target.checked)
+            console.log(event.target.checked)
+            if (event.target.checked) {
+              data["Code"] = ""
+            } else {
+              data["CodeEnd"] = ""
+              data["CodeStart"] = ""
+            }
+
+          }}
+            defaultChecked={false}
+          />
         </FormInline>
       );
     } else if (type === "password") {
@@ -1381,7 +1418,8 @@ const MasterData = props => {
   };
   //=============================================================
   const [dataSource, setDataSource] = useState([]);
-  const [dataSource1, setDataSource1] = useState([]);
+  const [dataSource1, setDataSource1] = useState([])
+  const [checkEvent, setCheckEvent] = useState(true);
   const [totalSize, setTotalSize] = useState(0);
   const [columns, setColumns] = useState(FuncSetTable());
   const [sort, setSort] = useState(0);
@@ -1412,12 +1450,14 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleEditConfirm = (status, rowdata, arrObjInputError, type) => {
+    console.log(status);
     if (status) {
       if (arrObjInputError.length) {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-        // UpdateData(rowdata,type); type is add, edit, editPass
+        UpdateData(rowdata, type);
+        // type is add, edit, editPass
       }
     } else {
       setValueText1([]);
@@ -1431,9 +1471,123 @@ const MasterData = props => {
     }
 
   };
+  //=================================================
+  const UpdateData = (rowdata, type) => {
+    console.log(rowdata)
+    var dataEditx = {}
+    if (type === "edit" || type === "editPass") {
+      props.dataEdit.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
+      })
+    } else {
+      //console.log(props.dataAdd)
+      props.dataAdd.forEach(y => {
+        console.log(y)
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+      })
+    }
+    if (props.tableQuery === "User") {
+      var guidstr = guid.raw().toUpperCase()
+      var i = 0, strLength = guidstr.length;
+      for (i; i < strLength; i++) {
+        guidstr = guidstr.replace('-', '');
+      }
+      dataEditx["password"] = "@@sql_gen_password," + dataEditx["password"] + "," + guidstr
+      dataEditx["SaltPassword"] = guidstr
+    }
+    dataEditx["Status"] = 1
+    var dataBaseMitiObj = []
+    if (props.tableQuery === "BaseMaster") {
+      console.log(checked)
+      var prefix = props.prefix
+      var codeLength = props.baseLength
+      console.log(prefix)
+      console.log(codeLength)
+      if (dataEditx["CodeStart"] !== undefined && dataEditx["CodeEnd"] !== undefined) {
 
+        var prefixStart = dataEditx["CodeStart"].substring(0, prefix);
+        var numStart = dataEditx["CodeStart"].substring(prefix, codeLength);
+        //END
+        var prefixEnd = dataEditx["CodeEnd"].substring(0, prefix);
+        var numEnd = dataEditx["CodeEnd"].substring(prefix, codeLength);
+
+        if (dataEditx["CodeStart"].length != codeLength)
+          throw new UserException("Length ของ Code Start ไม่ถูกต้อง")
+
+        if (dataEditx["CodeEnd"].length != codeLength)
+          throw new UserException("Length ของ Code End ไม่ถูกต้อง")
+
+        if (prefixStart.length != prefix)
+          throw new UserException("Length ของ Prefix Start ไม่ถูกต้อง")
+
+        if (prefixEnd.length != prefix)
+          throw new UserException("Length ของ Prefix End ไม่ถูกต้อง")
+
+        if (numEnd <= numStart)
+          throw new UserException("Code Start มีค่าน้อยกว่าหรือเท่ากับ Code End")
+
+        for (var i = numStart; i <= numEnd; i++) {
+          var genBase = prefixStart.toUpperCase() + i.toString().padStart(codeLength - prefix, '0');
+          console.log(genBase)
+
+          delete dataEditx["CodeEnd"]
+          delete dataEditx["CodeStart"]
+
+          dataEditx["Code"] = genBase
+
+          var x = Clone(dataEditx)
+          dataBaseMitiObj.push(x)
+          console.log(dataEditx["Code"])
+
+        }
+      } else {
+        delete dataEditx["CodeEnd"]
+        delete dataEditx["CodeStart"]
+        dataBaseMitiObj.push(dataEditx)
+      }
+    }
+    console.log(dataBaseMitiObj)
+    let updjson = {
+      "t": props.table,
+      "pk": "ID",
+      "datas": props.tableQuery === "BaseMaster" ? dataBaseMitiObj : [dataEditx],
+      "nr": false,
+      "_token": localStorage.getItem("Token")
+    }
+    // console.log(updjson)
+    // console.log(dataSentToAPI)
+    // Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
+    //   if (res.data._result !== undefined) {
+    //     if (res.data._result.status === 1) {
+    //       dataEditx = {}
+    //       setOpenSuccess(true)
+    //       getData(createQueryString(query))
+    //       setPage(0);
+
+    //       setResetPage(true);
+    //       Clear()
+    //     } else {
+    //       dataEditx = {}
+    //       setOpenError(true)
+    //       setTextError(res.data._result.message)
+    //       getData(createQueryString(query))
+    //       setPage(0);
+    //       setResetPage(true);
+    //       Clear()
+    //     }
+    //   }
+    // })
+  }
   //===========================================================
-
+  function UserException(message) {
+    setOpenError(true)
+    setTextError(message)
+    this.message = message;
+    this.name = 'UserException';
+  }
   const onHandleDeleteConfirm = (status, rowdata) => {
     if (status) {
       DeleteData();
@@ -1443,9 +1597,9 @@ const MasterData = props => {
   //===========================================================
   useEffect(() => { }, [editRow]);
 
-  // useEffect(() => {
-  //   getDataFilterURL();
-  // }, []);
+  useEffect(() => {
+    getDataFilterURL();
+  }, []);
 
   const getDataFilterURL = () => {
     if (
@@ -1558,9 +1712,12 @@ const MasterData = props => {
   };
   //===========================================================
 
-  const onChangeEditor = (field, rowdata, value, type, inputType, required) => {
+  const onChangeEditor = (field, rowdata, value, type, inputType, required, disable) => {
 
-    if (field === "WeightKG" || value === "") {
+
+
+    if (field === "WeightKG" && value === "") {
+      console.log("xx")
       value = null;
     }
 
@@ -1575,6 +1732,8 @@ const MasterData = props => {
       setPackName(value);
       setValueText1({ SKUMaster_ID: "xxxxxx" });
     }
+    console.log(editData)
+
 
     let editDataNew = Clone(editData)
 
@@ -1590,8 +1749,9 @@ const MasterData = props => {
     } else {
       editDataNew[field] = value;
     }
-
     setEditData(editDataNew);
+
+
 
     if (required) {
       if (!editDataNew[field]) {
@@ -1607,24 +1767,8 @@ const MasterData = props => {
       }
     }
 
-    // let cloneEditRow = [];
-    // let cloneData = idEdit[0];
 
-    // if (addData) {
-    //   data2["ID"] = null;
-    //   data2["Revision"] = 1;
-    //   data2["Status"] = 1;
-    //   data2[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     data2["Code"] = packCode;
-    //     data2["Name"] = packName;
-    //   }
-    //   cloneEditRow.push(data2);
-    //   setDataSentToAPI(cloneEditRow);
-    // } else {
-    //   cloneData[field] = value;
-    //   setDataSentToAPI([cloneData]);
-    // }
+
   };
   //===========================================================
   useEffect(() => {
@@ -1632,69 +1776,12 @@ const MasterData = props => {
   }, [dataSource, editRow]);
 
   //===========================================================
-  const UpdateData = (rowdata, type) => {
-    if (props.tableQuery === "User") {
-      if (type === "edit") {
-        dataSentToAPI.forEach(row => {
-          delete row["Password"];
-          delete row["ModifyBy"];
-          delete row["ModifyTime"];
-        });
-      } else {
-        dataSentToAPI.forEach(row => {
-          var guidstr = guid.raw().toUpperCase();
-          var i = 0,
-            strLength = guidstr.length;
-          for (i; i < strLength; i++) {
-            guidstr = guidstr.replace("-", "");
-          }
-          row["password"] =
-            "@@sql_gen_password," + row["password"] + "," + guidstr;
-          row["SaltPassword"] = guidstr;
-
-          delete row["Password"];
-          delete row["ModifyBy"];
-          delete row["ModifyTime"];
-        });
-      }
-    } else {
-      dataSentToAPI.forEach(row => {
-        delete row["ModifyBy"];
-        delete row["ModifyTime"];
-      });
-    }
-
-    let updjson = {
-      t: props.table,
-      pk: "ID",
-      datas: dataSentToAPI,
-      nr: false,
-      _token: localStorage.getItem("Token")
-    };
-
-    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
-        if (res.data._result.status === 1) {
-          setOpenSuccess(true);
-          getData(createQueryString(query));
-          setPage(0);
-          setResetPage(true);
-          Clear();
-        } else {
-          setOpenError(true);
-          setTextError(res.data._result.message);
-          getData(createQueryString(query));
-          setPage(0);
-          setResetPage(true);
-          Clear();
-        }
-      }
-    });
-  };
-  //===========================================================
 
   const Clear = () => {
     setEditRow([]);
+    setDialog(false);
+    setDialogEdit(false)
+    setDialogEditPassWord(false)
     setDeleteDataTmp([]);
     setData2({});
     setDataSentToAPI([]);
@@ -1706,6 +1793,8 @@ const MasterData = props => {
   //===========================================================
   return (
     <div>
+      {/* {props.custompopupAddEle} */}
+      {customAdd === true ? props.custompopupAddEle : null}
       <AmFilterTable
         defaultCondition={{ f: "status", c: "!=", v: "2" }}
         primarySearch={FuncFilterPri()}
@@ -1733,7 +1822,7 @@ const MasterData = props => {
         //style={{width:"600",height:"300px"}}
         open={dialog}
         onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
-        titleText={addData === true ? "Add" : "Edit"}
+        titleText={"Add"}
         data={editData}
         columns={FuncTest()}
         objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
@@ -1741,7 +1830,7 @@ const MasterData = props => {
       <AmEditorTable
         open={dialogEdit}
         onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "edit")}
-        titleText={addData === true ? "Add" : "Edit"}
+        titleText={"Edit"}
         data={editData}
         columns={FuncTestEdit()}
         objColumnsAndFieldCheck={{ objColumn: props.dataEdit, fieldCheck: "field" }}

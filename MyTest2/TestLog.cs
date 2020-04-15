@@ -29,6 +29,13 @@ namespace MyTest2
         }
 
         [Fact]
+        public void ReadName()
+        {
+            sysout.WriteLine(typeof(AWMSModel.Entity.ams_ObjectSize).Name);
+            //Console.ReadKey();
+        }
+
+        [Fact]
         public void Loging()
         {
             Queue<string> q = new Queue<string>();

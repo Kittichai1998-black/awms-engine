@@ -221,6 +221,7 @@ const PackMasterType = props => {
         dataAdd={columns}
         iniCols={iniCols}
         dataEdit={columnsEdit}
+        history={props.history}
       />
     </div>
   );

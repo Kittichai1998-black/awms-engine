@@ -932,7 +932,7 @@ const AmSetUserPer = (props) => {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
         console.log("is Action");
-
+        UpdateData(rowdata, type);
         // UpdateData();
       }
       // UpdateData()
@@ -1046,25 +1046,6 @@ const AmSetUserPer = (props) => {
       setValueText1({ SKUMaster_ID: "xxxxxx" })
     }
 
-    // let cloneEditRow = [];
-    // let cloneData = idEdit[0]
-
-    // if (addData) {
-    //   data2["ID"] = null;
-    //   data2["Revision"] = 1;
-    //   data2["Status"] = 1;
-    //   data2[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     data2["Code"] = packCode;
-    //     data2["Name"] = packName;
-    //   }
-    //   cloneEditRow.push(data2)
-    //   setDataSentToAPI(cloneEditRow)
-    // } else {
-    //   cloneData[field] = value;
-    //   setDataSentToAPI([cloneData])
-    // }
-
     let editDataNew = Clone(editData)
 
     if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
@@ -1102,46 +1083,48 @@ const AmSetUserPer = (props) => {
   }, [dataSource, editRow])
 
   //===========================================================
-  const UpdateData = () => {
-    if (props.tableQuery === "User") {
-      editData.forEach(row => {
-        var guidstr = guid.raw().toUpperCase()
-        var i = 0, strLength = guidstr.length;
-        for (i; i < strLength; i++) {
+  const UpdateData = (rowdata, type) => {
+    console.log(rowdata)
+    console.log(props.dataEdit)
 
-          guidstr = guidstr.replace('-', '');
+    var dataEditx = {}
+    if (type === "edit") {
 
-        }
-        row["password"] = "@@sql_gen_password," + row["password"] + "," + guidstr
-        row["SaltPassword"] = guidstr
+      console.log(props.dataEdit)
+      props.dataEdit.forEach(y => {
+        dataEditx["ID"] = rowdata["ID"]
+        dataEditx[y.field] = rowdata[y.field]
 
-        delete row["Password"]
-        delete row["ModifyBy"]
-        delete row["ModifyTime"]
       })
     } else {
-      editData.forEach(row => {
-        delete row["ModifyBy"]
-        delete row["ModifyTime"]
+
+      props.dataAdd.forEach(y => {
+        dataEditx["ID"] = null
+        dataEditx[y.field] = rowdata[y.field]
+        dataEditx["Status"] = 1
       })
     }
-
+    console.log(dataEditx)
     let updjson = {
       "t": props.table,
       "pk": "ID",
-      "datas": editData,
+      "datas": [dataEditx],
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
-
+    console.log(updjson)
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
           setOpenSuccess(true)
+
+          dataEditx = {}
           getData(createQueryString(query))
           Clear()
         } else {
           setOpenError(true)
+
+          dataEditx = {}
           setTextError(res.data._result.message)
           getData(createQueryString(query))
           Clear()
@@ -1155,6 +1138,9 @@ const AmSetUserPer = (props) => {
     setEditRow([])
     setDeleteDataTmp([])
     setData2({})
+    setDialog(false)
+    setDialogRole(false)
+    setDialogEdit(false)
     // setDataSentToAPI([])
     setValueText1([])
     setPackCode("")
