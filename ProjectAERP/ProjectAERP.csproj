@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
+    <ProjectReference Include="..\AWMSEngine\AWMSEngine.csproj" />
+    <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="app.property">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ADO\" />
+    <Folder Include="APIService\" />
+    <Folder Include="Engine\" />
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+</Project>
