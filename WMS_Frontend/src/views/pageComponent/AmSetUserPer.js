@@ -1089,7 +1089,7 @@ const AmSetUserPer = (props) => {
 
     var dataEditx = {}
     if (type === "edit") {
-      console.log("dfhdfgisudf")
+
       console.log(props.dataEdit)
       props.dataEdit.forEach(y => {
         dataEditx["ID"] = rowdata["ID"]

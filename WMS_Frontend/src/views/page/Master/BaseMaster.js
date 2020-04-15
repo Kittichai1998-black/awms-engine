@@ -4,14 +4,8 @@ import {
   apicall,
   createQueryString
 } from "../../../components/function/CoreFunction";
-import AmInput from "../../../components/AmInput";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Checkbox from "@material-ui/core/Checkbox";
 import styled from "styled-components";
 const Axios = new apicall();
 
@@ -76,6 +70,7 @@ const BaseMaster = props => {
     { label: "INACTIVE", value: 0 },
     { label: "ACTIVE", value: 1 }
   ];
+  const [isLoad, setIsLoad] = useState(true);
 
   const iniCols = [
     {
@@ -103,19 +98,32 @@ const BaseMaster = props => {
   ];
   const columns = [
     {
-      field: "Code",
-      type: "Custom",
-      name: "Code",
+      field: "Checkbox",
+      type: "checkbox",
+      name: "Checkbox",
+      placeholder: "",
+    },
+    {
+      field: "CodeStart",
+      type: "input",
+      name: "Code Start",
       placeholder: "Code",
-      required: true,
-      //Cell: e => setMultiBase(e.original)
+      disableCustom: true,
+
+    },
+    {
+      field: "CodeEnd",
+      type: "input",
+      name: "Code End",
+      placeholder: "Code",
+      disableCustom: true,
     },
     {
       field: "Code",
       type: "input",
       name: "Code",
       placeholder: "Code",
-      required: true
+      disableCustom: true,
     },
     {
       field: "Name",
@@ -296,117 +304,6 @@ const BaseMaster = props => {
     }
   ];
 
-  const [valueInput, setValueInput] = useState({});
-  const [objData, setObjData] = useState();
-  const onHandleChangeInput = (
-    value,
-    dataObject,
-    field,
-    fieldDataKey,
-    event
-  ) => {
-    valueInput[field] = value;
-    console.log(value)
-    console.log(field)
-    console.log(valueInput[field])
-    console.log(valueInput.CodeFrom)
-    setDataPallet(valueInput.CodeTo, valueInput.CodeFrom)
-  };
-  const onHandleChangeInputPalletCode = (
-    value,
-    dataObject,
-    field,
-    fieldDataKey,
-    event
-  ) => {
-    if (event && event.key == "Enter") {
-      valueInput[field] = value;
-      console.log(value)
-      console.log(field)
-      console.log(valueInput.CodeFrom)
-      console.log(valueInput.CodeTo)
-      console.log(valueInput[field])
-      //setDataPallet(valueInput.CodeTo, valueInput.CodeFrom)
-    }
-  };
-  var arrData1 = null
-  const setDataPallet = (CodeTo, CodeFrom) => {
-    var arrData = []
-
-    arrData["CodeTo"] = CodeTo
-    arrData["CodeFrom"] = CodeFrom
-
-    console.log(arrData)
-    //setObjData(arrData)
-    arrData1 = arrData
-    console.log(setObjData)
-  }
-
-
-  const setMultiBase = () => {
-
-
-    return <ExpansionPanel style={{ width: "100%", marginBottom: "10px" }}>
-      <ExpansionPanelSummary style={{ width: "100%", margin: "0px" }}
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Typography >Add MultlBase</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography>
-          <FormInline>
-            {" "}
-            <LabelH>{"Code to"} : </LabelH>
-            <AmInput
-              id={"CodeTo"}
-              placeholder="Scan pallet or box code"
-              autoFocus={true}
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "CodeTo", null, event)
-              }
-              onKeyPress={(value, obj, element, event) =>
-                onHandleChangeInputPalletCode(
-                  value,
-                  null,
-                  "PalletCode",
-                  null,
-                  event
-                )
-              }
-            /> <LabelH>{" from"} : </LabelH>
-            <AmInput
-              id={"CodeFrom"}
-              placeholder="Scan pallet or box code"
-              autoFocus={true}
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "CodeFrom", null, event)
-              }
-              onKeyPress={(value, obj, element, event) =>
-                onHandleChangeInputPalletCode(
-                  value,
-                  null,
-                  "PalletCode",
-                  null,
-                  event
-                )
-              }
-            />
-            />
-          </FormInline>
-
-        </Typography>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-
-
-  };
-
 
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
@@ -419,9 +316,10 @@ const BaseMaster = props => {
       return null;
     }
   };
+
+
   return (
     <div>
-      {console.log(arrData1)}
       <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -431,7 +329,10 @@ const BaseMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
-        custompopupAddEle={setMultiBase()}
+        //======= MultyBase  ========
+        prefix={2}
+        baseLength={10}
+        checked={isLoad}
       />
     </div>
   );
