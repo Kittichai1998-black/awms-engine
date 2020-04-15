@@ -1015,7 +1015,7 @@ const MasterData = props => {
           <InputDiv>
             <AmInput
 
-              // id={cols.field}
+              id={cols.field}
               error={rowError}
               required={required}
               validate={true}
@@ -1027,10 +1027,10 @@ const MasterData = props => {
               //value={checkEvent ? "" : data[cols.field]}
               disabled={
                 disableCustom ? (
-                  cols.field === "Code" ? !checkEvent : checkEvent
+                  cols.field === "Code2" ? !checkEvent : checkEvent
                 ) : disable
               }
-              value={data ? data[cols.field] : ""}
+              //value={data ? data[cols.field] : ""}
               onChange={val => {
                 onChangeEditor(cols.field, data, val, null, null, required, checkEvent);
               }}
@@ -1047,10 +1047,13 @@ const MasterData = props => {
             setCheckEvent(!event.target.checked)
             console.log(event.target.checked)
             if (event.target.checked) {
-              data["Code"] = ""
+              data["Code2"] = "";
+              document.getElementById("Code2").value = "";
             } else {
-              data["CodeEnd"] = ""
-              data["CodeStart"] = ""
+              data["CodeEnd"] = "";
+              data["CodeStart"] = "";
+              document.getElementById("CodeEnd").value = "";
+              document.getElementById("CodeStart").value = "";
             }
 
           }}
