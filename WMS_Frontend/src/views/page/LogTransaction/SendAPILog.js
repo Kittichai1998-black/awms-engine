@@ -29,9 +29,9 @@ const SendAPILog = (props) => {
 
   const query = {
     queryString: window.apipath + "/v2/SelectDataLogAPI",
-    t: "SendAPIEvent",
+    t: "APIPostEvent",
     q: '',
-    f: "ID, LogRefID,APIService_Module,APIName,InputText,OutputText,ResultMessage,StartTime,EndTime",
+    f: "ID, LogRefID,APIRefID,APIService_Module,APIName,APIUrl,InputText,OutputText,ResultMessage,StartTime,EndTime",
     g: "",
     s: "[{'f':'ID','od':'desc'},{'f':'StartTime','od':'desc'}]",
     sk: 0,
@@ -209,7 +209,7 @@ const SendAPILog = (props) => {
         <Divider />
         <br />
         <Typography variant="h6">{"Output"}</Typography>
-        {data.InputText ? showReactJsonView("Output-Text",JSON.parse(data.OutputText))
+        {data.OutputText ? showReactJsonView("Output-Text",JSON.parse(data.OutputText))
           : <label>Data Not Found.</label>}
       </div>
       return (
