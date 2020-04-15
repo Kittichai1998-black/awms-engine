@@ -16,7 +16,6 @@
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
     <ProjectReference Include="..\AWMSEngine\AWMSEngine.csproj" />
     <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
-    <ProjectReference Include="..\ProjectMRK\ProjectMRK.csproj" />
   </ItemGroup>
 
 </Project>
