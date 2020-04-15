@@ -296,6 +296,53 @@ const BaseMaster = props => {
     }
   ];
 
+  const [valueInput, setValueInput] = useState({});
+  const [objData, setObjData] = useState();
+  const onHandleChangeInput = (
+    value,
+    dataObject,
+    field,
+    fieldDataKey,
+    event
+  ) => {
+    valueInput[field] = value;
+    console.log(value)
+    console.log(field)
+    console.log(valueInput[field])
+    console.log(valueInput.CodeFrom)
+    setDataPallet(valueInput.CodeTo, valueInput.CodeFrom)
+  };
+  const onHandleChangeInputPalletCode = (
+    value,
+    dataObject,
+    field,
+    fieldDataKey,
+    event
+  ) => {
+    if (event && event.key == "Enter") {
+      valueInput[field] = value;
+      console.log(value)
+      console.log(field)
+      console.log(valueInput.CodeFrom)
+      console.log(valueInput.CodeTo)
+      console.log(valueInput[field])
+      //setDataPallet(valueInput.CodeTo, valueInput.CodeFrom)
+    }
+  };
+  var arrData1 = null
+  const setDataPallet = (CodeTo, CodeFrom) => {
+    var arrData = []
+
+    arrData["CodeTo"] = CodeTo
+    arrData["CodeFrom"] = CodeFrom
+
+    console.log(arrData)
+    //setObjData(arrData)
+    arrData1 = arrData
+    console.log(setObjData)
+  }
+
+
   const setMultiBase = () => {
 
 
@@ -313,28 +360,43 @@ const BaseMaster = props => {
             {" "}
             <LabelH>{"Code to"} : </LabelH>
             <AmInput
-              // error={rowError}
-              // required={required}
-              // id={cols.field}
-              style={{ width: "100px", margin: "0px" }}
-            // placeholder={placeholder}
-            // type="input"
-            // // value={data[cols.field] && data ? data[cols.field] : packCode}
-            // onChange={val => {
-            //   onChangeEditor(cols.field, data, val, "Pack Code", null, required);
-            // }}
-            />  <LabelH>{" from"} : </LabelH>
-            <AmInput
-              //required={required}
-              id={"Code"}
-              style={{ width: "100px", marginLeft: "5px" }}
-              placeholder={"code"}
+              id={"CodeTo"}
+              placeholder="Scan pallet or box code"
+              autoFocus={true}
               type="input"
-              //value={""}
-              onChange={val => {
-                console.log(val)
-                onChangeEditor(val, true);
-              }}
+              style={{ width: "100%" }}
+              onChange={(value, obj, element, event) =>
+                onHandleChangeInput(value, null, "CodeTo", null, event)
+              }
+              onKeyPress={(value, obj, element, event) =>
+                onHandleChangeInputPalletCode(
+                  value,
+                  null,
+                  "PalletCode",
+                  null,
+                  event
+                )
+              }
+            /> <LabelH>{" from"} : </LabelH>
+            <AmInput
+              id={"CodeFrom"}
+              placeholder="Scan pallet or box code"
+              autoFocus={true}
+              type="input"
+              style={{ width: "100%" }}
+              onChange={(value, obj, element, event) =>
+                onHandleChangeInput(value, null, "CodeFrom", null, event)
+              }
+              onKeyPress={(value, obj, element, event) =>
+                onHandleChangeInputPalletCode(
+                  value,
+                  null,
+                  "PalletCode",
+                  null,
+                  event
+                )
+              }
+            />
             />
           </FormInline>
 
@@ -345,40 +407,7 @@ const BaseMaster = props => {
 
   };
 
-  const onChangeEditor = (value, required) => {
-    //console.log(field)
-    console.log(value)
-    // let editDataNew = Clone(editData)
 
-    // if (addData && Object.getOwnPropertyNames(editDataNew).length === 0) {
-    //   editDataNew["ID"] = null
-    //   editDataNew["Revision"] = 1;
-    //   editDataNew["Status"] = 1;
-    //   editDataNew[field] = value;
-    //   if (props.tableQuery === "PackMaster") {
-    //     editDataNew["Code"] = packCode;
-    //     editDataNew["Name"] = packName;
-    //   }
-    // } else {
-    //   editDataNew[field] = value;
-    // }
-
-    // setEditData(editDataNew);
-
-    // if (required) {
-    //   if (!editDataNew[field]) {
-    //     const arrNew = [...new Set([...inputError, field])]
-    //     setInputError(arrNew)
-    //   } else {
-    //     const arrNew = [...inputError]
-    //     const index = arrNew.indexOf(field);
-    //     if (index > -1) {
-    //       arrNew.splice(index, 1);
-    //     }
-    //     setInputError(arrNew)
-    //   }
-    // }
-  };
   const getStatus = value => {
     if (value.Status === "0" || value.Status === 0) {
       return <AmEntityStatus key={0} statusCode={0} />;
@@ -392,6 +421,7 @@ const BaseMaster = props => {
   };
   return (
     <div>
+      {console.log(arrData1)}
       <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
