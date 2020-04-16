@@ -9,10 +9,13 @@ const AmWave = (props) => {
     return <WaveProvider>
             <AmWaveManagement
                 waveColumns={props.waveColumns}
-                WavemangeQuery={props.WavemangeQuery}
+                waveQuery={props.waveQuery}
             />
             <AmWaveTab/>
-            <AmWaveDetail detailColumns={props.detailColumns}/>
+        <AmWaveDetail
+            detailColumns={props.detailColumns}
+            waveManageQuery={props.waveManageQuery}
+        />
         </WaveProvider>
 
     

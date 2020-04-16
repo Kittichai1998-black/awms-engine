@@ -14,7 +14,7 @@ var Axios = new apicall();
 
 const useWaveColumns = (waveColumns) => {
     const [columns, setColumns] = useState(waveColumns);
-    const { wave } = useContext(WaveContext)
+    const { wave, tabModes } = useContext(WaveContext)
 
     const SetWaveID = (es) => {
         wave.setWaveID(es.row._original.ID)
@@ -42,7 +42,6 @@ const useWaveColumns = (waveColumns) => {
 
 const useWaveQuery = (query, mode) => {
     const [waveQuery, setWaveQuery] = useState(query);
-
     useEffect(() => {
         if (query != null) {
             let objQuery = { ...query};
@@ -68,8 +67,8 @@ const useWaveQuery = (query, mode) => {
 const AmWaveManagement = (props) => {
     const [Datawave, setDatawave] = useState();
     const waveColumns = useWaveColumns(props.waveColumns)
-    const { wave } = useContext(WaveContext)
-    const WavemangeQuery = useWaveQuery(props.WavemangeQuery, wave.waveRunMode)
+    const { wave, tabModes} = useContext(WaveContext)
+    const WavemangeQuery = useWaveQuery(props.waveQuery, wave.waveRunMode)
         //useState(props.WavemangeQuery);
         //useWaveQuery(props.WavemangeQuery, wave.waveRunMode)
 
@@ -79,17 +78,14 @@ const AmWaveManagement = (props) => {
     }, [WavemangeQuery])
 
     const getData = (WavemangeQuerys) => {
-     Axios.get(createQueryString(WavemangeQuerys)).then(res => {
-         if (res.data.datas.length > 0) {
-             
-         }
+     Axios.get(createQueryString(WavemangeQuerys)).then(res => {    
          setDatawave(res.data.datas);
      })
     }
 
     const DDLWave = [{ label: 'Manual', value: 0 },
         { label: 'Sequence', value: 1},
-        { label: 'Schedule', value: 2 },
+        { label: 'Schedule', value: 2},
     ]
 
     const onChangeEditor = (value, dataObject) => {
@@ -103,9 +99,10 @@ const AmWaveManagement = (props) => {
                  id="ModeWave"
                  placeholder="Select"
                  data={DDLWave}
-                 width={300} //��˹��������ҧ�ͧ��ͧ input
-                 ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
-                 valueData={0} //��� value ������͡
+                  width={300} 
+                 defaultValue={0}
+                 ddlMinWidth={300} 
+                 valueData={0} 
                  onChange={(value, dataObject) =>
                      onChangeEditor(value, dataObject)
                  }
