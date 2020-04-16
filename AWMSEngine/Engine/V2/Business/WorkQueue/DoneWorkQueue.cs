@@ -244,6 +244,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     stoList.ForEach(sto =>
                     {
                         var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                        
                         if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                         {
                             distos.ToList().ForEach(disto =>
