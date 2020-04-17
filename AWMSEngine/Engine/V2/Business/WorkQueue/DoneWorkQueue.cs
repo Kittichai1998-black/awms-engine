@@ -231,6 +231,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         private List<amt_DocumentItem> ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
+            //var distoByQueue = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(queueTrx.ID.Value, this.BuVO);
+
+
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
             var listDisto = new List<amt_DocumentItemStorageObject>();
