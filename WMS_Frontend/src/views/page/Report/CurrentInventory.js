@@ -108,7 +108,7 @@ const CurrentInventory = (props) => {
         if (event && event.key == 'Enter') {
             onGetDocument();
         }
-    }; 
+    };
     const GetBodyReports = () => {
         return <div style={{ display: "inline-block" }}>
             <FormInline>

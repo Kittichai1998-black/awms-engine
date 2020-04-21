@@ -1375,6 +1375,7 @@ const MasterData = props => {
         <FormInline>
           {" "}
           <LabelH>{t(name)} : </LabelH>
+          {console.log(data[cols.field])}
           <AmDropdown
             required={required}
             error={inputError}
