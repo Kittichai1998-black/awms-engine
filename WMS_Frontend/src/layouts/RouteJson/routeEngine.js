@@ -217,7 +217,8 @@ const routes = [
   { path: "/testdashboard", name: "TestRedirect", compoment: testDashboard, exact: true },
   { path: "/tpcq", name: "TestProcessQueue ", compoment: TestProcessQueueV2, exact: true },
   { path: "/twmn", name: "TestWaveManagement", compoment: TestWaveManagement, exact: true },
-  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true }// { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
+  { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true },// { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
+  { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
 ];
 
 export default routes;
