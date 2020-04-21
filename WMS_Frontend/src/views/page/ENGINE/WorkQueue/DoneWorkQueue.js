@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AmReport from '../../../../components/AmReport'
+import AmDoneWorkQueue from '../../../pageComponent/AmDoneWorkQueue'
 import AmButton from '../../../../components/AmButton'
 import { apicall } from '../../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
 import AmInput from "../../../../components/AmInput";
+import AmDropdown from '../../../../components/AmDropdown';
 import { useTranslation } from 'react-i18next'
 
 const Axios = new apicall();
@@ -67,15 +68,22 @@ const DoneWorkQueue = (props) => {
     onGetDocument()
   }, [page])
 
+  const INOUT = [
+    { label: "IN", value: 0 },
+    { label: "OUT", value: 1 }
+  ];
   const onGetALL = () => {
     return window.apipath + "/v2/GetSPReportAPI?"
       + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
-      + "&packName=" + (valueText.packName === undefined || valueText.packName === null ? '' : encodeURIComponent(valueText.packName.trim()))
+      + "&pallet=" + (valueText.PalletCode === undefined || valueText.PalletCode === null ? '' : encodeURIComponent(valueText.PalletCode.trim()))
       + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
       + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
       + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
-
-      + "&spname=CURRENTINV_STOSUM";
+      + "&IOType=" + (valueText.IOType === undefined || valueText.IOType === null ? '' : encodeURIComponent(valueText.IOType))
+      //+ "&IOType=0"
+      + "&unit=" + (valueText.unit === undefined || valueText.unit === null ? '' : encodeURIComponent(valueText.unit.trim()))
+      + "&doc=" + (valueText.Document_Code === undefined || valueText.Document_Code === null ? '' : encodeURIComponent(valueText.Document_Code.trim()))
+      + "&spname=DONE_WORKQUEUE";
   }
   const onGetDocument = () => {
     let pathGetAPI = onGetALL() +
@@ -85,6 +93,7 @@ const DoneWorkQueue = (props) => {
     Axios.get(pathGetAPI).then((rowselect1) => {
       if (rowselect1) {
         if (rowselect1.data._result.status !== 0) {
+          console.log(rowselect1.data.datas)
           setdatavalue(rowselect1.data.datas)
           setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
         }
@@ -97,6 +106,7 @@ const DoneWorkQueue = (props) => {
       value = value.replace(/\*/g, "%");
     }
     valueText[inputID] = value;
+    console.log(valueText.IOType)
   }
   const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
     getValue(value, inputID);
@@ -107,10 +117,14 @@ const DoneWorkQueue = (props) => {
       onGetDocument();
     }
   };
+  const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
+    getValue(value, inputID);
+    onGetDocument();
+  };
   const GetBodyReports = () => {
     return <div style={{ display: "inline-block" }}>
       <FormInline>
-        <LabelH>{t(window.project === "TAP" ? "Part NO." : 'SKU Code')} : </LabelH>
+        <LabelH>{t('SKU')} : </LabelH>
         <AmInput
           id={"packCode"}
           type="input"
@@ -120,13 +134,23 @@ const DoneWorkQueue = (props) => {
         />
       </FormInline>
       <FormInline>
-        <LabelH>{t(window.project === "TAP" ? "Part Name" : 'SKU Name')} : </LabelH>
+        <LabelH>{t('Pallet')} : </LabelH>
         <AmInput
-          id={"packName"}
+          id={"PalletCode"}
           type="input"
           style={{ width: "300px" }}
-          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packName", null, event)}
-          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packName", null, event)}
+          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "PalletCode", null, event)}
+          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "PalletCode", null, event)}
+        />
+      </FormInline>
+      <FormInline>
+        <LabelH>{t('Doc No.')} : </LabelH>
+        <AmInput
+          id={"Document_Code"}
+          type="input"
+          style={{ width: "300px" }}
+          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "Document_Code", null, event)}
+          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "Document_Code", null, event)}
         />
       </FormInline>
       <FormInline>
@@ -179,12 +203,28 @@ const DoneWorkQueue = (props) => {
 
   ];
 
-  const comma = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
   return (
     <div className={classes.root}>
-      <AmReport
+      <FormInline><LabelH>{t("IOType")} : </LabelH>
+        <AmDropdown
+          id={'IOType'}
+          fieldDataKey={"value"}
+          //fieldLabel={["Code", "Name"]}
+          placeholder="Select"
+          labelPattern=" : "
+          width={300}
+          ddlMinWidth={300}
+          zIndex={1000}
+          defaultValue={0}
+          valueData={valueText["IOType"]}
+          //data={dataDropDow}
+          //defaultValue={valueText["IOType"]}
+          // returnDefaultValue={true}
+          data={INOUT}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
+        />
+      </FormInline>
+      <AmDoneWorkQueue
         bodyHeadReport={GetBodyReports()}
         columnTable={columns}
         dataTable={datavalue}
@@ -193,10 +233,8 @@ const DoneWorkQueue = (props) => {
         totalSize={totalSize}
         renderCustomButton={customBtnSelect()}
         page={true}
-        //exportApi={onGetALL()}
-        excelFooter={true}
-      //fileNameTable={"CURINV"}
-      ></AmReport>
+        exportData={false}
+      ></AmDoneWorkQueue>
     </div>
   )
 
