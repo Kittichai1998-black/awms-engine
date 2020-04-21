@@ -8,6 +8,8 @@ import _ from 'lodash';
 import { apicall } from '../../components/function/CoreFunction2'
 import AmFilterTable from '../../components/table/AmFilterTable';
 import AmButton from "../../components/AmButton";
+import AmEditorTable from "../../components/table/AmEditorTable";
+import AmDialogs from "../../components/AmDialogs";
 const Axios = new apicall();
 
 const AmDoneWorkQueue = (props) => {
@@ -37,6 +39,11 @@ const AmDoneWorkQueue = (props) => {
   const [pageTb, setPageTb] = useState(0);
   const [dataExport, setDataExport] = useState([]);
   const [selection, setSelection] = useState();
+  const [dialogConfirm, setDialogConfirm] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [openWarning, setOpenWarning] = useState(false);
+  const [textError, setTextError] = useState("");
 
   useEffect(() => {
     if (dataTable) {
@@ -98,14 +105,44 @@ const AmDoneWorkQueue = (props) => {
     })
     return null
   }
+  const onHandleDeleteConfirm = (status) => {
+    if (status) {
+      doneWorkQueue()
+    }
+    setDialogConfirm(false);
+  };
   return (
     <div>
-      {/* <AmEditorTable
-        open={dialogDelete}
+      <AmDialogs
+        typePopup={"success"}
+        onAccept={e => {
+          setOpenSuccess(e);
+        }}
+        open={openSuccess}
+        content={"Success"}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"warning"}
+        onAccept={e => {
+          setOpenWarning(e);
+        }}
+        open={openWarning}
+        content={"Please select data"}
+      ></AmDialogs>
+      <AmEditorTable
+        open={dialogConfirm}
         onAccept={status => onHandleDeleteConfirm(status)}
-        titleText={"Confirm Delete"}
+        titleText={"Confirm DoneQueue"}
         columns={[]}
-      /> */}
+      />
       <div style={{ marginBottom: '10px' }}>
         {bodyHeadReport}
       </div>
@@ -145,7 +182,13 @@ const AmDoneWorkQueue = (props) => {
           style={{ marginRight: "5px" }}
           styleType="confirm"
           onClick={() => {
-            doneWorkQueue()
+            console.log(selection)
+            if (selection.length === 0) {
+              setOpenWarning(true)
+            } else {
+              setDialogConfirm(true)
+            }
+
           }}
         >
           DONE QUEUE

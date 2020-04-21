@@ -61,11 +61,15 @@ const DoneWorkQueue = (props) => {
   const [datavalue, setdatavalue] = useState([]);
   const pageSize = 100;
   const [page, setPage] = useState(0);
+  const [pageIni, setPageIni] = useState(false);
   const [totalSize, setTotalSize] = useState(0);
   const [valueText, setValueText] = useState({});
 
   useEffect(() => {
-    onGetDocument()
+    console.log(page)
+    if (pageIni) {
+      onGetDocument()
+    }
   }, [page])
 
   const INOUT = [
@@ -215,11 +219,9 @@ const DoneWorkQueue = (props) => {
           width={300}
           ddlMinWidth={300}
           zIndex={1000}
-          defaultValue={0}
+          //defaultValue={[0]}
           valueData={valueText["IOType"]}
-          //data={dataDropDow}
-          //defaultValue={valueText["IOType"]}
-          // returnDefaultValue={true}
+          returnDefaultValue={true}
           data={INOUT}
           onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
         />
@@ -229,13 +231,13 @@ const DoneWorkQueue = (props) => {
         columnTable={columns}
         dataTable={datavalue}
         pageSize={pageSize}
-        pages={(x) => setPage(x)}
+        pages={(x) => setPage(x)} //setPageIni(true)
         totalSize={totalSize}
         renderCustomButton={customBtnSelect()}
         page={true}
         exportData={false}
       ></AmDoneWorkQueue>
-    </div>
+    </div >
   )
 
 }
