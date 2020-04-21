@@ -23,6 +23,9 @@ using Quartz;
 using Microsoft.AspNetCore.Routing;
 using AWMSEngine.Common;
 using AWMSEngine.ScheduleService;
+using DinkToPdf.Contracts;
+using DinkToPdf;
+using System.IO;
 
 namespace AWMSEngine
 {
@@ -44,6 +47,8 @@ namespace AWMSEngine
             string fileName = appProperty[PropertyConst.APP_KEY_LOG_FILENAME];
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
+            var context = new Utility.CustomAssemblyLoadContext();
+            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
 
             services.AddCors(options =>
             {
@@ -61,6 +66,8 @@ namespace AWMSEngine
             services.AddRazorPages();
             services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSignalR();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+            services.AddControllers();
             this.SetUpScheduler();
             this.SetUpWorker(services);
         }

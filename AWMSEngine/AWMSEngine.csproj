@@ -59,15 +59,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="APIService\V2\Report\" />
     <Folder Include="Engine\V2\Business\Loading\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="IronPdf" Version="2020.3.2" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NReco.PdfGenerator" Version="1.1.15" />
     <PackageReference Include="System.DirectoryServices" Version="4.6.0" />
   </ItemGroup>
 
