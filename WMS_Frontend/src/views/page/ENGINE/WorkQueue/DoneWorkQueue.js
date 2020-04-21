@@ -63,14 +63,12 @@ const DoneWorkQueue = (props) => {
   const [page, setPage] = useState(0);
   const [pageIni, setPageIni] = useState(false);
   const [totalSize, setTotalSize] = useState(0);
-  const [valueText, setValueText] = useState({});
+  const [valueText, setValueText] = useState({ "IOType": 0 });
 
   useEffect(() => {
     console.log(page)
-    if (pageIni) {
-      onGetDocument()
-    }
-  }, [page])
+    onGetDocument()
+  }, [page, valueText])
 
   const INOUT = [
     { label: "IN", value: 0 },
@@ -103,6 +101,7 @@ const DoneWorkQueue = (props) => {
         }
       }
     });
+
   }
 
   const getValue = (value, inputID) => {
@@ -110,6 +109,7 @@ const DoneWorkQueue = (props) => {
       value = value.replace(/\*/g, "%");
     }
     valueText[inputID] = value;
+    setValueText({ ...valueText })
     console.log(valueText.IOType)
   }
   const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
@@ -123,7 +123,7 @@ const DoneWorkQueue = (props) => {
   };
   const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
     getValue(value, inputID);
-    onGetDocument();
+    //onGetDocument();
   };
   const GetBodyReports = () => {
     return <div style={{ display: "inline-block" }}>
@@ -219,9 +219,9 @@ const DoneWorkQueue = (props) => {
           width={300}
           ddlMinWidth={300}
           zIndex={1000}
-          //defaultValue={[0]}
+          defaultValue={"0"}
           valueData={valueText["IOType"]}
-          returnDefaultValue={true}
+          //returnDefaultValue={true}
           data={INOUT}
           onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
         />
@@ -231,7 +231,7 @@ const DoneWorkQueue = (props) => {
         columnTable={columns}
         dataTable={datavalue}
         pageSize={pageSize}
-        pages={(x) => setPage(x)} //setPageIni(true)
+        pages={(x) => { setPage(x); setPageIni(true) }}
         totalSize={totalSize}
         renderCustomButton={customBtnSelect()}
         page={true}
