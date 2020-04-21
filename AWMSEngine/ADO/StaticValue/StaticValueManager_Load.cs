@@ -135,6 +135,17 @@ namespace AWMSEngine.ADO.StaticValue
         {
             return this._HubService = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_HubService>("status", 1, buVO ?? new VOCriteria()));
         }
-
+        public List<ams_PrintForm> LoadPrintForm(VOCriteria buVO = null)
+        {
+            return this._PrintForm = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PrintForm>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public List<ams_PrintLayout> LoadPrintLayout(VOCriteria buVO = null)
+        {
+            return this._PrintLayout = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PrintLayout>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public List<ams_PrintField> LoadPrintField(VOCriteria buVO = null)
+        {
+            return this._PrintField = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PrintField>("status", 1, buVO ?? new VOCriteria()));
+        }
     }
 }
