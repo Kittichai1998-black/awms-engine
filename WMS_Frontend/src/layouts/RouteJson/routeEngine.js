@@ -170,8 +170,13 @@ const AD_Search = Loadable({
   loader: () => import("../../views/page/ENGINE/AD/AD_Search"),
   loading: Loading
 });
+const DoneWorkQueue = Loadable({
+  loader: () => import("../../views/page/ENGINE/WorkQueue/DoneWorkQueue"),
+  loading: Loading
+});
 
 const routes = [
+  { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
