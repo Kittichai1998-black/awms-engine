@@ -61,7 +61,7 @@ namespace ProjectSTGT.Engine.WorkQueue
                                 priority = rsto.priority,
                                 queueID = rsto.workQueueID.Value,
                                 desWarehouseCode = staticValue.GetWarehousesCode(rsto.desWarehouseID),
-                                desAreaCode = staticValue.GetAreaMasterCode(rsto.desAreaID),
+                                desAreaCode = staticValue.GetAreaMasterCode(rsto.desAreaID.Value),
                                 desLocationCode = rsto.desLocationID.HasValue ?
                                                AWMSEngine.ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, buVO).Code :
                                                null,
