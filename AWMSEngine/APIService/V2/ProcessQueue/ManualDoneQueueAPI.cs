@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<ManualDoneQueue.TReq>(this.RequestVO);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel <ADO.QueueApi.WCSQueueADO.TReqCheckQueue> (this.RequestVO);
             var res = new ManualDoneQueue().Execute(this.Logger, this.BuVO, req);
 
             return res;

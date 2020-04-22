@@ -51,7 +51,28 @@ namespace AWMSEngine.ADO.QueueApi
                 public int resultcheck;
             }
         }
-        
+        public class TReqCheckQueue
+        {
+            public long[] queueID;
+        }
+        public class TResCheckQueue
+        {
+            public List<CheckQueue> data;
+            public class CheckQueue
+            {
+                public long queueID;
+                public WCSQueueStatus status;
+            }
+            public Result _result;
+
+            public class Result
+            {
+                public dynamic resultmessage;
+                public int resultcheck;
+            }
+           
+        }
+
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
             return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
@@ -66,6 +87,12 @@ namespace AWMSEngine.ADO.QueueApi
             //var d = datas.Clone();
             //d.queueOut.ForEach(x => x.queueID = null);
             //var res = this.SendJson<TRes>("WCS_SEND_QUEUE", d, null, buVO);
+            //return res;
+        }
+        public TResCheckQueue SendCheckQueue(TReqCheckQueue queueID, VOCriteria buVO)
+        {
+            return new TResCheckQueue() { _result = new TResCheckQueue.Result() { resultcheck = 1, resultmessage = "SUCCESS" },data = new List<TResCheckQueue.CheckQueue>() };
+            //var res = this.SendJson<TRes>("WCS_CHECK_QUEUE", datas, null, buVO);
             //return res;
         }
     }
