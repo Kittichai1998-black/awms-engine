@@ -10,6 +10,7 @@ import AmInput from "../../../../components/AmInput";
 import Grid from '@material-ui/core/Grid';
 import AmDropdown from '../../../../components/AmDropdown';
 import AmDate from '../../../../components/AmDate';
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import { useTranslation } from 'react-i18next'
 
 const Axios = new apicall();
@@ -208,9 +209,23 @@ const DoneWorkQueue = (props) => {
     { accessor: "BaseQuantity", Header: "Qty", width: 100, sortable: false },
     { accessor: "Unit", Header: "Unit", width: 80, sortable: false },
 
-    { accessor: "Document_Code", Header: "Doc No.", width: 120, sortable: false },
+    { accessor: "Document_Code", Header: "Doc No.", width: 120, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
 
   ];
+  const getRedirect = data => {
+    return (
+      <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+        {data.Code}
+        <AmRediRectInfo
+          api={"/receive/detail?docID=" + data.Document_ID}
+          history={props.history}
+          docID={""}
+        >
+          {" "}
+        </AmRediRectInfo>
+      </div>
+    );
+  };
 
   return (
     <div className={classes.root}>
