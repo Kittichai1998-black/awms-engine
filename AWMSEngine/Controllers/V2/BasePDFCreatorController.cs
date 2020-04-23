@@ -41,7 +41,7 @@ namespace AWMSEngine.Controllers.V2
             {
                 PagesCount = true,
                 HtmlContent = TemplateGenerator.GetHTMLString(),
-                WebSettings = { DefaultEncoding = "utf-8" }
+                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
                 //, UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") ,
                 //HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 // FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
@@ -50,7 +50,7 @@ namespace AWMSEngine.Controllers.V2
             var pdf = new HtmlToPdfDocument()
             {
                 GlobalSettings = globalSettings,
-                Objects = { objectSettings }
+                Objects = { objectSettings, objectSettings }
             };
 
             //_converter.Convert(pdf);
