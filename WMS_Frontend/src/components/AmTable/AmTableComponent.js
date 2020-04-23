@@ -1,5 +1,4 @@
 import React, {useContext, useState, useEffect, useRef, useLayoutEffect, createRef} from 'react';
-import { apicall, Clone } from '../function/CoreFunction2';
 import {Arrow, 
     Table,
     TableContainer,
@@ -7,11 +6,11 @@ import {Arrow,
     TableHeaderRow,
     TableHeaderCell,
     TableCell,
-    TableHeader,
     TableFooter,
     TableStickyCell,
-    TableHeaderStickyColumnsCell } from "./AmTableStyle";
-import {AmTableProvider, AmTableContext} from "./AmTableContext";
+    TableHeaderStickyColumnsCell,
+    TableCellFooter } from "./AmTableStyle";
+import {AmTableContext} from "./AmTableContext";
 import AmInput from "../AmInput";
 import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
@@ -77,7 +76,7 @@ const useColumns = (Columns, rowNumber, selectionState, key) => {
                             numrow = e.viewIndex + 1;
                         }
                     }
-                    return <div style={{ fontWeight: "bold" , textAlign:"right"}}>{numrow}</div>;
+                    return <div style={{ fontWeight: "bold" , textAlign:"right", paddingRight:"2px"}}>{numrow}</div>;
                 }
             });
         }
@@ -153,6 +152,17 @@ const useColumns = (Columns, rowNumber, selectionState, key) => {
     return columns
 }
 
+const useDataSource = (props) => {
+  const [dataSource, setDataSource] = useState(props)
+  const {pagination} = useContext(AmTableContext);
+
+  useEffect(() => {
+    setDataSource(props.slice(0, pagination.pageSize))
+  }, [props, pagination.pageSize])
+
+  return dataSource
+}
+
 function useWindowSize(ref) {
     const [size, setSize] = useState([0, 0]);
     useLayoutEffect(() => {
@@ -169,29 +179,24 @@ function useWindowSize(ref) {
 
 const AmTableComponent = (props) => {
     const containerRef = useRef();
+    const dataSource = useDataSource(props.dataSource)
 
     const {selection, filter, sort, pagination} = useContext(AmTableContext)
     
     const tableSize = useWindowSize(containerRef)
-
     const columns = useColumns(props.columns, props.rowNumber, props.selection, props.key)
-
-    useEffect(()=>{
-      console.log(columns)
-    },[columns])
-
     return <TableContainer width="100%" ref={containerRef} height={props.height}>
-          <Table>
+          <Table style={props.tableStyle}>
             {GenerateHeader({columns, props, tableSize})}
-            {GenerateRow({columns, props, pageSize:pagination.pageSize})}
+            {GenerateRow({columns, props, dataSource})}
+            {GenerateFooter({columns, props, dataSource})}
           </Table>
         </TableContainer>
 }
 
-const GenerateRow = ({columns,props, pageSize}) => {
-    const limitData = props.dataSource.slice(0, pageSize)
+const GenerateRow = ({columns,props, dataSource}) => {
     return <>
-        {limitData.map((data, idx) => {
+        {dataSource.map((data, idx) => {
             return <TableRow>
                 <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle}/>
             </TableRow>
@@ -228,17 +233,24 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         let createCellData = {
             original: data,
             data:data,
-            column: column.accessor,
+            column: column,
+            accessor: column.accessor,
             value: data[column.accessor],
             viewIndex: rowIndex
           };
+
+        let style={};
+        if(cellStyle !== undefined && column.colStyle === undefined){
+          cellStyle({code: column.code, value:data[column.accessor] , data:data})
+        }
+
         if(column.fixed){
-            return <TableCell width={column.width} style={column.colStyle === undefined ? cellStyle({accessor: column.accessor, value:data[column.accessor] ,data:data}) : column.colStyle} key={idx}>
+            return <TableCell width={column.width} style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
                 {column.Cell === undefined || column.Cell === null? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableCell>
         }
         else{
-            return <TableCell width={column.width} style={column.colStyle === undefined ? cellStyle({accessor: column.accessor, value:data[column.accessor] ,data:data}) : column.colStyle} key={idx}>
+            return <TableCell width={column.width} style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
                 {column.Cell === undefined || column.Cell === null? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableCell>
         }
@@ -365,10 +377,9 @@ const GenerateHeader = ({columns,props, tableSize}) => {
           fixedStyle = { left: getWidth, zIndex: 1000 };
           getWidth = getWidth + (col.width !== undefined ? col.width : col.fixWidth !== undefined ? col.fixWidth : freeWidth);
         }
-        return (
-          <TableHeaderCell
+        return <TableHeaderCell
             id={`th_${idx}`}
-            style={{ minWidth: col.width, ...col.headerStyle }}
+            style={{ ...col.style, ...props.headerStyle }}
             key={idx}
             rowData={col}
             ref={cellRef.current[idx]}
@@ -388,15 +399,49 @@ const GenerateHeader = ({columns,props, tableSize}) => {
                 </div>)
             ) : null}
           </TableHeaderCell>
-        );
       });
     };
 
     return <TableHeaderRow>{RenderTableHeader()}</TableHeaderRow>;
   };
 
-const GenerateFooter = () => {
-    return <div></div>
+const GenerateFooter = ({columns,props, dataSource}) => {
+  let findFooter = columns.filter(x=> x.Footer !== undefined)
+  if(findFooter.length > 0){
+    return <TableFooter>
+      {columns.map(col => {return GenerateFooterCell(col,props, dataSource)})}
+    </TableFooter>
+  }
+  else{
+    return null;
+  }
+}
+
+const GenerateFooterCell = (column,props, dataSource) => {
+    const dataByField = [];
+    let totalField = 0;
+    dataSource.forEach((data, rowIndex)=> {
+      if(typeof data[column.accessor] === "number")
+        totalField += data[column.accessor]
+
+      dataByField.push({value:data[column.accessor], index:rowIndex})
+    })
+    dataByField.push({value:totalField, index:dataByField.length+1})
+
+    let style = {}
+    if(props.footerStyle !== undefined){
+      style = props.footerStyle(dataSource, dataByField, column)
+    }
+
+    if(column.Footer !== undefined){
+      if(typeof column.Footer === "function")
+        return <TableCellFooter style={style}>{column.Footer(dataSource, dataByField, column)}</TableCellFooter>
+      else
+        return <TableCellFooter style={style}>{totalField}</TableCellFooter>
+    }
+    else{
+      return <TableCellFooter style={style}> </TableCellFooter>
+    }
 }
 
 export default AmTableComponent;
