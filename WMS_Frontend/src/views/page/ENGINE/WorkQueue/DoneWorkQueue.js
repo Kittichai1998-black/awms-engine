@@ -79,6 +79,8 @@ const DoneWorkQueue = (props) => {
   ];
   const onGetALL = () => {
     return window.apipath + "/v2/GetSPReportAPI?"
+      + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom))
+      + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo))
       + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
       + "&pallet=" + (valueText.PalletCode === undefined || valueText.PalletCode === null ? '' : encodeURIComponent(valueText.PalletCode.trim()))
       + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
@@ -199,30 +201,41 @@ const DoneWorkQueue = (props) => {
     return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
   }
   const columns = [
+    { accessor: "IOType", Header: "IOType", width: 70, sortable: false, style: { textAlign: "center" }, Cell: dataRow => getIOType(dataRow.original) },
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "datetime", dateFormat: "HH:mm:ss", sortable: false, style: { textAlign: "center" } },
-    { accessor: "IOType", Header: "IOType", sortable: false },
-    { accessor: "PalletCode", Header: "Pallet", sortable: false },
+    { accessor: "StartTime", Header: "StartTime", className: 'center', width: 150, type: "datetime", dateFormat: "DD/MM/YYYY HH:mm", sortable: false, style: { textAlign: "center" } },
+    { accessor: "ModifyTime", Header: "LastModify", className: 'center', width: 150, type: "datetime", dateFormat: "DD/MM/YYYY HH:mm", sortable: false, style: { textAlign: "center" } },
+    { accessor: "PalletCode", Header: "Pallet", width: 120, sortable: false },
     { accessor: "Code", Header: "SKU", width: 140, sortable: false, },
-    { accessor: "Batch", Header: "Batch", width: 100, sortable: false },
-    { accessor: "Lot", Header: "Lot", width: 100, sortable: false },
-    { accessor: "OrderNo", Header: "Order No", width: 100, sortable: false },
+    { accessor: "Batch", Header: "Batch", width: 80, sortable: false },
+    { accessor: "Lot", Header: "Lot", width: 80, sortable: false },
+    { accessor: "OrderNo", Header: "Order No", width: 80, sortable: false },
     { accessor: "BaseQuantity", Header: "Qty", width: 100, sortable: false },
     { accessor: "Unit", Header: "Unit", width: 80, sortable: false },
-
-    { accessor: "Document_Code", Header: "Doc No.", width: 120, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
+    { accessor: "Document_Code", Header: "Doc No.", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
 
   ];
+  const getIOType = data => {
+    return data.IOType === 0 ? "IN" : "OUT"
+  };
   const getRedirect = data => {
     return (
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
-        {data.Code}
-        <AmRediRectInfo
+        {data.Document_Code}
+        {data.IOType === 0 ? <AmRediRectInfo
           api={"/receive/detail?docID=" + data.Document_ID}
           history={props.history}
           docID={""}
         >
           {" "}
-        </AmRediRectInfo>
+        </AmRediRectInfo> : <AmRediRectInfo
+          api={"/issue/detail?docID=" + data.Document_ID}
+          history={props.history}
+          docID={""}
+        >
+            {" "}
+          </AmRediRectInfo>}
+
       </div>
     );
   };
@@ -244,7 +257,7 @@ const DoneWorkQueue = (props) => {
           onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
         />
       </FormInline>
-      <FormInline><LabelH>{t("Date From")} : </LabelH>
+      <FormInline><LabelH>{t("Start From")} : </LabelH>
         <AmDate
           id={"dateFrom"}
           TypeDate={"date"}
@@ -253,7 +266,7 @@ const DoneWorkQueue = (props) => {
           onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
           FieldID={"dateFrom"} >
         </AmDate>{' '}
-        <LabelH>{t("Date To")} : </LabelH>
+        <LabelH>{t("Start To")} : </LabelH>
         <AmDate
           id={"dateTo"}
           TypeDate={"date"}
