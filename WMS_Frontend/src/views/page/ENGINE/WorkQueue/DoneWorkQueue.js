@@ -7,7 +7,9 @@ import { apicall } from '../../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
 import AmInput from "../../../../components/AmInput";
+import Grid from '@material-ui/core/Grid';
 import AmDropdown from '../../../../components/AmDropdown';
+import AmDate from '../../../../components/AmDate';
 import { useTranslation } from 'react-i18next'
 
 const Axios = new apicall();
@@ -127,6 +129,37 @@ const DoneWorkQueue = (props) => {
   };
   const GetBodyReports = () => {
     return <div style={{ display: "inline-block" }}>
+      <FormInline><LabelH>{t("IOType")} : </LabelH>
+        <AmDropdown
+          id={'IOType'}
+          fieldDataKey={"value"}
+          placeholder="Select"
+          labelPattern=" : "
+          width={300}
+          ddlMinWidth={300}
+          zIndex={1000}
+          defaultValue={"0"}
+          valueData={valueText["IOType"]}
+          data={INOUT}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
+        />
+      </FormInline>
+
+      <Grid >
+        <Grid item xs={6}>
+          <FormInline><LabelH>{t("IOType")} : </LabelH>
+            <AmDate
+              id={"dateFrom"}
+              TypeDate={"date"}
+              //style={{ width: "10px" }}
+              defaultValue={true}
+              // value={valueInput[field] ? valueInput[field].value : ""}
+              onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
+              FieldID={"dateFrom"} >
+            </AmDate>
+          </FormInline>
+        </Grid>
+      </Grid>
       <FormInline>
         <LabelH>{t('SKU')} : </LabelH>
         <AmInput
@@ -209,23 +242,11 @@ const DoneWorkQueue = (props) => {
 
   return (
     <div className={classes.root}>
-      <FormInline><LabelH>{t("IOType")} : </LabelH>
-        <AmDropdown
-          id={'IOType'}
-          fieldDataKey={"value"}
-          //fieldLabel={["Code", "Name"]}
-          placeholder="Select"
-          labelPattern=" : "
-          width={300}
-          ddlMinWidth={300}
-          zIndex={1000}
-          defaultValue={"0"}
-          valueData={valueText["IOType"]}
-          //returnDefaultValue={true}
-          data={INOUT}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
-        />
-      </FormInline>
+
+
+
+
+
       <AmDoneWorkQueue
         bodyHeadReport={GetBodyReports()}
         columnTable={columns}
