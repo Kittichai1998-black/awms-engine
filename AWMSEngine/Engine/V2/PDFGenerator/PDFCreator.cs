@@ -1,4 +1,8 @@
-﻿using DinkToPdf;
+﻿using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.General;
+using AWMSModel.Entity;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
@@ -10,37 +14,42 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
 {
-    public class PDFCreator : BaseEngine<PDFCreator.TReq, dynamic>
+    public class PDFCreator : BaseEngine<PDFCreator.TReq, PDFCreator.TRes>
     {
+       
         public class TReq
         {
             public string formCode;
-
+            public string spName;
         }
-      
-        protected override dynamic ExecuteEngine(TReq reqVO)
+
+        public class TRes
         {
+            public byte[] file;
+            public string contentType;
+            public string fileName;
+        }
+
+        protected override TRes ExecuteEngine(TReq reqVO)
+        {
+            TRes res = new TRes();
+            var converter = new SynchronizedConverter(new PdfTools());
             try
             {
-                var globalSettings = new GlobalSettings
-                {
-                    ColorMode = ColorMode.Color,
-                    Orientation = Orientation.Portrait,
-                    PaperSize = PaperKind.A4,
-                    Margins = new MarginSettings { Top = 10 },
-                    DocumentTitle = "PDF Report",
-                    //Out = fileName
+                //string fileName = @"D:\PDFConvert\Employee_Report2.pdf";
+                //Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                var dataTable = StaticValueManager.GetInstant().AreaMasters;
+                var param = new { 
+                    TableName = "Area",
+                    DataTable = dataTable
                 };
-
-                var objectSettings = new ObjectSettings
-                {
-                    PagesCount = true,
-                    HtmlContent = PDFGeneratorTemplate.GetHTMLString(),
-                    WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") }
-                    //, UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") ,
-                    //HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                    // FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
-                };
+                var pdf = CreateHTMLContent.createHtmlToPdfDocument(reqVO.formCode, param);
+                
+                //เเปลงเป็น pdf
+                var file = converter.Convert(pdf);
+                res.file = file;
+                res.contentType = "application/pdf";
+                res.fileName = reqVO.formCode+".pdf";
 
             }
             catch (Exception ex)
@@ -48,7 +57,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 throw new Exception(ex.Message);
             }
 
-            return null;
+            return res;
         }
  
     }

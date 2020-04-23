@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_PrintLayout : BaseEntitySTD
+    public class ams_PrintLayout : BaseEntityCreateModify
     {
         public long? PrintForm_ID;
         public PrintLayoutType PrintLayoutType;

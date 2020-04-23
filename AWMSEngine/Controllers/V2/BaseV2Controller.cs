@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.HubService;
 using AWMSModel.Criteria;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -37,9 +38,15 @@ namespace AWMSEngine.Controllers.V2
             var jsond = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = ExecuteAPI(serviceCode, "get", true, jsond);
 
-            if (res._result.status == 1)
+            if (res._result.status == 1 && res.stream is Stream)
             {
-                Stream _stream = (Stream)res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File((byte[])res.file, _contentType, _fileName);
+            }
+            else if (res._result.status == 1 && res.stream is byte[])
+            {
+                byte[] _stream = (byte[])res.stream;
                 string _contentType = (string)res.contentType;
                 string _fileName = (string)res.fileName;
                 return File(_stream, _contentType, _fileName);
