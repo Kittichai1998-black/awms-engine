@@ -907,7 +907,7 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleFilterConfirm = (status, obj) => {
-    console.log(props.history.location)
+    //console.log(props.history.location)
     if (status) {
       let getQuery = Clone(query);
       let filterDatas = [...filterData];
@@ -1045,7 +1045,7 @@ const MasterData = props => {
           <LabelH>{t(name)} : </LabelH>
           <Checkbox onClick={event => {
             setCheckEvent(!event.target.checked)
-            console.log(event.target.checked)
+            //console.log(event.target.checked)
             if (event.target.checked) {
               data["Code2"] = "";
               document.getElementById("Code2").value = "";
@@ -1375,6 +1375,7 @@ const MasterData = props => {
         <FormInline>
           {" "}
           <LabelH>{t(name)} : </LabelH>
+          {console.log(data[cols.field])}
           <AmDropdown
             required={required}
             error={inputError}
@@ -1453,12 +1454,12 @@ const MasterData = props => {
   //===========================================================
 
   const onHandleEditConfirm = (status, rowdata, arrObjInputError, type) => {
-    console.log(status);
+    //console.log(status);
     if (status) {
       if (arrObjInputError.length) {
         setInputError(arrObjInputError.map(x => x.field))
       } else {
-        console.log("is Action");
+        //console.log("is Action");
         UpdateData(rowdata, type);
         // type is add, edit, editPass
       }
@@ -1476,18 +1477,20 @@ const MasterData = props => {
   };
   //=================================================
   const UpdateData = (rowdata, type) => {
-    console.log(rowdata)
+    // console.log(rowdata)
+    // console.log(type)
     var dataEditx = {}
     if (type === "edit" || type === "editPass") {
       props.dataEdit.forEach(y => {
-        console.log(y)
+        // console.log(y)
         dataEditx["ID"] = rowdata["ID"]
         dataEditx[y.field] = rowdata[y.field]
+
       })
     } else {
       //console.log(props.dataAdd)
       props.dataAdd.forEach(y => {
-        console.log(y)
+        // console.log(y)
         dataEditx["ID"] = null
         dataEditx[y.field] = rowdata[y.field]
       })
@@ -1503,86 +1506,102 @@ const MasterData = props => {
     }
     dataEditx["Status"] = 1
     var dataBaseMitiObj = []
-    if (props.tableQuery === "BaseMaster") {
-      console.log(checked)
+    if (props.tableQuery === "BaseMaster" && type === "add") {
+      // console.log(checked)
       var prefix = props.prefix
       var codeLength = props.baseLength
-      console.log(prefix)
-      console.log(codeLength)
+      // console.log(dataEditx["CodeEnd"])
+      // console.log(dataEditx["CodeStart"])
+
       if (dataEditx["CodeStart"] !== undefined && dataEditx["CodeEnd"] !== undefined) {
 
-        var prefixStart = dataEditx["CodeStart"].substring(0, prefix);
-        var numStart = dataEditx["CodeStart"].substring(prefix, codeLength);
-        //END
-        var prefixEnd = dataEditx["CodeEnd"].substring(0, prefix);
-        var numEnd = dataEditx["CodeEnd"].substring(prefix, codeLength);
+        if (dataEditx["CodeStart"] !== "" && dataEditx["CodeEnd"] !== "") {
+          var prefixStart = dataEditx["CodeStart"].substring(0, prefix);
+          var numStart = dataEditx["CodeStart"].substring(prefix, codeLength);
+          //END
+          var prefixEnd = dataEditx["CodeEnd"].substring(0, prefix);
+          var numEnd = dataEditx["CodeEnd"].substring(prefix, codeLength);
 
-        if (dataEditx["CodeStart"].length != codeLength)
-          throw new UserException("Length ของ Code Start ไม่ถูกต้อง")
+          if (dataEditx["CodeStart"].length != codeLength)
+            throw new UserException("Length ของ Code Start ไม่ถูกต้อง")
 
-        if (dataEditx["CodeEnd"].length != codeLength)
-          throw new UserException("Length ของ Code End ไม่ถูกต้อง")
+          if (dataEditx["CodeEnd"].length != codeLength)
+            throw new UserException("Length ของ Code End ไม่ถูกต้อง")
 
-        if (prefixStart.length != prefix)
-          throw new UserException("Length ของ Prefix Start ไม่ถูกต้อง")
+          if (prefixStart.length != prefix)
+            throw new UserException("Length ของ Prefix Start ไม่ถูกต้อง")
 
-        if (prefixEnd.length != prefix)
-          throw new UserException("Length ของ Prefix End ไม่ถูกต้อง")
+          if (prefixEnd.length != prefix)
+            throw new UserException("Length ของ Prefix End ไม่ถูกต้อง")
 
-        if (numEnd <= numStart)
-          throw new UserException("Code Start มีค่าน้อยกว่าหรือเท่ากับ Code End")
+          if (numEnd <= numStart)
+            throw new UserException("Code Start มีค่าน้อยกว่าหรือเท่ากับ Code End")
 
-        for (var i = numStart; i <= numEnd; i++) {
-          var genBase = prefixStart.toUpperCase() + i.toString().padStart(codeLength - prefix, '0');
-          console.log(genBase)
+          for (var i = numStart; i <= numEnd; i++) {
+            var genBase = prefixStart.toUpperCase() + i.toString().padStart(codeLength - prefix, '0');
+            // console.log(genBase)
 
+            delete dataEditx["CodeEnd"]
+            delete dataEditx["CodeStart"]
+            delete dataEditx["Checkbox"]
+            delete dataEditx["Code2"]
+
+            dataEditx["Code"] = genBase
+
+            var x = Clone(dataEditx)
+            dataBaseMitiObj.push(x)
+            // console.log(dataEditx["Code"])
+
+          }
+        } else {
+          delete dataEditx["Checkbox"]
           delete dataEditx["CodeEnd"]
           delete dataEditx["CodeStart"]
-
-          dataEditx["Code"] = genBase
-
-          var x = Clone(dataEditx)
-          dataBaseMitiObj.push(x)
-          console.log(dataEditx["Code"])
-
+          dataEditx["Code"] = dataEditx["Code2"]
+          delete dataEditx["Code2"]
+          dataBaseMitiObj.push(dataEditx)
         }
       } else {
+        delete dataEditx["Checkbox"]
         delete dataEditx["CodeEnd"]
         delete dataEditx["CodeStart"]
+        dataEditx["Code"] = dataEditx["Code2"]
+        delete dataEditx["Code2"]
         dataBaseMitiObj.push(dataEditx)
       }
     }
-    console.log(dataBaseMitiObj)
+    // console.log(dataBaseMitiObj)
+    // console.log([dataEditx])
     let updjson = {
       "t": props.table,
       "pk": "ID",
-      "datas": props.tableQuery === "BaseMaster" ? dataBaseMitiObj : [dataEditx],
+      "datas": props.tableQuery === "BaseMaster" ? (dataBaseMitiObj.length !== 0 ? dataBaseMitiObj : [dataEditx]) : [dataEditx],
       "nr": false,
       "_token": localStorage.getItem("Token")
     }
     // console.log(updjson)
     // console.log(dataSentToAPI)
-    // Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
-    //   if (res.data._result !== undefined) {
-    //     if (res.data._result.status === 1) {
-    //       dataEditx = {}
-    //       setOpenSuccess(true)
-    //       getData(createQueryString(query))
-    //       setPage(0);
+    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then((res) => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          dataEditx = {}
+          setOpenSuccess(true)
+          getData(createQueryString(query))
+          setPage(0);
 
-    //       setResetPage(true);
-    //       Clear()
-    //     } else {
-    //       dataEditx = {}
-    //       setOpenError(true)
-    //       setTextError(res.data._result.message)
-    //       getData(createQueryString(query))
-    //       setPage(0);
-    //       setResetPage(true);
-    //       Clear()
-    //     }
-    //   }
-    // })
+          setResetPage(true);
+          Clear()
+        } else {
+          dataEditx = {}
+          setOpenError(true)
+          setTextError(res.data._result.message)
+          getData(createQueryString(query))
+          setPage(0);
+          setResetPage(true);
+          Clear()
+        }
+      }
+    })
   }
   //===========================================================
   function UserException(message) {
@@ -1720,7 +1739,7 @@ const MasterData = props => {
 
 
     if (field === "WeightKG" && value === "") {
-      console.log("xx")
+      //console.log("xx")
       value = null;
     }
 
@@ -1735,7 +1754,7 @@ const MasterData = props => {
       setPackName(value);
       setValueText1({ SKUMaster_ID: "xxxxxx" });
     }
-    console.log(editData)
+    //console.log(editData)
 
 
     let editDataNew = Clone(editData)

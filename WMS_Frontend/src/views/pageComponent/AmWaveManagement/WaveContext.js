@@ -4,7 +4,8 @@ export const WaveContext = React.createContext({})
 
 export const WaveProvider = ({ children }) => {
     const wave = WaveAction();
-    return <WaveContext.Provider value={{wave}}>
+    const tabModes = TabAction();
+    return <WaveContext.Provider value={{ wave, tabModes}}>
         {children}
     </WaveContext.Provider>
 }
@@ -12,7 +13,8 @@ export const WaveProvider = ({ children }) => {
 
 const initialState = {
     "waveID": 0,
-    "waveRunMode":0
+    "waveRunMode": 0,
+    "TabMode":1
 
 }
 
@@ -39,6 +41,24 @@ const waveReducer = (state, action) => {
     }
 }
 
+
+const TabReducer = (state, action) => {
+    switch (action.type) {
+        case "ADD": {
+            return {
+                ...state,
+                "TabMaode": action.value,
+
+            }
+        }
+        default: {
+            return {
+                ...state
+            }
+        }
+    }
+}
+
 const WaveAction = () => {
     const [state, dispatch] = useReducer(waveReducer, initialState);
     const setWaveID = (value) => dispatch({ type: "ADD", value })
@@ -46,4 +66,11 @@ const WaveAction = () => {
     const waveID = state.waveID;
     const waveRunMode = state.waveRunMode
     return { waveID, setWaveID, waveRunMode, setwaveRunMode }
+}
+
+const TabAction = () => {
+    const [state, dispatch] = useReducer(TabReducer, initialState);
+    const setTabMode= (value) => dispatch({ type: "ADD", value })  
+    const TabMode = state.TabMode;
+    return { TabMode, setTabMode }
 }

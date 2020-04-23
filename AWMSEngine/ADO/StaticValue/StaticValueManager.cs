@@ -81,6 +81,15 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_WaveSeqTemplate> _WaveSeqTemplates;
         public List<ams_WaveSeqTemplate> WaveSeqTemplates { get => this._WaveSeqTemplates ?? this.LoadWaveSeqTemplates(); }
+        
+        private List<ams_PrintForm> _PrintForm;
+        public List<ams_PrintForm> PrintForm { get => this._PrintForm ?? this.LoadPrintForm(); }
+
+        private List<ams_PrintLayout> _PrintLayout;
+        public List<ams_PrintLayout> PrintLayout { get => this._PrintLayout ?? this.LoadPrintLayout(); }
+
+        private List<ams_PrintField> _PrintField;
+        public List<ams_PrintField> PrintField { get => this._PrintField ?? this.LoadPrintField(); }
 
         private static StaticValueManager instant;
 

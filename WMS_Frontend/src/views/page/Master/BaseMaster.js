@@ -119,7 +119,7 @@ const BaseMaster = props => {
       disableCustom: true,
     },
     {
-      field: "Code",
+      field: "Code2",
       type: "input",
       name: "Code",
       placeholder: "Code",

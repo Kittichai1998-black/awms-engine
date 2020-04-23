@@ -127,12 +127,11 @@ const DocumentView = props => {
 
     Axios.get(
       window.apipath +
-        "/v2/GetDocAPI/?docTypeID=" +
-        props.typeDocNo +
-        "&docID=" +
-        docID +
-        "&getMapSto=true&_token=" +
-        localStorage.getItem("Token")
+      "/v2/GetDocAPI/?docTypeID=" +
+      props.typeDocNo +
+      "&docID=" +
+      docID +
+      "&getMapSto=true"
     ).then(res => {
       // console.log(
       //   "docID : " + props.docID,

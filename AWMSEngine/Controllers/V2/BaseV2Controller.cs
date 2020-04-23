@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.HubService;
 using AWMSModel.Criteria;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -29,6 +31,31 @@ namespace AWMSEngine.Controllers.V2
             var val = ADO.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
             DateTime dt = val.dt;
             return new { serverTime = DateTime.Now, dbTime = dt };
+        }
+        [HttpGet("download/{serviceCode}")]
+        public async Task<IActionResult> DownloadAPIService(string serviceCode)
+        {
+            var jsond = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
+            var res = ExecuteAPI(serviceCode, "get", true, jsond);
+
+            if (res._result.status == 1 && res.stream is Stream)
+            {
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File((byte[])res.file, _contentType, _fileName);
+            }
+            else if (res._result.status == 1 && res.stream is byte[])
+            {
+                byte[] _stream = (byte[])res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File(_stream, _contentType, _fileName);
+            }
+            else
+            {
+                string _message = (string)res._message;
+                return this.NotFound(_message);
+            }
         }
         [HttpGet("{serviceCode}")]
         public dynamic GetAPIService(string serviceCode)

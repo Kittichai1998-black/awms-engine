@@ -6,13 +6,20 @@ import { WaveContext } from './WaveContext';
 
 const AmWaveTab = (props) => {
     const [currentTab, setCurrentTab] = useState(0);
-    const { wave } = useContext(WaveContext)
+    const { wave, tabModes } = useContext(WaveContext)
+
+
+    const OnchaneTab = (e, n) => {
+        console.log(n)
+        tabModes.setTabMode(n)
+    }
+
 
     return <>
-        <Tabs value={currentTab} onChange={(e, n) => { setCurrentTab(n); }}>
-            <Tab label="Manual" />
-            <Tab label="Sequence" />
-            <Tab label="Schedule" />
+        <Tabs value={currentTab} onChange={(e, n) => OnchaneTab(e,n)}>
+            <Tab label="Manual" value={1}/>
+            <Tab label="Sequence" value={2}/>
+            <Tab label="Schedule" value={3} />
         </Tabs>
 
 
