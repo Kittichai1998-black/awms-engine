@@ -39,7 +39,7 @@ align-items: center;
 margin-right: 20px;
 
 label {
-  margin: 5px 0 5px 0;
+  margin: 5px 0 5px 10px;
 }
 input {
     vertical-align: middle;
@@ -52,7 +52,7 @@ input {
 `;
 const LabelH = styled.label`
     // font-weight: bold;
-    width: 100px; 
+    width: 80px; 
 `;
 
 
@@ -129,47 +129,7 @@ const DoneWorkQueue = (props) => {
   };
   const GetBodyReports = () => {
     return <div style={{ display: "inline-block" }}>
-      <FormInline><LabelH>{t("IOType")} : </LabelH>
-        <AmDropdown
-          id={'IOType'}
-          fieldDataKey={"value"}
-          placeholder="Select"
-          labelPattern=" : "
-          width={300}
-          ddlMinWidth={300}
-          zIndex={1000}
-          defaultValue={"0"}
-          valueData={valueText["IOType"]}
-          data={INOUT}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
-        />
-      </FormInline>
 
-      <Grid >
-        <Grid item xs={6}>
-          <FormInline><LabelH>{t("IOType")} : </LabelH>
-            <AmDate
-              id={"dateFrom"}
-              TypeDate={"date"}
-              //style={{ width: "10px" }}
-              defaultValue={true}
-              // value={valueInput[field] ? valueInput[field].value : ""}
-              onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
-              FieldID={"dateFrom"} >
-            </AmDate>
-          </FormInline>
-        </Grid>
-      </Grid>
-      <FormInline>
-        <LabelH>{t('SKU')} : </LabelH>
-        <AmInput
-          id={"packCode"}
-          type="input"
-          style={{ width: "300px" }}
-          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
-          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
-        />
-      </FormInline>
       <FormInline>
         <LabelH>{t('Pallet')} : </LabelH>
         <AmInput
@@ -181,13 +141,13 @@ const DoneWorkQueue = (props) => {
         />
       </FormInline>
       <FormInline>
-        <LabelH>{t('Doc No.')} : </LabelH>
+        <LabelH>{t('SKU')} : </LabelH>
         <AmInput
-          id={"Document_Code"}
+          id={"packCode"}
           type="input"
-          style={{ width: "300px" }}
-          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "Document_Code", null, event)}
-          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "Document_Code", null, event)}
+          style={{ width: "405px" }}
+          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
+          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
         />
       </FormInline>
       <FormInline>
@@ -205,7 +165,7 @@ const DoneWorkQueue = (props) => {
         <AmInput
           id={"lot"}
           type="input"
-          style={{ width: "300px" }}
+          style={{ width: "405px" }}
           onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "lot", null, event)}
           onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "lot", null, event)}
         />
@@ -220,6 +180,17 @@ const DoneWorkQueue = (props) => {
           onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
         />
       </FormInline>
+      <FormInline>
+        <LabelH>{t('Doc No.')} : </LabelH>
+        <AmInput
+          id={"Document_Code"}
+          type="input"
+          style={{ width: "405px" }}
+          onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "Document_Code", null, event)}
+          onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "Document_Code", null, event)}
+        />
+      </FormInline>
+
     </div>
 
   }
@@ -228,6 +199,7 @@ const DoneWorkQueue = (props) => {
   }
   const columns = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "datetime", dateFormat: "HH:mm:ss", sortable: false, style: { textAlign: "center" } },
+    { accessor: "IOType", Header: "IOType", sortable: false },
     { accessor: "PalletCode", Header: "Pallet", sortable: false },
     { accessor: "Code", Header: "SKU", width: 140, sortable: false, },
     { accessor: "Batch", Header: "Batch", width: 100, sortable: false },
@@ -242,7 +214,40 @@ const DoneWorkQueue = (props) => {
 
   return (
     <div className={classes.root}>
-
+      <FormInline><LabelH>{t("IOType")} : </LabelH>
+        <AmDropdown
+          id={'IOType'}
+          fieldDataKey={"value"}
+          placeholder="Select"
+          labelPattern=" : "
+          width={300}
+          ddlMinWidth={300}
+          zIndex={1000}
+          defaultValue={"0"}
+          valueData={valueText["IOType"]}
+          data={INOUT}
+          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'IOType', fieldDataKey, null)}
+        />
+      </FormInline>
+      <FormInline><LabelH>{t("Date From")} : </LabelH>
+        <AmDate
+          id={"dateFrom"}
+          TypeDate={"date"}
+          //style={{}}
+          defaultValue={true}
+          onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
+          FieldID={"dateFrom"} >
+        </AmDate>{' '}
+        <LabelH>{t("Date To")} : </LabelH>
+        <AmDate
+          id={"dateTo"}
+          TypeDate={"date"}
+          //style={{ width: "300px" }}
+          defaultValue={true}
+          onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
+          FieldID={"dateTo"} >
+        </AmDate>
+      </FormInline>
 
 
 
