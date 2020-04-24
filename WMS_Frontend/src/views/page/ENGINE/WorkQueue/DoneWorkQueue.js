@@ -11,6 +11,10 @@ import Grid from '@material-ui/core/Grid';
 import AmDropdown from '../../../../components/AmDropdown';
 import AmDate from '../../../../components/AmDate';
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmEditorTable from "../../../../components/table/AmEditorTable";
+import AmDialogs from "../../../../components/AmDialogs";
+
+
 import { useTranslation } from 'react-i18next'
 
 const Axios = new apicall();
@@ -67,9 +71,14 @@ const DoneWorkQueue = (props) => {
   const [pageIni, setPageIni] = useState(false);
   const [totalSize, setTotalSize] = useState(0);
   const [valueText, setValueText] = useState({ "IOType": 0 });
+  const [selection, setSelection] = useState();
+  const [dialogConfirm, setDialogConfirm] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [openWarning, setOpenWarning] = useState(false);
+  const [textError, setTextError] = useState("");
 
   useEffect(() => {
-    console.log(page)
     onGetDocument()
   }, [page, valueText])
 
@@ -100,7 +109,6 @@ const DoneWorkQueue = (props) => {
     Axios.get(pathGetAPI).then((rowselect1) => {
       if (rowselect1) {
         if (rowselect1.data._result.status !== 0) {
-          console.log(rowselect1.data.datas)
           setdatavalue(rowselect1.data.datas)
           setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
         }
@@ -239,9 +247,85 @@ const DoneWorkQueue = (props) => {
       </div>
     );
   };
+  const doneWorkQueue = () => {
+    var data = []
+    data = selection.map(x => {
+      return x.ID
+    });
+    Axios.post(window.apipath + "/v2/ManualDoneQueueAPI", {
+      queueID: data
+    }).then(res => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          setOpenSuccess(true);
+          onGetDocument()
+          setSelection(null)
+
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
+          onGetDocument()
+          setSelection(null)
+        }
+      }
+    })
+    return null
+  }
+  const onHandleDeleteConfirm = (status) => {
+    if (status) {
+      doneWorkQueue()
+    }
+    setDialogConfirm(false);
+  };
+  const getBtnDone = () => {
+    return <AmButton
+      style={{ marginRight: "5px" }}
+      styleType="confirm"
+      onClick={() => {
+        if (selection.length === 0) {
+          setOpenWarning(true)
+        } else {
+          setDialogConfirm(true)
+        }
+
+      }}
+    >
+      DONE QUEUE
+    </AmButton>
+  };
 
   return (
     <div className={classes.root}>
+      <AmEditorTable
+        open={dialogConfirm}
+        onAccept={status => onHandleDeleteConfirm(status)}
+        titleText={"Confirm DoneQueue"}
+        columns={[]}
+      />
+      <AmDialogs
+        typePopup={"success"}
+        onAccept={e => {
+          setOpenSuccess(e);
+        }}
+        open={openSuccess}
+        content={"Success"}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"warning"}
+        onAccept={e => {
+          setOpenWarning(e);
+        }}
+        open={openWarning}
+        content={"Please select data"}
+      ></AmDialogs>
       <FormInline><LabelH>{t("IOType")} : </LabelH>
         <AmDropdown
           id={'IOType'}
@@ -277,9 +361,6 @@ const DoneWorkQueue = (props) => {
         </AmDate>
       </FormInline>
 
-
-
-
       <AmDoneWorkQueue
         bodyHeadReport={GetBodyReports()}
         columnTable={columns}
@@ -290,6 +371,8 @@ const DoneWorkQueue = (props) => {
         renderCustomButton={customBtnSelect()}
         page={true}
         exportData={false}
+        renderCustomButtonBTMLeft={getBtnDone()}
+        onSelection={(data) => { setSelection(data) }}
       ></AmDoneWorkQueue>
     </div >
   )
