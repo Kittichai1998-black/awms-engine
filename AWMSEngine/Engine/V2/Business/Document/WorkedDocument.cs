@@ -12,15 +12,20 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Document
 {
-    public class WorkedDocument : BaseEngine<List<long>, List<long>>
+    public class WorkedDocument : BaseEngine<WorkedDocument.TReq, List<long>>
     {
-        protected override List<long> ExecuteEngine(List<long> reqVO)
+        public class TReq
         {
-            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueWorked, reqVO);
+            public List<long> docIDs;
+            public bool flag;
+        }
+        protected override List<long> ExecuteEngine(TReq reqVO)
+        {
+            var res = this.ExectProject<TReq, List<long>>(FeatureCode.EXEWM_DoneQueueWorked, reqVO);
             if (res == null)
             {
                 var docLists = new List<long>();
-                reqVO.ForEach(x =>
+                reqVO.docIDs.ForEach(x =>
                 {
 
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
@@ -50,11 +55,21 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     {
                                         if (StaticValue.IsFeature("WORKED_FROM_QTYSUM")) //case1
                                         {
-                                            decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.ACTIVE).Sum(z => z.BaseQuantity ?? 0);
-                                            decimal totalQty = docItems.First(z => z.ID == y).BaseQuantity ?? 0;
-                                            if (sumQtyDisto == totalQty)
+                                            if (reqVO.flag)
                                             {
-                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.ACTIVE).Sum(z => z.BaseQuantity ?? 0);
+                                                decimal totalQty = docItems.First(z => z.ID == y).BaseQuantity ?? 0;
+                                                if (sumQtyDisto == totalQty)
+                                                {
+                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (distos.FindAll(z => z.DocumentItem_ID == y).TrueForAll(z => z.Status == EntityStatus.ACTIVE))
+                                                {
+                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                }
                                             }
                                         }
                                         else //case

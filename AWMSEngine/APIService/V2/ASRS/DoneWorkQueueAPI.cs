@@ -23,7 +23,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, resDoneQ.docIDs);
+            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs=resDoneQ.docIDs });
             this.CommitTransaction();
 
             this.BeginTransaction();

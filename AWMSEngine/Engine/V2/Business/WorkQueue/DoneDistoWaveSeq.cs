@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public long distoID;
                 public string baseCode;
                 public string locationCode;
-                public decimal baseQty;
+                public decimal? baseQty;
             }
         }
         public class TRes
@@ -79,8 +79,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS) },
                         this.BuVO).Sum(x=> x.Quantity.HasValue ? x.Quantity : 0);
 
-                    var pickQty = reqData.baseQty;
                     var souPsto = pstos.Find(x => x.ID == disto.Sou_StorageObject_ID);
+
+                    decimal pickQty = 0;
+                    if (!disto.Quantity.HasValue)
+                    {
+                        pickQty = souPsto.Quantity;
+                    }
+                    else
+                    {
+                        pickQty = disto.Quantity.Value;
+                    }
 
                     var souBsto = ADO.StorageObjectADO.GetInstant().Get(souPsto.ParentStorageObject_ID == null ? souPsto.ID.Value : souPsto.ParentStorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
@@ -92,8 +101,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบตำแหน่งของ Pack");
 
                     var desBsto = MapBase(reqData.baseCode, location.AreaMaster_ID, location.ID);
-
-                    if (sumQtyByDocItem + pickQty > docItemQty || pickQty > souPsto.BaseQuantity)
+                    //sumQtyByDocItem + pickQty > docItemQty
+                    if (pickQty > souPsto.BaseQuantity)
                     {
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, $"หยิบสินค้าเกินจำนวนที่กำหนด");
                     }
@@ -115,7 +124,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         disto.Des_StorageObject_ID = desSto.id;
                         ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
                     }
-                    else
+                    else if (sumQtyByDocItem + pickQty < docItemQty)
                     {
                         var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData, waveSeq);
                         disto.Quantity = pickQty;
@@ -160,11 +169,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             }
                         }
                     });
-
-
-
-
-
 
                     if (waveSeq.AutoNextSeq == 1)
                     {
