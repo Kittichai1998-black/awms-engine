@@ -15,6 +15,7 @@ const AmTable = (props) => {
             tableStyle={props.tableStyle}
             footerStyle={props.footerStyle}
             headerStyle={props.headerStyle}
+            groupBy={props.groupBy}
         />
     </AmTableProvider>
 }
@@ -37,9 +38,10 @@ const AmTableSetup = (props) => {
             key={props.key}
             rowNumber={true}
             height={props.height}
-            tableStyle={props.tableStyle}
             footerStyle={props.footerStyle}
+            tableStyle={props.tableStyle}
             headerStyle={props.headerStyle}
+            groupBy={props.groupBy}
         />
         <div id="btmbar">
             <div id="pageination"></div>
@@ -61,69 +63,45 @@ AmTable.propTypes = {
     */
    columns : PropTypes.array.isRequired,
     /**
-    * รูปแบบของหัวตารางเลือกเอกสารสำหรับแสดงข้อมูลเอกสาร
-    * ** value : {
-      columns:2, //จำนวน grid ต่อบรรทัด
-      field:[
-        {"accessor":"Code", "label":"Code"}
-      ]
+        * Primary Key
+        ** value? : "ID"
     */
-    documentDetail:PropTypes.object.isRequired,
+    key:PropTypes.string.isRequired,
+     /**
+      * return style object ตามเงื่อนไขข้อมูล
+      ** value? : (accessor, cellData, dataSource)=> {return {color:"red"}}
+     */
+    cellStyle:PropTypes.func,
+     /**
+      * เปิดปิด row number
+      ** value? : true || false
+     */
+    rowNumber:PropTypes.bool,
+     /**
+      * ความสูง grid
+      ** value? : 500
+     */
+    height:PropTypes.number,
+     /**
+      * return style object
+      ** value? : {color:"red"}
+     */
+    tableStyle:PropTypes.object,
+     /**
+      * return style object
+      ** value? : {color:"red"}
+     */
+    headerStyle:PropTypes.object,
     /**
-     * เลือกรูปแบบการโปรเสทแบบ 1 เอกสารหรือหลายเอกสาร
-     ** value? : true || false
+     * return style object ตามเงื่อนไขข้อมูล footer
+     ** value? : (accessor, cellData, dataSource)=> {return {color:"red"}}
     */
-    processSingle:PropTypes.bool,
+    footerStyle:PropTypes.func,
     /**
-     * รูปแบบของหัวตารางของรายละเอียดเอกสาร
-     ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]
+     * return Array [Field]
+     ** value? : ["ID", "Code"]
     */
-    documentItemDetail : PropTypes.array.isRequired,
-    /**
-      * กำหนดค่าเริ่มต้นสำหรับสร้าง Wave
-      * ** value : "1"
-      */
-     modeDefault : PropTypes.string,
-     /**
-      * ใช้เปิดปิดการเบิกแบบเป็น percent
-      ** value : true || false
-     */
-     percentRandom : PropTypes.bool,
-     /**
-     * รูปแบบของหัวตารางสำหรับข้อมูลก่อน comfirm wave งานเบิก
-     * ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]
-     */
-     columnsConfirm:PropTypes.array.isRequired,
-     /**
-      * query string สำหรับดึงข้อมูล Area
-      ** value? : string
-     */
-     areaQuery:PropTypes.array.isRequired,
-     /**
-      * รายการ Area โดยใช้เงื่อนไขผ่าน {arealist:[],document:{document:{}, docItem:[]}} โดยส่ง Area List กลับ
-      ** value? : (arealist,doc)=> {return arealist}
-     */
-     customDesArea:PropTypes.func,
-     /**
-      * ข้อมูล Area เริ่มต้น โดยใช้เงื่อนไขผ่าน {document:{}, docItem:[]}
-      ** value? : (doc)=> {return value}
-     */
-     areaDefault:PropTypes.func,
-     /**
-      * Url สำหรับ process queue
-      ** value? : process_wq
-     */
-     processUrl:PropTypes.string,
-     /**
-      * Url สำหรับ confirm process queue
-      ** value? : confirm_process_wq
-     */
-     confirmProcessUrl:PropTypes.string,
-     /**
-      * ใช้เปิดปิดการเบิกแบบเป็นเก่าหรือแบบ wave
-      ** value? : true | false
-     */
-     waveProcess:PropTypes.bool,
+    groupByData:PropTypes.array,
   }
 
 AmTable.defaultProps = {

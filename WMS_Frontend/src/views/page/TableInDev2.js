@@ -10,7 +10,7 @@ const columns=[
     //width:200,
     fixed: 'left',
     style:{},
-    colStyle:{color:"black"},
+    //colStyle:{color:"black"},
     sortable:false,
     filterable:false,
     Filter:()=> {return <div>XXX</div>},
@@ -23,7 +23,7 @@ const columns=[
     code:'Name',
     //width:300,
     sortable:false,
-    style:{background:"blue"}
+    //style:{background:"blue"}
   },
   {
     Header: 'Name2',
@@ -34,6 +34,24 @@ const columns=[
     sortable:false,
     Cell:(e)=>{return <div>{e.value}</div>},
     Footer:(data, datafield, col)=>{return <div>Total : {datafield[datafield.length-1].value}</div>}
+  },
+  {
+    Header: 'Quantity',
+    accessor: 'Quantity',
+    code:'Quantity',
+    width:200,
+    filterable:true,
+    sortable:false,
+    type:"number"
+  },
+  {
+    Header: 'Quantity2',
+    accessor: 'Quantity2',
+    code:'Quantity2',
+    width:200,
+    filterable:true,
+    sortable:false,
+    type:"number"
   },
   {
     Header: 'Name2',
@@ -54,164 +72,204 @@ const columns=[
 
 const data = [{
         "ID":1,
-        "Name":"Name1",
+        "Name":"12",
         "Name2":"Name2",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
+        "ID":2,
+        "Name":"12",
         "Name2":"Name3",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
+        "ID":3,
+        "Name":"12",
         "Name2":"Name3",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":4,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":4,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":5,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":5,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":5,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":5,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":6,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":6,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":7,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":7,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":7,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":7,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":7,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":8,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":8,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":8,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
         }
       },{
-        "ID":1,
-        "Name":"Name1",
-        "Name2":"Name5",
+        "ID":8,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
         "subComponent":{
           "subData":()=>{},
           "subComponent":()=>{}
-        }
+        },
       }
     ];
 
@@ -225,15 +283,16 @@ const TableDev = (props) => {
       
       key={"ID"}
       subComponent={true}
-      tableStyle={{color:"black"}}
+      //tableStyle={{color:"black"}}
       footerStyle={(data, datafield, col)=>{
         const style = {}
         if(datafield[datafield.length-1].value > 0)
-          style.background="red"
+          //style.background="red"
 
         return style;
       }}
-      headerStyle={{color:"red"}}
+      //headerStyle={{color:"red"}}
+      groupBy={{"field":["ID","Name2"], "sumField":["Quantity","Quantity2"]}}
     />
     </>
 }
