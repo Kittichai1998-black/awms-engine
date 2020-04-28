@@ -11,11 +11,12 @@ import {Arrow,
     TableHeaderStickyColumnsCell,
     TableCellFooter } from "./AmTableStyle";
 import {AmTableContext} from "./AmTableContext";
-import AmInput from "../AmInput";
+import Input from "@material-ui/core/Input";
 import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
 import Radio from "@material-ui/core/Radio";
 import { withStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 
 const SortDirection = {
     DESC: "desc",
@@ -70,13 +71,15 @@ const useColumns = (Columns, rowNumber, selectionState, key) => {
                 Cell: e => {
                     let numrow = 0;
                     if (pagination.pageValue !== undefined) {
+                      if(!e.data._footer){
                         if (pagination.pageValue > 0) {
-                            numrow = e.viewIndex + 1 + parseInt(pagination.pageValue-1) * parseInt(pagination.pageSize);
+                          numrow = e.viewIndex + 1 + parseInt(pagination.pageValue-1) * parseInt(pagination.pageSize);
                         } else {
-                            numrow = e.viewIndex + 1;
+                          numrow = e.viewIndex + 1;
                         }
+                        return <div style={{ fontWeight: "bold" , textAlign:"right", paddingRight:"2px"}}>{numrow}</div>;
+                      }
                     }
-                    return <div style={{ fontWeight: "bold" , textAlign:"right", paddingRight:"2px"}}>{numrow}</div>;
                 }
             });
         }
@@ -152,13 +155,51 @@ const useColumns = (Columns, rowNumber, selectionState, key) => {
     return columns
 }
 
-const useDataSource = (props) => {
+const useDataSource = (props, groupBy) => {
   const [dataSource, setDataSource] = useState(props)
-  const {pagination} = useContext(AmTableContext);
+  const {pagination, sort} = useContext(AmTableContext);
 
   useEffect(() => {
-    setDataSource(props.slice(0, pagination.pageSize))
+    
   }, [props, pagination.pageSize])
+
+  useEffect(() => {
+    const data = props.slice(0, pagination.pageSize);
+
+    if(groupBy){
+      const groupItem = {"field":["Name","Name2"], "sumField":["Quantity","Quantity2"]};
+      let groups = _.groupBy(data, (data)=> {
+        //var findSort = groupItem.find(x => x === sort.sortValue);
+        let groupField = "";
+        groupItem.field.forEach(x=> groupField += data[x]);
+        return groupField;
+      });
+      console.log(_.sortBy(Object.keys(groups)));
+      let groupData = _.orderBy(Object.keys(groups), ["Name"], ["Name2"]).map((g,idx) => {
+        let grourData = groups[g];
+        let sumBy = {};
+        groupItem.sumField.forEach(x=> {
+          sumBy[x] = _.sumBy(data, x)
+        });
+        if(props.groupFooter){
+          //g.push({...props.groupFooter(data), "_footer":true})
+          return grourData
+        }
+        else{
+          grourData.push({...sumBy, "_footer":true})
+          return grourData
+        }
+      });
+      console.log(groupData);
+      let groupWithSum = []
+      groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
+      console.log(groupWithSum);
+      setDataSource(groupWithSum)
+    }else{
+      setDataSource(data)
+    }
+    
+  }, [props, groupBy, pagination.pageSize, sort])
 
   return dataSource
 }
@@ -179,9 +220,7 @@ function useWindowSize(ref) {
 
 const AmTableComponent = (props) => {
     const containerRef = useRef();
-    const dataSource = useDataSource(props.dataSource)
-
-    const {selection, filter, sort, pagination} = useContext(AmTableContext)
+    const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
     const columns = useColumns(props.columns, props.rowNumber, props.selection, props.key)
@@ -241,7 +280,7 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
 
         let style={};
         if(cellStyle !== undefined && column.colStyle === undefined){
-          cellStyle({code: column.code, value:data[column.accessor] , data:data})
+          cellStyle(column.code, data[column.accessor],data)
         }
 
         if(column.fixed){
@@ -395,7 +434,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <AmInput onBlur={e => onChangeFilter(col.accessor, e)} />
+                  <Input onBlur={e => onChangeFilter(col.accessor, e)} />
                 </div>)
             ) : null}
           </TableHeaderCell>

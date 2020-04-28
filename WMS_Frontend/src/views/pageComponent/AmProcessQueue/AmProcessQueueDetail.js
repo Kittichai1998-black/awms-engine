@@ -63,7 +63,7 @@ const DefaultProcessCondition = (doc, con) => {
                 batch:x.Batch,
                 lot:x.Lot,
                 orderNo:x.OrderNo,
-                options:x.Options,
+                options:null,
                 baseQty:x.BaseQuantity
             }]
             x.priority = "2";
