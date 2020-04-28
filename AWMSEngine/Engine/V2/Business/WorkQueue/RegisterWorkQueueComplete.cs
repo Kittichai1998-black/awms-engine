@@ -39,7 +39,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var resDone = doneQueue.Execute(this.Logger, this.BuVO, doneData);
 
             var workedDocument = new Document.WorkedDocument();
-            var workedDocIDs = workedDocument.Execute(this.Logger, this.BuVO, resDone.docIDs);
+            var workedDocIDs = workedDocument.Execute(this.Logger, this.BuVO, new Document.WorkedDocument.TReq() { docIDs = resDone.docIDs });
             var closingDocument = new Document.ClosingDocument();
             var closingDocIDs = closingDocument.Execute(this.Logger, this.BuVO, workedDocIDs);
             var closedDocument = new Document.ClosedDocument();

@@ -10,7 +10,6 @@ namespace AWMSModel.Entity
         public decimal? WidthM;
         public decimal? LengthM;
         public decimal? HeightM;
-        public long? ObjectSize_ID;
         public long? UnitType_ID;
         public long SKUMasterType_ID;
         public decimal? Cost;

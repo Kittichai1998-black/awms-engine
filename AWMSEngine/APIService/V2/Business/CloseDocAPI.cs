@@ -44,7 +44,7 @@ namespace AWMSEngine.APIService.V2.Business
                     else if (docs.EventStatus == DocumentEventStatus.WORKING)
                     {
                         this.BeginTransaction();
-                        var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new List<long> { doc });
+                        var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = new List<long> { doc } });
                         this.CommitTransaction();
 
                         if (resWorked.Count > 0)

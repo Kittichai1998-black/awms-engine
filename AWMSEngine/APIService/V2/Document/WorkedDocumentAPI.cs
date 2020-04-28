@@ -24,7 +24,7 @@ namespace AWMSEngine.APIService.V2.Document
         {
             this.BeginTransaction();
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, req.docIDs);
+            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = req.docIDs });
             this.CommitTransaction();
  
             return resWorked;
