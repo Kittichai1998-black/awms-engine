@@ -145,11 +145,11 @@ namespace AWMSModel.Criteria
                 return 0;
             }
         }
-        public string APIRefID
+        public string TrxRefID
         {
             get
             {
-                var apiRefID = this.Get<string>(BusinessVOConst.KEY_APIREFID);
+                var apiRefID = this.Get<string>(BusinessVOConst.KEY_TRXREFID);
                 return apiRefID;
             }
         }

@@ -7,7 +7,7 @@ namespace AWMSModel.Entity
     public class aml_APIPostBackEvent : BaseEntityID
     {
         public string LogRefID;
-        public string APIRefID;
+        public string PostRefID;
         public string APIService_Module;
         public string APIName;
         public string APIUrl;

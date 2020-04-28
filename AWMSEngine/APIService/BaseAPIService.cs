@@ -88,7 +88,7 @@ namespace AWMSEngine.APIService
 
                     token = !string.IsNullOrWhiteSpace(getKey.token) ? getKey.token : getKey._token;
                     apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
-                    this.BuVO.Set(BusinessVOConst.KEY_APIREFID, getKey.ref_id);
+                    this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
                 }
 
                 //-------CREATE FILE LOGGING
