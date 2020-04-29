@@ -463,7 +463,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 queueTrx.AreaLocationMaster_ID = _location.ID;
                 queueTrx.AreaMaster_ID = _area.ID.Value;
                 queueTrx.Warehouse_ID = _area.Warehouse_ID.Value;
-
+                queueTrx.Des_AreaLocationMaster_ID = _location.ID;
                 queueTrx.ActualTime = reqVO.actualTime;
                 queueTrx.EndTime = reqVO.actualTime;
                 queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
