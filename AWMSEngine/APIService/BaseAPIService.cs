@@ -31,17 +31,15 @@ namespace AWMSEngine.APIService
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isJsonResponse = true)
+        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true)
         {
             this.IsAuthenAuthorize = isAuthenAuthorize;
-            this.IsJsonResponse = isJsonResponse;
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
         }
         public BaseAPIService()
         {
             this.IsAuthenAuthorize = false;
-            this.IsJsonResponse = true;
             this.ControllerAPI = null;
             this.APIServiceID = 0;
         }
