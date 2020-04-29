@@ -10,6 +10,7 @@ namespace AMWUtil.DataAccess.Http
         public string APIName;
 
         public string APIUrl;
+        public string PostRefID;
         public string Header;
         public string InputText;
         public string OutputText;

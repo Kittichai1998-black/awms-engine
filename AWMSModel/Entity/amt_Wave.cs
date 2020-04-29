@@ -10,6 +10,7 @@ namespace AWMSModel.Entity
         public IOType IOType;
         //public long Document_ID;
         public WaveRunMode RunMode;
+        public string DesAreaCode;
         public DateTime? RunScheduleTime;
         public int Priority;
         public DateTime? StartTime;

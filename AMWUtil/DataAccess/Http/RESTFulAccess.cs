@@ -49,7 +49,7 @@ namespace AMWUtil.DataAccess.Http
             {
                 try
                 {
-                    var outResult = new HttpResultModel();
+                    var outResult = new HttpResultModel() { PostRefID = ObjectUtil.GenUniqID() };
                     outResults.Add(outResult);
                     retry--;
                     using (HttpClient client = new HttpClient())
@@ -74,6 +74,7 @@ namespace AMWUtil.DataAccess.Http
                         }
 
                         client.Timeout = new TimeSpan(timeout);
+                        logger.LogInfo("POST_REF_ID :: " + outResult.PostRefID);
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + datas.Json());
                         var response = client.PostAsync(apiUrl, content);
                         logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + response.Result.StatusCode);
@@ -112,7 +113,7 @@ namespace AMWUtil.DataAccess.Http
                 logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
             {
-                var outResult = new HttpResultModel();
+                var outResult = new HttpResultModel() { PostRefID = ObjectUtil.GenUniqID() }; ;
                 if (outResults != null)
                     outResults.Add(outResult);
                 try
@@ -155,7 +156,10 @@ namespace AMWUtil.DataAccess.Http
 
                     string json = datas.Json();
                     if (logger != null)
+                    {
+                        logger.LogInfo("POST_REF_ID :: " + outResult.PostRefID);
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + json);
+                    }
                     //return new T();
 
 

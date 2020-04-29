@@ -21,33 +21,17 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
             var res = new ASRSCreatWaveProcessQueue().Execute(this.Logger, this.BuVO, req);
 
 
-            if (req.desASRSAreaCode != null)
+            if (req.FlagAuto)
             {
 
                 var workingWave = new WorkingWave();
                 var workingWaves = workingWave.Execute(this.Logger, this.BuVO, new WorkingWave.TReq()
                 {
-
+                    waveID = res.WaveID
+                    
                 });
-                var nextDistoWaveSeq = new NextDistoWaveSeq();
-                var nextDistoWaveSeqs = nextDistoWaveSeq.Execute(this.Logger, this.BuVO, new NextDistoWaveSeq.TReq()
-                {
-                    DesAreaID = StaticValueManager.GetInstant().AreaMasters.Find(x => x.Code == req.desASRSAreaCode).ID.Value,
-                    DesLocationID = null,
-                    CurrentDistoIDs = res.CurrentDistoIDs
-                });
-
-
-
-                var doneDistoWaveSeq = new DoneDistoWaveSeq();
-                var doneDistoWaveSeqs = doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq()
-                {
-
-                });
-
+            
             }
-
-
             return res;
         }
     }

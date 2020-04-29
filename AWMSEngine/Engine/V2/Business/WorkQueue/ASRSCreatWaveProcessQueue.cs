@@ -26,6 +26,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         public class TRes
         {
+            public long WaveID;
             public List<RootStoProcess> confirmResult;
             public List<amt_Document> docGRCrossDocks;
             public List<long> CurrentDistoIDs;
@@ -71,7 +72,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             //this.WCSSendQueue(rstos);
 
-            return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs, CurrentDistoIDs = AlloDisto };
+            return new TRes() { WaveID= wave.ID.Value, confirmResult = rstos, docGRCrossDocks = docGRCDs, CurrentDistoIDs = AlloDisto };
         }
 
 
@@ -204,6 +205,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 IOType = IOType.OUTPUT,
                 Code = "Code",
                 Name = "Name",
+                DesAreaCode = reqVO.desASRSAreaCode,
                 Description = "Description",
                 RunMode = reqVO.waveRunMode,
                 RunScheduleTime = reqVO.waveRunMode == WaveRunMode.SCHEDULE ? reqVO.scheduleTime : null,
