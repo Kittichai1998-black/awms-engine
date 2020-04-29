@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public string desASRSWarehouseCode;
             public string desASRSAreaCode;
+            public bool FlagAuto;
             public string desASRSLocationCode;
             public List<ProcessQueueCriteria> processQueues;
             public bool lockNotExistsRandom = false;
