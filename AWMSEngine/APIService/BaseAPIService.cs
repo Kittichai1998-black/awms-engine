@@ -25,7 +25,6 @@ namespace AWMSEngine.APIService
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
         public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
         public bool IsAuthenAuthorize { get; set; }
-        public bool IsJsonResponse { get; set; }
 
         public AMWLogger Logger { get; set; }
 
@@ -160,10 +159,7 @@ namespace AWMSEngine.APIService
                 
                 var res = this.ExecuteEngineManual();
 
-                if (this.IsJsonResponse)
-                    response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
-                else
-                    response = res;
+                response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
 
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
@@ -247,7 +243,7 @@ namespace AWMSEngine.APIService
 
             }
 
-            if (this.IsJsonResponse && (int)response._result.status == -1)
+            if ((int)response._result.status == -1)
             {
                 this.Logger.LogFatal("############## RETRY_DEADLOCK_TRANSACTION ##############");
                 this.Logger.LogFatal("##############       SLEEP 1000 MS        ##############");
