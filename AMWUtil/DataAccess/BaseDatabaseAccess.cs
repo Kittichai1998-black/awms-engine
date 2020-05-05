@@ -20,7 +20,7 @@ namespace AMWUtil.DataAccess
             this._ConnectionString = connectionString;
         }
 
-        private string DynamicParametersToString(DynamicParameters parameter)
+        public static string DynamicParametersToString(DynamicParameters parameter)
         {
             if (parameter == null) return string.Empty;
             return string.Join(" , ", parameter.ParameterNames.ToList().Select(x =>
@@ -29,7 +29,7 @@ namespace AMWUtil.DataAccess
                 if(v == null)
                     return string.Format("@{0}=NULL", x);
 
-                return string.Format("@{0}='{1}'", x, v);
+                return string.Format("@{0}='{1}'", x, v.Json());
             }));
         }
 
@@ -42,7 +42,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogDebug("[QUERY] " + spName + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[QUERY] " + spName + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
@@ -71,7 +71,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             T res;
-            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
@@ -100,7 +100,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             int res;
-            if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
