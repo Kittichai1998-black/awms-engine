@@ -69,7 +69,7 @@ const StockCard = (props) => {
 
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "MovementType",
+        t: "DocumentProcessType",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
@@ -89,7 +89,7 @@ const StockCard = (props) => {
             + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
             + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
             + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
-            + "&movementType=" + (valueText.movementType === undefined || valueText.movementType === null ? '' : encodeURIComponent(valueText.movementType))
+            + "&docProcessTypeID=" + (valueText.documentProcessType === undefined || valueText.documentProcessType === null ? '' : encodeURIComponent(valueText.documentProcessType))
             + "&spname=DAILY_STOCKCARD";
     }
     const onGetDocument = () => {
@@ -166,19 +166,19 @@ const StockCard = (props) => {
                     onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
                 />
             </FormInline>
-            <FormInline><LabelH>{t("Movement")} : </LabelH>
+            <FormInline><LabelH>{t("Doc.Process")} : </LabelH>
                 <AmDropdown
-                    id={'movementType'}
+                    id={'documentProcessType'}
                     fieldDataKey={"ID"}
                     fieldLabel={["Code", "Name"]}
-                    placeholder="Select Movement"
+                    placeholder="Select Doc.Process Type"
                     labelPattern=" : "
                     width={300}
                     ddlMinWidth={300}
                     zIndex={1000}
                     returnDefaultValue={true}
                     queryApi={MVTQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'movementType', fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'documentProcessType', fieldDataKey, null)}
                     ddlType={'search'}
                 />
             </FormInline>
