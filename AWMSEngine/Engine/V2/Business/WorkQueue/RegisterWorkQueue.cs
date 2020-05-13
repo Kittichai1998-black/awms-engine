@@ -676,7 +676,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 var parentDocID_opt = ObjectUtil.QryStrGetValue(psto.options, OptionVOConst.OPT_PARENT_DOCUMENT_ID);
 
-                var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitByPack(packMaster.ID.Value, psto.qty, packMaster.UnitType_ID);
+                var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(skuMaster.ID.Value, psto.qty, skuMaster.UnitType_ID.Value);
                 decimal? baseQuantity = null;
                 if (psto.qty >= 0)
                     baseQuantity = baseUnitTypeConvt.baseQty;

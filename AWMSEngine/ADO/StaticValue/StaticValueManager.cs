@@ -65,7 +65,7 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_UnitType> UnitTypes { get => this._UnitTypes ?? this.LoadUnitType(); }
 
         private List<amv_PackUnitConvert> _PackUnitConverts;
-        public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts ?? this.LoadPackUnitConvert(); }
+        public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts ?? this.LoadPackUnitConvert(); } 
 
         private List<ams_BaseMasterType> _BaseMasterTypes;
         public List<ams_BaseMasterType> BaseMasterTypes { get => this._BaseMasterTypes ?? this.LoadBaseMasterType(); }
@@ -221,7 +221,9 @@ namespace AWMSEngine.ADO.StaticValue
         //---------------PACK Convert UNIT
         public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal oldQty, long oldUnitTypeID)
         {
-            var baseUnitID = this.PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
+            
+
+            var baseUnitID = this.PackUnitConverts.First(x => x.SKUMaster_ID == skuID).UnitType_ID;
             var convertUnit = this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, baseUnitID);
             return convertUnit;
         }
@@ -237,6 +239,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(long packID, decimal oldQty, long oldUnitTypeID)
         {
+
             int skuID = this.PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, oldQty, oldUnitTypeID);
         }

@@ -1,132 +1,130 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/logo.ico" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta name="theme-color" content="#000000" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      /* width */
-      ::-webkit-scrollbar {
-        width: 7px;
-      }
 
-      /* Track */
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
+<head>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="%PUBLIC_URL%/logo.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* width */
+    ::-webkit-scrollbar {
+      width: 7px;
+    }
 
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-        background: #888;
-      }
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
 
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
-    </style>
-    <!--
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+  <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <title>AMW : AMS (Auto Motion Software)</title>
-    <script>
-      //เเสดงผลสถานะ downloading
-      window.loading = {
-        countLoad: 0,
-        onLoading: function() {
-          this.countLoad++;
-          // console.log(this.countLoad);
-          window.loading.showLoading();
-        },
-        onLoaded: function() {
-          this.countLoad--;
-          // console.log(this.countLoad);
-          window.loading.showLoading();
-        },
-        showLoading: function() {
-          const x = document.getElementById("divloading");
-          if (this.countLoad === 0) {
-            x.style.display = "none";
-          } else {
-            x.style.display = "block";
-          }
+  <title>AMW : AMS (Auto Motion Software)</title>
+  <script>
+    //เเสดงผลสถานะ downloading
+    window.loading = {
+      countLoad: 0,
+      onLoading: function () {
+        this.countLoad++;
+        // console.log(this.countLoad);
+        window.loading.showLoading();
+      },
+      onLoaded: function () {
+        this.countLoad--;
+        // console.log(this.countLoad);
+        window.loading.showLoading();
+      },
+      showLoading: function () {
+        const x = document.getElementById("divloading");
+        if (this.countLoad === 0) {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
         }
-      };
-    </script>
-    <script>
-      window.apipath = "https://localhost:44366";
-      // window.apipath = "http://awms.automotionworks.com:8084";
-      window.project = "ENGINE";
+      }
+    };
+  </script>
+  <script>
+    window.apipath = "https://localhost:44366";
+    // window.apipath = "http://awms.automotionworks.com:8084";
+    window.project = "AERP";
 
-      window.alert = function(msg, backgroundColor, color, border) {
-        var div = document.createElement("div");
-        div.style.textAlign = "center";
-        div.style.width = "350px";
-        div.style.height = "70px";
-        div.style.paddingTop = "5px";
-        div.style.background = backgroundColor ? backgroundColor : "white";
-        (div.style.color = color ? color : "black"), (div.style.opacity = 0.8);
-        div.innerHTML = msg;
-        div.onclick = () => {
-          div.remove();
-        };
-        //div.style.border = border ? border : "2px solid black";
-        div.style.margin = "3px auto";
-        div.style.padding = "2px";
-        div.style.cursor = "pointer";
-        const ele = document.getElementById("msg");
-        ele.prepend(div);
+    window.alert = function (msg, backgroundColor, color, border) {
+      var div = document.createElement("div");
+      div.style.textAlign = "center";
+      div.style.width = "350px";
+      div.style.height = "70px";
+      div.style.paddingTop = "5px";
+      div.style.background = backgroundColor ? backgroundColor : "white";
+      (div.style.color = color ? color : "black"), (div.style.opacity = 0.8);
+      div.innerHTML = msg;
+      div.onclick = () => {
+        div.remove();
+      };
+      //div.style.border = border ? border : "2px solid black";
+      div.style.margin = "3px auto";
+      div.style.padding = "2px";
+      div.style.cursor = "pointer";
+      const ele = document.getElementById("msg");
+      ele.prepend(div);
+      setTimeout(() => {
+        div.style.opacity = "0";
+        div.style.opacity = "pointer-events:none";
         setTimeout(() => {
-          div.style.opacity = "0";
-          div.style.opacity = "pointer-events:none";
-          setTimeout(() => {
-            ele.removeChild(div);
-          }, 1000);
-        }, 50000);
-      };
+          ele.removeChild(div);
+        }, 1000);
+      }, 50000);
+    };
 
-      window.success = function(msg, backgroundColor, color) {
-        msg = "xxxx <br/> xxxx";
-        window.alert(
-          msg,
-          backgroundColor ? backgroundColor : "#689F38",
-          color ? color : "white",
-          "2px solid white"
-        );
-      };
+    window.success = function (msg, backgroundColor, color) {
+      msg = "xxxx <br/> xxxx";
+      window.alert(
+        msg,
+        backgroundColor ? backgroundColor : "#689F38",
+        color ? color : "white",
+        "2px solid white"
+      );
+    };
 
-      window.error = function(msg, backgroundColor, color) {
-        window.alert(
-          msg,
-          backgroundColor ? backgroundColor : "#E53935",
-          color ? color : "white",
-          "2px solid white"
-        );
-      };
+    window.error = function (msg, backgroundColor, color) {
+      window.alert(
+        msg,
+        backgroundColor ? backgroundColor : "#E53935",
+        color ? color : "white",
+        "2px solid white"
+      );
+    };
 
-      window.warning = function(msg, backgroundColor, color) {
-        window.alert(
-          msg,
-          backgroundColor ? backgroundColor : "#FF8F00",
-          color ? color : "white",
-          "2px solid white"
-        );
-      };
-    </script>
-  </head>
+    window.warning = function (msg, backgroundColor, color) {
+      window.alert(
+        msg,
+        backgroundColor ? backgroundColor : "#FF8F00",
+        color ? color : "white",
+        "2px solid white"
+      );
+    };
+  </script>
+</head>
 
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -136,9 +134,7 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <div
-      id="msg"
-      style="float: right; z-index: 9999; position: fixed; right: 10px; top:0 "
-    ></div>
-  </body>
+  <div id="msg" style="float: right; z-index: 9999; position: fixed; right: 10px; top:0 "></div>
+</body>
+
 </html>
