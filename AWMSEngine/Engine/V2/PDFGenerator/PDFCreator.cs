@@ -25,11 +25,17 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 
         public class TRes
         {
-            public byte[] file;
+            public byte[] stream;
             public string contentType;
             public string fileName;
         }
 
+        public class DataReport
+        {
+            public string TitleTable;
+            public List<ams_AreaMaster> AreaMasterData;
+            public string TitleTable2;
+        }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
@@ -39,15 +45,18 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 //string fileName = @"D:\PDFConvert\Employee_Report2.pdf";
                 //Directory.CreateDirectory(Path.GetDirectoryName(fileName));
                 var dataTable = StaticValueManager.GetInstant().AreaMasters;
-                var param = new { 
-                    TableName = "Area",
-                    DataTable = dataTable
+                var param = new DataReport
+                {
+                    TitleTable = "Area",
+                    AreaMasterData = dataTable,
+                    TitleTable2 = "Footer"
+
                 };
-                var pdf = CreateHTMLContent.createHtmlToPdfDocument(reqVO.formCode, param);
-                
+                var pdf = new CreateHTMLContent();
+                var html = pdf.createHtmlToPdfDocument(reqVO.formCode, param);
+
                 //เเปลงเป็น pdf
-                var file = converter.Convert(pdf);
-                res.file = file;
+                res.stream = converter.Convert(html);
                 res.contentType = "application/pdf";
                 res.fileName = reqVO.formCode+".pdf";
 

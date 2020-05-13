@@ -47,10 +47,8 @@ const SKUMasterType = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "SKU Type Code", accessor: "Code", fixed: "left", width: 120 },
+    { Header: "SKU Type Code", accessor: "Code", fixed: "left" },
     { Header: "SKU Type Name", accessor: "Name", width: 150 },
-    { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
-    { Header: "% Weight Verify", accessor: "ObjectSize_Code" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -74,24 +72,6 @@ const SKUMasterType = props => {
       name: "SKU Type Name",
       placeholder: "Name",
       required: true
-    },
-    {
-      field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code"]
-    },
-    {
-      field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"]
     }
   ];
 
@@ -111,24 +91,6 @@ const SKUMasterType = props => {
       placeholder: "Name",
       validate: /^.+$/,
       required: true
-    },
-    {
-      field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code"]
-    },
-    {
-      field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"]
     },
     {
       field: "Status",
@@ -154,26 +116,7 @@ const SKUMasterType = props => {
     }
   ];
   const columnsFilter = [
-    {
-      field: "UnitTypeCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code"],
-      fieldDataKey: "Code"
-    },
-    {
-      field: "ObjectSize_Code",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code"],
-      fieldDataKey: "Code"
-    },
+
     {
       field: "Status",
       type: "status",

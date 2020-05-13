@@ -111,6 +111,7 @@ namespace AWMSEngine.Engine.V2.Business
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
+
             TRes res = new TRes();
             List<bsto> sou_sto = new List<bsto>();
             List<bsto> des_sto = new List<bsto>();
@@ -152,15 +153,6 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
-
-                    var packCovert = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
-                        new SQLConditionCriteria[]
-                        {
-                            new SQLConditionCriteria("SKUMaster_ID",pack.SKUMaster_ID, SQLOperatorType.EQUALS),
-                        },
-                        this.BuVO);
-
-                    var packBaseConvert = packCovert.Find(x => x.UnitType_ID != x.BaseUnitType_ID);
 
                     var x = StaticValue.ConvertToALlUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQty, bs.distoBaseUnitID);
                     var Listpack = new List<TRes.QtyConvert>();
@@ -220,7 +212,7 @@ namespace AWMSEngine.Engine.V2.Business
                         distoUnitCode = bs.distoUnitCode,
                         //distoQtyConvert = bs.sou_packCode == "000000000" ? bs.distoQty : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQty, pack.BaseUnitType_ID, packBaseConvert.UnitType_ID).newQty,
                         //distoQtyMaxConvert = bs.sou_packCode == "000000000" ? bs.distoQtyMax : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQtyMax, pack.BaseUnitType_ID , packBaseConvert.UnitType_ID).newQty,
-                        distoUnitCodeConvert = bs.sou_packCode == "000000000" ? bs.distoUnitCode : StaticValue.UnitTypes.FirstOrDefault(x => x.ID == packBaseConvert.UnitType_ID).Code,
+                        distoUnitCodeConvert = null,
                         distoQtyConverts = Listpack,
 
 

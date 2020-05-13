@@ -157,7 +157,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         x => new CreateDocument.TReq.Item
                         {
                             skuCode = x.skuCode,
-                            packCode = x.packCode,
+                            packCode = null,
 
                             quantity = x.quantity,
                             unitType = x.unitType,
