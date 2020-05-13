@@ -7,34 +7,28 @@ import {
   IsEmptyObject
 } from "../../../components/function/CoreFunction2";
 import queryString from "query-string";
-import {AmTable} from "../../../components/table";
+import AmTable from "../../../components/AmTable/AmTable";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { WaveContext } from './WaveContext';
 var Axios = new apicall();
 
 
-const useWaveDetailColumns = (waveDetailColumns) => {
-
-
-}
-
-
 const useWaveManageQuery = (query, waveIDs, mode, waveMode) => {
-    console.log(mode)
     const [waveManageQury, setwaveManageQury] = useState(query);
+    const { wave, tabModes } = useContext(WaveContext)
     useEffect(() => {
        
         if (query != null) {
             let objQuery = { ...query };
             if (objQuery !== null) {
                 let getWaveDetail = JSON.parse(objQuery.q);
-                getWaveDetail.push({ 'f': 'waveID', 'c': '=', 'v': waveIDs }, { 'f': 'waveSeq', 'c': '=', 'v': mode })
+                getWaveDetail.push({ 'f': 'waveID', 'c': '=', 'v': waveIDs }, { 'f': 'statusStoEndWave', 'c': '=', 'v': mode })
                 objQuery.q = JSON.stringify(getWaveDetail);
                 //{ 'f': 'waveSeq', 'c': '=', 'v': mode }
             }
             setwaveManageQury(objQuery)
         }
-    }, [query, waveIDs, mode, waveMode])
+    }, [query, waveIDs, mode, waveMode,tabModes.TabMode])
 
     return waveManageQury;
 }
@@ -42,15 +36,18 @@ const useWaveManageQuery = (query, waveIDs, mode, waveMode) => {
 
 const AmWaveDetail = (props) => {
     const { wave, tabModes } = useContext(WaveContext)
-    const waveDetail = useWaveDetailColumns(props.detailColumns)
     const waveDetailQuery = useWaveManageQuery(props.waveManageQuery, wave.waveID, tabModes.TabMode, wave.waveRunMode)
-    const [DatawaveDetail, setDatawaveDetail] = useState();
+    const [DatawaveDetail, setDatawaveDetail] = useState([]);
 
     useEffect(() => {
+        console.log(wave.waveID)
         if (wave.waveID !== 0) {
             getData(waveDetailQuery)
+        } else if (wave.waveID == "") { 
+            setDatawaveDetail([])
         }
-    }, [waveDetailQuery])
+    }, [waveDetailQuery, wave.waveID])
+
 
     const getData = (waveDetailQuerys) => {
         Axios.get(createQueryString(waveDetailQuerys)).then(res => {
@@ -59,10 +56,12 @@ const AmWaveDetail = (props) => {
     }
 
     return <>
-        <AmTable columns={props.detailColumns} data={DatawaveDetail} sortable={false} />
-         
-
-        
+        <div style={{ marginTop:"10px" }}>
+        <AmTable
+                columns={props.wavedetailColumns}
+            dataSource={DatawaveDetail}
+                sortable={false} />
+        </div>
     </>
 }
 

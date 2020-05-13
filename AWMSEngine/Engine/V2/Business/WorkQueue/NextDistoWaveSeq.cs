@@ -24,10 +24,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             List<amt_DocumentItemStorageObject> currentDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria("ID", string.Join(',', reqVO.CurrentDistoIDs.ToArray()), SQLOperatorType.IN), this.BuVO);
-            if (currentDistos.Any(x => x.Status != EntityStatus.ACTIVE))
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะสินค้ายังไม่สิ้นสุด");
-            }
+
+            //if (currentDistos.Any(x => x.Status != EntityStatus.ACTIVE))
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะสินค้ายังไม่สิ้นสุด");
+            //}
             if (currentDistos.Any(x => !x.Sou_WaveSeq_ID.HasValue))
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่มีการใช้งาน Wave");
@@ -40,14 +41,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             groupDisto.ForEach(gDisto =>
             {
                 var firstDisto = gDisto.distos.FirstOrDefault();
+
                 amt_Wave wave = ADO.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
                 amt_WaveSeq nextWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == firstDisto.Des_WaveSeq_ID);
                 var bsto = ADO.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
                 var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
                 var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
 
-                nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
-                ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+                if(nextWaveSeq.EventStatus == WaveEventStatus.NEW)
+                {
+                    nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
+                    ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+                }
 
                 amt_WorkQueue wq = new amt_WorkQueue();
 
@@ -55,15 +60,78 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าไม่ได้อยู่ในพื้นที่เบิกสินค้า ไม่สามารถเบิกสินค้าได้");
 
                 if (stoArea.AreaMasterType_ID == AreaMasterTypeID.STO_ASRS)
-                {
                     wq = this.NextWorkQueue(bsto, wave, stoArea, desArea, reqVO);
-                }
 
                 gDisto.distos.ForEach(disto =>
                 {
                     nextDistos.Add(NextDisto(wave, nextWaveSeq, disto, wq));
+                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                 });
+                
+                var distoFromWaveSeq = ADO.DistoADO.GetInstant().ListBySouWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
+                if(distoFromWaveSeq.TrueForAll(x=> x.Status == EntityStatus.ACTIVE)) {
+                    var weveSeq = wave.WaveSeqs.Find(x => x.ID.Value == firstDisto.Sou_WaveSeq_ID.Value);
+                    weveSeq.EventStatus = WaveEventStatus.WORKED;
+                    ADO.WaveADO.GetInstant().PutSeq(weveSeq, this.BuVO);
+                }
 
+                if(wave.WaveSeqs.TrueForAll(x=> x.EventStatus == WaveEventStatus.WORKED))
+                    ADO.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.WORKED, null, WaveEventStatus.CLOSING, this.BuVO);
+
+                var waveClosing = ADO.WaveADO.GetInstant().Get(wave.ID.Value, this.BuVO);
+                if (waveClosing.EventStatus == WaveEventStatus.CLOSING)
+                {
+                    ADO.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.CLOSING, null, WaveEventStatus.CLOSED, this.BuVO);
+                }
+            });
+
+            nextDistos.ForEach(disto =>
+            {
+                amt_Wave wave = ADO.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(disto.Sou_WaveSeq_ID.Value, this.BuVO);
+                amt_WaveSeq curWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == disto.Sou_WaveSeq_ID);
+                if (curWaveSeq.AutoDoneSeq)
+                {
+                    var doneSeq = new DoneDistoWaveSeq();
+                    if (disto.WorkQueue_ID.HasValue)
+                    {
+                        if (curWaveSeq.WCSDone)
+                        {
+                            doneSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() {
+                                distos = new List<DoneDistoWaveSeq.TReq.DistoList>()
+                                {
+                                    new DoneDistoWaveSeq.TReq.DistoList(){ distoID=disto.ID.Value }
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        doneSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq()
+                        {
+                            distos = new List<DoneDistoWaveSeq.TReq.DistoList>()
+                                {
+                                    new DoneDistoWaveSeq.TReq.DistoList(){ distoID=disto.ID.Value }
+                                }
+                        });
+                    }
+                }
+                else
+                {
+                    var doneSeq = new DoneDistoWaveSeq();
+                    if (disto.WorkQueue_ID.HasValue)
+                    {
+                        if (curWaveSeq.WCSDone)
+                        {
+                            doneSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq()
+                            {
+                                distos = new List<DoneDistoWaveSeq.TReq.DistoList>()
+                                {
+                                    new DoneDistoWaveSeq.TReq.DistoList(){ distoID=disto.ID.Value }
+                                }
+                            });
+                        }
+                    }
+                }
             });
 
             return nextDistos;

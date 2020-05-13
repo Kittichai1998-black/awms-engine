@@ -229,10 +229,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 groupRstos.ForEach(rstoByDoc =>
                 {
                     var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
-                    int docSeq = 1;
+                    var groupSeq = ADO.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
+                    int seq = 1;
                     docItemGroup.ForEach(rstoByDocID =>
                     {
-                        int seq = 1;
                         rstoByDocID.rstos.ForEach(rsto =>
                         {
                             wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
@@ -249,8 +249,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 {
                                     eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
                                     baseCode = rsto.rstoCode,
-                                    pickSeqGroup = "0",
-                                    pickSeqIndex = 0,
+                                    pickSeqGroup = groupSeq.ToString(),
+                                    pickSeqIndex = seq,
                                     packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
                                     {
                                         batch = x.pstoBatch,
@@ -261,9 +261,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 }
 
                             });
-                            seq++;
                         });
-                        docSeq++;
+                        seq++;
                     });
                 });
             }

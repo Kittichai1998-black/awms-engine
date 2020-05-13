@@ -341,17 +341,26 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         }
                                         else
                                         {
-                                            var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                            if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                            var distoAll = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                                             {
-                                                updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                                new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("Sou_StorageObject_ID", sto.id.Value, SQLOperatorType.EQUALS),
+                                            }, this.BuVO);
 
-                                            }
-                                            else
+                                            if (distoAll.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
                                             {
-                                                StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
-                                                updSto.eventStatus = eventStatus;
-                                                RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
+                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                {
+                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+
+                                                }
+                                                else
+                                                {
+                                                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
+                                                    updSto.eventStatus = eventStatus;
+                                                    RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
+                                                }
                                             }
 
                                         //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
@@ -413,18 +422,28 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         }
                                         else
                                         {
-                                        //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
-                                        var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                            if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
-                                            {
-                                                updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
-                                            }
-                                            else
+                                            var distoAll = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                                             {
-                                                StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
-                                                updSto.eventStatus = eventStatus;
-                                                RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
+                                                new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("Sou_StorageObject_ID", sto.id.Value, SQLOperatorType.EQUALS),
+                                            }, this.BuVO);
+
+                                            if (distoAll.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                                            {
+                                                //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
+                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                {
+                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+
+                                                }
+                                                else
+                                                {
+                                                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
+                                                    updSto.eventStatus = eventStatus;
+                                                    RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
+                                                }
                                             }
 
                                         //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก

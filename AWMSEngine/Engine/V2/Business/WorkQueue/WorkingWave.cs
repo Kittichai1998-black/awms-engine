@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Wave Sequence ต้องอยู่ในสถานะ NEW เท่านั้น");
 
             waveSeq.EventStatus = WaveEventStatus.WORKING;
-            ADO.WaveADO.GetInstant().Put(wave, this.BuVO);
+            ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
 
             var distoWaveSeq = ADO.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
             var distoList = new List<DoneDistoWaveSeq.TReq.DistoList>();
@@ -40,10 +40,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 distoList.Add(new DoneDistoWaveSeq.TReq.DistoList()
                 {
-                    distoID = disto.ID.Value
+                    distoID = disto.ID.Value,
+                    limitQty = false                    
                 });
             });
-            var doneAllocateReq = new DoneDistoWaveSeq.TReq() { distos = distoList };
+            var doneAllocateReq = new DoneDistoWaveSeq.TReq() { distos = distoList,  };
             var doneAllocate = new DoneDistoWaveSeq();
             var res = doneAllocate.Execute(this.Logger, this.BuVO, doneAllocateReq);
 
