@@ -1,5 +1,7 @@
 ﻿import React, { useState, useEffect, useContext } from "react";
 import { AmTable } from "../../../components/table";
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import AmEditorTable from '../../../components/table/AmEditorTable'
 import AmDropdown from "../../../components/AmDropdown";
 import AmButton from '../../../components/AmButton'
@@ -15,6 +17,7 @@ var Axios = new apicall();
 const useWaveColumns = (waveColumns) => {
     const [columns, setColumns] = useState(waveColumns);
     const { wave, tabModes } = useContext(WaveContext)
+
 
     const SetWaveID = (es) => {
         wave.setWaveID(es.row._original.ID)
@@ -69,12 +72,10 @@ const AmWaveManagement = (props) => {
     const waveColumns = useWaveColumns(props.waveColumns)
     const { wave, tabModes} = useContext(WaveContext)
     const WavemangeQuery = useWaveQuery(props.waveQuery, wave.waveRunMode)
-        //useState(props.WavemangeQuery);
-        //useWaveQuery(props.WavemangeQuery, wave.waveRunMode)
+    const [currentTab, setCurrentTab] = useState(0);
 
     useEffect(() => {
         getData(WavemangeQuery)
-        console.log(WavemangeQuery)
     }, [WavemangeQuery])
 
     const getData = (WavemangeQuerys) => {
@@ -92,22 +93,32 @@ const AmWaveManagement = (props) => {
         wave.setwaveRunMode(value)
     }
 
+    const OnchaneTabTop = (e, n) => {
+        wave.setwaveRunMode(n)
+
+    }
+
 
     return <>
         <div>
-            <AmDropdown
-                 id="ModeWave"
-                 placeholder="Select"
-                 data={DDLWave}
-                  width={300} 
-                 defaultValue={0}
-                 ddlMinWidth={300} 
-                 valueData={0} 
-                 onChange={(value, dataObject) =>
-                     onChangeEditor(value, dataObject)
-                 }
-                 ddlType={"search"}
-            ></AmDropdown>
+            <Tabs value={currentTab} onChange={(e, n) => OnchaneTabTop(e, n)}>
+                <Tab label="Manual" value={0} />
+                <Tab label="Sequence" value={1} />
+                <Tab label="Schedule" value={2} />
+            </Tabs>
+            {/*<AmDropdown
+                id="ModeWave"
+                placeholder="Select"
+                data={DDLWave}
+                width={300}
+                defaultValue={"0"}
+                ddlMinWidth={300}
+                valueData={0}
+                onChange={(value, dataObject) =>
+                    onChangeEditor(value, dataObject)
+                }
+                ddlType={"search"}
+            ></AmDropdown>*/}
         </div>
         <AmTable columns={waveColumns} data={Datawave} sortable={false} />
         

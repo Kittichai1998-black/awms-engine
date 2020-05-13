@@ -8,8 +8,8 @@ namespace AWMSModel.Constant.EnumConst
     {
         HEADER_FIRSTPAGE = 10,
         HEADER_ALL = 11,
-        CONTENT = 20,
+        BODY = 20,
         FOOTER_LASTPAGE = 30,
-        FOOTER_ALL = 31,
+        
     }
 }

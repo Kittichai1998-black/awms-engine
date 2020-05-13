@@ -10,7 +10,6 @@ const AmWaveTab = (props) => {
 
 
     const OnchaneTab = (e, n) => {
-        console.log(n)
         tabModes.setTabMode(n)
     }
 
