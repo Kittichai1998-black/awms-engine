@@ -24,13 +24,13 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Branch> _Branchs;
         public List<ams_Branch> Branchs { get => this._Branchs ?? this.LoadBranch(); }
-        
+
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses ?? this.LoadWarehouse(); }
-        
+
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters ?? this.LoadAreaMaster(); }
-        
+
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes ?? this.LoadAreaMasterType(); }
 
@@ -81,7 +81,7 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_WaveSeqTemplate> _WaveSeqTemplates;
         public List<ams_WaveSeqTemplate> WaveSeqTemplates { get => this._WaveSeqTemplates ?? this.LoadWaveSeqTemplates(); }
-        
+
         private List<ams_PrintForm> _PrintForm;
         public List<ams_PrintForm> PrintForm { get => this._PrintForm ?? this.LoadPrintForm(); }
 
@@ -115,7 +115,7 @@ namespace AWMSEngine.ADO.StaticValue
             }
         }
 
-        
+
         public void ClearStaticByTableName(string tableName)
         {
             if (tableName.StartsWith("ams_"))
@@ -204,7 +204,7 @@ namespace AWMSEngine.ADO.StaticValue
             if (!value.HasValue) return null;
             string fixCode = value is StorageObjectEventStatus ? "STO" :
                                 (value is DocumentEventStatus) ? "DOC" :
-                                (value is WorkQueueEventStatus) ? "Q" : 
+                                (value is WorkQueueEventStatus) ? "Q" :
                                 (value is WaveEventStatus) ? "WAVE" : string.Empty;
             int v = AMWUtil.Common.EnumUtil.GetValueInt(value.Value);
             if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_INACTIVE", v))
@@ -242,30 +242,111 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
 
+
+        // New Convert
+
+        private class dataConvert 
+        {
+            public class convertList
+            {
+                public long unitType_C1;
+                public decimal qty_C1;
+                public long unitType_C2;
+                public decimal qty_C2;
+            }
+            public List<convertList> covertLists;
+
+        };
+
+
         public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal oldQty, long oldUnitTypeID, long newUnitTypeID)
         {
-            var oldUnit = this.PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
-            var newUnit = this.PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == newUnitTypeID);
-            if (newUnit == null || oldUnit == null)
-                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
+            var unitPackH = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID).FirstOrDefault();
+            var unitPack = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID);
+           
 
-            decimal baseQty = oldQty * oldUnit.BaseQuantity / oldUnit.Quantity;
-            //var baseUnit = this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+            if (unitPackH == null)
+                throw new Exception("Fail : UnitType ไม่มีใน Pack Convert");
+
+            var arr = new dataConvert();
+            arr.covertLists = new List<dataConvert.convertList>();
+            unitPack.ForEach(x =>
+            {
+                arr.covertLists.Add(new dataConvert.convertList()
+                {
+                    unitType_C1 = x.C1_UnitType_ID,
+                    qty_C1 = x.C1_Quantity,
+                    unitType_C2 = x.C2_UnitType_ID,
+                    qty_C2 = x.C2_Quantity
+                });
+
+                arr.covertLists.Add(new dataConvert.convertList()
+                {
+                    unitType_C1 = x.C2_UnitType_ID,
+                    qty_C1 = x.C2_Quantity,
+                    unitType_C2 = x.C1_UnitType_ID,
+                    qty_C2 = x.C1_Quantity
+                });
+
+            });
+
+            var checkUnit = arr.covertLists.FindAll(x => x.unitType_C1 == oldUnitTypeID);
+            if (checkUnit.Count == 0)
+                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config Convert");
+
+
+            var dataConvert_C2 = CovertUnit(oldQty, oldUnitTypeID, newUnitTypeID,arr.covertLists);
+            var dataConvert_BaseQty = CovertUnit(oldQty, oldUnitTypeID, unitPackH.UnitType_ID, arr.covertLists);
+
+            if (checkUnit == null)
+                throw new Exception("Covert Unit Fail : UnitType ไม่มีlามารถ Convert ได้");
+
+
             return new ConvertUnitCriteria()
             {
-                skuMaster_ID = newUnit.SKUMaster_ID,
-                skuMaster_Code = newUnit.SKUMaster_Code,
-                packMaster_ID = newUnit.PackMaster_ID,
-                packMaster_Code = newUnit.PackMaster_Code,
+                skuMaster_ID = unitPackH.SKUMaster_ID,
+                skuMaster_Code = unitPackH.SKUMaster_Code,
+                packMaster_ID = unitPackH.PackMaster_ID,
+                packMaster_Code = unitPackH.PackMaster_Code,
+                newQty = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
+                newUnitType_ID = newUnitTypeID,
                 oldQty = oldQty,
-                oldUnitType_ID = oldUnit.UnitType_ID,
-                newQty = baseQty * newUnit.Quantity / newUnit.BaseQuantity,
-                newUnitType_ID = newUnit.UnitType_ID,
-                baseQty = baseQty,
-                baseUnitType_ID = oldUnit.BaseUnitType_ID,
-                stdWeiKg = newUnit.WeightKG * (oldQty * oldUnit.BaseQuantity / oldUnit.Quantity) / newUnit.BaseQuantity
+                oldUnitType_ID = oldUnitTypeID,
+                baseQty = dataConvert_BaseQty.Value,
+                baseUnitType_ID = unitPackH.UnitType_ID,
+                C2_Quantity = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
+                C2_UnitType_ID = newUnitTypeID,
+                C1_Quantity = oldQty,
+                C1_UnitType_ID = oldUnitTypeID,
+             
             };
+
         }
+
+        private static decimal? CovertUnit(decimal c1qty, long c1unit, long c2unit,List< dataConvert.convertList> arr)
+        {
+
+            var cm = arr.FirstOrDefault(x => x.unitType_C1 == c1unit && x.unitType_C2 == c2unit);
+            if (cm != null)
+            {
+                return (c1qty / cm.qty_C1) * cm.qty_C2;
+            }
+
+            foreach (var cm2 in arr.FindAll(x => x.unitType_C1 == c1unit))
+            {
+                var _c1qty = (c1qty / cm2.qty_C1) * cm2.qty_C2;
+                var _c1unit = cm2.unitType_C2;
+                var _res = CovertUnit(_c1qty, _c1unit, c2unit, arr.FindAll(x => !x.Equals(cm2)));
+                if (_res.HasValue)
+                {
+                    return _res;
+                }
+            }
+
+            return null;
+
+        }
+
         public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal oldQty, long oldUnitTypeID, long newUnitTypeID)
         {
             var skuID = this.PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
