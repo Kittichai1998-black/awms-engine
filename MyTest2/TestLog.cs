@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using AMWUtil.DataAccess;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,6 +36,19 @@ namespace MyTest2
             //Console.ReadKey();
         }
 
+        [Fact]
+        public void SPPrint()
+        {
+            Dapper.DynamicParameters p = new Dapper.DynamicParameters();
+            p.Add("test1", "1");
+            p.Add("@test2", "2");
+            p.Add("@test3", 3);
+            p.Add("@test4", new string[] { "1", "2" });
+            p.Add("@test5", string.Join(',', new string[] { "1", "2" }));
+
+            string txt = BaseDatabaseAccess.DynamicParametersToString(p);
+            this.sysout.WriteLine(txt);
+        }
         [Fact]
         public void Loging()
         {

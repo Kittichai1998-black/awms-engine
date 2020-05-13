@@ -53,7 +53,6 @@ const AmWaveDetail = (props) => {
     }, [waveDetailQuery])
 
     const getData = (waveDetailQuerys) => {
-        console.log(waveDetailQuerys)
         Axios.get(createQueryString(waveDetailQuerys)).then(res => {
             setDatawaveDetail(res.data.datas);
         })
