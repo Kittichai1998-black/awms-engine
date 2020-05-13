@@ -31,12 +31,11 @@ namespace AWMSEngine.ADO
             }, buVO).FirstOrDefault();
             return mst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, int itemQty, VOCriteria buVO)
+        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("SKUMaster_ID",skuID),
-                new KeyValuePair<string, object>("ItemQty",itemQty),
                 new KeyValuePair<string, object>("Status",1)
             }, buVO).FirstOrDefault();
             return packMst;
@@ -54,12 +53,12 @@ namespace AWMSEngine.ADO
             }, buVO).FirstOrDefault();
             return packMst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(string skuCode, int itemQty, VOCriteria buVO)
+        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(string skuCode, VOCriteria buVO)
         {
             var skuMst = DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuCode, buVO);
             if (skuMst == null)
                 throw new AMWException(buVO.Logger, AMWExceptionCode.V1001, "SKUCode : " + skuCode);
-            var packMst = GetPackMasterBySKU(skuMst.ID.Value, itemQty, buVO); ;
+            var packMst = GetPackMasterBySKU(skuMst.ID.Value, buVO); ;
             return packMst;
         }
         public AWMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, string unitTypeCode, VOCriteria buVO)
@@ -81,7 +80,7 @@ namespace AWMSEngine.ADO
             {
                 new KeyValuePair<string, object>("Code",packCode),
                 new KeyValuePair<string, object>("Status",1)
-            }, buVO).FirstOrDefault(x => x.BaseUnitType_ID == x.UnitType_ID);
+            }, buVO).FirstOrDefault();
             return packMst;
         }
 

@@ -127,6 +127,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 if (pickFullBases.Count > 0)
                 {
                     var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
+                    var packCodeLists = x.docItems.Select(docItem => docItem.pstoCode).Distinct().ToList();
                     var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
 
                     var groupSTOLeft = listSTOLeft.GroupBy(sto => new { sto.BaseCode, sto.BaseUnit })

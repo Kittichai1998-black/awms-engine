@@ -122,6 +122,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
+            //var qtypC = StaticValue.ConvertToNewUnitBySKU(5949, 200, 100, 98);
+            //var qtyKG = StaticValue.ConvertToNewUnitBySKU(5949, 2, 93, 92);
+
             TRes res = new TRes();
             List<bsto> sou_sto = new List<bsto>();
             List<bsto> des_sto = new List<bsto>();
@@ -142,17 +145,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 },
                 this.BuVO);
 
-            //foreach (var data in docItems)
-            //{
-            //    if (data.Code != "000000000" && data.Quantity != null)
-            //    {
-            //        var result = StaticValue.ConvertToALlUnitBySKU(data.SKUMaster_ID.Value, data.Quantity.Value, data.UnitType_ID.Value);
-            //        data.Quantity = result[1].newQty;
-
-            //    }
-
-            //}
-
 
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
@@ -164,30 +156,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 {
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
-
-                    //var packCovert = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
-                    //    new SQLConditionCriteria[]
-                    //    {
-                    //        new SQLConditionCriteria("SKUMaster_ID",pack.SKUMaster_ID, SQLOperatorType.EQUALS),
-                    //    },
-                    //    this.BuVO);
-
-                    //var packBaseConvert = packCovert.Find(x => x.UnitType_ID != x.BaseUnitType_ID);
-
-                    //var x = StaticValue.ConvertToALlUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQty, bs.distoBaseUnitID);
-                    //var Listpack = new List<TRes.QtyConvert>();
-
-                    //foreach (var p in x)
-                    //{
-                    //    var qtyMax = StaticValue.ConvertToNewUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQtyMax, bs.distoBaseUnitID, p.newUnitType_ID);
-                    //    Listpack.Add(new TRes.QtyConvert()
-                    //    {
-                    //        qty = p.newQty,
-                    //        qtyMax = qtyMax.newQty,
-                    //        unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == p.newUnitType_ID).Code
-
-                    //    });
-                    //}
 
                     var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                     new SQLConditionCriteria[]
@@ -242,26 +210,13 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
                         distoUnitCode = bs.distoUnitCode,
-                        //distoQtyConvert = bs.sou_packCode == "000000000" ? bs.distoQty : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQty, pack.BaseUnitType_ID, packBaseConvert.UnitType_ID).newQty,
-                        //distoQtyMaxConvert = bs.sou_packCode == "000000000" ? bs.distoQtyMax : StaticValue.ConvertToNewUnitByPack(bs.sou_packID, bs.distoQtyMax, pack.BaseUnitType_ID , packBaseConvert.UnitType_ID).newQty,
-                        //distoUnitCodeConvert = bs.sou_packCode == "000000000" ? bs.distoUnitCode : StaticValue.UnitTypes.FirstOrDefault(x => x.ID == packBaseConvert.UnitType_ID).Code,
-                        //distoQtyConverts = Listpack,
-
-
-
-
+                     
                         distoBaseQty = bs.distoBaseQty,
                         distoBaseQtyMax = bs.distoBaseQtyMax,
                         distoBaseUnitID = bs.distoBaseUnitID,
                         distoBaseUnitCode = bs.distoBaseUnitCode,
 
-                        //workQueueID = docDisto.WorkQueue_ID.Value,
-                        //sou_workQueueDesArea = workQueueDesArea == null ? null : (StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Code + " : " + StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Name),
-                        //sou_workQueueDesAreaCode = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Code, //workQueueDesArea.Des_Area_ID,
-                        //sou_workQueueDesAreaName = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Name,
-                        //des_workQueueDesArea = workQueueDesArea == null ? null : (StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Code + " : " + StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Name),
-                        //des_workQueueDesAreaCode = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Code, //workQueueDesArea.Des_Area_ID,
-                        //des_workQueueDesAreaName = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Name,
+
 
                         areaID = bs.areaID,
                         areaCode = bs.areaCode,
@@ -326,13 +281,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         distoBaseUnitID = bs.distoBaseUnitID,
                         distoBaseUnitCode = bs.distoBaseUnitCode,
 
-                        //workQueueID = docDisto.WorkQueue_ID.Value,
-                        //sou_workQueueDesArea = workQueueDesArea == null ? null : (StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Code + " : " + StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Name),
-                        //sou_workQueueDesAreaCode = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Code, //workQueueDesArea.Des_Area_ID,
-                        //sou_workQueueDesAreaName = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Sou_AreaMaster_ID).Name,
-                        //des_workQueueDesArea = workQueueDesArea == null ? null : (StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Code + " : " + StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Name),
-                        //des_workQueueDesAreaCode = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Code, //workQueueDesArea.Des_Area_ID,
-                        //des_workQueueDesAreaName = workQueueDesArea == null ? null : StaticValue.AreaMasters.First(x => x.ID == workQueueDesArea.Des_AreaMaster_ID).Name,
+
 
                         areaID = bs.areaID,
                         areaCode = bs.areaCode,
