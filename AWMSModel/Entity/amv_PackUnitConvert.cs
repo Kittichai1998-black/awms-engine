@@ -15,5 +15,9 @@ namespace AWMSModel.Entity
         public decimal BaseQuantity;
         public int BaseUnitType_ID;
         public decimal WeightKG;
+        public decimal C2_Quantity;
+        public long C2_UnitType_ID;
+        public decimal C1_Quantity;
+        public long C1_UnitType_ID;
     }
 }

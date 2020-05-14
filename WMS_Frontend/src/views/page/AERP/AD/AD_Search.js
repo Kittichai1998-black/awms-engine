@@ -16,13 +16,13 @@ import AmPopup from "../../../../components/AmPopup";
 const Axios = new apicall();
 
 //======================================================================
-const DocumentSearchSTGT = props => {
+const AD_Search = props => {
   useEffect(() => {
     getData();
   }, []);
 
   const [dataMovementType, setDataMovementType] = useState();
-  const [dataCustomer, setDataCustomer] = useState();
+  // const [dataCustomer, setDataCustomer] = useState();
   const [dataWarehouse, setDataWarehouse] = useState();
   const [previewError, setPreviewError] = useState(false);
   const [previewWarning, setPreviewWarning] = useState(false);
@@ -92,7 +92,7 @@ const DocumentSearchSTGT = props => {
       setDataMovementType(res.data.datas);
     });
     Axios.get(createQueryString(CustomerQuery)).then(row => {
-      setDataCustomer(row.data.datas);
+      // setDataCustomer(row.data.datas);
     });
     Axios.get(createQueryString(WarehouseQuery)).then(row => {
       setDataWarehouse(row.data.datas);
@@ -217,7 +217,7 @@ const DocumentSearchSTGT = props => {
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
         {data.Code}
         <AmRediRectInfo
-          api={"/issue/detail?docID=" + data.ID}
+          api={"/audit/detail?docID=" + data.ID}
           history={props.history}
           docID={""}
         >
@@ -251,11 +251,11 @@ const DocumentSearchSTGT = props => {
         columns={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
-        docTypeCode="1002"
+        docTypeCode="2004"
         buttonClose={true}
         buttonReject={true}
         dataReject={dataReject}
-        apiReject={"/v2/RejectGIDocAPI"}
+        apiReject={"/v2/RejectADDocAPI"}
         //apiWorking={""}
         apiClose={"/v2/CloseDocAPI"}
       />
@@ -263,4 +263,4 @@ const DocumentSearchSTGT = props => {
   );
 };
 
-export default DocumentSearchSTGT;
+export default AD_Search;

@@ -20,11 +20,6 @@ namespace AWMSEngine.APIService.V2.Wave
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneDistoWaveSeq.TReq>(this.RequestVO);
             var exec = new DoneDistoWaveSeq().Execute(this.Logger, this.BuVO, req);
 
-            List<amt_WaveSeq> waveSeq = exec.waveSeqs;
-
-            //var reqClose = AMWUtil.Common.ObjectUtil.DynamicToModel<ClosedWave.TReq>(waveSeq);
-            //new ClosedWave().Execute(this.Logger, this.BuVO, reqClose);
-
             return exec;
 
         }

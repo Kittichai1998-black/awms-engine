@@ -78,7 +78,6 @@ const SKUMaster = props => {
       type: "number"
     },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
-    { Header: "% Weight Verify", accessor: "ObjectSizeCode", width: 150 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -128,16 +127,6 @@ const SKUMaster = props => {
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"]
-    },
-    {
-      field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"],
-      required: true
     }
   ];
 
@@ -184,16 +173,6 @@ const SKUMaster = props => {
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"]
-    },
-    {
-      field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
-      fieldLabel: ["Code", "Name"],
-      required: true
     },
     {
       field: "Status",
@@ -246,16 +225,6 @@ const SKUMaster = props => {
       name: "Unit Type",
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
-    {
-      field: "ObjectSizeCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
-      placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },

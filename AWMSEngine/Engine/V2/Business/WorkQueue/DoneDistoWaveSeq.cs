@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -19,22 +20,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public class DistoList
             {
                 public long distoID;
+                //Destination Base
                 public string baseCode;
+                //Current Location
                 public string locationCode;
                 public decimal? baseQty;
+                public bool limitQty = true;
             }
         }
         public class TRes
         {
             public List<amt_DocumentItemStorageObject> distos;
-            public List<amt_WaveSeq> waveSeqs;
+            public amt_WaveSeq waveSeq;
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var distoList = new List<amt_DocumentItemStorageObject>();
             var wavList = new List<amt_Wave>();
             var distos = ADO.DistoADO.GetInstant().GetListDisto(reqVO.distos.Select(x => x.distoID).ToList(), this.BuVO);
-            if(distos.Any(x=> x.Status == EntityStatus.ACTIVE))
+            if (distos.Any(x => x.Status == EntityStatus.ACTIVE))
             {
                 var findActive = distos.Find(x => x.Status == EntityStatus.ACTIVE);
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, $"งานนี้ถูกทำงานแล้ว ไม่สามารถทำงานซ้ำได้ ID : {findActive.ID}");
@@ -50,225 +54,276 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 new SQLConditionCriteria[] { new SQLConditionCriteria("ID", string.Join(',', pstoIDs), SQLOperatorType.IN) },
                 this.BuVO);
 
-            var waveSeqIDs = distos.Select(x => x.Sou_WaveSeq_ID).Distinct().ToList();
-            var waveSeqs = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(
-                new SQLConditionCriteria[] { new SQLConditionCriteria("ID", string.Join(',', waveSeqIDs), SQLOperatorType.IN) },
-                this.BuVO);
+            var waveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(
+                new SQLConditionCriteria[] { 
+                    new SQLConditionCriteria("ID", distos.First().Sou_WaveSeq_ID.Value, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS) 
+                },
+                this.BuVO).FirstOrDefault();
+            if (waveSeq == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Wave Sequence");
 
             distos.ForEach(disto =>
             {
-                var waveSeq = waveSeqs.Find(x => x.ID == disto.Sou_WaveSeq_ID);
-                if (waveSeq == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Wave Sequence");
+                var req = reqVO.distos.Find(x => x.distoID == disto.ID);
 
-                if (waveSeq.End_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATED)
+                var souPsto = pstos.Find(x => x.ID == disto.Sou_StorageObject_ID);
+                StorageObjectCriteria souBsto = new StorageObjectCriteria(), desBsto = new StorageObjectCriteria(), desSto = new StorageObjectCriteria();
+                if (souPsto.ParentStorageObject_ID.HasValue)
+                    souBsto = ADO.StorageObjectADO.GetInstant().Get(souPsto.ParentStorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+
+                var listItemInSouBase = souBsto.ToTreeList();
+                ams_AreaLocationMaster location = new ams_AreaLocationMaster();
+
+                var docItem = documentItems.Find(item => item.ID == disto.DocumentItem_ID);
+                var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                 {
-                    var currentSto = pstos.Find(x => x.ID == disto.Sou_StorageObject_ID);
-                    disto.BaseQuantity = currentSto.BaseQuantity;
-                    disto.Quantity = currentSto.Quantity;
-                    disto.Des_StorageObject_ID = currentSto.ID;
-                    disto.Status = EntityStatus.ACTIVE;
-                    ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
+                    new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Sou_WaveSeq_ID", waveSeq.ID, SQLOperatorType.EQUALS)
+                }, this.BuVO).Sum(x => x.BaseQuantity);
+
+                if (string.IsNullOrWhiteSpace(req.locationCode))
+                {
+                    if (souBsto != null)
+                    {
+                        location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(souBsto.parentID, this.BuVO);
+                    }
+                    else if (disto.WorkQueue_ID.HasValue)
+                    {
+                        var wq = ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
+                        location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(wq.Des_AreaLocationMaster_ID, this.BuVO);
+                    }
+                }
+                else
+                    location = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(req.locationCode, this.BuVO);
+
+                if (string.IsNullOrWhiteSpace(req.baseCode) || (req.baseCode == souBsto.code))
+                {
+                    desBsto = souBsto;
                 }
                 else
                 {
-                    var reqData = reqVO.distos.Find(x => x.distoID == disto.ID);
-
-                    var docItemQty = documentItems.Find(x => x.ID == disto.DocumentItem_ID).BaseQuantity;
-                    var sumQtyByDocItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                        new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS) },
-                        this.BuVO).Sum(x=> x.Quantity.HasValue ? x.Quantity : 0);
-
-                    var souPsto = pstos.Find(x => x.ID == disto.Sou_StorageObject_ID);
-
-                    decimal pickQty = 0;
-                    if (!disto.Quantity.HasValue)
-                    {
-                        pickQty = souPsto.Quantity;
-                    }
-                    else
-                    {
-                        pickQty = disto.Quantity.Value;
-                    }
-
-                    var souBsto = ADO.StorageObjectADO.GetInstant().Get(souPsto.ParentStorageObject_ID == null ? souPsto.ID.Value : souPsto.ParentStorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
-
-                    ams_AreaLocationMaster location = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqData.locationCode, this.BuVO);
-                    if (location == null)
-                        location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(souBsto.mstID, this.BuVO);
-
-                    if (location == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบตำแหน่งของ Pack");
-
-                    var desBsto = MapBase(reqData.baseCode, location.AreaMaster_ID, location.ID);
-                    //sumQtyByDocItem + pickQty > docItemQty
-                    if (pickQty > souPsto.BaseQuantity)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, $"หยิบสินค้าเกินจำนวนที่กำหนด");
-                    }
-                    else if (sumQtyByDocItem == docItemQty && pickQty == 0)
-                    {
-                        disto.Quantity = 0;
-                        disto.BaseQuantity = 0;
-                        disto.Status = EntityStatus.ACTIVE;
-                        disto.Des_StorageObject_ID = souPsto.ID;
-                        ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
-                    }
-                    else if (sumQtyByDocItem + pickQty == docItemQty)
-                    {
-                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData, waveSeq);
-
-                        disto.Quantity = pickQty;
-                        disto.BaseQuantity = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-                        disto.Status = EntityStatus.ACTIVE;
-                        disto.Des_StorageObject_ID = desSto.id;
-                        ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
-                    }
-                    else if (sumQtyByDocItem + pickQty < docItemQty)
-                    {
-                        var desSto = this.MapPackToBase(souPsto, pickQty, disto, souBsto, desBsto, location, reqData, waveSeq);
-                        disto.Quantity = pickQty;
-                        disto.BaseQuantity = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-                        disto.Status = EntityStatus.ACTIVE;
-                        disto.Des_StorageObject_ID = desSto.id;
-                        ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
-
-                        if(desSto.id != souPsto.ID)
-                        {
-                            var newDisto = disto.Clone();
-                            newDisto.ID = null;
-                            newDisto.Des_StorageObject_ID = null;
-                            newDisto.Quantity = null;
-                            newDisto.BaseQuantity = null;
-                            newDisto.Status = EntityStatus.INACTIVE;
-                            ADO.DistoADO.GetInstant().Create(newDisto, this.BuVO);
-                        }
-                    }
+                    desBsto = MapBase(req.baseCode, location.AreaMaster_ID, location.ID);
                 }
+
+                var canPick = docItem.ActualBaseQuantity - distos;
+                var souPstoCriteria = listItemInSouBase.Find(x => x.id == souPsto.ID);
+                
+                desSto = MapPackToBase(souPstoCriteria, desBsto, disto, waveSeq, req.baseQty, canPick, req);
             });
 
-            waveSeqs.ForEach(waveSeq =>
+            var souWaveDistos = ADO.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
+            if (souWaveDistos.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
             {
-                var souWaveDistos = ADO.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
-                if (souWaveDistos.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                waveSeq.EventStatus = WaveEventStatus.WORKED;
+                waveSeq.Status = EntityStatus.ACTIVE;
+                ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
+
+                var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
+                souSto.ForEach(x =>
                 {
-                    waveSeq.EventStatus = WaveEventStatus.WORKED;
-                    waveSeq.Status = EntityStatus.ACTIVE;
-                    ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
-
-                    var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
-                    souSto.ForEach(x =>
+                    var bsto = ADO.StorageObjectADO.GetInstant().Get(x, StorageObjectType.PACK, true, true, this.BuVO);
+                    if (bsto != null)
                     {
-                        var bsto = ADO.StorageObjectADO.GetInstant().Get(x, StorageObjectType.PACK, true, true, this.BuVO);
-                        if(bsto != null)
+                        var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE);
+                        if (findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
                         {
-                            var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE);
-                            if(findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
-                            {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                            }
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                         }
-                    });
-
-                    if (waveSeq.AutoNextSeq == 1)
-                    {
-                        var nextWaveSeq = new NextDistoWaveSeq();
-                        var nextReq = new NextDistoWaveSeq.TReq()
-                        {
-                            CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
-                        };
-                        nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
                     }
+                });
+
+                if (waveSeq.AutoNextSeq)
+                {
+                    var wave = ADO.WaveADO.GetInstant().Get(waveSeq.Wave_ID, this.BuVO);
+                    var nextWaveSeq = new NextDistoWaveSeq();
+                    var nextReq = new NextDistoWaveSeq.TReq()
+                    {
+                        CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
+                        DesAreaID = wave.Des_Area_ID
+                    };
+                    nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
                 }
-            });
+            }
 
             return new TRes()
             {
                 distos = distos,
-                waveSeqs = waveSeqs
+                waveSeq = waveSeq
             };
         }
 
-        private StorageObjectCriteria MapPackToBase(amt_StorageObject souPsto, decimal pickQty, amt_DocumentItemStorageObject disto, 
-            StorageObjectCriteria souBsto, StorageObjectCriteria desBsto, ams_AreaLocationMaster location, TReq.DistoList reqData, amt_WaveSeq waveSeq)
+        private StorageObjectCriteria GetDesFullSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq)
         {
-            if (pickQty == 0)
+            if (oldPack != null && oldPack.id != souPsto.id)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ใส่สามารถใส่จำนวนเป็น 0 ได้");
+                oldPack.eventStatus = waveSeq.End_StorageObject_EventStatus;
+                oldPack.baseQty += souPsto.baseQty;
+                oldPack.qty += souPsto.qty;
+                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+                UpdateDisto(disto, oldPack, souPsto.qty, souPsto.baseQty);
+                return oldPack;
             }
-
-            var remainQty = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, souPsto.Quantity - pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-
-            var oldPack = desBsto.ToTreeList().Find(x => x.batch == souPsto.Batch
-                && x.mstID == souPsto.PackMaster_ID
-                && x.lot == souPsto.Lot
-                && x.orderNo == souPsto.OrderNo
-                && x.expiryDate == souPsto.ExpiryDate
-                && x.productDate == souPsto.ProductDate);
-
-            var updatePsto = souBsto.ToTreeList().Find(x => x.id == souPsto.ID);
-
-            if (remainQty != 0)
+            else
             {
-                if (oldPack != null)
-                {
-                    oldPack.baseQty = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, oldPack.qty + pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-                    oldPack.qty = oldPack.qty + pickQty;
-                    ADO.StorageObjectADO.GetInstant().PutV2(oldPack, this.BuVO);
+                souPsto.parentID = desBsto.id;
+                souPsto.parentType = desBsto.type;
+                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(desBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+                UpdateDisto(disto, oldPack, souPsto.qty, souPsto.baseQty);
+                return souPsto;
+            }
+        }
 
-                    return oldPack;
+        private void UpdateDisto(amt_DocumentItemStorageObject disto, StorageObjectCriteria desSto, decimal qty, decimal baseQty)
+        {
+            if(disto.Quantity == null)
+                disto.Quantity = qty;
+
+            if (disto.BaseQuantity == null)
+                disto.BaseQuantity = baseQty;
+            disto.Status = EntityStatus.ACTIVE;
+            disto.Des_StorageObject_ID = desSto.id.Value;
+            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
+        }
+        private void InsertDisto(amt_DocumentItemStorageObject disto, StorageObjectCriteria desSto, decimal qty, decimal baseQty)
+        {
+            disto.Quantity = qty;
+            disto.BaseQuantity = baseQty;
+            disto.Status = EntityStatus.ACTIVE;
+            disto.Des_StorageObject_ID = desSto.id.Value;
+            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
+
+            if (disto.Sou_StorageObject_ID != desSto.id.Value)
+            {
+                var newDisto = disto.Clone();
+                newDisto.ID = null;
+                newDisto.Des_StorageObject_ID = null;
+                newDisto.Quantity = null;
+                newDisto.BaseQuantity = null;
+                newDisto.Status = EntityStatus.INACTIVE;
+                ADO.DistoADO.GetInstant().Create(newDisto, this.BuVO);
+            }
+        }
+        private StorageObjectCriteria GetDesPatialSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq, decimal baseQty)
+        {
+            var convertQty = StaticValue.ConvertToNewUnitByPack(souPsto.mstID.Value, baseQty, disto.BaseUnitType_ID, disto.UnitType_ID);
+            if (oldPack != null && oldPack.id != souPsto.id)
+            {
+                oldPack.eventStatus = waveSeq.End_StorageObject_EventStatus;
+                oldPack.baseQty += baseQty;
+                oldPack.qty += convertQty.newQty;
+                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+
+                souPsto.baseQty -= baseQty;
+                souPsto.qty -= convertQty.newQty;
+                if (souPsto.baseQty == 0)
+                {
+                    souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
+                }
+                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+                InsertDisto(disto, oldPack, baseQty, souPsto.baseQty);
+                return oldPack;
+            }
+            else
+            {
+                var newPsto = souPsto.Clone();
+                newPsto.id = null;
+                newPsto.parentID = desBsto.id;
+                newPsto.baseQty = baseQty;
+                newPsto.qty = convertQty.newQty;
+                newPsto.parentType = desBsto.type;
+                newPsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
+                var resStoID = ADO.StorageObjectADO.GetInstant().PutV2(newPsto, this.BuVO);
+                newPsto.id = resStoID;
+
+                souPsto.baseQty -= baseQty;
+                souPsto.qty -= convertQty.newQty;
+                if (souPsto.baseQty == 0)
+                {
+                    souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
+                }
+                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(desBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+                InsertDisto(disto, oldPack, baseQty, souPsto.baseQty);
+
+                return newPsto;
+            }
+        }
+
+        private StorageObjectCriteria MapPackToBase(StorageObjectCriteria souPsto, StorageObjectCriteria desBsto,
+            amt_DocumentItemStorageObject disto, amt_WaveSeq waveSeq, decimal? pickQty, decimal? canPick, TReq.DistoList req)
+        {
+            var oldPack = desBsto.ToTreeList().Find(x => x.batch == souPsto.batch
+                    && x.mstID == souPsto.mstID
+                    && x.lot == souPsto.lot
+                    && x.orderNo == souPsto.orderNo
+                    && x.expiryDate == souPsto.expiryDate
+                    && x.productDate == souPsto.productDate);
+
+            if (pickQty == null)
+            {
+                if (canPick >= souPsto.baseQty)
+                {
+                    var newPsto = GetDesFullSTO(disto, souPsto, desBsto, oldPack, waveSeq);
+                    return newPsto;
                 }
                 else
                 {
-                    updatePsto.baseQty = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, updatePsto.qty - pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-                    updatePsto.qty = updatePsto.qty - pickQty;
-                    ADO.StorageObjectADO.GetInstant().PutV2(updatePsto, this.BuVO);
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
+                    return newPsto;
+                }
+            }
+            else if (pickQty > 0 && req.limitQty)
+            {
+                if (pickQty > canPick)
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าเกินจำนวนที่ต้องการ");
 
-                    var newPsto = updatePsto.Clone();
-                    newPsto.id = null;
-                    newPsto.baseQty = StaticValue.ConvertToNewUnitByPack(souPsto.PackMaster_ID, pickQty, disto.UnitType_ID, disto.BaseUnitType_ID).baseQty;
-                    newPsto.qty = pickQty;
-                    newPsto.parentID = desBsto.id;
-                    newPsto.parentType = desBsto.type;
-                    newPsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
-                    var resStoID = ADO.StorageObjectADO.GetInstant().PutV2(newPsto, this.BuVO);
-                    newPsto.id = resStoID;
+                if(pickQty > souPsto.baseQty)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้ามีน้อยกว่าที่ต้องการ");
+                }
+                else if (pickQty == souPsto.baseQty)
+                {
+                    var newPsto = GetDesFullSTO(disto, souPsto, desBsto, oldPack, waveSeq);
+                    return newPsto;
+                }
+                else
+                {
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
+                    return newPsto;
+                }
+            }
+            else if (pickQty > 0 && !req.limitQty)
+            {
+                if (pickQty > souPsto.baseQty)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้ามีน้อยกว่าที่ต้องการ");
+                }
+                else if (pickQty == souPsto.baseQty)
+                {
+                    var newPsto = GetDesFullSTO(disto, souPsto, desBsto, oldPack, waveSeq);
+                    return newPsto;
+                }
+                else
+                {
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
                     return newPsto;
                 }
             }
             else
             {
-                if (reqData.baseCode != souBsto.code)
-                {
-                    updatePsto.parentID = desBsto.id;
-                    updatePsto.parentType = desBsto.type;
-                    updatePsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
-                    ADO.StorageObjectADO.GetInstant().PutV2(updatePsto, this.BuVO);
-
-                    var checkBsto = ADO.StorageObjectADO.GetInstant().Get(souBsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO);
-                    if (checkBsto.mapstos == null)
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(checkBsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-                }
-                else
-                {
-                    if (souBsto.mapstos.Count > 1)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าใน Base มากกว่า 1 SKU ไม่สามารถหยิบทั้ง Pallet ได้");
-                    }
-                    else
-                    {
-                        ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(souBsto, location.ID.Value, this.BuVO);
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
-                    }
-                }
-                return updatePsto;
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "จำนวนเป็น 0 ไม่สามารถเบิกของได้");
             }
         }
 
         private StorageObjectCriteria MapBase(string baseCode, long? areaID, long? locationID)
         {
+            if (string.IsNullOrWhiteSpace(baseCode))
+                return null;
+
             ams_AreaLocationMaster baseLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(baseCode, this.BuVO);
-            if(baseCode != null)
+            if (baseCode != null)
                 return ADO.StorageObjectADO.GetInstant().Get(baseCode, null, areaID, false, true, this.BuVO);
 
             var AutoPallet = StaticValue.IsFeature("AutoPallet");

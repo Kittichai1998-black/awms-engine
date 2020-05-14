@@ -105,15 +105,6 @@ const PackMaster = props => {
       validate: /^[0-9\.]+$/
     },
     {
-      field: "Quantity",
-      type: "input",
-      inputType: "number",
-      name: "Quantity",
-      placeholder: "Quantity",
-      validate: /^[0-9\.]+$/,
-      required: true
-    },
-    {
       field: "UnitType_ID",
       type: "dropdow",
       typeDropdow: "search",
@@ -121,33 +112,6 @@ const PackMaster = props => {
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
-      required: true
-    },
-    {
-      field: "BaseQuantity",
-      type: "input",
-      inputType: "number",
-      name: "Base Quantity",
-      placeholder: "Base Quantity",
-      validate: /^[0-9\.]+$/,
-      required: true
-    },
-    {
-      field: "BaseUnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Base Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Base Unit Type",
-      fieldLabel: ["Code", "Name"],
-      required: true
-    },
-    {
-      field: "ItemQty",
-      type: "input",
-      name: "Item Qty",
-      placeholder: "ItemQty",
-      validate: /^[0-9\.]+$/,
       required: true
     },
     {
@@ -197,15 +161,6 @@ const PackMaster = props => {
       validate: /^[0-9\.]+$/
     },
     {
-      field: "Quantity",
-      type: "input",
-      inputType: "number",
-      name: "Quantity",
-      placeholder: "Quantity",
-      validate: /^[0-9\.]+$/,
-      required: true
-    },
-    {
       field: "UnitType_ID",
       type: "dropdow",
       typeDropdow: "search",
@@ -213,33 +168,6 @@ const PackMaster = props => {
       dataDropDow: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
-      required: true
-    },
-    {
-      field: "BaseQuantity",
-      type: "input",
-      inputType: "number",
-      name: "Base Quantity",
-      placeholder: "Base Quantity",
-      validate: /^[0-9\.]+$/,
-      required: true
-    },
-    {
-      field: "BaseUnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Base Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Base Unit Type",
-      fieldLabel: ["Code", "Name"],
-      required: true
-    },
-    {
-      field: "ItemQty",
-      type: "input",
-      name: "Item Qty",
-      placeholder: "ItemQty",
-      validate: /^[0-9\.]+$/,
       required: true
     },
     {
@@ -287,13 +215,6 @@ const PackMaster = props => {
       placeholder: "Gross Weight"
     },
     {
-      field: "Quantity",
-      type: "input",
-      inputType: "number",
-      name: "Quantity",
-      placeholder: "Quantity"
-    },
-    {
       field: "UnitTypeCode",
       type: "dropdow",
       typeDropdow: "search",
@@ -302,29 +223,6 @@ const PackMaster = props => {
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
-    },
-    {
-      field: "BaseQuantity",
-      type: "input",
-      inputType: "number",
-      name: "Base Quantity",
-      placeholder: "Base Quantity"
-    },
-    {
-      field: "BaseUnitTypeCode",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Base Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Base Unit Type",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
-    {
-      field: "ItemQty",
-      type: "input",
-      name: "Item Qty",
-      placeholder: "ItemQty"
     },
     {
       field: "ObjectSizeCode",
@@ -386,16 +284,8 @@ const PackMaster = props => {
       width: 120,
       type: "number"
     },
-    { Header: "Quantity", accessor: "Quantity", width: 100, type: "number" },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
-    {
-      Header: "Base Quantity",
-      accessor: "BaseQuantity",
-      width: 120,
-      type: "number"
-    },
-    { Header: "BaseUnitTypeCode", accessor: "BaseUnitTypeCode", width: 140 },
-    { Header: "Item Qty", accessor: "ItemQty", width: 100, type: "number" },
+
     { Header: "% Weight Verify", accessor: "ObjectSizeCode", width: 150 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {

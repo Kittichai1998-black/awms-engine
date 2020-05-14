@@ -21,6 +21,7 @@ namespace AWMSEngine.ADO
             param.Add("@IoType", wave.IOType);
             param.Add("@Code", wave.Code);
             param.Add("@Name", wave.Name);
+            param.Add("@DesAreaID", wave.Des_Area_ID);
             param.Add("@Description", wave.Description);
             param.Add("@RunMode", wave.RunMode);
             param.Add("@RunScheduleTime", wave.RunScheduleTime);

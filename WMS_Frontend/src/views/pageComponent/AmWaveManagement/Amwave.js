@@ -7,15 +7,25 @@ import AmWaveDetail from './AmWaveDetail'
 
 const AmWave = (props) => {
     return <WaveProvider>
-            <AmWaveManagement
-                waveColumns={props.waveColumns}
-                waveQuery={props.waveQuery}
-            />
-            <AmWaveTab/>
-        <AmWaveDetail
-            detailColumns={props.detailColumns}
-            waveManageQuery={props.waveManageQuery}
+        <AmWaveManagement
+            waveDialog={props.waveDialog}
+            waveColumns={props.waveColumns}
+            waveQuery={props.waveQuery}
+            waveArealocationMasterQuery={props.waveArealocationMasterQuery}
+            waveAreaMasterQuery={props.waveAreaMasterQuery}
+            waveCustomtabRunmode={props.waveCustomtabRunmode}
         />
+        <div style={{ marginTop: "10px" }}>
+            <AmWaveTab
+                waveSeqQuery={props.waveSeqQuery}
+            >
+            </AmWaveTab></div>
+        <div>
+        <AmWaveDetail
+            wavedetailColumns={props.wavedetailColumns}
+            waveManageQuery={props.waveManageQuery}
+            />
+        </div>
         </WaveProvider>
 
     

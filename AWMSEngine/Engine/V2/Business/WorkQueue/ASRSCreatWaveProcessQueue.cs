@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
+using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSModel.Constant.EnumConst;
@@ -39,6 +40,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
 
+            if(string.IsNullOrWhiteSpace( reqVO.desASRSAreaCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "AreaCode is null");
 
             this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
@@ -199,13 +202,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             amt_Document doc = new amt_Document();
 
             List<ams_WaveSeqTemplate> waveTemplate = new List<ams_WaveSeqTemplate>();
-
             var Wave = new amt_Wave()
             {
                 IOType = IOType.OUTPUT,
                 Code = "Code",
                 Name = "Name",
-                DesAreaCode = reqVO.desASRSAreaCode,
+                Des_Area_ID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.desASRSAreaCode).ID.Value,
                 Description = "Description",
                 RunMode = reqVO.waveRunMode,
                 RunScheduleTime = reqVO.waveRunMode == WaveRunMode.SCHEDULE ? reqVO.scheduleTime : null,

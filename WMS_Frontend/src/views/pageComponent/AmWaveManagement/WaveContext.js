@@ -14,7 +14,9 @@ export const WaveProvider = ({ children }) => {
 const initialState = {
     "waveID": 0,
     "waveRunMode": 0,
-    "TabMode":1
+    "TabMode": 1,
+    "areaID": 0,
+    "areaLoc":0
 
 }
 
@@ -33,6 +35,18 @@ const waveReducer = (state, action) => {
                 "waveRunMode": action.value,
             }
         }
+        case "AREA": {
+            return {
+                ...state,
+                "areaID": action.value,
+            }
+        }
+        case "AREALOC": {
+            return {
+                ...state,
+                "areaLoc": action.value,
+            }
+        }
         default: {
             return {
                 ...state
@@ -47,8 +61,7 @@ const TabReducer = (state, action) => {
         case "ADD": {
             return {
                 ...state,
-                "TabMaode": action.value,
-
+                "TabMode": action.value,
             }
         }
         default: {
@@ -58,14 +71,17 @@ const TabReducer = (state, action) => {
         }
     }
 }
-
 const WaveAction = () => {
     const [state, dispatch] = useReducer(waveReducer, initialState);
     const setWaveID = (value) => dispatch({ type: "ADD", value })
     const setwaveRunMode = (value) => dispatch({ type: "ADDMODE", value })
+    const setareID = (value) => dispatch({ type: "AREA", value })
+    const setareaLoc = (value) => dispatch({ type: "AREALOC", value })
     const waveID = state.waveID;
     const waveRunMode = state.waveRunMode
-    return { waveID, setWaveID, waveRunMode, setwaveRunMode }
+    const areaID = state.areaID
+    const areaLoc = state.areaLoc
+    return { waveID, setWaveID, waveRunMode, setwaveRunMode, areaID, setareID, areaLoc,setareaLoc }
 }
 
 const TabAction = () => {
