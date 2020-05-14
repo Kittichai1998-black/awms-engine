@@ -202,7 +202,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     new SQLConditionCriteria("Code",Sku.Code, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("EventStatus",DocumentEventStatus.NEW,SQLOperatorType.EQUALS)
                 }, this.BuVO).FirstOrDefault();
 
            

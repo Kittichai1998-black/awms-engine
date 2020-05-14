@@ -566,7 +566,7 @@ const MappingPallet = props => {
                 //setMovementType={"1012"}
                 // autoDoc={true}
                 autoPost={false}
-                apiCreate={"/v2/ScanReceivedProductionLineAPI"}
+                //apiCreate={"/v2/ScanReceivedProductionLineAPI"}
                 showOldValue={onOldValue}
             />
         </div>
