@@ -84,9 +84,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                         if (stopacks == null || stopacks.Count == 0)
+                        {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
-                        sto = this.CreateSto(reqVO);
+                            sto = this.CreateSto(reqVO);
+                        }
                     }
                 }
                 // end

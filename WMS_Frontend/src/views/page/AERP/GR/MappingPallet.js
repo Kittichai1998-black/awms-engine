@@ -53,10 +53,10 @@ const MappingPallet = props => {
 
     const inputItem = [
         {
-            field: "orderNo",
+            field: "lot",
             type: "input",
-            name: "SI (Order No.)",
-            placeholder: "SI (Order No.)",
+            name: "Lot",
+            placeholder: "Lot",
             isFocus: true,
             maxLength: 7,
             required: true
@@ -64,8 +64,8 @@ const MappingPallet = props => {
         {
             field: "scanCode",
             type: "input",
-            name: "Reorder (Item Code)",
-            placeholder: "Reorder (Item Code)",
+            name: "Item Code",
+            placeholder: "Item Code",
             maxLength: 20,
             required: true
         },
@@ -171,8 +171,8 @@ const MappingPallet = props => {
                         value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                     },
                     {
-                        field: "orderNo",
-                        value: dataMapstos.orderNo
+                        field: "lot",
+                        value: dataMapstos.lot
                     },
                     {
                         field: "scanCode",
@@ -186,7 +186,7 @@ const MappingPallet = props => {
                         value: ""
                     },
                     {
-                        field: "orderNo",
+                        field: "lot",
                         value: ""
                     }
                 );
