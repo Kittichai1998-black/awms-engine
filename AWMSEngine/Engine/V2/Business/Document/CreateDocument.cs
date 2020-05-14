@@ -223,7 +223,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 ConvertUnitCriteria baseUnitTypeConvt = null;
                 if (Item.quantity.HasValue && packMst != null)
                 {
-                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity.Value, packMst.UnitType_ID);
+                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, skuMst.UnitType_ID.Value);
                     baseQuantity = baseUnitTypeConvt.baseQty;
                 }
 

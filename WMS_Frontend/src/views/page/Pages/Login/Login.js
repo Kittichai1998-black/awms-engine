@@ -186,6 +186,7 @@ const Login = props => {
             };
             Axios.post(window.apipath + "/v2/token/register", valueForm, config)
                 .then(res => {
+                    console.log(res)
                     if (res.data._result !== undefined) {
                         if (res.data._result.status === 1) {
                             savetoSession("Token", res.data.Token);

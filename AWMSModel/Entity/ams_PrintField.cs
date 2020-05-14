@@ -10,6 +10,8 @@ namespace AWMSModel.Entity
         public long? PrintLayout_ID;
         public FieldType FieldType;
         public string FieldStyle;
+        public string FieldClass;
+        public int? FieldSeq;
         public string Value;
         public decimal? PageAreaTopCM;
         public decimal? PageAreaLeftCM;

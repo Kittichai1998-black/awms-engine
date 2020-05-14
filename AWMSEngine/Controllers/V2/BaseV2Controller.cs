@@ -40,9 +40,10 @@ namespace AWMSEngine.Controllers.V2
 
             if (res._result.status == 1 && res.stream is Stream)
             {
+                Stream _stream = (Stream)res.stream;
                 string _contentType = (string)res.contentType;
                 string _fileName = (string)res.fileName;
-                return File((byte[])res.file, _contentType, _fileName);
+                return File(_stream, _contentType, _fileName);
             }
             else if (res._result.status == 1 && res.stream is byte[])
             {

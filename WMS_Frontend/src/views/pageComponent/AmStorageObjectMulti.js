@@ -139,8 +139,8 @@ const AmStorageObjectMulti = props => {
           ) : props.randerModefybuttonB4 ? (
             props.randerModefybuttonB4
           ) : (
-            ""
-          )
+                ""
+              )
         }
       />
     );
@@ -248,9 +248,9 @@ const AmStorageObjectMulti = props => {
 
     //var groupPallet = _.groupBy(res.data.datas, "Pallet");
 
-    res.data.datas.forEach(x => {
-      x.Remark = decodeURIComponent(x.Remark);
-    });
+    // res.data.datas.forEach(x => {
+    //   x.Remark = decodeURIComponent(x.Remark);
+    // });
 
     //var dataGroup = [];
     //console.log(props.multi);
