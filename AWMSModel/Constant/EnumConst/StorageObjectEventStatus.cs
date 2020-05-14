@@ -6,35 +6,38 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum StorageObjectEventStatus
     {
-        NONE = 0,
-        NEW = 10,
-        RECEIVING = 11,
-        RECEIVED = 12,
-        AUDITING = 13,
-        AUDITED = 14,
+        //Pallet
+        ACTIVE = 0,
+        INACTIVE = 1,
+        REMOVE = 2,
+        DOEN = 3,
 
-        ALLOCATING = 15,
-        ALLOCATED = 16,
+        //Pack
+        NEW = 100,
+        RECEIVING = 101,
+        RECEIVED = 102,
+        AUDITING = 103,
+        AUDITED = 104,
+        COUNTING = 105,
+        COUNTED = 106,
 
-        PICKING = 17,
-        PICKED = 18,
-        CONSOLIDATING = 111,
-        CONSOLIDATED = 112,
-        LOADING = 113,
-        LOADED = 114,
+        ALLOCATING = 151,
+        ALLOCATED = 152,
+        PICKING = 153,
+        PICKED = 154,
+        CONSOLIDATING = 155,
+        CONSOLIDATED = 156,
+        LOADING = 153,
+        LOADED = 154,
 
-        REMOVING = 21,
-        REMOVED = 22,
-        REJECTING = 23,
-        REJECTED = 24,
+        REMOVING = 201,
+        REMOVED = 202,
+        CANCELING = 203,
+        CANCELED = 204,
 
-        SHIPPING = 31,
-        SHIPPED = 32,
+        SHIPPING = 301,
+        SHIPPED = 302,
 
 
-        RETURN = 96,
-        PARTIAL = 97,
-        QC = 98,
-        HOLD = 99
     }
 }

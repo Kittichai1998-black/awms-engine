@@ -265,6 +265,12 @@ namespace AWMSEngine.ADO
         }
         public long PutV2(StorageObjectCriteria sto,VOCriteria buVO)
         {
+            if (sto.type == StorageObjectType.BASE)
+            {
+                var eventStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus);
+                sto.eventStatus = (StorageObjectEventStatus)eventStatus;
+            }
+
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", sto.id);
             param.Add("type", sto.type);
