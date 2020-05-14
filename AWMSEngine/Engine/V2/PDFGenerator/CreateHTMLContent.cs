@@ -242,8 +242,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             //ตัวอย่างค่า Settings ที่เก็บใน DB
             //HeaderSettings = { "FontSize":9, "Right":"Page [page] of [toPage]", "Line" : true }
             //FooterSettings = { "FontSize": 9, "Line": true, "Center": "Report Footer" }
-            var HeaderSettings = _printForm.HeaderSettings != null ? JsonConvert.DeserializeObject<HeaderSettings>(_printForm.HeaderSettings) : null;
-            var FooterSettings = _printForm.FooterSettings != null ? JsonConvert.DeserializeObject<FooterSettings>(_printForm.FooterSettings) : null;
+            //var HeaderSettings = _printForm.HeaderSettings != null ? JsonConvert.DeserializeObject<HeaderSettings>(_printForm.HeaderSettings) : null;
+            //var FooterSettings = _printForm.FooterSettings != null ? JsonConvert.DeserializeObject<FooterSettings>(_printForm.FooterSettings) : null;
             foreach (var item in itemsHTML)
             {
                 var page = new ObjectSettings()
@@ -253,10 +253,10 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                     , UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css")
                     },
                     HtmlContent = item,
-                    //HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                    //FooterSettings = { FontSize = 9, Line = true, Center = "Report Footer" }
-                    HeaderSettings = HeaderSettings,
-                    FooterSettings = FooterSettings
+                    HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                    FooterSettings = { FontSize = 9, Line = true, Center = "Report Footer" }
+                    //HeaderSettings = HeaderSettings,
+                    //FooterSettings = FooterSettings
                 };
                 pdf.Objects.Add(page);
             }

@@ -181,7 +181,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 }
 
                 //var mainUnitType = this.StaticValue.UnitTypes.First(x => x.Code == recItem.packItemUnit);
-                ConvertUnitCriteria baseUnitTypeConvt = packMst == null ? null : this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, docItem.quantity ?? 1, packMst.UnitType_ID);
+                ConvertUnitCriteria baseUnitTypeConvt = packMst == null ? null : this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, docItem.quantity ?? 1, skuMst.UnitType_ID.Value);
                 
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {

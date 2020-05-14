@@ -724,44 +724,22 @@ const AmCreateDocument = (props) => {
         }
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItems)
-                        docItems[key] = value
-                }
-                //modify
-                docItems.options = null
-                return docItems
+                return x
             })
         }
         else if (props.createDocType === "audit") {
             doc.docItems = dataSource.map(x => {
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItems)
-                        docItems[key] = value
-                }
-                //modify
-                docItems.options = null
-                return docItems
+                return x
             })
         } else if (props.createDocType === "issue") {
             doc.issueItems = dataSource.map(x => {
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItems)
-                        docItems[key] = value
-                }
-                //modify
-                docItems.options = null
-                return docItems
+                return x
             })
         } else if (props.createDocType === "receive") {
             doc.receiveItems = dataSource.map(x => {
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItems)
-                        docItems[key] = value
-                }
                 //modify
                 docItems.options = null
-                return docItems
+                return x
             })
         } else if (props.createDocType === "receiveOrder") {
             doc.receiveItems = dataSource.map(x => {
@@ -774,6 +752,7 @@ const AmCreateDocument = (props) => {
                 return docItems
             })
         }
+        console.log(doc, dataSource)
         if (Object.keys(doc).length > countDoc) {
             CreateDocuments(doc, dataSource)
         }

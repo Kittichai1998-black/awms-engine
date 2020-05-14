@@ -84,9 +84,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                         if (stopacks == null || stopacks.Count == 0)
+                        {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
-                        sto = this.CreateSto(reqVO);
+                            sto = this.CreateSto(reqVO);
+                        }
                     }
                 }
                 // end
@@ -202,7 +204,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     new SQLConditionCriteria("Code",Sku.Code, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("EventStatus",DocumentEventStatus.NEW,SQLOperatorType.EQUALS)
                 }, this.BuVO).FirstOrDefault();
 
            
@@ -676,7 +677,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 var parentDocID_opt = ObjectUtil.QryStrGetValue(psto.options, OptionVOConst.OPT_PARENT_DOCUMENT_ID);
 
-                var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitByPack(packMaster.ID.Value, psto.qty, packMaster.UnitType_ID);
+                var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(skuMaster.ID.Value, psto.qty, skuMaster.UnitType_ID.Value);
                 decimal? baseQuantity = null;
                 if (psto.qty >= 0)
                     baseQuantity = baseUnitTypeConvt.baseQty;

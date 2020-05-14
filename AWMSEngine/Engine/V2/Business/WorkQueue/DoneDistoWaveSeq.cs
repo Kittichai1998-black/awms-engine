@@ -140,7 +140,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var nextReq = new NextDistoWaveSeq.TReq()
                     {
                         CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
-                        DesAreaID = StaticValue.AreaMasters.Find(x => x.Code == wave.DesAreaCode).ID.Value,
+                        DesAreaID = wave.Des_Area_ID
                     };
                     nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
                 }
