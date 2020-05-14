@@ -763,6 +763,16 @@ const AmCreateDocument = (props) => {
                 docItems.options = null
                 return docItems
             })
+        } else if (props.createDocType === "receiveOrder") {
+            doc.receiveItems = dataSource.map(x => {
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItems)
+                        docItems[key] = value
+                }
+                //modify
+                docItems.options = null
+                return docItems
+            })
         }
         if (Object.keys(doc).length > countDoc) {
             CreateDocuments(doc, dataSource)

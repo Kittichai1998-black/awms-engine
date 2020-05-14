@@ -175,6 +175,20 @@ const DoneWorkQueue = Loadable({
   loading: Loading
 });
 
+const RD_Create = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create"),
+    loading: Loading
+});
+const RD_Detail = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Detail"),
+    loading: Loading
+});
+
+const RD_Search = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Search"),
+    loading: Loading
+});
+
 const routes = [
   { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
@@ -223,7 +237,10 @@ const routes = [
   { path: "/tpcq", name: "TestProcessQueue ", compoment: TestProcessQueueV2, exact: true },
   { path: "/twmn", name: "TestWaveManagement", compoment: TestWaveManagement, exact: true },
   { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true },// { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
-  { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
+    { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true },
+    { path: "/crateRD", name: "TestCreateDocRD", compoment: RD_Create, exact: true },
+    { path: "/searchRD", name: "TestSreachDocRD", compoment: RD_Search, exact: true },
+    { path: "/detailRD", name: "TestDetailDocRD", compoment: RD_Detail, exact: true },
 ];
 
 export default routes;
