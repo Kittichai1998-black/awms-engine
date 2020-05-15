@@ -11,64 +11,68 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 {
     public class CreateRDDocument : BaseEngine<CreateRDDocument.TReq, amt_Document>
     {
+
         public class TReq
         {
             public long? parentDocumentID;
             public string refID;
+            public string ref1;
+            public string ref2;
             public long? forCustomerID;
             public string forCustomerCode;
-            public string orderNo;
             public string batch;
             public string lot;
+            public DocumentProcessTypeID movementTypeID;
 
-            public long? souSupplierID;
-            public long? souCustomerID;
-            public long? souBranchID;//สาขาต้นทาง
-            public long? souWarehouseID;//คลังต้นทาง
-            public long? souAreaMasterID;//พื้นที่วางสินสินค้าต้นทาง
-            public string souSupplierCode;
-            public string souCustomerCode;
+            public long? souBranchID;
+            public long? souWarehouseID;
+            public long? souAreaMasterID;
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
+            public int? transportID;
 
-            public long? desBranchID;//สาขาต้นทาง
-            public long? desWarehouseID;//คลังต้นทาง
-            public long? desAreaMasterID;//พื้นที่วางสินสินค้าต้นทาง
-            public string desBranchCode;//สาขาต้นทาง
-            public string desWarehouseCode;//คลังต้นทาง
-            public string desAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
+            public long? desCustomerID;
+            public long? desSupplierID;
+            public long? desBranchID;
+            public long? desWarehouseID;
+            public long? desAreaMasterID;
+            public string desCustomerCode;//ผู้ผลิตต้นทาง
+            public string desSupplierCode;//ผู้จัดจำหน่ายต้นทาง
+            public string desBranchCode;
+            public string desWarehouseCode;
+            public string desAreaMasterCode;
 
             public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
             public string remark;
-            public string ref1;
-            public string ref2;
-            public DocumentProcessTypeID movementTypeID;
+            public string options;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
-            public List<ReceiveItem> receiveItems;
-            public class ReceiveItem
+            public List<ReceivedOrderItem> receivedOrderItem;
+            public class ReceivedOrderItem
             {
-                public string skuCode;
+
                 public string packCode;
+                public long? packID;
+                public string skuCode;
                 public decimal? quantity;
                 public string unitType;
+
+                public string batch;
+                public string lot;
+                public string orderNo;
+                public string refID;
+                public string ref1;
+                public string ref2;
+                public string options;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
 
-                public string orderNo;
-                public string batch;
-                public string lot;
-
-                public string ref1;
-                public string ref2;
-                public string refID;
-                public string options;
-
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
+
                 public List<amt_DocumentItemStorageObject> docItemStos;
                 public List<BaseSto> baseStos;
                 public class BaseSto
@@ -81,23 +85,28 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 }
             }
         }
+
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            long? Sou_Customer_ID =
-                    reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
-            long? Sou_Supplier_ID =
-                    reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
-            var Sou_AreaMaster_ID = this.StaticValue.GetAreaMaster(
+            var forCustomerModel = reqVO.forCustomerID.HasValue ?
+                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.forCustomerID) :
+                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.forCustomerCode);
+            var desSupplierModel = reqVO.desSupplierID.HasValue ?
+                this.StaticValue.Suppliers.FirstOrDefault(x => x.ID == reqVO.desSupplierID) :
+                this.StaticValue.Suppliers.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
+            var desCustomerModel = reqVO.desCustomerID.HasValue ?
+                this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
+                this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
+
+            var souAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souAreaMasterCode);
-            var Sou_Warehouse_ID = this.StaticValue.GetWarehouse(
+            var souWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.souWarehouseID,
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souWarehouseCode,
                                                     reqVO.souAreaMasterCode);
-            var Sou_Branch_ID = this.StaticValue.GetBranch(
+            var souBranchModel = this.StaticValue.GetBranch(
                                                     reqVO.souBranchID,
                                                     reqVO.souWarehouseID,
                                                     reqVO.souAreaMasterID,
@@ -105,15 +114,15 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.souWarehouseCode,
                                                     reqVO.souAreaMasterCode);
 
-            var Des_AreaMaster_ID = this.StaticValue.GetAreaMaster(
+            var desAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desAreaMasterCode);
-            var Des_Warehouse_ID = this.StaticValue.GetWarehouse(
+            var desWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
-            var Des_Branch_ID = this.StaticValue.GetBranch(
+            var desBranchModel = this.StaticValue.GetBranch(
                                                     reqVO.desBranchID,
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
@@ -131,16 +140,16 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                     string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
 
-                    souCustomerID = Sou_Customer_ID,
-                    souSupplierID = Sou_Supplier_ID,
-                    souBranchID = Sou_Branch_ID == null ? null : Sou_Branch_ID.ID,
-                    souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
-                    souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
+                    souBranchID = souBranchModel == null ? null : souBranchModel.ID,
+                    souWarehouseID = souWarehouseModel == null ? null : souWarehouseModel.ID,
+                    souAreaMasterID = souAreaMasterModel == null ? null : souAreaMasterModel.ID,
 
+                    desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
+                    desCustomerID = desCustomerModel == null ? null : desCustomerModel.ID,
 
-                    desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
-                    desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
-                    desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
+                    desBranchID = desBranchModel == null ? null : desBranchModel.ID,
+                    desWarehouseID = desWarehouseModel == null ? null : desWarehouseModel.ID,
+                    desAreaMasterID = desAreaMasterModel == null ? null : desAreaMasterModel.ID,
                     documentDate = reqVO.documentDate,
                     actionTime = reqVO.actionTime ?? reqVO.documentDate,
 
@@ -153,11 +162,11 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     documentProcessTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
 
-                    Items = reqVO.receiveItems.Select(
+                    Items = reqVO.receivedOrderItem.Select(
                         x => new CreateDocument.TReq.Item
                         {
                             skuCode = x.skuCode,
-                            packCode = null,
+                            packCode = x.packCode,
 
                             quantity = x.quantity,
                             unitType = x.unitType,

@@ -19,10 +19,13 @@ const RD_Detail = props => {
         ],
         [
             { label: "Source Warehouse", values: "SouWarehouseName" },
-            { label: "Destination Warehouse", values: "DesWarehouseName" }
+            { label: "Destination Customer", values: "DesCustomerName" }
         ],
         [
-            { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+            { label: "For Customer", values: "ForCustomerName" },
+            { label: "Doc Status", values: "renderDocumentStatus()", type: "function" }
+        ],
+        [
             { label: "Remark", values: "Remark" }
         ]
     ];

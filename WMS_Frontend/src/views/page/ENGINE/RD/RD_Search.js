@@ -217,7 +217,7 @@ const RD_Search = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/receive/detail?docID=" + data.ID}
+                    api={"/detailRD?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -251,7 +251,7 @@ const RD_Search = props => {
                 columns={iniCols}
                 primarySearch={primarySearch}
                 expensionSearch={search}
-                docTypeCode="1001"
+                docTypeCode="1011"
                 buttonClose={true}
                 buttonReject={true}
                 dataReject={dataReject}

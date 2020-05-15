@@ -743,13 +743,9 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "receiveOrder") {
             doc.receiveItems = dataSource.map(x => {
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItems)
-                        docItems[key] = value
-                }
                 //modify
                 docItems.options = null
-                return docItems
+                return x
             })
         }
         console.log(doc, dataSource)
