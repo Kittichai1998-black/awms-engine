@@ -741,6 +741,12 @@ const AmCreateDocument = (props) => {
                 docItems.options = null
                 return x
             })
+        } else if (props.createDocType === "receiveOrder") {
+            doc.receiveItems = dataSource.map(x => {
+                //modify
+                docItems.options = null
+                return x
+            })
         }
         console.log(doc, dataSource)
         if (Object.keys(doc).length > countDoc) {

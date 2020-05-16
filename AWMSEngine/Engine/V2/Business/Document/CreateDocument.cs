@@ -160,7 +160,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Sou_Warehouse_ID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                 Sou_AreaMaster_ID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-                Des_Customer_ID = Des_Customer_ID,
+                Des_Customer_ID = 1,
                 Des_Supplier_ID = Des_Supplier_ID,
                 Des_Branch_ID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                 Des_Warehouse_ID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
