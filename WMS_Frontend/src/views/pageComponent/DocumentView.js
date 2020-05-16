@@ -7,7 +7,7 @@ import {
   MuiThemeProvider,
   createMuiTheme
 } from "@material-ui/core/styles";
-
+import AmDialogs from '../../components/AmDialogs'
 import Table from "../../components/table/AmTable";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";
@@ -27,6 +27,7 @@ import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
+import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -115,6 +116,11 @@ const DocumentView = props => {
   const dataTableDetailSOU = [];
   const dataTableDetailDES = [];
 
+  //set dialog Add pallet
+  const [dataDoc, setDataDoc] = useState(false);
+  const [eventStatus, setEventStatus] = useState(null);
+
+
   useEffect(() => {
     getData();
     // console.log(props.optionDocItems);
@@ -138,10 +144,10 @@ const DocumentView = props => {
       //   "docTypeID : " + props.typeDocNo,
       //   res.data
       // );
-
+      setDataDoc(res.data)
       if (res.data._result.status === 1) {
         setDataHeader(res.data.document);
-
+        setEventStatus(res.data.document.EventStatus);
         //============================================================================
 
         res.data.document.documentItems.forEach(row => {
@@ -372,6 +378,23 @@ const DocumentView = props => {
       setActiveTab(tab);
     }
   };
+
+
+  const CreateBtnAddPallet = () => {
+    if (eventStatus === 10) {
+      return <BtnAddPallet
+        dataDocument={dataDoc}
+        dataDocItems={data}
+        apiCreate={props.addPalletMapSTO.apiCreate ?? null}
+        columnsDocItems={props.addPalletMapSTO.columnsDocItems}
+        inputHead={props.addPalletMapSTO.inputHead}
+      />
+    }
+    else {
+      return null;
+    }
+  }
+
   return (
     <div>
       {getHeader()}
@@ -383,7 +406,9 @@ const DocumentView = props => {
 
       <br />
       <br />
-
+      {props.useAddPalletMapSTO ?
+        CreateBtnAddPallet()
+        : null}
       {props.openSOU === true && props.openDES === true ? (
         <div>
           <Nav tabs>
