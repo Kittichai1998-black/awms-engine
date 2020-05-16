@@ -217,7 +217,7 @@ const RD_Search = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/detailRD?docID=" + data.ID}
+                    api={"/receiveOrder/detail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >

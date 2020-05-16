@@ -189,6 +189,23 @@ const RD_Search = Loadable({
     loading: Loading
 });
 
+
+const RD_Create_Customer = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_Customer"),
+    loading: Loading
+});
+
+const RD_Create_WM = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_WM"),
+    loading: Loading
+});
+
+const RD_Create_SUP = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_SUP"),
+    loading: Loading
+});
+
+
 const routes = [
   { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
@@ -209,6 +226,13 @@ const routes = [
   { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
   { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
+
+    { path: "/receiveOrder/create", name: "RD Create", compoment: RD_Create, exact: true },
+    { path: "/receiveOrder/createCus", name: "RD CreateforCus", compoment: RD_Create_Customer, exact: true },
+    { path: "/receiveOrder/createWM", name: "RD CreateforWM", compoment: RD_Create_WM, exact: true },
+    { path: "/receiveOrder/createSUP", name: "RD CreateforSUP", compoment: RD_Create_SUP, exact: true },
+    { path: "/receiveOrder/detail", name: "RD View", compoment: RD_Search, exact: true },
+    { path: "/receiveOrder/search", name: "RD View", compoment: RD_Detail, exact: true },
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/test", name: "base1", compoment: Test1, exact: true },
@@ -237,10 +261,7 @@ const routes = [
   { path: "/tpcq", name: "TestProcessQueue ", compoment: TestProcessQueueV2, exact: true },
   { path: "/twmn", name: "TestWaveManagement", compoment: TestWaveManagement, exact: true },
   { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true },// { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
-    { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true },
-    { path: "/crateRD", name: "TestCreateDocRD", compoment: RD_Create, exact: true },
-    { path: "/searchRD", name: "TestSreachDocRD", compoment: RD_Search, exact: true },
-    { path: "/detailRD", name: "TestDetailDocRD", compoment: RD_Detail, exact: true },
+    { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
 ];
 
 export default routes;

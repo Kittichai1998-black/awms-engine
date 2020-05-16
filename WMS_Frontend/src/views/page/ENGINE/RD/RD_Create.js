@@ -109,7 +109,7 @@ export default props => {
     ];
 
     const apicreate = "/v2/CreateRDDocAPI/"; //API สร้าง Doc
-    const apiRes = "/detailRD?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apiRes = "/receiveOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return (
         <AmCreateDocument
