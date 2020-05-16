@@ -4,6 +4,10 @@ using System.Text;
 
 namespace AWMSModel.Constant.EnumConst
 {
+    public class StorageObjectEventStatusAttr : Attribute
+    {
+        public bool IsPutawayBypassASRS { get; set; } = false;
+    }
     public enum StorageObjectEventStatus
     {
         //Pallet
@@ -15,10 +19,13 @@ namespace AWMSModel.Constant.EnumConst
         //Pack
         NEW = 100,
         RECEIVING = 101,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         RECEIVED = 102,
         AUDITING = 103,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         AUDITED = 104,
         COUNTING = 105,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         COUNTED = 106,
 
         ALLOCATING = 151,
@@ -26,6 +33,7 @@ namespace AWMSModel.Constant.EnumConst
         PICKING = 153,
         PICKED = 154,
         CONSOLIDATING = 155,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         CONSOLIDATED = 156,
         LOADING = 153,
         LOADED = 154,
@@ -33,6 +41,7 @@ namespace AWMSModel.Constant.EnumConst
         REMOVING = 201,
         REMOVED = 202,
         CANCELING = 203,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         CANCELED = 204,
 
         SHIPPING = 301,

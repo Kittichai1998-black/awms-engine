@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business
 {
-    public class ScanMapFromDoc : BaseEngine<ScanMapFromDoc.TReq, StorageObjectCriteria>
+    public class ScanMapSTOFromDoc : BaseEngine<ScanMapSTOFromDoc.TReq, StorageObjectCriteria>
     {
         public class TReq
         {

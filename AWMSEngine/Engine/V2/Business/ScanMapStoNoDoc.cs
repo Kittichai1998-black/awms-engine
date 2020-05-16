@@ -274,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (stoBase.id != null)
                     {
-                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.CANCELED))
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'เพิ่ม'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น " + stoBase.eventStatus);
 
                     }
@@ -287,7 +287,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                     if (stoBase.id != null)
                     {
-                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.CANCELED))
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'ลบ'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น" + stoBase.eventStatus);
                     }
                     this.ActionRemove(reqVO, mapsto);

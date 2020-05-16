@@ -382,13 +382,19 @@ const DocumentView = props => {
 
   const CreateBtnAddPallet = () => {
     if (eventStatus === 10) {
-      return <BtnAddPallet dataDocument={dataDoc} dataDocItems={data} />
+      return <BtnAddPallet
+        dataDocument={dataDoc}
+        dataDocItems={data}
+        apiCreate={props.createAddPallet.apiCreate ?? null}
+        columnsDocItems={props.createAddPallet.columnsDocItems}
+        inputHead={props.createAddPallet.inputHead}
+      />
     }
-    else{
+    else {
       return null;
     }
   }
- 
+
   return (
     <div>
       {getHeader()}
@@ -400,7 +406,9 @@ const DocumentView = props => {
 
       <br />
       <br />
-
+      {props.useAddPalletMapSTO ?
+        CreateBtnAddPallet()
+        : null}
       {props.openSOU === true && props.openDES === true ? (
         <div>
           <Nav tabs>
@@ -462,17 +470,12 @@ const DocumentView = props => {
         </div>
       ) : props.openSOU === true ? (
         typeDoc ? (
-          <div>
-
-            {props.useAddPalletMapSTO ?
-              CreateBtnAddPallet()
-              : null}
-            <Table
-              columns={columnsDetailSOU}
-              pageSize={100}
-              data={dataDetailSOU}
-              sortable={false}
-            /></div>
+          <Table
+            columns={columnsDetailSOU}
+            pageSize={100}
+            data={dataDetailSOU}
+            sortable={false}
+          />
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
