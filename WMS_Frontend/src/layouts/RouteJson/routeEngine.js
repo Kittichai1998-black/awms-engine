@@ -191,20 +191,58 @@ const RD_Search = Loadable({
 
 
 const RD_Create_Customer = Loadable({
-    loader: () => import("../../views/page/ENGINE/RD/RD_Create_Customer"),
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_FGcus"),
     loading: Loading
 });
 
 const RD_Create_WM = Loadable({
-    loader: () => import("../../views/page/ENGINE/RD/RD_Create_WM"),
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_FGwm"),
     loading: Loading
 });
 
 const RD_Create_SUP = Loadable({
-    loader: () => import("../../views/page/ENGINE/RD/RD_Create_SUP"),
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_FGsup"),
     loading: Loading
 });
 
+const RD_Create_FGRcus = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_FGRcus"),
+    loading: Loading
+});
+const RD_Create_FGRwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_FGRwm"),
+    loading: Loading
+});
+
+const RD_Create_PMwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_PMwm"),
+    loading: Loading
+});
+
+const RD_Create_PMsup = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_PMsup"),
+    loading: Loading
+});
+
+const RD_Create_RAWwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_RAWwm"),
+    loading: Loading
+});
+
+const RD_Create_RAWsup = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_RAWsup"),
+    loading: Loading
+});
+
+const RD_Create_WIPcus = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_WIPcus"),
+    loading: Loading
+});
+
+const RD_Create_WIPwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/RD/RD_Create_WIPwm"),
+    loading: Loading
+});
 
 const routes = [
   { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
@@ -228,9 +266,17 @@ const routes = [
   { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
 
     { path: "/receiveOrder/create", name: "RD Create", compoment: RD_Create, exact: true },
-    { path: "/receiveOrder/createCus", name: "RD CreateforCus", compoment: RD_Create_Customer, exact: true },
-    { path: "/receiveOrder/createWM", name: "RD CreateforWM", compoment: RD_Create_WM, exact: true },
-    { path: "/receiveOrder/createSUP", name: "RD CreateforSUP", compoment: RD_Create_SUP, exact: true },
+    { path: "/receiveOrder/createFGcus", name: "RD CreateforCus", compoment: RD_Create_Customer, exact: true },
+    { path: "/receiveOrder/createFGwm", name: "RD CreateforWM", compoment: RD_Create_WM, exact: true },
+    { path: "/receiveOrder/createFGsup", name: "RD CreateforSUP", compoment: RD_Create_SUP, exact: true },
+    { path: "/receiveOrder/createFGRcus", name: "RD CreateforSUP", compoment: RD_Create_FGRcus, exact: true },
+    { path: "/receiveOrder/createFGRwm", name: "RD CreateforRwm", compoment: RD_Create_FGRwm, exact: true },
+    { path: "/receiveOrder/createPMwm", name: "RD CreateforSUP", compoment: RD_Create_PMwm, exact: true },
+    { path: "/receiveOrder/createPMsup", name: "RD CreateforRwm", compoment: RD_Create_PMsup, exact: true },
+    { path: "/receiveOrder/createRAWwm", name: "RD CreateforSUP", compoment: RD_Create_RAWwm, exact: true },
+    { path: "/receiveOrder/createRAWsup", name: "RD CreateforRwm", compoment: RD_Create_RAWsup, exact: true },
+    { path: "/receiveOrder/createWIPcus", name: "RD CreateforSUP", compoment: RD_Create_WIPcus, exact: true },
+    { path: "/receiveOrder/createWIPwm", name: "RD CreateforSUP", compoment: RD_Create_WIPwm, exact: true },
     { path: "/receiveOrder/detail", name: "RD View", compoment: RD_Search, exact: true },
     { path: "/receiveOrder/search", name: "RD View", compoment: RD_Detail, exact: true },
 
