@@ -60,7 +60,10 @@ const GR_Detail = props => {
     var ID = values.docID.toString();
     return ID;
   };
-
+ 
+  const createAddPallet ={
+    apiCreate: ''
+  }
   //received
   //issued
   return (
@@ -78,6 +81,8 @@ const GR_Detail = props => {
       buttonBack={true}
       linkBack={"/receive/search"}
       history={props.history}
+      useAddPalletMapSTO={true}
+      addPalletMapSTO={createAddPallet}
     />
   );
 };
