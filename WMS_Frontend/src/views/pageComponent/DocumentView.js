@@ -385,9 +385,9 @@ const DocumentView = props => {
       return <BtnAddPallet
         dataDocument={dataDoc}
         dataDocItems={data}
-        apiCreate={props.createAddPallet.apiCreate ?? null}
-        columnsDocItems={props.createAddPallet.columnsDocItems}
-        inputHead={props.createAddPallet.inputHead}
+        apiCreate={props.addPalletMapSTO.apiCreate ?? null}
+        columnsDocItems={props.addPalletMapSTO.columnsDocItems}
+        inputHead={props.addPalletMapSTO.inputHead}
       />
     }
     else {

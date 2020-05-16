@@ -79,7 +79,7 @@ const GR_Detail = props => {
   ];
   const createAddPallet = {
     apiCreate: '/v2/ScanMapStoFromDocAPI',
-    columns: colListDocItems,
+    columnsDocItems: colListDocItems,
     inputHead: [
       {
         visible: true,

@@ -102,6 +102,9 @@ const BtnAddPallet = (props) => {
         classes,
         dataDocument,
         dataDocItems,
+        apiCreate,
+        // columnsDocItems,
+        inputHead,
         dataCheck,
 
     } = props;
@@ -155,7 +158,7 @@ const BtnAddPallet = (props) => {
         for (let [key, value] of Object.entries(valueInput)) {
             console.log(key)
             console.log(value)
-            
+
         }
         const tempDataReq = {
             docID: dataDocument.ID,
@@ -222,6 +225,7 @@ const BtnAddPallet = (props) => {
     );
 }
 BtnAddPallet.propTypes = {
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    apiCreate: "/v2/ScanMapStoFromDocAPI",
 };
 export default BtnAddPallet;
