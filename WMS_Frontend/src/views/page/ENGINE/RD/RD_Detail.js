@@ -14,7 +14,7 @@ const RD_Detail = props => {
             { label: "Document Date", values: "DocumentDate", type: "date" }
         ],
         [
-            { label: "Movement Type", values: "MovementName" },
+            { label: "Movement Type", values: "DocumentProcessTypeName" },
             { label: "Action Time", values: "ActionTime", type: "dateTime" }
         ],
         [

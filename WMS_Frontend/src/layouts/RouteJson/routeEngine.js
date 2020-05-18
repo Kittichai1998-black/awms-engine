@@ -277,8 +277,8 @@ const routes = [
     { path: "/receiveOrder/createRAWsup", name: "RD CreateforRwm", compoment: RD_Create_RAWsup, exact: true },
     { path: "/receiveOrder/createWIPcus", name: "RD CreateforSUP", compoment: RD_Create_WIPcus, exact: true },
     { path: "/receiveOrder/createWIPwm", name: "RD CreateforSUP", compoment: RD_Create_WIPwm, exact: true },
-    { path: "/receiveOrder/detail", name: "RD View", compoment: RD_Search, exact: true },
-    { path: "/receiveOrder/search", name: "RD View", compoment: RD_Detail, exact: true },
+    { path: "/receiveOrder/detail", name: "RD View", compoment: RD_Detail, exact: true },
+    { path: "/receiveOrder/search", name: "RD View", compoment: RD_Search, exact: true },
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/test", name: "base1", compoment: Test1, exact: true },

@@ -742,7 +742,7 @@ const AmCreateDocument = (props) => {
                 return x
             })
         } else if (props.createDocType === "receiveOrder") {
-            doc.receiveItems = dataSource.map(x => {
+            doc.receivedOrderItem = dataSource.map(x => {
                 //modify
                 docItems.options = null
                 return x
