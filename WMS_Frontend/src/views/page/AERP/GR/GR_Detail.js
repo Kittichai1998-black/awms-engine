@@ -61,6 +61,52 @@ const GR_Detail = props => {
     return ID;
   };
 
+  const colListDocItems = [
+    { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
+    { width: 130, accessor: "Lot", Header: "Lot" },
+    { width: 120, accessor: "Quantity", Header: "Qty" },
+    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+  ];
+  const createAddPallet = {
+    apiCreate: '/v2/ScanMapStoFromDocAPI',
+    columns: colListDocItems,
+    inputHead: [
+      {
+        visible: true,
+        type: "dropdown",
+        field: "warehouseID",
+        typeDropdown: "normal",
+        name: "Warehouse",
+        placeholder: "Select Warehouse",
+        fieldLabel: ["Code", "Name"],
+        fieldDataKey: "ID",
+        defaultValue: 1,
+        required: true,
+        customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
+      },
+      {
+        visible: true,
+        type: "dropdown",
+        field: "areaID",
+        typeDropdown: "normal",
+        name: "Area",
+        placeholder: "Select Area",
+        fieldLabel: ["Code", "Name"],
+        fieldDataKey: "ID",
+        // defaultValue: 17,
+        required: true,
+        customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+      },
+      {
+        field: "palletcode",
+        placeholder: "Pallet Code",
+        required: true,
+        type: "input",
+        name: "palletcode",
+        // maxLength: 10,
+      },
+    ]
+  }
   //received
   //issued
   return (
@@ -78,6 +124,8 @@ const GR_Detail = props => {
       buttonBack={true}
       linkBack={"/receive/search"}
       history={props.history}
+      // useAddPalletMapSTO={true}
+      // addPalletMapSTO={createAddPallet}
     />
   );
 };

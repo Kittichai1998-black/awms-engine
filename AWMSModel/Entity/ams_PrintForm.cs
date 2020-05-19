@@ -13,7 +13,5 @@ namespace AWMSModel.Entity
         public decimal? PageHeightCM;
         public decimal? PageMarginCM;
         public decimal? PagePaddingCM;
-        public string HeaderSettings;
-        public string FooterSettings;
     }
 }

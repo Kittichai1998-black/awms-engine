@@ -9,7 +9,10 @@ namespace AWMSModel.Constant.EnumConst
         GOODS_RECEIVED = 1001,//GR
         GOODS_ISSUED = 1002,//GI
         CONSOLIDATE = 1003,//CS
-        SHIPMENT_ORDER = 1012,//SO
+        SHIPMENT_ORDER = 1014,//SO
+        RECEIVED_ORDER = 1011, //RD
+        ISSUED_ORDER = 1012,//ID
+
 
         AUDIT = 2004,//AD
 

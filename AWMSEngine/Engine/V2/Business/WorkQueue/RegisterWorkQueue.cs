@@ -84,9 +84,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                         if (stopacks == null || stopacks.Count == 0)
+                        {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
-                        sto = this.CreateSto(reqVO);
+                            sto = this.CreateSto(reqVO);
+                        }
                     }
                 }
                 // end
@@ -316,56 +318,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED ||
-                    sto.eventStatus == StorageObjectEventStatus.PARTIAL ||
-                    sto.eventStatus == StorageObjectEventStatus.QC ||
-                    sto.eventStatus == StorageObjectEventStatus.RETURN ||
-                    sto.eventStatus == StorageObjectEventStatus.HOLD)
+                else if (sto.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && sto.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS )
                 {
-                    var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
-                    var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
-                    if (skuMaster == null)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
-                    var SKUMasterType = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-                    if (SKUMasterType.GroupType == SKUGroupType.EMP)
-                    {
-                        docItems = this.ProcessReceiving(sto, reqVO);
-
-                        if (docItems.Count() == 0)
-                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
-
-                    }
-                    else
-                    {
-                        var disto = new amt_DocumentItemStorageObject
-                        {
-                            ID = null,
-                            DocumentItem_ID = null,
-                            Sou_StorageObject_ID = stoEmp.id.Value,
-                            Des_StorageObject_ID = stoEmp.id.Value,
-                            Quantity = 0,
-                            BaseQuantity = 0,
-                            UnitType_ID = stoEmp.unitID,
-                            BaseUnitType_ID = stoEmp.baseUnitID,
-                            Status = EntityStatus.ACTIVE
-                        };
-
-                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, BuVO);
-
-                    }
-                }
-                else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
-                {
+                    //ถ้าพาเลท สินค้า มีสถานะ RECEIVED,AUDITED,COUNTED,CONSOLIDATED,CANCELED จะput away by pass 
                     var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
-                    var disto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                        new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
-                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
-                        }, BuVO);
-                    if (!disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
-                    {
-                        throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
-                    }
+                     
                     packList.ForEach(pack =>
                     {
                         var disto = new amt_DocumentItemStorageObject

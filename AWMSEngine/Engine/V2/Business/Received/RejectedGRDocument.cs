@@ -211,7 +211,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                     var area = StaticValueManager.GetInstant().AreaMasters.Find(x => x.ID == baseSto.areaID);
                                     if (this.StaticValue.GetAreaMasterGroupType(area.AreaMasterType_ID) == AreaMasterGroupType.MACHINE || area == null)
                                     {
-                                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(baseSto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.REJECTED, this.BuVO);
+                                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(baseSto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.CANCELED, this.BuVO);
                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
                                         disto.Status = EntityStatus.REMOVE;
                                     }
