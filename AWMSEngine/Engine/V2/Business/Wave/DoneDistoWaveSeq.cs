@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.WorkQueue
+namespace AWMSEngine.Engine.V2.Business.Wave
 {
     public class DoneDistoWaveSeq : BaseEngine<DoneDistoWaveSeq.TReq, DoneDistoWaveSeq.TRes>
     {
@@ -38,6 +38,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var distoList = new List<amt_DocumentItemStorageObject>();
             var wavList = new List<amt_Wave>();
             var distos = ADO.DistoADO.GetInstant().GetListDisto(reqVO.distos.Select(x => x.distoID).ToList(), this.BuVO);
+            if(distos.Count == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, $"ไม่พบข้อมูลในการหยิบสินค้า");
+
             if (distos.Any(x => x.Status == EntityStatus.ACTIVE))
             {
                 var findActive = distos.Find(x => x.Status == EntityStatus.ACTIVE);
@@ -76,10 +79,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 ams_AreaLocationMaster location = new ams_AreaLocationMaster();
 
                 var docItem = documentItems.Find(item => item.ID == disto.DocumentItem_ID);
-                var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                var distosSumQty = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Sou_WaveSeq_ID", waveSeq.ID, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("Sou_WaveSeq_ID", waveSeq.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", "0,1,3", SQLOperatorType.IN)
                 }, this.BuVO).Sum(x => x.BaseQuantity);
 
                 if (string.IsNullOrWhiteSpace(req.locationCode))
@@ -106,51 +110,97 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     desBsto = MapBase(req.baseCode, location.AreaMaster_ID, location.ID);
                 }
 
-                var canPick = docItem.ActualBaseQuantity - distos;
-                var souPstoCriteria = listItemInSouBase.Find(x => x.id == souPsto.ID);
-                
-                desSto = MapPackToBase(souPstoCriteria, desBsto, disto, waveSeq, req.baseQty, canPick, req);
+                if(waveSeq.End_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATED)
+                {
+                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, StorageObjectEventStatus.ALLOCATING, null, StorageObjectEventStatus.ALLOCATED, this.BuVO);
+                    disto.Status = EntityStatus.ACTIVE;
+                }
+                else
+                {
+                    var remainPick = docItem.ActualBaseQuantity - distosSumQty;
+                    var souPstoCriteria = listItemInSouBase.Find(x => x.id == souPsto.ID);
+
+                    desSto = MapPackToBase(souPstoCriteria, desBsto, disto, waveSeq, req.baseQty, remainPick, req);
+
+                    if (desSto.parentID.HasValue)
+                    {
+                        var dBsto = ADO.StorageObjectADO.GetInstant().Get(desSto.parentID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                        if(dBsto != null)
+                        {
+                            if (dBsto.mapstos.TrueForAll(x => x.eventStatus == waveSeq.End_StorageObject_EventStatus))
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(dBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+                            }
+                        }
+                    }
+                }
             });
 
             var souWaveDistos = ADO.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
-            if (souWaveDistos.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
-            {
-                waveSeq.EventStatus = WaveEventStatus.WORKED;
-                waveSeq.Status = EntityStatus.ACTIVE;
-                ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
 
-                var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
-                souSto.ForEach(x =>
-                {
-                    var bsto = ADO.StorageObjectADO.GetInstant().Get(x, StorageObjectType.PACK, true, true, this.BuVO);
-                    if (bsto != null)
-                    {
-                        var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE);
-                        if (findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
-                        {
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                        }
-                    }
-                });
+            //var prevWaveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
+            //    new SQLConditionCriteria("Seq", waveSeq.Seq - 1, SQLOperatorType.EQUALS),
+            //    new SQLConditionCriteria("Wave_ID", waveSeq.Wave_ID, SQLOperatorType.EQUALS),
+            //}, this.BuVO).FirstOrDefault();
 
-                if (waveSeq.AutoNextSeq)
-                {
-                    var wave = ADO.WaveADO.GetInstant().Get(waveSeq.Wave_ID, this.BuVO);
-                    var nextWaveSeq = new NextDistoWaveSeq();
-                    var nextReq = new NextDistoWaveSeq.TReq()
-                    {
-                        CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
-                        DesAreaID = wave.Des_Area_ID
-                    };
-                    nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
-                }
-            }
+            //if(prevWaveSeq != null)
+            //{
+            //    var prevWaveDisto = ADO.DistoADO.GetInstant().ListBySouWaveSeq(prevWaveSeq.ID.Value, this.BuVO);
+            //    if (prevWaveDisto.TrueForAll(x => x.Status == EntityStatus.DONE) && souWaveDistos.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+            //    {
+            //        waveSeq.EventStatus = WaveEventStatus.WORKED;
+            //        waveSeq.Status = EntityStatus.ACTIVE;
+            //        ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
+            //    }
+            //}
+            //else
+            //{
+            //    if (souWaveDistos.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+            //    {
+            //        waveSeq.EventStatus = WaveEventStatus.WORKED;
+            //        waveSeq.Status = EntityStatus.ACTIVE;
+            //        ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
+            //    }
+            //}
+
+            NextWaveSeq(souWaveDistos, waveSeq);
 
             return new TRes()
             {
                 distos = distos,
                 waveSeq = waveSeq
             };
+        }
+
+        private void NextWaveSeq(List<amt_DocumentItemStorageObject> souWaveDistos, amt_WaveSeq waveSeq)
+        {
+            var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
+            souSto.ForEach(x =>
+            {
+                var bsto = ADO.StorageObjectADO.GetInstant().Get(x, StorageObjectType.PACK, true, true, this.BuVO);
+                if (bsto != null)
+                {
+                    var findSto = bsto.ToTreeList().Find(y => y.id == x);
+                    var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE && y.id == findSto.parentID);
+                    if (findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
+                    {
+                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                    }
+                }
+            });
+
+            if (waveSeq.AutoNextSeq)
+            {
+                var wave = ADO.WaveADO.GetInstant().Get(waveSeq.Wave_ID, this.BuVO);
+                var nextWaveSeq = new NextDistoWaveSeq();
+                var nextReq = new NextDistoWaveSeq.TReq()
+                {
+                    CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
+                    DesAreaID = wave.Des_Area_ID
+                };
+                nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
+            }
         }
 
         private StorageObjectCriteria GetDesFullSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq)
@@ -168,9 +218,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 souPsto.parentID = desBsto.id;
                 souPsto.parentType = desBsto.type;
+                souPsto.eventStatus = waveSeq.End_StorageObject_EventStatus;
                 ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(desBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
-                UpdateDisto(disto, oldPack, souPsto.qty, souPsto.baseQty);
+                var findAllPack = desBsto.ToTreeList().FindAll(x => x.id != souPsto.id && x.type == StorageObjectType.PACK && x.eventStatus != waveSeq.End_StorageObject_EventStatus);
+                if(findAllPack.Count == 0)
+                {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(desBsto.id.Value, waveSeq.Start_StorageObject_EventStatus, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+                }
+                UpdateDisto(disto, souPsto, souPsto.qty, souPsto.baseQty);
                 return souPsto;
             }
         }
@@ -186,7 +241,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             disto.Des_StorageObject_ID = desSto.id.Value;
             ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
         }
-        private void InsertDisto(amt_DocumentItemStorageObject disto, StorageObjectCriteria desSto, decimal qty, decimal baseQty)
+        private void InsertDisto(amt_DocumentItemStorageObject disto, StorageObjectCriteria desSto, decimal qty, decimal baseQty, decimal remainQty)
         {
             disto.Quantity = qty;
             disto.BaseQuantity = baseQty;
@@ -194,7 +249,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             disto.Des_StorageObject_ID = desSto.id.Value;
             ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
 
-            if (disto.Sou_StorageObject_ID != desSto.id.Value)
+            if (remainQty - baseQty > 0)
             {
                 var newDisto = disto.Clone();
                 newDisto.ID = null;
@@ -205,7 +260,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 ADO.DistoADO.GetInstant().Create(newDisto, this.BuVO);
             }
         }
-        private StorageObjectCriteria GetDesPatialSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq, decimal baseQty)
+        private StorageObjectCriteria GetDesPatialSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq, decimal baseQty, decimal remainQty)
         {
             var convertQty = StaticValue.ConvertToNewUnitByPack(souPsto.mstID.Value, baseQty, disto.BaseUnitType_ID, disto.UnitType_ID);
             if (oldPack != null && oldPack.id != souPsto.id)
@@ -213,7 +268,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 oldPack.eventStatus = waveSeq.End_StorageObject_EventStatus;
                 oldPack.baseQty += baseQty;
                 oldPack.qty += convertQty.newQty;
-                ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().PutV2(oldPack, this.BuVO);
 
                 souPsto.baseQty -= baseQty;
                 souPsto.qty -= convertQty.newQty;
@@ -221,8 +276,22 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
                 }
+
                 ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
-                InsertDisto(disto, oldPack, baseQty, souPsto.baseQty);
+
+                InsertDisto(disto, oldPack, baseQty, convertQty.newQty, remainQty);
+
+                var souPackDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Sou_StorageObject_ID", souPsto.id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Sou_WaveSeq_ID", waveSeq.ID, SQLOperatorType.EQUALS)
+                }, this.BuVO);
+
+                //if (souPackDisto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                //    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(oldPack.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+
                 return oldPack;
             }
             else
@@ -244,8 +313,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
                 }
                 ADO.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(desBsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
-                InsertDisto(disto, oldPack, baseQty, souPsto.baseQty);
+
+                InsertDisto(disto, newPsto, baseQty, convertQty.newQty, remainQty);
+
+                var souPackDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Sou_StorageObject_ID", souPsto.id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Sou_WaveSeq_ID", waveSeq.ID, SQLOperatorType.EQUALS)
+                }, this.BuVO);
+
+                //if (souPackDisto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                //    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(newPsto.id.Value, null, null, waveSeq.End_StorageObject_EventStatus, this.BuVO);
+
 
                 return newPsto;
             }
@@ -259,18 +340,26 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     && x.lot == souPsto.lot
                     && x.orderNo == souPsto.orderNo
                     && x.expiryDate == souPsto.expiryDate
-                    && x.productDate == souPsto.productDate);
+                    && x.productDate == souPsto.productDate
+                    && x.eventStatus == waveSeq.End_StorageObject_EventStatus);
 
-            if (pickQty == null)
+            if(canPick == 0)
+            {
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                souPsto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, 0, 0, EntityStatus.DONE, this.BuVO);
+                return souPsto;
+            }
+            else if (pickQty == null)
             {
                 if (canPick >= souPsto.baseQty)
                 {
                     var newPsto = GetDesFullSTO(disto, souPsto, desBsto, oldPack, waveSeq);
                     return newPsto;
                 }
-                else
+                else//ต้องเหลือสินค้าแน่นอน
                 {
-                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value, canPick.Value);
                     return newPsto;
                 }
             }
@@ -290,7 +379,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, pickQty.Value, canPick.Value);
                     return newPsto;
                 }
             }
@@ -307,7 +396,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, canPick.Value);
+                    var newPsto = GetDesPatialSTO(disto, souPsto, desBsto, oldPack, waveSeq, pickQty.Value, canPick.Value);
                     return newPsto;
                 }
             }

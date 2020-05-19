@@ -27,7 +27,7 @@ namespace AWMSModel.Entity
         public string Ref2;
         public string ItemNo;
         public DocumentEventStatus EventStatus;
-        public decimal ActualBaseQuantity;
+        public decimal? ActualBaseQuantity;
 
         //public List<long> StorageObjectIDs;
         public List<amt_DocumentItemStorageObject> DocItemStos;

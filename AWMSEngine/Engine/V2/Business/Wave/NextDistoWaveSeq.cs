@@ -1,13 +1,14 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.WorkQueue
+namespace AWMSEngine.Engine.V2.Business.Wave
 {
     public class NextDistoWaveSeq : BaseEngine<NextDistoWaveSeq.TReq, List<amt_DocumentItemStorageObject>>
     {
@@ -16,7 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public long DesAreaID;
             public long? DesLocationID;
             //public long CurrentBaseStoID;
-            public List<long> CurrentDistoIDs;
+            public List<long> CurrentDistoIDs; //change sou_sto
             //public decimal NextDistoBaseQty;
         }
 
@@ -25,59 +26,114 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItemStorageObject> currentDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria("ID", string.Join(',', reqVO.CurrentDistoIDs.ToArray()), SQLOperatorType.IN), this.BuVO);
 
-            //if (currentDistos.Any(x => x.Status != EntityStatus.ACTIVE))
-            //{
-            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะสินค้ายังไม่สิ้นสุด");
-            //}
+            if (currentDistos.Any(x => x.Status != EntityStatus.INACTIVE))
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะสินค้ายังไม่สิ้นสุด");
+            }
+            if (currentDistos.Any(x => x.Status != EntityStatus.DONE))
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "งานจบแล้ว ไม่สารถสั่งทำงานได้");
+            }
             if (currentDistos.Any(x => !x.Sou_WaveSeq_ID.HasValue))
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่มีการใช้งาน Wave");
             }
 
             List<amt_DocumentItemStorageObject> nextDistos = new List<amt_DocumentItemStorageObject>();
+            List<amt_WorkQueue> wqs = new List<amt_WorkQueue>();
 
-            var groupDisto = currentDistos.GroupBy(disto => disto.Sou_StorageObject_ID).Select(x => new { sou_sto = x.Key, distos = x.ToList() }).ToList();
+            var groupDisto = currentDistos.GroupBy(disto => new { sou_sto = disto.Sou_StorageObject_ID, des_sto = disto.Des_StorageObject_ID })
+                .Select(x => new { x.Key.sou_sto, x.Key.des_sto, distos = x.ToList() }).ToList();
 
             groupDisto.ForEach(gDisto =>
             {
                 var firstDisto = gDisto.distos.FirstOrDefault();
 
                 amt_Wave wave = ADO.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
+                amt_WaveSeq currentWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == firstDisto.Sou_WaveSeq_ID);
                 amt_WaveSeq nextWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == firstDisto.Des_WaveSeq_ID);
                 var bsto = ADO.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
+                var psto = ADO.StorageObjectADO.GetInstant().Get(gDisto.sou_sto, StorageObjectType.PACK, false, false, this.BuVO);
                 var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
                 var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
 
-                if(nextWaveSeq.EventStatus == WaveEventStatus.NEW)
+                if (nextWaveSeq != null)
                 {
-                    nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
-                    ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+                    if (nextWaveSeq.EventStatus == WaveEventStatus.NEW)
+                    {
+                        nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
+                        ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+                    }
+
+                    amt_WorkQueue wq = new amt_WorkQueue();
+
+                    if (stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_ASRS && stoArea.AreaMasterType_ID != AreaMasterTypeID.STA_PICK)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าไม่ได้อยู่ในพื้นที่เบิกสินค้า ไม่สามารถเบิกสินค้าได้");
+
+                    var findOldWQ = wqs.Find(x => x.StorageObject_ID == bsto.ID);
+
+                    if (stoArea.AreaMasterType_ID == AreaMasterTypeID.STO_ASRS && findOldWQ == null && psto.eventStatus != nextWaveSeq.Start_StorageObject_EventStatus)
+                    {
+                        wq = this.NextWorkQueue(bsto, wave, stoArea, desArea, reqVO);
+                        wqs.Add(wq);
+                    }
+                    else
+                    {
+                        wq = findOldWQ;
+                    }
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, currentWaveSeq.End_StorageObject_EventStatus, null, nextWaveSeq.Start_StorageObject_EventStatus, this.BuVO);
+                    psto.eventStatus = nextWaveSeq.Start_StorageObject_EventStatus;
+
+                    if (psto.eventStatus != nextWaveSeq.Start_StorageObject_EventStatus)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่พบสินค้าที่มีสถานะพร้อมทำงานได้");
+
+                    nextDistos.Add(NextDisto(wave, nextWaveSeq, gDisto.distos.First(), wq));
                 }
-
-                amt_WorkQueue wq = new amt_WorkQueue();
-
-                if(stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_ASRS && stoArea.AreaMasterType_ID != AreaMasterTypeID.STO_STAGING)
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าไม่ได้อยู่ในพื้นที่เบิกสินค้า ไม่สามารถเบิกสินค้าได้");
-
-                if (stoArea.AreaMasterType_ID == AreaMasterTypeID.STO_ASRS)
-                    wq = this.NextWorkQueue(bsto, wave, stoArea, desArea, reqVO);
 
                 gDisto.distos.ForEach(disto =>
                 {
-                    nextDistos.Add(NextDisto(wave, nextWaveSeq, disto, wq));
-                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                    gDisto.distos.First().Status = EntityStatus.DONE;
                 });
-                
-                var distoFromWaveSeq = ADO.DistoADO.GetInstant().ListBySouWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
-                if(distoFromWaveSeq.TrueForAll(x=> x.Status == EntityStatus.ACTIVE)) {
-                    var weveSeq = wave.WaveSeqs.Find(x => x.ID.Value == firstDisto.Sou_WaveSeq_ID.Value);
-                    weveSeq.EventStatus = WaveEventStatus.WORKED;
-                    ADO.WaveADO.GetInstant().PutSeq(weveSeq, this.BuVO);
+
+                var curWaveDisto = ADO.DistoADO.GetInstant().ListBySouWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
+
+                var prevWaveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
+                        new SQLConditionCriteria("Seq", currentWaveSeq.Seq - 1, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Wave_ID", currentWaveSeq.Wave_ID, SQLOperatorType.EQUALS),
+                    }, this.BuVO).FirstOrDefault();
+
+                if (prevWaveSeq != null)
+                {
+                    if ((prevWaveSeq.EventStatus == WaveEventStatus.WORKED) && curWaveDisto.TrueForAll(x => x.Status == EntityStatus.DONE))
+                    {
+                        currentWaveSeq.EventStatus = WaveEventStatus.WORKED;
+                        currentWaveSeq.Status = EntityStatus.ACTIVE;
+                        ADO.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
+                    }
+                }
+                else
+                {
+                    if (curWaveDisto.TrueForAll(x => x.Status == EntityStatus.DONE))
+                    {
+                        currentWaveSeq.EventStatus = WaveEventStatus.WORKED;
+                        currentWaveSeq.Status = EntityStatus.ACTIVE;
+                        ADO.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
+                        var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(firstDisto.DocumentItem_ID, this.BuVO);
+                        new WorkedDocByWave().Execute(this.Logger, this.BuVO, new WorkedDocByWave.TReq() { docIDs = new List<long>() { docItem.Document_ID } });
+                    }
                 }
 
-                if(wave.WaveSeqs.TrueForAll(x=> x.EventStatus == WaveEventStatus.WORKED))
+                if (wave.WaveSeqs.TrueForAll(x => x.EventStatus == WaveEventStatus.WORKED))
+                {
+                    wave.EventStatus = WaveEventStatus.WORKED;
+                    ADO.WaveADO.GetInstant().Put(wave, this.BuVO);
+                }
+                if (wave.EventStatus == WaveEventStatus.WORKED)
+                {
                     ADO.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.WORKED, null, WaveEventStatus.CLOSING, this.BuVO);
-
+                }
                 var waveClosing = ADO.WaveADO.GetInstant().Get(wave.ID.Value, this.BuVO);
                 if (waveClosing.EventStatus == WaveEventStatus.CLOSING)
                 {
@@ -96,7 +152,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         if (curWaveSeq.WCSDone)
                         {
-                            doneSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() {
+                            doneSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq()
+                            {
                                 distos = new List<DoneDistoWaveSeq.TReq.DistoList>()
                                 {
                                     new DoneDistoWaveSeq.TReq.DistoList(){ distoID=disto.ID.Value }
@@ -187,7 +244,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 Des_AreaLocation_ID = reqVO.DesLocationID,
                 Des_Warehouse_ID = desArea.Warehouse_ID.Value,
 
-                EventStatus = WorkQueueEventStatus.WORKING,
+                EventStatus = WorkQueueEventStatus.NEW,
                 Status = EntityStatus.ACTIVE,
 
                 StartTime = null,
