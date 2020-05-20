@@ -25,6 +25,7 @@ namespace AWMSModel.Criteria.SP.Response
         public decimal? lengthM;
         public decimal? heightM;
         public decimal? weiKG;
+        public decimal? mstWeiKG;
         public int? objectSizeID;
         public string orderNo;
         public string lot;

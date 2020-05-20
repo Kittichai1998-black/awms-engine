@@ -66,7 +66,7 @@ namespace AWMSEngine.ADO
 
             if (values == null) return null;
             
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(values,
+            StorageObjectCriteria res = StorageObjectCriteria.GenerateBySP(values,
                 StaticValueManager.GetInstant().ObjectSizes,
                 StaticValueManager.GetInstant().UnitTypes,
                 StaticValueManager.GetInstant().SKUMasterTypes, code);
@@ -95,7 +95,7 @@ namespace AWMSEngine.ADO
 
             if (r == null) return null;
 
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, 
+            StorageObjectCriteria res = StorageObjectCriteria.GenerateBySP(r, 
                 StaticValueManager.GetInstant().ObjectSizes,
                 StaticValueManager.GetInstant().UnitTypes,
                 StaticValueManager.GetInstant().SKUMasterTypes, code);
@@ -114,7 +114,7 @@ namespace AWMSEngine.ADO
 
             if (r == null || r.Count == 0) return null;
 
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, 
+            StorageObjectCriteria res = StorageObjectCriteria.GenerateBySP(r, 
                 StaticValueManager.GetInstant().ObjectSizes,
                 StaticValueManager.GetInstant().UnitTypes,
                 StaticValueManager.GetInstant().SKUMasterTypes, id);
@@ -555,7 +555,7 @@ namespace AWMSEngine.ADO
 
             if (values == null) return null;
 
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(values,
+            StorageObjectCriteria res = StorageObjectCriteria.GenerateBySP(values,
                 StaticValueManager.GetInstant().ObjectSizes,
                 StaticValueManager.GetInstant().UnitTypes,
                 StaticValueManager.GetInstant().SKUMasterTypes, null);

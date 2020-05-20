@@ -141,21 +141,21 @@ namespace AWMSEngine.Engine.V2.Business
         
         private void SetWeiAndQty(StorageObjectCriteria mapsto)
         {
-            if (mapsto.mapstos.Count() > 0)
+            /*if (mapsto.mapstos.Count() > 0)
             {
                 mapsto.mapstos.ForEach(x => SetWeiAndQty(x));
                 mapsto.weiKG = mapsto.mapstos.Sum(x => x.weiKG);
             }
             var counts = mapsto.mapstos
-                .GroupBy(x => x.objectSizeID)
+                .GroupBy(x => x.objectSize.id)
                 .Select(x => new { objectSizeID = x.Key, count = x.Count() })
                 .ToList();
-            mapsto.objectSizeMaps.ForEach(x=>
+            mapsto.objectSize.inners.ForEach(x=>
             {
                 var f = counts.FirstOrDefault(y => y.objectSizeID == x.innerObjectSizeID);
                 if (f != null) x.quantity = f.count;
                 else x.quantity = 0;
-            });
+            });*/
         }
 
         /***********************************/

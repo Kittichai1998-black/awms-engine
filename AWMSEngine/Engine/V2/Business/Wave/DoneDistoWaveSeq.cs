@@ -453,10 +453,8 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         baseUnitCode = _unitType.Code,
                         baseUnitID = _unitType.ID.Value,
                         baseQty = 1,
-                        objectSizeID = _objSize.ID.Value,
                         type = StorageObjectType.BASE,
                         mstID = _base.ID.Value,
-                        objectSizeName = _objSize.Name,
                         areaID = _area.ID,
                         warehouseID = _area.Warehouse_ID.Value,
                         parentID = locationID
@@ -487,10 +485,8 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                             baseUnitCode = _unitType.Code,
                             baseUnitID = _unitType.ID.Value,
                             baseQty = 1,
-                            objectSizeID = _objSize.ID.Value,
                             type = StorageObjectType.BASE,
                             mstID = _base.ID.Value,
-                            objectSizeName = _objSize.Name,
                             areaID = _area.ID,
                             warehouseID = _area.Warehouse_ID.Value,
                             parentID = locationID
@@ -535,10 +531,8 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                             baseUnitCode = _unitType.Code,
                             baseUnitID = _unitType.ID.Value,
                             baseQty = 1,
-                            objectSizeID = _objSize.ID.Value,
                             type = StorageObjectType.BASE,
                             mstID = _base.ID.Value,
-                            objectSizeName = _objSize.Name,
                             areaID = _area.ID,
                             warehouseID = _area.Warehouse_ID.Value,
                             parentID = locationID

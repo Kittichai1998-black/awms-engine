@@ -8,7 +8,5 @@ namespace AWMSModel.Entity
     {
         public int OuterObjectSize_ID;
         public int InnerObjectSize_ID;
-        public decimal? MinQuantity;
-        public decimal? MaxQuantity;
     }
 }
