@@ -79,7 +79,8 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public List<ams_Transporter> LoadTransport(VOCriteria buVO = null)
         {
-            return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transporter>("status", 1, buVO ?? new VOCriteria()));
+            return null;
+            //return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transporter>("status", 1, buVO ?? new VOCriteria()));
         }
         public List<ams_WaveSeqTemplate> LoadWaveSeqTemplates(VOCriteria buVO = null)
         {

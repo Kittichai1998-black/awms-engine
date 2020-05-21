@@ -85,7 +85,7 @@ const FormInline = styled.div`
 `;
 
 const LabelH = {
-  "font-weight": "bold",
+  fontWight: "bold",
   width: "200px"
 };
 
@@ -97,9 +97,7 @@ const DocumentView = props => {
   const [header, setHeader] = useState(props.header);
   const [dataHeader, setDataHeader] = useState([]);
   const [columns, setColumns] = useState(props.columns);
-  const [columnsDetailSOU, setColumnsDetailSOU] = useState(
-    props.columnsDetailSOU
-  );
+  const [columnsDetailSOU, setColumnsDetailSOU] = useState([]);
   const [columnsDetailDES, setColumnsDetailDES] = useState(
     props.columnsDetailDES
   );
@@ -119,7 +117,14 @@ const DocumentView = props => {
   //set dialog Add pallet
   const [dataDoc, setDataDoc] = useState(false);
   const [eventStatus, setEventStatus] = useState(null);
+  //set dialog edit
+  const [dialog, setDialog] = useState(false);
 
+  //AlertDialog
+  const [showDialog, setShowDialog] = useState(null);
+  const [stateDialog, setStateDialog] = useState(false);
+  const [msgDialog, setMsgDialog] = useState("");
+  const [typeDialog, setTypeDialog] = useState("");
 
   useEffect(() => {
     getData();
@@ -158,6 +163,8 @@ const DocumentView = props => {
               sumQty += y.distoQty;
             });
           row._sumQtyDisto = sumQty;
+
+          row._balanceQty = row.Quantity - sumQty;
 
           // === getOption === DocItem
 
@@ -308,7 +315,26 @@ const DocumentView = props => {
       }
     });
   };
-
+  useEffect(() => {
+    if (dataHeader && dataHeader.EventStatus === 10) {
+      var newSou = [...props.columnsDetailSOU,
+      {
+        width: 100, Header: "Edit Qty", style: { textAlign: 'center' },
+        Cell: e => <AmButton style={{ width: "70px" }} styleType="info"
+          onClick={() => { }}>Edit</AmButton>
+      },
+      {
+        width: 100, Header: "Delete", style: { textAlign: 'center' },
+        Cell: e => <AmButton style={{ width: "70px" }} styleType="delete" onClick={
+          () => {
+            onHandleDelDiSTO(e.original);
+          }}>Remove</AmButton>
+      }]
+      setColumnsDetailSOU(newSou)
+    } else {
+      setColumnsDetailSOU(props.columnsDetailSOU)
+    }
+  }, [props.columnsDetailSOU, dataHeader])
   const renderDocumentStatus = () => {
     const res = DocumentEventStatus.filter(row => {
       return row.code === dataHeader.EventStatus;
@@ -388,15 +414,57 @@ const DocumentView = props => {
         apiCreate={props.addPalletMapSTO.apiCreate ?? null}
         columnsDocItems={props.addPalletMapSTO.columnsDocItems}
         inputHead={props.addPalletMapSTO.inputHead}
+        ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
+        ddlArea={props.addPalletMapSTO.ddlArea}
+        onSuccessMapping={(data) => ReturnMapping(data)}
       />
     }
     else {
       return null;
     }
   }
+  const ReturnMapping = (res) => {
+    console.log(res)
+    getData()
+  }
 
+  const genBtnEditQty = (org) => {
+
+  }
+  const onHandleDelDiSTO = (item) => {
+    console.log(item)
+    const tempDataReq = {
+      distoID: item.distoID,
+      rootID: item.rootID
+    }
+    Axios.post(window.apipath + "/v2/RemoveSTOandDiSTOfromDocAPI", tempDataReq).then((res) => {
+      if (res.data != null) {
+        if (res.data._result.status === 1) {
+          alertDialogRenderer("ลบข้อมูลสำเร็จ", "success", true);
+        } else {
+          alertDialogRenderer(res.data._result.message, "error", true);
+        }
+      } else {
+        alertDialogRenderer(res.data._result.message, "error", true);
+      }
+    });
+  }
+  const alertDialogRenderer = (message, type, state) => {
+    setMsgDialog(message);
+    setTypeDialog(type);
+    setStateDialog(state);
+  }
+  useEffect(() => {
+    if (msgDialog && stateDialog && typeDialog) {
+      setShowDialog(<AmDialogs typePopup={typeDialog} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >);
+    } else {
+      setShowDialog(null);
+    }
+  }, [stateDialog, msgDialog, typeDialog]);
   return (
     <div>
+      {stateDialog ? showDialog ? showDialog : null : null}
+
       {getHeader()}
       <br />
       <br />

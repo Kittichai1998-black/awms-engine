@@ -25,6 +25,9 @@ namespace AWMSEngine.Engine.V2.Business
             public string orderNo;
             public string batch;
             public string lot;
+            public string refID;
+            public string ref1;
+            public string ref2;
             public decimal amount;
             public string unitCode;
             public DateTime? productDate;
@@ -127,7 +130,9 @@ namespace AWMSEngine.Engine.V2.Business
                 orderNo = reqVO.orderNo,
                 lot = reqVO.lot,
                 batch = reqVO.batch,
-
+                refID = reqVO.refID,
+                ref1 = reqVO.ref1,
+                ref2 = reqVO.ref2,
                 qty = reqVO.amount,
                 unitID = trueUnit.ID.Value,
                 unitCode = trueUnit.Code,
