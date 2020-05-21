@@ -14,6 +14,7 @@ namespace AWMSModel.Entity
         public decimal? MinInnerVolume;
         public decimal? MaxInnerVolume;
         public decimal? PercentWeightAccept;
+        public bool IsDefault;
         public List<ams_ObjectSizeMap> ObjectSizeInners;
     }
 }

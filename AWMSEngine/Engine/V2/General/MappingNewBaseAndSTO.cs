@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -23,6 +24,7 @@ namespace AWMSEngine.Engine.V2.General
             public decimal? width;//กว้าง M.
             public decimal? length;//ยาว M.
             public decimal? height;//สูง M.
+            public bool autoDoc;
         }
         public class TRes
         {
@@ -82,10 +84,8 @@ namespace AWMSEngine.Engine.V2.General
                 baseUnitCode = _unitType.Code,
                 baseUnitID = _unitType.ID.Value,
                 baseQty = 1,
-                objectSizeID = _objSize.ID.Value,
                 type = StorageObjectType.BASE,
                 mstID = _base.ID.Value,
-                objectSizeName = _objSize.Name,
                 areaID = reqVO.areaID.Value,
                 warehouseID = reqVO.warehouseID.Value,
                 weiKG = reqVO.weight,
@@ -94,7 +94,15 @@ namespace AWMSEngine.Engine.V2.General
                 widthM = reqVO.width
             };
 
-           
+            var optionsSto = "";
+            if (reqVO.autoDoc)
+                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
+
+            if (reqVO.isEmptyPallet)
+                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
+
+            baseSto.options = optionsSto;
+            
             var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
             return new TRes()
             {

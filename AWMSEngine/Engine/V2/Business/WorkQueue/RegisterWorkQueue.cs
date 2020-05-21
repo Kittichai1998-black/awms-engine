@@ -13,6 +13,7 @@ using AWMSEngine.Common;
 using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.General;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -119,74 +120,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             StorageObjectCriteria newSto = new StorageObjectCriteria();
             bool checkEmpPallet = false;
+            long? idBaseSto = null;
 
             checkEmpPallet = StaticValueManager.GetInstant().SKUMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
-
-            var _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.baseCode, BuVO);
-
-            if (_base == null)
-            {
-
-                var BaseMasterType = StaticValueManager.GetInstant().BaseMasterTypes.FirstOrDefault();
-
-                ams_BaseMaster newBase = new ams_BaseMaster()
-                {
-                    Code = reqVO.baseCode,
-                    ObjectSize_ID = BaseMasterType.ObjectSize_ID,
-                    UnitType_ID = BaseMasterType.UnitType_ID,
-                    Name = checkEmpPallet ? "Empty Pallet" : "Pallet",
-                    WeightKG = BaseMasterType.Weight,
-                    BaseMasterType_ID = BaseMasterType.ID.Value,
-                    Status = EntityStatus.ACTIVE
-                };
-
-                var idbase = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(BuVO, newBase);
-                _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(idbase, BuVO);
-                if (_base == null)
-                {
-                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Pallet : " + reqVO.baseCode + " Not Found.");
-                }
-
-            }
-            var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);
-            var _objSize = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
-
             var _warehouse = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             var _area = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
 
-            // EmpPallet
-            StorageObjectCriteria baseSto = new StorageObjectCriteria()
+            var req_NewBase = new MappingNewBaseAndSTO.TReq()
             {
-                code = reqVO.baseCode,
-                eventStatus = StorageObjectEventStatus.NEW,
-                name = checkEmpPallet ? "Empty Pallet" : "Pallet",
-                qty = 1,
-                unitCode = _unitType.Code,
-                unitID = _unitType.ID.Value,
-                baseUnitCode = _unitType.Code,
-                baseUnitID = _unitType.ID.Value,
-                baseQty = 1,
-                type = StorageObjectType.BASE,
-                mstID = _base.ID.Value,
-                areaID = _area.ID,
+                baseCode = reqVO.baseCode,
+                isEmptyPallet = true,
                 warehouseID = _warehouse.ID.Value,
-                weiKG = reqVO.weight,
-                lengthM = reqVO.length,
-                heightM = reqVO.height,
-                widthM = reqVO.width
-
-
+                areaID = _area.ID,
+                weight = reqVO.weight,
+                length = reqVO.length,
+                height = reqVO.height,
+                width = reqVO.width
             };
-            var optionsSto = "";
-            if (reqVO.autoDoc)
-                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
-            
-            if(checkEmpPallet)
-                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
-
-
-            baseSto.options = optionsSto;
-            var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
+            var newbase = new MappingNewBaseAndSTO().Execute(this.Logger, this.BuVO, req_NewBase); ;
+            idBaseSto = newbase.id;
 
             reqVO.mappingPallets.ForEach((mappingPallets) =>
             {
@@ -209,7 +161,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 StorageObjectCriteria packSto = new StorageObjectCriteria()
                 {
-                    parentID = baseStoID,
+                    parentID = idBaseSto,
                     parentType = StorageObjectType.BASE,
                     code = Sku.Code,
                     eventStatus = StorageObjectEventStatus.NEW,
@@ -221,9 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     baseUnitCode = unit.Code,
                     baseUnitID = unit.ID.Value,
                     baseQty = Convert.ToDecimal(mappingPallets.qty),
-                    objectSizeID = PackMasterEmptyPallets.ObjectSize_ID,
                     type = StorageObjectType.PACK,
-                    objectSizeName = _objSizePack.Name,
                     mstID = PackMasterEmptyPallets.ID.Value,
                     options = mappingPallets.options,
                     areaID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID.Value,
@@ -234,7 +184,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             });
             
-            newSto = ADO.StorageObjectADO.GetInstant().Get(baseStoID, StorageObjectType.BASE, false, true, BuVO);
+            newSto = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
 
 

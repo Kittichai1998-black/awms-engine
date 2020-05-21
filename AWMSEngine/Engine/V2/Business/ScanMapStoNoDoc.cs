@@ -26,9 +26,6 @@ namespace AWMSEngine.Engine.V2.Business
             public string orderNo;
             public string batch;
             public string lot;
-            public string refID;
-            public string ref1;
-            public string ref2;
             public decimal amount;
             public string unitCode;
             public DateTime? productDate;
@@ -67,7 +64,7 @@ namespace AWMSEngine.Engine.V2.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type ไม่ถูกต้อง");
             }
         }
-        private StorageObjectCriteria NewStorageObjectCriteria(BaseEntitySTD obj,StorageObjectCriteria parentMapsto, TReq reqVO)
+        private StorageObjectCriteria NewStorageObjectCriteria(BaseEntitySTD obj, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
             ams_AreaLocationMaster alm = null;
 
@@ -81,7 +78,7 @@ namespace AWMSEngine.Engine.V2.Business
             else if (objType == StorageObjectType.BASE)
                 res = StorageObjectCriteria.NewBase(parentMapsto, (ams_BaseMaster)obj, reqVO.options, this.StaticValue);
             else if (objType == StorageObjectType.PACK)
-                res = StorageObjectCriteria.NewPack(parentMapsto, (ams_PackMaster)obj,reqVO.amount,reqVO.unitCode,reqVO.batch,reqVO.lot,reqVO.orderNo, reqVO.options,reqVO.productDate, this.StaticValue);
+                res = StorageObjectCriteria.NewPack(parentMapsto, (ams_PackMaster)obj, reqVO.amount, reqVO.unitCode, reqVO.batch, reqVO.lot, reqVO.orderNo, reqVO.options, reqVO.productDate, this.StaticValue);
 
             if (!String.IsNullOrEmpty(reqVO.locationCode) && parentMapsto == null)
             {
@@ -94,64 +91,9 @@ namespace AWMSEngine.Engine.V2.Business
                 if (alm == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Location : " + reqVO.locationCode);
 
-            var res = new StorageObjectCriteria()
-            {
-                id = null,
-                mstID = obj.ID,
-                code = obj.Code,
-                name = obj.Name,
-                type = objType,
-                skuID = skuID,
-                productDate = reqVO.productDate,
-
-                parentID = parentMapsto != null ? parentMapsto.id : alm != null ? alm.ID : null,
-                parentType = parrentType != null ? parrentType : StorageObjectType.LOCATION,
-
-                areaID = parentMapsto != null ? parentMapsto.areaID : reqVO.areaID.Value,
-                warehouseID = parentMapsto != null ? parentMapsto.warehouseID : reqVO.warehouseID.Value,
-                orderNo = reqVO.orderNo,
-                lot = reqVO.lot,
-                batch = reqVO.batch,
-                refID = reqVO.refID,
-                ref1 = reqVO.ref1,
-                ref2 = reqVO.ref2,
-                qty = reqVO.amount,
-                unitID = trueUnit.ID.Value,
-                unitCode = trueUnit.Code,
-                skuTypeID = skuType != null ? skuType.ID : null,
-                skuTypeName = skuType != null ? skuType.Name : null,
-                baseQty = baseUnit != null ? baseUnit.baseQty : 1,
-                baseUnitID = baseUnit != null ? baseUnit.baseUnitType_ID : trueUnit.ID.Value,
-                baseUnitCode = baseUnit != null ?
-                                    this.StaticValue.UnitTypes.First(x => x.ID == baseUnit.baseUnitType_ID).Code : trueUnit.Code,
-
-                weiKG = null,
-                widthM = null,
-                heightM = null,
-                lengthM = null,
-
-                options = reqVO.options,
-
-                maxWeiKG = objSize.MaxWeigthKG,
-                minWeiKG = objSize.MinWeigthKG,
-                objectSizeID = objSize.ID.Value,
-                objectSizeName = objSize.Name,
-                objectSizeMaps = objSize.ObjectSizeInners.Select(x => new StorageObjectCriteria.ObjectSizeMap()
-                {
-                    innerObjectSizeID = x.InnerObjectSize_ID,
-                    innerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
-                    outerObjectSizeID = x.ID.Value,
-                    outerObjectSizeName = x.Name,
-                    maxQuantity = x.MaxQuantity,
-                    minQuantity = x.MinQuantity,
-                    quantity = 0
-                }).ToList(),
-                mapstos = new List<StorageObjectCriteria>(),
-                eventStatus = StorageObjectEventStatus.NEW,
-                isFocus = obj is ams_PackMaster ? false : true,
-
-            };
-            res.groupSum = StorageObjectCriteria.CreateGroupSum(res);
+                res.parentID = alm.ID;
+                res.parentType = StorageObjectType.LOCATION;
+            }
             return res;
         }
         private StorageObjectCriteria ExecScan(TReq reqVO)
@@ -192,7 +134,7 @@ namespace AWMSEngine.Engine.V2.Business
                     }
                     else if (alm != null)
                     {
-                        mapsto = this.NewStorageObjectCriteria(alm,  null, reqVO);
+                        mapsto = this.NewStorageObjectCriteria(alm, null, reqVO);
                     }
                     else if (pm != null)
                     {
