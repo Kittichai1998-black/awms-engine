@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_WM = props => {
+const RD_Create_WIPwm = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,7 +31,7 @@ const RD_Create_WM = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_WM", valueTexts: "1011", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "WIP_TRANSFER_WM", valueTexts: "2011", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -212,7 +212,7 @@ const RD_Create_WM = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":2011}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -261,4 +261,4 @@ const RD_Create_WM = props => {
         {table}</div>;
 };
 
-export default RD_Create_WM;
+export default RD_Create_WIPwm;

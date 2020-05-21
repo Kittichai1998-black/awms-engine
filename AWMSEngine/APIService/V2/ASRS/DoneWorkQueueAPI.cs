@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
+using AWMSEngine.ADO.StaticValue;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
@@ -22,17 +23,21 @@ namespace AWMSEngine.APIService.V2.ASRS
             var resDoneQ = new DoneWorkQueue().Execute(this.Logger, this.BuVO, req);
             this.CommitTransaction();
 
-            this.BeginTransaction();
-            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs=resDoneQ.docIDs });
-            this.CommitTransaction();
+            if (!StaticValueManager.GetInstant().IsFeature("WAVE_MANAGEMENT"))
+            {
+                this.BeginTransaction();
+                var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
+                this.CommitTransaction();
 
-            this.BeginTransaction();
-            var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
-            this.CommitTransaction();
-            
-            this.BeginTransaction();
-            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
-            this.CommitTransaction();
+                this.BeginTransaction();
+                var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
+                this.CommitTransaction();
+
+                this.BeginTransaction();
+                var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
+                this.CommitTransaction();
+            }
+
 
             return resDoneQ;
         }

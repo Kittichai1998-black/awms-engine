@@ -14,7 +14,7 @@ namespace AWMSModel.Constant.EnumConst
         INACTIVE = 0,
         ACTIVE = 1,
         REMOVE = 2,
-        DOEN = 3,
+        DONE = 3,
 
         //Pack
         NEW = 100,

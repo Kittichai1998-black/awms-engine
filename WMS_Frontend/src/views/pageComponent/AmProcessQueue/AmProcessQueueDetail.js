@@ -201,7 +201,7 @@ const useArea = (areaQuery, doc, customArea, warehouse) => {
             setArea(areaRes);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[customArea, doc])
+    },[customArea, doc, warehouse])
 
     return area;
 }
@@ -223,13 +223,13 @@ const ProcessQueueDetail = (props) => {
     const [dialogText, setDialogText] = useState("")
 
     const [confirmState, setConfirmState] = useState(false)
-    const [areaEnable, setAreaEnable] = useState(false);
+    const [flagAuto, setFlagAuto] = useState(false);
 
     useEffect(()=> {
         if(props.areaDefault !== undefined)
             if(documents.documentListValue.length > 0){
                 setAreaDefault(props.areaDefault(documents.documentListValue[0]))
-                setAreaEnable(true)
+                setFlagAuto(true)
             }else{
                 setAreaDefault("0")
             }
@@ -575,7 +575,7 @@ const ProcessQueueDetail = (props) => {
             })
         })
 
-        if(areaEnable && IsEmptyObject(areaSelection)){
+        if(IsEmptyObject(areaSelection)){
             setDialogState(!dialogState)
             setDialogText("กรุณากรอก Area ปลายทาง")
             setDialogType("error")
@@ -584,7 +584,7 @@ const ProcessQueueDetail = (props) => {
             let processQueueData = {}
             processQueueData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
             processQueueData["desASRSLocationCode"] = null;
-            processQueueData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
+            processQueueData["desASRSAreaCode"] = areaSelection.Code;
             processQueueData["processQueues"] = processQueueArr;
 
             Axios.post(window.apipath + "/v2/" + props.processUrl, processQueueData).then(res => {
@@ -607,7 +607,7 @@ const ProcessQueueDetail = (props) => {
                         let createResData = {}
                         createResData["desASRSWarehouseCode"] = warehouse.warehouseValue.Code;
                         createResData["desASRSLocationCode"] = null;
-                        createResData["desASRSAreaCode"] = areaEnable && !IsEmptyObject(areaSelection) ? areaSelection.Code : null;
+                        createResData["desASRSAreaCode"] = areaSelection.Code;
                         createResData["processResults"] = process;
                         setProcessQueueData(res.data)
                         if(!confirmState)
@@ -656,6 +656,7 @@ const ProcessQueueDetail = (props) => {
                 mode={props.modeDefault} 
                 data={processQueueData} 
                 open={confirmState} 
+                flagAuto={flagAuto}
                 columnsConfirm={props.columnsConfirm}
                 onClose={(confirmState, dialogState)=>
                     {
@@ -716,11 +717,11 @@ const ProcessQueueDetail = (props) => {
                     {props.waveProcess ? <><label style={{marginRight:"10px"}}>Auto Run : </label>
                     <CheckboxCustom onClick={event => {
                         event.stopPropagation();
-                        setAreaEnable(event.target.checked)
-                    }} checked={areaEnable}/></> : null}
+                        setFlagAuto(event.target.checked)
+                    }} checked={flagAuto}/></> : null}
                     <label style={{marginRight:"10px"}}>Area : </label>
                     <AmDropdown
-                        disabled={!areaEnable ? true : documents.documentListValue.length === 0 ? true : false}
+                        disabled={documents.documentListValue.length === 0 ? true : false}
                         id={"Area"}
                         placeholder={"Area"}
                         fieldDataKey={"ID"}
@@ -838,6 +839,7 @@ const ConfirmDialog = (props) => {
         let confirmData = {};
         confirmData["desASRSWarehouseCode"] = data["desASRSWarehouseCode"];
         confirmData["desASRSLocationCode"] = data["desASRSLocationCode"];
+        confirmData["flagAuto"]=props.flagAuto;
         confirmData["desASRSAreaCode"] = data["desASRSAreaCode"];
         if(props.waveProcess){
             confirmData["waveRunMode"] = mode;

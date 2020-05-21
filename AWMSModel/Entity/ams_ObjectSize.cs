@@ -8,9 +8,11 @@ namespace AWMSModel.Entity
     public class ams_ObjectSize : BaseEntitySTD
     {
         public StorageObjectType ObjectType;
-        public decimal? MinWeigthKG;
-        public decimal? MaxWeigthKG;
-        public bool IsDefault;
+        public decimal? MinInnerWeightKG;
+        public decimal? MaxInnerWeightKG;
+        public decimal Volume;
+        public decimal? MinInnerVolume;
+        public decimal? MaxInnerVolume;
         public decimal? PercentWeightAccept;
         public List<ams_ObjectSizeMap> ObjectSizeInners;
     }

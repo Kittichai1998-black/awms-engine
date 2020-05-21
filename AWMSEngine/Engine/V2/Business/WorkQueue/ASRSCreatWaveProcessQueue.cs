@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         public class TReq : ASRSProcessQueue.TRes
         {
+            public bool flagAuto = false;
             public bool isSetQtyAfterDoneWQ = true;
             public WaveRunMode waveRunMode;
             public DateTime? scheduleTime;
@@ -46,15 +47,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
 
+
+
             var wave = this.InsertWave(reqVO);
             //List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
 
             var Allocate = new AllocatedDistoWaveSeq();
             var AlloDisto = new List<long>();
 
+            var docItemProcess = new List<RootStoProcess.DocItem>();
+
             rstos.ForEach(rs => rs.docItems.ForEach(docitem =>
             {
-
+                docItemProcess.Add(docitem);
                 var AllocatedDisto = Allocate.Execute(this.Logger, this.BuVO, new AllocatedDistoWaveSeq.TReq()
                 {
                     DocItemID = docitem.docItemID,
@@ -65,10 +70,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 });
 
                 AlloDisto.Add(AllocatedDisto.ID.Value);
-
-
             }));
 
+            var groupDocItem = docItemProcess.GroupBy(x => x.docItemID).Select(x => new { docItem = x.Key, processItem = x.ToList() }).ToList();
+            groupDocItem.ForEach(x =>
+            {
+                var item = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(x.docItem, this.BuVO);
+                item.ActualBaseQuantity = x.processItem.Sum(y => y.pickBaseQty);
+                ADO.DocumentADO.GetInstant().PutItem(item, this.BuVO);
+            });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
             var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
@@ -77,8 +87,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return new TRes() { WaveID= wave.ID.Value, confirmResult = rstos, docGRCrossDocks = docGRCDs, CurrentDistoIDs = AlloDisto };
         }
-
-
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {

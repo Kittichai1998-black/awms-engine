@@ -272,7 +272,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     RefID = Item.refID,
 
                     EventStatus = Item.eventStatus,
-                    DocItemStos = Item.docItemStos
+                    DocItemStos = Item.docItemStos,
+                    ActualBaseQuantity = 0
                 });
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);

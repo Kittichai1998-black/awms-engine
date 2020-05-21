@@ -130,6 +130,13 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
+
+
+
+
+
+
+
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
