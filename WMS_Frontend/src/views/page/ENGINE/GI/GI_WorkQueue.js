@@ -70,10 +70,10 @@ const ProcessQueue = () => {
       { "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true, custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } }
     ],
     "eventStatuses": [
-      { "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
-      { "field": "Hold", "value": 99, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
-      { "field": "Block", "value": 97, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
-      { "field": "QC", "value": 98, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } }
+      { "field": "Recevied", "value": 102, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      { "field": "Consolidated", "value": 156, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      //{ "field": "Block", "value": 907, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+      //{ "field": "QC", "value": 908, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } }
     ],
     "orderBys": [
       {

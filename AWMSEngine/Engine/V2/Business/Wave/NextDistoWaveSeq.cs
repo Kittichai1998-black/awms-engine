@@ -26,11 +26,11 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             List<amt_DocumentItemStorageObject> currentDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria("ID", string.Join(',', reqVO.CurrentDistoIDs.ToArray()), SQLOperatorType.IN), this.BuVO);
 
-            if (currentDistos.Any(x => x.Status != EntityStatus.INACTIVE))
+            if (currentDistos.Any(x => x.Status == EntityStatus.INACTIVE))
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะสินค้ายังไม่สิ้นสุด");
             }
-            if (currentDistos.Any(x => x.Status != EntityStatus.DONE))
+            if (currentDistos.Any(x => x.Status == EntityStatus.DONE))
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "งานจบแล้ว ไม่สารถสั่งทำงานได้");
             }

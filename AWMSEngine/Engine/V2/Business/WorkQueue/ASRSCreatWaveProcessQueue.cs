@@ -255,6 +255,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Start_StorageObject_EventStatus = temp.Start_StorageObject_EventStatus,
                     End_StorageObject_EventStatus = temp.End_StorageObject_EventStatus,
                     AutoNextSeq = temp.AutoNextSeq,
+                    AutoDoneSeq = temp.AutoDoneSeq,
+                    WCSDone = temp.WCSDone,
                     StartTime = temp.StartTime,
                     EndTime = temp.EndTime,
                     EventStatus = WaveEventStatus.NEW,

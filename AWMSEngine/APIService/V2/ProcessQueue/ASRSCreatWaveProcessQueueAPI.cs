@@ -24,14 +24,12 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
 
             if (req.flagAuto)
             {
-
                 var workingWave = new WorkingWave();
                 var working = workingWave.Execute(this.Logger, this.BuVO, new WorkingWave.TReq()
                 {
                     waveID = res.WaveID
                     
                 });
-            
             }
             return res;
         }

@@ -164,7 +164,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             //    }
             //}
 
-            NextWaveSeq(souWaveDistos, waveSeq);
+            NextWaveSeq(distos, souWaveDistos, waveSeq);
 
             return new TRes()
             {
@@ -173,7 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             };
         }
 
-        private void NextWaveSeq(List<amt_DocumentItemStorageObject> souWaveDistos, amt_WaveSeq waveSeq)
+        private void NextWaveSeq(List<amt_DocumentItemStorageObject> currentDistos, List<amt_DocumentItemStorageObject> souWaveDistos, amt_WaveSeq waveSeq)
         {
             var souSto = souWaveDistos.Select(x => x.Sou_StorageObject_ID).Distinct().ToList();
             souSto.ForEach(x =>
@@ -196,7 +196,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 var nextWaveSeq = new NextDistoWaveSeq();
                 var nextReq = new NextDistoWaveSeq.TReq()
                 {
-                    CurrentDistoIDs = souWaveDistos.Select(x => x.ID.Value).ToList(),
+                    CurrentDistoIDs = currentDistos.Select(x => x.ID.Value).ToList(),
                     DesAreaID = wave.Des_Area_ID
                 };
                 nextWaveSeq.Execute(this.Logger, this.BuVO, nextReq);
