@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.V2.General
             public bool isEmptyPallet = false;
             public long? warehouseID;
             public long? areaID;
+            public long? locationID;
             public decimal? weight;//น้ำหนัก Kg.
             public decimal? width;//กว้าง M.
             public decimal? length;//ยาว M.
@@ -94,6 +95,11 @@ namespace AWMSEngine.Engine.V2.General
                 widthM = reqVO.width
             };
 
+            if(reqVO.locationID != null)
+            {
+                baseSto.parentID = reqVO.locationID;
+                baseSto.parentType = StorageObjectType.LOCATION;
+            }
             var optionsSto = "";
             if (reqVO.autoDoc)
                 optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");

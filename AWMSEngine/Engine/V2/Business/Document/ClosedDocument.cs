@@ -51,7 +51,38 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     {
                                         if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
                                         {
-                                            UpdateStorageObjectReceived(di.WorkQueueID);
+                                            if (di.WorkQueueID == null)
+                                            {
+                                                
+                                                di.DiSTOs.ForEach(disto =>
+                                                {
+                                                    var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+
+                                                    ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+
+                                                    set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
+
+                                                });
+                                                void set_status_base(long parent_id, StorageObjectType parent_type)
+                                                {
+                                                    var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
+                                                    var stoLists = new List<StorageObjectCriteria>();
+                                                    if (sto != null)
+                                                        stoLists = sto.ToTreeList();
+                                                    if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED))
+                                                    {
+                                                        var parentUpdate= stoLists.Find(x => x.id == parent_id);
+                                                        parentUpdate.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                                        ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                                                        if (parentUpdate.parentID.HasValue)
+                                                            set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                UpdateStorageObjectReceived(di.WorkQueueID);
+                                            }
                                         }
                                         else
                                         {

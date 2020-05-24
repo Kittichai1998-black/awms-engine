@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.V2.Business
             public string baseCode;
             public long? warehouseID;
             public long? areaID;
+            public long? locationID;
             public List<DocItems> docItems;
             public class DocItems
             {
@@ -58,6 +59,7 @@ namespace AWMSEngine.Engine.V2.Business
                     baseCode = reqVO.baseCode,
                     warehouseID = reqVO.warehouseID,
                     areaID = reqVO.areaID,
+                    locationID = reqVO.locationID
                 };
                 var newbase = new MappingNewBaseAndSTO().Execute(this.Logger, this.BuVO, newBaseStoTReq); ;
                 idBaseSto = newbase.id;
@@ -67,6 +69,11 @@ namespace AWMSEngine.Engine.V2.Business
                 var getDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID, BuVO);
                 if (getDocItem == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Items");
+
+                decimal sumQtyDisto = getDocItem.DocItemStos.Sum(z => z.Quantity ?? 0);
+                decimal totalQty = getDocItem.Quantity ?? 0;
+                if (x.Quantity > (totalQty - sumQtyDisto))
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + getDocItem.Code + " ที่ต้องการรับเข้าเกินจำนวนที่ระบุในเอกสาร");
 
                 //lot, ref1
                 var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(getDocItem.SKUMaster_ID, BuVO);
@@ -92,6 +99,7 @@ namespace AWMSEngine.Engine.V2.Business
                     lot = getDocItem.Lot,
                     refID = getDoc.RefID,
                     ref1 = getDoc.Ref1,
+                    ref2 = getDoc.Ref2,
                     baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseUnitTypeConvt.baseUnitType_ID).Code,
                     baseUnitID = baseUnitTypeConvt.baseUnitType_ID,
                     baseQty = baseUnitTypeConvt.baseQty,
@@ -99,6 +107,7 @@ namespace AWMSEngine.Engine.V2.Business
                     mstID = getDocItem.PackMaster_ID,
                     options = getDocItem.Options,
                     areaID = reqVO.areaID,
+                    
                 };
                 var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 

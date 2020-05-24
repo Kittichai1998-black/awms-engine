@@ -100,8 +100,20 @@ const GR_Detail = props => {
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      // defaultValue: 17,
+      // defaultValue: 14,
       required: true,
+      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+    },
+    ddlLocation: {
+      visible: true,
+      field: "locationID",
+      typeDropdown: "normal",
+      name: "Location",
+      placeholder: "Select Location",
+      fieldLabel: ["Code", "Name"],
+      fieldDataKey: "ID",
+      // defaultValue: 14,
+      required: false,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     inputHead: [
@@ -135,6 +147,7 @@ const GR_Detail = props => {
       history={props.history}
       useAddPalletMapSTO={true}
       addPalletMapSTO={addPalletMapSTO}
+      buttonConfirmMappingSTO={true}
     />
   );
 };

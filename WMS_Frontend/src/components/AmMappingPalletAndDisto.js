@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
@@ -7,7 +8,6 @@ import MuiDialogActions from "@material-ui/core/DialogActions";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useRef } from "react";
 // import SearchIcon from '@material-ui/icons/Search';
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
@@ -20,10 +20,12 @@ import AmDialogs from './AmDialogs'
 import AmDate from "./AmDate";
 import AmAux from "./AmAux";
 import AmButton from "./AmButton";
+import Chip from '@material-ui/core/Chip';
 import AmInput from "./AmInput";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 import { useTranslation } from 'react-i18next'
+import ToListTree from './function/ToListTree';
 import _ from "lodash";
 const Axios = new apicall();
 
@@ -125,6 +127,27 @@ const AreaMasterQuery = {
     l: 100,
     all: "",
 }
+const LocationMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaLocationMaster",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+}
+const styles = (theme) => ({
+    rootChip: {
+        display: 'flex',
+        justifyContent: 'left',
+        flexWrap: 'wrap',
+        '& > *': {
+            margin: theme.spacing(0.2),
+        },
+    },
+});
 const BtnAddPallet = (props) => {
     const {
         classes,
@@ -135,13 +158,14 @@ const BtnAddPallet = (props) => {
         inputHead,
         ddlWarehouse,
         ddlArea,
+        ddlLocation,
         dataCheck,
         onSuccessMapping
 
     } = props;
     const { t } = useTranslation()
 
-    const [open, setOpen] = useState(false); 
+    const [open, setOpen] = useState(false);
     const [listDocItems, setListDocItems] = useState([]);
     const [dataSelect, setDataSelect] = useState([]);
     const [valueQtyDocItems, setValueQtyDocItems] = useState({});
@@ -152,7 +176,9 @@ const BtnAddPallet = (props) => {
     //dropdown Warehouse, Area 
     const [WarehouseDDL, setWarehouseDDL] = useState(null);
     const [AreaDDL, setAreaDDL] = useState(null);
+    const [LocationDDL, setLocationDDL] = useState(null);
     const [selWarehouse, setSelWarehouse] = useState(ddlWarehouse && ddlWarehouse.defaultValue ? ddlWarehouse.defaultValue : null);
+    const [selArea, setSelArea] = useState(ddlArea && ddlArea.defaultValue ? ddlArea.defaultValue : null);
 
     //AlertDialog
     const [showDialog, setShowDialog] = useState(null);
@@ -160,10 +186,13 @@ const BtnAddPallet = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
 
+    //show info base
+    const [showInfoBase, setShowInfoBase] = useState(null);
+
 
     useEffect(() => {
-        if(dataDocItems){
-            let newItems = _.filter(dataDocItems, function(o) { return o._balanceQty > 0; });
+        if (dataDocItems) {
+            let newItems = _.filter(dataDocItems, function (o) { return o._balanceQty > 0; });
             setListDocItems(newItems)
         }
     }, [dataDocItems]);
@@ -213,12 +242,13 @@ const BtnAddPallet = (props) => {
                 alertDialogRenderer("กรุณาเลือกรายการสินค้า และระบุจำนวนที่ต้องการรับเข้า", "warning", true);
 
             } else {
-                const tempDataReq = {
+                let tempDataReq = {
+                    ...valueInput,
                     docID: dataDocument.document.ID,
-                    baseCode: valueInput.baseCode,
                     docItems: docItems,
-                    warehouseID: valueInput.warehouseID,
-                    areaID: valueInput.areaID
+                    // baseCode: valueInput.baseCode,
+                    // warehouseID: valueInput.warehouseID,
+                    // areaID: valueInput.areaID
                 }
                 console.log(tempDataReq)
                 Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
@@ -266,7 +296,18 @@ const BtnAddPallet = (props) => {
             GetAreaDDL(selWarehouse)
         }
     }, [AreaDDL])
-
+    useEffect(() => {
+        if (LocationDDL !== null && ddlLocation && ddlLocation.visible && selArea) {
+            GetLocationDDL(selArea)
+        }else if(ddlLocation && ddlLocation.visible){
+            GetLocationDDL()
+        }
+    }, [selArea])
+    useEffect(() => {
+        if (LocationDDL == null && ddlLocation && ddlLocation.visible && selArea) {
+            GetLocationDDL(selArea)
+        }
+    }, [LocationDDL])
     async function GetWarehouseDDL() {
         let newWarehouseQueryStr = Clone(WarehouseQuery);
         if (ddlWarehouse.customQ !== undefined) {
@@ -293,13 +334,33 @@ const BtnAddPallet = (props) => {
             }
         });
     }
-
+    async function GetLocationDDL(selAreaID) {
+        let newLocationQueryStr = Clone(LocationMasterQuery);
+        if (selAreaID) {
+            if (ddlLocation.customQ !== undefined) {
+                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'AreaMaster_ID', c:'=', 'v': " + selAreaID + "}," + ddlLocation.customQ + "]";
+            } else {
+                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'AreaMaster_ID', c:'=', 'v': " + selAreaID + "}]";
+            }
+        }else{
+            if (ddlLocation.customQ !== undefined) {
+                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlLocation.customQ + "]";
+            } else {
+                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}]";
+            }
+        }
+        await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
+            if (res.data.datas) {
+                setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas))
+            }
+        });
+    }
     const inputDDLComponent = (showComponent, Query) => {
         if (showComponent.visible) {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
                 <AmDropdown
                     id={showComponent.field}
-                    required={true}
+                    required={showComponent.required}
                     placeholder={showComponent.placeholder}
                     fieldDataKey={showComponent.fieldDataKey}
                     fieldLabel={showComponent.fieldLabel}
@@ -455,20 +516,68 @@ const BtnAddPallet = (props) => {
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
+        if(field === "areaID") {
+            setSelArea(value);
+        }
         console.log(valueInput)
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
+        if (field === "baseCode") {
+            CheckBaseSTO(value);
+        }
     };
+    const CheckBaseSTO = (val) => {
+        Axios.get(window.apipath + "/v2/GetInfoBaseSTOAPI?baseCode=" + val).then((res) => {
+            if (res.data != null) {
+                if (res.data._result.status === 1) {
+                    if (res.data.id) {
+                        let getallpacks = findPack(res.data);
+                        let checkstatus = _.filter(getallpacks,
+                            function (o) {
+                                return o.eventStatus === 100 || o.eventStatus === 101 || o.eventStatus === 102;
+                            });
+                        console.log(checkstatus)
+                        let detail = null;
+                        if (res.data.eventStatus == (0 || 1) && checkstatus.length > 0) {
+
+                            let showinfo = getallpacks.map(x => {
+                                return <Chip size="small" label={x.ref1} />
+                            });
+                            detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}><label>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
+
+                        } else if (res.data.eventStatus === 1 && checkstatus.length === 0) {
+                            detail = <div style={{ marginTop: '3px' }}><label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label></div>
+                        }
+                        setShowInfoBase(detail)
+                    }else{
+                        setShowInfoBase(null)
+                    }
+
+                } else {
+                    alertDialogRenderer(res.data._result.message, "error", true);
+                }
+            } else {
+                alertDialogRenderer(res.data._result.message, "error", true);
+            }
+        });
+    }
+    const findPack = (storageObj) => {
+        var mapstosToTree = ToListTree(storageObj, 'mapstos');
+        var findpacks = _.filter(mapstosToTree, function (o) { return o.type === 2; });
+        return findpacks;
+    }
     const onHandleChangeRadio = (value, field) => {
         valueInput[field] = parseInt(value, 10);
     }
     const onHandleClear = () => {
+        console.log("clear")
         setValueInput({});
         setValueQtyDocItems({});
         setWarehouseDDL(null);
         setAreaDDL(null);
         setInputHeader(null);
+        setShowInfoBase(null);
     };
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
@@ -487,24 +596,27 @@ const BtnAddPallet = (props) => {
         <AmAux>
             {stateDialog ? showDialog ? showDialog : null : null}
 
-            <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Add Pallet"}</AmButton>
+            <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Receive"}</AmButton>
             <Dialog
                 aria-labelledby="addpallet-dialog-title"
-                onClose={() => setOpen(false)}
+                onClose={() => { onHandleClear(); setOpen(false); }}
                 open={open}
                 maxWidth="xl"
             >
                 <DialogTitle
                     id="addpallet-dialog-title"
-                    onClose={() => setOpen(false)}>
+                    onClose={() => { onHandleClear(); setOpen(false); }}>
                     {"Add Pallet and Mapping Storage Object"}
                 </DialogTitle>
                 <DialogContent>
+                    <FormInline> <LabelH>{t("Production Order")} : </LabelH><p>{dataDocument.document.Ref1}</p></FormInline>
                     {ddlWarehouse && ddlWarehouse.visible ? WarehouseDDL : null}
                     {ddlArea && ddlArea.visible ? AreaDDL : null}
+                    {ddlLocation && ddlLocation.visible ? LocationDDL : null}
                     {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                         return row.component(row, idx)
                     }) : null}
+                    {showInfoBase}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
                     <Table
                         columns={columns}
@@ -542,4 +654,4 @@ BtnAddPallet.defaultProps = {
     { width: 150, accessor: "_balanceQty", Header: "จำนวนที่รับเข้าได้" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }]
 }
-export default BtnAddPallet;
+export default withStyles(styles)(BtnAddPallet);

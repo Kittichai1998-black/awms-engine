@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (getDiSTO == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item Storage Object");
 
-            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.PACK, false, true, BuVO);
+            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.BASE, false, true, BuVO);
 
             var stoLists = getSto.ToTreeList();
             var stoPack = stoLists.Find(x => x.id == getDiSTO.Sou_StorageObject_ID);

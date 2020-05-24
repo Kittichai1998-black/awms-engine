@@ -19,6 +19,7 @@ namespace AWMSEngine.APIService.V2.Business
             this.BeginTransaction();
             var req = ObjectUtil.DynamicToModel<UpdateSTOandDiSTOfromDoc.TReq>(this.RequestVO);
             var res = new UpdateSTOandDiSTOfromDoc().Execute(this.Logger, this.BuVO, req);
+            this.CommitTransaction();
             return res;
 
         }
