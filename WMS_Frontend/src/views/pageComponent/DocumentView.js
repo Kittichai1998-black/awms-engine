@@ -117,7 +117,7 @@ const DocumentView = props => {
   const dataTableDetailDES = [];
 
   //set dialog Add pallet
-  const [dataDoc, setDataDoc] = useState(false);
+  const [dataDoc, setDataDoc] = useState(null);
   const [eventStatus, setEventStatus] = useState(null);
   //set dialog edit
   const [openDialogEditQty, setOpenDialogEditQty] = useState(false);
