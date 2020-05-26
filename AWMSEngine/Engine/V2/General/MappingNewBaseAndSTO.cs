@@ -29,7 +29,7 @@ namespace AWMSEngine.Engine.V2.General
         }
         public class TRes
         {
-            public long id;
+            public long? id;
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
@@ -67,53 +67,66 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Pallet : " + reqVO.baseCode + " Not Found.");
                 }
             }
-
-            //สร้าง sto base 
-            var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);
-            var _objSize = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
-
-            //ทำengine map new sku ใหม่ packใหม่
-             
-            StorageObjectCriteria baseSto = new StorageObjectCriteria()
+            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, reqVO.areaID, false, true, this.BuVO);
+            if (sto == null)
             {
-                code = reqVO.baseCode,
-                eventStatus = StorageObjectEventStatus.NEW,
-                name = reqVO.isEmptyPallet ? "Empty Pallet" : "Pallet",
-                qty = 1,
-                unitCode = _unitType.Code,
-                unitID = _unitType.ID.Value,
-                baseUnitCode = _unitType.Code,
-                baseUnitID = _unitType.ID.Value,
-                baseQty = 1,
-                type = StorageObjectType.BASE,
-                mstID = _base.ID.Value,
-                areaID = reqVO.areaID.Value,
-                warehouseID = reqVO.warehouseID.Value,
-                weiKG = reqVO.weight,
-                lengthM = reqVO.length,
-                heightM = reqVO.height,
-                widthM = reqVO.width
-            };
 
-            if(reqVO.locationID != null)
-            {
-                baseSto.parentID = reqVO.locationID;
-                baseSto.parentType = StorageObjectType.LOCATION;
+                //สร้าง sto base 
+                var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);
+                var _objSize = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
+
+                //ทำengine map new sku ใหม่ packใหม่
+
+                StorageObjectCriteria baseSto = new StorageObjectCriteria()
+                {
+                    code = reqVO.baseCode,
+                    eventStatus = StorageObjectEventStatus.NEW,
+                    name = reqVO.isEmptyPallet ? "Empty Pallet" : "Pallet",
+                    qty = 1,
+                    unitCode = _unitType.Code,
+                    unitID = _unitType.ID.Value,
+                    baseUnitCode = _unitType.Code,
+                    baseUnitID = _unitType.ID.Value,
+                    baseQty = 1,
+                    type = StorageObjectType.BASE,
+                    mstID = _base.ID.Value,
+                    areaID = reqVO.areaID.Value,
+                    warehouseID = reqVO.warehouseID.Value,
+                    weiKG = reqVO.weight,
+                    lengthM = reqVO.length,
+                    heightM = reqVO.height,
+                    widthM = reqVO.width
+                };
+
+                if (reqVO.locationID != null)
+                {
+                    baseSto.parentID = reqVO.locationID;
+                    baseSto.parentType = StorageObjectType.LOCATION;
+                }
+                var optionsSto = "";
+                if (reqVO.autoDoc)
+                    optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
+
+                if (reqVO.isEmptyPallet)
+                    optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
+
+                baseSto.options = optionsSto;
+
+                var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
+                return new TRes()
+                {
+                    id = baseStoID
+                };
             }
-            var optionsSto = "";
-            if (reqVO.autoDoc)
-                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
-
-            if (reqVO.isEmptyPallet)
-                optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
-
-            baseSto.options = optionsSto;
-            
-            var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
-            return new TRes()
+            else
             {
-                id = baseStoID
-            };
+                if (sto.areaID != reqVO.areaID || sto.parentID != reqVO.locationID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code : " + reqVO.baseCode + "ไม่ตรงกับตำแหน่งที่อยู่ปัจจุบัน");
+                return new TRes()
+                {
+                    id = sto.id.Value
+                };
+            }
         }
 
     }

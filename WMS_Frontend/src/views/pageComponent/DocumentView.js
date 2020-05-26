@@ -649,7 +649,7 @@ const DocumentView = props => {
           </AmButton>
         ) : null}
 
-        {props.buttonConfirmMappingSTO === true && eventStatus != (21||22||32)  ? (
+        {props.buttonConfirmMappingSTO === true && eventStatus != (21 || 22 || 32) ? (
           <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
             {t("Close")}
           </AmButton>

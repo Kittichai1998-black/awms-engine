@@ -95,19 +95,19 @@ const GR_Detail = props => {
     ddlArea: {
       visible: true,
       field: "areaID",
-      typeDropdown: "normal",
+      typeDropdown: "search",
       name: "Area",
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      // defaultValue: 14,
+      defaultValue: 15,
       required: true,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     ddlLocation: {
       visible: true,
       field: "locationID",
-      typeDropdown: "normal",
+      typeDropdown: "search",
       name: "Location",
       placeholder: "Select Location",
       fieldLabel: ["Code", "Name"],

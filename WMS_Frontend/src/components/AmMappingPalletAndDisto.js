@@ -197,6 +197,43 @@ const BtnAddPallet = (props) => {
         }
     }, [dataDocItems]);
 
+    useEffect(() => {
+        if (inputHead) {
+            setInputHeader(createComponent(inputHead));
+        }
+    }, [inputHead]);
+    useEffect(() => {
+        if (inputHeader === null) {
+            setInputHeader(createComponent(inputHead));
+        }
+    }, [inputHeader]);
+    useEffect(() => {
+        if (WarehouseDDL === null && ddlWarehouse && ddlWarehouse.visible) {
+            GetWarehouseDDL();
+        }
+    }, [WarehouseDDL])
+    useEffect(() => {
+        if (AreaDDL !== null && ddlArea && ddlArea.visible && selWarehouse) {
+            GetAreaDDL(selWarehouse)
+        }
+    }, [selWarehouse])
+    useEffect(() => {
+        if (AreaDDL == null && ddlArea && ddlArea.visible && selWarehouse) {
+            GetAreaDDL(selWarehouse)
+        }
+    }, [AreaDDL])
+    useEffect(() => {
+        if (LocationDDL !== null && ddlLocation && ddlLocation.visible && selArea) {
+            GetLocationDDL(selArea)
+        } else if (ddlLocation && ddlLocation.visible) {
+            GetLocationDDL(selArea)
+        }
+    }, [selArea])
+    useEffect(() => {
+        if (LocationDDL == null && ddlLocation && ddlLocation.visible && selArea) {
+            GetLocationDDL(selArea)
+        }
+    }, [LocationDDL])
     const columns = [
         ...columnsDocItems,
         {
@@ -205,7 +242,6 @@ const BtnAddPallet = (props) => {
         },
 
     ];
-
 
     const genInputQty = (datarow) => {
         let field = "item-" + datarow.ID;
@@ -226,7 +262,7 @@ const BtnAddPallet = (props) => {
     };
     const onSubmit = (data) => {
         // console.log(valueQtyDocItems)
-        // console.log(valueInput)
+        console.log(valueInput)
 
         if (valueInput.areaID === undefined ||
             valueInput.warehouseID === undefined ||
@@ -271,43 +307,6 @@ const BtnAddPallet = (props) => {
         }
     }
 
-    useEffect(() => {
-        if (inputHead) {
-            setInputHeader(createComponent(inputHead));
-        }
-    }, [inputHead]);
-    useEffect(() => {
-        if (inputHeader === null) {
-            setInputHeader(createComponent(inputHead));
-        }
-    }, [inputHeader]);
-    useEffect(() => {
-        if (WarehouseDDL === null && ddlWarehouse && ddlWarehouse.visible) {
-            GetWarehouseDDL();
-        }
-    }, [WarehouseDDL])
-    useEffect(() => {
-        if (AreaDDL !== null && ddlArea && ddlArea.visible && selWarehouse) {
-            GetAreaDDL(selWarehouse)
-        }
-    }, [selWarehouse])
-    useEffect(() => {
-        if (AreaDDL == null && ddlArea && ddlArea.visible && selWarehouse) {
-            GetAreaDDL(selWarehouse)
-        }
-    }, [AreaDDL])
-    useEffect(() => {
-        if (LocationDDL !== null && ddlLocation && ddlLocation.visible && selArea) {
-            GetLocationDDL(selArea)
-        }else if(ddlLocation && ddlLocation.visible){
-            GetLocationDDL()
-        }
-    }, [selArea])
-    useEffect(() => {
-        if (LocationDDL == null && ddlLocation && ddlLocation.visible && selArea) {
-            GetLocationDDL(selArea)
-        }
-    }, [LocationDDL])
     async function GetWarehouseDDL() {
         let newWarehouseQueryStr = Clone(WarehouseQuery);
         if (ddlWarehouse.customQ !== undefined) {
@@ -537,16 +536,16 @@ const BtnAddPallet = (props) => {
                             function (o) {
                                 return o.eventStatus === 100 || o.eventStatus === 101 || o.eventStatus === 102;
                             });
-                        console.log(checkstatus)
                         let detail = null;
-                        if (res.data.eventStatus == (0 || 1) && checkstatus.length > 0) {
-
+                        if (checkstatus.length > 0) {
+                            
                             let showinfo = getallpacks.map(x => {
+                                console.log(x.ref1)
                                 return <Chip size="small" label={x.ref1} />
                             });
                             detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}><label>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
 
-                        } else if (res.data.eventStatus === 1 && checkstatus.length === 0) {
+                        } else if (checkstatus.length === 0) {
                             detail = <div style={{ marginTop: '3px' }}><label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label></div>
                         }
                         setShowInfoBase(detail)
@@ -576,6 +575,7 @@ const BtnAddPallet = (props) => {
         setValueQtyDocItems({});
         setWarehouseDDL(null);
         setAreaDDL(null);
+        setLocationDDL(null);
         setInputHeader(null);
         setShowInfoBase(null);
     };
@@ -642,7 +642,7 @@ const BtnAddPallet = (props) => {
     );
 }
 BtnAddPallet.propTypes = {
-    // onSubmit: PropTypes.func.isRequired,
+    onSuccessMapping: PropTypes.func.isRequired,
     apiCreate: PropTypes.string,
     columnsDocItems: PropTypes.array,
 };

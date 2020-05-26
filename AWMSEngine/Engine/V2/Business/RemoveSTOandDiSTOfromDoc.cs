@@ -39,13 +39,16 @@ namespace AWMSEngine.Engine.V2.Business
                 remove_parent_empty(stoPack.parentID.Value, stoPack.parentType.Value);
             void remove_parent_empty(long parent_id, StorageObjectType parent_type)
             {
-                if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                if (parent_type != StorageObjectType.LOCATION)
                 {
-                    var parentRemove = stoLists.Find(x => x.id == parent_id);
-                    parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
-                    ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-                    if (parentRemove.parentID.HasValue)
-                        remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
+                    if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                    {
+                        var parentRemove = stoLists.Find(x => x.id == parent_id);
+                        parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        if (parentRemove.parentID.HasValue)
+                            remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
+                    }
                 }
             }
 
