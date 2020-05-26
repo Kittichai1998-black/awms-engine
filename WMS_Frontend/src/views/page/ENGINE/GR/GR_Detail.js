@@ -83,7 +83,7 @@ const GR_Detail = props => {
     ddlWarehouse: {
       visible: true,
       field: "warehouseID",
-      typeDropdown: "normal",
+      typeDropdown: "search",
       name: "Warehouse",
       placeholder: "Select Warehouse",
       fieldLabel: ["Code", "Name"],
@@ -116,7 +116,17 @@ const GR_Detail = props => {
       required: false,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
-    inputHead: [
+    inputTitle: [
+      {
+        field: "projCode",
+        name: "Project",
+        type: "text",
+        customShow: (dataDocument)=>{
+          return dataDocument.document.Ref1;
+        },
+      }
+    ],
+    inputHead:[
       {
         field: "baseCode",
         placeholder: "Pallet Code",
@@ -125,9 +135,10 @@ const GR_Detail = props => {
         name: "Pallet Code",
         maxLength: 10,
         validate: /^.+$/,
-      },
+      }
     ]
   }
+ 
   //received
   //issued
   return (

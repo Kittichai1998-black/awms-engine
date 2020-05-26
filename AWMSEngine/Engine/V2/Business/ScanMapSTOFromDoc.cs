@@ -97,7 +97,8 @@ namespace AWMSEngine.Engine.V2.Business
                                 && y.orderNo == getDocItem.OrderNo
                                 && y.lot == getDocItem.Lot
                                 && y.refID == getDoc.RefID
-                                && y.ref1 == getDoc.Ref1);
+                                && y.ref1 == getDoc.Ref1
+                                && y.ref2 == getDoc.Ref2);
                             if (getPACK != null)
                             {
                                 return x.Sou_StorageObject_ID == getPACK.id;
@@ -137,6 +138,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                 void gen_new_packSto()
                 {
+                    StaticValueManager.GetInstant().LoadUnitType(BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(getDocItem.SKUMaster_ID, BuVO);
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(getDocItem.PackMaster_ID, BuVO);
                     var unit = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == getDocItem.UnitType_ID);
