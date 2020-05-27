@@ -417,6 +417,7 @@ const DocumentView = props => {
         apiCreate={props.addPalletMapSTO.apiCreate ?? null}
         columnsDocItems={props.addPalletMapSTO.columnsDocItems}
         inputHead={props.addPalletMapSTO.inputHead}
+        inputTitle={props.addPalletMapSTO.inputTitle}
         ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
         ddlArea={props.addPalletMapSTO.ddlArea}
         ddlLocation={props.addPalletMapSTO.ddlLocation}

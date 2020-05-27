@@ -155,11 +155,11 @@ const BtnAddPallet = (props) => {
         dataDocItems,
         apiCreate,
         columnsDocItems,
+        inputTitle,
         inputHead,
         ddlWarehouse,
         ddlArea,
         ddlLocation,
-        dataCheck,
         onSuccessMapping
 
     } = props;
@@ -172,6 +172,7 @@ const BtnAddPallet = (props) => {
     const [valueInput, setValueInput] = useState({});
 
     const [inputHeader, setInputHeader] = useState([]);
+    const [inputTitles, setInputTitles] = useState([]);
 
     //dropdown Warehouse, Area 
     const [WarehouseDDL, setWarehouseDDL] = useState(null);
@@ -197,6 +198,16 @@ const BtnAddPallet = (props) => {
         }
     }, [dataDocItems]);
 
+    useEffect(() => {
+        if (inputTitle) {
+            setInputTitles(createComponent(inputTitle));
+        }
+    }, [inputTitle]);
+    useEffect(() => {
+        if (inputTitle === null) {
+            setInputTitles(createComponent(inputTitle));
+        }
+    }, [inputTitle]);
     useEffect(() => {
         if (inputHead) {
             setInputHeader(createComponent(inputHead));
@@ -341,7 +352,7 @@ const BtnAddPallet = (props) => {
             } else {
                 newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'AreaMaster_ID', c:'=', 'v': " + selAreaID + "}]";
             }
-        }else{
+        } else {
             if (ddlLocation.customQ !== undefined) {
                 newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlLocation.customQ + "]";
             } else {
@@ -384,12 +395,12 @@ const BtnAddPallet = (props) => {
                 return {
                     "field": x.field,
                     "component": (cols, key) => {
-                        return <div key={key} style={{ display: "inline-block" }}>
+                        return <div key={key} >
                             {FuncCreateForm(key, x.field, x.type, x.name,
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput, x.validate)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput, x.validate, x.customShow)}
                         </div>
                     }
                 }
@@ -398,11 +409,12 @@ const BtnAddPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput, validate) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus,
+        maxLength, required, clearInput, validate, customShow) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
-                    <div style={{ display: 'inline-flex', width: "330px", alignItems: 'center' }} >
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
                         <AmInput
                             id={field}
                             required={required}
@@ -412,7 +424,7 @@ const BtnAddPallet = (props) => {
                             autoFocus={isFocus}
                             placeholder={placeholder}
                             type="input"
-                            style={{ width: "100%" }}
+                            style={{ width: "330px" }}
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
@@ -508,6 +520,14 @@ const BtnAddPallet = (props) => {
                 onHandleChangeRadio(defaultValue.value, field)
             }
 
+        } else if (type === "text") {
+            if (customShow) {
+                var returnVal = customShow(dataDocument);
+            }
+            return <FormInline> <LabelH>{t(name)} : </LabelH>
+                <div >
+                    <label style={{ width: "330px" }}>{returnVal}</label>
+                </div></FormInline>
         }
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
@@ -515,7 +535,7 @@ const BtnAddPallet = (props) => {
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
-        if(field === "areaID") {
+        if (field === "areaID") {
             setSelArea(value);
         }
         console.log(valueInput)
@@ -538,7 +558,7 @@ const BtnAddPallet = (props) => {
                             });
                         let detail = null;
                         if (checkstatus.length > 0) {
-                            
+
                             let showinfo = getallpacks.map(x => {
                                 console.log(x.ref1)
                                 return <Chip size="small" label={x.ref1} />
@@ -549,7 +569,7 @@ const BtnAddPallet = (props) => {
                             detail = <div style={{ marginTop: '3px' }}><label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label></div>
                         }
                         setShowInfoBase(detail)
-                    }else{
+                    } else {
                         setShowInfoBase(null)
                     }
 
@@ -576,6 +596,7 @@ const BtnAddPallet = (props) => {
         setWarehouseDDL(null);
         setAreaDDL(null);
         setLocationDDL(null);
+        setInputTitles(null);
         setInputHeader(null);
         setShowInfoBase(null);
     };
@@ -609,7 +630,9 @@ const BtnAddPallet = (props) => {
                     {"Add Pallet and Mapping Storage Object"}
                 </DialogTitle>
                 <DialogContent>
-                    <FormInline> <LabelH>{t("Production Order")} : </LabelH><p>{dataDocument.document.Ref1}</p></FormInline>
+                    {inputTitles && inputTitles.length > 0 ? inputTitles.map((row, idx) => {
+                        return row.component(row, idx)
+                    }) : null}
                     {ddlWarehouse && ddlWarehouse.visible ? WarehouseDDL : null}
                     {ddlArea && ddlArea.visible ? AreaDDL : null}
                     {ddlLocation && ddlLocation.visible ? LocationDDL : null}
