@@ -31,9 +31,9 @@ namespace AMWUtil.Exception
             [CallerLineNumber]int lineNumber = 0)
             : base(
                 string.Format(
-                    code.Attribute<AMWExceptionDescription>().Code + ":" +
-                    (messages != null && messages.ContainsKey(code.Attribute<AMWExceptionDescription>().Code) ?
-                        messages[code.Attribute<AMWExceptionDescription>().Code] : code.Attribute<AMWExceptionDescription>().DefaultMessage),
+                    code.Attribute<AMWExceptionCodeAttribute>().Code + ":" +
+                    (messages != null && messages.ContainsKey(code.Attribute<AMWExceptionCodeAttribute>().Code) ?
+                        messages[code.Attribute<AMWExceptionCodeAttribute>().Code] : code.Attribute<AMWExceptionCodeAttribute>().DefaultMessage),
                     paramters ?? new string[] { })
                   )
         {

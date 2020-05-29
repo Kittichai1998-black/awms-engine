@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AMWUtil.Exception
 {
-    public class AMWExceptionDescription : Attribute
+    public class AMWExceptionCodeAttribute : Attribute
     {
         public string Code { get; set; }
         public string DefaultMessage { get; set; }
-        public AMWExceptionDescription(string Code)
+        public AMWExceptionCodeAttribute(string Code)
         {
             this.Code = Code;
         }
