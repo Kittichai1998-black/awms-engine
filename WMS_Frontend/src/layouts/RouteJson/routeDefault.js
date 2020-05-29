@@ -214,6 +214,10 @@ const WebPage = Loadable({
   loader: () => import("../../views/page/Master/WebPage"),
   loading: Loading
 });
+const ScanQRByCam = Loadable({
+  loader: () => import("../../views/page/InputScanQRByCam"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   {
@@ -509,6 +513,12 @@ let routes = [
     path: "/setting/webpage",
     name: "base5",
     compoment: WebPage,
+    exact: true
+  },
+  {
+    path: "/scanqr",
+    name: "base5",
+    compoment: ScanQRByCam,
     exact: true
   },
 ];

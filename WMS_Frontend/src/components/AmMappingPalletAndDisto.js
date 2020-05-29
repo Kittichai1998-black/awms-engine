@@ -157,6 +157,7 @@ const BtnAddPallet = (props) => {
         columnsDocItems,
         inputTitle,
         inputHead,
+        inputBase,
         ddlWarehouse,
         ddlArea,
         ddlLocation,
@@ -173,6 +174,7 @@ const BtnAddPallet = (props) => {
 
     const [inputHeader, setInputHeader] = useState([]);
     const [inputTitles, setInputTitles] = useState([]);
+    const [inputBaseCode, setInputBaseCode] = useState(null);
 
     //dropdown Warehouse, Area 
     const [WarehouseDDL, setWarehouseDDL] = useState(null);
@@ -189,7 +191,14 @@ const BtnAddPallet = (props) => {
 
     //show info base
     const [showInfoBase, setShowInfoBase] = useState(null);
+    const columns = [
+        ...columnsDocItems,
+        {
+            width: 160, Header: "จำนวนที่ต้องการรับเข้า", Cell: e =>
+                genInputQty(e.original)
+        },
 
+    ];
 
     useEffect(() => {
         if (dataDocItems) {
@@ -204,10 +213,10 @@ const BtnAddPallet = (props) => {
         }
     }, [inputTitle]);
     useEffect(() => {
-        if (inputTitle === null) {
+        if (inputTitles === null) {
             setInputTitles(createComponent(inputTitle));
         }
-    }, [inputTitle]);
+    }, [inputTitles]);
     useEffect(() => {
         if (inputHead) {
             setInputHeader(createComponent(inputHead));
@@ -218,6 +227,16 @@ const BtnAddPallet = (props) => {
             setInputHeader(createComponent(inputHead));
         }
     }, [inputHeader]);
+    useEffect(() => {
+        if (inputBase) {
+            setInputBaseCode(inputBaseComponent(inputBase));
+        }
+    }, [inputBase])
+    useEffect(() => {
+        if (inputBaseCode === null) {
+            setInputBaseCode(inputBaseComponent(inputBase));
+        }
+    }, [inputBaseCode])
     useEffect(() => {
         if (WarehouseDDL === null && ddlWarehouse && ddlWarehouse.visible) {
             GetWarehouseDDL();
@@ -236,7 +255,7 @@ const BtnAddPallet = (props) => {
     useEffect(() => {
         if (LocationDDL !== null && ddlLocation && ddlLocation.visible && selArea) {
             GetLocationDDL(selArea)
-        } else if (ddlLocation && ddlLocation.visible) {
+        } else if (LocationDDL === null && ddlLocation && ddlLocation.visible) {
             GetLocationDDL(selArea)
         }
     }, [selArea])
@@ -245,15 +264,7 @@ const BtnAddPallet = (props) => {
             GetLocationDDL(selArea)
         }
     }, [LocationDDL])
-    const columns = [
-        ...columnsDocItems,
-        {
-            width: 160, Header: "จำนวนที่ต้องการรับเข้า", Cell: e =>
-                genInputQty(e.original)
-        },
-
-    ];
-
+    
     const genInputQty = (datarow) => {
         let field = "item-" + datarow.ID;
         let docItemID = datarow.ID;
@@ -365,6 +376,7 @@ const BtnAddPallet = (props) => {
             }
         });
     }
+
     const inputDDLComponent = (showComponent, Query) => {
         if (showComponent.visible) {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
@@ -384,6 +396,35 @@ const BtnAddPallet = (props) => {
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
                 />
+            </FormInline>
+        } else {
+            return null;
+        }
+    }
+    const inputBaseComponent = (showComponent) => {
+        if (showComponent.visible) {
+            return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
+                <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                    <AmInput
+                        id={showComponent.field}
+                        required={showComponent.required}
+                        regExp={showComponent.validate}
+                        validate={showComponent.validate != null ? true : false}
+                        disabled={showComponent.disabled}
+                        autoFocus={showComponent.isFocus}
+                        placeholder={showComponent.placeholder}
+                        type={showComponent.type}
+                        style={{ width: "330px" }}
+                        inputProps={showComponent.maxLength ? {
+                            maxLength: showComponent.maxLength,
+                        } : {}}
+                        defaultValue={valueInput && valueInput[showComponent.field] ?
+                            showComponent.clearInput ? "" : valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
+                        // onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
+                    //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                    />
+                </div>
             </FormInline>
         } else {
             return null;
@@ -558,15 +599,27 @@ const BtnAddPallet = (props) => {
                             });
                         let detail = null;
                         if (checkstatus.length > 0) {
-
-                            let showinfo = getallpacks.map(x => {
-                                console.log(x.ref1)
-                                return <Chip size="small" label={x.ref1} />
+                            let getinfo = [];
+                            checkstatus.map(x => {
+                                if (x.Ref2) {
+                                    getinfo.push(x.Ref2);
+                                }
                             });
-                            detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}><label>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
-
+                            if (getinfo.length > 0) {
+                                let showinfo = getinfo.map(x => {
+                                    return <Chip size="small" label={x.Ref2} />
+                                });
+                                console.log(showinfo)
+                                detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}>
+                                    <label style={{ color: '#007bff' }}>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
+                            } else {
+                                detail = <div style={{ marginTop: '3px' }}>
+                                    <label style={{ color: '#007bff' }}>พาเลทนี้ยังไม่เคยถูกผูกกับ Project ใดๆ</label></div>;
+                            }
                         } else if (checkstatus.length === 0) {
-                            detail = <div style={{ marginTop: '3px' }}><label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label></div>
+                            detail = <div style={{ marginTop: '3px' }}>
+                                <label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label>
+                            </div>
                         }
                         setShowInfoBase(detail)
                     } else {
@@ -598,6 +651,7 @@ const BtnAddPallet = (props) => {
         setLocationDDL(null);
         setInputTitles(null);
         setInputHeader(null);
+        setInputBaseCode(null);
         setShowInfoBase(null);
     };
     const alertDialogRenderer = (message, type, state) => {
@@ -636,10 +690,11 @@ const BtnAddPallet = (props) => {
                     {ddlWarehouse && ddlWarehouse.visible ? WarehouseDDL : null}
                     {ddlArea && ddlArea.visible ? AreaDDL : null}
                     {ddlLocation && ddlLocation.visible ? LocationDDL : null}
+                    {inputBase && inputBase.visible ? inputBaseCode : null}
+                    {showInfoBase}
                     {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                         return row.component(row, idx)
                     }) : null}
-                    {showInfoBase}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
                     <Table
                         columns={columns}

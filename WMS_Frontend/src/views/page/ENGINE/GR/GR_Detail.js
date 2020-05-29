@@ -126,17 +126,28 @@ const GR_Detail = props => {
         },
       }
     ],
-    inputHead:[
-      {
-        field: "baseCode",
-        placeholder: "Pallet Code",
-        required: true,
-        type: "input",
-        name: "Pallet Code",
-        maxLength: 10,
-        validate: /^.+$/,
-      }
-    ]
+    inputBase:
+    {
+      visible: true,
+      field: "baseCode",
+      type: "input",
+      name: "Pallet Code",
+      placeholder: "Pallet Code",
+      maxLength: 10,
+      required: true,
+      validate: /^.+$/,
+    },
+    // [
+    //   {
+    //     field: "baseCode",
+    //     placeholder: "Pallet Code",
+    //     required: true,
+    //     type: "input",
+    //     name: "Pallet Code",
+    //     maxLength: 10,
+    //     validate: /^.+$/,
+    //   }
+    // ]
   }
  
   //received
