@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Exception;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,10 +16,13 @@ namespace AMWUtil.Validation
         /// </summary>
         public string RegexPattern = null;
         /// <summary>
-        /// Default : "{0} is '{1}' not valid!"
+        /// Default : Empty
         /// </summary>
-        public string ErrorMessage = "{0} is '{1}' not valid!";
-
+        public string MethodValidate = null;
+        /// <summary>
+        /// Default : null
+        /// </summary>
+        public AMWExceptionCode? ExceptionCode = null;
 
         public ValidationAttribute() { }
     }

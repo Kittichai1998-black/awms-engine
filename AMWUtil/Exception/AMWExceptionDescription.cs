@@ -8,8 +8,11 @@ namespace AMWUtil.Exception
 {
     public class AMWExceptionDescription : Attribute
     {
-        public string EN { get; set; }
-        public string TH { get; set; }
-        public string CN { get; set; }
+        public string Code { get; set; }
+        public string DefaultMessage { get; set; }
+        public AMWExceptionDescription(string Code)
+        {
+            this.Code = Code;
+        }
     }
 }

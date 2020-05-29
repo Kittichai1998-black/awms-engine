@@ -13,11 +13,11 @@ namespace AWMSEngine.Engine.V2.Validation
         protected override NullCriteria ExecuteEngine(NullCriteria reqVO)
         {
             if (ObjectUtil.IsEmptyNull(this.RequestParam.username))
-                throw this.NewAMWException(AMWExceptionCode.V1001, "username");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "username");
             if (ObjectUtil.IsEmptyNull(this.RequestParam.password))
-                throw this.NewAMWException(AMWExceptionCode.V1001, "password");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "password");
             if (ObjectUtil.IsEmptyNull(this.RequestParam.secretKey))
-                throw this.NewAMWException(AMWExceptionCode.V1001, "secretKey");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "secretKey");
             return null;
         }
     }
