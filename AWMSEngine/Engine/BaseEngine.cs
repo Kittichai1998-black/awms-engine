@@ -47,6 +47,8 @@ namespace AWMSEngine.Engine
 
         private void ValidateRequestParameter(TReq reqVO)
         {
+            if (reqVO == null)
+                return;
             var ex = ValidationUtil.ValidateModel(reqVO);
             if (ex != null)
                 throw new AMWException(this.Logger, ex.Code, ex.Parameters);
