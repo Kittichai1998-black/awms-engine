@@ -3,7 +3,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
 import Divider from '@material-ui/core/Divider';
-// import InputAdornment from '@material-ui/core/InputAdornment';
+import AmScanQRbyCamera from './AmScanQRbyCamera';
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -424,12 +424,23 @@ const BtnAddPallet = (props) => {
                         onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
                     //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                     />
+                    <AmScanQRbyCamera  returnResult={(data)=>showRes(data, showComponent.field)}/>
                 </div>
             </FormInline>
         } else {
             return null;
         }
     }
+    const showRes = (data,field) => {
+        if (data) {
+          console.log(data)
+          let ele = document.getElementById(field);
+                if (ele) {
+                  ele.value = data;
+                  ele.focus();
+                }
+        }
+      }
     const createComponent = (inputList) => {
         if (inputList)
             return inputList.map(x => {
