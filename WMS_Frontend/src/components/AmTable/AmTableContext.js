@@ -29,25 +29,31 @@ const selectionReducer = (state, action) => {
                 "selectionAll":!state.selectionAll
             }
         }
-        case "add" : {
-            let getUniq = state.selection.filter(x=> x[action.payload.uniq] !== action.payload.uniq);
-            getUniq.push(action.payload.data)
+        case "set" : {
             return {
                 ...state,
-                "selection":[getUniq]
+                "selectionAll":action.payload.data
+            }
+        }
+        case "add" : {
+            let getUniq = state.selection.filter(x=> x[action.payload.uniq] !== action.payload.data[action.payload.uniq]);
+            getUniq.push(action.payload.data);
+            return {
+                ...state,
+                "selection":getUniq
             }
         }
         case "remove" : {
-            let getUniq = state.selection.filter(x=> x[action.payload.uniq] !== action.payload.uniq);
+            let getUniq = state.selection.filter(x=> x[action.payload.uniq] !== action.payload.data);
             return {
                 ...state,
-                "selection":[getUniq]
+                "selection":getUniq
             }
         }
         case "addall":{
             return {
                 ...state,
-                "selection":[]
+                "selection":action.payload
             }
         }
         case "removeall":{
@@ -81,12 +87,21 @@ const paginationReducer = (state, action) => {
 const filterReducer = (state, action) => {
     switch(action.type){
         case "add" : {
-            let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
-            if(action.payload.value !== "" && action.payload.value !== undefined)
+            if(action.payload.customFilter === undefined){
+                let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+                if(action.payload.value !== undefined)
+                    filterData.push(action.payload)
+                return {
+                    ...state,
+                    "filter":filterData
+                }
+            }else{
+                let filterData = [...state.filter];
                 filterData.push(action.payload)
-            return {
-                ...state,
-                "filter":filterData
+                return {
+                    ...state,
+                    "filter":filterData
+                }
             }
         }
         case "removeall" : {
@@ -117,8 +132,9 @@ const SelectionAction = () => {
     const remove = (payload) => selectionDispatch({"type":"remove", payload})
     const addAll = (payload) => selectionDispatch({"type":"addall", payload})
     const removeAll = (payload) => selectionDispatch({"type":"removeall", payload})
-    const selectAll = (payload) => selectionDispatch({"type":"selectAll", payload})
-    return {selectionValue:selectionValue.selection,add,remove,addAll,removeAll, selectAll, selectAllState:selectionValue.selectionAll}
+    const selectAll = (payload) => selectionDispatch({"type":"selectall", payload})
+    const set = (payload) => selectionDispatch({"type":"set", payload})
+    return {selectionValue:selectionValue.selection,add,remove,addAll,removeAll, selectAll,set, selectAllState:selectionValue.selectionAll}
 }
 
 const PageAction = () => {
@@ -138,7 +154,7 @@ const SortAction = () => {
 
 const FilterAction = () => {
     const [filterValue, filterDispatch] = useReducer(filterReducer, initialState)
-    const setFilter = (payload) => filterDispatch({"type":"setpage", payload})
+    const setFilter = (payload) => filterDispatch({"type":"add", payload})
     const removeFilter = (payload) => filterDispatch({"type":"removeall", payload})
     return {filterValue:filterValue.filter,setFilter,removeFilter}
 }

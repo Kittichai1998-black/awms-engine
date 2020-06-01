@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import AmMaster from "../pageComponent/AmMaster";
+import AmMaster from "../pageComponent/AmMasterData/AmMaster";
 import {
   apicall,
   createQueryString
@@ -45,17 +45,16 @@ const testMasterV2 = props => {
       Header: "",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth:30,
       sortable: false,
       filterable: false,
+      colStyle:{textAlign:"center"},
       Cell: e => getStatus(e.original)
     },
     {
-      Header: "SKU Type Code",
+      Header: "Code",
       accessor: "Code",
       fixed: "left",
-      width: 120,
-      Footer: true
     },
     { Header: "SKU Type Name", accessor: "Name", width: 150 },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
@@ -66,6 +65,7 @@ const testMasterV2 = props => {
       accessor: "LastUpdateTime",
       width: 130,
       type: "datetime",
+      filterType:"datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
@@ -85,7 +85,7 @@ const testMasterV2 = props => {
       required: true
     },
     {
-      field: "UnitType_ID",
+      field: "BaseMasterType_Code",
       type: "dropdow",
       typeDropdow: "search",
       name: "Unit Type",
@@ -225,12 +225,15 @@ const testMasterV2 = props => {
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
-        tableQuery={"SKUMasterType"}
-        table={"ams_SKUMasterType"}
+        tableQuery={"BaseMaster"}
+        table={"ams_BaseMaster"}
         dataAdd={columns}
         history={props.history}
-        iniCols={iniCols}
+        columns={iniCols}
         dataEdit={columnsEdit}
+        tableType="view"
+        pageSize={20}
+        height={500}
       />
     </div>
   );

@@ -50,6 +50,10 @@ const columns=[
     code:'Quantity2',
     width:200,
     filterable:true,
+    Filter:(field, functionUpdate)=>{
+      //onChange(field, "xxx")
+      return <input type="input" onKeyPress={(e)=>{if(e.key==="Enter")functionUpdate(field, e.target.value)}}></input>
+    },
     sortable:false,
     type:"number"
   },
@@ -111,46 +115,6 @@ const data = [{
           "subComponent":()=>{}
         }
       },{
-        "ID":4,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":5,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":5,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":5,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
         "ID":5,
         "Name":"12",
         "Name2":"10",
@@ -171,56 +135,6 @@ const data = [{
           "subComponent":()=>{}
         }
       },{
-        "ID":6,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":7,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":7,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":7,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
-        "ID":7,
-        "Name":"12",
-        "Name2":"10",
-        "Quantity":10,
-        "Quantity2":20,
-        "subComponent":{
-          "subData":()=>{},
-          "subComponent":()=>{}
-        }
-      },{
         "ID":7,
         "Name":"12",
         "Name2":"10",
@@ -241,7 +155,7 @@ const data = [{
           "subComponent":()=>{}
         }
       },{
-        "ID":8,
+        "ID":9,
         "Name":"12",
         "Name2":"10",
         "Quantity":10,
@@ -251,7 +165,7 @@ const data = [{
           "subComponent":()=>{}
         }
       },{
-        "ID":8,
+        "ID":10,
         "Name":"12",
         "Name2":"10",
         "Quantity":10,
@@ -261,7 +175,97 @@ const data = [{
           "subComponent":()=>{}
         }
       },{
-        "ID":8,
+        "ID":11,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":12,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":13,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":14,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":15,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":16,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":17,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":18,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":19,
+        "Name":"12",
+        "Name2":"10",
+        "Quantity":10,
+        "Quantity2":20,
+        "subComponent":{
+          "subData":()=>{},
+          "subComponent":()=>{}
+        }
+      },{
+        "ID":20,
         "Name":"12",
         "Name2":"10",
         "Quantity":10,
@@ -277,12 +281,14 @@ const TableDev = (props) => {
     return <>
     <Table container={props} columns={columns} rowNumber={true}
       height={200}
-      selection={"checkbox"}
       selectionData={(seldata) => {console.log(seldata)}} 
       dataSource={data}
-      
-      key={"ID"}
+      selection="selection"
+      dataKey="ID"
       subComponent={true}
+      filterable={true}
+      filter={true}
+      filterData={(filter)=> {console.log(filter)}}
       //tableStyle={{color:"black"}}
       footerStyle={(data, datafield, col)=>{
         const style = {}
@@ -292,7 +298,7 @@ const TableDev = (props) => {
         return style;
       }}
       //headerStyle={{color:"red"}}
-      groupBy={{"field":["ID","Name2"], "sumField":["Quantity","Quantity2"]}}
+      groupBy={{"field":["Name","Name2"], "sumField":["Quantity","Quantity2"]}}
     />
     </>
 }

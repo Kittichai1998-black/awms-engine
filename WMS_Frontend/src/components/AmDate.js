@@ -79,6 +79,40 @@ const AmDate = props => {
     }
     //props.onChange(text)
   };
+
+  const onHandleDateBlur = (text, tDate) => {
+    const dataReturn = {};
+    if (tDate === "date") {
+      if (text === null) {
+        props.onBlur(null);
+      } else {
+        dataReturn.fieldID = fieldID;
+        dataReturn.fieldDataKey = text.format("YYYY-MM-DD");
+        dataReturn.fieldDataObject = text.format("YYYY-MM-DD");
+        props.onBlur(dataReturn);
+      }
+    } else if (tDate === "datetime-local") {
+      if (text === null) {
+        props.onBlur(null);
+      } else {
+        dataReturn.fieldID = fieldID;
+        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm");
+        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm");
+        props.onBlur(dataReturn);
+      }
+    } else if (tDate === "time") {
+      if (text === null) {
+        props.onBlur(null);
+      } else {
+        dataReturn.fieldID = fieldID;
+        dataReturn.fieldDataKey = text;
+        dataReturn.fieldDataObject = text;
+        props.onBlur(dataReturn);
+      }
+    }
+    //props.onChange(text)
+  };
+
   return (
     <form noValidate>
       <TextField
@@ -97,18 +131,36 @@ const AmDate = props => {
           shrink: true
         }}
         onChange={e => {
-
-          if (type === "time") {
-            if (e.target.value) {
-              onHandleDateChange(e.target.value, type);
+          if(props.onChange !== undefined){
+            if (type === "time") {
+              if (e.target.value) {
+                onHandleDateChange(e.target.value, type);
+              } else {
+                onHandleDateChange(null, type);
+              }
             } else {
-              onHandleDateChange(null, type);
+              if (moment(e.target.value).isValid() === true) {
+                onHandleDateChange(moment(e.target.value), type);
+              } else {
+                onHandleDateChange(null, type);
+              }
             }
-          } else {
-            if (moment(e.target.value).isValid() === true) {
-              onHandleDateChange(moment(e.target.value), type);
+          }
+        }}
+        onBlur={e => {
+          if(props.onBlur !== undefined){
+            if (type === "time") {
+              if (e.target.value) {
+                onHandleDateBlur(e.target.value, type);
+              } else {
+                onHandleDateBlur(null, type);
+              }
             } else {
-              onHandleDateChange(null, type);
+              if (moment(e.target.value).isValid() === true) {
+                onHandleDateBlur(moment(e.target.value), type);
+              } else {
+                onHandleDateBlur(null, type);
+              }
             }
           }
         }}
