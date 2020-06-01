@@ -296,7 +296,7 @@ const Default = props => {
         } else {
             jsonresult.forEach(row => {
                 if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1]==="dashboard") {
-                    row.WebPages.map(res => {
+                    row.WebPages.forEach((res) => {
                         if (res.PathLV2 === Path[2]) {
                            name = t(res.pageName.trim());
                              //name = res.pageName;
@@ -364,6 +364,9 @@ const Default = props => {
                        {t(x.text)}
                       </Typography>
                     </div>
+                }
+                else{
+                    return <div key={idx}></div>
                 }
             });
         }
@@ -687,7 +690,6 @@ const LogoIn= () => {
                     <Switch>
                    
                         {routeLink.map((x, idx) => (
-                           
                             <Route
                                 key={idx}
                                 path={x.path}
