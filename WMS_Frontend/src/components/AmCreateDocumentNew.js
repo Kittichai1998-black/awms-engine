@@ -161,7 +161,7 @@ const AmCreateDocument = (props) => {
             editData[field] = data
         }
 
-        if (related) {
+        if (related && related.length) {
             let indexField = related.reduce((obj, x) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
