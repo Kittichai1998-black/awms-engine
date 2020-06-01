@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (getDiSTO == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item Storage Object");
 
-            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.PACK, false, true, BuVO);
+            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.BASE, false, true, BuVO);
 
             var stoLists = getSto.ToTreeList();
             var stoPack = stoLists.Find(x => x.id == getDiSTO.Sou_StorageObject_ID);
@@ -39,13 +39,16 @@ namespace AWMSEngine.Engine.V2.Business
                 remove_parent_empty(stoPack.parentID.Value, stoPack.parentType.Value);
             void remove_parent_empty(long parent_id, StorageObjectType parent_type)
             {
-                if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                if (parent_type != StorageObjectType.LOCATION)
                 {
-                    var parentRemove = stoLists.Find(x => x.id == parent_id);
-                    parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
-                    ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-                    if (parentRemove.parentID.HasValue)
-                        remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
+                    if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                    {
+                        var parentRemove = stoLists.Find(x => x.id == parent_id);
+                        parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        if (parentRemove.parentID.HasValue)
+                            remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
+                    }
                 }
             }
 

@@ -418,20 +418,21 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             var AutoPallet = StaticValue.IsFeature("AutoPallet");
             if (AutoPallet)
             {
+                
+
                 var _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseCode, this.BuVO);
 
                 if (_base == null)
                 {
-                    var BaseMasterType = StaticValueManager.GetInstant().BaseMasterTypes.FirstOrDefault();
+                    var ObjectSizes_Default = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.IsDefault == true && x.ObjectType == StorageObjectType.BASE);
+                    var unitType = StaticValueManager.GetInstant().UnitTypes.Find(x => x.Code == "PL");
 
                     ams_BaseMaster newBase = new ams_BaseMaster()
                     {
                         Code = baseCode,
-                        ObjectSize_ID = BaseMasterType.ObjectSize_ID,
-                        UnitType_ID = BaseMasterType.UnitType_ID,
-                        Name = BaseMasterType.Name,
-                        WeightKG = BaseMasterType.Weight,
-                        BaseMasterType_ID = BaseMasterType.ID.Value,
+                        ObjectSize_ID = ObjectSizes_Default.ID.Value,
+                        UnitType_ID = unitType.ID.Value,
+                        Name = "Pallet",
                         Status = EntityStatus.ACTIVE
                     };
 
@@ -512,7 +513,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 {
                     var sto = ADO.StorageObjectADO.GetInstant().Get(baseCode, null, areaID, false, true, this.BuVO);
                     if (sto.areaID != areaID)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code : " + baseCode + "ไม่ตรงกับตำแหน่งที่ปัจจุบัน");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code : " + baseCode + "ไม่ตรงกับตำแหน่งที่อยู่ปัจจุบัน");
 
                     if (sto == null)
                     {

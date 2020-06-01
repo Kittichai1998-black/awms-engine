@@ -28,6 +28,8 @@ import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
 import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
+import AmInput from '../../components/AmInput'
+import AmDialogConfirm from '../../components/AmDialogConfirm';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -115,11 +117,12 @@ const DocumentView = props => {
   const dataTableDetailDES = [];
 
   //set dialog Add pallet
-  const [dataDoc, setDataDoc] = useState(false);
+  const [dataDoc, setDataDoc] = useState(null);
   const [eventStatus, setEventStatus] = useState(null);
   //set dialog edit
-  const [dialog, setDialog] = useState(false);
-
+  const [openDialogEditQty, setOpenDialogEditQty] = useState(false);
+  const [dialogEditQty, setDialogEditQty] = useState(null);
+  const [qtyEdit, setQtyEdit] = useState({});
   //AlertDialog
   const [showDialog, setShowDialog] = useState(null);
   const [stateDialog, setStateDialog] = useState(false);
@@ -321,7 +324,7 @@ const DocumentView = props => {
       {
         width: 100, Header: "Edit Qty", style: { textAlign: 'center' },
         Cell: e => <AmButton style={{ width: "70px" }} styleType="info"
-          onClick={() => { }}>Edit</AmButton>
+          onClick={() => { handleClickOpenDialogEditQty(e.original) }}>Edit</AmButton>
       },
       {
         width: 100, Header: "Delete", style: { textAlign: 'center' },
@@ -414,8 +417,11 @@ const DocumentView = props => {
         apiCreate={props.addPalletMapSTO.apiCreate ?? null}
         columnsDocItems={props.addPalletMapSTO.columnsDocItems}
         inputHead={props.addPalletMapSTO.inputHead}
+        inputTitle={props.addPalletMapSTO.inputTitle}
+        inputBase={props.addPalletMapSTO.inputBase}
         ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
         ddlArea={props.addPalletMapSTO.ddlArea}
+        ddlLocation={props.addPalletMapSTO.ddlLocation}
         onSuccessMapping={(data) => ReturnMapping(data)}
       />
     }
@@ -424,15 +430,10 @@ const DocumentView = props => {
     }
   }
   const ReturnMapping = (res) => {
-    console.log(res)
     getData()
   }
 
-  const genBtnEditQty = (org) => {
-
-  }
   const onHandleDelDiSTO = (item) => {
-    console.log(item)
     const tempDataReq = {
       distoID: item.distoID,
       rootID: item.rootID
@@ -441,6 +442,7 @@ const DocumentView = props => {
       if (res.data != null) {
         if (res.data._result.status === 1) {
           alertDialogRenderer("ลบข้อมูลสำเร็จ", "success", true);
+          getData();
         } else {
           alertDialogRenderer(res.data._result.message, "error", true);
         }
@@ -461,10 +463,94 @@ const DocumentView = props => {
       setShowDialog(null);
     }
   }, [stateDialog, msgDialog, typeDialog]);
+  const handleClickOpenDialogEditQty = (item) => {
+    const tempDataReq = {
+      distoID: item.distoID,
+      Quantity: null
+    }
+    setQtyEdit(tempDataReq)
+    setOpenDialogEditQty(true)
+  }
+
+  const onHandleChangeInputQty = (value, field, event) => {
+    const tempDataReq = {
+      ...qtyEdit,
+      Quantity: value
+    }
+    setQtyEdit(tempDataReq)
+
+  }
+  const onConfirmEdit = () => {
+    Axios.post(window.apipath + "/v2/UpdateSTOandDiSTOfromDocAPI", qtyEdit).then((res) => {
+      if (res.data != null) {
+        if (res.data._result.status === 1) {
+          alertDialogRenderer("แก้ไขจำนวนสินค้าสำเร็จ", "success", true);
+          setOpenDialogEditQty(false);
+          setQtyEdit({});
+          getData();
+        } else {
+          alertDialogRenderer(res.data._result.message, "error", true);
+        }
+      } else {
+        alertDialogRenderer(res.data._result.message, "error", true);
+      }
+    });
+  }
+  useEffect(() => {
+    if (!openDialogEditQty) {
+      let ele = document.getElementById("Quantity");
+      if (ele) {
+        ele.value = "";
+        ele.focus();
+      }
+    }
+  }, [openDialogEditQty])
+  const createDialogEditQty = () => {
+    return <div>
+      <FormInline>
+        <LabelT style={LabelH}>{t("Quantity")}</LabelT>
+        <div style={{ display: 'inline-flex', width: "330px", alignItems: 'center' }} >
+          <AmInput
+            id={"Quantity"}
+            autoFocus={true}
+            placeholder={"0"}
+            type="number"
+            style={{ width: "100%" }}
+            onBlur={(value, obj, element, event) => onHandleChangeInputQty(value, "Quantity", event)}
+          />
+        </div>
+      </FormInline>
+    </div>
+  }
+
+  const onConfirmMappingSTO = () => {
+    const tempDataReq = { docID: parseInt(props.docID) }
+    Axios.post(window.apipath + "/v2/ConfirmMappingSTOandDiSTOAPI", tempDataReq).then((res) => {
+      if (res.data != null) {
+        if (res.data._result.status === 1) {
+          alertDialogRenderer("สร้างเอกสารรับเข้าสำเร็จ", "success", true);
+
+          getData();
+        } else {
+          alertDialogRenderer(res.data._result.message, "error", true);
+        }
+      } else {
+        alertDialogRenderer(res.data._result.message, "error", true);
+      }
+    });
+  }
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
+      <AmDialogConfirm
+        titleDialog={t("Edit Quantity")}
+        open={openDialogEditQty}
+        close={a => setOpenDialogEditQty(a)}
+        bodyDialog={createDialogEditQty()}
+        customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => onConfirmEdit()}>{t("OK")}</AmButton>}
+        customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setOpenDialogEditQty(false); setQtyEdit({}); }}>{t("Cancel")}</AmButton>}
 
+      />
       {getHeader()}
       <br />
       <br />
@@ -558,11 +644,19 @@ const DocumentView = props => {
               ""
             )}
       <br />
-      {props.buttonBack === true ? (
-        <AmButton styleType="default" onClick={buttonBack}>
-          {t("Back")}
-        </AmButton>
-      ) : null}
+      <div>
+        {props.buttonBack === true ? (
+          <AmButton styleType="default" className="float-left" onClick={buttonBack}>
+            {t("Back")}
+          </AmButton>
+        ) : null}
+
+        {props.buttonConfirmMappingSTO === true && eventStatus != (21 || 22 || 32) ? (
+          <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
+            {t("Close")}
+          </AmButton>
+        ) : null}
+      </div>
     </div>
   );
 };

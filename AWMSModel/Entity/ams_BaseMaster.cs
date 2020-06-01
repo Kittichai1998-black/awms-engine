@@ -6,7 +6,7 @@ namespace AWMSModel.Entity
 {
     public class ams_BaseMaster : BaseEntitySTD
     {
-        public long BaseMasterType_ID;
+        public long? BaseMasterType_ID;
         public long ObjectSize_ID;
         public long UnitType_ID;
         public decimal? WeightKG;

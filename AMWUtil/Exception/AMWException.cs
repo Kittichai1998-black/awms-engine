@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,12 +11,7 @@ using System.Threading.Tasks;
 namespace AMWUtil.Exception
 {
     public class AMWException : System.Exception
-
     {
-        public enum ENLanguage
-        {
-            TH,EN,CN
-        }
 
         private int LineNumber;
         private string SourceFile;
@@ -30,15 +26,15 @@ namespace AMWUtil.Exception
             ILogger logger,
             AMWExceptionCode code,
             string[] paramters = null,
-            ENLanguage Language = ENLanguage.TH,
+            Dictionary<string,string> messages = null,
             [CallerFilePath]string sourceFile = "",
             [CallerLineNumber]int lineNumber = 0)
             : base(
-                string.Format(code + ":" 
-                    + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).EN :
-                    Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).CN :
-                        AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).TH),
-                    paramters??new string[] { })
+                string.Format(
+                    code.Attribute<AMWExceptionCodeAttribute>().Code + ":" +
+                    (messages != null && messages.ContainsKey(code.Attribute<AMWExceptionCodeAttribute>().Code) ?
+                        messages[code.Attribute<AMWExceptionCodeAttribute>().Code] : code.Attribute<AMWExceptionCodeAttribute>().DefaultMessage),
+                    paramters ?? new string[] { })
                   )
         {
             this.AWMCode = code;
@@ -56,10 +52,10 @@ namespace AMWUtil.Exception
             ILogger logger,
             AMWExceptionCode code,
             string paramters,
-            ENLanguage language = ENLanguage.TH,
+            Dictionary<string, string> messages = null,
             [CallerFilePath]string sourceFile = "",
             [CallerLineNumber]int lineNumber = 0) :
-            this(logger, code, new string[] { paramters }, language, sourceFile, lineNumber)
+            this(logger, code, new string[] { paramters }, messages, sourceFile, lineNumber)
         { }
 
         public AMWException(
@@ -67,8 +63,8 @@ namespace AMWUtil.Exception
             AMWExceptionCode code,
             string paramters,
             AMWExceptionSourceChild source,
-            ENLanguage language = ENLanguage.TH) :
-            this(logger, code, new string[] { paramters }, language, source.SourceFile,source.LineNumber)
+            Dictionary<string, string> messages = null) :
+            this(logger, code, new string[] { paramters }, messages, source.SourceFile,source.LineNumber)
         { }
 
 

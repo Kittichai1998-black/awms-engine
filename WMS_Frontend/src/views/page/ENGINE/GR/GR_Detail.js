@@ -83,7 +83,7 @@ const GR_Detail = props => {
     ddlWarehouse: {
       visible: true,
       field: "warehouseID",
-      typeDropdown: "normal",
+      typeDropdown: "search",
       name: "Warehouse",
       placeholder: "Select Warehouse",
       fieldLabel: ["Code", "Name"],
@@ -95,27 +95,61 @@ const GR_Detail = props => {
     ddlArea: {
       visible: true,
       field: "areaID",
-      typeDropdown: "normal",
+      typeDropdown: "search",
       name: "Area",
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      // defaultValue: 17,
+      defaultValue: 15,
       required: true,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
-    inputHead: [
+    ddlLocation: {
+      visible: true,
+      field: "locationID",
+      typeDropdown: "search",
+      name: "Location",
+      placeholder: "Select Location",
+      fieldLabel: ["Code", "Name"],
+      fieldDataKey: "ID",
+      // defaultValue: 14,
+      required: false,
+      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+    },
+    inputTitle: [
       {
-        field: "baseCode",
-        placeholder: "Pallet Code",
-        required: true,
-        type: "input",
-        name: "Pallet Code",
-        maxLength: 10,
-        validate: /^.+$/,
-      },
-    ]
+        field: "projCode",
+        name: "Project",
+        type: "text",
+        customShow: (dataDocument)=>{
+          return dataDocument.document.Ref1;
+        },
+      }
+    ],
+    inputBase:
+    {
+      visible: true,
+      field: "baseCode",
+      type: "input",
+      name: "Pallet Code",
+      placeholder: "Pallet Code",
+      maxLength: 10,
+      required: true,
+      validate: /^.+$/,
+    },
+    // [
+    //   {
+    //     field: "baseCode",
+    //     placeholder: "Pallet Code",
+    //     required: true,
+    //     type: "input",
+    //     name: "Pallet Code",
+    //     maxLength: 10,
+    //     validate: /^.+$/,
+    //   }
+    // ]
   }
+ 
   //received
   //issued
   return (
@@ -135,6 +169,7 @@ const GR_Detail = props => {
       history={props.history}
       useAddPalletMapSTO={true}
       addPalletMapSTO={addPalletMapSTO}
+      buttonConfirmMappingSTO={true}
     />
   );
 };
