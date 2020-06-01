@@ -92,7 +92,6 @@ const AmCreateDocument = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
     // const [dataUnit, setDataUnit] = useState()
-    const [dataCheck, setDataCheck] = useState()
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const rem = [
         {
@@ -118,17 +117,10 @@ const AmCreateDocument = (props) => {
 
     const columns = props.columns.concat(rem)
 
-    //   const ordered = {};
-    //   Object.keys(docItems).sort().forEach(function(key) {
-    //     ordered[key] = docItems[key];
-    //   });
-    //   console.log(ordered);
-
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
         dataSource.splice(idx, 1);
         setDataSource(dataSource);
-        setDataCheck(dataSource);
         setReload({})
     }
 
@@ -159,7 +151,7 @@ const AmCreateDocument = (props) => {
         setcreateDocumentData(createDocumentData)
     }
 
-    const onChangeEditor = (field, data, required) => {
+    const onChangeEditor = (field, data, required, related) => {
         if (addData && Object.getOwnPropertyNames(editData).length === 0) {
             editData["ID"] = addDataID
         }
@@ -169,136 +161,32 @@ const AmCreateDocument = (props) => {
             editData[field] = data
         }
 
-        let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode"),
-            indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch"),
-            indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity"),
-            indexOrderNo = props.columnEdit.findIndex(x => x.accessor === "orderNo"),
-            indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType"),
-            indexSKUItems = props.columnEdit.findIndex(x => x.accessor === "SKUItems"),
+        if (related) {
+            let indexField = related.reduce((obj, x) => {
+                obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
+                return obj
+            }, {})
 
-            // indexBQuantity = props.columnEdit.findIndex(x => x.accessor === "Quantity"),
-            // indexBUnit = props.columnEdit.findIndex(x => x.accessor === "BaseUnitCode"),
-            indexSQuantity = props.columnEdit.findIndex(x => x.accessor === "SaleQuantity"),
-            indexSUnit = props.columnEdit.findIndex(x => x.accessor === "UnitCode")
+            for (let [key, index] of Object.entries(indexField)) {
+                if (data) {
+                    editData[key] = data[key]
+                } else {
+                    delete editData[key]
+                }
 
-
-        //CaseByCase
-        if (field === "palletcode") {
-            if (data) {
-                editData.ID = data.ID
-
-                editData.SKUItems = data.SKUItems
-                editData.skuCode = data.Code
-                editData.skuName = data.Name
-
-                editData.batch = data.Batch
-                editData.quantity = data.Quantity
-                editData.unitType = data.BaseUnitCode
-
-                editData.locationcode = data.LocationCode
-
-                editData.orderNo = data.orderNo
-
-                editData.Quantity = data.Quantity
-                editData.BaseUnitCode = data.BaseUnitCode
-                editData.SaleQuantity = data.SaleQuantity
-                editData.UnitCode = data.UnitCode
-
-
-                // if (indexSKUItems !== -1)
-                //     setTimeout(() => {
-                //         ref.current[indexSKUItems].current.value = data.SKUItems
-                //     }, 1);
-                if (indexBatch !== -1)
-                    ref.current[indexBatch].current.value = data.Batch
-                if (indexQuantity !== -1)
-                    ref.current[indexQuantity].current.value = data.Quantity
-                if (indexOrderNo !== -1)
-                    ref.current[indexOrderNo].current.value = data.orderNo
-                if (indexUnitType !== -1)
-                    ref.current[indexUnitType].current.textContent = data.BaseUnitCode
-
-                // if (indexBQuantity !== -1)
-                //     ref.current[indexBQuantity].current.textContent = data.Quantity
-                // if (indexBUnit !== -1)
-                //     ref.current[indexBUnit].current.textContent = data.BaseUnitCode
-                if (indexSQuantity !== -1)
-                    ref.current[indexSQuantity].current.textContent = data.SaleQuantity
-                if (indexSUnit !== -1)
-                    ref.current[indexSUnit].current.textContent = data.UnitCode
-
-            } else {
-                delete editData.ID
+                if (index !== -1) {
+                    setTimeout(() => {
+                        if (data) {
+                            ref.current[index].current.value = data[key]
+                            ref.current[index].current.textContent = data[key]
+                        } else {
+                            ref.current[index].current.value = ""
+                            ref.current[index].current.textContent = ""
+                        }
+                    }, 1);
+                }
             }
-
-            // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
-            // editData.BaseUnitCode = data.BaseUnitCode
-            // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
-            // if (data.UnitCode !== data.BaseUnitCode)
-            //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
-            //  setDataUnit({})
-
         }
-        if (field === "SKUItems") {
-            delete editData.palletcode
-            editData["ID"] = addDataID
-            if (indexPalletCode !== -1)
-                setTimeout(() => {
-                    ref.current[indexPalletCode].current.value = ""
-                }, 1);
-            if (data) {
-                editData.SKUItems = data.SKUItems
-                editData.skuCode = data.Code
-                editData.unitType = data.UnitTypeCode
-                editData.skuName = data.Name
-
-                editData.Quantity = data.Quantity
-                editData.BaseUnitCode = data.BaseUnitCode
-                editData.SaleQuantity = data.SaleQuantity
-                editData.UnitCode = data.UnitCode
-                if (indexUnitType !== -1)
-                    ref.current[indexUnitType].current.textContent = data.UnitTypeCode
-                // if (indexBQuantity !== -1)
-                //     ref.current[indexBQuantity].current.textContent = data.Quantity
-                // if (indexBUnit !== -1)
-                //     ref.current[indexBUnit].current.textContent = data.BaseUnitCode
-                if (indexSQuantity !== -1)
-                    ref.current[indexSQuantity].current.textContent = data.SaleQuantity
-                if (indexSUnit !== -1)
-                    ref.current[indexSUnit].current.textContent = data.UnitCode
-            } else {
-                delete editData.SKUItems
-                delete editData.skuCode
-                delete editData.unitType
-                delete editData.skuName
-
-                delete editData.Quantity
-                delete editData.BaseUnitCode
-                delete editData.SaleQuantity
-                delete editData.UnitCode
-                if (indexUnitType !== -1)
-                    ref.current[indexUnitType].current.textContent = ""
-                // if (indexBQuantity !== -1)
-                //     ref.current[indexBQuantity].current.textContent = ""
-                // if (indexBUnit !== -1)
-                //     ref.current[indexBUnit].current.textContent = ""
-                if (indexSQuantity !== -1)
-                    ref.current[indexSQuantity].current.textContent = ""
-                if (indexSUnit !== -1)
-                    ref.current[indexSUnit].current.textContent = ""
-            }
-
-
-
-            // editData.UnitCode = data.UnitCode //forcheck dropdown UnitType
-            // editData.BaseUnitCode = data.BaseUnitCode
-
-            // let unitArr = [{ label: data.UnitCode, value: data.UnitCode }]
-            // if (data.UnitCode !== data.BaseUnitCode)
-            //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
-            // setDataUnit(unitArr)
-        }
-        setReload({})
 
         if (required) {
             if (!editData[field]) {
@@ -313,6 +201,8 @@ const AmCreateDocument = (props) => {
                 setInputError(arrNew)
             }
         }
+
+        setReload({})
     }
 
 
@@ -350,7 +240,6 @@ const AmCreateDocument = (props) => {
                         dataSource.push(editData)
                     }
                 }
-                setDataCheck(dataSource);
                 setDataSource(dataSource);
 
                 setEditData({})
@@ -470,7 +359,7 @@ const AmCreateDocument = (props) => {
                             // data={dataUnit}
                             // returnDefaultValue={true}
                             defaultValue={editData ? editData[accessor] : ""}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
                     </InputDiv>
@@ -498,7 +387,7 @@ const AmCreateDocument = (props) => {
                             columns={columsddl} //array column สำหรับแสดง table
                             width={width ? width : 300}
                             ddlMinWidth={width ? width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
                         />
                     </InputDiv>
                 </FormInline>
@@ -699,7 +588,7 @@ const AmCreateDocument = (props) => {
             souWarehouseID: null,
             transportID: null
         }
-        const docItems = {
+        const docItem = {
             packCode: null,
             packID: null,
             skuCode: null,
@@ -717,84 +606,100 @@ const AmCreateDocument = (props) => {
             docItemStos: [],
             baseStos: []
         }
+
+        //map Header
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
                 doc[key] = value
         }
+
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
-                return x
+                let _docItem = { ...docItem }
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItem)
+                        _docItem[key] = value
+                    if (key === "ID" && value > 0)
+                        _docItem.packID = value
+                }
+                //modify _docItem 
+                //_docItem.options = x.xxx
+                return _docItem
             })
         }
         else if (props.createDocType === "audit") {
             doc.docItems = dataSource.map(x => {
-                return x
+                let _docItem = { ...docItem }
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItem)
+                        _docItem[key] = value
+                    if (key === "ID" && value > 0)
+                        _docItem.packID = value
+                }
+                return _docItem
             })
         } else if (props.createDocType === "issue") {
             doc.issueItems = dataSource.map(x => {
-                return x
+                let _docItem = { ...docItem }
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItem)
+                        _docItem[key] = value
+                    if (key === "ID" && value > 0)
+                        _docItem.packID = value
+                }
+                return _docItem
             })
         } else if (props.createDocType === "receive") {
             doc.receiveItems = dataSource.map(x => {
-                //modify
-                docItems.options = null
-                return x
+                let _docItem = { ...docItem }
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItem)
+                        _docItem[key] = value
+                    if (key === "ID" && value > 0)
+                        _docItem.packID = value
+                }
+                return _docItem
             })
         } else if (props.createDocType === "receiveOrder") {
             doc.receivedOrderItem = dataSource.map(x => {
-                //modify
-                docItems.options = null
-                return x
-            })
-        }
-        console.log(doc, dataSource)
-        if (Object.keys(doc).length > countDoc) {
-            CreateDocuments(doc, dataSource)
-        }
-    }
-
-    const CreateDocuments = (CreateData, docItem) => {
-        if (docItem.length) {
-            Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
-                if (res.data._result.status) {
-                    setMsgDialog(" Create Document success Document ID = " + res.data.ID);
-                    setStateDialog(true);
-                    if (props.apiRes !== undefined)
-                        props.history.push(props.apiRes + res.data.ID)
-                } else {
-                    setMsgDialog(res.data._result.message);
-                    setStateDialogErr(true);
+                let _docItem = { ...docItem }
+                for (let [key, value] of Object.entries(x)) {
+                    if (key in docItem)
+                        _docItem[key] = value
+                    if (key === "ID" && value > 0)
+                        _docItem.packID = value
                 }
+                return _docItem
             })
-        } else {
-            setMsgDialog("Data DocumentItem Invalid");
-            setStateDialogErr(true);
+        }
+
+        if (Object.keys(doc).length > countDoc && dataSource.length) {
+            CreateDocuments(doc)
         }
     }
 
-    const setFormatData = (data) => {
+    const CreateDocuments = (CreateData) => {
+        Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
+            if (res.data._result.status) {
+                setMsgDialog(" Create Document success Document ID = " + res.data.ID);
+                setStateDialog(true);
+                if (props.apiRes !== undefined)
+                    props.history.push(props.apiRes + res.data.ID)
+            } else {
+                setMsgDialog(res.data._result.message);
+                setStateDialogErr(true);
+            }
+        })
+    }
+
+    const FormatData = (data) => {
         dataSource.length = 0
         getUnique(data, "ID").forEach(x => {
             // let chkData = dataSource.filter(z => z.ID === x.ID)
             // if (chkData.length === 0) {
 
-            let y = {
-                ID: x.ID,
-                palletcode: x.palletcode,
-                SKUItems: x.SKUItems,
-                batch: x.Batch || x.batch,
-                quantity: x.Quantity || x.quantity,
-                unitType: x.BaseUnitCode || x.unitType,
-                skuCode: x.Code || x.skuCode,
-                skuName: x.Name || x.skuName,
-                orderNo: x.orderNo,
-                UnitCode: x.UnitCode,
-                BaseUnitCode: x.BaseUnitCode,
-                locationcode: x.LocationCode || x.locationcode,
-                Quantity: x.Quantity,
-                SaleQuantity: x.SaleQuantity
-            };
+            let y = { ...x };
             // ['Batch', 'Quantity', 'UnitCode'].forEach(e => delete y[e]);
             if (props.createDocType === "audit")
                 y.qtyrandom = "100%"
@@ -836,8 +741,8 @@ const AmCreateDocument = (props) => {
                             columns={props.addList.columns}
                             search={props.addList.search}
                             textBtn="Add Item List"
-                            onSubmit={(data) => { setDataSource(setFormatData(data)); setDataCheck(data); }}
-                            dataCheck={dataCheck}
+                            onSubmit={(data) => { setDataSource(FormatData(data)); setReload({}) }}
+                            dataCheck={dataSource}
                         /> : null}
 
                         {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >Add Item</AmButton>}

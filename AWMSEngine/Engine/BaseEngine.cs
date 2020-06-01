@@ -38,10 +38,6 @@ namespace AWMSEngine.Engine
 
         private string _subServiceNameTMP;
 
-        protected AMWException NewAMWException(AMWExceptionCode code, params string[] parameters)
-        {
-            return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
-        }
 
         protected TExecRes ExectProject<TExecReq,TExecRes>(FeatureCode featureCode, TExecReq req)
            where TExecRes : class
@@ -51,14 +47,11 @@ namespace AWMSEngine.Engine
 
         private void ValidateRequestParameter(TReq reqVO)
         {
-            try
-            {
-                ValidationUtil.ValidateModel(reqVO);
-            }
-            catch (Exception ex)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, ex.Message);
-            }
+            if (reqVO == null)
+                return;
+            var ex = ValidationUtil.ValidateModel(reqVO);
+            if (ex != null)
+                throw new AMWException(this.Logger, ex.Code, ex.Parameters);
         }
 
 

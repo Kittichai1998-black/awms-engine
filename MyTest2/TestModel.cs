@@ -9,18 +9,18 @@ namespace MyTest2
 {
     public class Model01
     {
-        [ValidationAttribute(ErrorMessage = "Error {0} : {1}", RegexPattern = "^[0-9]+$")]
+        [ValidationAttribute(RegexPattern = "^[0-9]+$")]
         public string test;
-        [ValidationAttribute(ErrorMessage = "Error {0} : {1}", RegexPattern = "^[0-9]+$")]
+        [ValidationAttribute(RegexPattern = "^[0-9]+$")]
         public int test1;
-        [ValidationAttribute(ErrorMessage = "Error {0} : {1}", RegexPattern = "^[0-9]+$")]
+        [ValidationAttribute(RegexPattern = "^[0-9]+$")]
         public int? test2;
 
         public List<Model02> m02;
         public Model02[] m03;
         public class Model02
         {
-            [ValidationAttribute(ErrorMessage = "Error {0} : {1}" )]
+            [ValidationAttribute(MethodValidate = "AMWUtil.Validation.ValidationUtil.IsCheck")]
             public string test3;
         }
     }
@@ -31,6 +31,10 @@ namespace MyTest2
         public TestModel(ITestOutputHelper sysout)
         {
             this.sysout = sysout;
+        }
+        public static bool IsCheck(string code)
+        {
+            return code == "test01";
         }
         [Fact]
         public void TestCreateModel()
