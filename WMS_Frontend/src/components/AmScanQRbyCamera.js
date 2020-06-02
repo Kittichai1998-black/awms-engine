@@ -69,8 +69,13 @@ const DialogTitle = withStyles(theme => ({
         <MuiDialogTitle disableTypography className={classes.root}>
             <Typography variant="h6">{children}</Typography>
             {onClose ? (
-                <IconButton aria-label="Close" className={classes.closeButton} onClick={onClose}>
-                    <CloseIcon size="small" />
+                <IconButton
+                    aria-label="Close"
+                    size="small"
+                    className={classes.closeButton}
+                    onClick={onClose}
+                >
+                    <CloseIcon fontSize="inherit" />
                 </IconButton>
             ) : null}
         </MuiDialogTitle>
@@ -96,7 +101,7 @@ export default function ScanQRByCam(props) {
     } = props
     const theme = useTheme();
 
-    const [result, setResult] = useState(null);
+    // const [result, setResult] = useState(null);
     const [open, setOpen] = useState(false);
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -106,20 +111,24 @@ export default function ScanQRByCam(props) {
 
     const handleClose = () => {
         setOpen(false);
-        setResult(null)
+        // setResult(null)
     };
 
-    const handleAgree = () => {
-        setOpen(false);
-        returnResult(result)
-        setResult(null)
-    };
+    // const handleAgree = () => {
+    //     setOpen(false);
+    //     returnResult(result)
+    //     setResult(null)
+    // };
     const handleError = err => {
         console.error(err)
+        alert(err)
     }
     const handleScan = data => {
         if (data) {
-            setResult(data)
+            console.log(data)
+            // setResult(data)
+            setOpen(false);
+            returnResult(data)
         }
     }
 
@@ -136,17 +145,17 @@ export default function ScanQRByCam(props) {
                 <DialogTitle id="responsive-dialog-title" onClose={handleClose}>{"Scan QR"}</DialogTitle>
                 <DialogContent>
 
-                    <p style={{ marginTop: '3px', marginBottom: '3px' }}><b>Result : </b>{result ? result : 'No result'}</p>
+                    {/* <p style={{ marginTop: '3px', marginBottom: '3px' }}><b>Result : </b>{result ? result : 'No result'}</p> */}
                     <div style={{ textAlign: 'center' }}>
                         <QrReader
                             delay={200}
                             onError={handleError}
                             onScan={handleScan}
-                        style={cameraStyle}
+                            style={cameraStyle}
                         />
                     </div>
                 </DialogContent>
-                <DialogActions>
+                {/* <DialogActions>
                     <AmButton
                         styleType="confirm_clear"
                         onClick={handleAgree}
@@ -155,7 +164,7 @@ export default function ScanQRByCam(props) {
                         styleType="delete_clear"
                         onClick={handleClose}
                     >Cancel</AmButton>
-                </DialogActions>
+                </DialogActions> */}
             </Dialog>
         </div>
 

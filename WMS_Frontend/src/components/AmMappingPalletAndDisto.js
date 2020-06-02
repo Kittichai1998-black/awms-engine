@@ -7,6 +7,8 @@ import AmScanQRbyCamera from './AmScanQRbyCamera';
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 import PropTypes from "prop-types";
 // import SearchIcon from '@material-ui/icons/Search';
 import styled from "styled-components";
@@ -65,12 +67,12 @@ const DialogTitle = withStyles(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
         margin: 0,
-        padding: theme.spacing(1)
+        padding: theme.spacing(0.5)
     },
     closeButton: {
-        position: "absolute",
-        right: theme.spacing(1),
-        top: theme.spacing(1),
+        position: 'absolute',
+        right: theme.spacing(0.5),
+        top: theme.spacing(0.7),
         color: theme.palette.grey[500],
         padding: "3px"
     }
@@ -165,6 +167,8 @@ const BtnAddPallet = (props) => {
 
     } = props;
     const { t } = useTranslation()
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [open, setOpen] = useState(false);
     const [listDocItems, setListDocItems] = useState([]);
@@ -684,6 +688,7 @@ const BtnAddPallet = (props) => {
 
             <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Receive"}</AmButton>
             <Dialog
+                fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
                 onClose={() => { onHandleClear(); setOpen(false); }}
                 open={open}
@@ -692,7 +697,7 @@ const BtnAddPallet = (props) => {
                 <DialogTitle
                     id="addpallet-dialog-title"
                     onClose={() => { onHandleClear(); setOpen(false); }}>
-                    {"Add Pallet and Mapping Storage Object"}
+                    {"Receive Pallet"}
                 </DialogTitle>
                 <DialogContent>
                     {inputTitles && inputTitles.length > 0 ? inputTitles.map((row, idx) => {
