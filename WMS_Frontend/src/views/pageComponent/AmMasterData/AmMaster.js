@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { apicall, createQueryString } from '../../../components/function/CoreFunction';
 import {QueryGenerate} from '../../../components/function/UtilFunction';
 import AmTable from "../../../components/AmTable/AmTable";
@@ -11,6 +11,7 @@ import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
 
+import {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent} from "./AmMasterComponentType";
 import AmMasterEditorData from "./AmMasterEditorData";
 
 const Axios = new apicall()
@@ -34,16 +35,18 @@ const FormInline = styled.div`
 
 const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
+    const [count, setCount] = useState(0)
 
     useEffect(() => {
         if(typeof queryObj === "object"){
             var queryStr = createQueryString(queryObj)
             Axios.get(queryStr).then(res => {
                 setDataSource(res.data.datas)
+                setCount(res.data.counts)
             });
         }
     }, [queryObj])    
-    return dataSource;
+    return {dataSource, count};
 }
 
 const viewQuery = (tableQuery, codeInclude) => ({
@@ -54,7 +57,7 @@ const viewQuery = (tableQuery, codeInclude) => ({
     g: "",
     s: !codeInclude ? '[{"f":"ID","od":"asc"}]' :'[{"f":"Code","od":"asc"}]',
     sk: 0,
-    l: 100,
+    l: 25,
     all: "",
 });
 
@@ -66,7 +69,7 @@ const mstQuery = (tableQuery, codeInclude) => ({
     g: "",
     s: !codeInclude ? '[{"f":"ID","od":"asc"}]' :'[{"f":"Code","od":"asc"}]',
     sk: 0,
-    l: 100,
+    l: 25,
     all: "",
 });
 
@@ -79,7 +82,6 @@ const useColumns = (cols) => {
         const iniCols = [...cols];
 
         iniCols.forEach(col => {
-            //col.Filter = (field, onChangeFilter) => <input type="text" onChange={e=> {onChangeFilter(field,e.target.value)}}/>
             if(col.filterType === "dropdown"){
                 let cols = col.filterConfig;
                 col.Filter =  (field, onChangeFilter) => {
@@ -98,7 +100,7 @@ const useColumns = (cols) => {
                 />
                 }
             }else if(col.filterType === "datetime"){
-                col.width=340;
+                col.width=350;
                 col.Filter =  (field, onChangeFilter) => {
                     return <FormInline>
                         <AmDatePicker style={{display:"inline-block"}} onBlur={(e) => {onChangeFilter(field, e.fieldDataObject, {dataType:"dateTime",dateField:"dateFrom"})}} TypeDate={"date"} fieldID="dateFrom"/>
@@ -143,6 +145,7 @@ const useColumns = (cols) => {
     return {columns, editData, removeData};
 }
 
+
 const AmMasterData = (props) => {
     const [queryObj, setQueryObj] = useState(() => {
         if(props.tableType === "master")
@@ -156,10 +159,42 @@ const AmMasterData = (props) => {
     const {columns, editData, removeData} = useColumns(props.columns);
     const [updateData, setUpdateData] = useState();
     const [dialogState, setDialogState] = useState({});
-    const [editPopupState, setEditPopupState] = useState(false);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
+    const [iniQuery, setIniQuery] = useState(true);
 
-    const dataSource = useQueryData(queryObj);
+    const {dataSource, count} = useQueryData(queryObj);
+    // {
+    //     field: "Code",
+    //     type: "input",
+    //     name: "SKU Type Code",
+    //     placeholder: "Code",
+    //     required: true
+    //   }
+    
+    const genEditorField = () => {
+        const findEditorField = (config, cols, data) => {
+            if(config.type === "input"){
+                return <InputComponent config={config}/>
+            }
+            else if(config.type === "dropdow"){
+                return <DropDownComponent/>
+            }
+            else if(config.type === "findpopup"){
+                return <DropDownComponent/>
+            }
+        }
+
+        return props.dataAdd.map(y=>{
+            return { 
+              "field":y.field,
+              "component":(data=null, cols, key)=>{
+                return <div key={key}>
+                    
+                </div>
+              }
+            }
+        });
+    }
 
     const updateRow = () => {
         const updateData = (table, data) => {
@@ -180,9 +215,9 @@ const AmMasterData = (props) => {
     }
 
     useEffect(()=> {
-        if(typeof(page) === "number"){
+        if(typeof(page) === "number" && !iniQuery){
           const queryEdit = JSON.parse(JSON.stringify(queryObj));
-          queryEdit.sk = page === 0 ? 0 : page * parseInt(queryEdit.l, 10);
+          queryEdit.sk = page === 0 ? 0 : (page -1) * parseInt(queryEdit.l, 10);
           setQueryObj(queryEdit)
         }
     }, [page])
@@ -196,7 +231,6 @@ const AmMasterData = (props) => {
     },[removeData])
 
     const onChangeFilterData = (filterValue) => {
-        console.log(filterValue)
         var res = queryObj;
         filterValue.forEach(fdata => {
             if(fdata.customFilter !== undefined)
@@ -207,8 +241,11 @@ const AmMasterData = (props) => {
         setQueryObj(res)
     }
 
-    console.log(props.pageSize)
     return <>
+            <AmMasterEditorData config={{required:true, title:"Edit"}}
+                editColumns={props.dataAdd}
+                editData={updateData}
+                response={x=>console.log(x)}/>
             <AmDialogs 
                 typePopup={dialogState.type} 
                 onAccept={(e) => {setDialogState({...dialogState, state:false})}} 
@@ -221,10 +258,16 @@ const AmMasterData = (props) => {
                 filterable={true}
                 filterData={res=> {onChangeFilterData(res)}}
                 rowNumber={true}
+                totalSize={count}
                 pageSize={props.pageSize}
                 height={props.height}
                 pagination={true}
-                onPageChange={setPage}
+                onPageChange={p => {
+                    if(page !== p)
+                        setPage(p)
+                    else
+                        setIniQuery(false)
+                }}
             />
         </>
 }

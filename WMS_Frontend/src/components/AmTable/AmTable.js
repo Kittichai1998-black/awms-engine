@@ -25,6 +25,7 @@ const AmTable = (props) => {
             minRow={props.minRow}
             pagination={props.pagination}
             onPageChange={props.onPageChange}
+            totalSize={props.totalSize}
         />
     </AmTableProvider>
 }
@@ -179,6 +180,11 @@ AmTable.propTypes = {
      ** value? : (page) => {}
     */
     onPageChange:PropTypes.func,
+    /**
+     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     ** value? : (page) => {}
+    */
+    totalSize:PropTypes.number,    
   }
 
 AmTable.defaultProps = {

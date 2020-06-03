@@ -1,13 +1,10 @@
-import React, {useState, useEffect} from "React";
+import React, {useState, useEffect} from "react";
 import styled from 'styled-components';
 
 import AmInput from "../../../components/AmInput";
 import AmDropdown from '../../../components/AmDropdown';
 import AmFindPopup from '../../../components/AmFindPopup';
 import AmDate from "../../../components/AmDate";
-
-import { useTranslation } from 'react-i18next';
-const { t } = useTranslation();
 
 const FormInline = styled.div`
     display: flex;
@@ -29,7 +26,7 @@ const LabelH = styled.label`
     width: 200px;
 `;
 
-const FilterInputComponent = (config, response) => {
+const InputComponent = ({config, response}) => {
     const [value, setValue] = useState({});
 
     useEffect(() => {
@@ -38,18 +35,19 @@ const FilterInputComponent = (config, response) => {
 
     return  (
         <FormInline>
-          <label style={{width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label>
+          <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
           <AmInput 
             id={config.field}
             placeholder={config.placeholder}
             style={{width:"200px"}}
             type= "input"
+            value={value !== undefined ? value.value : ""}
             onChangeV2={(value)=>{setValue({field:config.field, value:value})}}/>
         </FormInline>
       )
 };
 
-const FilterDropDownComponent = (config, defaultData, queryData, response) => {
+const DropDownComponent = ({config, response, defaultData, queryData}) => {
     const [selection, setSelection] = useState({});
     useEffect(() => {
         response(selection);
@@ -57,7 +55,7 @@ const FilterDropDownComponent = (config, defaultData, queryData, response) => {
 
     var checkType  = Array.isArray(queryData);
     if(!checkType){
-        return <FormInline> <LabelH>{t(config.name)} : </LabelH> 
+        return <FormInline> <LabelH>{config.name} : </LabelH> 
         <AmDropdown
           required={config.required}
           id={config.field}
@@ -75,7 +73,7 @@ const FilterDropDownComponent = (config, defaultData, queryData, response) => {
         /> 
       </FormInline>
     }else{
-        return <FormInline> <LabelH>{t(config.name)} : </LabelH> 
+        return <FormInline> <LabelH>{config.name} : </LabelH> 
         <AmDropdown
             id={config.field}
             placeholder={config.placeholder}
@@ -92,13 +90,13 @@ const FilterDropDownComponent = (config, defaultData, queryData, response) => {
     }
 }
 
-const FilterFindPopupComponent = (config, columns, queryData, response) => {
+const FindPopupComponent = ({config, response, columns, queryData}) => {
     const [selection, setSelection] = useState({});
     useEffect(() => {
         response(selection);
     }, [selection, response])
 
-    return  <FormInline><label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label><AmFindPopup
+    return  <FormInline><label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{config.name} : </label><AmFindPopup
       id={config.field}
       placeholder={config.placeholder}
       fieldDataKey={config.field}
@@ -113,14 +111,14 @@ const FilterFindPopupComponent = (config, columns, queryData, response) => {
   /></FormInline>
 }
 
-const FilterDateTimeComponent = (config, response) => {
+const DateTimeComponent = ({config, response}) => {
     const [selection, setSelection] = useState({});
 
     useEffect(() => {
         response(selection);
     }, [selection, response])
 
-    return <FormInline> <label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label> 
+    return <FormInline> <label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{config.name} : </label> 
       <AmDate
         id={config.field}
         TypeDate={"date"}
@@ -131,4 +129,4 @@ const FilterDateTimeComponent = (config, response) => {
     </FormInline>
 }
 
-export {FilterInputComponent, FilterDropDownComponent, FilterFindPopupComponent, FilterDateTimeComponent};
+export {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent}
