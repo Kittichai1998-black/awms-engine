@@ -40,49 +40,32 @@ const LabelH = styled.label`
   width: 100px;
 `;
 const MoveLocation = props => {
-  // const [resetPage, setResetPage] = useState(false);
-  // useEffect(() => {
-  //   if (resetPage === true) {
-  //     setResetPage(false);
-  //   }
-  // }, [resetPage]);
+  const columns = [
+    {
+      field: "Priority",
+      type: "input",
+      name: "Priority",
+      placeholder: "Priority",
+      required: true
+    }]
+  const iniCols = [
 
-  const { t } = useTranslation();
-  const [page, setPage] = useState();
-  const [totalSize, setTotalSize] = useState(0);
-  const [dataSource, setDataSource] = useState([]);
-  const [valueText, setValueText] = useState("");
-  const [openError, setOpenError] = useState(false);
-  const [textError, setTextError] = useState("");
-  // const getData = () => {
-  //   Axios.get(
-  //     window.apipath +
-  //     "/v2/GetSPReportAPI?" +
-  //     "&LogRefID=" +
-  //     valueText +
-  //     "&spname=LOG_SEARCH"
-  //   ).then(res => {
-  //     console.log(res);
-  //     if (res) {
-  //       if (res.data._result.status !== 0) {
-  //         setTotalSize(res.data.datas.length);
-  //         setDataSource(res.data.datas);
-  //         setPage(0);
-  //         setResetPage(true);
-  //         setValueText("");
-  //       } else {
-  //         setOpenError(true);
-  //         setTextError(res.data._result.message);
-  //         setValueText("");
-  //       }
-  //     }
-  //   });
-  // };
+    {
+      Header: "Code",
+      accessor: "Code",
+      fixed: "left",
+      // Cell: (e) => { console.log(e) }
+    },
 
+
+  ];
   return (
     <div>
 
-      <AmMoveLocation></AmMoveLocation>
+      <AmMoveLocation
+        columns={iniCols}
+        dataAdd={columns}
+      ></AmMoveLocation>
 
     </div>
   );

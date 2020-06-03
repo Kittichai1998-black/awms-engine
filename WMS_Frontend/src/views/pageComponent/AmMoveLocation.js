@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import {
-  apicall,
-  createQueryString
-} from "../../components/function/CoreFunction";
+import { apicall, createQueryString } from '../../components/function/CoreFunction'
 import AmDialogs from "../../components/AmDialogs";
 import AmButton from "../../components/AmButton";
 import AmInput from "../../components/AmInput";
+import AmEditorTable from "../../components/table/AmEditorTable";
 import {
   indigo,
   deepPurple,
@@ -16,19 +14,10 @@ import {
   green
 } from "@material-ui/core/colors";
 import moment from "moment";
-import Paper from "@material-ui/core/Paper";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepContent from "@material-ui/core/StepContent";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import styled from "styled-components";
-import PropTypes from "prop-types";
-import queryString from "query-string";
-import Grid from "@material-ui/core/Grid";
+import AmTable from "../../components/AmTable/AmTable";
+import EditIcon from "@material-ui/icons/MoveToInbox";
+import IconButton from "@material-ui/core/IconButton";
+import Grid from '@material-ui/core/Grid';
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -64,136 +53,158 @@ const styles = theme => ({
     marginTop: theme.spacing(),
     marginRight: theme.spacing()
   },
-  actionsContainer: {
-    marginBottom: theme.spacing(2),
-    textAlign: "end"
-  },
-  resetContainer: {
-    textAlign: "center"
-  },
-  stepLabel: {
-    fontWeight: "bold",
-    fontSize: "medium"
-  },
-  avatarHead: {
-    // color: '#fff',
-    width: "35px",
-    height: "35px",
-    // marginRight: '0px',
-    backgroundColor: "#fff"
-  },
-  avatarHeadStatus: {
-    width: "30px",
-    height: "30px",
-    fontSize: "1.125em"
-  },
-  cardHeader: {
-    padding: "5px 0px 5px 5px"
-  },
-  cardTitle: {
-    fontWeight: "bolder",
-    fontSize: "1em"
-  },
-  cardAvatar: {
-    marginRight: "10px"
-  },
-  avatar2: {
-    width: "30px",
-    height: "30px",
-    // color: '#fff',
-    backgroundColor: "#fff"
-  },
-  avatarStatus: {
-    width: "25px",
-    height: "25px"
-  },
-  textNowrap: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "block",
-    whiteSpace: "nowrap"
-  },
-  labelHead: {
-    fontWeight: "bold",
-    display: "inline-block"
-  },
-  divLevel1: { display: "block" },
-  divLevel2: { marginLeft: 22, display: "block" },
-  chip: {
-    margin: "2px 2px",
-    height: "24px",
-    // padding: '1px',
-    borderRadius: "15px",
-    backgroundColor: "rgba(255, 255, 255, 0.2)"
-  },
-  avatar: {
-    width: 24,
-    height: 24,
-    color: "#fff",
-    fontSize: "95%",
-    backgroundColor: grey[500]
-  },
-  listRoot: {
-    width: "100%",
-    padding: "5px 5px"
-  },
-  listItemAvatarRoot: {
-    minWidth: "30px",
-    maxWidth: "30px"
-  },
-  inline: {
-    display: "inline"
-  },
-  gutters: {
-    padding: "0px 5px 0px 35px"
-  },
-  guttersHead: {
-    padding: "0px 5px 0px 5px"
-  },
-  gutters2: { paddingRight: "40px" },
-  bgFocus: {
-    // backgroundColor: red[50],
-    borderRadius: "5px",
-    backgroundColor: "rgba(255, 224, 0, 0.3)"
-  }
+
+
 });
 
-const BaseMaster = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "BaseMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
-  f: "ID,Code",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  all: ""
-};
 
-const AreaLocationMaster = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "AreaLocationMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
-  f: "ID,Code,Name",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  all: ""
-};
+// const useQueryData = (queryObj) => {
+//   console.log(queryObj)
+//   const [dataSource, setDataSource] = useState([])
+
+//   useEffect(() => {
+//     if (typeof queryObj === "object") {
+//       var queryStr = createQueryString(queryObj)
+//       Axios.get(queryStr).then(res => {
+//         console.log(res)
+//         setDataSource(res.data.datas)
+//       });
+//     }
+//   }, [queryObj])
+//   return dataSource;
+// }
 
 const AmMoveLocation = props => {
-  const { classes } = props;
+  const iniCols = [
+    {
+      Header: "Code",
+      accessor: "Code",
+      fixed: "left"
 
-  const [valueInput, setValueInput] = useState({});
+    }]
+  const Query = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "WorkQueueSto",
+    q: "[{ 'f': 'EventStatus', 'c':'!=', 'v': 0}]",
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
+  const [query, setQuery] = useState(Query);
+  useEffect(() => {
+    getData(query);
+  }, []);
 
-  const [showDialog, setShowDialog] = useState(null);
-  const [stateDialog, setStateDialog] = useState(false);
-  const [msgDialog, setMsgDialog] = useState("");
-  const [typeDialog, setTypeDialog] = useState("");
+  async function getData(qryString) {
+    var queryStr = createQueryString(qryString)
+    Axios.get(queryStr).then(res => {
+      console.log(res)
+      setDataSource(res.data.datas)
+    });
+
+  }
+  const useColumns = (cols) => {
+    const [columns, setColumns] = useState(cols);
+    const [editData, setEditData] = useState();
+    const [removeData, setRemoveData] = useState();
+
+    useEffect(() => {
+      const iniCols = [...cols];
+      iniCols.push({
+        Header: "",
+        fixWidth: 63,
+        colStyle: { zIndex: -1 },
+        filterable: false,
+        Cell: (e) => <IconButton
+          size="small"
+          aria-label="info"
+          style={{ marginLeft: "3px" }}
+        >
+          <EditIcon
+            fontSize="small"
+            style={{ color: "#f39c12" }}
+            onClick={() => { setDialog(true) }}
+          />
+        </IconButton>
+      })
+      setColumns(iniCols);
+    }, [])
+
+    return { columns, editData, removeData };
+  }
+  const { columns, editData, removeData } = useColumns(props.columns);
+  const [dataSource, setDataSource] = useState([])
+  const [dialog, setDialog] = useState(false);
+  //const [columns, setColumns] = useState(FuncgetButton());
+
+  const RanderEle = () => {
+    if (props.dataAdd) {
+      const x = props.dataAdd;
+      return x.map(y => {
+        return {
+          component: (data = null, cols, key) => {
+
+            return (
+              <div key={key}>
+                {RanderElePopMove()}
+              </div>
+            );
+          }
+        };
+      });
+    }
+  };
+
+  const RanderElePopMove = () => {
+    return (
+
+      <div>
+
+        <Grid item xs={6}>
+          ghhfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+        </Grid>
+        <Grid item xs={6}>
+          grrh
+        </Grid>
+      </div>
 
 
+
+      // <AmInput
+      //   id={"x"}
+      //   required={true}
+      //   validate={true}
+      //   // msgError="Error"
+      //   style={{ width: "270px", margin: "0px" }}
+      // />
+    )
+  }
 
   return (
     <div>
+      <AmEditorTable
+        open={dialog}
+        //onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
+        titleText={"Add"}
+        //data={editData}
+        columns={RanderEle()}
+      //objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
+      />
+      <AmTable
+        columns={columns}
+        dataKey={"Code"}
+        dataSource={dataSource}
+        filterable={false}
+        //filterData={res => { onChangeFilterData(res) }}
+        rowNumber={true}
+        pageSize={20}
+        height={props.height}
+      // pagination={false}
+      //onPageChange={setPage}
+      />
     </div>
   );
 };
