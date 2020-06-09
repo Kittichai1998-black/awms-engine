@@ -1,11 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const AreaMaster = props => {
@@ -31,18 +27,19 @@ const AreaMaster = props => {
     l: 100,
     all: ""
   };
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
-
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", fixed: "left", width: 100 },
@@ -76,19 +73,19 @@ const AreaMaster = props => {
     },
     {
       field: "Warehouse_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Warehouse",
-      dataDropDow: WarehouseQuery,
+      dataDropDown: WarehouseQuery,
       placeholder: "Warehouse",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "AreaMasterType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "AreaMasterType",
-      dataDropDow: AreaMasterTypeQuery,
+      dataDropDown: AreaMasterTypeQuery,
       placeholder: "AreaMasterType",
       fieldLabel: ["Code", "Name"],
       required: true
@@ -114,29 +111,29 @@ const AreaMaster = props => {
     },
     {
       field: "Warehouse_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Warehouse",
-      dataDropDow: WarehouseQuery,
+      dataDropDown: WarehouseQuery,
       placeholder: "Warehouse",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "AreaMasterType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "AreaMasterType",
-      dataDropDow: AreaMasterTypeQuery,
+      dataDropDown: AreaMasterTypeQuery,
       placeholder: "AreaMasterType",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -157,30 +154,30 @@ const AreaMaster = props => {
   const columnsFilter = [
     {
       field: "Warehouse_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Warehouse",
-      dataDropDow: WarehouseQuery,
+      dataDropDown: WarehouseQuery,
       placeholder: "Warehouse",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "AreaMasterType_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "AreaMasterType",
-      dataDropDow: AreaMasterTypeQuery,
+      dataDropDown: AreaMasterTypeQuery,
       placeholder: "Warehouse",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -217,7 +214,7 @@ const AreaMaster = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"AreaMaster"}
@@ -226,6 +223,19 @@ const AreaMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"AreaMaster"}
+        table={"ams_AreaMaster"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        pageSize={25}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

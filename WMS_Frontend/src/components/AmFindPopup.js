@@ -243,7 +243,7 @@ const FindPopup = (props) => {
     useEffect(() => {
         if (defaultValue) {
             setDefaultVal(defaultValue);
-            setValueKey(defaultValue)
+            //setValueKey(defaultValue)
         }
     }, [defaultValue]);
     useEffect(() => {

@@ -75,30 +75,32 @@ const testMasterV2 = props => {
       type: "input",
       name: "SKU Type Code",
       placeholder: "Code",
-      required: true
+      required: true,
+      validate: /^.+$/
     },
     {
       field: "Name",
       type: "input",
       name: "SKU Type Name",
       placeholder: "Name",
-      required: true
+      required: true,
+      validate: /^.+$/
     },
     {
       field: "BaseMasterType_Code",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code"]
     },
     {
       field: "ObjectSize_ID",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"]
     }
@@ -122,25 +124,25 @@ const testMasterV2 = props => {
     {
       field: "UnitType_ID",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code"]
     },
     {
       field: "ObjectSize_ID",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
       dataDropDow: EntityEventStatus,
       placeholder: "Status"
@@ -164,9 +166,9 @@ const testMasterV2 = props => {
     {
       field: "UnitTypeCode",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code"],
       fieldDataKey: "Code"
@@ -174,9 +176,9 @@ const testMasterV2 = props => {
     {
       field: "ObjectSize_Code",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code"],
       fieldDataKey: "Code"
@@ -184,7 +186,7 @@ const testMasterV2 = props => {
     {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
       dataDropDow: EntityEventStatus,
       placeholder: "Status"
@@ -234,6 +236,7 @@ const testMasterV2 = props => {
         tableType="view"
         pageSize={20}
         height={500}
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
-import AmSetOjectSize from "../../pageComponent/AmSetOjectSize";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React, {useState, useEffect} from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import AmButton from "../../../components/AmButton";
+import AmEditorTable from '../../../components/table/AmEditorTable';
+import AmTable from "../../../components/AmTable/AmTable";
+import { apicall, createQueryString } from '../../../components/function/CoreFunction';
 
+const Axios = new apicall()
 //======================================================================
 const ObjectSize = props => {
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
+  const [editObjectSize, setEditObjectSize] = useState();
+  const [open, setOpen] = useState(false);
+
+  useEffect(()=> {
+    console.log(editObjectSize)
+  }, [editObjectSize]);
+
   const EntityObjectType = [
     { label: "Location", value: 0 },
     { label: "Base", value: 1 },
@@ -21,11 +25,17 @@ const ObjectSize = props => {
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
@@ -35,18 +45,6 @@ const ObjectSize = props => {
       Header: "ObjectType Name",
       accessor: "ObjectName",
       width: 120,
-      type: "number"
-    },
-    {
-      Header: "MinWeigthKG",
-      accessor: "MinWeigthKG",
-      width: 150,
-      type: "number"
-    },
-    {
-      Header: "MaxWeigthKG",
-      accessor: "MaxWeigthKG",
-      width: 150,
       type: "number"
     },
     {
@@ -62,6 +60,11 @@ const ObjectSize = props => {
       width: 150,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
+    },
+    {
+      Header: "Object Size Map",
+      width: 150,
+      Cell: e => <AmButton onClick={()=>{setEditObjectSize(e.original)}}>Object Size</AmButton>
     }
   ];
 
@@ -83,25 +86,11 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType","validate":/^[0-9\.]+$/},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG",
-      validate: /^[0-9\.]+$/
     },
     {
       field: "PercentWeightAccept",
@@ -131,31 +120,25 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType","validate":/^[0-9\.]+$/},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG",
-      validate: /^[0-9\.]+$/
     },
     {
       field: "PercentWeightAccept",
       type: "input",
       name: "Weight Accept",
       placeholder: "PercentWeightAccept"
+    },
+    {
+      field: "Status",
+      type: "dropdown",
+      typeDropDown: "normal",
+      name: "Status",
+      dataDropDown: EntityEventStatus,
+      placeholder: "Status"
     }
   ];
   const primarySearch = [
@@ -166,24 +149,11 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType"},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG"
     },
     {
       field: "PercentWeightAccept",
@@ -193,10 +163,10 @@ const ObjectSize = props => {
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -231,22 +201,49 @@ const ObjectSize = props => {
     }
   };
 
+  var useEditColumns = (editID) => {
+    return [
+      {
+        field: "ID",
+        component: (data, cols, key) => {
+          return (
+            <div key={key}>
+              <AmTable
+                columns={columns}
+                dataKey={"ID"}
+                dataSource={[]}
+                selection={"checkbox"}
+                height={400}
+              />{" "}
+            </div>
+          );
+        }
+      }
+    ]
+  }
+
   return (
     <div>
-      <AmSetOjectSize
+      {/* <AmDialogConfirm open={open}
+        titleDialog={props.titleText}
+        bodyDialog={generateColumns()}
+        dataDialog={props.data}
+        maxWidth={props.maxWidth}
+        customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{checkStr()}</AmButton>}
+        customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">Cancel</AmButton>}
+        styleDialog={props.style} /> */}
+      <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"ObjectSize"}
         table={"ams_ObjectSize"}
         dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        // customUser={true}
-        customPer={true}
         history={props.history}
-      //dataObjectSize={ObjectSize}
-      //dataObjectSizeNone={ObjectSize2}
-      //columnsEditAPIKey={columnsEditObjectSize}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        pageSize={25}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

@@ -1,12 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const PackMaster = props => {
@@ -47,13 +42,6 @@ const PackMaster = props => {
   };
 
   const colsSKUMaster = [
-    // {
-    //   Header: "ID",
-    //   accessor: "ID",
-    //   fixed: "left",
-    //   width: 100,
-    //   sortable: true
-    // },
     {
       Header: "Code",
       accessor: "Code",
@@ -66,33 +54,28 @@ const PackMaster = props => {
     }
   ];
 
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
-
   const columns = [
     {
       field: "SKUMaster_ID",
       type: "findPopup",
-      colsFindPopup: colsSKUMaster,
-      name: window.project === "TAP" ? "Part NO." : "SKU Code",
-      dataDropDow: SKUMasterQuery,
-      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
-      labelTitle:
-        "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
+      name: "SKU Code",
+      findPopopQuery: SKUMasterQuery,
+      fieldValue:"ID",
+      placeholder: "SKU Code",
+      findPopupTitle:"SKU",
+      findPopupColumns:colsSKUMaster,
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Code",
-      type: "inputPackCode",
+      type: "input",
       name: "Pack Code",
       placeholder: "Code",
       required: true
     },
     {
       field: "Name",
-      type: "inputPackName",
+      type: "input",
       name: "Pack Name",
       placeholder: "Name"
     },
@@ -106,20 +89,20 @@ const PackMaster = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       required: true
@@ -130,17 +113,17 @@ const PackMaster = props => {
     {
       field: "SKUMaster_ID",
       type: "findPopup",
-      colsFindPopup: colsSKUMaster,
-      name: window.project === "TAP" ? "Part NO." : "SKU Code",
-      dataDropDow: SKUMasterQuery,
-      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
-      labelTitle:
-        "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
+      name: "SKU Code",
+      findPopopQuery: SKUMasterQuery,
+      fieldValue:"ID",
+      placeholder: "SKU Code",
+      findPopupTitle:"SKU",
+      findPopupColumns:colsSKUMaster,
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Code",
-      type: "inputPackCode",
+      type: "input",
       name: "Pack Code",
       placeholder: "Code",
       validate: /^.+$/,
@@ -148,7 +131,7 @@ const PackMaster = props => {
     },
     {
       field: "Name",
-      type: "inputPackName",
+      type: "input",
       name: "Pack Name",
       placeholder: "Name"
     },
@@ -162,30 +145,30 @@ const PackMaster = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -199,7 +182,7 @@ const PackMaster = props => {
       type: "findPopup",
       colsFindPopup: colsSKUMaster,
       name: window.project === "TAP" ? "Part NO." : "SKU Code",
-      dataDropDow: SKUMasterQuery,
+      dataDropDown: SKUMasterQuery,
       placeholder: window.project === "TAP" ? "Part NO." : "SKU Code",
       labelTitle:
         "Search of " + window.project === "TAP" ? "Part NO." : "SKU Code",
@@ -216,30 +199,30 @@ const PackMaster = props => {
     },
     {
       field: "UnitTypeCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "ObjectSizeCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -263,11 +246,17 @@ const PackMaster = props => {
   ];
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     {
@@ -310,7 +299,7 @@ const PackMaster = props => {
   };
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"PackMaster"}
@@ -319,6 +308,19 @@ const PackMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"PackMaster"}
+        table={"ams_PackMaster"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        pageSize={25}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );
