@@ -134,28 +134,28 @@ const AmMoveLocation = props => {
   useEffect(() => {
     getData();
   }, []);
-
-  function getData(val) {
-    console.log(val)
-
+  const [queryWorkQueueSto, setQueryWorkQueueSto] = useState();
+  function getData(val, data) {
     const Query = {
       queryString: window.apipath + "/v2/SelectDataViwAPI/",
       t: "WorkQueueSto",
-      q: "[{ 'f': 'Warehouse_ID', 'c':'=', 'v': " + (val !== undefined ? val : warehouse) + "}]",
+      q: '[{ "f": "Warehouse_ID", "c":"=", "v": ' + (val !== undefined ? val : warehouse) + '}]',
       f: "*",
       g: "",
-      s: "[{'f':'Pallet','od':'asc'}]",
+      s: '[{"f":"Pallet","od":"asc"}]',
       sk: 0,
       l: 100,
       all: ""
     };
-    var queryStr = createQueryString(Query)
+    setQueryWorkQueueSto(Query)
+    var queryStr = createQueryString(data != undefined ? data : Query)
     Axios.get(queryStr).then(res => {
-      console.log(res)
       setDataSource(res.data.datas)
+      setCount(res.data.counts)
     });
 
   }
+
   const [editData, setEditData] = useState();
   const useColumns = (cols) => {
     const [columns, setColumns] = useState(cols);
@@ -214,13 +214,10 @@ const AmMoveLocation = props => {
       </Tooltip></div>;
   }
   const getPopup = (e, type) => {
-    console.log(e)
-    console.log(type)
     if (type === "Move") {
       setEditData(Clone(e))
       setDialog(true)
     } else if (type === "Done") {
-      console.log("dsd")
       setDialogConfirm(true)
       setDialogDataText("Done", true)
 
@@ -231,6 +228,8 @@ const AmMoveLocation = props => {
 
   }
   const { columns } = useColumns(props.columns);
+  const [page, setPage] = useState(1);
+  const [iniQuery, setIniQuery] = useState(true);
   const [dataSource, setDataSource] = useState([])
   const [dialog, setDialog] = useState(false);
   const [dialogConfirm, setDialogConfirm] = useState(false);
@@ -240,12 +239,22 @@ const AmMoveLocation = props => {
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (typeof (page) === "number" && !iniQuery) {
+      const queryEdit = JSON.parse(JSON.stringify(queryWorkQueueSto));
+      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+      //setQueryObj(queryEdit)
+      getData(warehouse, queryEdit)
+    }
+  }, [page])
+
   const RanderEle = () => {
     if (props.dataAdd) {
       return props.dataAdd.map(y => {
         return {
           component: (data, cols, key) => {
-            console.log(data)
             return (
               <div key={key}>
                 {RanderElePopMove(data)}
@@ -268,11 +277,10 @@ const AmMoveLocation = props => {
     }
   }
   const RanderElePopMove = (data) => {
-    console.log(data)
     return (
       <div>
-        <Grid container spacing={3}>
-          <Grid item xs={6} style={{ paddingLeft: "20px" }}>
+        <Grid container spacing={3} >
+          <Grid item xs={6} style={{ padding: "5px" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -286,7 +294,7 @@ const AmMoveLocation = props => {
               </Grid>
             </FormInline>
           </Grid>
-          <Grid item xs={6} style={{ paddingLeft: "20px" }}>
+          <Grid item xs={6} style={{ padding: "5px" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -303,7 +311,7 @@ const AmMoveLocation = props => {
         </Grid>
         {/* == */}
         <Grid container spacing={3}>
-          <Grid item xs={6} style={{ paddingLeft: "20px" }}>
+          <Grid item xs={6} style={{ padding: "5px" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -317,7 +325,7 @@ const AmMoveLocation = props => {
               </Grid>
             </FormInline>
           </Grid>
-          <Grid item xs={6} style={{ paddingLeft: "20px" }}>
+          <Grid item xs={6} style={{ padding: "5px" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -334,7 +342,7 @@ const AmMoveLocation = props => {
         </Grid>
         {/* == */}
         <Grid container spacing={3} >
-          <Grid item xs={6} style={{ paddingLeft: "20px", paddingBottom: "20px" }}>
+          <Grid item xs={6} style={{ padding: "5px", paddingBottom: "10px" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -369,7 +377,7 @@ const AmMoveLocation = props => {
         accessor: 'Code',
         sortable: true,
       }]
-    return <div style={{ paddingTop: "20px" }} >
+    return <div >
       <FormInline>
         <label style={LabelH}>
           {"Area&Location"} :{" "}
@@ -432,7 +440,7 @@ const AmMoveLocation = props => {
     return <div >
       <RadioGroup aria-label="quiz" name="quiz" value={value}  >
         <Grid>
-          <Grid style={{ paddingLeft: "20px", textAlign: "center" }}>
+          <Grid style={{ padding: "5px", textAlign: "center" }}>
             <FormInline>
               <Grid item xs={6} >
                 <FormInline>
@@ -495,17 +503,14 @@ const AmMoveLocation = props => {
     return null;
   };
 
-  // const onChangeFilterData = (filterValue) => {
-  //   console.log(filterValue)
-  //   var res = queryObj;
-  //   filterValue.forEach(fdata => {
-  //     if (fdata.customFilter !== undefined)
-  //       res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-  //     else
-  //       res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
-  //   });
-  //   setQueryObj(res)
-  // }
+  const onChangeFilterData = (filterValue) => {
+    var res = queryWorkQueueSto;
+    filterValue.forEach(fdata => {
+      res = QueryGenerate({ ...queryWorkQueueSto }, fdata.field, fdata.value)
+    });
+    getData(warehouse, res)
+    //setQueryWorkQueueSto(res)
+  }
   return (
     <div>
       <AmDialogs
@@ -563,14 +568,21 @@ const AmMoveLocation = props => {
       />
       <AmTable
         columns={columns}
-        dataKey={"Code"}
+        dataKey={"ID"}
         dataSource={dataSource}
-        filterable={false}
         rowNumber={true}
+        totalSize={count}
         pageSize={20}
-        //filterable={true}
-        //filterData={res => { onChangeFilterData(res) }}
+        filterable={true}
+        filterData={res => { onChangeFilterData(res) }}
         height={props.height}
+        pagination={true}
+        onPageChange={p => {
+          if (page !== p)
+            setPage(p)
+          else
+            setIniQuery(false)
+        }}
       />
     </div>
   );

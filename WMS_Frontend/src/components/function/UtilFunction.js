@@ -4,34 +4,34 @@ import moment from "moment";
 const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     var convertFilter = JSON.parse(queryStr.q)
     var queryFilter = [...convertFilter];
-    var searchData = queryFilter.find(x=> x.f === field);
+    var searchData = queryFilter.find(x => x.f === field);
     var searchSign = "=";
     searchValue = searchValue.toString();
-    if(searchValue !== ""){
-        if(searchValue.startsWith(">=")){
+    if (searchValue !== "") {
+        if (searchValue.startsWith(">=")) {
             searchSign = ">=";
-            searchValue = searchValue.substr(2,searchValue.length -1)
+            searchValue = searchValue.substr(2, searchValue.length - 1)
         }
-        else if(searchValue.startsWith("<=")){
+        else if (searchValue.startsWith("<=")) {
             searchSign = "<=";
-            searchValue = searchValue.substr(2,searchValue.length -1)
+            searchValue = searchValue.substr(2, searchValue.length - 1)
         }
-        else if(searchValue.startsWith(">")){
+        else if (searchValue.startsWith(">")) {
             searchSign = ">";
-            searchValue = searchValue.substr(1,searchValue.length -1)
+            searchValue = searchValue.substr(1, searchValue.length - 1)
         }
-        else if(searchValue.startsWith("<")){
+        else if (searchValue.startsWith("<")) {
             searchSign = "<";
-            searchValue = searchValue.substr(1,searchValue.length -1)
+            searchValue = searchValue.substr(1, searchValue.length - 1)
         }
-        else if(searchValue.startsWith("%") || searchValue.endsWith("%") || searchValue.startsWith("*") || searchValue.endsWith("*")){
+        else if (searchValue.startsWith("%") || searchValue.endsWith("%") || searchValue.startsWith("*") || searchValue.endsWith("*")) {
             searchSign = "LIKE";
         }
-        else if(searchValue.includes(",")){
+        else if (searchValue.includes(",")) {
             searchSign = "IN";
         }
 
-        if(searchData !== undefined){
+        if (searchData !== undefined) {
             if (dataType === "datetime") {
                 if (dateField["dateFrom"]) {
                     searchData.v = dateField["dateFrom"];
@@ -41,11 +41,11 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                     searchData.v = dateField["dateTo"];
                     searchData.c = "<=";
                 }
-            }else{
+            } else {
                 searchData.c = searchSign;
                 searchData.v = searchValue;
             }
-        }else{
+        } else {
             if (dataType === "datetime") {
                 if (dateField["dateFrom"]) {
                     let createObj = {};
@@ -59,7 +59,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                     createObj.v = dateField["dateTo"];
                     createObj.c = "<=";
                 }
-            }else{
+            } else {
                 searchData = {};
                 searchData.f = field;
                 searchData.c = searchSign;
@@ -68,12 +68,12 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             }
         }
     }
-    else{
-        queryFilter = [...queryFilter.filter(x=> x.f !== field)]; 
+    else {
+        queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
 
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
 }
 
-export {QueryGenerate}
+export { QueryGenerate }
