@@ -459,7 +459,10 @@ const GenerateHeader = ({columns,props, tableSize}) => {
             width={col.width === undefined ? freeWidth : col.width}
             fixWidth={col.fixWidth}
           >
-            {typeof col.Header === "string" ? (
+            {col.Header === undefined ? (
+              <SortHeader row={col}></SortHeader>
+            ) : 
+            typeof col.Header === "string"  ? (
               <SortHeader row={col}>{col.Header}</SortHeader>
             ) : (
               <SortHeader row={col}>{col.Header(col)}</SortHeader>

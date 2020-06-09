@@ -1,37 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
+//import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-import Checkbox from "@material-ui/core/Checkbox";
-import styled from "styled-components";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const BaseMaster = props => {
-  const LabelH = styled.label`
-  font-weight: bold;
-  width: 100px;
-`;
-
-  const InputDiv = styled.div``;
-  const FormInline = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  label {
-    margin: 5px 0 5px 0;
-  }
-  input {
-    vertical-align: middle;
-  }
-  @media (max-width: 800px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
   const BaseMasterTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "BaseMasterType",
@@ -66,19 +40,20 @@ const BaseMaster = props => {
     l: 100,
     all: ""
   };
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
-  const [isLoad, setIsLoad] = useState(true);
-
+  
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
@@ -141,30 +116,30 @@ const BaseMaster = props => {
     },
     {
       field: "BaseMasterType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Base Type",
-      dataDropDow: BaseMasterTypeQuery,
+      dataDropDown: BaseMasterTypeQuery,
       placeholder: "Base Type",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Size",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "Size",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
@@ -197,40 +172,44 @@ const BaseMaster = props => {
     },
     {
       field: "BaseMasterType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Base Type",
-      dataDropDow: BaseMasterTypeQuery,
+      dataDropDown: BaseMasterTypeQuery,
       placeholder: "Base Type",
       fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Size",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "Size",
       fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
       required: true
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
       required: true
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
+      fieldValue: "value",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -248,40 +227,40 @@ const BaseMaster = props => {
     },
     {
       field: "BaseMasterType_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Base Type",
-      dataDropDow: BaseMasterTypeQuery,
+      dataDropDown: BaseMasterTypeQuery,
       placeholder: "Base Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "ObjectSize_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Size",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "Size",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "UnitType_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -320,7 +299,7 @@ const BaseMaster = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"BaseMaster"}
@@ -333,6 +312,20 @@ const BaseMaster = props => {
         prefix={2}
         baseLength={10}
         checked={isLoad}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"BaseMaster"}
+        table={"ams_BaseMaster"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        tableType="view"
+        pageSize={25}
+        height={500}
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

@@ -1,11 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const Warehouse = props => {
@@ -21,17 +17,19 @@ const Warehouse = props => {
     all: ""
   };
 
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
@@ -64,9 +62,9 @@ const Warehouse = props => {
     {
       field: "Branch_ID",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Branch",
-      dataDropDow: BranchQuery,
+      dataDropDown: BranchQuery,
       placeholder: "Branch_ID",
       fieldLabel: ["Code", "Name"]
     }
@@ -92,18 +90,18 @@ const Warehouse = props => {
     {
       field: "Branch_ID",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Branch",
-      dataDropDow: BranchQuery,
+      dataDropDown: BranchQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -115,9 +113,9 @@ const Warehouse = props => {
     {
       field: "Branch_Code",
       type: "dropdow",
-      typeDropdow: "search",
+      typeDropDown: "search",
       name: "Branch",
-      dataDropDow: BranchQuery,
+      dataDropDown: BranchQuery,
       placeholder: "Branch",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -125,9 +123,9 @@ const Warehouse = props => {
     {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -163,7 +161,7 @@ const Warehouse = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"Warehouse"}
@@ -172,6 +170,20 @@ const Warehouse = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"Warehouse"}
+        table={"ams_Warehouse"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        tableType="view"
+        height={500}
+        pageSize={25}
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

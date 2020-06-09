@@ -1,36 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const AreaLocationMaster = props => {
-  const AreaMasterTypeQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "AreaMasterType",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const WarehouseQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Warehouse",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  
   const AreaMasterQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
@@ -72,11 +47,17 @@ const AreaLocationMaster = props => {
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Area Code", accessor: "AreaCode", fixed: "left", width: 150 },
@@ -101,10 +82,10 @@ const AreaLocationMaster = props => {
   const columns = [
     {
       field: "AreaMaster_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Area Code",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Area Code",
       fieldLabel: ["Code", "Name"]
     },
@@ -153,20 +134,20 @@ const AreaLocationMaster = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "ObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
@@ -176,10 +157,10 @@ const AreaLocationMaster = props => {
   const columnsEdit = [
     {
       field: "AreaMaster_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Area Code",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Area Code",
       fieldLabel: ["Code", "Name"]
     },
@@ -229,30 +210,30 @@ const AreaLocationMaster = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "ObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -263,10 +244,10 @@ const AreaLocationMaster = props => {
   const columnsFilter = [
     {
       field: "AreaCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Area Code",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Area Code",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -277,20 +258,20 @@ const AreaLocationMaster = props => {
     { field: "Level", type: "input", name: "Level", placeholder: "Level" },
     {
       field: "UnitType_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "ObjectSize_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "ObjectSize",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -298,9 +279,9 @@ const AreaLocationMaster = props => {
     {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -336,7 +317,7 @@ const AreaLocationMaster = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilter={columnsFilter}
         columnsFilterPrimary={columnsFilterPri}
         tableQuery={"AreaLocationMaster"}
@@ -345,6 +326,19 @@ const AreaLocationMaster = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={columnsFilterPri}
+        columnsFilter={columnsFilter}
+        tableQuery={"AreaLocationMaster"}
+        table={"ams_AreaLocationMaster"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        tableType="view"
+        pageSize={25}
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

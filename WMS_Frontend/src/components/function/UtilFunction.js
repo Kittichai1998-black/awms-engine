@@ -6,24 +6,25 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     var queryFilter = [...convertFilter];
     var searchData = queryFilter.find(x=> x.f === field);
     var searchSign = "=";
+    searchValue = searchValue.toString();
     if(searchValue !== ""){
-        if(searchValue.search(">=") === 0){
+        if(searchValue.startsWith(">=")){
             searchSign = ">=";
             searchValue = searchValue.substr(2,searchValue.length -1)
         }
-        else if(searchValue.search("<=") === 0){
+        else if(searchValue.startsWith("<=")){
             searchSign = "<=";
             searchValue = searchValue.substr(2,searchValue.length -1)
         }
-        else if(searchValue.search(">") === 0){
+        else if(searchValue.startsWith(">")){
             searchSign = ">";
             searchValue = searchValue.substr(1,searchValue.length -1)
         }
-        else if(searchValue.search("<") === 0){
+        else if(searchValue.startsWith("<")){
             searchSign = "<";
             searchValue = searchValue.substr(1,searchValue.length -1)
         }
-        else if(searchValue.search("%") === 0 || searchValue.search("%") === searchValue.length - 1){
+        else if(searchValue.startsWith("%") || searchValue.endsWith("%") || searchValue.startsWith("*") || searchValue.endsWith("*")){
             searchSign = "LIKE";
         }
         else if(searchValue.includes(",")){
