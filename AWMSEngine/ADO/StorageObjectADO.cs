@@ -47,7 +47,7 @@ namespace AWMSEngine.ADO
                 if (x != baseInfo)
                 {
                     x.areaID = location.AreaMaster_ID;
-                    x.eventStatus = eventStatus;
+                   
                     this.PutV2(x, buVO);
                 }
             });

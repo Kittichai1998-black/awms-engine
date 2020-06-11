@@ -14,10 +14,24 @@ import {
   green
 } from "@material-ui/core/colors";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import AmTable from "../../components/AmTable/AmTable";
 import EditIcon from "@material-ui/icons/MoveToInbox";
+import OfflinePinIcon from "@material-ui/icons/OfflinePin";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import IconButton from "@material-ui/core/IconButton";
+import LabelT from "../../components/AmLabelMultiLanguage";
 import Grid from '@material-ui/core/Grid';
+import Clone from "../../components/function/Clone";
+import AmStorageObjectStatus from "../../components/AmStorageObjectStatus";
+import styled from "styled-components";
+import Tooltip from '@material-ui/core/Tooltip';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import AmDropdown from "../../components/AmDropdown";
+import AmFindPopup from '../../components/AmFindPopup';
+import { QueryGenerate } from '../../components/function/UtilFunction';
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -56,25 +70,36 @@ const styles = theme => ({
 
 
 });
+const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 5px 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
 
-
-// const useQueryData = (queryObj) => {
-//   console.log(queryObj)
-//   const [dataSource, setDataSource] = useState([])
-
-//   useEffect(() => {
-//     if (typeof queryObj === "object") {
-//       var queryStr = createQueryString(queryObj)
-//       Axios.get(queryStr).then(res => {
-//         console.log(res)
-//         setDataSource(res.data.datas)
-//       });
-//     }
-//   }, [queryObj])
-//   return dataSource;
-// }
-
+const LabelH = {
+  fontWeight: "bold",
+  width: "200px"
+};
+const LabelDD = {
+  fontWeight: "bold",
+  width: "100px"
+};
+const LabelD = {
+  width: "120px"
+};
 const AmMoveLocation = props => {
+  const { t } = useTranslation();
+  const [warehouse, setWarehouse] = useState(1);
   const iniCols = [
     {
       Header: "Code",
@@ -82,74 +107,157 @@ const AmMoveLocation = props => {
       fixed: "left"
 
     }]
-  const Query = {
+
+  const LocationQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "WorkQueueSto",
-    q: "[{ 'f': 'EventStatus', 'c':'!=', 'v': 0}]",
+    t: "AreaLocationMaster",
+    q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
     f: "*",
     g: "",
-    s: "[{'f':'Pallet','od':'asc'}]",
+    s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
     l: 100,
     all: ""
   };
-  const [query, setQuery] = useState(Query);
+  const WarehouseQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "Warehouse",
+    q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
+  //const [query, setQuery] = useState(Query);
   useEffect(() => {
-    getData(query);
+    getData();
   }, []);
-
-  async function getData(qryString) {
-    var queryStr = createQueryString(qryString)
+  const [queryWorkQueueSto, setQueryWorkQueueSto] = useState();
+  function getData(val, data) {
+    const Query = {
+      queryString: window.apipath + "/v2/SelectDataViwAPI/",
+      t: "WorkQueueSto",
+      q: '[{ "f": "Warehouse_ID", "c":"=", "v": ' + (val !== undefined ? val : warehouse) + '}]',
+      f: "*",
+      g: "",
+      s: '[{"f":"Pallet","od":"asc"}]',
+      sk: 0,
+      l: 100,
+      all: ""
+    };
+    setQueryWorkQueueSto(Query)
+    var queryStr = createQueryString(data != undefined ? data : Query)
     Axios.get(queryStr).then(res => {
-      console.log(res)
       setDataSource(res.data.datas)
+      setCount(res.data.counts)
     });
 
   }
+
+  const [editData, setEditData] = useState();
   const useColumns = (cols) => {
     const [columns, setColumns] = useState(cols);
-    const [editData, setEditData] = useState();
-    const [removeData, setRemoveData] = useState();
 
     useEffect(() => {
-      const iniCols = [...cols];
+      const iniCols = []
       iniCols.push({
         Header: "",
-        fixWidth: 63,
-        colStyle: { zIndex: -1 },
+        width: 20,
+        colStyle: { zIndex: -1, textAlign: "center" },
+
         filterable: false,
         Cell: (e) => <IconButton
           size="small"
           aria-label="info"
           style={{ marginLeft: "3px" }}
         >
-          <EditIcon
-            fontSize="small"
-            style={{ color: "#f39c12" }}
-            onClick={() => { setDialog(true) }}
-          />
+          {props.syncWC ? (
+            e.original.AreaMaster_Code != "SA" ? getButtonDoneAndCancel(e) : getButtonMove(e)
+          ) : getButtonMove(e)}
         </IconButton>
       })
+      iniCols.push(...cols)
       setColumns(iniCols);
     }, [])
 
-    return { columns, editData, removeData };
+    return { columns };
   }
-  const { columns, editData, removeData } = useColumns(props.columns);
+  const getButtonMove = (e) => {
+    return <Tooltip title="Move">
+      <EditIcon
+        fontSize="small"
+        style={{ color: "#F9A825" }}
+        onClick={() => { getPopup(e.original, "Move") }}
+      />
+    </Tooltip>;
+  }
+  const getButtonDoneAndCancel = (e) => {
+
+
+    return <div><Tooltip title="Done">
+
+      <OfflinePinIcon
+        fontSize="small"
+        style={{ color: "#388E3C" }}
+        onClick={() => { getPopup(e.original, "Done") }}
+      />
+    </Tooltip>
+
+      <Tooltip title="Cancel">
+        <HighlightOffIcon
+          fontSize="small"
+          style={{ color: "#D32F2F" }}
+          onClick={() => { getPopup(e.original, "Cancel") }}
+        />
+      </Tooltip></div>;
+  }
+  const getPopup = (e, type) => {
+    if (type === "Move") {
+      setEditData(Clone(e))
+      setDialog(true)
+    } else if (type === "Done") {
+      setDialogConfirm(true)
+      setDialogDataText("Done", true)
+
+    } else {
+      setDialogConfirm(true)
+      setDialogDataText("Cancel")
+    }
+
+  }
+  const { columns } = useColumns(props.columns);
+  const [page, setPage] = useState(1);
+  const [iniQuery, setIniQuery] = useState(true);
   const [dataSource, setDataSource] = useState([])
   const [dialog, setDialog] = useState(false);
-  //const [columns, setColumns] = useState(FuncgetButton());
+  const [dialogConfirm, setDialogConfirm] = useState(false);
+  const [dialogDataText, setDialogDataText] = useState("");
+  const [valueDataFindPopup, setValueDataFindPopup] = useState({});
+  const [valueDataRadio, setValueDataRadio] = useState(0);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState("");
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (typeof (page) === "number" && !iniQuery) {
+      const queryEdit = JSON.parse(JSON.stringify(queryWorkQueueSto));
+      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+      //setQueryObj(queryEdit)
+      getData(warehouse, queryEdit)
+    }
+  }, [page])
 
   const RanderEle = () => {
     if (props.dataAdd) {
-      const x = props.dataAdd;
-      return x.map(y => {
+      return props.dataAdd.map(y => {
         return {
-          component: (data = null, cols, key) => {
-
+          component: (data, cols, key) => {
             return (
               <div key={key}>
-                {RanderElePopMove()}
+                {RanderElePopMove(data)}
               </div>
             );
           }
@@ -157,53 +265,324 @@ const AmMoveLocation = props => {
       });
     }
   };
-
-  const RanderElePopMove = () => {
+  const getStatus = value => {
+    if (value === "RECEIVED") {
+      return <AmStorageObjectStatus key={"RECEIVED"} statusCode={102} />;
+    } else if (value === "AUDITED") {
+      return <AmStorageObjectStatus key={"AUDITED"} statusCode={104} />;
+    } else if (value === "CONSOLIDATED") {
+      return <AmStorageObjectStatus key={"CONSOLIDATED"} statusCode={156} />;
+    } else {
+      return null;
+    }
+  }
+  const RanderElePopMove = (data) => {
     return (
-
       <div>
-
-        <Grid item xs={6}>
-          ghhfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+        <Grid container spacing={3} >
+          <Grid item xs={6} style={{ padding: "5px" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelH}>{"Warehouse : "}</label>
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelD}>{data.Warehouse}</label>
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
+          <Grid item xs={6} style={{ padding: "5px" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelH}>{"Current Area : "}</label>
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelD}>{data.Area}</label>
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          grrh
+        {/* == */}
+        <Grid container spacing={3}>
+          <Grid item xs={6} style={{ padding: "5px" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelH}>{"Base : "}</label>
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelD}>{data.Pallet}</label>
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
+          <Grid item xs={6} style={{ padding: "5px" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelH}>{"Current Location : "}</label>
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelD}>{data.Location}</label>
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
         </Grid>
-      </div>
+        {/* == */}
+        <Grid container spacing={3} >
+          <Grid item xs={6} style={{ padding: "5px", paddingBottom: "10px" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelH}>{"Status : "}</label>
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <label style={LabelD}>{getStatus(data.PackStatus)}</label>
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
+        </Grid>
+        {getEleCheckbox()}
+        {getEleFindLocation()}
 
-
-
-      // <AmInput
-      //   id={"x"}
-      //   required={true}
-      //   validate={true}
-      //   // msgError="Error"
-      //   style={{ width: "270px", margin: "0px" }}
-      // />
+      </div >
     )
   }
 
+  const getEleFindLocation = value => {
+    const cols = [
+      {
+        Header: 'Area',
+        accessor: 'AreaMaster_Name',
+        width: 130,
+        sortable: true,
+      },
+      {
+        Header: 'Code',
+        accessor: 'Code',
+        sortable: true,
+      }]
+    return <div >
+      <FormInline>
+        <label style={LabelH}>
+          {"Area&Location"} :{" "}
+        </label>
+        <AmFindPopup
+          id={"alm"}
+          fieldDataKey="ID"
+          fieldLabel={["AreaMaster_Code", "Code"]}
+          labelPattern=" : "
+          valueData={valueDataFindPopup ? valueDataFindPopup["Code"] : ""}
+          labelTitle={"Area Location"}
+          queryApi={LocationQuery}
+          placeholder={"Select Area&Location..."}
+          columns={cols}
+          width={270}
+          onChange={(value) =>
+            setValueDataFindPopup(value)
+          }
+        />
+      </FormInline>
+    </div>;
+  }
+  const onHandlePopupConfirm = (status, rowdata) => {
+    if (status) {
+      updateMove(rowdata, valueDataRadio, valueDataFindPopup, rowdata.Pallet, rowdata.StoID);
+    }
+    setDialog(false);
+  };
+
+  const updateMove = (rowdata, mode, location, pallet, bstosID) => {
+    let updjson = {
+      mode: mode,
+      palletCode: pallet,
+      SouLocationCode: rowdata.Area,
+      DesLocationID: parseInt(location),
+      bstosID: rowdata.ID
+
+    };
+
+    Axios.post(window.apipath + "/v2/MoveLocaionAPI", updjson).then(res => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          setOpenSuccess(true);
+          getData(warehouse);
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
+          getData(warehouse);
+        }
+      }
+
+    })
+    return null;
+  };
+  const handleRadioChange = (checked, val) => {
+    setValueDataRadio(val)
+    return null;
+  };
+  const getEleCheckbox = value => {
+    return <div >
+      <RadioGroup aria-label="quiz" name="quiz" value={value}  >
+        <Grid>
+          <Grid style={{ padding: "5px", textAlign: "center" }}>
+            <FormInline>
+              <Grid item xs={6} >
+                <FormInline>
+                  <FormControlLabel value="0"
+                    control={
+                      <Radio color="primary"
+                        checked={valueDataRadio === 0}
+                        onChange={(checked) => handleRadioChange(checked, 0)}
+                      />}
+                    label="AMS Only"
+
+                  />
+                </FormInline>
+              </Grid>
+              <Grid item xs={6} >
+                <FormInline>
+                  <FormControlLabel value="1"
+                    control={
+                      <Radio color="primary"
+                      />}
+                    disabled={!props.syncWC}
+                    label="Create Queue"
+                    onChange={(checked) => handleRadioChange(checked, 1)} />
+                </FormInline>
+              </Grid>
+            </FormInline>
+          </Grid>
+        </Grid>
+      </RadioGroup>
+    </div>;
+  }
+
+  const onHandledataConfirm = (status, rowdata, type) => {
+    if (status) {
+      //setDialogDataText()
+      updateDoneAndCancel(type)
+    } else {
+      setDialogConfirm(false)
+    }
+    return null
+  }
+  const updateDoneAndCancel = (mode) => {
+
+    if (mode === "Done") {
+      // Axios.post(window.apipath + "/v2/MoveLocaionAPI", updjson).then(res => {
+      //   console.log(res)
+      //   if (res.data._result !== undefined) {
+      //     if (res.data._result.status === 1) {
+
+      //     } else {
+
+      //     }
+      //   }
+
+      // })
+    } else {
+
+    }
+
+    return null;
+  };
+
+  const onChangeFilterData = (filterValue) => {
+    var res = queryWorkQueueSto;
+    filterValue.forEach(fdata => {
+      res = QueryGenerate({ ...queryWorkQueueSto }, fdata.field, fdata.value)
+    });
+    getData(warehouse, res)
+    //setQueryWorkQueueSto(res)
+  }
   return (
     <div>
+      <AmDialogs
+        typePopup={"success"}
+        onAccept={e => {
+          setOpenSuccess(e);
+        }}
+        open={openSuccess}
+        content={"Success"}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+      <FormInline>
+        {" "}
+        <label style={LabelDD}>
+          {t("Warehouse")} :{" "}
+        </label>
+        <AmDropdown
+          id={"WH"}
+          placeholder={"Select Warehouse..."}
+          fieldDataKey={"ID"}
+          fieldLabel={["Code", "Name"]}
+          labelPattern=" : "
+          width={250}
+          ddlMinWidth={200}
+          zIndex={1000}
+          defaultValue={1}
+          queryApi={WarehouseQuery}
+          onChange={(value, dataObject, inputID, fieldDataKey) =>
+            getData(value)
+
+          }
+          ddlType={"normal"}
+        />{" "}
+      </FormInline>
+      <br />
       <AmEditorTable
         open={dialog}
-        //onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError, "add")}
-        titleText={"Add"}
-        //data={editData}
+        onAccept={(status, rowdata) => onHandlePopupConfirm(status, rowdata)}
+        titleText={"Move Location"}
+        data={editData}
         columns={RanderEle()}
-      //objColumnsAndFieldCheck={{ objColumn: props.dataAdd, fieldCheck: "field" }}
+      />
+      <AmEditorTable
+        open={dialogConfirm}
+        onAccept={status => onHandledataConfirm(status, dialogDataText)}
+        titleText={dialogDataText}
+        columns={[]}
       />
       <AmTable
         columns={columns}
-        dataKey={"Code"}
+        dataKey={"ID"}
         dataSource={dataSource}
-        filterable={false}
-        //filterData={res => { onChangeFilterData(res) }}
         rowNumber={true}
+        totalSize={count}
         pageSize={20}
+        filterable={true}
+        filterData={res => { onChangeFilterData(res) }}
         height={props.height}
-      // pagination={false}
-      //onPageChange={setPage}
+        pagination={true}
+        onPageChange={p => {
+          if (page !== p)
+            setPage(p)
+          else
+            setIniQuery(false)
+        }}
       />
     </div>
   );

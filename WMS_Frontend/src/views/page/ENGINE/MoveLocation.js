@@ -51,13 +51,50 @@ const MoveLocation = props => {
   const iniCols = [
 
     {
-      Header: "Code",
+      Header: "Moving Jobs",
       accessor: "Code",
-      fixed: "left",
-      // Cell: (e) => { console.log(e) }
+      width: 100
     },
-
-
+    {
+      Header: "Base",
+      accessor: "Pallet",
+      width: 100
+    },
+    {
+      Header: "Status",
+      accessor: "PackStatus",
+      width: 100
+    },
+    {
+      Header: "Current Area",
+      accessor: "Area",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Location",
+      width: 100
+    },
+    {
+      Header: "Sou Area",
+      accessor: "Sou_Area_Code",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Sou_AreaLocation_Code",
+      width: 100
+    },
+    {
+      Header: "Des Area",
+      accessor: "Des_Area_Code",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Des_AreaLocation_Code",
+      width: 100
+    }
   ];
   return (
     <div>
@@ -65,6 +102,7 @@ const MoveLocation = props => {
       <AmMoveLocation
         columns={iniCols}
         dataAdd={columns}
+        syncWC={false}
       ></AmMoveLocation>
 
     </div>
