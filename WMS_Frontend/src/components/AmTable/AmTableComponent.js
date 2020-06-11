@@ -44,33 +44,34 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, dataSource, pag
     const {selection, pagination} = useContext(AmTableContext);
 
     useEffect(() => {
-      if(selection.selectAllState){
-        selection.addAll(dataSource)
-        if (dataSource.length > 0) {
-          dataSource.forEach(x => {
-            let element = document.getElementById(
-              "selection_" + x[dataKey]
-            );
-            if (element !== null || element === undefined) {
-              element.checked = true;
-            }
-          });
+      if(typeof dataSource === "object"){
+        if(selection.selectAllState){
+          selection.addAll(dataSource)
+          if (dataSource.length > 0) {
+            dataSource.forEach(x => {
+              let element = document.getElementById(
+                "selection_" + x[dataKey]
+              );
+              if (element !== null || element === undefined) {
+                element.checked = true;
+              }
+            });
+          }
+        }
+        else{
+          if (dataSource.length > 0) {
+            selection.removeAll()
+            dataSource.forEach(x => {
+              let element = document.getElementById(
+                "selection_" + x[dataKey]
+              );
+              if (element !== null || element === undefined) {
+                element.checked = false;
+              }
+            });
+          }
         }
       }
-      else{
-        if (dataSource.length > 0) {
-          selection.removeAll()
-          dataSource.forEach(x => {
-            let element = document.getElementById(
-              "selection_" + x[dataKey]
-            );
-            if (element !== null || element === undefined) {
-              element.checked = false;
-            }
-          });
-        }
-      }
-        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selection.selectAllState, dataSource, dataKey]);
 
@@ -186,41 +187,44 @@ const useDataSource = (props, groupBy) => {
   const {pagination, sort} = useContext(AmTableContext);
 
   useEffect(() => {
-    const data = props.slice(0, pagination.pageSize);
+    if(typeof props === "object"){
+      const data = props.slice(0, pagination.pageSize);
 
-    if(groupBy){
-      let groups = _.groupBy(data, (data)=> {
-        //var findSort = groupItem.find(x => x === sort.sortValue);
-        let groupField = "";
-        groupBy.field.forEach(x=> groupField += data[x]);
-        return groupField;
-      });
-      
-      console.log(groups)
-      let groupData = _.orderBy(Object.keys(groups), groupBy.field).map((g) => {
-        let grourData = groups[g];
-        let sumBy = {};
-        groupBy.sumField.forEach(x=> {
-          sumBy[x] = _.sumBy(grourData, x)
+      if(groupBy){
+        let groups = _.groupBy(data, (data)=> {
+          //var findSort = groupItem.find(x => x === sort.sortValue);
+          let groupField = "";
+          groupBy.field.forEach(x=> groupField += data[x]);
+          return groupField;
         });
-        if(props.groupFooter){
-          //g.push({...props.groupFooter(data), "_footer":true})
-          return grourData
-        }
-        else{
-          grourData.push({...sumBy, "_footer":true})
-          return grourData
-        }
-      });
-      let groupWithSum = []
-      
-      console.log(groupData)
-      groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
-      setDataSource(groupWithSum)
+        
+        console.log(groups)
+        let groupData = _.orderBy(Object.keys(groups), groupBy.field).map((g) => {
+          let grourData = groups[g];
+          let sumBy = {};
+          groupBy.sumField.forEach(x=> {
+            sumBy[x] = _.sumBy(grourData, x)
+          });
+          if(props.groupFooter){
+            //g.push({...props.groupFooter(data), "_footer":true})
+            return grourData
+          }
+          else{
+            grourData.push({...sumBy, "_footer":true})
+            return grourData
+          }
+        });
+        let groupWithSum = []
+        
+        console.log(groupData)
+        groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
+        setDataSource(groupWithSum)
+      }else{
+        setDataSource(data)
+      }
     }else{
-      setDataSource(data)
-    }
-    
+      setDataSource([])
+    }    
   }, [props, groupBy, pagination.pageSize, sort])
 
   return dataSource

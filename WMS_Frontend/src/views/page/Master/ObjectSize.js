@@ -5,17 +5,64 @@ import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmTable from "../../../components/AmTable/AmTable";
-import { apicall, createQueryString } from '../../../components/function/CoreFunction';
+import { apicall } from '../../../components/function/CoreFunction2';
 
 const Axios = new apicall()
 //======================================================================
 const ObjectSize = props => {
   const [editObjectSize, setEditObjectSize] = useState();
+  const [objectSizeData, setObjectSizeData] = useState([]);
+  const [relationComponent, setRelationComponent] = useState([]);
   const [open, setOpen] = useState(false);
 
   useEffect(()=> {
-    console.log(editObjectSize)
+    if(editObjectSize !== undefined){
+      Axios.get(
+        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSize.ID
+      ).then(res => {setObjectSizeData(res.data.datas)})
+    }
+    return () => setEditObjectSize()
   }, [editObjectSize]);
+
+  useEffect(() => {
+    const getObjectSizeColumns = (dataSou) => {
+      const objSizeCols = [
+        { Header: "Code", accessor: "Code", width: 250 },
+        { Header: "Name", accessor: "Name", width: 250 }
+      ];
+
+      if(dataSou !== undefined && dataSou.length > 0){
+        setOpen(true)
+      }
+
+      const defaultValue = () => {
+        return dataSou.filter(x=> x.ObjMapID !== null)
+      }
+
+      return [
+        {
+          field: "ID",
+          component: (data, cols, key) => {
+            return (
+              <div key={key}>
+                <AmTable
+                  columns={objSizeCols}
+                  dataKey={"ID"}
+                  dataSource={dataSou}
+                  selection={"checkbox"}
+                  selectionData={sel => console.log(sel)}
+                  selectionDefault={defaultValue()}
+                  height={400}
+                />{" "}
+              </div>
+            );
+          }
+        }
+      ]
+    }
+    
+    setRelationComponent(getObjectSizeColumns(objectSizeData))
+  }, [objectSizeData])
 
   const EntityObjectType = [
     { label: "Location", value: 0 },
@@ -201,37 +248,35 @@ const ObjectSize = props => {
     }
   };
 
-  var useEditColumns = (editID) => {
-    return [
-      {
-        field: "ID",
-        component: (data, cols, key) => {
-          return (
-            <div key={key}>
-              <AmTable
-                columns={columns}
-                dataKey={"ID"}
-                dataSource={[]}
-                selection={"checkbox"}
-                height={400}
-              />{" "}
-            </div>
-          );
-        }
+  const PopupObjSize = ({relationComponent, open}) => {
+    return <AmEditorTable 
+    open={open} 
+    onAccept={(status, rowdata)=> {
+      if(!status)
+        setOpen(false)
+      else{
+        UpdateObjectSizeMap();
+        setOpen(false)
       }
-    ]
+    }}
+    titleText={"Object Size"} 
+    data={{}}
+    columns={relationComponent}
+  />};
+
+  const UpdateObjectSizeMap = () => {
+    let updjson = {
+      t: "ams_ObjectSizeMap",
+      pk: "ObjMapID",
+      datas: [],
+      nr: false,
+      _token: localStorage.getItem("Token")
+    };
   }
 
   return (
     <div>
-      {/* <AmDialogConfirm open={open}
-        titleDialog={props.titleText}
-        bodyDialog={generateColumns()}
-        dataDialog={props.data}
-        maxWidth={props.maxWidth}
-        customAcceptBtn={<AmButton id={props.titleText} onClick={() => onHandleClick(true)} styleType="confirm_clear">{checkStr()}</AmButton>}
-        customCancelBtn={<AmButton id="Editor_Cancel" onClick={() => onHandleClick(false)} styleType="delete_clear">Cancel</AmButton>}
-        styleDialog={props.style} /> */}
+      <PopupObjSize relationComponent={relationComponent} open={open}/>
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

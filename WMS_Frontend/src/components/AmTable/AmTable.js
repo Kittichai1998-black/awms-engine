@@ -18,7 +18,6 @@ const AmTable = (props) => {
             footerStyle={props.footerStyle}
             headerStyle={props.headerStyle}
             groupBy={props.groupBy}
-            selection={props.selection}
             filterable={props.filterable}
             filterData={props.filterData}
             pageSize={props.pageSize}
@@ -26,12 +25,15 @@ const AmTable = (props) => {
             pagination={props.pagination}
             onPageChange={props.onPageChange}
             totalSize={props.totalSize}
+            selection={props.selection}
+            selectionData={props.selectionData}
+            selectionDefault={props.selectionDefault}
         />
     </AmTableProvider>
 }
 
 const AmTableSetup = (props) => {
-    const {pagination, filter} = useContext(AmTableContext);
+    const {pagination, filter, selection} = useContext(AmTableContext);
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
     
@@ -46,6 +48,19 @@ const AmTableSetup = (props) => {
             props.filterData(filter.filterValue)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter.filterValue])
+
+    useEffect(() => {
+        if(props.selectionData)
+            props.selectionData(selection.selectionValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selection.selectionValue])
+    
+    useEffect(() => {
+        console.log(props.selectionDefault)
+        if(props.selectionDefault)
+            selection.addAll(props.selectionDefault)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.selectionDefault])
 
     useEffect(()=>{
         if(props.onPageChange === undefined){
@@ -184,10 +199,21 @@ AmTable.propTypes = {
      * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
      ** value? : (page) => {}
     */
-    totalSize:PropTypes.number,    
+    totalSize:PropTypes.number,
+    /**
+     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     ** value? : (selectionValue) => {}
+    */
+    selectionData:PropTypes.func,
+    /**
+     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     ** value? : [{ID:1},{ID:2},...]
+    */
+    defaultSelection:PropTypes.array,
   }
 
 AmTable.defaultProps = {
     minRow:5,
-    height:500
+    height:500,
+    pageSize:25,
 }
