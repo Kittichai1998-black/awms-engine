@@ -1,13 +1,11 @@
-import React, {useState, useEffect} from "React";
+import React, {useState, useEffect} from "react";
 import styled from 'styled-components';
 
 import AmInput from "../../../components/AmInput";
 import AmDropdown from '../../../components/AmDropdown';
 import AmFindPopup from '../../../components/AmFindPopup';
 import AmDate from "../../../components/AmDate";
-
-import { useTranslation } from 'react-i18next';
-const { t } = useTranslation();
+import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 
 const FormInline = styled.div`
     display: flex;
@@ -29,106 +27,93 @@ const LabelH = styled.label`
     width: 200px;
 `;
 
-const FilterInputComponent = (config, response) => {
+const InputComponent = ({config, defaultData, response}) => {
     const [value, setValue] = useState({});
-
-    useEffect(() => {
-        response(value);
-    }, [value, response])
 
     return  (
         <FormInline>
-          <label style={{width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label>
+          <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
           <AmInput 
             id={config.field}
             placeholder={config.placeholder}
             style={{width:"200px"}}
             type= "input"
-            onChangeV2={(value)=>{setValue({field:config.field, value:value})}}/>
+            value={!IsEmptyObject(value) ? value.value : defaultData !== undefined ? defaultData : ""}
+            onChangeV2={(value)=>{setValue({field:config.field, value:value}); response({field:config.field, value:value})}}/>
         </FormInline>
       )
 };
 
-const FilterDropDownComponent = (config, defaultData, queryData, response) => {
+const DropDownComponent = ({config, response, defaultData, queryData}) => {
     const [selection, setSelection] = useState({});
-    useEffect(() => {
-        response(selection);
-    }, [selection, response])
-
     var checkType  = Array.isArray(queryData);
     if(!checkType){
-        return <FormInline> <LabelH>{t(config.name)} : </LabelH> 
+        return <FormInline> <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
         <AmDropdown
           required={config.required}
           id={config.field}
           placeholder={config.placeholder}
-          fieldDataKey={config.field}
-          fieldLabel={config.fieldLabel}
+          fieldDataKey={config.fieldValue === undefined ? "ID" : config.fieldValue}
+          fieldLabel={config.fieldLabel === undefined ? ["label"] : config.fieldLabel}
           labelPattern=" : "
           width={270} 
           ddlMinWidth={270}
-          valueData={selection[config.field]}
+          zIndex={99999999}
+          value={selection !== undefined && selection !== null ? selection[config.field] : ""}
           queryApi={queryData}
           defaultValue={defaultData ? defaultData:""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => setSelection(dataObject)}
-          ddlType={config.type}
+          onChange={(value, dataObject, inputID, fieldDataKey) => {console.log(value); setSelection(dataObject); response(dataObject, value)}}
+          ddlType={"search"}
         /> 
       </FormInline>
     }else{
-        return <FormInline> <LabelH>{t(config.name)} : </LabelH> 
+        return <FormInline> <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
         <AmDropdown
             id={config.field}
             placeholder={config.placeholder}
-            fieldDataKey={"value"} 
+            fieldDataKey={config.fieldValue === undefined ? "value" : config.fieldValue}
+            fieldLabel={config.fieldLabel === undefined ? ["label"] : config.fieldLabel}
             width={200}
             ddlMinWidth={200}
-            zIndex={1000}
-            valueData={selection[config.field]}
+            zIndex={99999999}
+            value={selection !== undefined && selection !== null ? selection[config.field] : ""}
             data={queryData}
-            onChange={(value, dataObject, inputID, fieldDataKey) => setSelection(dataObject)}
-            ddlType={config.type}
+            defaultValue={defaultData !== undefined ? defaultData.toString() : ""}
+            onChange={(value, dataObject, inputID, fieldDataKey) => {setSelection(dataObject); response(dataObject, value)}}
+            ddlType={"normal"}
         /> 
         </FormInline>
     }
 }
 
-const FilterFindPopupComponent = (config, columns, queryData, response) => {
+const FindPopupComponent = ({config, response, columns, queryData, defaultData}) => {
     const [selection, setSelection] = useState({});
-    useEffect(() => {
-        response(selection);
-    }, [selection, response])
-
-    return  <FormInline><label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label><AmFindPopup
+    return  <FormInline><label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{config.name} : </label><AmFindPopup
       id={config.field}
       placeholder={config.placeholder}
-      fieldDataKey={config.field}
+      fieldDataKey={config.fieldValue}
       fieldLabel={config.fieldLabel}
       labelPattern=" : "
-      valueData={selection[config.field]}
+      value={selection !== undefined && selection !== null ? selection[config.field] : ""}
       labelTitle={config.title}
       queryApi={queryData}
       columns={columns}
-      width={200}
-      onChange={(value, dataObject, inputID, fieldDataKey) => setSelection(dataObject)}
+      defaultValue={defaultData !== undefined ? defaultData.toString() : ""}
+      width={300}
+      onChange={(value, dataObject, inputID, fieldDataKey) => {setSelection(dataObject); response(dataObject, value)}}
   /></FormInline>
 }
 
-const FilterDateTimeComponent = (config, response) => {
-    const [selection, setSelection] = useState({});
-
-    useEffect(() => {
-        response(selection);
-    }, [selection, response])
-
-    return <FormInline> <label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{t(config.name)} : </label> 
+const DateTimeComponent = ({config, response}) => {
+    return <FormInline> <label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{config.name} : </label> 
       <AmDate
         id={config.field}
         TypeDate={"date"}
         style={{width:"200px"}}
-        onChange={(value)=> setSelection({field : config.field, value:value})}
+        onChange={(value)=> response({field : config.field, value:value})}
         FieldID={config.field} >
       </AmDate>
     </FormInline>
 }
 
-export {FilterInputComponent, FilterDropDownComponent, FilterFindPopupComponent, FilterDateTimeComponent};
+export {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent}

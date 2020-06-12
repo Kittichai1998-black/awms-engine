@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { apicall, createQueryString } from '../../../components/function/CoreFunction';
-import {QueryGenerate} from '../../../components/function/UtilFunction';
+import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmTable from "../../../components/AmTable/AmTable";
 import AmDialogs from "../../../components/AmDialogs";
+import AmButton from "../../../components/AmButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
@@ -34,39 +35,41 @@ const FormInline = styled.div`
 
 const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
+    const [count, setCount] = useState(0)
 
     useEffect(() => {
-        if(typeof queryObj === "object"){
+        if (typeof queryObj === "object") {
             var queryStr = createQueryString(queryObj)
             Axios.get(queryStr).then(res => {
                 setDataSource(res.data.datas)
+                setCount(res.data.counts)
             });
         }
-    }, [queryObj])    
-    return dataSource;
+    }, [queryObj])
+    return { dataSource, count };
 }
 
-const viewQuery = (tableQuery, codeInclude) => ({
+const viewQuery = (tableQuery, codeInclude, pageSize) => ({
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: tableQuery,
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "*",
     g: "",
-    s: !codeInclude ? '[{"f":"ID","od":"asc"}]' :'[{"f":"Code","od":"asc"}]',
+    s: !codeInclude ? '[{"f":"ID","od":"asc"}]' : '[{"f":"Code","od":"asc"}]',
     sk: 0,
-    l: 100,
+    l: pageSize,
     all: "",
 });
 
-const mstQuery = (tableQuery, codeInclude) => ({
+const mstQuery = (tableQuery, codeInclude, pageSize) => ({
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: tableQuery,
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "*",
     g: "",
-    s: !codeInclude ? '[{"f":"ID","od":"asc"}]' :'[{"f":"Code","od":"asc"}]',
+    s: !codeInclude ? '[{"f":"ID","od":"asc"}]' : '[{"f":"Code","od":"asc"}]',
     sk: 0,
-    l: 100,
+    l: pageSize,
     all: "",
 });
 
@@ -75,158 +78,219 @@ const useColumns = (cols) => {
     const [editData, setEditData] = useState();
     const [removeData, setRemoveData] = useState();
 
-    useEffect(()=> {
+    useEffect(() => {
         const iniCols = [...cols];
 
         iniCols.forEach(col => {
-            //col.Filter = (field, onChangeFilter) => <input type="text" onChange={e=> {onChangeFilter(field,e.target.value)}}/>
-            if(col.filterType === "dropdown"){
-                let cols = col.filterConfig;
-                col.Filter =  (field, onChangeFilter) => {
-                    return <AmDropdown
-                    id={field}
-                    placeholder={col.placeholder}
-                    fieldDataKey={cols.fieldDataKey}
-                    fieldLabel={cols.fieldLabel} 
-                    labelPattern=" : "
-                    width={200}
-                    ddlMinWidth={200} 
-                    zIndex={1000}
-                    queryApi={cols.dataDropDow}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
-                    ddlType={cols.typeDropdow}    
-                />
-                }
-            }else if(col.filterType === "datetime"){
-                col.width=340;
-                col.Filter =  (field, onChangeFilter) => {
-                    return <FormInline>
-                        <AmDatePicker style={{display:"inline-block"}} onBlur={(e) => {onChangeFilter(field, e.fieldDataObject, {dataType:"dateTime",dateField:"dateFrom"})}} TypeDate={"date"} fieldID="dateFrom"/>
-                        <label>-</label>
-                        <AmDatePicker style={{display:"inline-block"}} onBlur={(e) => {onChangeFilter(field, e.fieldDataObject, {dataType:"dateTime",dateField:"dateTo"})}} TypeDate={"date"} fieldID="dateTo"/>
-                    </FormInline>
+            let filterConfig = col.filterConfig;
+            if (filterConfig !== undefined) {
+                if (filterConfig.filterType === "dropdown") {
+                    col.Filter = (field, onChangeFilter) => {
+                        var checkType = Array.isArray(filterConfig.dataDropDown);
+                        if (checkType) {
+                            return <AmDropdown
+                                id={field}
+                                placeholder={col.placeholder}
+                                fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                                fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                                labelPattern=" : "
+                                width={200}
+                                ddlMinWidth={200}
+                                zIndex={1000}
+                                data={filterConfig.dataDropDown}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                            />
+                        }
+                        else {
+                            return <AmDropdown
+                                id={field}
+                                placeholder={col.placeholder}
+                                fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                                fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                                labelPattern=" : "
+                                width={200}
+                                ddlMinWidth={200}
+                                zIndex={1000}
+                                queryApi={filterConfig.dataDropDown}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                                ddlType={filterConfig.typeDropDown}
+                            />
+                        }
+
+                    }
+                } else if (filterConfig.filterType === "datetime") {
+                    col.width = 350;
+                    col.Filter = (field, onChangeFilter) => {
+                        return <FormInline>
+                            <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                            <label>-</label>
+                            <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+                        </FormInline>
+                    }
                 }
             }
         })
 
-        iniCols.push({   
+        iniCols.push({
             Header: "",
-            fixWidth:63,
-            colStyle:{zIndex:-1},
+            fixWidth: 63,
+            colStyle: { zIndex: -1 },
             filterable: false,
-            Cell:(e)=> <><IconButton
+            Cell: (e) => <><IconButton
                 size="small"
                 aria-label="info"
                 style={{ marginLeft: "3px" }}
-              >
+                onClick={() => { setEditData({ ...e.data }) }}
+            >
                 <EditIcon
-                  fontSize="small"
-                  style={{ color: "#f39c12" }}
-                  onClick={()=>{setEditData({...e.data})}}
+                    fontSize="small"
+                    style={{ color: "#f39c12" }}
                 />
-              </IconButton>
-              <IconButton
-                size="small"
-                aria-label="info"
-                style={{ marginLeft: "3px" }}>
-                <DeleteIcon
-                  fontSize="small"
-                  style={{ color: "#e74c3c" }}
-                  onClick={()=>{setRemoveData(e.data)}}/>
+            </IconButton>
+                <IconButton
+                    size="small"
+                    aria-label="info"
+                    onClick={() => { setRemoveData(e.data) }}
+                    style={{ marginLeft: "3px" }}>
+                    <DeleteIcon
+                        fontSize="small"
+                        style={{ color: "#e74c3c" }} />
                 </IconButton>
             </>,
-            sortable:false,
+            sortable: false,
         })
         setColumns(iniCols);
     }, [])
 
-    return {columns, editData, removeData};
+    return { columns, editData, removeData };
 }
+
 
 const AmMasterData = (props) => {
     const [queryObj, setQueryObj] = useState(() => {
-        if(props.tableType === "master")
-            return mstQuery(props.tableQuery, props.codeInclude)
-        else if(props.tableType === "view")
-            return viewQuery(props.tableQuery, props.codeInclude)
+        if (props.tableType === "master")
+            return mstQuery(props.tableQuery, props.codeInclude, props.pageSize)
+        else if (props.tableType === "view")
+            return viewQuery(props.tableQuery, props.codeInclude, props.pageSize)
         else
             return;
     });
 
-    const {columns, editData, removeData} = useColumns(props.columns);
+    const { columns, editData, removeData } = useColumns(props.columns);
     const [updateData, setUpdateData] = useState();
     const [dialogState, setDialogState] = useState({});
-    const [editPopupState, setEditPopupState] = useState(false);
-    const [page, setPage] = useState(0);
-
-    const dataSource = useQueryData(queryObj);
-
-    const updateRow = () => {
+    const [page, setPage] = useState(1);
+    const [iniQuery, setIniQuery] = useState(true);
+    const [editorColumns, setEditorColumns] = useState(props.dataEdit);
+    //props.updateURL
+    const { dataSource, count } = useQueryData(queryObj);
+    // {
+    //     field: "Code",
+    //     type: "input",
+    //     name: "SKU Type Code",
+    //     placeholder: "Code",
+    //     required: true
+    //   }
+    const updateRow = (tableUpd, update, url) => {
         const updateData = (table, data) => {
             let updJson = {
                 "t": table,
                 "pk": "ID",
-                "datas": data,
+                "datas": [data],
                 "nr": false,
                 "_token": localStorage.getItem("Token")
             };
-            console.log(updJson)
-            Axios.put(window.apipath + "/v2/InsUpdDataAPI", updJson).then(res => {
-                alert(res.data);
+            Axios.put(url, updJson).then(res => {
+                setQueryObj({ ...queryObj })
             });
         }
-        if(!IsEmptyObject(editData) && editData !== undefined)
-            updateData(props.tableQuery, editData)
+
+        if (update !== null) {
+            updateData(tableUpd, update)
+        }
     }
 
-    useEffect(()=> {
-        if(typeof(page) === "number"){
-          const queryEdit = JSON.parse(JSON.stringify(queryObj));
-          queryEdit.sk = page === 0 ? 0 : page * parseInt(queryEdit.l, 10);
-          setQueryObj(queryEdit)
+    useEffect(() => {
+        setUpdateData(editData)
+        setEditorColumns(props.dataEdit)
+    }, [editData])
+
+    useEffect(() => {
+        if (typeof (page) === "number" && !iniQuery) {
+            const queryEdit = JSON.parse(JSON.stringify(queryObj));
+            queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+            setQueryObj(queryEdit)
         }
     }, [page])
 
-    useEffect(()=>{
-        setUpdateData(editData)
-    },[editData])
-
-    useEffect(()=>{
+    useEffect(() => {
         console.log(removeData)
-    },[removeData])
+    }, [removeData])
 
     const onChangeFilterData = (filterValue) => {
-        console.log(filterValue)
         var res = queryObj;
+        console.log(queryObj)
         filterValue.forEach(fdata => {
-            if(fdata.customFilter !== undefined)
-                res = QueryGenerate({...queryObj}, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+            if (fdata.customFilter !== undefined)
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
             else
-                res = QueryGenerate({...queryObj}, fdata.field, fdata.value, )
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
         });
         setQueryObj(res)
     }
 
-    console.log(props.pageSize)
+    const onClickAdd = () => {
+        setEditorColumns(props.dataAdd);
+        setUpdateData({ ID: null, status: 1, revision: 1 })
+    }
+
     return <>
-            <AmDialogs 
-                typePopup={dialogState.type} 
-                onAccept={(e) => {setDialogState({...dialogState, state:false})}} 
-                open={dialogState.state} 
-                content={dialogState.content}/>
-            <AmTable
-                columns={columns}
-                dataKey={props.codeInclude ? "Code" : "ID"}
-                dataSource={dataSource}
-                filterable={true}
-                filterData={res=> {onChangeFilterData(res)}}
-                rowNumber={true}
-                pageSize={props.pageSize}
-                height={props.height}
-                pagination={true}
-                onPageChange={setPage}
-            />
-        </>
+        <AmMasterEditorData config={{ required: true, title: "Edit" }}
+            //addColumns={editorColumns}
+            editorColumns={editorColumns}
+            editData={updateData}
+            response={(status, data) => {
+                if (status) {
+                    updateRow(props.table, data, props.updateURL);
+                }
+            }} />
+        <AmDialogs
+            typePopup={dialogState.type}
+            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+            open={dialogState.state}
+            content={dialogState.content} />
+        <FormInline style={{ float: "right", marginBottom: "10px" }} >
+            <AmButton
+                style={{ marginRight: "5px", float: "right" }}
+                styleType="add"
+                onClick={onClickAdd}>{"Add"}
+            </AmButton>
+            <AmButton
+                style={{ marginRight: "5px", float: "right" }}
+                styleType="add"
+                onClick={onClickAdd}>{"Add"}
+            </AmButton>
+        </FormInline>
+        <div style={{ clear: "both" }}></div>
+        <AmTable
+            columns={columns}
+            dataKey={props.codeInclude ? "Code" : "ID"}
+            dataSource={dataSource}
+            filterable={true}
+            filterData={res => { onChangeFilterData(res) }}
+            rowNumber={true}
+            totalSize={count}
+            pageSize={props.pageSize}
+            height={500}
+            pagination={true}
+            onPageChange={p => {
+                if (page !== p)
+                    setPage(p)
+                else
+                    setIniQuery(false)
+            }}
+        />
+    </>
 }
 
 export default AmMasterData;

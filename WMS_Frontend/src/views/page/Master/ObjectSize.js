@@ -1,18 +1,69 @@
-import React, { useState, useEffect, useContext } from "react";
-import AmSetOjectSize from "../../pageComponent/AmSetOjectSize";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React, {useState, useEffect} from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import AmButton from "../../../components/AmButton";
+import AmEditorTable from '../../../components/table/AmEditorTable';
+import AmTable from "../../../components/AmTable/AmTable";
+import { apicall } from '../../../components/function/CoreFunction2';
 
+const Axios = new apicall()
 //======================================================================
 const ObjectSize = props => {
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
+  const [editObjectSize, setEditObjectSize] = useState();
+  const [objectSizeData, setObjectSizeData] = useState([]);
+  const [relationComponent, setRelationComponent] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(()=> {
+    if(editObjectSize !== undefined){
+      Axios.get(
+        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSize.ID
+      ).then(res => {setObjectSizeData(res.data.datas)})
+    }
+    return () => setEditObjectSize()
+  }, [editObjectSize]);
+
+  useEffect(() => {
+    const getObjectSizeColumns = (dataSou) => {
+      const objSizeCols = [
+        { Header: "Code", accessor: "Code", width: 250 },
+        { Header: "Name", accessor: "Name", width: 250 }
+      ];
+
+      if(dataSou !== undefined && dataSou.length > 0){
+        setOpen(true)
+      }
+
+      const defaultValue = () => {
+        return dataSou.filter(x=> x.ObjMapID !== null)
+      }
+
+      return [
+        {
+          field: "ID",
+          component: (data, cols, key) => {
+            return (
+              <div key={key}>
+                <AmTable
+                  columns={objSizeCols}
+                  dataKey={"ID"}
+                  dataSource={dataSou}
+                  selection={"checkbox"}
+                  selectionData={sel => console.log(sel)}
+                  selectionDefault={defaultValue()}
+                  height={400}
+                />{" "}
+              </div>
+            );
+          }
+        }
+      ]
+    }
+    
+    setRelationComponent(getObjectSizeColumns(objectSizeData))
+  }, [objectSizeData])
+
   const EntityObjectType = [
     { label: "Location", value: 0 },
     { label: "Base", value: 1 },
@@ -21,11 +72,17 @@ const ObjectSize = props => {
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
@@ -35,18 +92,6 @@ const ObjectSize = props => {
       Header: "ObjectType Name",
       accessor: "ObjectName",
       width: 120,
-      type: "number"
-    },
-    {
-      Header: "MinWeigthKG",
-      accessor: "MinWeigthKG",
-      width: 150,
-      type: "number"
-    },
-    {
-      Header: "MaxWeigthKG",
-      accessor: "MaxWeigthKG",
-      width: 150,
       type: "number"
     },
     {
@@ -62,6 +107,11 @@ const ObjectSize = props => {
       width: 150,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
+    },
+    {
+      Header: "Object Size Map",
+      width: 150,
+      Cell: e => <AmButton onClick={()=>{setEditObjectSize(e.original)}}>Object Size</AmButton>
     }
   ];
 
@@ -83,25 +133,11 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType","validate":/^[0-9\.]+$/},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG",
-      validate: /^[0-9\.]+$/
     },
     {
       field: "PercentWeightAccept",
@@ -131,31 +167,25 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType","validate":/^[0-9\.]+$/},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG",
-      validate: /^[0-9\.]+$/
     },
     {
       field: "PercentWeightAccept",
       type: "input",
       name: "Weight Accept",
       placeholder: "PercentWeightAccept"
+    },
+    {
+      field: "Status",
+      type: "dropdown",
+      typeDropDown: "normal",
+      name: "Status",
+      dataDropDown: EntityEventStatus,
+      placeholder: "Status"
     }
   ];
   const primarySearch = [
@@ -166,24 +196,11 @@ const ObjectSize = props => {
     //{"field": "ObjectType","type":"input","name":"Object Type","placeholder":"ObjectType"},
     {
       field: "ObjectType",
-      type: "iotype",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "ObjectType",
-      dataDropDow: EntityObjectType,
+      dataDropDown: EntityObjectType,
       placeholder: "ObjectType"
-    },
-    {
-      field: "MinWeigthKG",
-      type: "input",
-      name: "Min WeigthKG",
-      placeholder: "MinWeigthKG",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxWeigthKG",
-      type: "input",
-      name: "Max WeigthKG",
-      placeholder: "MaxWeigthKG"
     },
     {
       field: "PercentWeightAccept",
@@ -193,10 +210,10 @@ const ObjectSize = props => {
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -231,22 +248,47 @@ const ObjectSize = props => {
     }
   };
 
+  const PopupObjSize = ({relationComponent, open}) => {
+    return <AmEditorTable 
+    open={open} 
+    onAccept={(status, rowdata)=> {
+      if(!status)
+        setOpen(false)
+      else{
+        UpdateObjectSizeMap();
+        setOpen(false)
+      }
+    }}
+    titleText={"Object Size"} 
+    data={{}}
+    columns={relationComponent}
+  />};
+
+  const UpdateObjectSizeMap = () => {
+    let updjson = {
+      t: "ams_ObjectSizeMap",
+      pk: "ObjMapID",
+      datas: [],
+      nr: false,
+      _token: localStorage.getItem("Token")
+    };
+  }
+
   return (
     <div>
-      <AmSetOjectSize
+      <PopupObjSize relationComponent={relationComponent} open={open}/>
+      <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"ObjectSize"}
         table={"ams_ObjectSize"}
         dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        // customUser={true}
-        customPer={true}
         history={props.history}
-      //dataObjectSize={ObjectSize}
-      //dataObjectSizeNone={ObjectSize2}
-      //columnsEditAPIKey={columnsEditObjectSize}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        pageSize={25}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

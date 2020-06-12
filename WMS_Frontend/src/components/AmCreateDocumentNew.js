@@ -161,7 +161,7 @@ const AmCreateDocument = (props) => {
             editData[field] = data
         }
 
-        if (related) {
+        if (related && related.length) {
             let indexField = related.reduce((obj, x) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
@@ -209,43 +209,61 @@ const AmCreateDocument = (props) => {
     const onHandleEditConfirm = (status, rowdata, inputError) => {
         if (status) {
             if (!inputError.length) {
-                let chkData = dataSource.filter(x => {
-                    return x.ID === rowdata.ID
+                let chkDataPallet = dataSource.find(x => x.ID === rowdata.ID)
+                let chkDataSku = dataSource.find(x => {
+                    return x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot
                 })
-                if (chkData.length > 0) {
+                // console.log(chkDataSku);
+                if (chkDataPallet) {
+
+
                     for (let row in editData) {
-                        if (row === "qtyrandom") {
-                            let editdatas = editData[row].replace("%", "")
-                            chkData[0]["qtyrandom"] = (editdatas + "%")
-                        } else if (row === "SKUItems") {
-                            if (!editData[row])
-                                delete chkData[0]["unitType"]
-                            chkData[0][row] = editData[row]
-                        } else {
-                            chkData[0][row] = editData[row]
-                        }
+                        //     if (row === "qtyrandom") {
+                        //         let editdatas = editData[row].replace("%", "")
+                        //         chkData[0]["qtyrandom"] = (editdatas + "%")
+                        //     } else if (row === "SKUItems") {
+                        //         if (!editData[row])
+                        //             delete chkData[0]["unitType"]
+                        //         chkData[0][row] = editData[row]
+                        //     } else {
+                        chkDataPallet[row] = editData[row]
+                        //     }
+
                     }
+                    setEditData({})
+                    setInputError([])
+                    setDialog(false)
                 }
                 else {
-                    if (editData.qtyrandom !== undefined) {
-                        if (editData.qtyrandom > 100) {
-                            setStateDialogErr(true)
-                            setMsgDialog("Random > 100 ")
-                        } else {
-                            editData["qtyrandom"] = (editData.qtyrandom + "%")
-                            dataSource.push(editData)
-                        }
-                    } else {
-                        editData["qtyrandom"] = (0 + "%")
+                    if (chkDataSku) {
+                        setStateDialogErr(true)
+                        setMsgDialog("มีข้อมูล SKU นี้แล้ว")
+                    }
+                    // if (editData.qtyrandom !== undefined) {
+                    //     if (editData.qtyrandom > 100) {
+                    //         setStateDialogErr(true)
+                    //         setMsgDialog("Random > 100 ")
+                    //     } else {
+                    //         editData["qtyrandom"] = (editData.qtyrandom + "%")
+                    //         dataSource.push(editData)
+                    //     }
+                    // } else {
+                    //     editData["qtyrandom"] = (0 + "%")
+
+                    else {
                         dataSource.push(editData)
+                        setAddDataID(addDataID - 1);
+                        setEditData({})
+                        setInputError([])
+                        setDialog(false)
                     }
                 }
-                setDataSource(dataSource);
+                // console.log(dataSource);
 
-                setEditData({})
-                setAddDataID(addDataID - 1);
-                setDialog(false)
-                setInputError([])
+                // setDataSource(dataSource);
+
+
+
             } else {
                 setInputError(inputError.map(x => x.accessor))
             }
@@ -682,7 +700,7 @@ const AmCreateDocument = (props) => {
     const CreateDocuments = (CreateData) => {
         Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
             if (res.data._result.status) {
-                setMsgDialog(" Create Document success Document ID = " + res.data.ID);
+                setMsgDialog("Create Document success Document ID = " + res.data.ID);
                 setStateDialog(true);
                 if (props.apiRes !== undefined)
                     props.history.push(props.apiRes + res.data.ID)
@@ -701,8 +719,8 @@ const AmCreateDocument = (props) => {
 
             let y = { ...x };
             // ['Batch', 'Quantity', 'UnitCode'].forEach(e => delete y[e]);
-            if (props.createDocType === "audit")
-                y.qtyrandom = "100%"
+            // if (props.createDocType === "audit")
+            //     y.qtyrandom = "100%"
             dataSource.push(y)
             // }
         })

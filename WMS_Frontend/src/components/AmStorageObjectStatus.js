@@ -13,9 +13,9 @@ const styles = theme => ({
 const StorageObjectEventStatus = [
     { status: "NEW", code: 10, label: 'NW' },
     { status: "RECEIVING", code: 11, label: 'RC' },
-    { status: "RECEIVED", code: 12, label: 'RC' },
+    { status: "RECEIVED", code: 102, label: 'RC' },
     { status: "AUDITING", code: 13, label: 'AD' },
-    { status: "AUDITED", code: 14, label: 'AD' },
+    { status: "AUDITED", code: 104, label: 'AD' },
     // {status: "ISSUING",code: 15},
     // {status: "ISSUED",code: 16},
     { status: "PICKING", code: 17, label: 'PK' },

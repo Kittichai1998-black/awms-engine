@@ -31,6 +31,7 @@ const AmEditiorTable = (props) => {
 
     }
     const generateComponent = (cols) => {
+        console.log(cols)
         let comp = cols.map((row, idx) => {
             if (row.component) {
                 let comp2 = row.component(props.data ? props.data.original ? props.data.original : props.data : {}, row, idx)
@@ -74,7 +75,6 @@ const AmEditiorTable = (props) => {
         // 
         // setOpen(!open)
     }
-
 
     return (
         <div>

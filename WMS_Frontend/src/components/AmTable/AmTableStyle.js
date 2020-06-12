@@ -18,8 +18,7 @@ const TableContainer = styled.div`
     position:relative;
     width:${props => `${props.width}px`}
     overflow:auto;
-    min-height:200px;
-    height:${props => `${props.height}px`}
+    max-height:${props => `${props.height}px`}
     padding-right:1px;
     &&::-webkit-scrollbar{
         width: 0.5em;

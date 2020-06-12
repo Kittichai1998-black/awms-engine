@@ -51,6 +51,7 @@ const selectionReducer = (state, action) => {
             }
         }
         case "addall":{
+            console.log(action.payload)
             return {
                 ...state,
                 "selection":action.payload

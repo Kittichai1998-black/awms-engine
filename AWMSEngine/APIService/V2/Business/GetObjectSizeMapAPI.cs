@@ -16,12 +16,11 @@ namespace AWMSEngine.APIService.V2.Business
         public class TRes
         {
             public long ID;
+            public long? ObjMapID;
             public string Code;
             public string Name;
             public long? OuterObjectSize_ID;
             public long? InnerObjectSize_ID;
-            public decimal? MaxQuantity;
-            public decimal? MinQuantity;
             public int ObjectType;
             public EntityStatus? Status;
         }

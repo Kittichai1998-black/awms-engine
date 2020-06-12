@@ -40,49 +40,70 @@ const LabelH = styled.label`
   width: 100px;
 `;
 const MoveLocation = props => {
-  // const [resetPage, setResetPage] = useState(false);
-  // useEffect(() => {
-  //   if (resetPage === true) {
-  //     setResetPage(false);
-  //   }
-  // }, [resetPage]);
+  const columns = [
+    {
+      field: "Priority",
+      type: "input",
+      name: "Priority",
+      placeholder: "Priority",
+      required: true
+    }]
+  const iniCols = [
 
-  const { t } = useTranslation();
-  const [page, setPage] = useState();
-  const [totalSize, setTotalSize] = useState(0);
-  const [dataSource, setDataSource] = useState([]);
-  const [valueText, setValueText] = useState("");
-  const [openError, setOpenError] = useState(false);
-  const [textError, setTextError] = useState("");
-  // const getData = () => {
-  //   Axios.get(
-  //     window.apipath +
-  //     "/v2/GetSPReportAPI?" +
-  //     "&LogRefID=" +
-  //     valueText +
-  //     "&spname=LOG_SEARCH"
-  //   ).then(res => {
-  //     console.log(res);
-  //     if (res) {
-  //       if (res.data._result.status !== 0) {
-  //         setTotalSize(res.data.datas.length);
-  //         setDataSource(res.data.datas);
-  //         setPage(0);
-  //         setResetPage(true);
-  //         setValueText("");
-  //       } else {
-  //         setOpenError(true);
-  //         setTextError(res.data._result.message);
-  //         setValueText("");
-  //       }
-  //     }
-  //   });
-  // };
-
+    {
+      Header: "Moving Jobs",
+      accessor: "Code",
+      width: 100
+    },
+    {
+      Header: "Base",
+      accessor: "Pallet",
+      width: 100
+    },
+    {
+      Header: "Status",
+      accessor: "PackStatus",
+      width: 100
+    },
+    {
+      Header: "Current Area",
+      accessor: "Area",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Location",
+      width: 100
+    },
+    {
+      Header: "Sou Area",
+      accessor: "Sou_Area_Code",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Sou_AreaLocation_Code",
+      width: 100
+    },
+    {
+      Header: "Des Area",
+      accessor: "Des_Area_Code",
+      width: 100
+    },
+    {
+      Header: "Location",
+      accessor: "Des_AreaLocation_Code",
+      width: 100
+    }
+  ];
   return (
     <div>
 
-      <AmMoveLocation></AmMoveLocation>
+      <AmMoveLocation
+        columns={iniCols}
+        dataAdd={columns}
+        syncWC={false}
+      ></AmMoveLocation>
 
     </div>
   );

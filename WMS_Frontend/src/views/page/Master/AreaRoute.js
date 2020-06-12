@@ -5,6 +5,7 @@ import {
   createQueryString
 } from "../../../components/function/CoreFunction";
 import AmEntityStatus from "../../../components/AmEntityStatus";
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 const Axios = new apicall();
 
 //======================================================================
@@ -28,11 +29,17 @@ const AreaRoute = props => {
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
     { Header: "IOType", accessor: "IOTypeCode", fixed: "left", width: 100 },
@@ -51,7 +58,7 @@ const AreaRoute = props => {
   const columns = [
     {
       field: "IOType",
-      type: "iotype",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "IOType",
       dataDropDow: IOTypeStatus,
@@ -60,7 +67,7 @@ const AreaRoute = props => {
     },
     {
       field: "Sou_AreaMaster_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Sou Area",
       dataDropDow: AreaMasterQuery,
@@ -69,7 +76,7 @@ const AreaRoute = props => {
     },
     {
       field: "Des_AreaMaster_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Des Area",
       dataDropDow: AreaMasterQuery,
@@ -88,7 +95,7 @@ const AreaRoute = props => {
   const columnsEdit = [
     {
       field: "IOType",
-      type: "iotype",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "IOType",
       dataDropDow: IOTypeStatus,
@@ -97,7 +104,7 @@ const AreaRoute = props => {
     },
     {
       field: "Sou_AreaMaster_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Sou Area",
       dataDropDow: AreaMasterQuery,
@@ -106,7 +113,7 @@ const AreaRoute = props => {
     },
     {
       field: "Des_AreaMaster_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Des Area",
       dataDropDow: AreaMasterQuery,
@@ -133,7 +140,7 @@ const AreaRoute = props => {
   const primarySearch = [
     {
       field: "AreaSou",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Sou Area",
       dataDropDow: AreaMasterQuery,
@@ -143,7 +150,7 @@ const AreaRoute = props => {
     },
     {
       field: "AreaDes",
-      type: "dropdow",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Des Area",
       dataDropDow: AreaMasterQuery,
@@ -155,7 +162,7 @@ const AreaRoute = props => {
   const columnsFilter = [
     {
       field: "IOType",
-      type: "iotype",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "IOType",
       dataDropDow: IOTypeStatus,
@@ -170,7 +177,7 @@ const AreaRoute = props => {
     },
     {
       field: "Status",
-      type: "status",
+      type: "dropdown",
       typeDropdow: "normal",
       name: "Status",
       dataDropDow: EntityEventStatus,
@@ -210,7 +217,7 @@ const AreaRoute = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"AreaRoute"}
@@ -219,6 +226,18 @@ const AreaRoute = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"AreaRoute"}
+        table={"ams_AreaRoute"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );
