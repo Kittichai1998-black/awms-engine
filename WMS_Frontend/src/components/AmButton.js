@@ -24,10 +24,10 @@ import { useTranslation } from 'react-i18next'
 // 1. We define the styles.
 const styles = theme => ({
     root: {
-        fontWeight: '600',
+        fontWeight: '500',
         color: '#fff',
         textTransform: 'none',
-        lineHeight: 1.75,
+        lineHeight: 1.45,
         width: 'auto',
         // minWidth: '130px',
         fontFamily: [

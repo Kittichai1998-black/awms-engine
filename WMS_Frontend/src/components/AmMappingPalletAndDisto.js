@@ -173,6 +173,8 @@ const BtnAddPallet = (props) => {
     const [open, setOpen] = useState(false);
     const [listDocItems, setListDocItems] = useState([]);
     const [dataSelect, setDataSelect] = useState([]);
+    const [defaultSelect, setDefaultSelect] = useState();
+
     const [valueQtyDocItems, setValueQtyDocItems] = useState({});
     const [valueInput, setValueInput] = useState({});
 
@@ -205,11 +207,14 @@ const BtnAddPallet = (props) => {
     ];
 
     useEffect(() => {
-        if (dataDocItems) {
+        if (dataDocItems && open) {
             let newItems = _.filter(dataDocItems, function (o) { return o._balanceQty > 0; });
             setListDocItems(newItems)
+            setDefaultSelect([...newItems]);
+            saveDefaultInputQTY(newItems)
+
         }
-    }, [dataDocItems]);
+    }, [dataDocItems, open]);
 
     useEffect(() => {
         if (inputTitle) {
@@ -268,27 +273,42 @@ const BtnAddPallet = (props) => {
             GetLocationDDL(selArea)
         }
     }, [LocationDDL])
-    
+
     const genInputQty = (datarow) => {
         let field = "item-" + datarow.ID;
         let docItemID = datarow.ID;
         return <AmInput id={field} style={{ width: "100px" }} type="input"
+            defaultValue={datarow._balanceQty}
             onChange={(value, obj, element, event) => onHandleChangeInputQTY(value, element, event, docItemID)}
         />
     }
+    const saveDefaultInputQTY = (docitems) => {
+        let valueQTY = {};
+        docitems.forEach(datarow => {
+            let field = "item-" + datarow.ID;
+            valueQTY = {
+                ...valueQTY, [field]: {
+                    recQty: datarow._balanceQty,
+                    docItemID: datarow.ID
+                }
+            }
+        });
+        setValueQtyDocItems(valueQTY);
+    }
     const onHandleChangeInputQTY = (value, element, event, docItemID) => {
-
         setValueQtyDocItems({
             ...valueQtyDocItems, [element.id]: {
-                recQty: value,
+                recQty: parseFloat(value),
                 docItemID: docItemID
             }
         });
 
     };
-    const onSubmit = (data) => {
+
+    const onSubmit = () => {
         // console.log(valueQtyDocItems)
-        console.log(valueInput)
+        // console.log(valueInput)
+        // console.log(dataSelect)
 
         if (valueInput.areaID === undefined ||
             valueInput.warehouseID === undefined ||
@@ -298,7 +318,10 @@ const BtnAddPallet = (props) => {
 
             let docItems = []
             for (let [key, value] of Object.entries(valueQtyDocItems)) {
-                docItems.push({ ID: value.docItemID, Quantity: parseFloat(value.recQty) })
+                let checkselect = _.filter(dataSelect, _.matches({ 'ID': value.docItemID }))
+                if (checkselect && checkselect.length > 0) {
+                    docItems.push({ ID: value.docItemID, Quantity: parseFloat(value.recQty) })
+                }
             }
             if (docItems.length === 0) {
                 alertDialogRenderer("กรุณาเลือกรายการสินค้า และระบุจำนวนที่ต้องการรับเข้า", "warning", true);
@@ -320,7 +343,7 @@ const BtnAddPallet = (props) => {
                             onHandleClear();
 
                             setOpen(false);
-                            onSuccessMapping(dataSelect)
+                            onSuccessMapping()
                         } else {
                             alertDialogRenderer(res.data._result.message, "error", true);
                         }
@@ -428,23 +451,23 @@ const BtnAddPallet = (props) => {
                         onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
                     //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                     />
-                    <AmScanQRbyCamera  returnResult={(data)=>showRes(data, showComponent.field)}/>
+                    <AmScanQRbyCamera returnResult={(data) => showRes(data, showComponent.field)} />
                 </div>
             </FormInline>
         } else {
             return null;
         }
     }
-    const showRes = (data,field) => {
+    const showRes = (data, field) => {
         if (data) {
-          console.log(data)
-          let ele = document.getElementById(field);
-                if (ele) {
-                  ele.value = data;
-                  ele.focus();
-                }
+            console.log(data)
+            let ele = document.getElementById(field);
+            if (ele) {
+                ele.value = data;
+                ele.focus();
+            }
         }
-      }
+    }
     const createComponent = (inputList) => {
         if (inputList)
             return inputList.map(x => {
@@ -594,7 +617,6 @@ const BtnAddPallet = (props) => {
         if (field === "areaID") {
             setSelArea(value);
         }
-        console.log(valueInput)
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
@@ -668,6 +690,8 @@ const BtnAddPallet = (props) => {
         setInputHeader(null);
         setInputBaseCode(null);
         setShowInfoBase(null);
+        setDataSelect([]);
+        setDefaultSelect(null);
     };
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
@@ -720,6 +744,8 @@ const BtnAddPallet = (props) => {
                         selectionType="checkbox"
                         selection={true}
                         primaryKey="ID"
+                        currentPage={0}
+                        defaultSelection={defaultSelect}
                         getSelection={data => setDataSelect(data)}
                     />
                 </DialogContent>
@@ -727,7 +753,7 @@ const BtnAddPallet = (props) => {
                     <AmButton
                         styleType="add"
                         onClick={() => {
-                            onSubmit(dataSelect);
+                            onSubmit();
                         }}
                     >Add</AmButton>
                 </DialogActions>
@@ -742,10 +768,10 @@ BtnAddPallet.propTypes = {
 };
 BtnAddPallet.defaultProps = {
     apiCreate: "/v2/ScanMapStoFromDocAPI",
-    columnsDocItems: [{ width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
+    columnsDocItems: [{ accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "Lot", Header: "Lot" },
     // { width: 100, accessor: "Quantity", Header: "Qty" },
     { width: 150, accessor: "_balanceQty", Header: "จำนวนที่รับเข้าได้" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }]
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }]
 }
 export default withStyles(styles)(BtnAddPallet);
