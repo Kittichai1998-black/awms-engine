@@ -120,7 +120,7 @@ const styles = theme => ({
     content: {
         width: `calc(100% - ${drawerWidth}px)`,
         flexGrow: 1,
-        padding: theme.spacing(3),
+        padding: "5px",
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen

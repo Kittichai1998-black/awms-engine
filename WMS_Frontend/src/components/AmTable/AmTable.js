@@ -9,6 +9,7 @@ const AmTable = (props) => {
     return <AmTableProvider>
         <AmTableSetup 
             dataSource={props.dataSource} 
+            width={props.width}
             columns={props.columns} 
             cellStyle={props.cellStyle} 
             dataKey={props.dataKey}
@@ -28,6 +29,7 @@ const AmTable = (props) => {
             selection={props.selection}
             selectionData={props.selectionData}
             selectionDefault={props.selectionDefault}
+            clearSelectionChangePage={props.clearSelectionChangePage}
         />
     </AmTableProvider>
 }
@@ -36,6 +38,8 @@ const AmTableSetup = (props) => {
     const {pagination, filter, selection} = useContext(AmTableContext);
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
+   
+    const { selectionData } = props;
     
     useEffect(() => {
         if(props.pageSize)
@@ -50,13 +54,12 @@ const AmTableSetup = (props) => {
     }, [filter.filterValue])
 
     useEffect(() => {
-        if(props.selectionData)
-            props.selectionData(selection.selectionValue)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selection.selectionValue])
+        if(selectionData !== undefined){
+            selectionData(selection.selectionValue)
+        }
+    }, [selection.selectionValue, selectionData])
     
     useEffect(() => {
-        console.log(props.selectionDefault)
         if(props.selectionDefault)
             selection.addAll(props.selectionDefault)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,6 +78,7 @@ const AmTableSetup = (props) => {
         <div id="topbar"></div>
         <AmTableComponent 
             dataSource={dataSource} 
+            width={props.width}
             columns={props.columns} 
             cellStyle={props.cellStyle} 
             dataKey={props.dataKey}
@@ -88,6 +92,7 @@ const AmTableSetup = (props) => {
             filterable={props.filterable}
             minRow={props.minRow}
             page={page}
+            clearSelectionChangePage={props.clearSelectionChangePage}
         />
         <div id="btmbar">
             <div id="pagination">
@@ -103,6 +108,7 @@ const AmTableSetup = (props) => {
                     }}
                 /> : null}
             </div>
+            <div style={{clear:"both"}}></div>
         </div>
     </>
 }
@@ -191,29 +197,41 @@ AmTable.propTypes = {
     */
     pagination:PropTypes.bool,
     /**
-     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     * return ข้อมูลเลขหน้าปัจจุบัน
      ** value? : (page) => {}
     */
     onPageChange:PropTypes.func,
     /**
-     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
-     ** value? : (page) => {}
+     * ข้อมูลจำนวน row ทั้งหมด
+     ** value? : 500
     */
     totalSize:PropTypes.number,
     /**
-     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     * return ข้อมูลที่ถูกเลือก
      ** value? : (selectionValue) => {}
     */
     selectionData:PropTypes.func,
     /**
-     * ใช้ส่งข้อมูลเลขหนาปัจจุบัน
+     * ข้อมูล selection เริ่มต้น
      ** value? : [{ID:1},{ID:2},...]
     */
     defaultSelection:PropTypes.array,
+    /**
+     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูบที่เลือกเมื่อเปลี่ยนหน้า
+     ** value? : true | false
+    */
+    clearSelectionChangePage:PropTypes.bool,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    width:PropTypes.oneOfType([PropTypes.string,PropTypes.number]),
   }
 
 AmTable.defaultProps = {
     minRow:5,
     height:500,
     pageSize:25,
+    clearSelectionChangePage:true,
+    width:"100%"
 }

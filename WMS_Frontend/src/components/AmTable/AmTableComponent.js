@@ -17,8 +17,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
 import Radio from "@material-ui/core/Radio";
 import { withStyles } from "@material-ui/core/styles";
-import { IsEmptyObject } from "../function/CoreFunction2";
 import _ from "lodash";
+
+const IsEmptyObject = (obj) => {
+  if(typeof(obj) === "object")
+      return Object.keys(obj).length === 0 && obj.constructor === Object
+  else
+      return false;
+}
 
 const SortDirection = {
     DESC: "desc",
@@ -39,44 +45,22 @@ const SortDirection = {
     },
   })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, dataSource, page) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
-
+    
     useEffect(() => {
-      if(typeof dataSource === "object"){
-        if(selection.selectAllState){
-          selection.addAll(dataSource)
-          if (dataSource.length > 0) {
-            dataSource.forEach(x => {
-              let element = document.getElementById(
-                "selection_" + x[dataKey]
-              );
-              if (element !== null || element === undefined) {
-                element.checked = true;
-              }
-            });
-          }
-        }
-        else{
-          if (dataSource.length > 0) {
-            selection.removeAll()
-            dataSource.forEach(x => {
-              let element = document.getElementById(
-                "selection_" + x[dataKey]
-              );
-              if (element !== null || element === undefined) {
-                element.checked = false;
-              }
-            });
-          }
+      if(selectionState){
+        if(clearSelectionChangePage){
+          selection.removeAll()
         }
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selection.selectAllState, dataSource, dataKey]);
+    }, [page]);
 
     useEffect(() => {
         let getColumns = [...Columns];
+        
         if (rowNumber) 
         {
             getColumns.unshift({
@@ -150,15 +134,16 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, dataSource, pag
             Cell: ele => {
                 if(ele.original[dataKey] !== undefined){
                   let chkSel = selection.selectionValue.find(x=> x[dataKey] === ele.original[dataKey])
+                  
                   return (
                     <input
                         id={"selection_" + ele.original[dataKey]}
                         type="checkbox"
                         name="selection"
-                        checked={chkSel}
+                        checked={chkSel !== undefined}
                         value={ele.data[dataKey]}
                         onChange={e => {
-                          if (!chkSel) {
+                          if (chkSel === undefined) {
                             selection.add({data:ele.original, uniq:dataKey});
                           } else {
                             selection.remove({uniq:dataKey, data:ele.original[dataKey]});
@@ -198,7 +183,6 @@ const useDataSource = (props, groupBy) => {
           return groupField;
         });
         
-        console.log(groups)
         let groupData = _.orderBy(Object.keys(groups), groupBy.field).map((g) => {
           let grourData = groups[g];
           let sumBy = {};
@@ -216,7 +200,6 @@ const useDataSource = (props, groupBy) => {
         });
         let groupWithSum = []
         
-        console.log(groupData)
         groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
         setDataSource(groupWithSum)
       }else{
@@ -249,8 +232,9 @@ const AmTableComponent = (props) => {
     const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
-    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.dataSource, props.page)
-    return <TableContainer width="100%" ref={containerRef} height={props.height}>
+    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page)
+
+    return <TableContainer width={props.width} ref={containerRef} height={props.height}>
           <Table style={props.tableStyle}>
             {GenerateHeader({columns, props, tableSize})}
             {GenerateRow({columns, props, dataSource})}

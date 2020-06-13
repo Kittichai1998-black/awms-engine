@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
+//import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const ObjectSizeMap = props => {
@@ -20,18 +17,21 @@ const ObjectSizeMap = props => {
     l: 100,
     all: ""
   };
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
       width: 35,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal",
+        width:150
+      },
       Cell: e => getStatus(e.original)
     },
     {
@@ -41,18 +41,6 @@ const ObjectSizeMap = props => {
       width: 200
     },
     { Header: "InnerObjectSize", accessor: "InCode", width: 200 },
-    {
-      Header: "MinQuantity",
-      accessor: "MinQuantity",
-      width: 100,
-      type: "number"
-    },
-    {
-      Header: "MaxQuantity",
-      accessor: "MaxQuantity",
-      width: 100,
-      type: "number"
-    },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -65,101 +53,73 @@ const ObjectSizeMap = props => {
   const columns = [
     {
       field: "OuterObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "OuterObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "OuterObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "InnerObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "InnerObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "InnerObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
-    },
-    {
-      field: "MinQuantity",
-      type: "input",
-      name: "MinQuantity",
-      placeholder: "MinQuantity",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxQuantity",
-      type: "input",
-      name: "MaxQuantity",
-      placeholder: "MaxQuantity",
-      validate: /^[0-9\.]+$/
     }
   ];
 
   const columnsEdit = [
     {
       field: "OuterObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "OuterObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "OuterObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
       field: "InnerObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "InnerObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "InnerObjectSize",
       fieldLabel: ["Code", "Name"],
       required: true
     },
     {
-      field: "MinQuantity",
-      type: "input",
-      name: "MinQuantity",
-      placeholder: "MinQuantity",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "MaxQuantity",
-      type: "input",
-      name: "MaxQuantity",
-      placeholder: "MaxQuantity",
-      validate: /^[0-9\.]+$/
-    },
-    {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
   const primarySearch = [
     {
       field: "OutCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "OuterObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "OuterObjectSize",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "InCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "InnerObjectSize",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "InnerObjectSize",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -167,23 +127,11 @@ const ObjectSizeMap = props => {
   ];
   const columnsFilter = [
     {
-      field: "MinQuantity",
-      type: "input",
-      name: "MinQuantity",
-      placeholder: "MinQuantity"
-    },
-    {
-      field: "MaxQuantity",
-      type: "input",
-      name: "MaxQuantity",
-      placeholder: "MaxQuantity"
-    },
-    {
       field: "Status",
       type: "status",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -220,7 +168,7 @@ const ObjectSizeMap = props => {
 
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"ObjectSizeMap"}
@@ -229,7 +177,21 @@ const ObjectSizeMap = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
-      />
+      /> */}
+      <AmMaster
+                columnsFilterPrimary={primarySearch}
+                columnsFilter={columnsFilter}
+                tableQuery={"ObjectSizeMap"}
+                table={"ams_ObjectSizeMap"}
+                dataAdd={columns}
+                history={props.history}
+                columns={iniCols}
+                dataEdit={columnsEdit}
+                tableType="view"
+                height={500}
+                pageSize={25}
+                updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+            />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
-import {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent} from "./AmMasterComponentType";
+import {InputComponent, DropDownComponent, FindPopupComponent} from "./AmMasterComponentType";
 
 const EditorData = ({config, editorColumns, editData, response}) => {
     const [popupState, setPopState] = useState(false);
@@ -25,7 +25,6 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                 />
             }
             else if(config.type === "dropdown"){
-                console.log(data ? data[field] : "")
                 return <DropDownComponent key={key} 
                     config={config}
                     response={(obj, val)=>{

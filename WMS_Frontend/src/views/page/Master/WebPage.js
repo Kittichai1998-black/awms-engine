@@ -1,26 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import AmMasterData from "../../pageComponent/MasterData";
-import AmIconStatus from "../../../components/AmIconStatus";
-import { Button } from "@material-ui/core";
-import styled from "styled-components";
-import AmInput from "../../../components/AmInput";
-import Clone from "../../../components/function/Clone";
-import AmButton from "../../../components/AmButton";
-import Grid from "@material-ui/core/Grid";
-import {
-    apicall,
-    createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
+//import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 const WebPage = props => {
 
-    const EntityEventStatus = [
-        { label: "INACTIVE", value: 0 },
-        { label: "ACTIVE", value: 1 }
-    ];
     const PermissionQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Permission",
@@ -45,13 +30,20 @@ const WebPage = props => {
     };
     const iniCols = [
         {
-            Header: "",
+            Header: "Status",
             accessor: "Status",
             fixed: "left",
             width: 35,
             sortable: false,
+            filterType:"dropdown",
+            filterConfig:{
+              filterType:"dropdown",
+              dataDropDown:EntityEventStatus,
+              typeDropDown:"normal",
+              width:120
+            },
             Cell: e => getStatus(e.original)
-        },
+          },
         { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
         { Header: "Name", accessor: "Name", width: 200 },
         { Header: "Seq No.", accessor: "Seq", width: 70 },
@@ -122,10 +114,10 @@ const WebPage = props => {
         },
         {
             field: "WebPageGroup_ID",
-            type: "dropdow",
-            typeDropdow: "search",
+            type: "dropdown",
+            typeDropDown: "search",
             name: "WebPageGroup_ID",
-            dataDropDow: WebPageGroupQuery,
+            dataDropDown: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             placeholder: "Web Page Group"
         }, 
@@ -182,28 +174,28 @@ const WebPage = props => {
         },
         {
             field: "WebPageGroup_ID",
-            type: "dropdow",
-            typeDropdow: "search",
+            type: "dropdown",
+            typeDropDown: "search",
             name: "WebPageGroup",
-            dataDropDow: WebPageGroupQuery,
+            dataDropDown: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             placeholder: "Web Page Group"
         },
         {
             field: "Permission_ID",
-            type: "dropdow",
-            typeDropdow: "search",
+            type: "dropdown",
+            typeDropDown: "search",
             name: "Permission",
-            dataDropDow: PermissionQuery,
+            dataDropDown: PermissionQuery,
             fieldLabel: ["Code"],
             placeholder: "Permission"
         },
         // {
         //     field: "Status",
         //     type: "status",
-        //     typeDropdow: "normal",
+        //     typeDropDown: "normal",
         //     name: "Status",
-        //     dataDropDow: EntityEventStatus,
+        //     dataDropDown: EntityEventStatus,
         //     placeholder: "Status"
         // }
     ];
@@ -249,30 +241,30 @@ const WebPage = props => {
         },
         {
             field: "WebPageGroup_Code",
-            type: "dropdow",
-            typeDropdow: "search",
+            type: "dropdown",
+            typeDropDown: "search",
             name: "WebPageGroup",
-            dataDropDow: WebPageGroupQuery,
+            dataDropDown: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             fieldDataKey: "Code",
             placeholder: "Web Page Group"
         },
         {
             field: "Permission_Code",
-            type: "dropdow",
-            typeDropdow: "search",
+            type: "dropdown",
+            typeDropDown: "search",
             name: "Permission",
-            dataDropDow: PermissionQuery,
+            dataDropDown: PermissionQuery,
             fieldLabel: ["Code"],
             fieldDataKey: "Code",
             placeholder: "Permission"
         },
         {
             field: "Status",
-            type: "status",
-            typeDropdow: "normal",
+            type: "dropdown",
+            typeDropDown: "normal",
             name: "Status",
-            dataDropDow: EntityEventStatus,
+            dataDropDown: EntityEventStatus,
             placeholder: "Status"
         },
         {
@@ -307,7 +299,7 @@ const WebPage = props => {
     };
     return (
         <div>
-            <AmMasterData
+            {/* <AmMasterData
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
                 tableQuery={"WebPage"}
@@ -316,6 +308,20 @@ const WebPage = props => {
                 iniCols={iniCols}
                 dataEdit={columnsEdit}
                 history={props.history}
+            /> */}
+            <AmMaster
+                columnsFilterPrimary={primarySearch}
+                columnsFilter={columnsFilter}
+                tableQuery={"WebPage"}
+                table={"ams_WebPage"}
+                dataAdd={columnsAdd}
+                history={props.history}
+                columns={iniCols}
+                dataEdit={columnsEdit}
+                tableType="view"
+                height={500}
+                pageSize={25}
+                updateURL={window.apipath + "/v2/InsUpdDataAPI"}
             />
         </div>
     );

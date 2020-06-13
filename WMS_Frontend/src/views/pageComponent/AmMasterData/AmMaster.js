@@ -77,6 +77,7 @@ const useColumns = (cols) => {
     const [columns, setColumns] = useState(cols);
     const [editData, setEditData] = useState();
     const [removeData, setRemoveData] = useState();
+    
 
     useEffect(() => {
         const iniCols = [...cols];
@@ -94,7 +95,7 @@ const useColumns = (cols) => {
                                 fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
                                 fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                                 labelPattern=" : "
-                                width={200}
+                                width={filterConfig.width !== undefined ? filterConfig.width : 150}
                                 ddlMinWidth={200}
                                 zIndex={1000}
                                 data={filterConfig.dataDropDown}
@@ -150,7 +151,7 @@ const useColumns = (cols) => {
                 <IconButton
                     size="small"
                     aria-label="info"
-                    onClick={() => { setRemoveData(e.data) }}
+                    onClick={() => { setRemoveData({ ...e.data, "Status":2 }) }}
                     style={{ marginLeft: "3px" }}>
                     <DeleteIcon
                         fontSize="small"
@@ -182,15 +183,8 @@ const AmMasterData = (props) => {
     const [page, setPage] = useState(1);
     const [iniQuery, setIniQuery] = useState(true);
     const [editorColumns, setEditorColumns] = useState(props.dataEdit);
-    //props.updateURL
     const { dataSource, count } = useQueryData(queryObj);
-    // {
-    //     field: "Code",
-    //     type: "input",
-    //     name: "SKU Type Code",
-    //     placeholder: "Code",
-    //     required: true
-    //   }
+    const [popupTitle, setPopupTitle] = useState();
     const updateRow = (tableUpd, update, url) => {
         const updateData = (table, data) => {
             let updJson = {
@@ -211,6 +205,16 @@ const AmMasterData = (props) => {
     }
 
     useEffect(() => {
+        setPopupTitle("Remove")
+        setUpdateData(removeData)
+        console.log(removeData)
+        setEditorColumns([{
+            field: "Status",
+          }])
+    }, [removeData])
+
+    useEffect(() => {
+        setPopupTitle("Edit")
         setUpdateData(editData)
         setEditorColumns(props.dataEdit)
     }, [editData])
@@ -229,7 +233,6 @@ const AmMasterData = (props) => {
 
     const onChangeFilterData = (filterValue) => {
         var res = queryObj;
-        console.log(queryObj)
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined)
                 res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
@@ -242,11 +245,11 @@ const AmMasterData = (props) => {
     const onClickAdd = () => {
         setEditorColumns(props.dataAdd);
         setUpdateData({ ID: null, status: 1, revision: 1 })
+        setPopupTitle("Add")
     }
 
     return <>
-        <AmMasterEditorData config={{ required: true, title: "Edit" }}
-            //addColumns={editorColumns}
+        <AmMasterEditorData config={{ required: true, title: popupTitle }}
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
