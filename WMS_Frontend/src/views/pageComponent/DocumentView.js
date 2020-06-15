@@ -514,7 +514,7 @@ const DocumentView = props => {
             id={"Quantity"}
             autoFocus={true}
             placeholder={"0"}
-            type="number"
+            type="input"
             style={{ width: "100%" }}
             onBlur={(value, obj, element, event) => onHandleChangeInputQty(value, "Quantity", event)}
           />
@@ -555,7 +555,7 @@ const DocumentView = props => {
       <br />
       <br />
       {typeDoc ? (
-        <Table columns={columns} pageSize={100} data={data} sortable={false} />
+        <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
       ) : null}
 
       <br />
@@ -600,6 +600,7 @@ const DocumentView = props => {
                       pageSize={100}
                       data={dataDetailSOU}
                       sortable={false}
+                      currentPage={0}
                     />
                   ) : null}
                 </Col>
@@ -615,6 +616,7 @@ const DocumentView = props => {
                       pageSize={100}
                       data={dataDetailDES}
                       sortable={false}
+                      currentPage={0}
                     />
                   ) : null}
                 </Col>
@@ -629,6 +631,7 @@ const DocumentView = props => {
             pageSize={100}
             data={dataDetailSOU}
             sortable={false}
+            currentPage={0}
           />
         ) : null
       ) : props.openDES === true ? (
@@ -638,6 +641,7 @@ const DocumentView = props => {
             pageSize={100}
             data={dataDetailDES}
             sortable={false}
+            currentPage={0}
           />
         ) : null
       ) : (
@@ -651,11 +655,12 @@ const DocumentView = props => {
           </AmButton>
         ) : null}
 
-        {props.buttonConfirmMappingSTO === true && eventStatus != (21 || 22 || 32) ? (
-          <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
-            {t("Close")}
-          </AmButton>
-        ) : null}
+        {props.buttonConfirmMappingSTO === true ?
+          eventStatus === 10 || eventStatus === 11 || eventStatus === 12 || eventStatus === 31 ?
+            <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
+              {t("Close")}
+            </AmButton> : null
+          : null}
       </div>
     </div>
   );

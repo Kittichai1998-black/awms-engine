@@ -32,7 +32,7 @@ const GR_Detail = props => {
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "OrderNo", Header: "Order No." },
     { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
@@ -75,7 +75,7 @@ const GR_Detail = props => {
     { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 150, accessor: "Quantity", Header: "จำนวนที่รับเข้าได้" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
   const addPalletMapSTO = {
     apiCreate: '/v2/ScanMapStoFromDocAPI',

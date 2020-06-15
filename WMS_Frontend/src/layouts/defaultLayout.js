@@ -65,7 +65,7 @@ const drawerWidth = 240;
 const styles = theme => ({
     root: {
         [theme.breakpoints.down('sm')]: {
-            aa:theme.palette.secondary.main
+            aa: theme.palette.secondary.main
         },
         display: 'flex'
     },
@@ -120,7 +120,7 @@ const styles = theme => ({
     content: {
         width: `calc(100% - ${drawerWidth}px)`,
         flexGrow: 1,
-        padding: "5px",
+        padding: theme.spacing(1),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
@@ -210,7 +210,7 @@ const Default = props => {
     })
     const { t, i18n } = useTranslation()
 
-    const [menuVisible, setMenuVisible] = useState({visibility:"visible"});
+    const [menuVisible, setMenuVisible] = useState({ visibility: "visible" });
 
 
 
@@ -253,7 +253,7 @@ const Default = props => {
     const matches = useMediaQuery('(max-width:400px)');
     const divLingLogo = {
 
-       width: '4vw',
+        width: '4vw',
         display: 'inline-block',
         height: '2.5vw',
         lineHeight: '2.5vw',
@@ -265,24 +265,24 @@ const Default = props => {
     const divLingLogo_phone = {
 
         width: '4vw',
-         display: 'inline-block',
-         height: '2.5vw',
-         lineHeight: '2.5vw',
-         Float: 'Left',
-         marginLeft: '1vw',
-         fontSize: '0.7rem'
- 
-     };
-    
+        display: 'inline-block',
+        height: '2.5vw',
+        lineHeight: '2.5vw',
+        Float: 'Left',
+        marginLeft: '1vw',
+        fontSize: '0.7rem'
+
+    };
+
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
-       
+
         setRoutes(data);
     }, []);
 
     const NavicateBarN = () => {
-        
+
         const jsonresult = JSON.parse(
             localStorage.getItem('MenuItems') === 'undefined'
                 ? null
@@ -295,11 +295,11 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
-                if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1]==="dashboard") {
+                if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1] === "dashboard") {
                     row.WebPages.forEach((res) => {
                         if (res.PathLV2 === Path[2]) {
-                           name = t(res.pageName.trim());
-                             //name = res.pageName;
+                            name = t(res.pageName.trim());
+                            //name = res.pageName;
                             icon_s = iconMenuTree[res.Icon];
                         } else if (Path[2] === "inbound" && res.PathLV2.match("inbound")) {
                             name = t(res.pageName.trim());
@@ -319,14 +319,14 @@ const Default = props => {
             });
             return (
                 <span key="0">
-                    <span 
-                    style={
-                        matches ? (
-                             { lineHeight: "29px",fontSize:'0.8rem'}
-                         ) : (
-                             {lineHeight: "29px",fontSize:'1rem'}
-                         )  
-                    }>{name}</span>
+                    <span
+                        style={
+                            matches ? (
+                                { lineHeight: "29px", fontSize: '0.8rem' }
+                            ) : (
+                                    { lineHeight: "29px", fontSize: '1rem' }
+                                )
+                        }>{name}</span>
                 </span>
             );
         }
@@ -335,14 +335,14 @@ const Default = props => {
         if (Path[1] === "") {
         } else {
             return (
-                <div 
-                style={
-                    matches ? (
-                         {float: "left", lineHeight: "29px",fontSize:'0.8rem'}
-                     ) : (
-                         {float: "left", lineHeight: "29px",fontSize:'1rem'}
-                     )  
-                }
+                <div
+                    style={
+                        matches ? (
+                            { float: "left", lineHeight: "29px", fontSize: '0.8rem' }
+                        ) : (
+                                { float: "left", lineHeight: "29px", fontSize: '1rem' }
+                            )
+                    }
                 >
                     <Link key="0" color="inherit" href="/">{t("Home")}</Link>
                 </div>
@@ -352,20 +352,20 @@ const Default = props => {
     const Route_1 = () => {
         if (Path[1] === "") {
         } else {
-            if(Path[1]==="dashboard" && window.project==="STGT"){
-                return <Typography color="textPrimary"  style={  matches ? ({fontSize:'0.8rem'}) : ({fontSize:'1rem'})}>
-                      {t('Monitor')}
-                      </Typography>
+            if (Path[1] === "dashboard" && window.project === "STGT") {
+                return <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
+                    {t('Monitor')}
+                </Typography>
             }
             return routes.map((x, idx) => {
                 if (x.text.toString().toLowerCase() === Path[1]) {
-                    return <div  key={idx} style={{ float: "left",lineHeight: "29px",marginLeft: "5px"}}>
-                    <Typography color="textPrimary"  style={  matches ? ({fontSize:'0.8rem'}) : ({fontSize:'1rem'})}>
-                       {t(x.text)}
-                      </Typography>
+                    return <div key={idx} style={{ float: "left", lineHeight: "29px", marginLeft: "5px" }}>
+                        <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
+                            {t(x.text)}
+                        </Typography>
                     </div>
                 }
-                else{
+                else {
                     return <div key={idx}></div>
                 }
             });
@@ -382,55 +382,55 @@ const Default = props => {
     }
 
     useEffect(() => {
-        if(props.width === "xs"){
-            setMenuVisible({visibility:"hidden"})
+        if (props.width === "xs") {
+            setMenuVisible({ visibility: "hidden" })
             handleDrawerClose()
         }
-        else{
-            setMenuVisible({visibility:"visible"})
+        else {
+            setMenuVisible({ visibility: "visible" })
             handleDrawerOpen()
         }
     }, [props.width])
 
-const LogoIn= () => {
-    return (<a
-        href='/'
-         style={{
-             display: 'inline-block',
-               width: 'auto',
-              textDecoration: 'none',
+    const LogoIn = () => {
+        return (<a
+            href='/'
+            style={{
+                display: 'inline-block',
+                width: 'auto',
+                textDecoration: 'none',
                 color: '#FFF'
-        }}>
-           {matches ? (
-            <img
-            src={require('../assets/logo/logo.png')}
-            style={{
-           
-            width: '35px',
-              display: 'inline-block'
-            }}
-           alt=''
-           />
-           ):(
-        <img
-            src={require('../assets/logo/logo.png')}
-            style={{
-           float: 'left',
-            width: '4vw',
-              display: 'inline-block'
-            }}
-           alt=''
-           />
-           )}
+            }}>
             {matches ? (
-               ''
+                <img
+                    src={require('../assets/logo/logo.png')}
+                    style={{
+
+                        width: '35px',
+                        display: 'inline-block'
+                    }}
+                    alt=''
+                />
             ) : (
-                <div style={divLingLogo}>AMS</div>
-            )}
-           
-    </a>
-    )
-}
+                    <img
+                        src={require('../assets/logo/logo.png')}
+                        style={{
+                            float: 'left',
+                            width: '4vw',
+                            display: 'inline-block'
+                        }}
+                        alt=''
+                    />
+                )}
+            {matches ? (
+                ''
+            ) : (
+                    <div style={divLingLogo}>AMS</div>
+                )}
+
+        </a>
+        )
+    }
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
@@ -451,8 +451,10 @@ const LogoIn= () => {
                         <IconButton
                             color='inherit'
                             aria-label='Open drawer'
-                            onClick={() => {handleDrawerOpen(); 
-                                setMenuVisible({visibility:"visible"})}}
+                            onClick={() => {
+                                handleDrawerOpen();
+                                setMenuVisible({ visibility: "visible" })
+                            }}
                             className={classNames(classes.menuButton, open && classes.hide)}
                         >
                             <MenuIcon />
@@ -519,12 +521,13 @@ const LogoIn= () => {
                                 </Typography>
                             </div>
 
-                            
+
                             <Popper
                                 open={openLangHeader}
                                 // anchorEl={anchorEl}
                                 transition
                                 disablePortal
+                                style={{ position: "fixed", left: null, top: null }}
                             >
                                 {({ TransitionProps, placement }) => {
                                     return (
@@ -679,16 +682,16 @@ const LogoIn= () => {
                         <Breadcrumbs
                             separator={<NavigateNextIcon fontSize="small" />}
                             aria-label="Breadcrumb"
-                           
+
                         >
                             {Home_Link()}
                             {Route_1()}
-                            <Typography color="textPrimary" style={{ fontSize:"1rem" }}>{NavicateBarN()}</Typography>
+                            <Typography color="textPrimary" style={{ fontSize: "1rem" }}>{NavicateBarN()}</Typography>
                         </Breadcrumbs>
                     </Paper>
 
                     <Switch>
-                   
+
                         {routeLink.map((x, idx) => (
                             <Route
                                 key={idx}
