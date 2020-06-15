@@ -21,9 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ADO\" />
-    <Folder Include="APIService\" />
-    <Folder Include="Engine\" />
+    <Folder Include="APIService\Document\" />
+    <Folder Include="Engine\Document\" />
     <Folder Include="Model\" />
   </ItemGroup>
 

@@ -57,10 +57,10 @@ const MappingPallet = Loadable({
   loader: () => import("../../views/page/AERP/GR/MappingPallet"),
   loading: Loading
 });
-// const ProcessQueueCT = Loadable({
-//   loader: () => import("../../views/page/STA/Audit/WorkQueueSTACounting"),
-//   loading: Loading
-// });
+const MoveLocation = Loadable({
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
+  loading: Loading
+});
 const routes = [
   //{ path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
@@ -79,6 +79,8 @@ const routes = [
   { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
   //{ path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
+
+  { path: "/sto/move", name: "Move Location", compoment: MoveLocation, exact: true },
 ];
 
 export default routes;
