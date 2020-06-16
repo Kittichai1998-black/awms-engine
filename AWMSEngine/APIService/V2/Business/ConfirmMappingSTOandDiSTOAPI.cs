@@ -34,35 +34,16 @@ namespace AWMSEngine.APIService.V2.Business
                         this.BeginTransaction();
                         var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
                         this.CommitTransaction();
-
-                        if (resClosing.Count > 0)
-                        {
-                            this.BeginTransaction();
-                            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
-                            this.CommitTransaction();
-
-                        }
                     }
                 }
-                else if (docs.EventStatus == DocumentEventStatus.WORKED)
+                else if (docs.EventStatus == DocumentEventStatus.WORKED || docs.EventStatus == DocumentEventStatus.CLOSING)
                 {
                     this.BeginTransaction();
                     var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, new List<long>() { res.docID });
                     this.CommitTransaction();
 
-                    if (resClosing.Count > 0)
-                    {
-                        this.BeginTransaction();
-                        var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
-                        this.CommitTransaction();
-                    }
                 }
-                else if (docs.EventStatus == DocumentEventStatus.CLOSING)
-                {
-                    this.BeginTransaction();
-                    var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, new List<long> { res.docID });
-                    this.CommitTransaction();
-                }
+
             }
             return res;
         }

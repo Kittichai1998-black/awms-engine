@@ -38,9 +38,9 @@ namespace AWMSEngine.Engine.V2.Business
             var getDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(getDiSTO.DocumentItem_ID.Value, BuVO);
             if (getDocItem == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item");
-            getDocItem.DocItemStos.ForEach(x => { 
-            
-                if(x.ID == getDiSTO.ID.Value)
+            getDocItem.DocItemStos.ForEach(x => {
+
+                if (x.ID == getDiSTO.ID.Value)
                 {
                     x.Quantity = getStoPack.qty;
                     x.BaseQuantity = getStoPack.baseQty;

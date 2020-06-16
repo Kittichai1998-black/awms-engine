@@ -368,6 +368,7 @@ const DropdownComponent = (props) => {
         value,
         defaultValue,
         returnDefaultValue,
+        autoDefaultValue,
         fieldDataKey,
         queryApi,
         data,
@@ -384,6 +385,7 @@ const DropdownComponent = (props) => {
     const [optionList, setOptionList] = useState([]);
     const [valueKey, setValueKey] = useState("");
     const [defaultVal, setDefaultVal] = useState(null);
+    const [autoDefaultVal, setAutoDefaultVal] = useState(null);
     const [upreturnDefaultValue, setReturnDefaultValue] = useState(returnDefaultValue);
 
     const toggleOpen = () => {
@@ -438,13 +440,20 @@ const DropdownComponent = (props) => {
                     setDefaultVal(null);
                     setValueKey("");
                     onChange(null, null, id, fieldDataKey)
+                }else if(autoDefaultValue && returnDefaultValue){
+                    setReturnDefaultValue(false)
+                    setValueData(null);
+                    setDefaultVal(null);
+                    setValueKey("");
+                    onChange(null, null, id, fieldDataKey)
                 }
             } else {
                 setValueData(null);
                 if (defaultValue && returnDefaultValue) {
                     setReturnDefaultValue(true)
                     setDefaultVal(defaultValue);
-
+                }else  if (autoDefaultValue && returnDefaultValue) {
+                    setReturnDefaultValue(true) 
                 }
             }
 
@@ -466,6 +475,12 @@ const DropdownComponent = (props) => {
             } else {
                 onChange(null, null, id, fieldDataKey);
             }
+        }else if(autoDefaultValue && upreturnDefaultValue){
+            if (valueData) {
+                onChange(valueData[fieldDataKey], valueData, id, fieldDataKey);
+            } else {
+                onChange(null, null, id, fieldDataKey);
+            }
         }
     }, [valueKey, valueData]);
     useEffect(() => {
@@ -478,6 +493,9 @@ const DropdownComponent = (props) => {
                 }
                 else if (defaultVal) {
                     getDefaultByValue(defaultVal);
+                }
+                else if(autoDefaultValue){
+                    getDefaultByValue(null);
                 }
             }
         }
@@ -535,17 +553,27 @@ const DropdownComponent = (props) => {
     const getDefaultByValue = (value) => {
         if (optionList.length > 0) {
             let valuearray = null;
-            var dataoption = optionList;
-            dataoption.forEach((val, index) => {
+            let dataoption = [...optionList];
+            if(value){
+                dataoption.forEach((val, index) => {
 
-                if (String(value) === String(val[fieldDataKey])) {
-                    valuearray = ({
-                        ...val,
-                        value: val[fieldDataKey],
-                        label: getLabel(val),
-                    })
-                }
-            })
+                    if (String(value) === String(val[fieldDataKey])) {
+                        valuearray = ({
+                            ...val,
+                            value: val[fieldDataKey],
+                            label: getLabel(val),
+                        })
+                    }
+                })
+            }else{
+                let firstdata = dataoption[0];
+                valuearray = ({
+                    ...firstdata,
+                    value: firstdata[fieldDataKey],
+                    label: getLabel(firstdata),
+                })
+            }
+           
             setValueData(valuearray);
             getValueKey(valuearray);
         }
@@ -701,6 +729,7 @@ DropdownComponent.propTypes = {
     disabled: PropTypes.bool,
     zIndex: PropTypes.number,
     returnDefaultValue: PropTypes.bool,
+    autoDefaultValue: PropTypes.bool
 }
 DropdownComponent.defaultProps = {
     fieldDataKey: "value",

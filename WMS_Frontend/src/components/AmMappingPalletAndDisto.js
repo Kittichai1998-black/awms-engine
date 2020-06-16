@@ -15,7 +15,8 @@ import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 // import { useTranslation } from 'react-i18next'
 import { withStyles } from "@material-ui/core/styles";
-import Table from "./table/AmTable";
+// import Table from "./table/AmTable";
+import AmTable from "./AmTable/AmTable";
 import AmDropdown from './AmDropdown';
 import AmRadioGroup from "./AmRadioGroup";
 import AmDialogs from './AmDialogs'
@@ -257,12 +258,13 @@ const BtnAddPallet = (props) => {
         }
     }, [selWarehouse])
     useEffect(() => {
-        if (AreaDDL == null && ddlArea && ddlArea.visible && selWarehouse) {
+
+        if (AreaDDL == null && ddlArea && ddlArea.visible) {
             GetAreaDDL(selWarehouse)
         }
     }, [AreaDDL])
     useEffect(() => {
-        if (LocationDDL !== null && ddlLocation && ddlLocation.visible && selArea) {
+        if (LocationDDL !== null && ddlLocation && ddlLocation.visible) {
             GetLocationDDL(selArea)
         } else if (LocationDDL === null && ddlLocation && ddlLocation.visible) {
             GetLocationDDL(selArea)
@@ -375,10 +377,18 @@ const BtnAddPallet = (props) => {
             } else {
                 newAreaQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'Warehouse_ID', c:'=', 'v': " + selWarehouseID + "}]";
             }
+        } else {
+            if (ddlArea.customQ !== undefined) {
+                newAreaQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlArea.customQ + "]";
+            }
         }
         await Axios.get(createQueryString(newAreaQueryStr)).then(res => {
             if (res.data.datas) {
                 setAreaDDL(inputDDLComponent(ddlArea, res.data.datas))
+                if (res.data.datas.length === 0) {
+                    setSelArea(null)
+                    valueInput['areaID'] = null;
+                }
             }
         });
     }
@@ -390,18 +400,28 @@ const BtnAddPallet = (props) => {
             } else {
                 newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'AreaMaster_ID', c:'=', 'v': " + selAreaID + "}]";
             }
+            await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
+                if (res.data.datas) {
+                    setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas))
+                }
+            });
         } else {
-            if (ddlLocation.customQ !== undefined) {
-                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlLocation.customQ + "]";
-            } else {
-                newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}]";
-            }
+            // console.log("set location null")
+            setLocationDDL(inputDDLComponent(ddlLocation, []));
+            valueInput['locationID'] = null;
         }
-        await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
-            if (res.data.datas) {
-                setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas))
-            }
-        });
+        // else {
+        //     if (ddlLocation.customQ !== undefined) {
+        //         newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlLocation.customQ + "]";
+        //     } else {
+        //         newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}]";
+        //     }
+        // }
+        // await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
+        //     if (res.data.datas) {
+        //         setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas))
+        //     }
+        // });
     }
 
     const inputDDLComponent = (showComponent, Query) => {
@@ -418,7 +438,8 @@ const BtnAddPallet = (props) => {
                     ddlMinWidth={330}
                     zIndex={9999}
                     returnDefaultValue={true}
-                    defaultValue={valueInput && valueInput[showComponent.field] ? valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
+                    autoDefaultValue={true}
+                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : null}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -460,7 +481,6 @@ const BtnAddPallet = (props) => {
     }
     const showRes = (data, field) => {
         if (data) {
-            console.log(data)
             let ele = document.getElementById(field);
             if (ele) {
                 ele.value = data;
@@ -611,6 +631,7 @@ const BtnAddPallet = (props) => {
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
+        // console.log(field + ":" + value)
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
@@ -646,7 +667,6 @@ const BtnAddPallet = (props) => {
                                 let showinfo = getinfo.map(x => {
                                     return <Chip size="small" label={x.Ref2} />
                                 });
-                                console.log(showinfo)
                                 detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}>
                                     <label style={{ color: '#007bff' }}>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
                             } else {
@@ -736,7 +756,7 @@ const BtnAddPallet = (props) => {
                         return row.component(row, idx)
                     }) : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    <Table
+                    {/* <Table
                         columns={columns}
                         pageSize={100}
                         data={listDocItems}
@@ -747,6 +767,18 @@ const BtnAddPallet = (props) => {
                         currentPage={0}
                         defaultSelection={defaultSelect}
                         getSelection={data => setDataSelect(data)}
+                    /> */}
+                    <AmTable
+                     columns={columns}
+                     dataKey={"ID"}
+                     dataSource={listDocItems}
+                     selectionDefault={defaultSelect}
+                     selection="checkbox"
+                     selectionData={data => setDataSelect(data)}
+                     rowNumber={true}
+                    //  totalSize={count}
+                     pageSize={100}
+                    //  height={500}
                     />
                 </DialogContent>
                 <DialogActions>

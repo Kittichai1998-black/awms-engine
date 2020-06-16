@@ -53,17 +53,20 @@ namespace AWMSEngine.Engine.V2.Business
 
                     void set_status_base(long parent_id, StorageObjectType parent_type)
                     {
-                        var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
-                        var stoLists = new List<StorageObjectCriteria>();
-                        if (sto != null)
-                            stoLists = sto.ToTreeList();
-                        if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
+                        if (parent_type != StorageObjectType.LOCATION)
                         {
-                            var parentUpdate = stoLists.Find(x => x.id == parent_id);
-                            parentUpdate.eventStatus = StorageObjectEventStatus.RECEIVING;
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
-                            if (parentUpdate.parentID.HasValue)
-                                set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
+                            var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
+                            var stoLists = new List<StorageObjectCriteria>();
+                            if (sto != null)
+                                stoLists = sto.ToTreeList();
+                            if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
+                            {
+                                var parentUpdate = stoLists.Find(x => x.id == parent_id);
+                                parentUpdate.eventStatus = StorageObjectEventStatus.RECEIVING;
+                                ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                                if (parentUpdate.parentID.HasValue)
+                                    set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
+                            }
                         }
                     }
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, null, DocumentEventStatus.WORKING, BuVO);
