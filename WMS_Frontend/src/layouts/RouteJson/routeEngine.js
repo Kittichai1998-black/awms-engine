@@ -244,6 +244,81 @@ const RD_Create_WIPwm = Loadable({
     loading: Loading
 });
 
+const ID_Create = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create"),
+    loading: Loading
+});
+
+const ID_Create_EMPwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_EMPwm"),
+    loading: Loading
+});
+
+const ID_Create_FGcus = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGcus"),
+    loading: Loading
+});
+
+const ID_Create_FGwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGwm"),
+    loading: Loading
+});
+
+const ID_Create_RAWsup = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWsup"),
+    loading: Loading
+});
+
+const ID_Create_RAWwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWwm"),
+   loading: Loading
+});
+
+const ID_Create_STOcus = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOcus"),
+    loading: Loading
+});
+
+const ID_Create_STOsup = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOsup"),
+    loading: Loading
+});
+
+const ID_Create_STOwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOwm "),
+    loading: Loading
+});
+
+const ID_Create_WIPsup = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPsup"),
+    loading: Loading
+});
+
+const ID_Create_WIPwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPwm"),
+    loading: Loading
+});
+const ID_Search = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Search"),
+    loading: Loading
+});
+
+const ID_Detail = Loadable({
+    loader: () => import("../../views/page/ENGINE/ID/ID_Detail"),
+    loading: Loading
+});
+
+const Create_GR_RD = Loadable({
+    loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR"),
+    loading: Loading
+});
+
+const Create_GR_DR_FGwm = Loadable({
+    loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR _FGwm"),
+    loading: Loading
+});
+
+
 const routes = [
   { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
@@ -279,6 +354,22 @@ const routes = [
     { path: "/receiveOrder/createWIPwm", name: "RD CreateforSUP", compoment: RD_Create_WIPwm, exact: true },
     { path: "/receiveOrder/detail", name: "RD View", compoment: RD_Detail, exact: true },
     { path: "/receiveOrder/search", name: "RD View", compoment: RD_Search, exact: true },
+
+    { path: "/IssueOrder/create", name: "ID Create", compoment: ID_Create, exact: true },
+    { path: "/IssueOrder/createFGcus", name: "ID_Create_FGcus", compoment: ID_Create_FGcus, exact: true },
+    { path: "/IssueOrder/createFGwm", name: "ID_Create_FGwm", compoment: ID_Create_FGwm, exact: true },
+    { path: "/IssueOrder/createRAWwm", name: "ID_Create_RAWwm", compoment: ID_Create_RAWwm, exact: true },
+    { path: "/IssueOrder/createRAWsup", name: "ID_Create_RAWsup", compoment: ID_Create_RAWsup, exact: true },
+    { path: "/IssueOrder/createSTOcus", name: "ID_Create_STOcus", compoment: ID_Create_STOcus, exact: true },
+    { path: "/IssueOrder/createSTOsup", name: "ID_Create_STOsup", compoment: ID_Create_STOsup, exact: true },
+    { path: "/IssueOrder/createSTOwm", name: "ID_Create_STOwm", compoment: ID_Create_STOwm, exact: true },
+    { path: "/IssueOrder/createWIPsup", name: "ID_Create_WIPsup", compoment: ID_Create_WIPsup, exact: true },
+    { path: "/IssueOrder/createWIPwm", name: "ID_Create_WIPwm", compoment: ID_Create_WIPwm, exact: true },
+    { path: "/IssueOrder/detail", name: "ID View", compoment: ID_Detail, exact: true },
+    { path: "/IssueOrder/search", name: "ID Search", compoment: ID_Search, exact: true },
+
+    { path: "/grDr/create", name: "Create_GR_RD", compoment: Create_GR_RD, exact: true },
+    { path: "/grDr/createFGwm", name: "Create_GR_RD", compoment: Create_GR_DR_FGwm, exact: true },
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/test", name: "base1", compoment: Test1, exact: true },

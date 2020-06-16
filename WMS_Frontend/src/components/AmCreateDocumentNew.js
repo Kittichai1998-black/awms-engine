@@ -1,10 +1,9 @@
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import React, { useState, useRef, createRef } from "react";
+import React, { useState, useRef, createRef, useEffect } from "react";
 import styled from 'styled-components'
 
 // import { useTranslation } from 'react-i18next'
-
 import AmButton from '../components/AmButton'
 import AmDate from '../components/AmDate'
 import AmDatepicker from '../components/AmDate'
@@ -14,7 +13,8 @@ import AmEditorTable from '../components/table/AmEditorTable'
 import AmFindPopup from '../components/AmFindPopup'
 import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
-import { apicall, Clone } from '../components/function/CoreFunction'
+import {Clone } from '../components/function/CoreFunction'
+import { apicall, createQueryString } from "../components/function/CoreFunction2";
 import BtnAddList from './AmCreateDocument_BtnAddList'
 import { getUnique } from './function/ObjectFunction'
 import LabelT from './AmLabelMultiLanguage'
@@ -68,11 +68,45 @@ const cols = [
     },
 ];
 
+const colss = [
+    {
+        Header: 'Code',
+        accessor: 'Code',
+        fixed: 'left',
+        width: 130,
+        sortable: true,
+    }
+  
+];
+
+const useDocumentItemQuery = (docID, DocItemQuery) => {
+    const [docItemsQuery, setDocItemsQuery] = useState(DocItemQuery)
+
+    useEffect(() => {
+        if (DocItemQuery != null && docID != undefined) {
+            let objQuery = DocItemQuery;
+            if (objQuery !== null) {
+                let Itemsqry = JSON.parse(objQuery.q);
+                console.log(Itemsqry)
+                Itemsqry.push({ 'f': 'Document_ID', 'c': '=', 'v': docID })
+                objQuery.q = JSON.stringify(Itemsqry);
+
+            }
+     
+            setDocItemsQuery(objQuery)
+        }
+    }, [docID])
+    return docItemsQuery
+}
+
+
+
 const AmCreateDocument = (props) => {
     // const { t } = useTranslation();
     const [addData, setAddData] = useState(false);
     const [dialog, setDialog] = useState(false);
     const [editData, setEditData] = useState({});
+    const [editDataItem, setEditDataItem] = useState({});
     const [addDataID, setAddDataID] = useState(-1);
     const [title, setTitle] = useState("");
     const [dataSource, setDataSource] = useState([]);
@@ -84,7 +118,6 @@ const AmCreateDocument = (props) => {
         return arr
     }, {})
     const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
-
     // const [valueText, setValueText] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
@@ -93,7 +126,11 @@ const AmCreateDocument = (props) => {
     const [stateDialogErr, setStateDialogErr] = useState(false);
     // const [dataUnit, setDataUnit] = useState()
     const [dataCheck, setDataCheck] = useState()
+    const [docIds, setdocIds] = useState();
+    const DocItemsquery = useDocumentItemQuery(docIds,props.DocItemQuery)
     const ref = useRef(props.columnEdit.map(() => createRef()))
+    const [dataDocItem, setdataDocItem] = useState();
+    const [dialogItem, setDialogItem] = useState(false);
     const rem = [
         {
             Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => {
@@ -118,11 +155,55 @@ const AmCreateDocument = (props) => {
 
     const columns = props.columns.concat(rem)
 
-    //   const ordered = {};
-    //   Object.keys(docItems).sort().forEach(function(key) {
-    //     ordered[key] = docItems[key];
-    //   });
-    //   console.log(ordered);
+
+    useEffect(() => {
+        if (docIds != undefined) {
+            getData()
+        }
+    }, [docIds])
+
+  
+
+
+    const getDocItem = () => {
+       return  window.apipath + "/v2/GetSPSearchAPI?"
+           + "&docID=" + docIds
+            + "&spname=DOCITEM_LISTDRANDDI";
+    }
+
+    const getData = () => {
+        
+        if (getDocItem != undefined) {
+            Axios.get(getDocItem()).then(res => {
+                console.log(res.data.datas.length)
+                if (res.data.datas == undefined || res.data.datas.length == 0) {
+                    getDocItemQuery(DocItemsquery)
+                    //setStateDialogErr(true)
+                    //setMsgDialog("เอกสารนี้ถูกสร้างไปแล้ว")
+                } else if (res.data.datas.length != 0){
+                    setdataDocItem(res.data.datas);
+                    setEditData(res.data.datas);
+                    setDialogItem(true)
+                }
+
+            })
+        }
+     
+    }
+
+    const getDocItemQuery = (DocItemsquerys) => {
+        Axios.get(createQueryString(DocItemsquerys)).then(res => {
+            if (res.data.datas.length != 0) {
+                setdataDocItem(res.data.datas);
+                setEditData(res.data.datas);
+                setDialogItem(true)
+            } else {
+
+
+            }
+        })
+        }
+
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
@@ -159,7 +240,16 @@ const AmCreateDocument = (props) => {
         setcreateDocumentData(createDocumentData)
     }
 
-    const onChangeEditor = (field, data, required) => {
+    const onHandleChangeFindpopupDoc = (value, dataObject, inputID, fieldDataKey, pair, key) => {
+ 
+        if (value != undefined) {
+            setdocIds(value)
+           
+        }
+    }
+
+    const onChangeEditor = (field, data, required, idx) => {
+        console.log(field)
         if (addData && Object.getOwnPropertyNames(editData).length === 0) {
             editData["ID"] = addDataID
         }
@@ -247,6 +337,7 @@ const AmCreateDocument = (props) => {
                     ref.current[indexPalletCode].current.value = ""
                 }, 1);
             if (data) {
+
                 editData.SKUItems = data.SKUItems
                 editData.skuCode = data.Code
                 editData.unitType = data.UnitTypeCode
@@ -297,7 +388,28 @@ const AmCreateDocument = (props) => {
             // if (data.UnitCode !== data.BaseUnitCode)
             //     unitArr.push({ label: data.BaseUnitCode, value: data.BaseUnitCode })
             // setDataUnit(unitArr)
-        }
+        } else if (field === "Quantity") {
+            if (editData[0] != undefined) {
+                editData.map((row, i) => {
+                    console.log(i)
+                    console.log(idx)
+                    if (i === idx) {
+                        return editData[i].Quantity = data
+                    } else {
+                        //return editData[i].Quantity = data
+
+                    }
+
+                })
+
+            } else {
+                console.log(data)
+                console.log(editData.Quantity)
+                editData.Quantity = data
+            }
+            editData.Quantity = data.Quantity
+
+ }
         setReload({})
 
         if (required) {
@@ -317,6 +429,7 @@ const AmCreateDocument = (props) => {
 
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
+        console.log(rowdata)
         if (status) {
             if (!inputError.length) {
                 let chkData = dataSource.filter(x => {
@@ -356,6 +469,7 @@ const AmCreateDocument = (props) => {
                 setEditData({})
                 setAddDataID(addDataID - 1);
                 setDialog(false)
+                setDialogItem(false)
                 setInputError([])
             } else {
                 setInputError(inputError.map(x => x.accessor))
@@ -366,11 +480,56 @@ const AmCreateDocument = (props) => {
             setEditData({})
             // setAddDataID(addDataID - 1);
             setDialog(false)
+            setDialogItem(false)
         }
 
         // // setDataUnit()
         // // setUnitCodes();
 
+    }
+
+
+    const onHandleEditConfirmItem = (status, rowdata, inputError) => {
+        if (editData.length != 0) {
+            editData.forEach((rowI, i) => {
+                if (status) {
+                    if (editData[i]["Qty"]) {
+                        let qtySum = editData[i]["Qty"]
+                        let qtys = editData[i]["Quantity"]
+                        let ToatalQty = qtys - qtySum
+                        console.log(ToatalQty)
+                        if (ToatalQty == 0) {
+                            setDialogItem(false)
+                             setStateDialogErr(true)
+                          setMsgDialog("เอกสารนี้ถูกสร้างครบจำนวนแล้ว")
+
+                        } else {
+                            editData[i]["Quantity"] = ToatalQty
+                            setDataSource(editData);
+                            setEditData({})
+                            setAddDataID(addDataID - 1);
+                            setDialogItem(false)
+                            setInputError([])
+                        }
+                    } else {
+                        setDataSource(editData);
+                        setEditData({})
+                        setAddDataID(addDataID - 1);
+                        setDialogItem(false)
+                        setInputError([])
+                    }
+
+                } else {
+                    setInputError([])
+                    setEditData({})
+                    setDialogItem(false)
+                }
+
+                
+            })
+            
+        }
+ 
     }
 
     const editorListcolunm = () => {
@@ -383,11 +542,106 @@ const AmCreateDocument = (props) => {
                             return x === row.accessor
                         }) : false
                         return <div key={key}>
-                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel, row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i, rowError, row.required)}
+                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
+                                row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i, rowError, row.required)}
                         </div>
                     }
                 }
             })
+        }
+    }
+
+    //const editorListcolunmItem = () => {
+    //    if (props.columnEditItem !== undefined) {
+    //        return  props.columnEditItem.map((row, i) => {
+    //                    return {
+    //                        "field": row.accessor,
+    //                        "component": (data = null, cols, key) => {
+    //                            let rowError = inputError.length ? inputError.some(x => {
+    //                                return x === row.accessor
+    //                            }) : false
+    //                            return <div key={key}>
+
+    //                                {getTypeEditorItem(row.type, row.Header, row.accessori, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
+    //                                    row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i, rowError, row.required)}
+
+    //                            </div>
+    //                        }
+    //                    }
+    //                })
+               
+    //    }
+    //}
+
+    const genColumsEditor = () => {
+        if (editData != undefined) {
+           return editData.map((x, idx) => {
+               return  props.columnEditItem.map((row, i) => {
+                    return {
+                        "field": row.accessor,
+                        "component": (data = null, cols, key) => {
+                            let rowError = inputError.length ? inputError.some(x => { return x === row.accessor }) : false;
+                            return <div key={key}>
+                                {
+                                    getTypeEditorItem(row, i, rowError, idx)
+                                }
+                            </div>
+                        }
+                    }
+                })
+            })
+        }
+    }
+
+    const getTypeEditorItem = ({ type, Header, accessori, accessor, data, cols, row, idddl, queryApi,
+        columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, required }, index, rowError, idx) => {
+        console.log(type)
+        if (type === "inputNum") {
+            return (<div>
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <FormInline>{TextInputnum ? (
+                            <FormInline>
+                                <AmInput
+                                    required={required}
+                                    error={rowError}
+                                    // helperText={inputError.length ? "required field" : false}
+                                    inputRef={ref.current[index]}
+                                    defaultValue={editData[idx] !== null && editData[idx] !== {} && editData[idx]["qtyrandom"] !== undefined ?
+                                        editData[idx][accessori].replace("%", "") : ""}
+                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
+                                    type="number"
+                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
+                                <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
+                                    <LabelT>{TextInputnum}</LabelT>
+                                </div>
+                            </FormInline>
+                        ) : (
+                                <AmInput
+                                    required={required}
+                                    error={rowError}
+                                    // helperText={inputError.length ? "required field" : false}
+                                    inputRef={ref.current[index]}
+                                    defaultValue={editData[idx]['Qty'] ? editData[idx][accessori] - editData[idx]['Qty'] :
+                                        editData[idx][accessori] ? editData[idx][accessori] : ""}
+                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
+                                    type="number"
+                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required, idx) }} />
+                            )
+                        }</FormInline>
+                    </InputDiv>
+                </FormInline>
+
+            </div>)
+        } else if (type === "text") {
+            return (
+                <div>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <label ref={ref.current[index]}>{texts ||editData[idx][accessori]}</label >
+                </div>
+
+            )
         }
     }
 
@@ -637,6 +891,24 @@ const AmCreateDocument = (props) => {
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopup(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
             )
+        } else if (type === "findPopUpDoc") {
+            return (
+                <AmFindPopup
+                    id={idddls}
+                    placeholder={placeholder ? placeholder : "Select"}
+                    fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                    labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                    fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                    valueData={valueFindPopup[idddls]} //ค่า value ที่เลือก
+                    labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                    queryApi={queryApi} //object query string
+                    columns={colss} //array column สำหรับแสดง table
+                    width={width ? width : 300}
+                    ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
+                    disabled={docIds? true : false}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopupDoc(value, dataObject, inputID, fieldDataKey, pair, key)}
+                />
+            )
         }
     }
 
@@ -743,12 +1015,34 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "receiveOrder") {
             doc.receivedOrderItem = dataSource.map(x => {
+          
                 //modify
+                //x.BaseUnitCode = x.unitType
+                x.RefDocumentItem_ID = null
                 docItems.options = null
                 return x
             })
+        } else if (props.createDocType === "issueOrder") {
+            doc.issuedOrderItem = dataSource.map(x => {
+                //modify
+                //console.log(x.unitType)
+                //x.BaseUnitCode = x.unitType
+                x.RefDocumentItem_ID = null
+                docItems.options = null
+                return x
+            })
+        } else if (props.createDocType === "reciveByDR") {
+            doc.receiveItems = dataSource.map(x => {
+                x.unitType = x.UnitTypeCode
+                x.RefDocumentItem_ID = x.ID
+                x.Options = null
+                x.skuCode = x.Code            
+                return x
+            })
+
+
+
         }
-        console.log(doc, dataSource)
         if (Object.keys(doc).length > countDoc) {
             CreateDocuments(doc, dataSource)
         }
@@ -778,7 +1072,7 @@ const AmCreateDocument = (props) => {
         getUnique(data, "ID").forEach(x => {
             // let chkData = dataSource.filter(z => z.ID === x.ID)
             // if (chkData.length === 0) {
-
+           
             let y = {
                 ID: x.ID,
                 palletcode: x.palletcode,
@@ -819,6 +1113,16 @@ const AmCreateDocument = (props) => {
                 data={editData}
                 objColumnsAndFieldCheck={{ objColumn: props.columnEdit, fieldCheck: "accessor" }}
                 columns={editorListcolunm()}
+            />
+
+            <AmEditorTable
+                style={{ width: "600px", height: "500px" }}
+                titleText={title}
+                open={dialogItem}
+                onAccept={(status, rowdata, inputError) => onHandleEditConfirmItem(status, rowdata, inputError)}
+                data={editData}
+                objColumnsAndFieldCheck={{ objColumn: props.columnEdit, fieldCheck: "accessor" }}
+                columns={genColumsEditor()}
             />
 
             {/* Header */}

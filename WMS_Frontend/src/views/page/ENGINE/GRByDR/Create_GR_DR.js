@@ -1,4 +1,4 @@
-Ôªøimport React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import queryString from "query-string";
@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_WIPcus = props => {
+const Create_GR_DR = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,7 +31,7 @@ const RD_Create_WIPcus = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "WIP_TRANSFER_CUS", valueTexts: "2012", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -43,10 +43,10 @@ const RD_Create_WIPcus = props => {
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                 ],
                 [
-
+                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery" },
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
-               
+
             ];
 
             if (headerCreate.length > 0) {
@@ -57,10 +57,12 @@ const RD_Create_WIPcus = props => {
                         columns={columns}
                         columnEdit={columnEdit}
                         apicreate={apicreate}
-                        createDocType={"receiveOrder"}
+                        createDocType={"reciveByDR"}
                         history={props.history}
+                        DocItemQuery={DocumentItem}
+                        columnEditItem={columnEditItem}
                         apiRes={apiRes}
-                  />
+                    />
                 );
             }
         }
@@ -77,14 +79,14 @@ const RD_Create_WIPcus = props => {
     const columsFindpopUpPALC = [
         {
             Header: "Pallet Code",
-            accessor: "palletcode",
+            accessor: "Palletcode",
             width: 110,
             style: { textAlign: "center" }
         },
-       
+
         {
             Header: "SI",
-            accessor: "orderNo",
+            accessor: "OrderNo",
             width: 70,
             style: { textAlign: "center" }
         },
@@ -140,7 +142,7 @@ const RD_Create_WIPcus = props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PalletSto",
         q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //‡πÄ‡∏á‡∏∑‡πà‡∏≠‡∏ô‡πÑ‡∏Ç '[{ "f": "Status", "c":"<", "v": 2}]'
+            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //‡ß◊ËÕπ‰¢ '[{ "f": "Status", "c":"<", "v": 2}]'
         f:
             "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
         g: "",
@@ -175,6 +177,7 @@ const RD_Create_WIPcus = props => {
         all: ""
     };
 
+
     const addList = {
         queryApi: PalletCode,
         columns: columsFindpopUpPALC,
@@ -184,7 +187,7 @@ const RD_Create_WIPcus = props => {
                 placeholder: "Pallet Code"
             },
             {
-                accessor: "orderNo",
+                accessor: "OrderNo",
                 placeholder: "SI"
             },
             { accessor: "Code", placeholder: "Reorder" },
@@ -212,7 +215,7 @@ const RD_Create_WIPcus = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":2012}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -220,6 +223,32 @@ const RD_Create_WIPcus = props => {
         l: 100,
         all: ""
     };
+
+    const DocumentDR = {
+        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+        t: "Document",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+
+    }
+
+    const DocumentItem = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentItem",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+
+    }
 
     const columsFindpopUp = [
         {
@@ -234,31 +263,41 @@ const RD_Create_WIPcus = props => {
 
     const columnEdit = [
         { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
-        { Header: "Batch", accessor: "batch", type: "input", codeTranslate: "Batch" },
-        { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
-        { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
+        { Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
+        { Header: "Batch", accessor: "Batch", type: "input", codeTranslate: "Batch" },
+        { Header: "Lot", accessor: "Lot", type: "input", codeTranslate: "Lot" },
+        { Header: "Order No.", accessor: "OrderNo", type: "input", codeTranslate: "Order No." },
+        { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Quantity" },
+        { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" }
     ];
+
+    const columnEditItem = [
+        { Header: "Item Code", accessori: "SKUItems", type: "text", accessor: "SKUItems" },
+        { Header: "Batch", accessori: "Batch", type: "text", accessor: "batch", codeTranslate: "Batch" },
+        { Header: "Lot", accessori: "Lot", type: "text", accessor: "lot",codeTranslate: "Lot" },
+        { Header: "Order No.", accessori: "OrderNo", type: "text", accessor: "orderNo", codeTranslate: "Order No." },
+        { Header: "Quantity", accessori: "Quantity", type: "inputNum", accessor: "Quantity",codeTranslate: "Quantity" },
+        { Header: "Unit", accessori: "UnitType_Code", type: "text", accessor: "UnitType_Code", codeTranslate: "Unit" }
+    ];
+
 
 
     const columns = [
         { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item Code", accessor: "SKUItems" },
-        { Header: "Pallet", accessor: "palletcode", width: 110 },
-        { Header: "Batch", accessor: "batch", width: 100 },
-        { Header: "Lot", accessor: "lot", width: 100 },
-        { Header: "Order No.", accessor: "orderNo", width: 100 },
-        { Header: "Qty", accessor: "quantity", width: 110 },
-        { Header: "Unit", accessor: "unitType", width: 90 }
+        { Header: "Pallet", accessor: "Balletcode", width: 110 },
+        { Header: "Batch", accessor: "Batch", width: 100 },
+        { Header: "Lot", accessor: "Lot", width: 100 },
+        { Header: "Order No.", accessor: "OrderNo", width: 100 },
+        { Header: "Qty", accessor: "Quantity", width: 110 },
+        { Header: "Unit", accessor: "UnitType_Code", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateDRDocAPI/"; //API ‡∏™‡∏£‡πâ‡∏≤‡∏á Doc
-    const apiRes = "/receiveOrder/detail?docID="; //path ‡∏´‡∏ô‡πâ‡∏≤‡∏£‡∏≤‡∏¢‡∏•‡∏∞‡πÄ‡∏≠‡∏µ‡∏¢‡∏î ‡∏ï‡∏≠‡∏ô‡∏ô‡∏µ‡πâ‡∏¢‡∏±‡∏á‡πÑ‡∏°‡πà‡πÄ‡∏õ‡∏¥‡∏î
+    const apicreate = "/v2/CreateGRDocAPI/"; //API  √È“ß Doc
+    const apiRes = "/receive/detail?docID="; //path ÀπÈ“√“¬≈–‡Õ’¬¥ µÕππ’È¬—ß‰¡Ë‡ª‘¥
 
     return <div>
         {table}</div>;
 };
 
-export default RD_Create_WIPcus;
+export default Create_GR_DR;

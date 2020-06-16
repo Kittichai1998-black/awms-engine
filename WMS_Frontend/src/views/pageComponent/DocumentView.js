@@ -128,7 +128,8 @@ const DocumentView = props => {
 
   const getData = () => {
     //========================================================================================================
-    // console.log(props.typeDocNo);
+      console.log(props.typeDocNo);
+      console.log(typeDoc)
     // console.log(props);
 
     Axios.get(

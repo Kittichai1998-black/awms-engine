@@ -97,7 +97,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     {
                         x.EventStatus = DocumentEventStatus.WORKING;
                         x.Status = EntityStatus.ACTIVE;
-                        x.RefDocumentItem_ID = x.ID;
+                        //x.RefDocumentItem_ID = x.ID;
                         x.ID = null;
                     });
 
