@@ -8,30 +8,43 @@ import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmTable from "../../../components/AmTable/AmTable";
 import { apicall } from '../../../components/function/CoreFunction2';
 import GroupIcon from '@material-ui/icons/Group';
+import LockIcon from '@material-ui/icons/Lock';
+import AmInput from "../../../components/AmInput";
+import AmDialogs from "../../../components/AmDialogs";
+
+import guid from 'guid';
+
+import styled from 'styled-components';
 
 const Axios = new apicall()
 
+const FormInline = styled.div`
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    label {
+    margin: 5px 0 5px 0;
+    }
+    input {
+        vertical-align: middle;
+    }
+    @media (max-width: 800px) {
+        flex-direction: column;
+        align-items: stretch;
+    }
+`;
 //======================================================================
 const User = props => {
 
-  const [role, setRole] = useState();
-  const [roleID, setRoleID] = useState();
-  const [rolePermissionData, setRolePermissionData] = useState([]);
+  const [userPassID, setUserPassID] = useState();
+  const [userID, setUserID] = useState();
+  const [userRoleData, setUserRoleData] = useState([]);
   const [relationComponent, setRelationComponent] = useState([]);
-  const updateRolePermission = useRef([]);
+  const updateUserRole = useRef([]);
   const [open, setOpen] = useState(false);
-
-  const RoleQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Role",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID,Code,Name",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+  const [openPassword, setOpenPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [dialogState, setDialogState] = useState({});
 
   const iniCols = [
     {
@@ -57,8 +70,35 @@ const User = props => {
       Header: "Update Time",
       accessor: "LastUpdateTime",
       width: 150,
+    },
+    {
+      Header: "",
+      width: 15,
+      filterable:false,
+      sortable:false,
+      Cell: e => <IconButton
+        size="small"
+        aria-label="info"
+        onClick={()=>{setUserID(e.original.ID)}}
+        style={{ marginLeft: "3px" }}>
+        <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
+      </IconButton>
+    },
+    {
+      Header: "",
+      width: 15,
+      filterable:false,
+      sortable:false,
+      Cell: e => <IconButton
+        size="small"
+        aria-label="info"
+        onClick={()=>{setUserPassID(e.original.ID)}}
+        style={{ marginLeft: "3px" }}>
+        <LockIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
+      </IconButton>
     }
   ];
+
   const columns = [
     {
       field: "Code",
@@ -96,15 +136,7 @@ const User = props => {
       validate: /^[0-9\.]+$/
     }
   ];
-  const columnsEditPassWord = [
-    {
-      field: "password",
-      type: "password",
-      name: "Password",
-      placeholder: "Password",
-      required: true
-    }
-  ];
+  
   const columnsEdit = [
     {
       field: "Code",
@@ -212,17 +244,22 @@ const User = props => {
   };
 
   useEffect(()=> {
-    if(role !== undefined){
+    if(userID !== undefined){
       Axios.get(
-        window.apipath + "/v2/GetRolePermissionAPI?ID=" + roleID
+        window.apipath + "/v2/GetUserRoleAPI?ID=" + userID
       ).then(res => {
-        setRolePermissionData(res.data.datas)})
+        setUserRoleData(res.data.datas)})
     }
-    return () => setRole()
-  }, [role]);
+  }, [userID]);
+
+  useEffect(()=> {
+    if(userPassID !== undefined){
+      setOpenPassword(true)
+    }
+  }, [userPassID]);
 
   useEffect(() => {
-    const getObjectSizeColumns = (dataSou) => {
+    const getUserRoleColumns = (dataSou) => {
       const objSizeCols = [
         { Header: "Code", accessor: "Code", width: 250 },
         { Header: "Name", accessor: "Name", width: 250 }
@@ -233,10 +270,7 @@ const User = props => {
       }
 
       const defaultValue = () => {
-        console.log(dataSou.filter(x=> { console.log(x.Status !== 0 && x.Status !== 2 && x.Status !== null); console.log(x.Status);
-          return x.RolePermissionID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null)
-        }))
-        return dataSou.filter(x=> x.RolePermissionID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
+        return dataSou.filter(x=> x.User_ID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
         {
@@ -252,22 +286,21 @@ const User = props => {
                   selectionData={sel => {
                     var select = [...sel];
                     var objUpdate = [];
-                    var newObjSize = select.filter(x => x.RolePermissionID === null);
-                    var oldObjSize = dataSou.filter(x => x.RolePermissionID !== null);
+                    var newObjSize = select.filter(x => x.User_ID === null);
+                    var oldObjSize = dataSou.filter(x => x.User_ID !== null);
                     oldObjSize.forEach(e => {
-                      var oldObj = select.find(x => x.RolePermissionID === e.RolePermissionID);
+                      var oldObj = select.find(x => x.ID === e.ID);
                       if(oldObj === undefined){
-                        objUpdate.push({"ID":e.RolePermissionID, "Status":0})
+                        objUpdate.push({"ID":e.ID, "Status":0})
                       }else{
                         if(e.Status !== 1)
-                          objUpdate.push({"ID":e.RolePermissionID, "Status":1})
+                          objUpdate.push({"ID":e.ID, "Status":1})
                       }
                     });
                     newObjSize.forEach(x=> {
-                      objUpdate.push({"ID":null, "Status":1, "Role_ID":roleID, "Permission_ID":x.ID, "Revision":1 })
+                      objUpdate.push({"ID":null, "Status":1, "User_ID":userID, "Role_ID":x.ID, "Revision":1 })
                     });
-
-                    updateRolePermission.current = objUpdate;
+                    updateUserRole.current = objUpdate;
                   }}
                   selectionDefault={defaultValue()}
                   height={400}
@@ -279,36 +312,112 @@ const User = props => {
       ]
     }
     
-    setRelationComponent(getObjectSizeColumns(rolePermissionData))
-  }, [rolePermissionData])
+    setRelationComponent(getUserRoleColumns(userRoleData))
+  }, [userRoleData])
   
   const PopupObjSize = React.memo(({relationComponent, open}) => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
-      if(!status)
-        setOpen(false)
-      else{
-        UpdateObjectSizeMap();
-        setOpen(false)
+      if(!status){
+        setUserID(undefined);
       }
+      else{
+        UpdateUserRole();
+        setUserID(false)
+      }
+      setOpen(false)
     }}
-    titleText={"Object Size"} 
+    titleText={"User Role"} 
     data={{}}
     columns={relationComponent}
   />});
 
-  const UpdateObjectSizeMap = () => {
+  const PopupPassword = React.memo(({relationComponent, open}) => {
+    return <AmEditorTable 
+    open={openPassword} 
+    onAccept={(status, rowdata)=> {
+      if(!status){
+        setUserPassID()
+      }
+      else{
+        UpdatePassword();
+        setUserPassID()
+      }
+      setOpenPassword(false);
+    }}
+    titleText={"Password"} 
+    data={{}}
+    columns={[{ 
+      "field":"Password",
+      "component":(data=null, cols, key)=>{
+        return <div key={key}>
+            <FormInline>
+            <label style={{width:"150px",paddingLeft:"20px"}}>Password : </label>
+            <AmInput 
+              autoComplete="off"
+              id="Password"
+              placeholder="Password"
+              required={true}
+              validate={true}
+              msgError="Error" 
+              regExp={/^[0-9\.]+$/}
+              style={{width:"270px",margin:"0px"}}
+              type="password"
+              value={password}
+              onChangeV2={(value)=>{setPassword(value);}}/>
+        </FormInline>
+        </div>
+      }
+    }]}
+  />});
+
+  const UpdateUserRole = () => {
+    console.log(updateUserRole)
     let updjson = {
-      t: "ams_ObjectSizeMap",
+      t: "ams_User_Role",
       pk: "ID",
-      datas: updateRolePermission.current,
+      datas: updateUserRole.current,
       nr: false,
       _token: localStorage.getItem("Token")
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
+      if(res.data._result.status === 1){
+        setUserID();
+        setDialogState({type:"success", content:"Success", state:true})
+      }
+      else{
+        setUserID();
+        setDialogState({type:"error", content:res.data._result.message, state:true})
+      }
+    });
+  }
+
+  const UpdatePassword = () => {
+    var guidstr = guid.raw().toUpperCase()
+    var i = 0, strLength = guidstr.length;
+    for (i; i < strLength; i++) {
+      guidstr = guidstr.replace('-', '');
+    }
+    var pass = "@@sql_gen_password," + password + "," + guidstr;
+
+    let updjson = {
+      t: "ams_User",
+      pk: "ID",
+      datas: [{"ID":userPassID, password:pass}],
+      nr: false,
+      _token: localStorage.getItem("Token")
+    };
+
+    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
+      if(res.data._result.status === 1){
+        setUserPassID();
+        setDialogState({type:"success", content:"Success", state:true})
+      }
+      else{
+        setUserPassID();
+        setDialogState({type:"error", content:res.data._result.message, state:true})
       }
     });
   }
@@ -329,6 +438,13 @@ const User = props => {
         history={props.history}
       /> */}
       <PopupObjSize relationComponent={relationComponent} open={open}/>
+      <PopupPassword open={openPassword}/>
+      
+      <AmDialogs
+            typePopup={dialogState.type}
+            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+            open={dialogState.state}
+            content={dialogState.content} />
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

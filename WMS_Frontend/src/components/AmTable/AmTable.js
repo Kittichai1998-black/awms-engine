@@ -215,7 +215,7 @@ AmTable.propTypes = {
      * ข้อมูล selection เริ่มต้น
      ** value? : [{ID:1},{ID:2},...]
     */
-    defaultSelection:PropTypes.array,
+    selectionDefault:PropTypes.array,
     /**
      * ใช้เปิดปิดเงื่อนไขเคลียข้อมูบที่เลือกเมื่อเปลี่ยนหน้า
      ** value? : true | false

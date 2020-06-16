@@ -6,16 +6,19 @@ import AmButton from "../../../components/AmButton";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmTable from "../../../components/AmTable/AmTable";
 import { apicall } from '../../../components/function/CoreFunction2';
+import { FaPallet } from 'react-icons/fa';
+import IconButton from "@material-ui/core/IconButton";
+import AmDialogs from "../../../components/AmDialogs";
 
 const Axios = new apicall()
 //======================================================================
 const ObjectSize = props => {
-  const [editObjectSize, setEditObjectSize] = useState();
   const [editObjectSizeID, setEditObjectSizeID] = useState();
   const [objectSizeData, setObjectSizeData] = useState([]);
   const [relationComponent, setRelationComponent] = useState([]);
   const updateObjSize = useRef([]);
   const [open, setOpen] = useState(false);
+  const [dialogState, setDialogState] = useState({});
 
 
   const EntityObjectType = [
@@ -64,10 +67,15 @@ const ObjectSize = props => {
     },
     {
       Header: "",
-      width: 90,
+      width: 15,
       filterable:false,
-      Cell: e => <AmButton styleType="info" onClick={()=>{setEditObjectSize(e.original);setEditObjectSizeID(e.original.ID)}}>Object Size</AmButton>
-    }
+      Cell: e => <IconButton
+        size="small"
+        aria-label="info"
+        onClick={()=>{setEditObjectSizeID(e.original.ID)}}
+        style={{ marginLeft: "3px" }}>
+        <FaPallet style={{ color: "#3E5FFA" }}/>
+      </IconButton>}
   ];
 
   const columns = [
@@ -204,14 +212,13 @@ const ObjectSize = props => {
   };
   
   useEffect(()=> {
-    if(editObjectSize !== undefined){
+    if(editObjectSizeID !== undefined){
       Axios.get(
-        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSize.ID
+        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSizeID
       ).then(res => {
         setObjectSizeData(res.data.datas)})
     }
-    return () => setEditObjectSize()
-  }, [editObjectSize]);
+  }, [editObjectSizeID]);
 
   useEffect(() => {
     const getObjectSizeColumns = (dataSou) => {
@@ -297,7 +304,11 @@ const ObjectSize = props => {
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
+      if(res.data._result.status === 1){
+        setDialogState({type:"success", content:"Success", state:true})
+      }
+      else{
+        setDialogState({type:"error", content:res.data._result.message, state:true})
       }
     });
   }
@@ -305,6 +316,12 @@ const ObjectSize = props => {
   return (
     <div>
       <PopupObjSize relationComponent={relationComponent} open={open}/>
+      
+      <AmDialogs
+            typePopup={dialogState.type}
+            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+            open={dialogState.state}
+            content={dialogState.content} />
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
