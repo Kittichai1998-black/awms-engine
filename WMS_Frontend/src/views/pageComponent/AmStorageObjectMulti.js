@@ -264,11 +264,11 @@ const AmStorageObjectMulti = props => {
         ));
         x.Qty = x.Qty.toString()
           .split("\\n")
-          .map(y => <div>{y.split(".000")}</div>);
+          .map(y => <div style={{ marginBottom: "3px" }} >{y.split(".000")}</div>);
         x.Base_Unit = x.Base_Unit.split("\\n").map(y => (
           <div style={{ marginBottom: "3px" }}>{y}</div>
         ));
-        x.Batch = x.Batch.split("\\n").map(y => (
+        x.Lot = x.Lot.split("\\n").map(y => (
           <div style={{ marginBottom: "3px" }}>{y}</div>
         ));
 
@@ -279,6 +279,7 @@ const AmStorageObjectMulti = props => {
         ));
       });
     }
+    console.log(res.data.datas)
     setDataSource(res.data.datas);
     //setDataSource(dataGroup)
     setTotalSize(res.data.counts);

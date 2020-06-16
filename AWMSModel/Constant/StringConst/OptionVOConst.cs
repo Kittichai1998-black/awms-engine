@@ -44,6 +44,31 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_POSNR = "posnr";
         public const string OPT_BASECODE = "basecode";
 
+        //AREP
+        public const string OPT_WH_SEQORD = "wh_seqord";
+        public const string OPT_WH_SET = "wh_set";
+        public const string OPT_WH_SEQ_ORDER = "wh_seq_order";
+        public const string OPT_WH_ORDERLINE = "wh_orderLine";
+        public const string OPT_WH_SEQUENCE = "wh_Sequence";
+        public const string OPT_ADVICE = "advice";
+        public const string OPT_ADVICE_LINE = "advice_line";
+        public const string OPT_RECEIPT = "receipt";
+        public const string OPT_RECEIPT_LINE = "receipt_line";
+        public const string OPT_COMPANY = "company";
+        public const string OPT_LOCATION = "location";
+        public const string OPT_COUNT_NUM = "count_num";
+        public const string OPT_WH_LINE = "wh_line";
+        public const string OPT_SEQ_SERIAL = "Seq_Serial";
+        public const string OPT_LOC = "Loc";
+        public const string OPT_STOCK_INV = "stock_inv";
+        public const string OPT_INV_COUNTED = "inv_counted";
+        public const string OPT_VARIACE = "variance";
+        public const string OPT_PROJ_LINE = "proj_line";
+        public const string OPT_ORINGIN = "wh_origin";
+        public const string OPT_WAREHOUSE_F = "warehouse_f";
+        public const string OPT_WAREHOUSE_T = "warehouse_t";
+        public const string OPT_ITEM_GROUP = "item_group";
+        public const string OPT_INVENTORY_UNIT = "inventory_unit";
 
     }
 }

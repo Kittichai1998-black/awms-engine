@@ -16,7 +16,7 @@ const Table = styled.div`
 `
 const TableContainer = styled.div`
     position:relative;
-    width:${props => `${props.width}px`}
+    width:${props => `${typeof props.width === "number" ? props.width + 'px' : props.width}`}
     overflow:auto;
     max-height:${props => `${props.height}px`}
     padding-right:1px;

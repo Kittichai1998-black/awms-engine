@@ -186,6 +186,9 @@ const BtnAddList = props => {
           });
         });
       }
+    } else {
+      setQuery({ ...props.queryApi })
+      setKeySearch({})
     }
   }, [open]);
 
@@ -204,10 +207,9 @@ const BtnAddList = props => {
   }, [query, open]);
 
   useEffect(() => {
-    if (typeof page === "number") {
+    if (typeof page === "number" && (props.queryApi.l !== query.l)) {
       // const queryEdit = JSON.parse(JSON.stringify(query));
       query.sk = page === 0 ? 0 : page * parseInt(query.l, 10);
-
       setQuery({ ...query });
     }
   }, [page]);

@@ -6,7 +6,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     var queryFilter = [...convertFilter];
     var searchData = queryFilter.find(x => x.f === field);
     var searchSign = "=";
-    searchValue = searchValue.toString();
+    searchValue = searchValue === null ? "" : searchValue.toString();
     if (searchValue !== "") {
         if (searchValue.startsWith(">=")) {
             searchSign = ">=";

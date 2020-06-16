@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import {EntityEventStatus} from "../../../components/Models/EntityStatus";
@@ -11,58 +11,12 @@ const Axios = new apicall()
 //======================================================================
 const ObjectSize = props => {
   const [editObjectSize, setEditObjectSize] = useState();
+  const [editObjectSizeID, setEditObjectSizeID] = useState();
   const [objectSizeData, setObjectSizeData] = useState([]);
   const [relationComponent, setRelationComponent] = useState([]);
+  const updateObjSize = useRef([]);
   const [open, setOpen] = useState(false);
 
-  useEffect(()=> {
-    if(editObjectSize !== undefined){
-      Axios.get(
-        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSize.ID
-      ).then(res => {setObjectSizeData(res.data.datas)})
-    }
-    return () => setEditObjectSize()
-  }, [editObjectSize]);
-
-  useEffect(() => {
-    const getObjectSizeColumns = (dataSou) => {
-      const objSizeCols = [
-        { Header: "Code", accessor: "Code", width: 250 },
-        { Header: "Name", accessor: "Name", width: 250 }
-      ];
-
-      if(dataSou !== undefined && dataSou.length > 0){
-        setOpen(true)
-      }
-
-      const defaultValue = () => {
-        return dataSou.filter(x=> x.ObjMapID !== null)
-      }
-
-      return [
-        {
-          field: "ID",
-          component: (data, cols, key) => {
-            return (
-              <div key={key}>
-                <AmTable
-                  columns={objSizeCols}
-                  dataKey={"ID"}
-                  dataSource={dataSou}
-                  selection={"checkbox"}
-                  selectionData={sel => console.log(sel)}
-                  selectionDefault={defaultValue()}
-                  height={400}
-                />{" "}
-              </div>
-            );
-          }
-        }
-      ]
-    }
-    
-    setRelationComponent(getObjectSizeColumns(objectSizeData))
-  }, [objectSizeData])
 
   const EntityObjectType = [
     { label: "Location", value: 0 },
@@ -109,9 +63,10 @@ const ObjectSize = props => {
       dateFormat: "DD/MM/YYYY HH:mm"
     },
     {
-      Header: "Object Size Map",
-      width: 150,
-      Cell: e => <AmButton onClick={()=>{setEditObjectSize(e.original)}}>Object Size</AmButton>
+      Header: "",
+      width: 90,
+      filterable:false,
+      Cell: e => <AmButton styleType="info" onClick={()=>{setEditObjectSize(e.original);setEditObjectSizeID(e.original.ID)}}>Object Size</AmButton>
     }
   ];
 
@@ -247,8 +202,76 @@ const ObjectSize = props => {
       return null;
     }
   };
+  
+  useEffect(()=> {
+    if(editObjectSize !== undefined){
+      Axios.get(
+        window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSize.ID
+      ).then(res => {
+        setObjectSizeData(res.data.datas)})
+    }
+    return () => setEditObjectSize()
+  }, [editObjectSize]);
 
-  const PopupObjSize = ({relationComponent, open}) => {
+  useEffect(() => {
+    const getObjectSizeColumns = (dataSou) => {
+      const objSizeCols = [
+        { Header: "Code", accessor: "Code", width: 250 },
+        { Header: "Name", accessor: "Name", width: 250 }
+      ];
+
+      if(dataSou !== undefined && dataSou.length > 0){
+        setOpen(true)
+      }
+
+      const defaultValue = () => {
+        return dataSou.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
+      }
+      return [
+        {
+          field: "ID",
+          component: (data, cols, key) => {
+            return (
+              <div key={key}>
+                <AmTable
+                  columns={objSizeCols}
+                  dataKey={"ID"}
+                  dataSource={dataSou}
+                  selection={"checkbox"}
+                  selectionData={sel => {
+                    var select = [...sel];
+                    var objUpdate = [];
+                    var newObjSize = select.filter(x => x.ObjMapID === null);
+                    var oldObjSize = dataSou.filter(x => x.ObjMapID !== null);
+                    oldObjSize.forEach(e => {
+                      var oldObj = select.find(x => x.ObjMapID === e.ObjMapID);
+                      if(oldObj === undefined){
+                        objUpdate.push({"ID":e.ObjMapID, "Status":0})
+                      }else{
+                        if(e.Status !== 1)
+                          objUpdate.push({"ID":e.ObjMapID, "Status":1})
+                      }
+                    });
+                    newObjSize.forEach(x=> {
+                      objUpdate.push({"ID":null, "Status":1, "OuterObjectSize_ID":editObjectSizeID, "InnerObjectSize_ID":x.ID, "Revision":1 })
+                    });
+
+                    updateObjSize.current = objUpdate;
+                  }}
+                  selectionDefault={defaultValue()}
+                  height={400}
+                />{" "}
+              </div>
+            );
+          }
+        }
+      ]
+    }
+    
+    setRelationComponent(getObjectSizeColumns(objectSizeData))
+  }, [objectSizeData])
+  
+  const PopupObjSize = React.memo(({relationComponent, open}) => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
@@ -262,16 +285,21 @@ const ObjectSize = props => {
     titleText={"Object Size"} 
     data={{}}
     columns={relationComponent}
-  />};
+  />});
 
   const UpdateObjectSizeMap = () => {
     let updjson = {
       t: "ams_ObjectSizeMap",
-      pk: "ObjMapID",
-      datas: [],
+      pk: "ID",
+      datas: updateObjSize.current,
       nr: false,
       _token: localStorage.getItem("Token")
     };
+
+    Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
+      if (res.data._result !== undefined) {
+      }
+    });
   }
 
   return (

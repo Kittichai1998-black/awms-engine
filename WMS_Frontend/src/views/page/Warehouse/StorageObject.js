@@ -94,9 +94,7 @@ const StorageObject = props => {
     { Header: "Warehouse", accessor: "Warehouse", width: 150 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
-    { Header: "Batch", accessor: "Batch", width: 120 },
     { Header: "Lot", accessor: "Lot", width: 120 },
-    { Header: "OrderNo", accessor: "OrderNo", width: 120 },
     {
       Header: "Qty",
       accessor: "Qty",
@@ -189,28 +187,28 @@ const StorageObject = props => {
   ];
 
   const getStatus = value => {
-    if (value.Status === "NEW") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={10} />;
-    } else if (value.Status === "RECEIVING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={11} />;
-    } else if (value.Status === "RECEIVED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={12} />;
-    } else if (value.Status === "AUDITING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={13} />;
-    } else if (value.Status === "AUDITED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={14} />;
-    } else if (value.Status === "PICKING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={17} />;
-    } else if (value.Status === "PICKED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={18} />;
-    } else if (value.Status === "HOLD") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={99} />;
-    } else if (value.Status === "QUALITY_CONTROL") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={98} />;
-    } else if (value.Status === "REMOVING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={21} />;
-    } else if (value.Status === "REMOVED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={22} />;
+    if (value.Status[0].props.children.key === "NEW") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={10} />;
+    } else if (value.Status[0].props.children.key === "RECEIVING") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={11} />;
+    } else if (value.Status[0].props.children.key === "RECEIVED") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={102} />;
+    } else if (value.Status[0].props.children.key === "AUDITING") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={13} />;
+    } else if (value.Status[0].props.children.key === "AUDITED") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={104} />;
+    } else if (value.Status[0].props.children.key === "PICKING") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={17} />;
+    } else if (value.Status[0].props.children.key === "PICKED") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={18} />;
+    } else if (value.Status[0].props.children.key === "HOLD") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={99} />;
+    } else if (value.Status[0].props.children.key === "QUALITY_CONTROL") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={98} />;
+    } else if (value.Status[0].props.children.key === "REMOVING") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={21} />;
+    } else if (value.Status[0].props.children.key === "REMOVED") {
+      return <AmStorageObjectStatus key={value.Status[0].props.children.key} statusCode={22} />;
     } else {
       return null;
     }
@@ -288,19 +286,8 @@ const StorageObject = props => {
       searchType: "input",
       placeholder: "Location"
     },
-    {
-      label: "Batch",
-      field: "Batch",
-      searchType: "input",
-      placeholder: "Batch"
-    },
     { label: "Lot", field: "Lot", searchType: "input", placeholder: "Lot" },
-    {
-      label: "OrderNo",
-      field: "OrderNo",
-      searchType: "input",
-      placeholder: "OrderNo"
-    },
+
     { label: "Qty", field: "Qty", searchType: "input", placeholder: "Qty" },
     {
       label: "Unit Type",
@@ -368,6 +355,7 @@ const StorageObject = props => {
         modifyhold={true}
         modifyreceived={true}
         modifyQC={true}
+        multi={true}
       />
     </div>
   );

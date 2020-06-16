@@ -32,7 +32,7 @@ const selectionReducer = (state, action) => {
         case "set" : {
             return {
                 ...state,
-                "selectionAll":action.payload.data
+                "selection":action.payload.data
             }
         }
         case "add" : {
@@ -51,10 +51,10 @@ const selectionReducer = (state, action) => {
             }
         }
         case "addall":{
-            console.log(action.payload)
+            const addUniq = action.payload.map(x=> {return x})
             return {
                 ...state,
-                "selection":action.payload
+                "selection":addUniq
             }
         }
         case "removeall":{
