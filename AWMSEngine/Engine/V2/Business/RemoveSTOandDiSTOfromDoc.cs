@@ -12,7 +12,7 @@ namespace AWMSEngine.Engine.V2.Business
 {
     public class RemoveSTOandDiSTOfromDoc : BaseEngine<RemoveSTOandDiSTOfromDoc.TReq, NullCriteria>
     {
-      
+
         public class TReq
         {
             public long? distoID;
@@ -44,6 +44,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
                     {
                         var parentRemove = stoLists.Find(x => x.id == parent_id);
+
                         parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
                         ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                         if (parentRemove.parentID.HasValue)

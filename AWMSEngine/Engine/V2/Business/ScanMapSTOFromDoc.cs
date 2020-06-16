@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -93,8 +94,6 @@ namespace AWMSEngine.Engine.V2.Business
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
                             var getPACK = stolist.Find(y =>
                                 y.id == x.Sou_StorageObject_ID
-                                && y.batch == getDocItem.Batch
-                                && y.orderNo == getDocItem.OrderNo
                                 && y.lot == getDocItem.Lot
                                 && y.refID == getDoc.RefID
                                 && y.ref1 == getDoc.Ref1
@@ -146,8 +145,8 @@ namespace AWMSEngine.Engine.V2.Business
 
                     var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getDocItem.SKUMaster_ID.Value, x.Quantity, getDocItem.UnitType_ID.Value);
                     decimal? baseQuantity = baseUnitTypeConvt.baseQty;
-
-
+                    var option = "";
+                    option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
                     StorageObjectCriteria packSto = new StorageObjectCriteria()
                     {
                         parentID = idBaseSto.Value,
@@ -160,7 +159,7 @@ namespace AWMSEngine.Engine.V2.Business
                         unitCode = unit.Code,
                         unitID = unit.ID.Value,
                         lot = getDocItem.Lot,
-                        refID = getDoc.RefID,
+                        refID = getDocItem.RefID,
                         ref1 = getDoc.Ref1,
                         ref2 = getDoc.Ref2,
                         baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseUnitTypeConvt.baseUnitType_ID).Code,
@@ -168,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business
                         baseQty = baseUnitTypeConvt.baseQty,
                         type = StorageObjectType.PACK,
                         mstID = getDocItem.PackMaster_ID,
-                        options = getDocItem.Options,
+                        options = option,
                         areaID = reqVO.areaID,
 
                     };
