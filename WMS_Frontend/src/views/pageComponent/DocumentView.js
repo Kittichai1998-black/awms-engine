@@ -27,7 +27,7 @@ import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
-import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
+import BtnAddPallet from '../../components/AmMappingPalletAndDisto2';
 import AmInput from '../../components/AmInput'
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 const Axios = new apicall();
@@ -379,13 +379,14 @@ const DocumentView = props => {
   };
 
   const getHeader = () => {
-    return header.map(x => {
+    return header.map((x,idx) => {
       return (
-        <Grid container spacing={24}>
-          {x.map(y => {
+        <Grid key={idx} container spacing={24}>
+          {x.map((y, i) => {
             let syn = y.label ? " :" : "";
             return (
               <Grid
+                key={i}
                 xs={12}
                 sm={6}
                 style={{ paddingLeft: "20px", paddingTop: "10px" }}

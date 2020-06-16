@@ -88,7 +88,7 @@ const GR_Detail = props => {
       placeholder: "Select Warehouse",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 1,
+      // defaultValue: 1,
       required: true,
       // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
     },
@@ -100,7 +100,7 @@ const GR_Detail = props => {
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 15,
+      // defaultValue: 15,
       required: true,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },

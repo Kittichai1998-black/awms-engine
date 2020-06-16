@@ -16,7 +16,7 @@ import AmButton from "./AmButton";
 
 function QRIcon(props) {
     return (
-        <SvgIcon {...props} id="bold" enable-background="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
+        <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
             <g><path d="m23 8.696c-.553 0-1-.448-1-1v-4.74c0-.527-.429-.956-.955-.956h-4.74c-.553 0-1-.448-1-1s.447-1 1-1h4.74c1.63 0 2.955 1.326 2.955 2.956v4.74c0 .552-.447 1-1 1z" /></g>
             <g><path d="m1 8.696c-.553 0-1-.448-1-1v-4.74c0-1.63 1.325-2.956 2.955-2.956h4.74c.553 0 1 .448 1 1s-.447 1-1 1h-4.74c-.526 0-.955.429-.955.956v4.74c0 .552-.447 1-1 1z" /></g>
             <g><path d="m21.045 24h-4.74c-.553 0-1-.448-1-1s.447-1 1-1h4.74c.526 0 .955-.429.955-.956v-4.74c0-.552.447-1 1-1s1 .448 1 1v4.74c0 1.63-1.325 2.956-2.955 2.956z" /></g>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import { apicall, createQueryString } from '../../components/function/CoreFunction2';
-import { ExplodeRangeNum, MergeRangeNum,ExplodeRangeNumToIntArray,ConvertToRangeNum } from '../../components/function/RangeNumUtill';
+import { ExplodeRangeNum, MergeRangeNum, ExplodeRangeNumToIntArray, ConvertToRangeNum } from '../../components/function/RangeNumUtill';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -61,7 +61,7 @@ const optiontest = [
     { label: 'No', value: 'n' },
 ];
 const suggestions = [
-    { label: 'Afghanistan',},
+    { label: 'Afghanistan', },
     { label: 'Aland Islands' },
     { label: 'Albania' },
     { label: 'Algeria' },
@@ -272,6 +272,7 @@ function Test6(props) {
         });
         // }
     };
+   
     //ค่าที่ส่งกลับมา ของcomponent AmDropdown, AmMultiDropdown, AmFindPopup,
     const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey) => {
         setValueText({
@@ -301,7 +302,7 @@ function Test6(props) {
                     value: value
                 }
             });
-        }else{
+        } else {
             alert(value)
         }
     };
@@ -319,7 +320,7 @@ function Test6(props) {
         // );
     }
 
-    const onHandlePress =  (value, obj, element, event) => {
+    const onHandlePress = (value, obj, element, event) => {
         alert(value);
     };
     //Ex. function ที่ส่งเป็น props ไปยัง AmValidate
@@ -343,12 +344,14 @@ function Test6(props) {
             width={200} //กำหนดความกว้างของช่อง input
             ddlMinWidth={200} //กำหนดความกว้างของกล่อง dropdown
             // value={valueText.ddlUnitType.value} //ค่า value ที่เลือก
-            defaultValue={valueText.ddlUnitType.value}
+            defaultValue={null}
+            autoDefaultValue={true}
+            returnDefaultValue={true}
             queryApi={UnitTypeQuery}
             onChange={onHandleDDLChange}
             ddlType={"search"} //รูปแบบ Dropdown 
-                zIndex={1000}
-                required
+            zIndex={1000}
+            required
         />;
     }
     const customMultiDropdown = () => {
@@ -366,18 +369,18 @@ function Test6(props) {
             onChange={onHandleDDLChange} />;
     }
     const convertData = () => {
-        let val1 = ["1-6","9","12-14"];
-         let val2 = "1-6";
-          let val3 = "1-6,25,9,12-14,23";
-          let val4 = "1,2,3,4,5,6,9,12,13,14,23";
-          let val5 = "5,4,3,2,1,6,10,12,13,14,23";
-          let val6 = [5,4,3,2,1,6,10,12,13,14,23];
+        let val1 = ["1-6", "9", "12-14"];
+        let val2 = "1-6";
+        let val3 = "1-6,25,9,12-14,23";
+        let val4 = "1,2,3,4,5,6,9,12,13,14,23";
+        let val5 = "5,4,3,2,1,6,10,12,13,14,23";
+        let val6 = [5, 4, 3, 2, 1, 6, 10, 12, 13, 14, 23];
         //   console.log(ExplodeRangeNum(val1));
         //   console.log(ExplodeRangeNum(val2));
         //   console.log(ExplodeRangeNum(val3));
         //   console.log(MergeRangeNum(val4));
         //   console.log(MergeRangeNum(val5));
-        
+
         // console.log(ExplodeRangeNumToIntArray(val1));
         // console.log(ExplodeRangeNumToIntArray(val2));
         // console.log(ExplodeRangeNumToIntArray(val3));
@@ -483,27 +486,27 @@ function Test6(props) {
                 onChange={onHandleDDLChange}
                 ddlType={"search"} //รูปแบบ Dropdown 
             /> */}
-             <FormInline>
+            <FormInline>
                 <label>Unit Type</label>
-            <AmDropdown
-                id="ddlUnitType2"
-                // disabled
-                placeholder="Select Unit Type"
-                fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                fieldLabel={["ID", "Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                width={200} //กำหนดความกว้างของช่อง input
-                ddlMinWidth={200} //กำหนดความกว้างของกล่อง dropdown
-                // value={valueText.ddlUnitType2.value} // ใช้เมื่อต้องการเปลี่ยน value จากหน้า frontโดยตรง
-                defaultValue={2}
-                queryApi={UnitTypeQuery}
-                onChange={onHandleDDLChange}
-                ddlType={"search"} //รูปแบบ Dropdown 
-                zIndex={1000}
-                disabled
+                <AmDropdown
+                    id="ddlUnitType2"
+                    // disabled
+                    placeholder="Select Unit Type"
+                    fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                    fieldLabel={["ID", "Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                    labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                    width={200} //กำหนดความกว้างของช่อง input
+                    ddlMinWidth={200} //กำหนดความกว้างของกล่อง dropdown
+                    // value={valueText.ddlUnitType2.value} // ใช้เมื่อต้องการเปลี่ยน value จากหน้า frontโดยตรง
+                    defaultValue={2}
+                    queryApi={UnitTypeQuery}
+                    onChange={onHandleDDLChange}
+                    ddlType={"search"} //รูปแบบ Dropdown 
+                    zIndex={1000}
+                    disabled
                 // required={true}
-            />
-             </FormInline>
+                />
+            </FormInline>
 
             {/* Dropdown แบบไม่มีช่อง Search 
             ต้องส่ง props ddlType={"normal"} 
@@ -518,6 +521,8 @@ function Test6(props) {
                 // width={200}
                 // ddlMinWidth={200}  ถ้าใช้ เเบบ normal ไม่ได้ต้องส่งค่า ddlMinWidth,ddlMaxWidth
                 data={optiontest}
+                autoDefaultValue={true}
+                returnDefaultValue={true}
                 // value={valueText.ddlTest.value}
                 onChange={onHandleDDLChange}
                 ddlType={"normal"}
@@ -526,19 +531,19 @@ function Test6(props) {
             {/* Ex.ส่ง queryDatas สำหรับแปลงเป็น optionlist */}
             <FormInline>
                 <label>Unit Type</label>
-            <AmDropdown id="ddlSKUType"
-                // disabled
-                placeholder="Select SKU Type"
-                fieldDataKey="ID"
-                fieldLabel={["Code"]}
-                labelPattern=" : "
-                width={300}
-                zIndex={1000}
-                // value={valueText.ddlSKUType.value}
-                data={dataSrc}
-                onChange={onHandleDDLChange}
-                ddlType={"normal"} />
-             </FormInline>
+                <AmDropdown id="ddlSKUType"
+                    // disabled
+                    placeholder="Select SKU Type"
+                    fieldDataKey="ID"
+                    fieldLabel={["Code"]}
+                    labelPattern=" : "
+                    width={300}
+                    zIndex={1000}
+                    // value={valueText.ddlSKUType.value}
+                    data={dataSrc}
+                    onChange={onHandleDDLChange}
+                    ddlType={"normal"} />
+            </FormInline>
 
             {/* Ex.ส่ง ค่า option แบบเป็นarray  */}
             <AmDropdown
@@ -599,7 +604,7 @@ function Test6(props) {
                 fieldDataKey="ID" //ชื่อฟิิล์ดข้อมูล ที่ใช้อ้างอิงกับค่าใน table
                 fieldLabel={["Code", "Name"]}
                 labelPattern=" : " // 
-                width={300} 
+                width={300}
                 zIndex={1000}
                 ddlMinWidth={300}
                 // ddlMaxWidth={350}
@@ -626,9 +631,9 @@ function Test6(props) {
                         // styleValidate={{display: 'block'}} <=แสดงใต้input เปลี่ยนสไตล์ส่วนเเสดงผลข้อความเตือน default จะเเสดงแถวเดียวกับinput
                         // msgSuccess="Success" //ข้อความสำเร็จ
                         msgError="Error" //ข้อความผิดพลาด
-                        regExp={/^[0-9\.]+$/} 
+                        regExp={/^[0-9\.]+$/}
                     //    regExp={/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/}  
-                />
+                    />
                 </InputDiv>
                 {/* <AmValidate
                     value={valueText.txtEmail.value}
