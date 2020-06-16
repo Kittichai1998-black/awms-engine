@@ -631,7 +631,6 @@ const BtnAddPallet = (props) => {
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // console.log(field + ":" + value)
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }

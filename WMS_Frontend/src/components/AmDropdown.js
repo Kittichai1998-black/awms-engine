@@ -440,7 +440,7 @@ const DropdownComponent = (props) => {
                     setDefaultVal(null);
                     setValueKey("");
                     onChange(null, null, id, fieldDataKey)
-                }else if(autoDefaultValue && returnDefaultValue){
+                } else if (autoDefaultValue && returnDefaultValue) {
                     setReturnDefaultValue(false)
                     setValueData(null);
                     setDefaultVal(null);
@@ -452,8 +452,8 @@ const DropdownComponent = (props) => {
                 if (defaultValue && returnDefaultValue) {
                     setReturnDefaultValue(true)
                     setDefaultVal(defaultValue);
-                }else  if (autoDefaultValue && returnDefaultValue) {
-                    setReturnDefaultValue(true) 
+                } else if (autoDefaultValue && returnDefaultValue) {
+                    setReturnDefaultValue(true)
                 }
             }
 
@@ -475,7 +475,7 @@ const DropdownComponent = (props) => {
             } else {
                 onChange(null, null, id, fieldDataKey);
             }
-        }else if(autoDefaultValue && upreturnDefaultValue){
+        } else if (autoDefaultValue && upreturnDefaultValue) {
             if (valueData) {
                 onChange(valueData[fieldDataKey], valueData, id, fieldDataKey);
             } else {
@@ -494,7 +494,7 @@ const DropdownComponent = (props) => {
                 else if (defaultVal) {
                     getDefaultByValue(defaultVal);
                 }
-                else if(autoDefaultValue){
+                else if (autoDefaultValue) {
                     getDefaultByValue(null);
                 }
             }
@@ -554,7 +554,7 @@ const DropdownComponent = (props) => {
         if (optionList.length > 0) {
             let valuearray = null;
             let dataoption = [...optionList];
-            if(value){
+            if (value) {
                 dataoption.forEach((val, index) => {
 
                     if (String(value) === String(val[fieldDataKey])) {
@@ -565,7 +565,7 @@ const DropdownComponent = (props) => {
                         })
                     }
                 })
-            }else{
+            } else {
                 let firstdata = dataoption[0];
                 valuearray = ({
                     ...firstdata,
@@ -573,7 +573,7 @@ const DropdownComponent = (props) => {
                     label: getLabel(firstdata),
                 })
             }
-           
+
             setValueData(valuearray);
             getValueKey(valuearray);
         }
