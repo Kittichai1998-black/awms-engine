@@ -317,6 +317,10 @@ const Create_GR_DR_FGwm = Loadable({
     loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR _FGwm"),
     loading: Loading
 });
+const MoveLocation = Loadable({
+    loader: () => import("../../views/page/ENGINE/MoveLocation"),
+    loading: Loading
+});
 
 
 const routes = [
