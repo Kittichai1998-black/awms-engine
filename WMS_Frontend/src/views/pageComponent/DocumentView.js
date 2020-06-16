@@ -27,7 +27,7 @@ import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
-import BtnAddPallet from '../../components/AmMappingPalletAndDisto2';
+import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
 import AmInput from '../../components/AmInput'
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 const Axios = new apicall();
