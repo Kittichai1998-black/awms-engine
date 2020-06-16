@@ -15,7 +15,8 @@ import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 // import { useTranslation } from 'react-i18next'
 import { withStyles } from "@material-ui/core/styles";
-import Table from "./table/AmTable";
+// import Table from "./table/AmTable";
+import AmTable from "./AmTable/AmTable";
 import AmDropdown from './AmDropdown';
 import AmRadioGroup from "./AmRadioGroup";
 import AmDialogs from './AmDialogs'
@@ -630,7 +631,7 @@ const BtnAddPallet = (props) => {
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        console.log(field + ":" + value)
+        // console.log(field + ":" + value)
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
@@ -755,7 +756,7 @@ const BtnAddPallet = (props) => {
                         return row.component(row, idx)
                     }) : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    <Table
+                    {/* <Table
                         columns={columns}
                         pageSize={100}
                         data={listDocItems}
@@ -766,6 +767,18 @@ const BtnAddPallet = (props) => {
                         currentPage={0}
                         defaultSelection={defaultSelect}
                         getSelection={data => setDataSelect(data)}
+                    /> */}
+                    <AmTable
+                     columns={columns}
+                     dataKey={"ID"}
+                     dataSource={listDocItems}
+                     selectionDefault={defaultSelect}
+                     selection="checkbox"
+                     selectionData={data => setDataSelect(data)}
+                     rowNumber={true}
+                    //  totalSize={count}
+                     pageSize={100}
+                    //  height={500}
                     />
                 </DialogContent>
                 <DialogActions>
