@@ -45,6 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             public string remark;
             public string ref1;
             public string ref2;
+            public string options;
             public DocumentProcessTypeID documentProcessTypeID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;

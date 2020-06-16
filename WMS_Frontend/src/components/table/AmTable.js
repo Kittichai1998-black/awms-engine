@@ -270,15 +270,15 @@ const AmTable = props => {
         let getData = tableData.map(row =>
           row._original ? row._original : row
         );
-        selectionData.forEach((x, idx) => {
-          getData.forEach(row => {
-            if (x[props.primaryKey] === row[props.primaryKey]) {
-              selectionData.splice(idx, 1);
-            }
-          });
-        });
-        selectionData.push(...getData);
-        setSelection(selectionData);
+        // selectionData.forEach((x, idx) => {
+        //   getData.forEach(row => {
+        //     if (x[props.primaryKey] === row[props.primaryKey]) {
+        //       selectionData.splice(idx, 1);
+        //     }
+        //   });
+        // });
+        // selectionData.push(...getData);
+        setSelection([...getData]);
       } else {
         selectionData.splice(0, selectionData.length);
         setSelection([]);

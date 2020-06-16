@@ -189,6 +189,8 @@ namespace AWMSModel.Constant.EnumConst
         STO_FAST_TRANSFER_CUS = 5022,
         STO_FAST_TRANSFER_SUP = 5023,
 
+        STO_MANUALTRANSFER_WM = 5121,
+
         STO_CROSSDOCK_WM = 5031,
         STO_CROSSDOCK_CUS = 5032,
         STO_CROSSDOCK_SUP = 5033,

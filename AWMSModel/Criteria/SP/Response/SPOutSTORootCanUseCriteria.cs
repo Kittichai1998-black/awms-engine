@@ -66,7 +66,7 @@ namespace AWMSModel.Criteria.SP.Response
         public long rootID;
         public string rootCode;
         public string rootName;
-
+        public long distoID;
         public decimal distoQty;
         public decimal distoQtyMax;
         public long distoUnitID;

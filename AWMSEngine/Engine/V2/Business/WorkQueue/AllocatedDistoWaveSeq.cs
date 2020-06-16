@@ -40,10 +40,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 BaseUnitType_ID = psto.BaseUnitType_ID,
                 Quantity = qtyConvert.newQty,
                 UnitType_ID = qtyConvert.newUnitType_ID,
-                Status = EntityStatus.ACTIVE
+                Status = EntityStatus.INACTIVE
             }, this.BuVO);
 
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+            //ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
             
             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(psto.ParentStorageObject_ID.Value, 
                 null, EntityStatus.ACTIVE, 

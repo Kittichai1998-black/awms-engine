@@ -61,7 +61,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string refID;
             public string ref1;
             public string ref2;
-
+            public string ref3;
             public List<Item> Items;
             public class Item
             {
@@ -84,6 +84,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 public string ref1;
                 public string ref2;
+                public string ref3;
                 public string refID;
                 public string options;
 
@@ -161,7 +162,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Sou_Warehouse_ID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                 Sou_AreaMaster_ID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-                Des_Customer_ID = 1,
+                Des_Customer_ID = Des_Customer_ID,
                 Des_Supplier_ID = Des_Supplier_ID,
                 Des_Branch_ID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                 Des_Warehouse_ID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
@@ -184,7 +185,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 RefID = reqVO.refID,
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
-
+                Ref3 = reqVO.ref3,
                 DocumentItems = new List<amt_DocumentItem>(),
             };
 
@@ -252,7 +253,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options,"basecode"),
+                    Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options, "basecode"),
                     SKUMaster_ID = skuMst != null ? skuMst.ID : null,
                     PackMaster_ID = packMst != null ? packMst.ID : null,
 
@@ -270,6 +271,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     ProductionDate = Item.productionDate,
                     Ref1 = Item.ref1,
                     Ref2 = Item.ref2,
+                    Ref3 = Item.ref3,
                     RefID = Item.refID,
 
                     RefDocumentItem_ID = Item.refDocumentItem_ID,

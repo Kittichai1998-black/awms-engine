@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
         public class TReq
         {
             public List<long> docIDs;
-            public bool flag;
+            public bool flag = true;
         }
         protected override List<long> ExecuteEngine(TReq reqVO)
         {

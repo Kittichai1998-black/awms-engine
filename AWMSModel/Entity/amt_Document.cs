@@ -35,6 +35,7 @@ namespace AWMSModel.Entity
         public string RefID;
         public string Ref1;
         public string Ref2;
+        public string Ref3;
 
         public long? Wave_ID;
         public long? For_Customer_ID;

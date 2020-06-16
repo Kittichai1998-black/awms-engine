@@ -68,7 +68,7 @@ namespace AWMSEngine.ADO
         {
             EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(toEventStatus);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("rootid", waveID);
+            param.Add("id", waveID);
             param.Add("fromEventStatus", fromEventStatus);
             param.Add("fromStatus", fromStatus);
             param.Add("toEventStatus", toEventStatus);

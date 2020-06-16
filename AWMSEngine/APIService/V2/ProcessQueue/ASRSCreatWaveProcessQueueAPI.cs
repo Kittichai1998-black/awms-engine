@@ -1,4 +1,5 @@
 ﻿using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,16 +22,14 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
             var res = new ASRSCreatWaveProcessQueue().Execute(this.Logger, this.BuVO, req);
 
 
-            if (req.FlagAuto)
+            if (req.flagAuto)
             {
-
                 var workingWave = new WorkingWave();
-                var workingWaves = workingWave.Execute(this.Logger, this.BuVO, new WorkingWave.TReq()
+                var working = workingWave.Execute(this.Logger, this.BuVO, new WorkingWave.TReq()
                 {
                     waveID = res.WaveID
                     
                 });
-            
             }
             return res;
         }

@@ -14,7 +14,7 @@ namespace AMWUtil.DataAccess
     {
 
         private string _ConnectionString;// = "Server=191.20.2.29;Uid=sa;PASSWORD=abc123;database=smartsale_dev;Max Pool Size=400;Connect Timeout=600;";
-        public string ConnectionString => _ConnectionString;
+        public string ConnectionString { get => _ConnectionString; set => _ConnectionString = value; }
         public BaseDatabaseAccess(string connectionString)
         {
             this._ConnectionString = connectionString;

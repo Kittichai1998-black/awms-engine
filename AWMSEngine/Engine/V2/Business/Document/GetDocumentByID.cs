@@ -78,7 +78,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public long rootID;
             public string rootCode;
             public string rootName;
-
+            public long distoID;
             public decimal distoQty;
             public long distoUnitID;
 
@@ -157,15 +157,16 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
 
-                    var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                    new SQLConditionCriteria[]
-                        {
-                            new SQLConditionCriteria("DocumentItem_ID",bs.docItemID, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status","0,1", SQLOperatorType.IN),
-                        },
-                    this.BuVO).FirstOrDefault();
+                    //var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    //new SQLConditionCriteria[]
+                    //    {
+                    //        new SQLConditionCriteria("DocumentItem_ID",bs.docItemID, SQLOperatorType.EQUALS),
+                    //        new SQLConditionCriteria("Sou_StorageObject_ID",bs.sou_id, SQLOperatorType.EQUALS),
+                    //        new SQLConditionCriteria("Status","0,1", SQLOperatorType.IN),
+                    //    },
+                    //this.BuVO).FirstOrDefault();
 
-                    var workQueueDesArea = ADO.WorkQueueADO.GetInstant().Get(docDisto.WorkQueue_ID.Value, this.BuVO);
+                    //var workQueueDesArea = ADO.WorkQueueADO.GetInstant().Get(docDisto.WorkQueue_ID.Value, this.BuVO);
 
 
                     sou_sto.Add(new bsto
@@ -205,7 +206,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         rootID = bs.rootID,
                         rootCode = bs.rootCode,
                         rootName = bs.rootName,
-
+                        distoID = bs.distoID,
                         distoQty = bs.distoQty,
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
@@ -270,6 +271,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         rootCode = bs.rootCode,
                         rootName = bs.rootName,
 
+                        distoID = bs.distoID,
                         distoQty = bs.distoQty,
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,

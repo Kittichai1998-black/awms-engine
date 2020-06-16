@@ -16,10 +16,9 @@ const Table = styled.div`
 `
 const TableContainer = styled.div`
     position:relative;
-    width:${props => `${props.width}px`}
+    width:${props => `${typeof props.width === "number" ? props.width + 'px' : props.width}`}
     overflow:auto;
-    min-height:200px;
-    height:${props => `${props.height}px`}
+    max-height:${props => `${props.height}px`}
     padding-right:1px;
     &&::-webkit-scrollbar{
         width: 0.5em;
@@ -49,8 +48,9 @@ const TableCell = styled.div`
 `
 const TableHeaderCell = styled(TableCell)`
     width:${props => `${props.fixWidth ? props.fixWidth : props.width}px`};
-    ${props => props.fixWidth ? `min-width:${props.fixWidth}px` : "min-width:150px"}
+    ${props => props.fixWidth ? `min-width:${props.fixWidth}px` : props.width ? `min-width:${props.width}px` : "min-width:150px"}
     text-align:center;
+    z-index:1000;
     background:rgb(248,249,250);
     padding:5px;
     font-weigth:bold;
@@ -62,7 +62,6 @@ const TableHeaderCell = styled(TableCell)`
         position: absolute;
         left: 0;
         width: 100%;
-
     }
     :after{
         bottom: -1px;

@@ -160,6 +160,7 @@ namespace AWMSEngine.ADO
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
             param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
+            param.Add("@actualQty", docItem.ActualBaseQuantity);
 
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
@@ -752,6 +753,7 @@ namespace AWMSEngine.ADO
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));           
             param.Add("@actionBy", buVO.ActionBy);
+            param.Add("@actualQty", docItem.ActualBaseQuantity);
 
 
             var res = this.Query<dynamic>("SP_DOCITEM_PUT",

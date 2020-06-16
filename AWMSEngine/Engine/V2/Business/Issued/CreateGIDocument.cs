@@ -18,6 +18,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string refID;
             public string ref1;
             public string ref2;
+            public string ref3;
             public long? forCustomerID;
             public string forCustomerCode;
             public string batch;
@@ -66,6 +67,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 public string refID;
                 public string ref1;
                 public string ref2;
+                public string ref3;
                 public string options;
 
                 public DateTime? expireDate;
@@ -156,7 +158,8 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
-
+                    ref3 = reqVO.ref3,
+                    options = reqVO.options,
                     docTypeId = DocumentTypeID.GOODS_ISSUED,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.movementTypeID,
@@ -179,6 +182,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                             productionDate = x.productionDate,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
+                            ref3 = x.ref3,
                             refID = x.refID,
 
                             eventStatus = x.eventStatus,

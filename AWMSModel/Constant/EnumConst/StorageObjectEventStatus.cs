@@ -11,10 +11,10 @@ namespace AWMSModel.Constant.EnumConst
     public enum StorageObjectEventStatus
     {
         //Pallet
-        ACTIVE = 0,
-        INACTIVE = 1,
+        INACTIVE = 0,
+        ACTIVE = 1,
         REMOVE = 2,
-        DOEN = 3,
+        DONE = 3,
 
         //Pack
         NEW = 100,
@@ -35,8 +35,8 @@ namespace AWMSModel.Constant.EnumConst
         CONSOLIDATING = 155,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         CONSOLIDATED = 156,
-        LOADING = 153,
-        LOADED = 154,
+        LOADING = 157,
+        LOADED = 158,
 
         REMOVING = 201,
         REMOVED = 202,

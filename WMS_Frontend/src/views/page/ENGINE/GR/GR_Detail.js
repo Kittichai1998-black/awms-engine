@@ -32,12 +32,12 @@ const GR_Detail = props => {
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "OrderNo", Header: "Order No." },
     { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
     { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 100, accessor: "rootCode", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
     { width: 125, accessor: "orderNo", Header: "Order No." },
@@ -74,49 +74,82 @@ const GR_Detail = props => {
   const colListDocItems = [
     { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "Lot", Header: "Lot" },
-    { width: 120, accessor: "Quantity", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 150, accessor: "Quantity", Header: "จำนวนที่รับเข้าได้" },
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
-  const createAddPallet = {
+  const addPalletMapSTO = {
     apiCreate: '/v2/ScanMapStoFromDocAPI',
-    columnsDocItems: colListDocItems,
-    inputHead: [
+    // columnsDocItems: colListDocItems,
+    ddlWarehouse: {
+      visible: true,
+      field: "warehouseID",
+      typeDropdown: "search",
+      name: "Warehouse",
+      placeholder: "Select Warehouse",
+      fieldLabel: ["Code", "Name"],
+      fieldDataKey: "ID",
+      // defaultValue: 1,
+      required: true,
+      // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
+    },
+    ddlArea: {
+      visible: true,
+      field: "areaID",
+      typeDropdown: "search",
+      name: "Area",
+      placeholder: "Select Area",
+      fieldLabel: ["Code", "Name"],
+      fieldDataKey: "ID",
+      // defaultValue: 15,
+      required: true,
+      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+    },
+    ddlLocation: {
+      visible: true,
+      field: "locationID",
+      typeDropdown: "search",
+      name: "Location",
+      placeholder: "Select Location",
+      fieldLabel: ["Code", "Name"],
+      fieldDataKey: "ID",
+      // defaultValue: 14,
+      required: false,
+      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+    },
+    inputTitle: [
       {
-        visible: true,
-        type: "dropdown",
-        field: "warehouseID",
-        typeDropdown: "normal",
-        name: "Warehouse",
-        placeholder: "Select Warehouse",
-        fieldLabel: ["Code", "Name"],
-        fieldDataKey: "ID",
-        defaultValue: 1,
-        required: true,
-        customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
-      },
-      {
-        visible: true,
-        type: "dropdown",
-        field: "areaID",
-        typeDropdown: "normal",
-        name: "Area",
-        placeholder: "Select Area",
-        fieldLabel: ["Code", "Name"],
-        fieldDataKey: "ID",
-        // defaultValue: 17,
-        required: true,
-        customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
-      },
-      {
-        field: "palletcode",
-        placeholder: "Pallet Code",
-        required: true,
-        type: "input",
-        name: "palletcode",
-        // maxLength: 10,
-      },
-    ]
+        field: "projCode",
+        name: "Project",
+        type: "text",
+        customShow: (dataDocument)=>{
+          return dataDocument.document.Ref1;
+        },
+      }
+    ],
+    inputBase:
+    {
+      visible: true,
+      field: "baseCode",
+      type: "input",
+      name: "Pallet Code",
+      placeholder: "Pallet Code",
+      maxLength: 10,
+      required: true,
+      validate: /^.+$/,
+    },
+    // [
+    //   {
+    //     field: "baseCode",
+    //     placeholder: "Pallet Code",
+    //     required: true,
+    //     type: "input",
+    //     name: "Pallet Code",
+    //     maxLength: 10,
+    //     validate: /^.+$/,
+    //   }
+    // ]
   }
+ 
   //received
   //issued
   return (
@@ -135,7 +168,8 @@ const GR_Detail = props => {
       linkBack={"/receive/search"}
       history={props.history}
       useAddPalletMapSTO={true}
-      addPalletMapSTO={createAddPallet}
+      addPalletMapSTO={addPalletMapSTO}
+      buttonConfirmMappingSTO={true}
     />
   );
 };

@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AMWUtil.Validation;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -37,15 +38,20 @@ namespace AWMSEngine.Engine
 
         private string _subServiceNameTMP;
 
-        protected AMWException NewAMWException(AMWExceptionCode code, params string[] parameters)
-        {
-            return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
-        }
 
         protected TExecRes ExectProject<TExecReq,TExecRes>(FeatureCode featureCode, TExecReq req)
            where TExecRes : class
         {
             return Common.FeatureExecute.ExectProject<TExecReq, TExecRes>(featureCode, this.Logger, this.BuVO, req);
+        }
+
+        private void ValidateRequestParameter(TReq reqVO)
+        {
+            if (reqVO == null)
+                return;
+            var ex = ValidationUtil.ValidateModel(reqVO);
+            if (ex != null)
+                throw new AMWException(this.Logger, ex.Code, ex.Parameters);
         }
 
 
@@ -69,6 +75,7 @@ namespace AWMSEngine.Engine
                 //dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
+                this.ValidateRequestParameter(reqVO);
                 resVO = this.ExecuteEngine(reqVO);
                 //resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };
             }
