@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 {
-    public class CreateRDDocument : BaseEngine<CreateRDDocument.TReq, amt_Document>
+    public class CreateDRDocument : BaseEngine<CreateDRDocument.TReq, amt_Document>
     {
 
         public class TReq
@@ -59,7 +59,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string skuCode;
                 public decimal? quantity;
                 public string unitType;
-
+                public decimal? baseQuantity;
+                public string baseunitType;
                 public string batch;
                 public string lot;
                 public string orderNo;
@@ -67,6 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string ref1;
                 public string ref2;
                 public string options;
+                public long? refDocumentItem_ID;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
@@ -164,7 +166,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
 
-                    docTypeId = DocumentTypeID.RECEIVED_ORDER,
+                    docTypeId = DocumentTypeID.DELIVERY_RECEIVED,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
@@ -184,10 +186,12 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
+                            refDocumentItem_ID = x.refDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
-
+                            baseQuantity = x.baseQuantity,
+                            baseUnitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

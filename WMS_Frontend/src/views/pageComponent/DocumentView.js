@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core/styles";
 import AmDialogs from '../../components/AmDialogs'
 import Table from "../../components/table/AmTable";
+import AmTable from "../../components/AmTable/AmTable";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";
 // import "bootstrap/dist/css/bootstrap.min.css";
@@ -136,7 +137,8 @@ const DocumentView = props => {
 
   const getData = () => {
     //========================================================================================================
-    // console.log(props.typeDocNo);
+      console.log(props.typeDocNo);
+      console.log(typeDoc)
     // console.log(props);
 
     Axios.get(
@@ -333,7 +335,7 @@ const DocumentView = props => {
     });
   };
   useEffect(() => {
-    if (dataHeader && dataHeader.EventStatus === 10) {
+    if (dataHeader && dataHeader.EventStatus === 10 && props.useAddPalletMapSTO) {
       var newSou = [...props.columnsDetailSOU,
       {
         width: 100, Header: "Edit Qty", style: { textAlign: 'center' },
@@ -570,7 +572,8 @@ const DocumentView = props => {
       <br />
       <br />
       {typeDoc ? (
-        <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
+        // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
+        <AmTable columns={columns} pageSize={100} dataSource={data} />
       ) : null}
 
       <br />
@@ -610,13 +613,14 @@ const DocumentView = props => {
                   <br />
 
                   {typeDoc ? (
-                    <Table
-                      columns={columnsDetailSOU}
-                      pageSize={100}
-                      data={dataDetailSOU}
-                      sortable={false}
-                      currentPage={0}
-                    />
+                    // <Table
+                    //   columns={columnsDetailSOU}
+                    //   pageSize={100}
+                    //   data={dataDetailSOU}
+                    //   sortable={false}
+                    //   currentPage={0}
+                    // />
+                    <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
                   ) : null}
                 </Col>
               </Row>
@@ -626,13 +630,14 @@ const DocumentView = props => {
                 <Col sm="12">
                   <br />
                   {typeDoc ? (
-                    <Table
-                      columns={columnsDetailDES}
-                      pageSize={100}
-                      data={dataDetailDES}
-                      sortable={false}
-                      currentPage={0}
-                    />
+                    // <Table
+                    //   columns={columnsDetailDES}
+                    //   pageSize={100}
+                    //   data={dataDetailDES}
+                    //   sortable={false}
+                    //   currentPage={0}
+                    // />
+                    <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
                   ) : null}
                 </Col>
               </Row>
@@ -641,23 +646,25 @@ const DocumentView = props => {
         </div>
       ) : props.openSOU === true ? (
         typeDoc ? (
-          <Table
-            columns={columnsDetailSOU}
-            pageSize={100}
-            data={dataDetailSOU}
-            sortable={false}
-            currentPage={0}
-          />
+          // <Table
+          //   columns={columnsDetailSOU}
+          //   pageSize={100}
+          //   data={dataDetailSOU}
+          //   sortable={false}
+          //   currentPage={0}
+          // />
+          <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
-          <Table
-            columns={columnsDetailDES}
-            pageSize={100}
-            data={dataDetailDES}
-            sortable={false}
-            currentPage={0}
-          />
+          // <Table
+          //   columns={columnsDetailDES}
+          //   pageSize={100}
+          //   data={dataDetailDES}
+          //   sortable={false}
+          //   currentPage={0}
+          // />
+          <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
         ) : null
       ) : (
               ""

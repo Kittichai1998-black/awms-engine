@@ -8,17 +8,18 @@ import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmTable from "../../../components/AmTable/AmTable";
 import { apicall } from '../../../components/function/CoreFunction2';
 import GroupIcon from '@material-ui/icons/Group';
+import AmDialogs from "../../../components/AmDialogs";
 
 const Axios = new apicall()
 
 //======================================================================
 const Permission = props => {
-  const [role, setRole] = useState();
   const [roleID, setRoleID] = useState();
   const [rolePermissionData, setRolePermissionData] = useState([]);
   const [relationComponent, setRelationComponent] = useState([]);
   const updateRolePermission = useRef([]);
   const [open, setOpen] = useState(false);
+  const [dialogState, setDialogState] = useState({});
 
   const iniCols = [
     {
@@ -51,7 +52,7 @@ const Permission = props => {
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setRole(e.original);setRoleID(e.original.ID)}}
+        onClick={()=>{setRoleID(e.original.ID)}}
         style={{ marginLeft: "3px" }}>
         <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
       </IconButton>}
@@ -164,14 +165,13 @@ const Permission = props => {
   };
 
   useEffect(()=> {
-    if(role !== undefined){
+    if(roleID !== undefined){
       Axios.get(
         window.apipath + "/v2/GetRolePermissionAPI?ID=" + roleID
       ).then(res => {
         setRolePermissionData(res.data.datas)})
     }
-    return () => setRole()
-  }, [role]);
+  }, [roleID]);
 
   useEffect(() => {
     const getPermissionColumns = (dataSou) => {
@@ -185,9 +185,6 @@ const Permission = props => {
       }
 
       const defaultValue = () => {
-        console.log(dataSou.filter(x=> { console.log(x.Status !== 0 && x.Status !== 2 && x.Status !== null); console.log(x.Status);
-          return x.RolePermissionID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null)
-        }))
         return dataSou.filter(x=> x.RolePermissionID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
@@ -234,7 +231,7 @@ const Permission = props => {
     setRelationComponent(getPermissionColumns(rolePermissionData))
   }, [rolePermissionData])
   
-  const PopupObjSize = React.memo(({relationComponent, open}) => {
+  const PopupPermission = React.memo(({relationComponent, open}) => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
@@ -260,7 +257,11 @@ const Permission = props => {
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if (res.data._result !== undefined) {
+      if(res.data._result.status === 1){
+        setDialogState({type:"success", content:"Success", state:true})
+      }
+      else{
+        setDialogState({type:"error", content:res.data._result.message, state:true})
       }
     });
   }
@@ -281,7 +282,13 @@ const Permission = props => {
         columnsEditAPIKey={columnsEditAPIKey}
         history={props.history}
       /> */}
-      <PopupObjSize relationComponent={relationComponent} open={open}/>
+      <PopupPermission relationComponent={relationComponent} open={open}/>
+      
+      <AmDialogs
+            typePopup={dialogState.type}
+            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+            open={dialogState.state}
+            content={dialogState.content} />
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

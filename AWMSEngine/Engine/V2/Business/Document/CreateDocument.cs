@@ -78,6 +78,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public DateTime? expireDate;
                 public DateTime? productionDate;
 
+                public long? refDocumentItem_ID;
                 public string orderNo;
                 public string batch;
                 public string lot;
@@ -273,13 +274,13 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
-                    BaseQuantity = baseQuantity,
+                    BaseQuantity = Item.baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.baseUnitType_ID : null,
 
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,
                     Lot = Item.lot,
-
+                       
                     Options = Item.options,
                     ExpireDate = Item.expireDate,
                     ProductionDate = Item.productionDate,
@@ -287,6 +288,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Ref2 = Item.ref2,
                     Ref3 = Item.ref3,
                     RefID = Item.refID,
+
+                    RefDocumentItem_ID = Item.refDocumentItem_ID,
 
                     EventStatus = Item.eventStatus,
                     DocItemStos = Item.docItemStos

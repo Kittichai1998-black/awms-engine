@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_WIPcus = props => {
+const ID_Create_STOwm = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,7 +31,7 @@ const RD_Create_WIPcus = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "WIP_TRANSFER_CUS", valueTexts: "2012", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER_WM", valueTexts: "5011", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -212,7 +212,7 @@ const RD_Create_WIPcus = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":2012}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":5011}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -253,12 +253,11 @@ const RD_Create_WIPcus = props => {
         { Header: "Qty", accessor: "quantity", width: 110 },
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];
-
-    const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
-    const apiRes = "/receiveOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apicreate = "/v2/CreateIDDocAPI/"; //API สร้าง Doc
+    const apiRes = "/IssueOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;
 };
 
-export default RD_Create_WIPcus;
+export default ID_Create_STOwm;
