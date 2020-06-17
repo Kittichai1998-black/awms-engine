@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_UnitTypeConvert : BaseEntitySTD
+    public class ams_UnitTypeConvert : BaseEntityCreateModify
     {
         public int SKUMaster_ID;
         public decimal C1_Quantity;

@@ -302,7 +302,7 @@ namespace AWMSEngine.ADO.StaticValue
             var dataConvert_BaseQty = CovertUnit(oldQty, oldUnitTypeID, unitPackH.UnitType_ID, arr.covertLists);
 
             if (checkUnit == null)
-                throw new Exception("Covert Unit Fail : UnitType ไม่มีlามารถ Convert ได้");
+                throw new Exception("Covert Unit Fail : UnitType ไม่สามารถ Convert ได้");
 
 
             return new ConvertUnitCriteria()

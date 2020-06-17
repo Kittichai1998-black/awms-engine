@@ -572,7 +572,7 @@ const AmMoveLocation = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={20}
+        pageSize={100}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         height={props.height}

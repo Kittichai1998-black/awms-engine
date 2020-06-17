@@ -160,12 +160,15 @@ const DocumentView = props => {
 
         res.data.document.documentItems.forEach(row => {
           var sumQty = 0;
+          var sumBaseQty = 0;
           res.data.sou_bstos
             .filter(y => y.docItemID == row.ID)
             .forEach(y => {
               sumQty += y.distoQty;
+              sumBaseQty += y.distoBaseQty;
             });
           row._sumQtyDisto = sumQty;
+          row._sumQtyBaseDisto = sumBaseQty;
 
           row._balanceQty = row.Quantity - sumQty;
 
@@ -204,7 +207,16 @@ const DocumentView = props => {
             qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
 
           dataTable.push({
-            ...row,
+            ...row, _baseqty:
+              typeDoc === "received"
+                ? row._sumQtyBaseDisto +
+                " / " +
+                (row.BaseQuantity === null ? " - " : row.BaseQuantity) : typeDoc === "issued"
+                  ? row._sumQtyBaseDisto +
+                  " / " +
+                  (row.BaseQuantity === null ? "-" : row.BaseQuantity)
+                  : null
+            ,
             _qty:
               typeDoc === "issued"
                 ? row._sumQtyDisto +
@@ -223,7 +235,9 @@ const DocumentView = props => {
                       " / " +
                       (row.Quantity === null ? " - " : row.Quantity)
                       : null
+
           });
+
         });
 
         //============================================================================
@@ -379,7 +393,7 @@ const DocumentView = props => {
   };
 
   const getHeader = () => {
-    return header.map((x,idx) => {
+    return header.map((x, idx) => {
       return (
         <Grid key={idx} container spacing={24}>
           {x.map((y, i) => {
