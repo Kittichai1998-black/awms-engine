@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AWMSModel.Entity;
 using iTextSharp.text;
@@ -35,12 +36,22 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             TRes res = new TRes();
 
             MemoryStream workStream = new MemoryStream();
-            Document document = new Document(PageSize.A4, 30, 30, 20, 20);
+            Rectangle rect = new Rectangle(200f, 200f);
+            Document document = new Document(rect, 0, 0, 0, 0);
+            //document.SetMargins(-20f, -20f, 0f, 0f);
+
             PdfWriter.GetInstance(document, workStream).CloseStream = false;
 
             document.Open();
-            document.Add(new Paragraph("Hello World"));
-            document.Add(new Paragraph(DateTime.Now.ToString()));
+            //document.Add(new Paragraph("Hello World"));
+            //document.Add(new Paragraph(DateTime.Now.ToString()));
+            var qrcode = new QRCodeGenerate().CreateQRCode("PAL0000050");
+            iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
+            img.Alignment = Element.ALIGN_CENTER;
+            //img.SetAbsolutePosition(0, 0);
+            img.ScaleAbsolute(200f, 200f); 
+            //img.ScalePercent(100);
+            document.Add(img);
             document.Close();
 
             res.stream = workStream.ToArray();
