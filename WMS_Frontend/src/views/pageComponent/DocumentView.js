@@ -573,7 +573,7 @@ const DocumentView = props => {
       <br />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable columns={columns} pageSize={100} dataSource={data} />
+        <AmTable dataKey="ID" columns={columns} pageSize={100} dataSource={data} />
       ) : null}
 
       <br />
@@ -620,7 +620,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+                    <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
                   ) : null}
                 </Col>
               </Row>
@@ -637,7 +637,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+                    <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
                   ) : null}
                 </Col>
               </Row>
@@ -653,7 +653,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+          <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
@@ -664,7 +664,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+          <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
         ) : null
       ) : (
               ""
