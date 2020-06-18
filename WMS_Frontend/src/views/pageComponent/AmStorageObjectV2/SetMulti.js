@@ -29,11 +29,11 @@ const DataGenerateMulti = (data) => {
         {getStatus(y)}
       </div>
     ));
-    x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getIsHold(y)}
-      </div>
-    ));
+    // x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
+    //   <div style={{ marginBottom: "3px", textAlign: "center" }}>
+    //     {getIsHold(y)}
+    //   </div>
+    // ));
   });
   return data;
 }
