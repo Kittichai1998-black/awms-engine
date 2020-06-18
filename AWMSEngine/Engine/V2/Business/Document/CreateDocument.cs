@@ -274,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
-                    BaseQuantity = Item.baseQuantity,
+                    BaseQuantity = baseQuantity,//Item.baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.baseUnitType_ID : null,
 
                     OrderNo = Item.orderNo,
