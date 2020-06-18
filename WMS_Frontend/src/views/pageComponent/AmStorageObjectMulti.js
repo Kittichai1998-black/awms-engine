@@ -730,7 +730,13 @@ const AmStorageObjectMulti = props => {
       selection.forEach(rowdata => {
         bstosID.push(rowdata.ID);
       });
-      let postdata = { bstosID: bstosID, eventStatus: status };
+      let postdata = {
+        bstosID: bstosID,
+        eventStatus: status,
+        IsHold: status === 99 ? 1 : 0,
+        remark: remark
+
+      };
 
       Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
         res => {
@@ -762,16 +768,6 @@ const AmStorageObjectMulti = props => {
   };
   //===========================================================
 
-  const [isLoad, setIsLoad] = useState(false);
-  const onHandleLoadFile = (val, obj, element, event) => {
-    setIsLoad(true);
-  };
-  const exportColumns = () => {
-    return columns.filter(x => {
-      return x.accessor;
-    });
-  };
-  //===========================================================
   const comma = value => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };

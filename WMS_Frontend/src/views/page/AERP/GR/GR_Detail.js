@@ -31,6 +31,8 @@ const GR_Detail = props => {
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "Lot", Header: "Lot" },
+    { width: 120, accessor: "_baseqty", Header: "BaseQty" },
+    { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
@@ -105,7 +107,7 @@ const GR_Detail = props => {
         field: "projCode",
         name: "Project",
         type: "text",
-        customShow: (dataDocument)=>{
+        customShow: (dataDocument) => {
           return dataDocument.document.Ref1;
         },
       }

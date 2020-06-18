@@ -22,7 +22,8 @@ namespace AWMSModel.Entity
         public string Options;
         public string RefID;
         public string Ref1;
-        public string Ref2;
+        public string Ref2; 
+        public int IsHold;
         public StorageObjectEventStatus EventStatus;
         public string Batch;
         public string Lot;

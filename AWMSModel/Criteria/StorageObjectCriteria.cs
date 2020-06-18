@@ -52,6 +52,7 @@ namespace AWMSModel.Criteria
         public string refID;
         public string ref1;
         public string ref2;
+        public int IsHold;
         public long? skuTypeID;
         public string skuTypeName;
 

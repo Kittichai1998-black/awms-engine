@@ -18,6 +18,8 @@ namespace AWMSEngine.Engine.Business
         {
             public long[] bstosID;
             public long eventStatus;
+            public int IsHold;
+            public string remark;
         }
         public class TDocRes
         {
@@ -31,38 +33,30 @@ namespace AWMSEngine.Engine.Business
             List<amt_StorageObject> res = new List<amt_StorageObject>();
             foreach (var bstoid in reqVO.bstosID)
             {
-                //var stoData = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO).EventStatus;
+                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, true, true, this.BuVO);
+                //if (sto.eventStatus != StorageObjectEventStatus.RECEIVED)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
 
-                //if (reqVO.eventStatus == 99)
-                //{
-                //    if (stoData != StorageObjectEventStatus.RECEIVED)
-                //        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED");
+                this.UpdateHoldStatus(this.Logger, sto, reqVO.remark,reqVO.IsHold, this.BuVO);
 
-                //    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, EntityStatus.ACTIVE, StorageObjectEventStatus.HOLD, this.BuVO);
-                //}
-                //else
-                //{
-                //    if (stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC && stoData != StorageObjectEventStatus.PARTIAL && stoData != StorageObjectEventStatus.RETURN && stoData != StorageObjectEventStatus.RECEIVED)
-                //        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not QC / HOLD / PARTIAL / RETURN");
-
-                //    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                //}
-
-
-
-
-                res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
+            res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
 
             }
             allRes.data = res;
             return allRes;
         }
-        //private amt_DocumentItemStorageObject UpdateHoldStatus(AMWLogger logger, long bstoid, VOCriteria buVO)
-        //{
-        //    var sto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(, this.BuVO);
-
-        //    return null;
-        //}
+        private void UpdateHoldStatus(AMWLogger logger, StorageObjectCriteria sto ,string remark, int IsHold, VOCriteria buVO)
+        {
+            
+            sto.IsHold = IsHold;
+            
+            foreach (var st in sto.mapstos)
+            {
+                st.IsHold = IsHold;
+                st.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(st.options, OptionVOConst.OPT_REMARK, remark);
+            }
+             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+        }
     }
 }

@@ -195,7 +195,13 @@ const AmMasterData = (props) => {
                 "_token": localStorage.getItem("Token")
             };
             Axios.put(url, updJson).then(res => {
-                setQueryObj({ ...queryObj })
+                if(res.data._result.status === 1){
+                    setQueryObj({ ...queryObj })
+                    dialogState({type:"success", content:"Success", state:true})
+                }
+                else{
+                    dialogState({type:"error", content:data._result.message, state:true})
+                }
             });
         }
 

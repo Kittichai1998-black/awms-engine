@@ -302,6 +302,7 @@ namespace AWMSEngine.ADO
             param.Add("refID", sto.refID);
             param.Add("ref1", sto.ref1);
             param.Add("ref2", sto.ref2);
+            param.Add("IsHold", sto.IsHold);
 
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
@@ -540,7 +541,7 @@ namespace AWMSEngine.ADO
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
-            return res;
+            return res; 
         }
         public List<SPOutSTOQty> SumSTOQty(long areaID, StorageObjectEventStatus eventStatus, EntityStatus status, VOCriteria buVO) {
             return this.SumSTOQty(null,null,  areaID,  eventStatus,  status, buVO);

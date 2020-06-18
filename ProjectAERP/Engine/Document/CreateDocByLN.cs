@@ -27,7 +27,18 @@ namespace ProjectAERP.Engine.Document
         {
 
         }
+        private class dataConvert
+        {
+            public class convertList
+            {
+                public long unitType_C1;
+                public decimal qty_C1;
+                public long unitType_C2;
+                public decimal qty_C2;
+            }
+            public List<convertList> covertLists;
 
+        };
         protected override TRes ExecuteEngine(TReq reqVO)
         {
 
@@ -60,6 +71,9 @@ namespace ProjectAERP.Engine.Document
                         throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Status " + wh_d.update_r + " ไม่ถูกต้อง");
 
                     var Sku = this.GetSKU(this.Logger, wh_d, this.BuVO);
+
+                    this.ConverterUnit(this.Logger, wh_d, Sku, this.BuVO);
+
                     var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
                          new SQLConditionCriteria[] {
                             new SQLConditionCriteria("SKUMaster_ID",Sku.ID, SQLOperatorType.EQUALS),
@@ -80,7 +94,7 @@ namespace ProjectAERP.Engine.Document
                             {
                                 skuCode = Sku.Code,
                                 quantity = (decimal)wh_d.Advised_qty,
-                                unitType = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == Sku.UnitType_ID).Code,
+                                unitType = wh_d.inventory_unit,
                                 batch = null,
                                 lot = wh_d.Lot,
                                 orderNo = null,
@@ -104,9 +118,9 @@ namespace ProjectAERP.Engine.Document
                                 Options = optionsItems,
                                 Code = Sku.Code,
                                 Quantity = (decimal)wh_d.Advised_qty,
-                                BaseQuantity = (decimal)wh_d.Advised_qty,
-                                UnitType_ID = Sku.UnitType_ID,
-                                BaseUnitType_ID = Sku.UnitType_ID,
+                                //BaseQuantity = (decimal)wh_d.Advised_qty,
+                                UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.inventory_unit).ID,
+                                //BaseUnitType_ID = Sku.UnitType_ID,
                                 RefID = wh_d.Serial,
                                 Ref2 = reqVO.proj,
                                 Ref1 = reqVO.wh_order,
@@ -295,17 +309,17 @@ namespace ProjectAERP.Engine.Document
 
                 var dataUnit = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_UnitType>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Code",wh_d.inventory_unit, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Code",wh_d.purchase_unit, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
-                var unit = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit).ID;
+                var unit = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID;
                 if (unit == null)
                 {
                     var unitID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(this.BuVO, new ams_UnitType()
                     {
-                        Code = wh_d.inventory_unit,
-                        Name = wh_d.inventory_unit,
+                        Code = wh_d.purchase_unit,
+                        Name = wh_d.purchase_unit,
                         ObjectType = StorageObjectType.PACK,
                         Status = EntityStatus.ACTIVE
 
@@ -339,6 +353,11 @@ namespace ProjectAERP.Engine.Document
                 });
 
                 StaticValueManager.GetInstant().LoadPackUnitConvert(this.BuVO);
+            }
+            else
+            {
+               if( sku.UnitType_ID != StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "หน่วยของสินค้าไม่ถูกต้อง");
             }
             return sku;
         }
@@ -445,6 +464,72 @@ namespace ProjectAERP.Engine.Document
             };
 
             return res;
+
+        }
+        private void ConverterUnit(AMWLogger logger, ERPWHInbound.items wh_d, ams_SKUMaster sku, VOCriteria buVO)
+        {
+            var dataUnit = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_UnitType>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Code",wh_d.inventory_unit, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
+                }, this.BuVO).FirstOrDefault();
+
+            var inventoryID = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit).ID;
+            if (inventoryID == null)
+            {
+                var unitID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(this.BuVO, new ams_UnitType()
+                {
+                    Code = wh_d.inventory_unit,
+                    Name = wh_d.inventory_unit,
+                    ObjectType = StorageObjectType.PACK,
+                    Status = EntityStatus.ACTIVE
+
+                });
+                inventoryID = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(unitID, this.BuVO).ID;
+                StaticValueManager.GetInstant().LoadUnitType(this.BuVO);
+            }
+
+            var unitPack = StaticValueManager.GetInstant().PackUnitConverts.FindAll(x => x.SKUMaster_ID == sku.ID.Value);
+
+            var arr = new dataConvert();
+            arr.covertLists = new List<dataConvert.convertList>();
+            unitPack.ForEach(x =>
+            {
+                arr.covertLists.Add(new dataConvert.convertList()
+                {
+                    unitType_C1 = x.C1_UnitType_ID,
+                    qty_C1 = x.C1_Quantity,
+                    unitType_C2 = x.C2_UnitType_ID,
+                    qty_C2 = x.C2_Quantity
+                });
+
+                arr.covertLists.Add(new dataConvert.convertList()
+                {
+                    unitType_C1 = x.C2_UnitType_ID,
+                    qty_C1 = x.C2_Quantity,
+                    unitType_C2 = x.C1_UnitType_ID,
+                    qty_C2 = x.C1_Quantity
+                });
+
+            });
+
+
+            var checkUnit = arr.covertLists.FindAll(x => x.unitType_C1 == inventoryID.Value);
+            if (checkUnit.Count == 0)
+            {
+                //ไม่มีใน Covert
+                var packConvertID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitTypeConvert>(this.BuVO, new ams_UnitTypeConvert()
+                {
+                    SKUMaster_ID = (int)sku.ID.Value,
+                    C1_Quantity = 1,
+                    C1_UnitType_ID = (int)StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID,
+                    C2_Quantity = (decimal)wh_d.conversion,
+                    C2_UnitType_ID = (int)inventoryID.Value,
+                    Status = EntityStatus.ACTIVE
+
+                });
+                StaticValueManager.GetInstant().LoadPackUnitConvert(this.BuVO);
+            }
 
         }
     }

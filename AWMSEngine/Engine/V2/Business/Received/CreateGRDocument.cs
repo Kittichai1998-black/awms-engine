@@ -57,13 +57,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string packCode;
                 public decimal? quantity;
                 public string unitType;
-
+                public decimal? basequantity;
                 public DateTime? expireDate;
                 public DateTime? productionDate;
 
                 public string orderNo;
                 public string batch;
                 public string lot;
+
+                public long? refDocumentItem_ID;
 
                 public string ref1;
                 public string ref2;
@@ -162,10 +164,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         {
                             skuCode = x.skuCode,
                             packCode = null,
-
+                            baseQuantity = x.basequantity,
                             quantity = x.quantity,
                             unitType = x.unitType,
-
+                            refDocumentItem_ID = x.refDocumentItem_ID,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,

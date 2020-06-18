@@ -254,8 +254,8 @@ const RD_Create_FGwm = props => {
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
-    const apiRes = "/receiveOrder/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
+    const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
+    const apiRes = "/receiveOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;
