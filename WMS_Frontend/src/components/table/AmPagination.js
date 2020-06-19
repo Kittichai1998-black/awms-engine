@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -21,7 +21,7 @@ export default props => {
 
   return (
     <TablePagination
-      style={{ marginRight: '20px', float:"right" }}
+      style={{ marginRight: '0', minHeight:0}}
       colSpan={3}
       rowsPerPageOptions={[]}
       component='div'
@@ -79,6 +79,7 @@ const TablePaginationActions = props => {
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
         aria-label='First Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
@@ -86,6 +87,7 @@ const TablePaginationActions = props => {
         onClick={handleBackButtonClick}
         disabled={page === 0}
         aria-label='Previous Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? (
           <KeyboardArrowRight />
@@ -97,6 +99,7 @@ const TablePaginationActions = props => {
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='Next Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? (
           <KeyboardArrowLeft />
@@ -108,6 +111,7 @@ const TablePaginationActions = props => {
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='Last Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>

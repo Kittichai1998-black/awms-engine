@@ -213,9 +213,9 @@ const AmMasterData = (props) => {
     useEffect(() => {
         setPopupTitle("Remove")
         setUpdateData(removeData)
-        console.log(removeData)
         setEditorColumns([{
             field: "Status",
+            value:2
           }])
     }, [removeData])
 
@@ -226,16 +226,13 @@ const AmMasterData = (props) => {
     }, [editData])
 
     useEffect(() => {
+        console.log(page)
         if (typeof (page) === "number" && !iniQuery) {
             const queryEdit = JSON.parse(JSON.stringify(queryObj));
             queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
             setQueryObj(queryEdit)
         }
     }, [page])
-
-    useEffect(() => {
-        console.log(removeData)
-    }, [removeData])
 
     const onChangeFilterData = (filterValue) => {
         var res = queryObj;

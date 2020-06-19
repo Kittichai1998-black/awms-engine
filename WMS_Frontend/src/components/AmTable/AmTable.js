@@ -4,6 +4,7 @@ import { AmTableProvider, AmTableContext } from "./AmTableContext";
 import { } from "./AmPagination";
 import PropTypes from "prop-types"
 import AmPagination from "../table/AmPagination";
+import Grid from "@material-ui/core/Grid";
 
 const AmTable = (props) => {
     return <AmTableProvider>
@@ -30,6 +31,9 @@ const AmTable = (props) => {
             selectionData={props.selectionData}
             selectionDefault={props.selectionDefault}
             clearSelectionChangePage={props.clearSelectionChangePage}
+            customAllTopControl={props.customAllTopControl}
+            customTopLeftControl={props.customTopLeftControl}
+            customTopRightControl={props.customTopRightControl}
         />
     </AmTableProvider>
 }
@@ -74,8 +78,63 @@ const AmTableSetup = (props) => {
         }
     }, [page, props.dataSource, props.onPageChange])
 
+    const Topbar = (propsTopbar) => {
+        if(propsTopbar.customAllTopControl){
+            return <>
+                <div style={{display:"inline-block"}}>{propsTopbar.customAllTopControl}</div>
+                <div id="pagination">
+                    {propsTopbar.pagination ? <AmPagination
+                        totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                        pageSize={propsTopbar.pageSize}
+                        resetPage={propsTopbar.resetPage}
+                        onPageChange={page => {
+                            if (propsTopbar.onPageChange !== undefined) {
+                                propsTopbar.onPageChange(page + 1)
+                            }
+                            setPage(page + 1)
+                        }}
+                    /> : null}
+                </div>
+            </>
+        }
+        else{
+            return <Grid container direction="row" justify="space-between" alignItems="flex-end">
+            <Grid item xs={6}>
+                {propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}
+            </Grid>
+            <Grid item xs={6} style={{textAlign:"right"}}>
+                <div style={{display:"inline-block"}}>
+                    {propsTopbar.pagination ? <AmPagination
+                        totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                        pageSize={propsTopbar.pageSize}
+                        resetPage={propsTopbar.resetPage}
+                        onPageChange={page => {
+                            if (propsTopbar.onPageChange !== undefined) {
+                                propsTopbar.onPageChange(page + 1)
+                            }
+                            setPage(page + 1)
+                        }}
+                    /> : null}
+                </div>
+                <div style={{display:"inline-block"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
+            
+            </Grid>
+        </Grid>
+        }
+    };
+
     return <>
-        <div id="topbar"></div>
+        <Topbar 
+            customAllTopControl={props.customAllTopControl} 
+            customTopLeftControl={props.customTopLeftControl} 
+            customTopRightControl={props.customTopRightControl}
+            totalSize={props.totalSize}
+            onPageChange={props.onPageChange}
+            resetPage={props.resetPage}
+            pageSize={props.pageSize}
+            dataSource={dataSource}
+            pagination={props.pagination}
+            />
         <AmTableComponent
             dataSource={dataSource}
             width={props.width}
@@ -95,7 +154,7 @@ const AmTableSetup = (props) => {
             clearSelectionChangePage={props.clearSelectionChangePage}
         />
         <div id="btmbar">
-            <div id="pagination">
+            {/* <div id="pagination">
                 {props.pagination ? <AmPagination
                     totalSize={props.totalSize ? props.totalSize : props.dataSource.length}
                     pageSize={props.pageSize}
@@ -107,7 +166,7 @@ const AmTableSetup = (props) => {
                         setPage(page + 1)
                     }}
                 /> : null}
-            </div>
+            </div> */}
             <div style={{ clear: "both" }}></div>
         </div>
     </>
