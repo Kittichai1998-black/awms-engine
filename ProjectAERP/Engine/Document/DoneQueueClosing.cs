@@ -97,8 +97,8 @@ namespace ProjectAERP.Engine.Document
                         var qtyDisto = disto.Sum(x => x.BaseQuantity);
                         var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID, buVO);
                         var qtylistItem = listItem.Sum(x => x.BaseQuantity);
-                        if (qtyDisto == qtylistItem)
-                        {
+                        //if (qtyDisto == qtylistItem)
+                        //{
                             if(docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                             {
                                 this.SendToERP_IN(docs, buVO);
@@ -108,7 +108,7 @@ namespace ProjectAERP.Engine.Document
                                 this.SendToERP_OUT(docs, buVO);
                             }
                             
-                        }
+                        //}
                     }
                 }
             }
