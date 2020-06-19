@@ -102,11 +102,13 @@ namespace ProjectAERP.Engine.Document
                             if(docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                             {
                                 this.SendToERP_IN(docs, buVO);
+                                res = new List<long>() ;
                             }
                             else
                             {
                                 this.SendToERP_OUT(docs, buVO);
-                            }
+                                res = new List<long>();
+                        }
                             
                         //}
                     }
