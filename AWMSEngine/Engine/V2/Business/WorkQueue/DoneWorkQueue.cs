@@ -138,7 +138,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     }
                                 });
 
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(stos.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                                ADO.StorageObjectADO.GetInstant().UpdateStatus(stos.id.Value, null, null, StorageObjectEventStatus.ACTIVE, this.BuVO);
                             }
                         }
 
