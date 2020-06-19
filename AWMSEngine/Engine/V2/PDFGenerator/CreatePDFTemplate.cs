@@ -36,20 +36,20 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             TRes res = new TRes();
 
             MemoryStream workStream = new MemoryStream();
-            Rectangle rect = new Rectangle(200f, 200f);
+            Rectangle rect = new Rectangle(PageSize.A4);
             Document document = new Document(rect, 0, 0, 0, 0);
             //document.SetMargins(-20f, -20f, 0f, 0f);
 
             PdfWriter.GetInstance(document, workStream).CloseStream = false;
 
             document.Open();
-            //document.Add(new Paragraph("Hello World"));
-            //document.Add(new Paragraph(DateTime.Now.ToString()));
+            document.Add(new Paragraph("Hello World"));
+            document.Add(new Paragraph(DateTime.Now.ToString()));
             var qrcode = new QRCodeGenerate().CreateQRCode("PAL0000050");
             iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
-            img.Alignment = Element.ALIGN_CENTER;
+            img.Alignment = Element.ALIGN_MIDDLE;
             //img.SetAbsolutePosition(0, 0);
-            img.ScaleAbsolute(200f, 200f); 
+            //img.ScaleAbsolute(150f, 150f); 
             //img.ScalePercent(100);
             document.Add(img);
             document.Close();
