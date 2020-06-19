@@ -112,6 +112,9 @@ namespace ProjectAERP.Engine.Document
                         else
                         {
                             //Insert Docitem
+                            var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(Sku.ID.Value, (decimal)wh_d.Advised_qty, StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit).ID.Value);
+                            var baseQuantity = baseUnitTypeConvt.baseQty;
+
                             AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(new amt_DocumentItem
                             {
                                 Document_ID = docGR.ID.Value,
@@ -119,9 +122,9 @@ namespace ProjectAERP.Engine.Document
                                 Options = optionsItems,
                                 Code = Sku.Code,
                                 Quantity = (decimal)wh_d.Advised_qty,
-                                //BaseQuantity = (decimal)wh_d.Advised_qty,
+                                BaseQuantity = baseQuantity,
                                 UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.inventory_unit).ID,
-                                //BaseUnitType_ID = Sku.UnitType_ID,
+                                BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.purchase_unit).ID,
                                 RefID = wh_d.Serial,
                                 Ref2 = reqVO.proj,
                                 Ref1 = reqVO.wh_order,
