@@ -29,11 +29,11 @@ const DataGenerateMulti = (data) => {
         {getStatus(y)}
       </div>
     ));
-    // x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
-    //   <div style={{ marginBottom: "3px", textAlign: "center" }}>
-    //     {getIsHold(y)}
-    //   </div>
-    // ));
+    x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
+      <div style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getIsHold(y)}
+      </div>
+    ));
   });
   return data;
 }
@@ -42,7 +42,7 @@ const getStatus = Status => {
   if (Status === "NEW") {
     return <AmStorageObjectStatus key={Status} statusCode={10} />;
   } else if (Status === "RECEIVING") {
-    return <AmStorageObjectStatus key={Status} statusCode={11} />;
+    return <AmStorageObjectStatus key={Status} statusCode={101} />;
   } else if (Status === "RECEIVED") {
     return <AmStorageObjectStatus key={Status} statusCode={102} />;
   } else if (Status === "AUDITING") {
@@ -50,9 +50,9 @@ const getStatus = Status => {
   } else if (Status === "AUDITED") {
     return <AmStorageObjectStatus key={Status} statusCode={14} />;
   } else if (Status === "PICKING") {
-    return <AmStorageObjectStatus key={Status} statusCode={17} />;
+    return <AmStorageObjectStatus key={Status} statusCode={153} />;
   } else if (Status === "PICKED") {
-    return <AmStorageObjectStatus key={Status} statusCode={18} />;
+    return <AmStorageObjectStatus key={Status} statusCode={154} />;
   } else if (Status === "QUALITY_CONTROL") {
     return <AmStorageObjectStatus key={Status} statusCode={98} />;
   } else if (Status === "REMOVING") {

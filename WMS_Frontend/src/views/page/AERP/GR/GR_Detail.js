@@ -30,6 +30,8 @@ const GR_Detail = props => {
   const columns = [
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
+    { width: 130, accessor: "advice", Header: "Advice" },
+    { width: 130, accessor: "serial", Header: "Serial" },
     { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_baseqty", Header: "BaseQty" },
     { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
@@ -40,7 +42,7 @@ const GR_Detail = props => {
   const columnsDetailSOU = [
     { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
     { width: 100, accessor: "rootCode", Header: "Pallet" },
-    { width: 150, accessor: "skuCode", Header: "Pack Code" },
+    { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
     { width: 125, accessor: "Lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
@@ -48,7 +50,7 @@ const GR_Detail = props => {
   ];
 
 
-  const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
+  const optionDocItems = [{ optionName: "advice" }, { optionName: "serial" }];
 
   const getStatusGR = value => {
     if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
