@@ -57,8 +57,8 @@ namespace AMWUtil.DataAccess
                 {
                     Connection.Open();
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
-                    
+                    res = Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+                    transaction.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
@@ -89,8 +89,9 @@ namespace AMWUtil.DataAccess
                 {
                     Connection.Open();
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
-                    
+                    res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+                    transaction.Commit();
+
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
@@ -121,7 +122,8 @@ namespace AMWUtil.DataAccess
                 {
                     Connection.Open();
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+                    res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+                    transaction.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
