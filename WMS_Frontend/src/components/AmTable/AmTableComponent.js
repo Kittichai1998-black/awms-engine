@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useRef, useLayoutEffect, createRef} from 'react';
+import React, {useContext, useState, useEffect, useRef, useLayoutEffect} from 'react';
 import {Arrow, 
     Table,
     TableContainer,
@@ -11,12 +11,12 @@ import {Arrow,
     TableHeaderStickyColumnsCell,
     TableCellFooter } from "./AmTableStyle";
 import {AmTableContext} from "./AmTableContext";
-import Input from "@material-ui/core/Input";
+//import Input from "@material-ui/core/Input";
 import AmInput from "../AmInput";
-import Checkbox from "@material-ui/core/Checkbox";
+//import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
-import Radio from "@material-ui/core/Radio";
-import { withStyles } from "@material-ui/core/styles";
+//import Radio from "@material-ui/core/Radio";
+//import { withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
 const IsEmptyObject = (obj) => {
@@ -31,19 +31,19 @@ const SortDirection = {
     ASC: "asc"
 };
 
-  const CheckboxCustom = withStyles({
-    root: {
-        padding:"0 !important",
-        marginRight:"5px"
-    },
-  })(Checkbox);
+  // const CheckboxCustom = withStyles({
+  //   root: {
+  //       padding:"0 !important",
+  //       marginRight:"5px"
+  //   },
+  // })(Checkbox);
 
-  const RadioCustom = withStyles({
-    root: {
-        padding:"0 !important",
-        marginRight:"5px"
-    },
-  })(Radio);
+  // const RadioCustom = withStyles({
+  //   root: {
+  //       padding:"0 !important",
+  //       marginRight:"5px"
+  //   },
+  // })(Radio);
 
 const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page) => {
     const [columns, setColumns] = useState([]);
