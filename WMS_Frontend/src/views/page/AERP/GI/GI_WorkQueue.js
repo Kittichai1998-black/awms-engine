@@ -70,7 +70,7 @@ const ProcessQueue = () => {
   };
 
   const processCondition = {
-    "conditions": [{ "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": false }],
+    "conditions": [{ "field": "Full Pallet", "key": "useFullPick", "enable": false, "defaultValue": false, "editable": false }],
     "eventStatuses": [{ "field": "Recevied", "value": 102, "enable": true, "defaultValue": true, "editable": false, },],
     "orderBys": [
       //{ "field": "Partial Pallet", "enable": true, "sortField": "psto.baseQuantity", "sortBy": "0", "editable": false },

@@ -4,22 +4,20 @@ import React, { useState, useRef, createRef, useEffect } from "react";
 import styled from 'styled-components'
 
 // import { useTranslation } from 'react-i18next'
-import AmButton from '../components/AmButton'
-import AmDate from '../components/AmDate'
-import AmDatepicker from '../components/AmDate'
-import AmDialogs from '../components/AmDialogs'
-import AmDropdown from '../components/AmDropdown'
-import AmEditorTable from '../components/table/AmEditorTable'
-import AmFindPopup from '../components/AmFindPopup'
-import AmInput from '../components/AmInput'
-import AmCheckBox from '../components/AmCheckBox'
-import AmTable from '../components/table/AmTable'
-import {Clone } from '../components/function/CoreFunction'
-import { apicall, createQueryString } from "../components/function/CoreFunction2";
-import BtnAddList from './AmCreateDocument_BtnAddList'
-import { getUnique } from './function/ObjectFunction'
-import AmDialogconfirm from './AmDialogConfirm'
-import LabelT from './AmLabelMultiLanguage'
+import AmButton from '../../components/AmButton'
+import AmDate from '../../components/AmDate'
+import AmDatepicker from '../../components/AmDate'
+import AmDialogs from '../../components/AmDialogs'
+import AmDropdown from '../../components/AmDropdown'
+import AmEditorTable from '../../components/table/AmEditorTable'
+import AmFindPopup from '../../components/AmFindPopup'
+import AmInput from '../../components/AmInput'
+import AmCheckBox from '../../components/AmCheckBox'
+import AmTable from '../../components/table/AmTableV2'
+import { Clone } from '../../components/function/CoreFunction'
+import { apicall, createQueryString } from "../../components/function/CoreFunction";
+import { getUnique } from '../../components/function/ObjectFunction'
+import LabelT from '../../components/AmLabelMultiLanguage'
 
 // import ValidateInput from './function/ValidateInput'
 
@@ -271,7 +269,7 @@ const AmCreateDocument = (props) => {
         setcreateDocumentData(createDocumentData)
     }
 
-    //เช็ตค่าที่หัวของหน้าใน Findpopup
+    //�絤�ҷ����Ǣͧ˹��� Findpopup
     const onHandleChangeFindpopup = (value, dataObject, inputID, fieldDataKey, pair, key) => {
         setvalueFindPopup({
             [inputID]: {
@@ -382,7 +380,7 @@ const AmCreateDocument = (props) => {
                     else {
                         if (chkDataSku) {
                             setStateDialogErr(true)
-                            setMsgDialog("มีข้อมูล SKU นี้แล้ว")
+                            setMsgDialog("�բ����� SKU �������")
                         }
                         // if (editData.qtyrandom !== undefined) {
                         //     if (editData.qtyrandom > 100) {
@@ -439,7 +437,7 @@ const AmCreateDocument = (props) => {
                             if (ToatalQty == 0) {
                                 setDialogItem(false)
                                 setStateDialogErr(true)
-                                setMsgDialog("เอกสารนี้ถูกสร้างครบจำนวนแล้ว")
+                                setMsgDialog("�͡��ù��١���ҧ�ú�ӹǹ����")
 
                             } else {
                                 dataDocItem[i]["Quantity"] = ToatalQty
@@ -640,18 +638,18 @@ const AmCreateDocument = (props) => {
                                 id={idddl}
                                 DDref={ref.current[index]}
                                 placeholder={placeholder ? placeholder : "Select"}
-                                fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                                fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                                labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                                width={width ? width : 300} //กำหนดความกว้างของช่อง input
-                                ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
-                                // valueData={valueText[idddl]} //ค่า value ที่เลือก
+                                fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                                fieldLabel={fieldLabel} //���촷���ͧ�����ʴ���� optionList ��� ��ͧ input
+                                labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
+                                width={width ? width : 300} //��˹��������ҧ�ͧ��ͧ input
+                                ddlMinWidth={width ? width : 300} //��˹��������ҧ�ͧ���ͧ dropdown
+                                // valueData={valueText[idddl]} //��� value ������͡
                                 queryApi={queryApi}
                                 // data={dataUnit}
                                 // returnDefaultValue={true}
                                 defaultValue={editData ? editData[accessor] : ""}
                                 onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
-                                ddlType={"search"} //รูปแบบ Dropdown 
+                                ddlType={"search"} //�ٻẺ Dropdown 
                             />
                         </InputDiv>
                     </FormInline>
@@ -668,14 +666,14 @@ const AmCreateDocument = (props) => {
                                 popupref={ref.current[index]}
                                 id={idddl}
                                 placeholder={placeholder ? placeholder : "Select"}
-                                // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                                labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                                fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
-                                // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
-                                labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                                // fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                                labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
+                                fieldLabel={fieldLabel} //���촷���ͧ�����ʴ���� ��ͧ input
+                                // valueData={valueFindPopupin[idddl]} //��� value ������͡
+                                labelTitle="Search of Code" //��ͤ����ʴ��˹��popup
                                 queryApi={queryApi} //object query string
                                 defaultValue={editData ? editData[accessor] : ""}
-                                columns={columsddl} //array column สำหรับแสดง table
+                                columns={columsddl} //array column ����Ѻ�ʴ� table
                                 width={width ? width : 300}
                                 ddlMinWidth={width ? width : 100}
                                 onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
@@ -775,17 +773,17 @@ const AmCreateDocument = (props) => {
                     <AmDropdown
                         id={idddls}
                         placeholder={placeholder ? placeholder : "Select"}
-                        fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                        fieldLabel={fieldLabel} //���촷���ͧ�����ʴ���� optionList ��� ��ͧ input
+                        labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
                         width={width ? width : 300}
-                        ddlMinWidth={width ? width : 300}//กำหนดความกว้างของกล่อง dropdown
-                        valueData={dataDDLHead[idddls]} //ค่า value ที่เลือก
+                        ddlMinWidth={width ? width : 300}//��˹��������ҧ�ͧ���ͧ dropdown
+                        valueData={dataDDLHead[idddls]} //��� value ������͡
                         queryApi={queryApi}
                         //returnDefaultValue={true}
                         defaultValue={defaultValue ? defaultValue : ""}
                         onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
-                        ddlType={"search"} //รูปแบบ Dropdown 
+                        ddlType={"search"} //�ٻẺ Dropdown 
                     />
                 )
             } else if (type === "datepicker") {
@@ -805,15 +803,15 @@ const AmCreateDocument = (props) => {
                     <AmFindPopup
                         id={idddls}
                         placeholder={placeholder ? placeholder : "Select"}
-                        fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
-                        valueData={valueFindPopup[idddls]} //ค่า value ที่เลือก
-                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                        labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
+                        fieldLabel={fieldLabel} //���촷���ͧ�����ʴ���� ��ͧ input
+                        valueData={valueFindPopup[idddls]} //��� value ������͡
+                        labelTitle="Search of Code" //��ͤ����ʴ��˹��popup
                         queryApi={queryApi} //object query string
-                        columns={cols} //array column สำหรับแสดง table
+                        columns={cols} //array column ����Ѻ�ʴ� table
                         width={width ? width : 300}
-                        ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
+                        ddlMinWidth={width ? width : 300}//��˹��������ҧ�ͧ��ͧ input
                         onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopup(value, dataObject, inputID, fieldDataKey, pair, key)}
                     />
                 )
@@ -822,15 +820,15 @@ const AmCreateDocument = (props) => {
                     <AmFindPopup
                         id={idddls}
                         placeholder={placeholder ? placeholder : "Select"}
-                        fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
-                        valueData={valueFindPopup[idddls]} //ค่า value ที่เลือก
-                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                        labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
+                        fieldLabel={fieldLabel} //���촷���ͧ�����ʴ���� ��ͧ input
+                        valueData={valueFindPopup[idddls]} //��� value ������͡
+                        labelTitle="Search of Code" //��ͤ����ʴ��˹��popup
                         queryApi={queryApi} //object query string
-                        columns={colss} //array column สำหรับแสดง table
+                        columns={colss} //array column ����Ѻ�ʴ� table
                         width={width ? width : 300}
-                        ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
+                        ddlMinWidth={width ? width : 300}//��˹��������ҧ�ͧ��ͧ input
                         disabled={docIds ? true : false}
                         onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopupDoc(value, dataObject, inputID, fieldDataKey, pair, key)}
                     />
@@ -923,54 +921,7 @@ const AmCreateDocument = (props) => {
                     doc[key] = value
             }
 
-            if (props.createDocType === "shipment") {
-                doc.shipmentItems = dataSource.map(x => {
-                    let _docItem = { ...docItem }
-                    for (let [key, value] of Object.entries(x)) {
-                        if (key in docItem)
-                            _docItem[key] = value
-                        if (key === "ID" && value > 0)
-                            _docItem.packID = value
-                    }
-                    //modify _docItem 
-                    //_docItem.options = x.xxx
-                    return _docItem
-                })
-            }
-            else if (props.createDocType === "audit") {
-                doc.docItems = dataSource.map(x => {
-                    let _docItem = { ...docItem }
-                    for (let [key, value] of Object.entries(x)) {
-                        if (key in docItem)
-                            _docItem[key] = value
-                        if (key === "ID" && value > 0)
-                            _docItem.packID = value
-                    }
-                    return _docItem
-                })
-            } else if (props.createDocType === "issue") {
-                doc.issueItems = dataSource.map(x => {
-                    let _docItem = { ...docItem }
-                    for (let [key, value] of Object.entries(x)) {
-                        if (key in docItem)
-                            _docItem[key] = value
-                        if (key === "ID" && value > 0)
-                            _docItem.packID = value
-                    }
-                    return _docItem
-                })
-            } else if (props.createDocType === "receive") {
-                doc.receiveItems = dataSource.map(x => {
-                    let _docItem = { ...docItem }
-                    for (let [key, value] of Object.entries(x)) {
-                        if (key in docItem)
-                            _docItem[key] = value
-                        if (key === "ID" && value > 0)
-                            _docItem.packID = value
-                    }
-                    return _docItem
-                })
-            } else if (props.createDocType === "receiveOrder") {
+           if (props.createDocType === "receiveOrder") {
                 doc.receivedOrderItem = dataSource.map(x => {
                     let _docItem = { ...docItem }
                     for (let [key, value] of Object.entries(x)) {
@@ -998,8 +949,6 @@ const AmCreateDocument = (props) => {
                     x.skuCode = x.Code
                     return x
                 })
-
-
 
             }
             if (Object.keys(doc).length > countDoc) {
@@ -1064,17 +1013,8 @@ const AmCreateDocument = (props) => {
                     </Grid>
                     <Grid item>
                         <div style={{ marginTop: "20px" }}>
-                            {props.addList ? <BtnAddList
-                                headerCreate={props.headerCreate}
-                                queryApi={props.addList.queryApi}
-                                columns={props.addList.columns}
-                                search={props.addList.search}
-                                textBtn="Add Item List"
-                                onSubmit={(data) => { setDataSource(FormatData(data)); setReload({}) }}
-                                dataCheck={dataSource}
-                            /> : null}
 
-                            {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >Add Item</AmButton>}
+                             <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >Set Item</AmButton>
 
                         </div>
                     </Grid>

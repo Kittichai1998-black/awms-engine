@@ -360,13 +360,14 @@ const Default = props => {
             return routes.map((x, idx) => {
                 if (x.text.toString().toLowerCase() === Path[1]) {
                     return <div key={idx} style={{ float: "left", lineHeight: "29px", marginLeft: "5px" }}>
-                        <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
-                            {t(x.text)}
-                        </Typography>
+                       <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
+                      {t(x.text)}
+                       </Typography>  
+                        
                     </div>
                 }
                 else {
-                    return <div key={idx}></div>
+                 /* return <div key={idx}></div>*/
                 }
             });
         }
@@ -686,7 +687,7 @@ const Default = props => {
                         >
                             {Home_Link()}
                             {Route_1()}
-                            <Typography color="textPrimary" style={{ fontSize: "1rem" }}>{NavicateBarN()}</Typography>
+                            {NavicateBarN()}
                         </Breadcrumbs>
                     </Paper>
 

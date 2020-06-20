@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+import AmputAndpick from "../../../pageComponent/AmCreateDocPutandPick/AmputAndpick";
 import queryString from "query-string";
 import {
     apicall,
@@ -26,6 +26,7 @@ const Create_GR_DR = props => {
         // getURL()
         if (dataMovementTypeCUS !== "") {
             var headerCreate = [
+                [{ label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc }],
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
@@ -43,7 +44,6 @@ const Create_GR_DR = props => {
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                 ],
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery" },
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
@@ -51,22 +51,26 @@ const Create_GR_DR = props => {
 
             if (headerCreate.length > 0) {
                 setTable(
-                    <AmCreateDocument
+                    <AmputAndpick
                         addList={addList}
-                        headerCreate={headerCreate}
+                        docheaderCreate={headerCreate}
                         columns={columns}
                         columnEdit={columnEdit}
                         apicreate={apicreate}
-                        createDocType={"reciveByDR"}
+                        createDocType={"putAway"}
                         history={props.history}
-                        DocItemQuery={DocumentItem}
-                        columnEditItem={columnEditItem}
+                        docItemQuery={DocumentItem}
+                        doccolumnEditItem={columnEditItem}
                         apiRes={apiRes}
                     />
                 );
             }
         }
     }, [dataMovementTypeCUS]);
+
+    const columsDoc = [
+        { Header: "Code", accessor: "Code" }
+    ]
 
 
     const columsFindPopupSKU = [
@@ -272,12 +276,12 @@ const Create_GR_DR = props => {
     ];
 
     const columnEditItem = [
-        { Header: "Item Code", accessori: "SKUItems", type: "text", accessor: "SKUItems" },
-        { Header: "Batch", accessori: "Batch", type: "text", accessor: "batch", codeTranslate: "Batch" },
-        { Header: "Lot", accessori: "Lot", type: "text", accessor: "lot",codeTranslate: "Lot" },
-        { Header: "Order No.", accessori: "OrderNo", type: "text", accessor: "orderNo", codeTranslate: "Order No." },
-        { Header: "Quantity", accessori: "Quantity", type: "inputNum", accessor: "Quantity",codeTranslate: "Quantity" },
-        { Header: "Unit", accessori: "UnitType_Code", type: "text", accessor: "UnitType_Code", codeTranslate: "Unit" }
+        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Batch", accessor: "batch", codeTranslate: "Batch" },
+        { Header: "Lot",  accessor: "lot",codeTranslate: "Lot" },
+        { Header: "Order No.", accessor: "orderNo", codeTranslate: "Order No." },
+        { Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
+        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
 
 
