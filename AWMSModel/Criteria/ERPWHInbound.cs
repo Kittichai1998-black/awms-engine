@@ -33,6 +33,8 @@ namespace AWMSModel.Criteria
             public string warehouse_t;
             public string item_group;
             public string inventory_unit;
+            public string purchase_unit;
+            public double conversion;
             public string Location;
             public string Lot;
             public string Serial;

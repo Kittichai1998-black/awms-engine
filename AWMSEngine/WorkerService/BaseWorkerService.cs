@@ -28,10 +28,11 @@ namespace AWMSEngine.WorkerService
 
         public async Task ExecuteAsync()
         {
-            VOCriteria buVO = new VOCriteria();
             var logger = AMWLoggerManager.GetLogger("worker." + this.WorkerServiceID, this.GetType().Name);
+            VOCriteria buVO = new VOCriteria();
             buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
             logger.LogInfo("######START######");
+            logger.LogInfo("...WORKER...");
             while (true)
             { 
                 var job = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);

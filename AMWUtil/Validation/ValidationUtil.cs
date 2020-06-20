@@ -24,10 +24,14 @@ namespace AMWUtil.Validation
                 {
                     var v = t.GetValue(model);
                     var v2 = (IEnumerable)v;
-                    foreach(var v3 in v2)
+                    if (v2 != null)
                     {
-                        ValidateModel(v3);
+                        foreach (var v3 in v2)
+                        {
+                            ValidateModel(v3);
+                        }
                     }
+                       
                 }
                 else
                 {

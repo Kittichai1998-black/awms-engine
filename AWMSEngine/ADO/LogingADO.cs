@@ -70,9 +70,9 @@ namespace AWMSEngine.ADO
         public long PutAPIPostBackEvent(HttpResultModel apiEvt, VOCriteria buVO)
         {
             //return 0;
-            var id = ADO.DataADO.GetInstant().Insert<aml_APIPostBackEvent>(
+            var id = ADO.DataADO.GetInstant().Insert<aml_APIPostEvent>(
                 buVO,
-                new aml_APIPostBackEvent()
+                new aml_APIPostEvent()
                 {
                     ID = null,
                     PostRefID = apiEvt.PostRefID,

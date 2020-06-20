@@ -59,11 +59,13 @@ namespace AWMSEngine.Engine.V2.Business
                             var stoLists = new List<StorageObjectCriteria>();
                             if (sto != null)
                                 stoLists = sto.ToTreeList();
-                            if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
+                            var gety = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
+                            if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type)
+                                .TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
                             {
                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
-                                parentUpdate.eventStatus = StorageObjectEventStatus.RECEIVING;
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                                parentUpdate.eventStatus = StorageObjectEventStatus.ACTIVE;
+                                ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.ACTIVE, this.BuVO);
                                 if (parentUpdate.parentID.HasValue)
                                     set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
                             }

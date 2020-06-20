@@ -48,7 +48,7 @@ namespace AWMSEngine
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
             var context = new Utility.CustomAssemblyLoadContext();
-            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
+            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "Library\\libwkhtmltox.dll"));
 
             services.AddCors(options =>
             {

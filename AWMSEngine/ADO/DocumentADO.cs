@@ -102,6 +102,7 @@ namespace AWMSEngine.ADO
                 param.Add("@refID", doc.RefID);
                 param.Add("@ref1", doc.Ref1);
                 param.Add("@ref2", doc.Ref2);
+                param.Add("@ref3", doc.Ref3);
 
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
                 param.Add("@batch", doc.Batch);
@@ -155,6 +156,7 @@ namespace AWMSEngine.ADO
             param.Add("@productionDate", docItem.ProductionDate);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
+            param.Add("@ref3", docItem.Ref3);
             param.Add("@refID", docItem.RefID);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);

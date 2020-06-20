@@ -156,17 +156,17 @@ namespace AWMSEngine.APIService
 
                 //-----------VALIDATE PERMISSION
                 this.Permission(token, tokenInfo, apiKey, apiKeyInfo);
-                
-                var res = this.ExecuteEngineManual();
 
+                this.BuVO.SqlTransaction_Begin();
+                var res = this.ExecuteEngineManual();
                 response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
+                this.BuVO.SqlTransaction_Commit();
 
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
                 result.stacktrace = string.Empty;
                 result.logref = this.Logger.LogRefID;
-                this.BuVO.SqlTransaction_Commit();
             }
             catch (AMWException ex)
             {

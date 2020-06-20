@@ -69,6 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string packCode;
                 public long? packID;
                 public int? packItemQty; //not receive
+                public bool isUnitTypeForPack = false;
                 public decimal? quantity;
                 public string unitType;
                 public decimal? baseQuantity; //not receive
@@ -216,7 +217,16 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(Item.skuCode, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
-                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
+
+                    if (Item.isUnitTypeForPack)
+                    {
+                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
+                    }
+                    else
+                    {
+                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID).Code , this.BuVO);
+                    }
+                    
                 }
                 else if (!Item.options.Contains("basecode"))
                 {
@@ -225,8 +235,13 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 ConvertUnitCriteria baseUnitTypeConvt = null;
                 if (Item.quantity.HasValue && packMst != null)
                 {
-                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, skuMst.UnitType_ID.Value);
+                    //baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, skuMst.UnitType_ID.Value);
+                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value , StaticValue.UnitTypes.First(x => x.Code == Item.unitType).ID.Value);
                     baseQuantity = baseUnitTypeConvt.baseQty;
+                                        
+                        if(baseQuantity % 1 != 0)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ค่าที่ Convert ได้ไม่เป็นจำนวนเต็ม");
+
                 }
 
                 if (Item.baseStos.Count > 0)
@@ -259,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
-                    BaseQuantity = Item.baseQuantity,
+                    BaseQuantity = baseQuantity,//Item.baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.baseUnitType_ID : null,
 
                     OrderNo = Item.orderNo,

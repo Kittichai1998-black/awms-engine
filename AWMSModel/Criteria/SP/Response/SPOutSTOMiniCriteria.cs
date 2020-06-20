@@ -39,6 +39,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string refID;
         public string ref1;
         public string ref2;
+        public int IsHold;
         public int? skuTypeID;
     }
 }

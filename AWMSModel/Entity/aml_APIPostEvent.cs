@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class aml_APIPostBackEvent : BaseEntityID
+    public class aml_APIPostEvent : BaseEntityID
     {
         public string LogRefID;
         public string PostRefID;

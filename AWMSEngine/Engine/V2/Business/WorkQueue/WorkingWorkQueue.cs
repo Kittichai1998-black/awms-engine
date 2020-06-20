@@ -118,7 +118,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 docItems.ForEach(docItem =>
                 {
-                    if (docItem.Quantity == null)
+                    if (docItem.BaseQuantity == null)
                     {
                         stoList.ForEach(sto =>
                         {
@@ -131,9 +131,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else
                     {
-                        var qtyIssue = docItem.Quantity;//1500
+                        //var qtyIssue = docItem.Quantity;//1500
                         var baseqtyIssue = docItem.BaseQuantity;
-                        decimal? sumDiSTOQty = sumDisto.Sum(x => x.sumQty);
+                        //decimal? sumDiSTOQty = sumDisto.Sum(x => x.sumQty);
                         decimal? sumDiSTOBaseQty = sumDisto.Sum(x => x.sumBaseQty);
                         stoList.ForEach(sto =>
                         {
@@ -141,14 +141,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                             distos.ForEach(disto =>
                             {
-                                if (disto.Quantity == null)
+                                if (disto.BaseQuantity == null)
                                 {
-                                    var remainQty = qtyIssue - sumDiSTOQty;
+                                    //var remainQty = qtyIssue - sumDiSTOQty;
                                     var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
                                     //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
 
                                     //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
-                                    if (remainQty >= sto.qty) //1500 > 1000
+                                    if (remainBaseQty >= sto.qty) //1500 > 1000
                                     { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
                                         disto = UpdateDistoFull(sto, disto);
                                     }
@@ -161,8 +161,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
                                         var updSto = new StorageObjectCriteria();
                                         updSto = sto;
-                                        updSto.baseQty -= remainQty.Value;  //1000 - 500 = เหลือของ 500
-                                        updSto.qty -= remainBaseQty.Value;
+                                        updSto.baseQty -= remainBaseQty.Value;  //1000 - 500 = เหลือของ 500
+                                        //updSto.qty -= remainQty.Value;
 
                                         if (updSto.baseQty == 0)
                                         {
@@ -170,9 +170,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         }
                                         else
                                         {
-                                            disto.Quantity = remainQty.Value;
                                             disto.BaseQuantity = remainBaseQty.Value;
-                                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, remainQty.Value, remainBaseQty.Value, EntityStatus.INACTIVE, this.BuVO);
+                                            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, remainBaseQty.Value, updSto.baseUnitID);
+                                            disto.Quantity = qtyConvert.newQty;
+
+                                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
                                         }
                                     }
                                 }
@@ -189,8 +191,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private amt_DocumentItemStorageObject UpdateDistoFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
         {
-            disto.Quantity = sto.qty;
             disto.BaseQuantity = sto.baseQty;
+            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, sto.baseQty, sto.baseUnitID);
+            disto.Quantity = qtyConvert.newQty;
+
             ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
 
             return disto;

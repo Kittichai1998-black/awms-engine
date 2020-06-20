@@ -424,6 +424,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
                 var rmItem = mapstos.FirstOrDefault(x => x.code == reqVo.scanCode);
                 var qty = rmItem.qty -= reqVo.amount;
+                this.StaticValue.LoadPackUnitConvert();
                 if (qty > 0)
                 {
                     var baseUnit = this.StaticValue.ConvertToBaseUnitByPack(reqVo.scanCode, qty, rmItem.unitID);

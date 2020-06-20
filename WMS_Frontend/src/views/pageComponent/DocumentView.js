@@ -162,12 +162,15 @@ const DocumentView = props => {
 
         res.data.document.documentItems.forEach(row => {
           var sumQty = 0;
+          var sumBaseQty = 0;
           res.data.sou_bstos
             .filter(y => y.docItemID == row.ID)
             .forEach(y => {
               sumQty += y.distoQty;
+              sumBaseQty += y.distoBaseQty;
             });
           row._sumQtyDisto = sumQty;
+          row._sumQtyBaseDisto = sumBaseQty;
 
           row._balanceQty = row.Quantity - sumQty;
 
@@ -206,7 +209,16 @@ const DocumentView = props => {
             qryStr.locationcode === "undefined" ? null : qryStr.locationcode;
 
           dataTable.push({
-            ...row,
+            ...row, _baseqty:
+              typeDoc === "received"
+                ? row._sumQtyBaseDisto +
+                " / " +
+                (row.BaseQuantity === null ? " - " : row.BaseQuantity) : typeDoc === "issued"
+                  ? row._sumQtyBaseDisto +
+                  " / " +
+                  (row.BaseQuantity === null ? "-" : row.BaseQuantity)
+                  : null
+            ,
             _qty:
               typeDoc === "issued"
                 ? row._sumQtyDisto +
@@ -225,7 +237,9 @@ const DocumentView = props => {
                       " / " +
                       (row.Quantity === null ? " - " : row.Quantity)
                       : null
+
           });
+
         });
 
         //============================================================================
@@ -559,7 +573,7 @@ const DocumentView = props => {
       <br />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable columns={columns} pageSize={100} dataSource={data} />
+        <AmTable dataKey="ID" columns={columns} pageSize={100} dataSource={data} />
       ) : null}
 
       <br />
@@ -606,7 +620,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+                    <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
                   ) : null}
                 </Col>
               </Row>
@@ -623,7 +637,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+                    <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
                   ) : null}
                 </Col>
               </Row>
@@ -639,7 +653,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+          <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
@@ -650,7 +664,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+          <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
         ) : null
       ) : (
               ""

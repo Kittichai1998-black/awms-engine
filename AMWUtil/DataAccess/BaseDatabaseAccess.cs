@@ -55,7 +55,9 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    res = Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = tran.Connection.Query<T>(spName, parameter, tran, true, 60, commandType);
+                    tran.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
@@ -84,7 +86,9 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = tran.Connection.ExecuteScalar<T>(cmdTxt, parameter, tran, 60, commandType);
+                    tran.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
@@ -113,7 +117,9 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = tran.Connection.Execute(cmdTxt, parameter, tran, 60, commandType);
+                    tran.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
@@ -141,11 +147,11 @@ namespace AMWUtil.DataAccess
             conn.Open();
             return conn;
         }
-        public SqlTransaction CreateTransaction(string transName = null)
+        public SqlTransaction CreateTransaction(string transName = null, IsolationLevel isolationLevel = IsolationLevel.Snapshot)
         {
             var conn = CreateConnection();
             conn.Open();
-            var trans =  conn.BeginTransaction(IsolationLevel.ReadCommitted,transName);
+            var trans =  conn.BeginTransaction(isolationLevel, transName);
             return trans;
         }
     }
