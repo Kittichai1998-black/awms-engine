@@ -56,10 +56,9 @@ namespace AMWUtil.DataAccess
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     Connection.Open();
-                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = tran.Connection.Query<T>(spName, parameter, tran, true, 60, commandType);
-                    tran.Commit();
-                    Connection.Close();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+                    
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
@@ -89,10 +88,9 @@ namespace AMWUtil.DataAccess
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     Connection.Open();
-                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = tran.Connection.ExecuteScalar<T>(cmdTxt, parameter, tran, 60, commandType);
-                    tran.Commit();
-                    Connection.Close();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+                    
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
@@ -122,10 +120,8 @@ namespace AMWUtil.DataAccess
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     Connection.Open();
-                    var tran = Connection.BeginTransaction(IsolationLevel.Snapshot);
-                    res = tran.Connection.Execute(cmdTxt, parameter, tran, 60, commandType);
-                    tran.Commit();
-                    Connection.Close();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
                 }
             }
             //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
