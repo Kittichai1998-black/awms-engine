@@ -197,10 +197,10 @@ const AmMasterData = (props) => {
             Axios.put(url, updJson).then(res => {
                 if(res.data._result.status === 1){
                     setQueryObj({ ...queryObj })
-                    dialogState({type:"success", content:"Success", state:true})
+                    setDialogState({type:"success", content:"Success", state:true})
                 }
                 else{
-                    dialogState({type:"error", content:data._result.message, state:true})
+                    setDialogState({type:"error", content:data._result.message, state:true})
                 }
             });
         }
