@@ -4,6 +4,7 @@ using AWMSModel.Constant.StringConst;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using Z.Expressions;
@@ -77,8 +78,11 @@ namespace AWMSModel.Criteria
 
         public void SqlTransaction_Begin()
         {
-            var trans = this.SqlConnection.BeginTransaction(this.Logger.LogRefID);
-            this.SqlTransaction = trans;
+            if(this.SqlTransaction == null)
+            {
+                var trans = this.SqlConnection.BeginTransaction(IsolationLevel.Snapshot, this.Logger.LogRefID);
+                this.SqlTransaction = trans;
+            }
         }
         public void SqlTransaction_Commit()
         {

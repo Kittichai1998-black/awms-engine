@@ -34,7 +34,7 @@ namespace AMWUtil.DataAccess
         }
 
         protected IEnumerable<T> Query<T>(
-            string spName,
+            string cmdTxt,
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
@@ -42,20 +42,23 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogDebug("[QUERY] " + spName + " | " + DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[QUERY] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
-                res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+                res = transaction.Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
             }
             else if(conn != null)
             {
-                res = conn.Query<T>(spName, parameter, null, true, 60, commandType);
+                res = conn.Query<T>(cmdTxt, parameter, null, true, 60, commandType);
             }
             else
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    res = Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+                    Connection.Open();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
+                    res = Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
+                    transaction.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
@@ -84,7 +87,11 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
+                    Connection.Open();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
                     res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+                    transaction.Commit();
+
                 }
             }
             //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
@@ -113,7 +120,10 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
+                    Connection.Open();
+                    transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
                     res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+                    transaction.Commit();
                 }
             }
             //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
@@ -141,11 +151,11 @@ namespace AMWUtil.DataAccess
             conn.Open();
             return conn;
         }
-        public SqlTransaction CreateTransaction(string transName = null)
+        public SqlTransaction CreateTransaction(string transName = null, IsolationLevel isolationLevel = IsolationLevel.Snapshot)
         {
             var conn = CreateConnection();
             conn.Open();
-            var trans =  conn.BeginTransaction(IsolationLevel.ReadCommitted,transName);
+            var trans =  conn.BeginTransaction(isolationLevel, transName);
             return trans;
         }
     }
