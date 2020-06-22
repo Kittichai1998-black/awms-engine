@@ -25,45 +25,51 @@ const Topbar = React.memo((propsTopbar) => {
         </>
     }
     else{
-        return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
-        <Grid item xs={6}>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
-        </Grid>
-        <Grid item xs={6} style={{textAlign:"right"}}>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>
-                {propsTopbar.pagination ? <AmPagination
-                    totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
-                    pageSize={propsTopbar.pageSize}
-                    resetPage={propsTopbar.resetPage}
-                    onPageChange={page => {
-                        if (propsTopbar.onPageChange !== undefined) {
-                            propsTopbar.onPageChange(page + 1)
-                        }
-                        propsTopbar.page(page + 1)
-                    }}
-                /> : null}
-            </div>
-        </Grid>
-    </Grid>
+        if(propsTopbar.customTopLeftControl && propsTopbar.customTopRightControl){
+            return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
+                <Grid item xs={6}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
+                </Grid>
+                <Grid item xs={6} style={{textAlign:"right"}}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>
+                        {propsTopbar.pagination ? <AmPagination
+                            totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                            pageSize={propsTopbar.pageSize}
+                            resetPage={propsTopbar.resetPage}
+                            onPageChange={page => {
+                                if (propsTopbar.onPageChange !== undefined) {
+                                    propsTopbar.onPageChange(page + 1)
+                                }
+                                propsTopbar.page(page + 1)
+                            }}
+                        /> : null}
+                    </div>
+                </Grid>
+            </Grid>
+        }
     }
 });
 
-const Bottombar = React.memo((propsTopbar) => {
-    if(propsTopbar.customTopControl){
+const Bottombar = React.memo((propsBtmbar) => {
+    if(propsBtmbar.customBtmControl){
         return <>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customAllTopControl}</div>
+            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customAllBtmControl}</div>
         </>
     }
     else{
-        return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
-        <Grid item xs={6}>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
-        </Grid>
-        <Grid item xs={6} style={{textAlign:"right"}}>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
-        </Grid>
-    </Grid>
+        if(propsBtmbar.customBtmLeftControl && propsBtmbar.customBtmRightControl){
+            return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
+                <Grid item xs={6}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmLeftControl ? propsBtmbar.customBtmLeftControl : null}</div>
+                </Grid>
+                <Grid item xs={6} style={{textAlign:"right"}}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmRightControl ? propsBtmbar.customBtmRightControl : null}</div>
+                </Grid>
+            </Grid>
+        }
+        else
+            return null;
     }
 });
 
@@ -341,5 +347,5 @@ AmTable.defaultProps = {
     height: 500,
     pageSize: 25,
     clearSelectionChangePage: true,
-    width: "100%"
+    width: "100%",
 }

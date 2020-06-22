@@ -266,7 +266,7 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         if (columnType.type !== undefined) {
           if (columnType.type === "datetime") {
             return (
-              <div>
+              <div style={{marginLeft:"2px"}}>
                 {dataRow !== undefined && Moment(dataRow).isValid()
                   ? Moment(dataRow).format(
                       columnType.dateFormat
@@ -278,11 +278,11 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
             );
           }
           else if (columnType.type === "number"){
-            return <div style={{ width: "100%", textAlign: "right" }}>{dataRow}</div>;
+            return <div style={{ width: "100%", paddingRight:"2px", textAlign: "right" }}>{dataRow}</div>;
           }
         }
         else{
-          return dataRow;
+          return <div style={{marginLeft:"2px"}}>{dataRow}</div>;
         }
     };
 
