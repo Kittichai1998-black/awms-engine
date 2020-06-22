@@ -164,6 +164,7 @@ const AmTableSetup = (props) => {
         <AmTableComponent
             dataSource={dataSource}
             width={props.width}
+            height={props.height}
             columns={props.columns}
             cellStyle={props.cellStyle}
             dataKey={props.dataKey}

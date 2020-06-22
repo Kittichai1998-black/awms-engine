@@ -18,13 +18,12 @@ const TableContainer = styled.div`
     position:relative;
     width:${props => `${typeof props.width === "number" ? props.width + 'px' : props.width}`}
     overflow:auto;
-    max-height:${props => `${props.height}px`}
+    max-height:${props => `${typeof props.height === "number" ? props.height + 'px' : props.height}`}
     padding-right:1px;
     &&::-webkit-scrollbar{
         width: 0.5em;
         height:0.5em;
     }
-    height:100%;
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
