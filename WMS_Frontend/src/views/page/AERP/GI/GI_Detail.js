@@ -33,8 +33,10 @@ const GI_Detail = props => {
     { width: 130, accessor: "advice", Header: "Advice" },
     { width: 130, accessor: "serial", Header: "Serial" },
     { width: 130, accessor: "Lot", Header: "Lot" },
+    { width: 120, accessor: "_baseqty", Header: "BaseQty" },
+    { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
     { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
@@ -42,7 +44,7 @@ const GI_Detail = props => {
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No." },
+    { width: 125, accessor: "Lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -89,6 +91,7 @@ const GI_Detail = props => {
       buttonBack={true}
       linkBack={"/issue/search"}
       history={props.history}
+      // usePickingOnFloor={true}
     />
   );
 };
