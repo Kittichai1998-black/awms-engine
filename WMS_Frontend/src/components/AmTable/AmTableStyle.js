@@ -24,6 +24,7 @@ const TableContainer = styled.div`
         width: 0.5em;
         height:0.5em;
     }
+    height:100%;
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
