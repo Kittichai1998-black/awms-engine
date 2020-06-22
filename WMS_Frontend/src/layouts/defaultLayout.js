@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect,useLayoutEffect } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
@@ -212,12 +212,30 @@ const Default = props => {
 
     const [menuVisible, setMenuVisible] = useState({ visibility: "visible" });
 
+    const refContainer = useRef();
 
+    function useWindowSize(ref) {
+        const [size, setSize] = useState([0, 0]);
+        useLayoutEffect(() => {
+          function updateSize() {
+              if(ref !== undefined)
+                setSize([ref.current.offsetWidth, window.innerHeight-120]);
+          }
+          window.addEventListener('resize', updateSize);
+          updateSize();
+          return () => window.removeEventListener('resize', updateSize);
+        }, []);
+        return size;
+    }
+
+    const size = useWindowSize(refContainer)
 
     // const openMenuHeader = Boolean(anchorEl);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+
+    console.log(size)
 
     const handleDrawerClose = () => {
         setOpen(false);
@@ -690,7 +708,7 @@ const Default = props => {
                             {NavicateBarN()}
                         </Breadcrumbs>
                     </Paper>
-
+                    <div ref={refContainer} style={{width:"100%", height:size[1] }}>
                     <Switch>
 
                         {routeLink.map((x, idx) => (
@@ -706,6 +724,7 @@ const Default = props => {
                         ))}
                         <Redirect to="/404" />
                     </Switch>
+                    </div>
                 </main>
             </div>
         </MuiThemeProvider>
