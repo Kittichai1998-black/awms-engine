@@ -234,7 +234,7 @@ const AmTableComponent = (props) => {
     const tableSize = useWindowSize(containerRef)
     const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page)
 
-    return <TableContainer width={props.width} ref={containerRef} height={props.height}>
+    return <TableContainer width={props.width} ref={containerRef}>
           <Table style={props.tableStyle}>
             {GenerateHeader({columns, props, tableSize})}
             {GenerateRow({columns, props, dataSource})}
