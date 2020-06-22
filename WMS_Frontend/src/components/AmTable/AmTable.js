@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AmTableComponent from "./AmTableComponent";
 import { AmTableProvider, AmTableContext } from "./AmTableContext";
 import PropTypes from "prop-types"
-import AmPagination from "../table/AmPagination";
+import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
 
 const Topbar = React.memo((propsTopbar) => {
@@ -104,22 +104,36 @@ const AmTable = (props) => {
             customBtmControl={props.customBtmControl}
             customBtmLeftControl={props.customBtmLeftControl}
             customBtmRightControl={props.customBtmRightControl}
+            sortable={props.sortable}
+            sortData={props.sortData}
         />
     </AmTableProvider>
 }
 
 const AmTableSetup = (props) => {
-    const { pagination, filter, selection } = useContext(AmTableContext);
+    const { pagination, filter, selection, sort } = useContext(AmTableContext);
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
 
-    const { selectionData } = props;
+    const { selectionData, sortData, sortable } = props;
 
     useEffect(() => {
         if (props.pageSize)
             pagination.setPageSize(props.pageSize)
+        else{
+            pagination.setPageSize(props.dataSource.length)
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.pageSize])
+    }, [props.pageSize, props.dataSource])
+
+    useEffect(() => {
+        console.log(sortData !== undefined && sortable)
+        console.log(sortData !== undefined)
+        console.log(sortable)
+        if (sortData !== undefined && sortable)
+            sortData(sort.sortValue)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sort.sortValue,  sortData])
 
     useEffect(() => {
         if (props.filterable)
@@ -178,6 +192,7 @@ const AmTableSetup = (props) => {
             minRow={props.minRow}
             page={page}
             clearSelectionChangePage={props.clearSelectionChangePage}
+            sortable={props.sortable}
         />
         <div id="btmbar">
             {/* <div id="pagination">
@@ -341,6 +356,17 @@ AmTable.propTypes = {
      ** value? : "100%" | 100
     */
     customBtmRightControl:PropTypes.element,
+    /**
+     * ตั้งค่าการเปิดปิดการ sort ทั้งตาราง
+     ** value? : true | false
+    */
+    sortable:PropTypes.bool,
+    /**
+     * return ข้อมูลที่ถูกเรียง
+     * value? : {"id": row.accessor,"sortDirection": SortDirection.ASC}
+     ** value? : (orderBy) => {}
+    */
+   sortData:PropTypes.func,
 }
 
 AmTable.defaultProps = {
@@ -349,4 +375,6 @@ AmTable.defaultProps = {
     pageSize: 25,
     clearSelectionChangePage: true,
     width: "100%",
+    sortable: false,
+    filterable:false
 }

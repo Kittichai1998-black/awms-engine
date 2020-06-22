@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -7,8 +7,20 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
-export default props => {
+const theme = createMuiTheme({
+  overrides: {
+    MuiTablePagination: {
+      // Name of the rule
+      toolbar: {
+        minHeight:0,
+      },
+    },
+  },
+});
+
+const Pageination = props => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -20,26 +32,28 @@ export default props => {
   }, [props.resetPage]);
 
   return (
-    <TablePagination
-      style={{ marginRight: '20px', float:"right" }}
-      colSpan={3}
-      rowsPerPageOptions={[]}
-      component='div'
-      count={props.totalSize ? props.totalSize : 0}
-      rowsPerPage={props.pageSize}
-      page={page}
-      backIconButtonProps={{
-        'aria-label': 'Previous Page'
-      }}
-      nextIconButtonProps={{
-        'aria-label': 'Next Page'
-      }}
-      SelectProps={{ displayEmpty: 'false' }}
-      labelRowsPerPage={null}
-      onChangePage={(e, page) => setPage(page)}
-      onChangeRowsPerPage={(e, page) => setPage(page)}
-      ActionsComponent={TablePaginationActionsWrapped}
-    />
+    <ThemeProvider theme={theme}>
+      <TablePagination
+        style={{ marginRight: '0'}}
+        colSpan={3}
+        rowsPerPageOptions={[]}
+        component='div'
+        count={props.totalSize ? props.totalSize : 0}
+        rowsPerPage={props.pageSize}
+        page={page}
+        backIconButtonProps={{
+          'aria-label': 'Previous Page'
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'Next Page'
+        }}
+        SelectProps={{ displayEmpty: 'false' }}
+        labelRowsPerPage={null}
+        onChangePage={(e, page) => setPage(page)}
+        onChangeRowsPerPage={(e, page) => setPage(page)}
+        ActionsComponent={TablePaginationActionsWrapped}
+      />
+    </ThemeProvider>
   );
 };
 
@@ -48,7 +62,7 @@ const actionsStyles = theme => ({
     flexShrink: 0,
     color: theme.palette.text.secondary,
     marginLeft: theme.spacing(2.5),
-  }
+  },
 });
 
 const TablePaginationActions = props => {
@@ -79,6 +93,7 @@ const TablePaginationActions = props => {
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
         aria-label='First Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
@@ -86,6 +101,7 @@ const TablePaginationActions = props => {
         onClick={handleBackButtonClick}
         disabled={page === 0}
         aria-label='Previous Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? (
           <KeyboardArrowRight />
@@ -97,6 +113,7 @@ const TablePaginationActions = props => {
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='Next Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? (
           <KeyboardArrowLeft />
@@ -108,6 +125,7 @@ const TablePaginationActions = props => {
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label='Last Page'
+        style={{padding:0}}
       >
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
@@ -128,3 +146,5 @@ TablePaginationActions.propTypes = {
 const TablePaginationActionsWrapped = withStyles(actionsStyles, {
   withTheme: true
 })(TablePaginationActions);
+
+export default Pageination;

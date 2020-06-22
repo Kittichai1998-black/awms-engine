@@ -346,43 +346,34 @@ const GenerateHeader = ({columns,props, tableSize}) => {
 
     const SortHeader = propsChild => {
       const { row, children } = propsChild;
+      const {sortValue, setSort} = sort;
       if (props.sortable) {
         if (row.sortable === undefined || row.sortable === true) {
           let orderBy;
-          if (sort !== undefined && sort !== null && sort !== {}) {
-            if (row.accessor === sort.id) {
-              if (sort.sortDirection === SortDirection.DESC)
-                orderBy = {
-                  id: row.accessor,
-                  sortDirection: SortDirection.ASC
-                };
-              else
-                orderBy = {
-                  id: row.accessor,
-                  sortDirection: SortDirection.DESC
-                };
-            }
-          }
-
           return (
             <div
               style={{ width: "100%" }}
               onClick={() => {
-                if (sort === undefined || sort === null || sort === {}) {
+                if (sortValue === undefined || sortValue === null || IsEmptyObject(sortValue)) {
                   orderBy = {
                     id: row.accessor,
                     sortDirection: SortDirection.DESC
                   };
                 }
-                if (sort !== undefined && sort !== null && sort !== {}) {
-                  if (row.accessor !== sort.id) {
+                if (sortValue !== undefined && sortValue !== null && !IsEmptyObject(sortValue)) {
+                  if (row.accessor === sortValue.id) {
+                    orderBy = {
+                      id: row.accessor,
+                      sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC
+                    };
+                  }else{
                     orderBy = {
                       id: row.accessor,
                       sortDirection: SortDirection.DESC
                     };
                   }
                 }
-                sort.setSort(orderBy);
+                setSort(orderBy);
               }}
             >
               {children}
@@ -447,14 +438,14 @@ const GenerateHeader = ({columns,props, tableSize}) => {
             width={col.width === undefined ? freeWidth : col.width}
             fixWidth={col.fixWidth}
           >
-            {col.Header === undefined ? (
+            {props.sortable ? (col.Header === undefined ? (
               <SortHeader row={col}></SortHeader>
             ) : 
             typeof col.Header === "string"  ? (
               <SortHeader row={col}>{col.Header}</SortHeader>
             ) : (
               <SortHeader row={col}>{col.Header(col)}</SortHeader>
-            )}
+            )) : null}
             {props.filterable ? (
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
