@@ -29,7 +29,12 @@ import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
 import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
+import AmPickingOnFloor from '../../components/AmPickingOnFloor';
 import AmInput from '../../components/AmInput'
+import IconButton from "@material-ui/core/IconButton";
+import AmToolTip from "../../components/AmToolTip";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 const Axios = new apicall();
 // import Axios from "axios";
@@ -137,8 +142,8 @@ const DocumentView = props => {
 
   const getData = () => {
     //========================================================================================================
-      console.log(props.typeDocNo);
-      console.log(typeDoc)
+    console.log(props.typeDocNo);
+    console.log(typeDoc)
     // console.log(props);
 
     Axios.get(
@@ -338,16 +343,33 @@ const DocumentView = props => {
     if (dataHeader && dataHeader.EventStatus === 10 && props.useAddPalletMapSTO) {
       var newSou = [...props.columnsDetailSOU,
       {
-        width: 100, Header: "Edit Qty", style: { textAlign: 'center' },
-        Cell: e => <AmButton style={{ width: "70px" }} styleType="info"
-          onClick={() => { handleClickOpenDialogEditQty(e.original) }}>Edit</AmButton>
-      },
-      {
-        width: 100, Header: "Delete", style: { textAlign: 'center' },
-        Cell: e => <AmButton style={{ width: "70px" }} styleType="delete" onClick={
-          () => {
-            onHandleDelDiSTO(e.original);
-          }}>Remove</AmButton>
+        width: 100, Header: "Edit/Delete", style: { textAlign: 'center' },
+        Cell: e =>
+          <div style={{ display: "inline-flex" }}>
+            <AmToolTip title={"Edit Qty"} placement={"top"}><IconButton
+              size="small"
+              aria-label="info"
+              style={{ marginLeft: "3px" }}
+              onClick={() => { handleClickOpenDialogEditQty(e.original) }}
+            >
+              <EditIcon
+                fontSize="small"
+                style={{ color: "#f39c12" }}
+              />
+            </IconButton>
+            </AmToolTip>
+            <AmToolTip title={"Delete"} placement={"top"}>
+              <IconButton
+                size="small"
+                aria-label="info"
+                onClick={() => { onHandleDelDiSTO(e.original) }}
+                style={{ marginLeft: "3px" }}>
+                <DeleteIcon
+                  fontSize="small"
+                  style={{ color: "#e74c3c" }} />
+              </IconButton>
+            </AmToolTip>
+          </div >
       }]
       setColumnsDetailSOU(newSou)
     } else {
@@ -443,6 +465,18 @@ const DocumentView = props => {
       />
     }
     else {
+      return null;
+    }
+  }
+  const CreateBtnPicking = () => {
+    if (eventStatus === 11) {
+      return <AmPickingOnFloor
+        dataDocument={dataDoc}
+        dataItemsSource={dataDetailSOU}
+        columnsItemsSource={columnsDetailSOU}
+        onSuccess={(data) => ReturnMapping(data)}
+      />
+    } else {
       return null;
     }
   }
@@ -581,6 +615,9 @@ const DocumentView = props => {
       {props.useAddPalletMapSTO ?
         CreateBtnAddPallet()
         : null}
+      {props.usePickingOnFloor ?
+        CreateBtnPicking()
+        : null}
       {props.openSOU === true && props.openDES === true ? (
         <div>
           <Nav tabs>
@@ -689,7 +726,9 @@ const DocumentView = props => {
 };
 DocumentView.propTypes = {
   openSOU: PropType.bool.isRequired,
-  openDES: PropType.bool.isRequired
+  openDES: PropType.bool.isRequired,
+  usePickingOnFloor: PropType.bool,
+  useAddPalletMapSTO: PropType.bool
 };
 export default withStyles(styles)(DocumentView);
 // export default DocumentView;

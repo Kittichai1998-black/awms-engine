@@ -88,6 +88,7 @@ const GI_Detail = props => {
       buttonBack={true}
       linkBack={"/issue/search"}
       history={props.history}
+      // usePickingOnFloor={true}
     />
   );
 };
