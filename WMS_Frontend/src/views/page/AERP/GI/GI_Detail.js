@@ -14,7 +14,7 @@ const GI_Detail = props => {
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
-      { label: "Doc. ProcessType", values: "DocumentProcessTypeName" },
+      { label: "Movement Type", values: "MovementName" },
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
@@ -30,13 +30,9 @@ const GI_Detail = props => {
   const columns = [
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
-    { width: 130, accessor: "advice", Header: "Advice" },
-    { width: 130, accessor: "serial", Header: "Serial" },
-    { width: 130, accessor: "Lot", Header: "Lot" },
-    { width: 120, accessor: "_baseqty", Header: "BaseQty" },
-    { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
+    { width: 130, accessor: "OrderNo", Header: "Order No." },
     { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "UnitType_Code", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
@@ -44,7 +40,7 @@ const GI_Detail = props => {
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
-    { width: 125, accessor: "Lot", Header: "Lot" },
+    { width: 125, accessor: "orderNo", Header: "Order No." },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -55,11 +51,12 @@ const GI_Detail = props => {
     // { width: 150, accessor: "packCode", Header: "Pack Code" },
     // { accessor: "packName", Header: "Pack Name" },
     { Header: "Item Code", accessor: "SKUItems" },
-    { width: 125, accessor: "Lot", Header: "Lot" },
+    { width: 125, accessor: "orderNo", Header: "Order No." },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
-  const optionDocItems = [{ optionName: "advice" }, { optionName: "serial" }];
+
+  const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
   const getStatusGR = value => {
     if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
@@ -79,7 +76,7 @@ const GI_Detail = props => {
   return (
     <DocView
       openSOU={true}
-      openDES={false}
+      openDES={true}
       optionDocItems={optionDocItems}
       columnsDetailSOU={columnsDetailSOU}
       columnsDetailDES={columnsDetailDES}
@@ -91,7 +88,7 @@ const GI_Detail = props => {
       buttonBack={true}
       linkBack={"/issue/search"}
       history={props.history}
-      // usePickingOnFloor={true}
+      usePickingOnFloor={true}
     />
   );
 };

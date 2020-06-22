@@ -447,7 +447,7 @@ const DocumentView = props => {
     }
   }
   const CreateBtnPicking = () => {
-    if (eventStatus === 11) {
+    if (eventStatus === 32) {
       return <AmPickingOnFloor
         dataDocument={dataDoc}
         dataItemsSource={dataDetailSOU}

@@ -142,7 +142,7 @@ const AmTableSetup = (props) => {
         }
     }, [page, props.dataSource, props.onPageChange])
 
-    return <div style={{height:props.height}}>
+    return <div style={{maxHeight:props.height}}>
         <Topbar 
             customAllTopControl={props.customAllTopControl} 
             customTopLeftControl={props.customTopLeftControl} 
