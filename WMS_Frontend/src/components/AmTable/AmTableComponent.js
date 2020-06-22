@@ -11,6 +11,8 @@ import {Arrow,
     TableHeaderStickyColumnsCell,
     TableCellFooter } from "./AmTableStyle";
 import {AmTableContext} from "./AmTableContext";
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 //import Input from "@material-ui/core/Input";
 import AmInput from "../AmInput";
 //import Checkbox from "@material-ui/core/Checkbox";
@@ -45,7 +47,7 @@ const SortDirection = {
   //   },
   // })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
     
@@ -108,6 +110,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                                   selection.set({data:ele.original, uniq:ele.original[dataKey]});
                               }
                           }}
+                          disabled={selectionCustom ? selectionCustom(ele.data) : false}
                       />
                       );
                   }
@@ -148,8 +151,8 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                           } else {
                             selection.remove({uniq:dataKey, data:ele.original[dataKey]});
                           }
-                        }
-                      }
+                        }}
+                        disabled={selectionCustom ? selectionCustom(ele.data) : false}
                     />
                     );
                 }
@@ -162,7 +165,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         }
         setColumns([...getColumns]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [Columns, selection.selectionValue, selection.selectAllState, page]);
+      }, [Columns, selection.selectionValue, selection.selectAllState, page,]);
 
     return columns
 }
@@ -232,7 +235,7 @@ const AmTableComponent = (props) => {
     const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
-    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page)
+    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page, props.selectionCustom)
 
     return <TableContainer width={props.width} height={props.height} ref={containerRef}>
           <Table style={props.tableStyle}>
@@ -380,10 +383,12 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               {orderBy === null || orderBy === undefined ? null : orderBy.sortDirection === SortDirection.DESC ? 
               (
                 <span>
+                  <ArrowDropUpIcon style={{transform: "rotate(-135deg)",WebkitTransform: "rotate(-135deg)"}}/>
                   <Arrow style={{transform: "rotate(-135deg)",WebkitTransform: "rotate(-135deg)"}}/>
                 </span>
               ) : (
                 <span>
+                  <ArrowDropDownIcon style={{transform: "rotate(45deg)",WebkitTransform: "rotate(45deg)"}}/>
                   <Arrow style={{transform: "rotate(45deg)",WebkitTransform: "rotate(45deg)"}}/>
                 </span>
               )}
