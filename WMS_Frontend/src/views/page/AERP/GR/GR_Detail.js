@@ -31,7 +31,7 @@ const GR_Detail = props => {
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "advice", Header: "Advice" },
-    { width: 130, accessor: "serial", Header: "Serial" },
+    { width: 130, accessor: "RefID", Header: "Serial" },
     { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_baseqty", Header: "BaseQty" },
     { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
