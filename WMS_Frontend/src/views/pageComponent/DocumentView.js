@@ -192,21 +192,6 @@ const DocumentView = props => {
             });
           }
 
-          if (window.project === "AAI") {
-            row.lenum = qryStr.lenum === "undefined" ? null : qryStr.lenum;
-            row.posnr = qryStr.rosnr === "undefined" ? null : qryStr.posnr;
-            row.matnr = qryStr.matnr === "undefined" ? null : qryStr.matnr;
-            row.charg = qryStr.charg === "undefined" ? null : qryStr.charg;
-            row.lgtyp = qryStr.lgtyp === "undefined" ? null : qryStr.lgtyp;
-            row.lgbtr = qryStr.lgbtr === "undefined" ? null : qryStr.lgbtr;
-            row.lgpla = qryStr.lgpla === "undefined" ? null : qryStr.lgpla;
-            row.bestq_ur =
-              qryStr.bestq_ur === "undefined" ? null : qryStr.bestq_ur;
-            row.bastq_qi =
-              qryStr.bastq_qi === "undefined" ? null : qryStr.bastq_qi;
-            row.bastq_blk =
-              qryStr.bastq_blk === "undefined" ? null : qryStr.bastq_blk;
-          }
 
           row.palletcode =
             qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
@@ -266,13 +251,6 @@ const DocumentView = props => {
                     ? null
                     : qryStr[x.optionName];
               });
-            }
-
-            if (window.project === "AAI") {
-              rowDetail.tanum =
-                qryStr.tanum === "undefined" ? null : qryStr.tanum;
-              rowDetail.btanr =
-                qryStr.btanr === "undefined" ? null : qryStr.btanr;
             }
 
             dataTableDetailSOU.push({

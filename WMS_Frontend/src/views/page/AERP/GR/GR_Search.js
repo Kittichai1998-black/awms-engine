@@ -170,12 +170,13 @@ const DocumentSearchSTGT = props => {
   const iniCols = [
     { Header: "", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-    { Header: "Lot", accessor: "Lot", width: 150 },
+    { Header: "Wh Order", accessor: "Ref1", width: 120 },
+    //{ Header: "Lot", accessor: "Lot", width: 100 },
     { Header: "Doc.ProcessType", accessor: "DocumentProcessTypeName", width: 200 },
     { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
     { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
     // {   Header: "Sou.Customer",   accessor: "SouCustomerName",   width: 150 },
-    { Header: "Remark", accessor: "Remark", width: 150 },
+    //{ Header: "Remark", accessor: "Remark", width: 150 },
     { Header: "Doc. Date", accessor: "DocumentDate", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY" },
     { Header: "Action Time", accessor: "ActionTime", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY HH:mm" }, { Header: "Create", accessor: "Created", width: 200 },
     { Header: "Modify Time", accessor: "LastUpdate", width: 200 }
@@ -184,9 +185,10 @@ const DocumentSearchSTGT = props => {
   const search = [
     { label: "Sou. Warehouse", field: "SouWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
     { label: "Des. Warehouse", field: "DesWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
+    { label: "Wh Order", field: "Ref1", width: 120, searchType: "input" },
     // {   label: "Sou.Customer",   field: "SouCustomerName",   searchType: "dropdown",   dropdownData: dataCustomer,   fieldDataKey: "Name",   fieldLabel: "Name" },
-    { label: "Lot", field: "Lot", searchType: "input" },
-    { label: "Remark", field: "Remark", searchType: "input" },
+    //{ label: "Lot", field: "Lot", searchType: "input" },
+    //{ label: "Remark", field: "Remark", searchType: "input" },
     { label: "Doc. Date From", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateFrom" },
     { label: "Doc. Date To", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateTo" }
   ];
@@ -241,11 +243,11 @@ const DocumentSearchSTGT = props => {
         expensionSearch={search}
         docTypeCode="1001"
         buttonClose={true}
-        buttonReject={true}
+        buttonReject={false}
         dataReject={dataReject}
         apiReject={"/v2/RejectGRDocAPI"}
         //apiWorking={""}
-        apiClose={"/v2/CloseDocAPI"}
+        apiClose={"/v2/ClosingDocumentAPI"}
       />
     </div>
   );
