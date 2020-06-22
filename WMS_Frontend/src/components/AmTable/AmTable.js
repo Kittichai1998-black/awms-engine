@@ -120,11 +120,8 @@ const AmTableSetup = (props) => {
     useEffect(() => {
         if (props.pageSize)
             pagination.setPageSize(props.pageSize)
-        else{
-            pagination.setPageSize(props.dataSource.length)
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.pageSize, props.dataSource])
+    }, [props.pageSize])
 
     useEffect(() => {
         console.log(sortData !== undefined && sortable)

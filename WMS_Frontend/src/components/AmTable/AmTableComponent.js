@@ -438,14 +438,14 @@ const GenerateHeader = ({columns,props, tableSize}) => {
             width={col.width === undefined ? freeWidth : col.width}
             fixWidth={col.fixWidth}
           >
-            {props.sortable ? (col.Header === undefined ? (
+            {col.Header === undefined ? (
               <SortHeader row={col}></SortHeader>
             ) : 
             typeof col.Header === "string"  ? (
               <SortHeader row={col}>{col.Header}</SortHeader>
             ) : (
               <SortHeader row={col}>{col.Header(col)}</SortHeader>
-            )) : null}
+            )}
             {props.filterable ? (
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
