@@ -255,11 +255,11 @@ const DocumentSearchSTGT = props => {
         expensionSearch={search}
         docTypeCode="1002"
         buttonClose={true}
-        buttonReject={true}
+        buttonReject={false}
         dataReject={dataReject}
-        apiReject={"/v2/RejectGIDocAPI"}
+        //apiReject={"/v2/RejectGIDocAPI"}
         //apiWorking={""}
-        apiClose={"/v2/CloseDocAPI"}
+        apiClose={"/v2/ClosingDocumentAPI"}
       />
     </div>
   );
