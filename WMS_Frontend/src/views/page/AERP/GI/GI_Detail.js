@@ -14,7 +14,7 @@ const GI_Detail = props => {
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
-      { label: "Movement Type", values: "MovementName" },
+      { label: "Doc. ProcessType", values: "DocumentProcessTypeName" },
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
@@ -30,7 +30,9 @@ const GI_Detail = props => {
   const columns = [
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
-    { width: 130, accessor: "OrderNo", Header: "Order No." },
+    { width: 130, accessor: "advice", Header: "Advice" },
+    { width: 130, accessor: "serial", Header: "Serial" },
+    { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -51,12 +53,11 @@ const GI_Detail = props => {
     // { width: 150, accessor: "packCode", Header: "Pack Code" },
     // { accessor: "packName", Header: "Pack Name" },
     { Header: "Item Code", accessor: "SKUItems" },
-    { width: 125, accessor: "orderNo", Header: "Order No." },
+    { width: 125, accessor: "Lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
-
-  const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
+  const optionDocItems = [{ optionName: "advice" }, { optionName: "serial" }];
 
   const getStatusGR = value => {
     if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
@@ -76,7 +77,7 @@ const GI_Detail = props => {
   return (
     <DocView
       openSOU={true}
-      openDES={true}
+      openDES={false}
       optionDocItems={optionDocItems}
       columnsDetailSOU={columnsDetailSOU}
       columnsDetailDES={columnsDetailDES}
