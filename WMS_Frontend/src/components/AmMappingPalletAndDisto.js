@@ -29,6 +29,7 @@ import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 import { useTranslation } from 'react-i18next'
 import ToListTree from './function/ToListTree';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import _ from "lodash";
 const Axios = new apicall();
 
@@ -64,6 +65,30 @@ const InputDiv = styled.div`
         margin: 0;
     }
 `;
+
+function QRIcon(props) {
+    return (
+        <SvgIcon>
+            <path
+                d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
+            />
+        </SvgIcon>
+    );
+}
+const BtnReceive = withStyles(theme => ({
+
+}))(props => {
+    const { classes, onHandleClick, ...other } = props;
+    return (
+        <>
+            <AmButton className="float-right" styleType="confirm"
+                startIcon={<QRIcon />}
+                onClick={onHandleClick}>
+                {'Receive'}
+            </AmButton>
+        </>
+    );
+});
 const DialogTitle = withStyles(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -201,7 +226,8 @@ const BtnAddPallet = (props) => {
     const columns = [
         ...columnsDocItems,
         {
-            width: 160, Header: "จำนวนที่ต้องการรับเข้า", Cell: e =>
+            width: 160, Header: "จำนวนที่ต้องการรับเข้า",
+            Cell: e =>
                 genInputQty(e.original)
         },
 
@@ -729,7 +755,7 @@ const BtnAddPallet = (props) => {
         <AmAux>
             {stateDialog ? showDialog ? showDialog : null : null}
 
-            <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Receive"}</AmButton>
+            <BtnReceive onHandleClick={() => setOpen(true)} />
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
@@ -768,15 +794,15 @@ const BtnAddPallet = (props) => {
                         getSelection={data => setDataSelect(data)}
                     /> */}
                     <AmTable
-                     columns={columns}
-                     dataKey={"ID"}
-                     dataSource={listDocItems}
-                     selectionDefault={defaultSelect}
-                     selection="checkbox"
-                     selectionData={data => setDataSelect(data)}
-                     rowNumber={true}
-                    //  totalSize={count}
-                     pageSize={100}
+                        columns={columns}
+                        dataKey={"ID"}
+                        dataSource={listDocItems}
+                        selectionDefault={defaultSelect}
+                        selection="checkbox"
+                        selectionData={data => setDataSelect(data)}
+                        rowNumber={true}
+                        //  totalSize={count}
+                        pageSize={100}
                     //  height={500}
                     />
                 </DialogContent>

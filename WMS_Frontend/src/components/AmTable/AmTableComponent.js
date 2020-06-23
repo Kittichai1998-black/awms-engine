@@ -235,7 +235,7 @@ const AmTableComponent = (props) => {
     const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
-    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page, props.selectionCustom)
+    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page, props.selectionDisabledCustom)
 
     return <TableContainer width={props.width} height={props.height} ref={containerRef}>
           <Table style={props.tableStyle}>
