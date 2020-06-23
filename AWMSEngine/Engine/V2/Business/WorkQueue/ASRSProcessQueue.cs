@@ -111,10 +111,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         response.processResults.Add(processRes);
                     }
 
+                    var docItem = doc.DocumentItems.First(x => x.ID == proc.docItemID);
+
                     var processResItem = new TRes.ProcessQueueResult.ProcessQueueResultItem()
                     {
                         docItemID = proc.docItemID,
-                        docItemCode = doc.DocumentItems.First(x => x.ID == proc.docItemID).Code,
+                        docItemCode = docItem.Code,
                         baseQty = proc.baseQty,
                         priority = proc.priority,
                         percentRandom = proc.percentRandom,
@@ -140,7 +142,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 (string.IsNullOrWhiteSpace(proc.baseCode) || x.bstoCode == proc.baseCode) &&
                                 (string.IsNullOrWhiteSpace(proc.skuCode) || x.pstoCode == proc.skuCode) &&
                                 (string.IsNullOrWhiteSpace(_condi.batch) || x.pstoBatch == _condi.batch) &&
-                                (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoLot == _condi.lot) &&
+                                (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoLot == _condi.lot) &&                               
                                 (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoOrderNo == _condi.orderNo) &&
                                 (string.IsNullOrWhiteSpace(_condi.options) || x.pstoOptions.QryStrContainsKeyValue(_condi.options)) &&
                                 (!proc.useExpireDate || (x.pstoExpiryDate.HasValue && x.pstoExpiryDate.Value > DateTime.Today)) &&
@@ -190,6 +192,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 useIncubateDate = proc.useIncubateDate,
                                 useShelfLifeDate = proc.useShelfLifeDate,
                                 warehouseCode = souWM.Code,
+                                refID = docItem.RefID,
                                 not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList()
                             };
                             var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
