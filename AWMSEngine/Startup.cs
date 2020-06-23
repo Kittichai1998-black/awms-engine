@@ -26,75 +26,138 @@ using AWMSEngine.ScheduleService;
 using DinkToPdf.Contracts;
 using DinkToPdf;
 using System.IO;
+using AMWUtil.Logger;
 
 namespace AWMSEngine
 {
     public class Startup
     {
+        private AMWLogger Logger { get; set; }
+        private IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, PropertyConst.APP_FILENAME);
             var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
-            string rootName = appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH];
-            string fileName = appProperty[PropertyConst.APP_KEY_LOG_FILENAME];
-            AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
-            ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
-            var context = new Utility.CustomAssemblyLoadContext();
-            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "Library\\libwkhtmltox.dll"));
+            
+            AMWUtil.Logger.AMWLoggerManager.InitInstant(
+                appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH],
+                appProperty[PropertyConst.APP_KEY_LOG_FILENAME]);
+            this.Logger = AMWUtil.Logger.AMWLoggerManager.GetLogger("server", "server");
 
-            services.AddCors(options =>
+            try
             {
-                options.AddPolicy("AllowCors", builder =>
+                this.Logger.LogInfo("########### BEGIN START_SERVER ###########");
+                this.Logger.LogInfo("----------- BEGIN ConfigureServices -----------");
+                this.Logger.LogInfo("StaticValueManager.GetInstant().LoadAll()");
+                ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
+                this.Logger.LogInfo("services.AddCors()");
+                services.AddCors(options =>
                 {
-                    builder
-                    .AllowAnyOrigin()
-                    //.WithMethods("GET", "PUT", "POST", "DELETE")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    //.AllowCredentials()
-                    .WithExposedHeaders("x-custom-header");
+                    options.AddPolicy("AllowCors", builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        //.WithMethods("GET", "PUT", "POST", "DELETE")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        //.AllowCredentials()
+                        .WithExposedHeaders("x-custom-header");
+                    });
                 });
-            });
-            services.AddRazorPages();
-            services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-            services.AddSignalR();
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            services.AddControllers();
-            this.SetUpScheduler();
-            this.SetUpWorker(services);
+
+                this.Logger.LogInfo("services.AddRazorPages()");
+                services.AddRazorPages();
+                this.Logger.LogInfo("services.AddMvc().AddNewtonsoftJson()");
+                services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+                this.Logger.LogInfo("services.AddSignalR()");
+                services.AddSignalR();
+                this.Logger.LogInfo("services.AddSingleton()");
+                services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+                this.Logger.LogInfo("services.AddControllers()");
+                services.AddControllers();
+                this.Logger.LogInfo("SetUpScheduler()");
+                this.SetUpScheduler();
+                this.Logger.LogInfo("SetUpWorker()");
+                this.SetUpWorker(services);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex.Message);
+                this.Logger.LogError(ex.StackTrace);
+                return;
+            }
+            finally
+            {
+                this.Logger.LogInfo("----------- END ConfigureServices -----------");
+            }
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        private void OnStopping()
         {
-            if (env.IsDevelopment())
+            this.Logger.LogInfo("#####################################");
+            this.Logger.LogInfo("########### STOPING_SERVER ##########");
+            this.Logger.LogInfo("#####################################");
+        }
+        private void OnStopped()
+        {
+            this.Logger.LogInfo("#####################################");
+            this.Logger.LogInfo("########### STOPED_SERVER ###########");
+            this.Logger.LogInfo("#####################################");
+        }
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime appLifetime)
+        {
+            try
             {
-                app.UseDeveloperExceptionPage();
+                appLifetime.ApplicationStopping.Register(OnStopping);
+                appLifetime.ApplicationStopped.Register(OnStopped);
+
+                this.Logger.LogInfo("----------- BEGIN Configure -----------");
+                if (env.IsDevelopment())
+                {
+                    this.Logger.LogInfo("app.UseDeveloperExceptionPage()");
+                    app.UseDeveloperExceptionPage();
+                }
+                else
+                {
+                    this.Logger.LogInfo("app.UseHsts()");
+                    app.UseHsts();
+                }
+
+                this.Logger.LogInfo("app.UseRouting()");
+                app.UseRouting();
+                this.Logger.LogInfo("app.UseCors()");
+                app.UseCors("AllowCors");
+                this.Logger.LogInfo("app.UseHsts()");
+                app.UseHttpsRedirection();
+                this.Logger.LogInfo("app.UseStaticFiles()");
+                app.UseStaticFiles();
+                this.Logger.LogInfo("SetUpHub()");
+                this.SetUpHub(app);
+
+                this.Logger.LogInfo("app.UseEndpoints()");
+                app.UseEndpoints(endpoint =>
+                {
+                    endpoint.MapControllers();
+                });
             }
-            else
+            catch(Exception ex)
             {
-                app.UseHsts();
+                this.Logger.LogError(ex.Message);
+                this.Logger.LogError(ex.StackTrace);
+                return;
             }
-
-            app.UseRouting();
-            app.UseCors("AllowCors");
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            this.SetUpHub(app);
-
-            app.UseEndpoints(endpoint =>
+            finally
             {
-                endpoint.MapControllers();
-            });
+                this.Logger.LogInfo("----------- END Configure -----------");
+                this.Logger.LogInfo("########### END START_SERVER ###########");
+            }
 
         }
 
@@ -145,59 +208,6 @@ namespace AWMSEngine
                 IJobDetail w = SchedulerUtil.Start(tJob, jobCronex, new KeyValuePair<string, object>("ScheduleServiceID", jb.ID.Value));
             }
         }
-        /*******************************/
-        private void SetUpWorker_TMP(Dictionary<string, string> appProperty, IServiceCollection services)
-        {
-            string workerNames = appProperty.ContainsKey(PropertyConst.APP_KEY_WORKER_NAMES) ? appProperty[PropertyConst.APP_KEY_WORKER_NAMES] : string.Empty;
-            if (!string.IsNullOrWhiteSpace(workerNames))
-            {
-                foreach (string n in workerNames.Split(','))
-                {
-                    string workerClassname = appProperty[string.Format(PropertyConst.APP_KEY_WORKER_CLASSNAME, n)];
-                    var t = AMWUtil.Common.ClassType.GetClassType(workerClassname);
-                    MethodInfo m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService", new Type[] { typeof(IServiceCollection) });
-                    var m2 = m1.MakeGenericMethod(t);
-                    IServiceCollection w = (IServiceCollection)m2.Invoke(null, new object[] { services });
-                }
-            }
-        }
-        private void SetUpScheduler_TMP(Dictionary<string,string> appProperty)
-        {
-            string jobNames = appProperty.ContainsKey(PropertyConst.APP_KEY_JOB_NAMES) ? appProperty[PropertyConst.APP_KEY_JOB_NAMES] : string.Empty;
-            if (!string.IsNullOrWhiteSpace(jobNames))
-            {
-                foreach (string n in jobNames.Split(','))
-                {
-                    string jobCronex = appProperty[string.Format(PropertyConst.APP_KEY_JOB_CRONEX, n)];
-                    string jobClassname = appProperty[string.Format(PropertyConst.APP_KEY_JOB_CLASSNAME, n)];
-                    string jobData = appProperty[string.Format(PropertyConst.APP_KEY_JOB_DATA, n)];
-                    var tJob = AMWUtil.Common.ClassType.GetClassType(jobClassname);
-                    var v = jobData.Json<Dictionary<string, object>>();
-
-                    IJobDetail w = AMWUtil.Common.SchedulerUtil.Start(tJob, jobCronex, v.FieldKeyValuePairs().ToArray());
-                    
-                }
-            }
-        }
-        private void SetUpHub_TMP(Dictionary<string, string> appProperty, IApplicationBuilder app)
-        {
-            string hubNames = appProperty.ContainsKey(PropertyConst.APP_KEY_HUB_NAMES) ? appProperty[PropertyConst.APP_KEY_HUB_NAMES] : string.Empty;
-            if (!string.IsNullOrWhiteSpace(hubNames))
-            {
-                app.UseEndpoints(routes =>
-                {
-                    foreach (string n in hubNames.Split(','))
-                    {
-                        string hubURL = appProperty[string.Format(PropertyConst.APP_KEY_HUB_URL, n)];
-                        string hubClassname = appProperty[string.Format(PropertyConst.APP_KEY_HUB_CLASSNAME, n)];
-                        var t = AMWUtil.Common.ClassType.GetClassType(hubClassname);
-
-                        var m1 = typeof(HubEndpointRouteBuilderExtensions).GetMethod("MapHub", new Type[] { typeof(IEndpointRouteBuilder), typeof(string) });
-                        var m2 = m1.MakeGenericMethod(t);
-                        m2.Invoke(routes, new object[] { routes, new string(hubURL) });
-                    }
-                });
-            }
-        }
+        
     }
 }
