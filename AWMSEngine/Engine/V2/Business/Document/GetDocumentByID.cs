@@ -98,6 +98,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
             public int areaID;
+            public int areaTypeID;
             public string areaCode;
             public long workQueueID;
             public string sou_workQueueDesArea;
@@ -220,6 +221,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,
@@ -286,6 +288,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,

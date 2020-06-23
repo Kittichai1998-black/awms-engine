@@ -321,7 +321,8 @@ const DocumentView = props => {
     if (dataHeader && dataHeader.EventStatus === 10 && props.useAddPalletMapSTO) {
       var newSou = [...props.columnsDetailSOU,
       {
-        width: 100, Header: "Edit/Delete", style: { textAlign: 'center' },
+        width: 100, Header: "Edit/Delete",
+        colStyle: { textAlign: 'center' },
         Cell: e =>
           <div style={{ display: "inline-flex" }}>
             <AmToolTip title={"Edit Qty"} placement={"top"}><IconButton
@@ -447,7 +448,7 @@ const DocumentView = props => {
     }
   }
   const CreateBtnPicking = () => {
-    if (eventStatus === 32) {
+    if (eventStatus === 11) {
       return <AmPickingOnFloor
         dataDocument={dataDoc}
         dataItemsSource={dataDetailSOU}
@@ -585,7 +586,7 @@ const DocumentView = props => {
       <br />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable dataKey="ID" columns={columns} pageSize={100} dataSource={data} />
+        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true}/>
       ) : null}
 
       <br />
@@ -635,7 +636,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+                    <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true}/>
                   ) : null}
                 </Col>
               </Row>
@@ -652,7 +653,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+                    <AmTable dataKey="id" columns={columnsDetailDES}  pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true}/>
                   ) : null}
                 </Col>
               </Row>
@@ -668,7 +669,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable dataKey="ID" columns={columnsDetailSOU} pageSize={100} dataSource={dataDetailSOU} />
+          <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true}/>
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
@@ -679,7 +680,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable dataKey="ID" columns={columnsDetailDES} pageSize={100} dataSource={dataDetailDES} />
+          <AmTable dataKey="id" columns={columnsDetailDES}  pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true}/>
         ) : null
       ) : (
               ""

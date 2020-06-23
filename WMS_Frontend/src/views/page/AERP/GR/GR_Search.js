@@ -170,9 +170,10 @@ const DocumentSearchSTGT = props => {
   const iniCols = [
     { Header: "", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-    { Header: "Wh Order", accessor: "Ref1", width: 120 },
-    //{ Header: "Lot", accessor: "Lot", width: 100 },
     { Header: "Doc.ProcessType", accessor: "DocumentProcessTypeName", width: 200 },
+    { Header: "Wh Order", accessor: "Ref1", width: 120 },
+    { Header: "Project", accessor: "ref2", width: 100 },
+    { Header: "Customer", accessor: "forCustomerCode", width: 100 },
     { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
     { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
     // {   Header: "Sou.Customer",   accessor: "SouCustomerName",   width: 150 },

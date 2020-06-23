@@ -12,17 +12,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TReq
         {
             public long? docID;
-            public List<long> stoPackIDs;
+            public List<long> packIDs;
 
         }
       
-        private ams_AreaLocationMaster _location;
-        private ams_Warehouse _warehouse;
-        private ams_AreaMaster _area;
-
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-
+            
 
             throw new NotImplementedException();
         }
