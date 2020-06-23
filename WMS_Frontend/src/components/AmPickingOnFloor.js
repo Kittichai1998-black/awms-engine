@@ -54,53 +54,25 @@ const styles = (theme) => ({
 });
 function QRIcon(props) {
     return (
-        <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
-            <g><path d="M40.121,105.553c-11.42-34.613,7.447-72.068,42.064-83.49s72.07,7.451,83.49,42.064l129.897,393.695
-		c-12.105-3.196-24.979-3.781-37.831-1.431L131.984,75.244c-5.292-16.04-22.643-24.781-38.682-19.489
-		c-16.04,5.292-24.781,22.643-19.489,38.682c3.069,9.303-1.984,19.335-11.288,22.404C53.222,119.91,43.191,114.856,40.121,105.553z
-		 M551.913,414.393l-212.828,70.222c7.553,8.575,13.54,18.769,17.342,30.288c0.135,0.411,0.211,0.826,0.34,1.238l206.263-68.056
-		c9.303-3.069,14.357-13.101,11.288-22.403C571.248,416.377,561.215,411.323,551.913,414.393z M339.582,520.465
-		c12.059,36.547-7.794,75.949-44.34,88.008c-36.547,12.059-75.949-7.793-88.008-44.34c-12.059-36.548,7.794-75.949,44.34-88.008
-		C288.121,464.065,327.524,483.918,339.582,520.465z M306.495,531.381c-6.029-18.273-25.729-28.198-44.004-22.169
-		c-18.273,6.028-28.199,25.73-22.17,44.003c6.029,18.273,25.73,28.199,44.004,22.171
-		C302.598,569.356,312.524,549.654,306.495,531.381z M498.127,147.345l72.256,218.997c1.535,4.651-0.992,9.667-5.644,11.202
-		l-227.42,75.035c-4.651,1.535-9.667-0.992-11.201-5.644l-72.256-218.997c-1.535-4.652,0.992-9.667,5.644-11.202l227.419-75.036
-		C491.577,140.167,496.592,142.693,498.127,147.345z M468.044,274.559l-77.438-42.605l-36.864,80.319l24.407,11.233l15.939-34.747
-		l28.781,87.232l27.545-9.088l-28.777-87.219l33.477,18.427L468.044,274.559z M400.472,143.908L354.276,3.896
-		c-0.981-2.974-4.188-4.59-7.162-3.608l-39.611,13.069l-0.194,0.356l-0.332-0.182l-20.899,6.896l17.21,52.159l-23.573,7.778
-		l-17.209-52.159l-20.906,6.898l-0.158,0.344l-0.37-0.17l-39.354,12.985c-2.975,0.981-4.589,4.188-3.608,7.162l46.197,140.013
-		c0.981,2.974,4.188,4.59,7.162,3.608l145.398-47.974C399.838,150.089,401.454,146.882,400.472,143.908z"/></g></SvgIcon>
+        <SvgIcon>
+            <path
+                d="M20.55 5.22l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.15.55L3.46 5.22C3.17 5.57 3 6.01 3 6.5V19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.49-.17-.93-.45-1.28zM12 9.5l5.5 5.5H14v2h-4v-2H6.5L12 9.5zM5.12 5l.82-1h12l.93 1H5.12z"
+            />
+        </SvgIcon>
     );
 }
 
 const BtnPick = withStyles(theme => ({
-    button: {
-        margin: theme.spacing(),
-        width: '130px',
-        lineHeight: 1.5
-    },
-    leftIcon: {
-        marginRight: theme.spacing(),
-    },
+
 }))(props => {
     const { classes, onHandleClick, ...other } = props;
     return (
         <>
-            {/* <AmToolTip title={"Pick"} placement={"top"}>
-            <IconButton
-                size="small"
-                style={{ marginLeft: "3px" }}
-                className={classes.iconButton}
-                onClick={onHandleClick}
-                {...other}>
-                <QRIcon color="primary" fontSize="small" />
-            </IconButton></AmToolTip> */}
-
-            <AmButton styleType="confirm" className={classNames(classes.button)}
-                    startIcon={<QRIcon className={classNames(classes.leftIcon)} />}
-                    onClick={onHandleClick}>
-                    {'Picking'}
-                </AmButton>
+            <AmButton className="float-right" styleType="confirm"
+                startIcon={<QRIcon />}
+                onClick={onHandleClick}>
+                {'Picking'}
+            </AmButton>
         </>
     );
 });
@@ -148,13 +120,32 @@ const DialogActions = withStyles(theme => ({
         margin: 0
     }
 }))(MuiDialogActions);
+
+const useColumns = (cols) => {
+    const [columns, setColumns] = useState(cols);
+
+    useEffect(() => {
+        const iniCols = [...cols];
+        var new_iniCols = iniCols.filter(x => x.accessor != "status");
+
+        new_iniCols.push({
+            width: 150,
+            Header: "Area Location",
+            Cell: e => <label>{e.original.areaCode}{e.original.areaLocationCode ? " : " + e.original.areaLocationCode : ""}</label>
+        })
+        setColumns(new_iniCols)
+    }, [])
+    return { columns };
+}
+
 const BtnPickingOnFloor = (props) => {
     const {
         classes,
         dataDocument,
         dataItemsSource,
         columnsItemsSource,
-        onSuccess
+        onSuccess,
+        apiCreate
     } = props
     const { t } = useTranslation()
     const theme = useTheme();
@@ -169,25 +160,17 @@ const BtnPickingOnFloor = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
+    const { columns } = useColumns(columnsItemsSource);
 
-    const columns = [
-        ...columnsItemsSource,
-        {
-            width: 160, Header: "Area Location", Cell: e =>
-                genArea(e.original)
-        },
-
-    ];
     useEffect(() => {
         if (dataItemsSource && open) {
-            let newItems = _.filter(dataItemsSource, function (o) { return o.status === 1; });
+            let newItems = _.filter(dataItemsSource, function (o) { return o.status === 0; });
+
             setListDocItems(newItems)
             setDefaultSelect([...newItems]);
         }
     }, [dataItemsSource, open]);
-    const genArea = (datarow) => {
-        return <label>Area</label>
-    }
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -197,7 +180,39 @@ const BtnPickingOnFloor = (props) => {
         setOpen(false);
     };
     const handleConfirm = () => {
-        setOpen(false);
+        console.log(dataSelect)
+
+        if (dataSelect && dataSelect.length > 0) {
+            let listStos = []
+            for (let [key, value] of Object.entries(dataSelect)) {
+                listStos.push(value.id)
+            }
+            let tempDataReq = {
+                docID: dataDocument.document.ID,
+                packIDs: listStos
+            }
+            console.log(tempDataReq)
+            Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
+                if (res.data != null) {
+                    if (res.data._result.status === 1) {
+                        alertDialogRenderer("เบิกพาเลทสินค้าสำเร็จ", "success", true);
+                        onHandleClear();
+
+                        setOpen(false);
+                        onSuccess()
+                    } else {
+                        alertDialogRenderer(res.data._result.message, "error", true);
+                    }
+                } else {
+                    alertDialogRenderer(res.data._result.message, "error", true);
+                }
+            });
+        } else {
+            alertDialogRenderer("กรุณาเลือกรายการสินค้าที่ต้องการเบิกบนคลังพื้น", "warning", true);
+        }
+
+
+
 
     }
     const onHandleClear = () => {
@@ -219,9 +234,7 @@ const BtnPickingOnFloor = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Picking"}</AmButton>
-
-            {/* <BtnPick  onHandleClick={handleClickOpen} /> */}
+            <BtnPick onHandleClick={handleClickOpen} />
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
@@ -234,13 +247,15 @@ const BtnPickingOnFloor = (props) => {
                 <DialogContent>
                     <AmTable
                         columns={columns}
-                        dataKey={"ID"}
+                        dataKey={"id"}
                         dataSource={listDocItems}
                         selectionDefault={defaultSelect}
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
+                        selectionDisible={data => { return data.areaTypeID != 30 }}
                         rowNumber={true}
-                        pageSize={100}
+                        pageSize={listDocItems.length}
+                    // height={400}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -255,4 +270,14 @@ const BtnPickingOnFloor = (props) => {
         </div>
     );
 };
+BtnPickingOnFloor.propTypes = {
+    onSuccess: PropTypes.func.isRequired,
+    apiCreate: PropTypes.string,
+    columnsItemsSource: PropTypes.array.isRequired,
+    dataItemsSource: PropTypes.array,
+    dataDocument: PropTypes.array,
+};
+BtnPickingOnFloor.defaultProps = {
+    apiCreate: "/v2/done_wq_onfloor",
+}
 export default withStyles(styles)(BtnPickingOnFloor);
