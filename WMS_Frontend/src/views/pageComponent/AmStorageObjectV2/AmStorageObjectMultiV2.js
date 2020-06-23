@@ -170,6 +170,14 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
+        customTopLeftControl={<AmButton
+          style={{ marginRight: "5px" }}
+          styleType="confirm"
+          onClick={() => {
+          }}
+        >
+          HOLD
+        </AmButton>}
       />
 
     </div>
