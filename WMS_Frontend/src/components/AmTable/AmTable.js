@@ -6,9 +6,10 @@ import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
 
 const Topbar = React.memo((propsTopbar) => {
+    console.log(propsTopbar)
     if(propsTopbar.customTopControl){
         return <>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customAllTopControl}</div>
+            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
             <div id="pagination" style={{display:"inline-block", verticalAlign: "middle"}}>
                 {propsTopbar.pagination ? <AmPagination
                     totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
@@ -25,7 +26,7 @@ const Topbar = React.memo((propsTopbar) => {
         </>
     }
     else{
-        if(propsTopbar.customTopLeftControl && propsTopbar.customTopRightControl){
+        if(propsTopbar.customTopLeftControl || propsTopbar.customTopRightControl){
             return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
                 <Grid item xs={6}>
                     <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
@@ -67,11 +68,11 @@ const Topbar = React.memo((propsTopbar) => {
 const Bottombar = React.memo((propsBtmbar) => {
     if(propsBtmbar.customBtmControl){
         return <>
-            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customAllBtmControl}</div>
+            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmControl}</div>
         </>
     }
     else{
-        if(propsBtmbar.customBtmLeftControl && propsBtmbar.customBtmRightControl){
+        if(propsBtmbar.customBtmLeftControl || propsBtmbar.customBtmRightControl){
             return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
                 <Grid item xs={6}>
                     <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmLeftControl ? propsBtmbar.customBtmLeftControl : null}</div>
@@ -172,7 +173,7 @@ const AmTableSetup = (props) => {
 
     return <div style={{maxHeight:props.height}}>
         <Topbar 
-            customAllTopControl={props.customAllTopControl} 
+            customTopControl={props.customTopControl} 
             customTopLeftControl={props.customTopLeftControl} 
             customTopRightControl={props.customTopRightControl}
             totalSize={props.totalSize}
@@ -204,7 +205,7 @@ const AmTableSetup = (props) => {
             selectionDisabledCustom={props.selectionDisabledCustom}
         />
         <Bottombar 
-            customAllBtmControl={props.customAllBtmControl} 
+            customBtmControl={props.customBtmControl} 
             customBtmLeftControl={props.customBtmLeftControl} 
             customBtmRightControl={props.customBtmRightControl}
             totalSize={props.totalSize}
