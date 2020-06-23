@@ -59,7 +59,6 @@ namespace AWMSEngine.Engine.V2.Business
                             var stoLists = new List<StorageObjectCriteria>();
                             if (sto != null)
                                 stoLists = sto.ToTreeList();
-                            var gety = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
                             if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type)
                                 .TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
                             {
