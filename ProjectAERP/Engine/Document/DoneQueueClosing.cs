@@ -363,7 +363,7 @@ namespace ProjectAERP.Engine.Document
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",docItem.Code, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("ObjectType",StorageObjectType.PACK, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("EventStatus","12,13,14", SQLOperatorType.IN),
+                        new SQLConditionCriteria("EventStatus","102,103,104", SQLOperatorType.IN),
                         new SQLConditionCriteria("refID",docItem.RefID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Lot",docItem.Lot, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)

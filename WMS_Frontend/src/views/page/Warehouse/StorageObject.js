@@ -51,19 +51,6 @@ const StorageObject = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-    {
-      Header: "Weigth PalletPack",
-      accessor: "Wei_PalletPack",
-      width: 150,
-      type: "number"
-    },
-    { Header: "Weigth Pack", accessor: "Wei_Pack", width: 120, type: "number" },
-    {
-      Header: "Weigth PackStd",
-      accessor: "Wei_PackStd",
-      width: 150,
-      type: "number"
-    },
     { Header: "Remark", accessor: "Remark", width: 150 },
     {
       Header: "Received Date",
