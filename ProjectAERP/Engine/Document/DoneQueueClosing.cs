@@ -127,6 +127,8 @@ namespace ProjectAERP.Engine.Document
             if (listkeyRoot != null && listkeyRoot.Count > 0)
             {
                 listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_ERROR));
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_WARNING));
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_INFO));
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
