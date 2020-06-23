@@ -48,6 +48,19 @@ const Topbar = React.memo((propsTopbar) => {
                 </Grid>
             </Grid>
         }
+        else{
+            return propsTopbar.pagination ? <AmPagination
+                totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                pageSize={propsTopbar.pageSize}
+                resetPage={propsTopbar.resetPage}
+                onPageChange={page => {
+                    if (propsTopbar.onPageChange !== undefined) {
+                        propsTopbar.onPageChange(page + 1)
+                    }
+                    propsTopbar.page(page + 1)
+                }}
+            /> : null
+        }
     }
 });
 
@@ -169,7 +182,7 @@ const AmTableSetup = (props) => {
             dataSource={dataSource}
             pagination={props.pagination}
             page={(e) => setPage(e)}
-            />
+        />
         <AmTableComponent
             dataSource={dataSource}
             width={props.width}
@@ -190,22 +203,18 @@ const AmTableSetup = (props) => {
             sortable={props.sortable}
             selectionDisabledCustom={props.selectionDisabledCustom}
         />
-        <div id="btmbar">
-            {/* <div id="pagination">
-                {props.pagination ? <AmPagination
-                    totalSize={props.totalSize ? props.totalSize : props.dataSource.length}
-                    pageSize={props.pageSize}
-                    resetPage={props.resetPage}
-                    onPageChange={page => {
-                        if (props.onPageChange !== undefined) {
-                            props.onPageChange(page + 1)
-                        }
-                        setPage(page + 1)
-                    }}
-                /> : null}
-            </div> */}
-            <div style={{ clear: "both" }}></div>
-        </div>
+        <Bottombar 
+            customAllBtmControl={props.customAllBtmControl} 
+            customBtmLeftControl={props.customBtmLeftControl} 
+            customBtmRightControl={props.customBtmRightControl}
+            totalSize={props.totalSize}
+            onPageChange={props.onPageChange}
+            resetPage={props.resetPage}
+            pageSize={props.pageSize}
+            dataSource={dataSource}
+            pagination={props.pagination}
+            page={(e) => setPage(e)}
+        />
     </div>
 }
 
