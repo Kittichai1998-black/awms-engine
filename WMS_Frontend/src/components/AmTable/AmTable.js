@@ -106,6 +106,7 @@ const AmTable = (props) => {
             customBtmRightControl={props.customBtmRightControl}
             sortable={props.sortable}
             sortData={props.sortData}
+            selectionDisabledCustom={props.selectionDisabledCustom}
         />
     </AmTableProvider>
 }
@@ -124,9 +125,6 @@ const AmTableSetup = (props) => {
     }, [props.pageSize])
 
     useEffect(() => {
-        console.log(sortData !== undefined && sortable)
-        console.log(sortData !== undefined)
-        console.log(sortable)
         if (sortData !== undefined && sortable)
             sortData(sort.sortValue)
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,6 +188,7 @@ const AmTableSetup = (props) => {
             page={page}
             clearSelectionChangePage={props.clearSelectionChangePage}
             sortable={props.sortable}
+            selectionDisabledCustom={props.selectionDisabledCustom}
         />
         <div id="btmbar">
             {/* <div id="pagination">
@@ -361,9 +360,13 @@ AmTable.propTypes = {
     /**
      * return ข้อมูลที่ถูกเรียง
      * value? : {"id": row.accessor,"sortDirection": SortDirection.ASC}
-     ** value? : (orderBy) => {}
     */
    sortData:PropTypes.func,
+   /**
+    * ตั้งค่าความ Selection Disabled
+    ** value? : function return boolean
+   */
+    selectionDisabledCustom:PropTypes.func
 }
 
 AmTable.defaultProps = {
