@@ -26,7 +26,8 @@ const DataGenerateMulti = (data) => {
 
     x.Status = x.Status.split("\\n").map(y => (
       <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getStatus(y)}
+        {/* {getStatus(y)} */}
+        <div style={{ marginBottom: "3px" }}>{y}</div>
       </div>
     ));
     x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
@@ -38,32 +39,6 @@ const DataGenerateMulti = (data) => {
   return data;
 }
 
-const getStatus = Status => {
-  if (Status === "NEW") {
-    return <AmStorageObjectStatus key={Status} statusCode={10} />;
-  } else if (Status === "RECEIVING") {
-    return <AmStorageObjectStatus key={Status} statusCode={101} />;
-  } else if (Status === "RECEIVED") {
-    return <AmStorageObjectStatus key={Status} statusCode={102} />;
-  } else if (Status === "AUDITING") {
-    return <AmStorageObjectStatus key={Status} statusCode={13} />;
-  } else if (Status === "AUDITED") {
-    return <AmStorageObjectStatus key={Status} statusCode={14} />;
-  } else if (Status === "PICKING") {
-    return <AmStorageObjectStatus key={Status} statusCode={153} />;
-  } else if (Status === "PICKED") {
-    return <AmStorageObjectStatus key={Status} statusCode={154} />;
-  } else if (Status === "QUALITY_CONTROL") {
-    return <AmStorageObjectStatus key={Status} statusCode={98} />;
-  } else if (Status === "REMOVING") {
-    return <AmStorageObjectStatus key={Status} statusCode={21} />;
-  } else if (Status === "REMOVED") {
-    return <AmStorageObjectStatus key={Status} statusCode={22} />;
-  } else {
-    return null;
-  }
-
-};
 const getIsHold = value => {
   return value === "0" ? <div style={{ textAlign: "center" }}>
     <Tooltip title="NONE" >
