@@ -18,12 +18,12 @@ const GR_Detail = props => {
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
-      { label: "Source Warehouse", values: "SouWarehouseName" },
-      { label: "Destination Warehouse", values: "DesWarehouseName" }
+      { label: "Customer", values: "ForCustomer" },
+      { label: "Project", values: "ref2" }
     ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-      { label: "Remark", values: "Remark" }
+      { label: "", values: "" }
     ]
   ];
 

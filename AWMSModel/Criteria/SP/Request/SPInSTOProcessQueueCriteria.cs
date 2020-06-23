@@ -17,6 +17,7 @@ namespace AWMSModel.Criteria.SP.Request
         public bool useExpireDate;
         public bool useIncubateDate;
         public bool useFullPick;
+        public string refID;
 
         public ConditionProcess condition;
         public List<StorageObjectEventStatus> eventStatuses;

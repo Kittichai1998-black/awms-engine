@@ -18,12 +18,12 @@ const GI_Detail = props => {
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
-      { label: "Source Warehouse", values: "SouWarehouseName" },
-      { label: "Destination Warehouse", values: "DesWarehouseName" }
+      { label: "Customer", values: "ForCustomer" },
+      { label: "Project", values: "ref2" }
     ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-      { label: "Remark", values: "Remark" }
+      { label: "", values: "" }
     ]
   ];
 
@@ -42,7 +42,7 @@ const GI_Detail = props => {
     { width: 100, accessor: "rootCode", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No." },
+    { width: 125, accessor: "Lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];

@@ -10,6 +10,8 @@ import {
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
+import AmDropdown from '../../../components/AmDropdown';
+import AmDatePicker from '../../../components/AmDate';
 import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
@@ -38,6 +40,7 @@ const FormInline = styled.div`
 
 const AmStorageObjectMulti = props => {
   const { t } = useTranslation();
+
 
   const [dataSource, setDataSource] = useState([])
   const [count, setCount] = useState(0)
@@ -87,11 +90,72 @@ const AmStorageObjectMulti = props => {
 
   }
 
+  const useColumns = (cols) => {
+    const [columns, setColumns] = useState(cols);
+
+    useEffect(() => {
+      const iniCols = [...cols];
+
+      iniCols.forEach(col => {
+        let filterConfig = col.filterConfig;
+        if (filterConfig !== undefined) {
+          if (filterConfig.filterType === "dropdown") {
+            col.Filter = (field, onChangeFilter) => {
+              var checkType = Array.isArray(filterConfig.dataDropDown);
+              if (checkType) {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "label" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.width !== undefined ? filterConfig.width : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  data={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                />
+              }
+              else {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "label" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={200}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  queryApi={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                  ddlType={filterConfig.typeDropDown}
+                />
+              }
+
+            }
+          } else if (filterConfig.filterType === "datetime") {
+            col.width = 350;
+            col.Filter = (field, onChangeFilter) => {
+              return <FormInline>
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                <label>-</label>
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+              </FormInline>
+            }
+          }
+        }
+      })
+      setColumns(iniCols);
+    }, [])
+
+    return { columns };
+  }
+  const { columns } = useColumns(props.iniCols);
   //===========================================================
   return (
     <div>
       <AmTable
-        columns={props.iniCols}
+        columns={columns}
         dataKey={"ID"}
         dataSource={dataSource}
         rowNumber={true}
@@ -106,6 +170,14 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
+        customTopLeftControl={<AmButton
+          style={{ marginRight: "5px" }}
+          styleType="confirm"
+          onClick={() => {
+          }}
+        >
+          HOLD
+        </AmButton>}
       />
 
     </div>
