@@ -110,7 +110,9 @@ namespace AWMSEngine
             this.Logger.LogInfo("########### STOPED_SERVER ###########");
             this.Logger.LogInfo("#####################################");
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        [Obsolete]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime appLifetime)
         {
             try
