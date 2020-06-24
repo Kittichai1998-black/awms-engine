@@ -9,10 +9,13 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
+import { DataGenerateRemark } from "../AmStorageObjectV2/SetRemark";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import AmButton from "../../../components/AmButton";
+import AmEditorTable from "../../../components/table/AmEditorTable";
+import AmInput from "../../../components/AmInput";
 
 const Axios = new apicall();
 
@@ -47,6 +50,8 @@ const AmStorageObjectMulti = props => {
   const [queryViewData, setQueryViewData] = useState();
   const [page, setPage] = useState(1);
   const [iniQuery, setIniQuery] = useState(true);
+  const [selection, setSelection] = useState();
+  const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
     getData();
@@ -151,9 +156,62 @@ const AmStorageObjectMulti = props => {
     return { columns };
   }
   const { columns } = useColumns(props.iniCols);
+
+  const onHandleEditConfirm = (status) => {
+    if (status) {
+      onUpdateHold()
+    }
+
+    setDialog(false);
+    setSelection([]);
+  };
+  const onUpdateHold = () => {
+
+    // let bstosID = [];
+
+    // if (selection.length > 0) {
+    //   selection.forEach(rowdata => {
+    //     bstosID.push(rowdata.ID);
+    //   });
+    //   let postdata = {
+    //     bstosID: bstosID,
+    //     eventStatus: status,
+    //     IsHold: 1,
+    //     remark: remark
+
+    //   };
+
+    //   Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
+    //     res => {
+    //       if (res.data._result !== undefined) {
+    //         if (res.data._result.status === 1) {
+    //           setOpenSuccess(true);
+    //           getData(createQueryString(query));
+    //           Clear();
+    //         } else {
+    //           setOpenError(true);
+    //           setTextError(res.data._result.message);
+    //           getData(createQueryString(query));
+    //           Clear();
+    //         }
+    //       }
+    //     }
+    //   );
+    // }
+
+  }
+
   //===========================================================
   return (
     <div>
+      <AmEditorTable
+        open={dialog}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+        titleText={"Remark"}
+        data={"text"}
+        //columns={randerRemark()}
+        columns={DataGenerateRemark()}
+      />
       <AmTable
         columns={columns}
         dataKey={"ID"}
@@ -164,6 +222,11 @@ const AmStorageObjectMulti = props => {
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
+        selection={"checkbox"}
+        selectionData={(data) => {
+          console.log(data)
+          setSelection(data);
+        }}
         onPageChange={p => {
           if (page !== p)
             setPage(p)
@@ -174,6 +237,8 @@ const AmStorageObjectMulti = props => {
           style={{ marginRight: "5px" }}
           styleType="confirm"
           onClick={() => {
+            setDialog(true)
+            //onUpdateHold()
           }}
         >
           HOLD
