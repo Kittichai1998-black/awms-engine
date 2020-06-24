@@ -90,7 +90,7 @@ const GR_Detail = props => {
       fieldDataKey: "ID",
       // defaultValue: 5,
       required: true,
-      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+      customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     ddlLocation: {
       visible: true,
