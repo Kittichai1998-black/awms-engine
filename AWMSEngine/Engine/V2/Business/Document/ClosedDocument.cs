@@ -259,12 +259,12 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     if (done_des_event_status == null || done_des_event_status.Length == 0)
                     {
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, this.BuVO);
+                            StorageObjectEventStatus.PICKED, EntityStatus.ACTIVE, StorageObjectEventStatus.DONE, this.BuVO);
                     }
                     else
                     {
                         StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, StorageObjectEventStatus.PICKING,
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, StorageObjectEventStatus.PICKED,
                             EntityStatus.ACTIVE, eventStatus, this.BuVO);
                         RemoveOPTEventSTO(stoDes.ID.Value, stoDes.Options, this.BuVO);
 
@@ -272,11 +272,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 }
                 else
                 {
-                    var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
-                    var stoDes = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, this.BuVO);
+                    var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
 
-                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKED, this.BuVO);
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.parentID.Value,
+                            StorageObjectEventStatus.PICKED, EntityStatus.ACTIVE, StorageObjectEventStatus.DONE, this.BuVO);
                 }
 
 

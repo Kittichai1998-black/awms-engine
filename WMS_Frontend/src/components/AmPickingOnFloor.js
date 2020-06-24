@@ -164,10 +164,11 @@ const BtnPickingOnFloor = (props) => {
 
     useEffect(() => {
         if (dataItemsSource && open) {
-            let newItems = _.filter(dataItemsSource, function (o) { return o.status === 0; });
+            let newItems = dataItemsSource.filter(x => x.status === 0);
+            let newDefaultSel = newItems.filter(x => x.areaTypeID === 30);
 
             setListDocItems(newItems)
-            setDefaultSelect([...newItems]);
+            setDefaultSelect([...newDefaultSel]);
         }
     }, [dataItemsSource, open]);
 
@@ -185,11 +186,15 @@ const BtnPickingOnFloor = (props) => {
         if (dataSelect && dataSelect.length > 0) {
             let listStos = []
             for (let [key, value] of Object.entries(dataSelect)) {
-                listStos.push(value.id)
+                listStos.push({
+                    packID: value.id,
+                    distoID: value.distoID,
+                    docItemID: value.docItemID
+                })
             }
             let tempDataReq = {
                 docID: dataDocument.document.ID,
-                packIDs: listStos
+                packList: listStos
             }
             console.log(tempDataReq)
             Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
@@ -252,7 +257,9 @@ const BtnPickingOnFloor = (props) => {
                         selectionDefault={defaultSelect}
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
-                        selectionDisible={data => { return data.areaTypeID != 30 }}
+                        selectionDisabledCustom={data => {
+                            return data.areaTypeID !== 30
+                        }}
                         rowNumber={true}
                         pageSize={listDocItems.length}
                     // height={400}

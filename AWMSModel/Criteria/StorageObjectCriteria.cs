@@ -55,6 +55,7 @@ namespace AWMSModel.Criteria
         public int IsHold;
         public long? skuTypeID;
         public string skuTypeName;
+        public long? forCustomerID;
 
         public ObjectSize objectSize;
         public class ObjectSize
