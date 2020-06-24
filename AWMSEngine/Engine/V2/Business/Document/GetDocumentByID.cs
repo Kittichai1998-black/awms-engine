@@ -133,7 +133,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID", reqVO.docTypeID, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("DocumentType_ID", reqVO.docTypeID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 },
                 new SQLOrderByCriteria[] { }, null, null,
                 this.BuVO).FirstOrDefault();
@@ -143,6 +144,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 },
                 this.BuVO);
 
