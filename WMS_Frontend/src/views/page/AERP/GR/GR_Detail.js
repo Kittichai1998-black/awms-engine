@@ -19,7 +19,7 @@ const GR_Detail = props => {
     ],
     [
       { label: "Customer", values: "ForCustomer" },
-      { label: "Project", values: "ref2" }
+      { label: "Project", values: "Ref2" }
     ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
@@ -90,7 +90,7 @@ const GR_Detail = props => {
       fieldDataKey: "ID",
       // defaultValue: 5,
       required: true,
-      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+      customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     ddlLocation: {
       visible: true,

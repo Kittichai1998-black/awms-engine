@@ -19,7 +19,7 @@ const GI_Detail = props => {
     ],
     [
       { label: "Customer", values: "ForCustomer" },
-      { label: "Project", values: "ref2" }
+      { label: "Project", values: "Ref2" }
     ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },

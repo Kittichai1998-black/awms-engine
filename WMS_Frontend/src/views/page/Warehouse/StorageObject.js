@@ -101,6 +101,16 @@ const StorageObject = props => {
     );
   };
 
+  const columns = [
+    {
+      field: "Option",
+      type: "input",
+      name: "Remark",
+      placeholder: "Remark",
+      required: true
+    }
+  ];
+
   const getNumberQty = value => {
     return parseInt(value.Qty);
   };
@@ -130,7 +140,7 @@ const StorageObject = props => {
       <AmStorageObjectMulti
         iniCols={iniCols}
         selection={true}
-        modifyRemark={true}
+        dataRemark={columns}
         export={false}
         multi={true}
       />

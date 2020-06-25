@@ -28,7 +28,8 @@ namespace AWMSEngine.APIService.V2.Business
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
+            var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, 
+                new WorkedDocument.TReq() { docIDs = new List<long> { resDoneQ.docID.Value } });
             this.CommitTransaction();
 
             this.BeginTransaction();
