@@ -6,7 +6,7 @@ import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
 
 const Topbar = React.memo((propsTopbar) => {
-    console.log(propsTopbar)
+    // console.log(propsTopbar)
     if(propsTopbar.customTopControl){
         return <>
             <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
