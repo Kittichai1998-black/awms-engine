@@ -79,7 +79,7 @@ const User = props => {
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setUserID(e.original.ID)}}
+        onClick={()=>{setUserID(e.original.ID); setUserPass(e.original)}}
         style={{ marginLeft: "3px" }}>
         <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
       </IconButton>
@@ -332,7 +332,7 @@ const User = props => {
     columns={relationComponent}
   />});
 
-  const PopupPassword = React.memo(({relationComponent, open}) => {
+  const PopupPassword = React.memo(({open}) => {
     return <AmEditorTable 
     open={openPassword} 
     onAccept={(status, rowdata)=> {

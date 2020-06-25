@@ -121,7 +121,7 @@ namespace ProjectAERP.Engine.Document
                                 Options = optionsItems,
                                 Code = Sku.Code,
                                 Quantity = (decimal)wh_d.Advised_qty,
-                                //BaseQuantity = (decimal)wh_d.Advised_qty,
+                                BaseQuantity = baseQuantity,
                                 UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.inventory_unit).ID,
                                 BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.purchase_unit).ID ,
                                 RefID = wh_d.Serial,

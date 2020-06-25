@@ -61,6 +61,10 @@ const MoveLocation = Loadable({
   loader: () => import("../../views/page/ENGINE/MoveLocation"),
   loading: Loading
 });
+const ProcessQueueCT = Loadable({
+  loader: () => import("../../views/page/AERP/AD/AD_WorkQueue"),
+  loading: Loading
+});
 const routes = [
   //{ path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
@@ -77,7 +81,7 @@ const routes = [
   { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
   { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
-  //{ path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
+  { path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
 
   { path: "/sto/move", name: "Move Location", compoment: MoveLocation, exact: true },
