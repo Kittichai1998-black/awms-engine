@@ -8,33 +8,45 @@ import Tooltip from '@material-ui/core/Tooltip';
 const DataGenerateMulti = (data) => {
 
   data.forEach(x => {
-    x.SKU_Code = x.SKU_Code.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px" }}>{y}</div>
-    ));
-    x.SKU_Name = x.SKU_Name.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px" }}>{y}</div>
-    ));
-    x.Qty = x.Qty.toString()
-      .split("\\n")
-      .map(y => <div style={{ marginBottom: "3px" }} >{y.split(".000")}</div>);
-    x.Base_Unit = x.Base_Unit.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px" }}>{y}</div>
-    ));
-    x.Lot = x.Lot.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px" }}>{y}</div>
-    ));
-
-    x.Status = x.Status.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {/* {getStatus(y)} */}
+    console.log(x)
+    if (x.SKU_Code != null) {
+      x.SKU_Code = x.SKU_Code.split("\\n").map(y => (
         <div style={{ marginBottom: "3px" }}>{y}</div>
-      </div>
-    ));
-    x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
-      <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getIsHold(y)}
-      </div>
-    ));
+      ));
+    }
+    if (x.SKU_Name != null) {
+      x.SKU_Name = x.SKU_Name.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
+      ));
+    }
+    if (x.Qty != null) {
+      x.Qty = x.Qty.toString()
+        .split("\\n")
+        .map(y => <div style={{ marginBottom: "3px" }} >{y.split(".000")}</div>);
+      x.Base_Unit = x.Base_Unit.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
+      ));
+    }
+    if (x.Lot != null) {
+      x.Lot = x.Lot.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
+      ));
+    }
+    if (x.Status != null) {
+      x.Status = x.Status.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px", textAlign: "center" }}>
+          {/* {getStatus(y)} */}
+          <div style={{ marginBottom: "3px" }}>{y}</div>
+        </div>
+      ));
+    }
+    if (x.HoldStatus != null) {
+      x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px", textAlign: "center" }}>
+          {getIsHold(y)}
+        </div>
+      ));
+    }
   });
   return data;
 }
