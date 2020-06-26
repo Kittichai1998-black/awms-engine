@@ -4,9 +4,9 @@ import { AmTableProvider, AmTableContext } from "./AmTableContext";
 import PropTypes from "prop-types"
 import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
+import _ from "lodash";
 
 const Topbar = React.memo((propsTopbar) => {
-    console.log(propsTopbar)
     if(propsTopbar.customTopControl){
         return <>
             <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
@@ -141,6 +141,18 @@ const AmTableSetup = (props) => {
     useEffect(() => {
         if (sortData !== undefined && sortable)
             sortData(sort.sortValue)
+        else if(sortData === undefined && sortable){
+            if(sort.sortValue["sortDirection"] !== undefined){
+                if(sort.sortValue["sortDirection"] === "asc"){
+                    let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "asc")
+                    setDataSource(sortLocalData);
+                }
+                else{
+                    let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "desc")
+                    setDataSource(sortLocalData);
+                }
+            }
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort.sortValue,  sortData])
 

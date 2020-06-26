@@ -235,7 +235,7 @@ const Default = props => {
         setOpen(true);
     };
 
-    console.log(size)
+    // console.log(size)
 
     const handleDrawerClose = () => {
         setOpen(false);

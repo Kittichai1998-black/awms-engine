@@ -74,7 +74,7 @@ const TableHeaderCell = styled(TableCell)`
 `
 
 const TableHeaderStickyColumnsCell = styled(TableHeaderCell)`
-    z-index:1000;
+    z-index:10000;
     left:0;
 `
 const TableStickyCell = styled(TableCell)`

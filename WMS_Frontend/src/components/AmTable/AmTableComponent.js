@@ -105,10 +105,8 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                           type="radio"
                           name="selection"
                           value={ele.data[dataKey]}
-                          onKeyPress={e => {
-                              if (e.target.checked) {
-                                  selection.set({data:ele.original, uniq:ele.original[dataKey]});
-                              }
+                          onChange={e => {
+                            selection.set({data:ele.original, uniq:ele.original[dataKey]});
                           }}
                           disabled={selectionCustom ? selectionCustom(ele.data) : false}
                       />
@@ -177,33 +175,34 @@ const useDataSource = (props, groupBy) => {
   useEffect(() => {
     if(typeof props === "object"){
       const data = props.slice(0, pagination.pageSize);
-
+      let keyObj = [];
       if(groupBy){
-        let groups = _.groupBy(data, (data)=> {
+        let groups = _.groupBy(data, (dt)=> {
           //var findSort = groupItem.find(x => x === sort.sortValue);
           let groupField = "";
-          groupBy.field.forEach(x=> groupField += data[x]);
+          groupBy.field.forEach(x=> groupField += dt[x]);
+          keyObj.push(groupField)
           return groupField;
         });
-        
-        let groupData = _.orderBy(Object.keys(groups), groupBy.field).map((g) => {
-          let grourData = groups[g];
+        keyObj = [...new Set(keyObj)];
+        let groupObj = keyObj.map(x=> groups[x])
+        let groupAllData = _.orderBy(Object.keys(groupObj), groupBy.field).map((g) => {
+          let groupData = groupObj[g];
           let sumBy = {};
           groupBy.sumField.forEach(x=> {
-            sumBy[x] = _.sumBy(grourData, x)
+            sumBy[x] = _.sumBy(groupData, x)
           });
           if(props.groupFooter){
             //g.push({...props.groupFooter(data), "_footer":true})
-            return grourData
+            return groupData
           }
           else{
-            grourData.push({...sumBy, "_footer":true})
-            return grourData
+            groupData.push({...sumBy, "_footer":true})
+            return groupData
           }
         });
         let groupWithSum = []
-        
-        groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
+        groupAllData.forEach(x=> groupWithSum = groupWithSum.concat(x))
         setDataSource(groupWithSum)
       }else{
         setDataSource(data)
@@ -309,9 +308,9 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         }
 
         if(column.fixed){
-            return <TableCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
+            return <TableStickyCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
-            </TableCell>
+            </TableStickyCell>
         }
         else{
             return <TableCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
@@ -353,6 +352,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
       if (props.sortable) {
         if (row.sortable === undefined || row.sortable === true) {
           let orderBy;
+          var sortValueOwn = sortValue.id === row.accessor ? sortValue : null;
           return (
             <div
               style={{ width: "100%" }}
@@ -380,16 +380,14 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               }}
             >
               {children}
-              {orderBy === null || orderBy === undefined ? null : orderBy.sortDirection === SortDirection.DESC ? 
+              {sortValueOwn === null || sortValueOwn === undefined ? null : sortValueOwn.sortDirection === SortDirection.DESC ? 
               (
                 <span>
-                  <ArrowDropUpIcon style={{transform: "rotate(-135deg)",WebkitTransform: "rotate(-135deg)"}}/>
-                  <Arrow style={{transform: "rotate(-135deg)",WebkitTransform: "rotate(-135deg)"}}/>
+                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(0deg)"}}/>
                 </span>
               ) : (
                 <span>
-                  <ArrowDropDownIcon style={{transform: "rotate(45deg)",WebkitTransform: "rotate(45deg)"}}/>
-                  <Arrow style={{transform: "rotate(45deg)",WebkitTransform: "rotate(45deg)"}}/>
+                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(180deg)"}}/>
                 </span>
               )}
             </div>
@@ -431,10 +429,36 @@ const GenerateHeader = ({columns,props, tableSize}) => {
       return columns.map((col, idx) => {
         //let fixedStyle = {};
         if (col.fixed) {
-          //fixedStyle = { left: getWidth, zIndex: 1000 };
           getWidth = getWidth + (col.width !== undefined ? col.width : col.fixWidth !== undefined ? col.fixWidth : freeWidth);
+          return <TableHeaderStickyColumnsCell
+            id={`th_${idx}`}
+            style={{ ...col.style, ...props.headerStyle, left:idx === 0 ? 0 : getWidth }}
+            key={idx}
+            rowData={col}
+            ref={cellRef.current[idx]}
+            fixWidth={col.fixWidth}
+          >
+            {col.Header === undefined ? (
+              <SortHeader row={col}></SortHeader>
+            ) : 
+            typeof col.Header === "string"  ? (
+              <SortHeader row={col}>{col.Header}</SortHeader>
+            ) : (
+              <SortHeader row={col}>{col.Header(col)}</SortHeader>
+            )}
+            {props.filterable ? (
+              col.filterable === false ? null : typeof col.Filter === "function" ? 
+                (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
+                <div>
+                  <AmInput style={{
+                    width:col.fixWidth !== undefined ? col.fixWidth : col.width === undefined ? freeWidth : col.width,
+                  }} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                </div>)
+            ) : null}
+          </TableHeaderStickyColumnsCell>
         }
-        return <TableHeaderCell
+        else{
+          return <TableHeaderCell
             id={`th_${idx}`}
             style={{ ...col.style, ...props.headerStyle }}
             key={idx}
@@ -461,6 +485,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
                 </div>)
             ) : null}
           </TableHeaderCell>
+        }
       });
     };
 

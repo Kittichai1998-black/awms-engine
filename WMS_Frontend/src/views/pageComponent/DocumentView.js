@@ -437,7 +437,7 @@ const DocumentView = props => {
         inputHead={props.addPalletMapSTO.inputHead}
         inputTitle={props.addPalletMapSTO.inputTitle}
         inputBase={props.addPalletMapSTO.inputBase}
-        ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
+        // ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
         ddlArea={props.addPalletMapSTO.ddlArea}
         ddlLocation={props.addPalletMapSTO.ddlLocation}
         onSuccessMapping={(data) => ReturnMapping(data)}
