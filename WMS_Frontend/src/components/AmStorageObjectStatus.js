@@ -12,7 +12,7 @@ const styles = theme => ({
 });
 const StorageObjectEventStatus = [
     { status: "NEW", code: 10, label: 'NW' },
-    { status: "RECEIVING", code: 11, label: 'RECEIVING' },
+    { status: "RECEIVING", code: 101, label: 'RECEIVING' },
     { status: "RECEIVED", code: 102, label: 'RECEIVED' },
     { status: "AUDITING", code: 103, label: 'AUDITING' },
     { status: "AUDITED", code: 104, label: 'AUDITEDAD' },

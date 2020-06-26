@@ -9,14 +9,13 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
-import { DataGenerateRemark } from "../AmStorageObjectV2/SetRemark";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import AmInput from "../../../components/AmInput";
-
+import AmDialogs from "../../../components/AmDialogs";
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -52,6 +51,8 @@ const AmStorageObjectMulti = props => {
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
   const [dialog, setDialog] = useState(false);
+  const [remark, setRemark] = useState("");
+  const [dialogState, setDialogState] = useState({});
 
   useEffect(() => {
     getData();
@@ -158,6 +159,9 @@ const AmStorageObjectMulti = props => {
   const { columns } = useColumns(props.iniCols);
 
   const onHandleEditConfirm = (status) => {
+
+    //var x = onChangeEditor()
+    //console.log(remark)
     if (status) {
       onUpdateHold()
     }
@@ -165,8 +169,60 @@ const AmStorageObjectMulti = props => {
     setDialog(false);
     setSelection([]);
   };
-  const onUpdateHold = () => {
 
+
+  const DataGenerateRemark = () => {
+    const columns = [
+      {
+        field: "Option",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
+        required: true
+      }
+    ];
+    return columns.map(y => {
+      return {
+        field: y.field,
+        component: (data = null, cols, key) => {
+          return (
+            <div key={key}>
+              <FormInline>
+                {" "}
+                <LabelH>{"Remark"} : </LabelH>
+                <InputDiv>
+                  <AmInput
+                    id={cols.field}
+                    style={{ width: "270px", margin: "0px" }}
+                    //placeholder={placeholder}
+                    type="input"
+                    //value={data ? data[cols.field]:""}
+                    onChange={val => {
+                      onChangeEditor(val);
+                    }}
+                  />
+                </InputDiv>
+              </FormInline>
+
+            </div>
+          );
+        }
+      };
+    });
+  };
+  const onChangeEditor = (value) => {
+    setRemark(value)
+    console.log(selection)
+    // if (selection.length === 0) {
+    //   setOpenWarning(true);
+    // } else {
+    //   let cloneData = selection;
+    //   setRemark(value);
+    //   setDataSentToAPI(cloneData);
+    // }
+  };
+  const onUpdateHold = () => {
+    console.log(remark)
     // let bstosID = [];
 
     // if (selection.length > 0) {
@@ -204,6 +260,11 @@ const AmStorageObjectMulti = props => {
   //===========================================================
   return (
     <div>
+      <AmDialogs
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
