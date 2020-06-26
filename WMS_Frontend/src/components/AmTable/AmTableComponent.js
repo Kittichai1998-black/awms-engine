@@ -1,6 +1,5 @@
 import React, {useContext, useState, useEffect, useRef, useLayoutEffect} from 'react';
-import {Arrow, 
-    Table,
+import {Table,
     TableContainer,
     TableRow,
     TableHeaderRow,
@@ -9,10 +8,10 @@ import {Arrow,
     TableFooter,
     TableStickyCell,
     TableHeaderStickyColumnsCell,
-    TableCellFooter } from "./AmTableStyle";
+    TableCellFooter,
+    TableStickyCellFooter } from "./AmTableStyle";
 import {AmTableContext} from "./AmTableContext";
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 //import Input from "@material-ui/core/Input";
 import AmInput from "../AmInput";
 //import Checkbox from "@material-ui/core/Checkbox";
@@ -67,7 +66,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         {
             getColumns.unshift({
                 Header: "Row",
-                fixWidth: 20,
+                fixWidth: 40,
                 filterable: false,
                 fixed: "left",
                 sortable: false,
@@ -291,7 +290,7 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
     const renderEmptyData = () => {
       return <div style={{visibility:"hidden"}}>&nbsp;</div>
     }
-
+    let getWidth = 0;
     return columns.map((column, idx) => {
         let createCellData = {
             original: data,
@@ -308,7 +307,10 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         }
 
         if(column.fixed){
-            return <TableStickyCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
+            let fixedStyle = { };
+            fixedStyle.left = getWidth;
+            getWidth = getWidth + column.fixWidth;
+            return <TableStickyCell style={column.colStyle === undefined ? {...style, ...fixedStyle} : {...column.colStyle, ...fixedStyle}} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableStickyCell>
         }
@@ -427,12 +429,13 @@ const GenerateHeader = ({columns,props, tableSize}) => {
       let getWidth = 0;
       const freeWidth = calculateWidth(columns);
       return columns.map((col, idx) => {
-        //let fixedStyle = {};
         if (col.fixed) {
-          getWidth = getWidth + (col.width !== undefined ? col.width : col.fixWidth !== undefined ? col.fixWidth : freeWidth);
+          let fixedStyle = { };
+          fixedStyle.left = getWidth;
+          getWidth = getWidth + col.fixWidth;
           return <TableHeaderStickyColumnsCell
             id={`th_${idx}`}
-            style={{ ...col.style, ...props.headerStyle, left:idx === 0 ? 0 : getWidth }}
+            style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}
             key={idx}
             rowData={col}
             ref={cellRef.current[idx]}
@@ -504,7 +507,7 @@ const GenerateFooter = ({columns,props, dataSource}) => {
   }
 }
 
-const GenerateFooterCell = (column,props, dataSource, idx) => {
+const GenerateFooterCell = (column, props, dataSource, idx) => {
     const dataByField = [];
     let totalField = 0;
     dataSource.forEach((data, rowIndex)=> {
@@ -520,14 +523,31 @@ const GenerateFooterCell = (column,props, dataSource, idx) => {
       style = props.footerStyle(dataSource, dataByField, column)
     }
 
+    
+    let getWidth = 0;
+    let fixedStyle = { };
+    fixedStyle.left = getWidth;
+    getWidth = getWidth + column.fixWidth;
     if(column.Footer !== undefined){
-      if(typeof column.Footer === "function")
-        return <TableCellFooter key={idx} style={style}>{column.Footer(dataSource, dataByField, column)}</TableCellFooter>
-      else
-        return <TableCellFooter key={idx} style={style}>{totalField}</TableCellFooter>
+      if(typeof column.Footer === "function"){
+        
+        if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}>{column.Footer(dataSource, dataByField, column)}</TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}>{column.Footer(dataSource, dataByField, column)}</TableCellFooter>
+      }
+      else{
+        if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}>{totalField}</TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}>{totalField}</TableCellFooter>
+      }
     }
     else{
-      return <TableCellFooter key={idx} style={style}> </TableCellFooter>
+      if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}></TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}></TableCellFooter>
     }
 }
 
