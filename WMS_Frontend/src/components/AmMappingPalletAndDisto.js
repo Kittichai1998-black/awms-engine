@@ -57,7 +57,7 @@ input {
 //   }
 const LabelH = styled.label`
 font-weight: bold;
-  width: 100px;
+  width: 110px;
 `;
 
 const InputDiv = styled.div`
@@ -216,7 +216,10 @@ const BtnAddPallet = (props) => {
     // const [selWarehouse, setSelWarehouse] = useState(ddlWarehouse && ddlWarehouse.defaultValue ? ddlWarehouse.defaultValue : null);
     const [selArea, setSelArea] = useState(ddlArea && ddlArea.defaultValue ? ddlArea.defaultValue : null);
     const [selLocation, setSelLocation] = useState(null);
-    
+
+    const fileImgRef = useRef();
+    const [imgFile, setImgFile] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
     //AlertDialog
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -365,21 +368,21 @@ const BtnAddPallet = (props) => {
                     warehouseID: dataDocument.document.Des_Warehouse_ID
                 }
                 console.log(tempDataReq)
-                // Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
-                //     if (res.data != null) {
-                //         if (res.data._result.status === 1) {
-                //             alertDialogRenderer("สร้างพาเลทสินค้าสำเร็จ", "success", true);
-                //             onHandleClear();
+                Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
+                    if (res.data != null) {
+                        if (res.data._result.status === 1) {
+                            alertDialogRenderer("สร้างพาเลทสินค้าสำเร็จ", "success", true);
+                            onHandleClear();
 
-                //             setOpen(false);
-                //             onSuccessMapping()
-                //         } else {
-                //             alertDialogRenderer(res.data._result.message, "error", true);
-                //         }
-                //     } else {
-                //         alertDialogRenderer(res.data._result.message, "error", true);
-                //     }
-                // });
+                            setOpen(false);
+                            onSuccessMapping()
+                        } else {
+                            alertDialogRenderer(res.data._result.message, "error", true);
+                        }
+                    } else {
+                        alertDialogRenderer(res.data._result.message, "error", true);
+                    }
+                });
             }
 
         }
@@ -500,7 +503,7 @@ const BtnAddPallet = (props) => {
                         onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
                     //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                     />
-                    <AmCheckPalletForReceive dataDocument={dataDocument.document} returnResult={(data) => showPalletSelect(data,  showComponent.field)}/>
+                    <AmCheckPalletForReceive dataDocument={dataDocument.document} returnResult={(data) => showPalletSelect(data, showComponent.field)} />
                     <AmScanQRbyCamera returnResult={(data) => showRes(data, showComponent.field)} />
                 </div>
             </FormInline>
@@ -517,8 +520,8 @@ const BtnAddPallet = (props) => {
             }
         }
     }
-    const showPalletSelect =(data, field) => {
-        if(data){
+    const showPalletSelect = (data, field) => {
+        if (data) {
             renderNewDropdown(data[0].AreaID, data[0].LocationID);
             let PalletCode = data[0].Pallet;
 
@@ -528,15 +531,15 @@ const BtnAddPallet = (props) => {
                 ele.focus();
             }
         }
-       
+
 
     }
-    const renderNewDropdown = (areaID, locationID) =>{
-        if(areaID){
+    const renderNewDropdown = (areaID, locationID) => {
+        if (areaID) {
             valueInput['areaID'] = areaID;
             GetAreaDDL(null, areaID)
         }
-        if(locationID){
+        if (locationID) {
             valueInput['locationID'] = locationID;
             GetLocationDDL(null, locationID)
         }
@@ -764,6 +767,8 @@ const BtnAddPallet = (props) => {
         // setShowInfoBase(null);
         setDataSelect([]);
         setDefaultSelect(null);
+        setImgFile(null);
+        setImageFile(null);
     };
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
@@ -777,6 +782,51 @@ const BtnAddPallet = (props) => {
             setShowDialog(null);
         }
     }, [stateDialog, msgDialog, typeDialog]);
+
+    async function onUploadFile() {
+        // console.log(imageFile)
+        // console.log(fileImgRef.current.value)
+        // console.log(imageFile.size);
+        if (imageFile.size > 100000000) //100000000 bytes
+        {
+            alertDialogRenderer("ไฟล์มีขนาดใหญ่เกินกว่า 100 MB ไม่สามารถอัพโหลดได้", "warning", true);
+        }
+        else {
+            let fileBase64 = await toBase64(imageFile)
+            if (valueInput.baseCode) {
+                let filejson = {
+                    baseCode: valueInput.baseCode,
+                    imageBase64: fileBase64
+                }
+                await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
+                    if (res.data._result.status === 1) {
+                        alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
+                    } else {
+                        alertDialogRenderer(res.data._result.message, "error", true);
+                    }
+                });
+            } else {
+                alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
+            }
+        }
+
+    }
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+    const handleFileChange = (event) => {
+        if (event.target.files[0]) {
+            setImgFile(URL.createObjectURL(event.target.files[0]))
+            setImageFile(event.target.files[0])
+        } else {
+            console.log("nofile");
+            setImgFile(null)
+            setImageFile(null)
+        }
+    }
     return (
 
         <AmAux>
@@ -808,20 +858,17 @@ const BtnAddPallet = (props) => {
                     {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                         return row.component(row, idx)
                     }) : null}
-                    {/* {ComponenAddImage} */}
+                    <FormInline><LabelH><label htmlFor="img">{t('Select Image')} : </label></LabelH>
+                        {/* <div style={{ display: 'inline-flex', alignItems: 'center' }} > */}
+                        <input ref={fileImgRef} type="file" id="img" name="formFile"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e)}
+                        />
+                        <input type="submit" onClick={onUploadFile} />
+                        {/* </div> */}
+                    </FormInline>
+                    {imgFile ? <img src={imgFile} height='150' /> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    {/* <Table
-                        columns={columns}
-                        pageSize={100}
-                        data={listDocItems}
-                        sortable={false}
-                        selectionType="checkbox"
-                        selection={true}
-                        primaryKey="ID"
-                        currentPage={0}
-                        defaultSelection={defaultSelect}
-                        getSelection={data => setDataSelect(data)}
-                    /> */}
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
