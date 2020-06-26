@@ -7,7 +7,9 @@ import ViewList from '@material-ui/icons/ViewList';
 import AmButton from "../components/AmButton";
 
 const AmRedirectInfo = props => {
-  const { api, titleDialog, bodyDialog, textLink, type, customIcon, styleTypeBtn, startIcon, endIcon, textButton, appendIcon } = props;
+  const { api, titleDialog, bodyDialog,
+    textLink, type, customIcon, styleTypeBtn,
+    startIcon, endIcon, textButton, appendIcon } = props;
   const [openDialogCon, setopenDialogCon] = useState(false);
   const PageDetail = () => {
     if (api) {
@@ -85,16 +87,25 @@ const AmRedirectInfo = props => {
             textCancel="Close"
           />
         </div>
+      ) : type === "custom_icon" ? (
+        <IconButton
+          size="small"
+          aria-label="info"
+          onClick={PageDetail}
+          style={{ marginLeft: "3px" }}
+        >
+          {customIcon}
+        </IconButton>
       ) : (
-                <IconButton
-                  size="small"
-                  aria-label="info"
-                  onClick={PageDetail}
-                  style={{ marginLeft: "3px" }}
-                >
-                  <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
-                </IconButton>
-              )}
+                  <IconButton
+                    size="small"
+                    aria-label="info"
+                    onClick={PageDetail}
+                    style={{ marginLeft: "3px" }}
+                  >
+                    <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
+                  </IconButton>
+                )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import React from "react";
 import styled from "styled-components";
 import AmInput from "../../../components/AmInput";
+import React from "react";
 const LabelH = styled.label`
   font-weight: bold;
   width: 200px;
@@ -31,6 +31,7 @@ const columns = [
     required: true
   }
 ];
+
 const DataGenerateRemark = () => {
 
   return columns.map(y => {
@@ -69,12 +70,18 @@ const FuncTestSetEle = (
           type="input"
           //value={data ? data[cols.field]:""}
           onChange={val => {
-            // onChangeEditor(cols.field, data, val);
+            onChangeEditor(val);
           }}
         />
       </InputDiv>
     </FormInline>
   );
+};
+const onChangeEditor = (value) => {
+
+  //setRemark(value);
+  console.log(value)
+  return value;
 };
 
 export { DataGenerateRemark }

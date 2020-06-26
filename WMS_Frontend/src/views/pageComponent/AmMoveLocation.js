@@ -111,7 +111,7 @@ const AmMoveLocation = props => {
   const LocationQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "AreaLocationMaster",
-    q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
+    q: '[{ "f": "Status", "c":"!=", "v": 0}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
