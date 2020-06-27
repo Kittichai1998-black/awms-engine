@@ -17,7 +17,6 @@ namespace AWMSEngine.Engine.Business
         public class TDocReq
         {
             public long[] bstosID;
-            public long eventStatus;
             public int IsHold;
             public string remark;
         }
@@ -33,7 +32,7 @@ namespace AWMSEngine.Engine.Business
             List<amt_StorageObject> res = new List<amt_StorageObject>();
             foreach (var bstoid in reqVO.bstosID)
             {
-                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, true, true, this.BuVO);
+                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, false, true, this.BuVO);
                 //if (sto.eventStatus != StorageObjectEventStatus.RECEIVED)
                 //    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
@@ -50,13 +49,15 @@ namespace AWMSEngine.Engine.Business
         {
             
             sto.IsHold = IsHold;
-            
+           
             foreach (var st in sto.mapstos)
             {
+                var ob = AMWUtil.Common.ObjectUtil.QryStrSetValue(st.options, OptionVOConst.OPT_REMARK, remark);
                 st.IsHold = IsHold;
-                st.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(st.options, OptionVOConst.OPT_REMARK, remark);
+                st.options = ob;
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
             }
-             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
     }
 }

@@ -213,50 +213,51 @@ const AmStorageObjectMulti = props => {
   const onChangeEditor = (value) => {
     setRemark(value)
     console.log(selection)
-    // if (selection.length === 0) {
-    //   setOpenWarning(true);
-    // } else {
-    //   let cloneData = selection;
-    //   setRemark(value);
-    //   setDataSentToAPI(cloneData);
-    // }
+    if (selection.length === 0) {
+      //setOpenWarning(true);
+    } else {
+      //let cloneData = selection;
+      setRemark(value);
+      //setDataSentToAPI(cloneData);
+    }
   };
   const onUpdateHold = () => {
     console.log(remark)
-    // let bstosID = [];
+    let bstosID = [];
 
-    // if (selection.length > 0) {
-    //   selection.forEach(rowdata => {
-    //     bstosID.push(rowdata.ID);
-    //   });
-    //   let postdata = {
-    //     bstosID: bstosID,
-    //     eventStatus: status,
-    //     IsHold: 1,
-    //     remark: remark
+    if (selection.length > 0) {
+      selection.forEach(rowdata => {
+        bstosID.push(rowdata.ID);
+      });
+      let postdata = {
+        bstosID: bstosID,
+        IsHold: 1,
+        remark: remark
 
-    //   };
+      };
 
-    //   Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
-    //     res => {
-    //       if (res.data._result !== undefined) {
-    //         if (res.data._result.status === 1) {
-    //           setOpenSuccess(true);
-    //           getData(createQueryString(query));
-    //           Clear();
-    //         } else {
-    //           setOpenError(true);
-    //           setTextError(res.data._result.message);
-    //           getData(createQueryString(query));
-    //           Clear();
-    //         }
-    //       }
-    //     }
-    //   );
-    // }
+      Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
+        res => {
+          if (res.data._result !== undefined) {
+            if (res.data._result.status === 1) {
+              setDialogState({ type: "success", content: "Success", state: true })
+              getData();
+              Clear();
+            } else {
+              setDialogState({ type: "error", content: res.data._result.message, state: true })
+              getData();
+              Clear();
+            }
+          }
+        }
+      );
+    }
 
   }
-
+  const Clear = () => {
+    setSelection([]);
+    setRemark("");
+  };
   //===========================================================
   return (
     <div>
