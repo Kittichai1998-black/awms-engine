@@ -168,9 +168,21 @@ const useGetStos = (data) => {
 const getPalletDel = (data) => {
     return <div style={{ display: "flex", maxWidth: '250px' }}>
         <label>{data}</label>
-        <AmRediRectInfo api={'/images/' + data + '.jpg'} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} />
+        <AmRediRectInfo customApi={()=>getFile(data)} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} />
     </div>
 
+}
+async function getFile(data) {
+    try {
+        await Axios.get(window.apipath +'/v2/download/download_image?fileName=' + data).then(res => {
+            // if (res.data.datas) {
+                
+            // }
+        });
+
+    } catch (err) {
+         console.log(err)
+    }
 }
 const columnsStorageObject = [
     {
@@ -319,8 +331,7 @@ const AmCheckPalletForReceive = (props) => {
     )
 }
 AmCheckPalletForReceive.propTypes = {
-    dataDocument: PropTypes.object.isRequired,
-    columnsStorageObject: PropTypes.array.isRequired,
+    dataDocument: PropTypes.object.isRequired 
 };
 
 export default AmCheckPalletForReceive;
