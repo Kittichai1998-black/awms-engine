@@ -28,6 +28,16 @@ const DataGenerateMulti = (data) => {
         <div style={{ marginBottom: "3px" }}>{y}</div>
       ));
     }
+    if (x.For_Customer != null) {
+      x.For_Customer = x.For_Customer.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
+      ));
+    }
+    if (x.Project != null) {
+      x.Project = x.Project.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
+      ));
+    }
     if (x.Status != null) {
       x.Status = x.Status.split("\\n").map(y => (
         <div style={{ marginBottom: "3px", textAlign: "center" }}>
