@@ -51,6 +51,8 @@ const AmStorageObjectMulti = props => {
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
   const [dialog, setDialog] = useState(false);
+  const [remarkMode, setRemarkMode] = useState(false);
+  const [hold, setHold] = useState(true);
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
 
@@ -194,9 +196,7 @@ const AmStorageObjectMulti = props => {
                   <AmInput
                     id={cols.field}
                     style={{ width: "270px", margin: "0px" }}
-                    //placeholder={placeholder}
                     type="input"
-                    //value={data ? data[cols.field]:""}
                     onChange={val => {
                       onChangeEditor(val);
                     }}
@@ -212,9 +212,8 @@ const AmStorageObjectMulti = props => {
   };
   const onChangeEditor = (value) => {
     setRemark(value)
-    console.log(selection)
     if (selection.length === 0) {
-      //setOpenWarning(true);
+      setDialogState({ type: "warning", content: "Warning", state: true })
     } else {
       //let cloneData = selection;
       setRemark(value);
@@ -222,7 +221,6 @@ const AmStorageObjectMulti = props => {
     }
   };
   const onUpdateHold = () => {
-    console.log(remark)
     let bstosID = [];
 
     if (selection.length > 0) {
@@ -231,9 +229,9 @@ const AmStorageObjectMulti = props => {
       });
       let postdata = {
         bstosID: bstosID,
-        IsHold: 1,
-        remark: remark
-
+        IsHold: hold ? 1 : 0,
+        remark: remark,
+        remarkMode: remarkMode
       };
 
       Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
@@ -271,7 +269,6 @@ const AmStorageObjectMulti = props => {
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
         titleText={"Remark"}
         data={"text"}
-        //columns={randerRemark()}
         columns={DataGenerateRemark()}
       />
       <AmTable
@@ -286,7 +283,6 @@ const AmStorageObjectMulti = props => {
         pagination={true}
         selection={"checkbox"}
         selectionData={(data) => {
-          console.log(data)
           setSelection(data);
         }}
         onPageChange={p => {
@@ -295,16 +291,33 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
-        customTopLeftControl={<AmButton
+        customTopLeftControl={<div><AmButton
           style={{ marginRight: "5px" }}
           styleType="confirm"
           onClick={() => {
             setDialog(true)
-            //onUpdateHold()
           }}
         >
           HOLD
-        </AmButton>}
+        </AmButton><AmButton
+            style={{ marginRight: "5px" }}
+            styleType="confirm"
+            onClick={() => {
+              setDialog(true)
+              setHold(false)
+            }}
+          >
+            UNHOLD
+        </AmButton><AmButton
+            style={{ marginRight: "5px" }}
+            styleType="confirm"
+            onClick={() => {
+              setDialog(true)
+              setRemarkMode(true)
+            }}
+          >
+            REMARK
+        </AmButton></div>}
       />
 
     </div>
