@@ -168,9 +168,9 @@ const AmHeaderputandpick = (props) => {
     }, [doc.datadocItem, doc.dialogItem]);
 
 
-    useEffect(() => {
-        doc.setdocID(props.docIDCreate)
-    }, [props.docIDCreate])
+    //useEffect(() => {
+    //    doc.setdocID(props.docIDCreate)
+    //}, [props.docIDCreate])
 
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
@@ -528,11 +528,11 @@ const AmHeaderputandpick = (props) => {
                 <AmTable
                     columns={columns}
                     dataKey={"ID"}
-                    dataSource={doc.editdata.length != 0 ? [...doc.editdata] :
-                        doc.datadocItem.length != 0 ? [...doc.datadocItem] :
-                            doc.dataSourceItemTB ? [...doc.dataSourceItemTB] : []}
-                    selectionDefault={doc.editdata.length != 0 ? doc.editdata :
-                               doc.dataSet.length != 0 ? doc.dataSet : defaultSelect}
+                    
+                    dataSource={doc.editdata.length != 0 ? doc.editdata :
+                        doc.datadocItem.length != 0 ? doc.datadocItem :
+                            doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
+                    selectionDefault={dataSelect}
                     selection="checkbox"
                     selectionData={data => setDataSelect(data)}
                     rowNumber={true}

@@ -15,7 +15,9 @@ const AmputAndpick = (props) => {
     const getDocID = () => {
         //return props.dochistory.location.search
         const values = queryString.parse(props.dochistory.location.search);
-        var ID = values.docID.toString();
+        if (values.docID != undefined) {
+            var ID = values.docID.toString();
+        }
         return ID;
     };
     return <PutandPickProvider>
@@ -24,7 +26,7 @@ const AmputAndpick = (props) => {
                 docheaderCreate={props.docheaderCreate}
                 docItemQuery={props.docItemQuery}
                 doccolumnEditItem={props.doccolumnEditItem}
-                docIDCreate={getDocID()}
+                //docIDCreate={getDocID()}
             >
             </AmHeaderputandpick>
         </div>
