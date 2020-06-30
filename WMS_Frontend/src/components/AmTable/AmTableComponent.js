@@ -46,7 +46,7 @@ const SortDirection = {
   //   },
   // })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
     
@@ -123,7 +123,16 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                 id="selectAll"
                 checked={selection.selectAllState}
                 type="checkbox"
-                onChange={e => {selection.selectAll(null)}}
+                onChange={e => {
+                  if(e.target.checked){
+                    selection.addAll(dataSource)
+                  }else{
+                    selection.removeAll(null);
+                  }
+
+                  selection.selectAll(null)
+                  
+                }}
                 />
             },
             filterable: false,
@@ -162,7 +171,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         }
         setColumns([...getColumns]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [Columns, selection.selectionValue, selection.selectAllState, page,]);
+      }, [Columns, selection.selectionValue, selection.selectAllState, dataSource]);
 
     return columns
 }
@@ -233,7 +242,16 @@ const AmTableComponent = (props) => {
     const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
-    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page, props.selectionDisabledCustom)
+    const columns = useColumns(
+      props.columns, 
+      props.rowNumber, 
+      props.selection, 
+      props.dataKey, 
+      props.clearSelectionChangePage, 
+      props.page, 
+      props.selectionDisabledCustom,
+      props.dataSource
+    )
 
     return <TableContainer width={props.width} height={props.height} ref={containerRef}>
           <Table style={props.tableStyle}>

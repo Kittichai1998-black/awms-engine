@@ -166,6 +166,7 @@ const AmTableSetup = (props) => {
     }, [props.selectionDefault])
 
     useEffect(() => {
+        selection.removeAll();
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
@@ -175,8 +176,8 @@ const AmTableSetup = (props) => {
     }, [page, props.dataSource])
 
     useEffect(() => {
-        selection.removeAll();
-        props.onPageChange(page)
+        if(typeof props.onPageChange === "function")
+            props.onPageChange(page)
     }, [page])
 
     return <div style={{maxHeight:props.height}}>
