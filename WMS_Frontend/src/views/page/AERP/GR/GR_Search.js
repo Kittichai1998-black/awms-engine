@@ -187,6 +187,7 @@ const DocumentSearchSTGT = props => {
     { label: "Sou. Warehouse", field: "SouWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
     { label: "Des. Warehouse", field: "DesWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
     { label: "Wh Order", field: "Ref1", width: 120, searchType: "input" },
+    { label: "Project", field: "Project", width: 100, searchType: "input" },
     // {   label: "Sou.Customer",   field: "SouCustomerName",   searchType: "dropdown",   dropdownData: dataCustomer,   fieldDataKey: "Name",   fieldLabel: "Name" },
     //{ label: "Lot", field: "Lot", searchType: "input" },
     //{ label: "Remark", field: "Remark", searchType: "input" },

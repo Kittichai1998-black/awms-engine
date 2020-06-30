@@ -56,9 +56,9 @@ const AmStorageObjectMulti = props => {
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
 
-  useEffect(() => {
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {

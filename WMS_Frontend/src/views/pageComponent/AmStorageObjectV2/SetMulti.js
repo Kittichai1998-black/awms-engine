@@ -37,14 +37,14 @@ const DataGenerateMulti = (data) => {
         <div style={{ marginBottom: "3px" }}>{y}</div>
       ));
     }
-    if (x.Status != null) {
-      x.Status = x.Status.split("\\n").map(y => (
-        <div style={{ marginBottom: "3px", textAlign: "center" }}>
-          {/* {getStatus(y)} */}
-          <div style={{ marginBottom: "3px" }}>{y}</div>
-        </div>
-      ));
-    }
+    // if (x.Status != null) {
+    //   x.Status = x.Status.split("\\n").map(y => (
+    //     <div style={{ marginBottom: "3px", textAlign: "center" }}>
+    //       {/* {getStatus(y)} */}
+    //       <div style={{ marginBottom: "3px" }}>{y}</div>
+    //     </div>
+    //   ));
+    // }
 
 
 

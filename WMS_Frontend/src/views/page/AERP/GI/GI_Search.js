@@ -33,7 +33,7 @@ const DocumentSearchSTGT = props => {
 
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "MovementType",
+    t: "DocumentProcessType",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "Name AS value,Name AS label",
     g: "",
@@ -202,6 +202,7 @@ const DocumentSearchSTGT = props => {
     { label: "Des. Warehouse", field: "DesWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
     // {   label: "Sou.Customer",   field: "SouCustomerName",   searchType: "dropdown",   dropdownData: dataCustomer,   fieldDataKey: "Name",   fieldLabel: "Name" },
     //{ label: "Remark", field: "Remark", searchType: "input" },
+    { label: "Project", field: "Project", width: 100, searchType: "input" },
     { label: "Wh Order", field: "Ref1", width: 120, searchType: "input" },
     { label: "Doc. Date From", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateFrom" },
     { label: "Doc. Date To", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateTo" }
@@ -210,7 +211,7 @@ const DocumentSearchSTGT = props => {
   const primarySearch = [
     { label: "Event Status", field: "EventStatus", searchType: "dropdown", dropdownData: DocumentEventStatusSearch, fieldDataKey: "Name", fieldLabel: "Name" },
     { label: "Doc No.", field: "Code", searchType: "input" },
-    { label: "Movement", field: "MovementName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
+    { label: "Doc.ProcessType", field: "MovementName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
   ];
   const dataReject = [// {//   field: "souAreaCode",//   type: "dropdow",//   typeDropdow: "search",//   name: "Sou. Area",//   dataDropDow: AreaMasterQuery,//   placeholder: "Sou. Area",//   fieldLabel: ["Code", "Name"]//   //required: true//   //disabled: true// },
     { field: "desAreaCode", type: "dropdow", typeDropdow: "search", name: "Dest. Area", dataDropDow: AreaMasterQuery, placeholder: "Dest. Area", fieldLabel: ["Code", "Name"] },

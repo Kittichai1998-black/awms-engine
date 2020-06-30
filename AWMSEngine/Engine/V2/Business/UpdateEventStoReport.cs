@@ -40,8 +40,7 @@ namespace AWMSEngine.Engine.Business
                 }
                 else
                 {
-                    if (sto.eventStatus != StorageObjectEventStatus.RECEIVED)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
+                  
                     this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
                 }
                 
@@ -57,6 +56,11 @@ namespace AWMSEngine.Engine.Business
             
             sto.IsHold = IsHold;
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
+
+            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            if (!checkStatus)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
+
             foreach (var st in sto.mapstos)
             {
                 st.IsHold = IsHold;
