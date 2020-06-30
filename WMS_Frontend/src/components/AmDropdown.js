@@ -105,7 +105,7 @@ const Menu = props => {
                 maxWidth: props.ddlmaxwidth,
                 backgroundColor: 'white',
                 borderRadius: '4px 4px 0 0',
-                boxShadow: `0 0 0 1px ${shadow}`,
+                boxShadow: `0 0 0 1px ${shadow}`, 
                 marginTop: 8,
                 marginBottom: 0,
                 // padding: '1px 0px',
@@ -603,6 +603,7 @@ const DropdownComponent = (props) => {
             {
                 input: (base) => ({
                     ...base,
+                    textAlign:"left",
                     color: theme.palette.text.primary,//rgba(0, 0, 0, 0.87)
                     '& input': {
                         font: 'inherit',
