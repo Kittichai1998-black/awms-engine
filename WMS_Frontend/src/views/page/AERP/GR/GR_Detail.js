@@ -18,18 +18,20 @@ const GR_Detail = props => {
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
     [
-      { label: "Source Warehouse", values: "SouWarehouseName" },
-      { label: "Destination Warehouse", values: "DesWarehouseName" }
+      { label: "Customer", values: "ForCustomer" },
+      { label: "Project", values: "Ref2" }
     ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-      { label: "Remark", values: "Remark" }
+      { label: "", values: "" }
     ]
   ];
 
   const columns = [
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
+    { width: 130, accessor: "advice", Header: "Advice" },
+    { width: 130, accessor: "RefID", Header: "Serial" },
     { width: 130, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_baseqty", Header: "BaseQty" },
     { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
@@ -40,7 +42,7 @@ const GR_Detail = props => {
   const columnsDetailSOU = [
     { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
     { width: 100, accessor: "rootCode", Header: "Pallet" },
-    { width: 150, accessor: "skuCode", Header: "Pack Code" },
+    { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
     { width: 125, accessor: "Lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
@@ -48,7 +50,7 @@ const GR_Detail = props => {
   ];
 
 
-  const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
+  const optionDocItems = [{ optionName: "advice" }, { optionName: "serial" }];
 
   const getStatusGR = value => {
     if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
@@ -66,18 +68,18 @@ const GR_Detail = props => {
   const addPalletMapSTO = {
     apiCreate: '/v2/ScanMapStoFromDocAPI',
     // columnsDocItems: colListDocItems,
-    ddlWarehouse: {
-      visible: true,
-      field: "warehouseID",
-      typeDropdown: "search",
-      name: "Warehouse",
-      placeholder: "Select Warehouse",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "ID",
-      // defaultValue: 1,
-      required: true,
-      // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
-    },
+    // ddlWarehouse: {
+    //   visible: true,
+    //   field: "warehouseID",
+    //   typeDropdown: "search",
+    //   name: "Warehouse",
+    //   placeholder: "Select Warehouse",
+    //   fieldLabel: ["Code", "Name"],
+    //   fieldDataKey: "ID",
+    //   // defaultValue: 1,
+    //   required: true,
+    //   // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
+    // },
     ddlArea: {
       visible: true,
       field: "areaID",
@@ -88,7 +90,7 @@ const GR_Detail = props => {
       fieldDataKey: "ID",
       // defaultValue: 5,
       required: true,
-      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+      customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     ddlLocation: {
       visible: true,
@@ -100,12 +102,11 @@ const GR_Detail = props => {
       fieldDataKey: "ID",
       // defaultValue: 14,
       required: false,
-      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     inputTitle: [
       {
-        field: "projCode",
-        name: "Project",
+        field: "WhOrder",
+        name: "Wh.Order",
         type: "text",
         customShow: (dataDocument) => {
           return dataDocument.document.Ref1;

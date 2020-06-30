@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -53,6 +54,9 @@ namespace AWMSModel.Constant.EnumConst
         /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
         AFT_Supplier_RequireFields,
         /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
-        AFT_Customer_RequireFields
+        AFT_Customer_RequireFields,
+        /// Path folder images 
+        [EnumValueAttribute(ValueString = "PATH_FOLDER_IMAGES")]
+        PATH_FOLDER_IMAGES
     }
 }

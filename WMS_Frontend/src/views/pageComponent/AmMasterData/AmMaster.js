@@ -9,6 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 import AmDropdown from '../../../components/AmDropdown';
+import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
 
@@ -77,7 +78,7 @@ const useColumns = (cols) => {
     const [columns, setColumns] = useState(cols);
     const [editData, setEditData] = useState();
     const [removeData, setRemoveData] = useState();
-    
+
 
     useEffect(() => {
         const iniCols = [...cols];
@@ -151,7 +152,7 @@ const useColumns = (cols) => {
                 <IconButton
                     size="small"
                     aria-label="info"
-                    onClick={() => { setRemoveData({ ...e.data, "Status":2 }) }}
+                    onClick={() => { setRemoveData({ ...e.data, "Status": 2 }) }}
                     style={{ marginLeft: "3px" }}>
                     <DeleteIcon
                         fontSize="small"
@@ -195,12 +196,12 @@ const AmMasterData = (props) => {
                 "_token": localStorage.getItem("Token")
             };
             Axios.put(url, updJson).then(res => {
-                if(res.data._result.status === 1){
+                if (res.data._result.status === 1) {
                     setQueryObj({ ...queryObj })
-                    dialogState({type:"success", content:"Success", state:true})
+                    setDialogState({ type: "success", content: "Success", state: true })
                 }
-                else{
-                    dialogState({type:"error", content:data._result.message, state:true})
+                else {
+                    setDialogState({ type: "error", content: data._result.message, state: true })
                 }
             });
         }
@@ -213,10 +214,10 @@ const AmMasterData = (props) => {
     useEffect(() => {
         setPopupTitle("Remove")
         setUpdateData(removeData)
-        console.log(removeData)
         setEditorColumns([{
             field: "Status",
-          }])
+            value: 2
+        }])
     }, [removeData])
 
     useEffect(() => {
@@ -226,16 +227,13 @@ const AmMasterData = (props) => {
     }, [editData])
 
     useEffect(() => {
+        console.log(page)
         if (typeof (page) === "number" && !iniQuery) {
             const queryEdit = JSON.parse(JSON.stringify(queryObj));
             queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
             setQueryObj(queryEdit)
         }
     }, [page])
-
-    useEffect(() => {
-        console.log(removeData)
-    }, [removeData])
 
     const onChangeFilterData = (filterValue) => {
         var res = queryObj;

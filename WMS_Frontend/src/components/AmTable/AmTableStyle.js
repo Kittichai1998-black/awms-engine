@@ -7,18 +7,17 @@ const Table = styled.div`
     min-width: ${props => {
         return props.width ? props.width : "100%"
     }};
-    background:${props => props.background ? props.background : "black"};
+    background:${props => props.background ? props.background : "white"};
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
-    border-collapse: collapse;
-    border: 1px solid #ddd;
+    border-collapse: separate;
 `
 const TableContainer = styled.div`
     position:relative;
     width:${props => `${typeof props.width === "number" ? props.width + 'px' : props.width}`}
     overflow:auto;
-    max-height:${props => `${props.height}px`}
+    max-height:${props => `${typeof props.height === "number" ? props.height + 'px' : props.height}`}
     padding-right:1px;
     &&::-webkit-scrollbar{
         width: 0.5em;
@@ -30,7 +29,7 @@ const TableContainer = styled.div`
 `
 const TableRow = styled.div`
     display:table-row;
-    :hover div{
+    :hover div.tableCell{
         background:#cccccc;
         ${props => props.hover}
     }
@@ -41,40 +40,37 @@ const TableHeaderRow = styled.div`
 const TableCell = styled.div`
     display:table-cell;
     background:#ffffff;
-    border:1px solid #ddd;
     box-sizing:border-box;
     align-items:center;
     white-space:nowrap;
+
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    :first-child{
+        border-left: 1px solid #ddd;
+    }
 `
 const TableHeaderCell = styled(TableCell)`
     width:${props => `${props.fixWidth ? props.fixWidth : props.width}px`};
     ${props => props.fixWidth ? `min-width:${props.fixWidth}px` : props.width ? `min-width:${props.width}px` : "min-width:150px"}
     text-align:center;
-    z-index:1000;
+    z-index:500;
     background:rgb(248,249,250);
     padding:5px;
     font-weigth:bold;
     position: -webkit-sticky;
     position:sticky;
     top:0;
-    :after, :before{
-        content: '';
-        position: absolute;
-        left: 0;
-        width: 100%;
-    }
-    :after{
-        bottom: -1px;
-        border-bottom: 1px solid #ddd;
-    }
-    :before{
-        top: -1px;
-        border-top: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    :first-child{
+        border-left: 1px solid #ddd;
     }
 `
 
 const TableHeaderStickyColumnsCell = styled(TableHeaderCell)`
-    z-index:1000;
+    z-index:600;
     left:0;
 `
 const TableStickyCell = styled(TableCell)`
@@ -84,35 +80,32 @@ const TableStickyCell = styled(TableCell)`
 `
 const TableFooter = styled.div`
     display:table-footer-group;
-    background:green;
 `
 const TableCellFooter = styled(TableCell)`
+    z-index:500;
+    background:rgb(248,249,250);
+    padding:5px;
     font-weigth:bold;
     position: -webkit-sticky;
     position:sticky;
-    text-align:right;
     bottom:0;
-    :after, :before{
-        content: '';
-        position: absolute;
-        left: 0;
-        width: 100%;
-    }
-    :after{
-        top: -1px;
-        border-top: 1px solid #ddd;
-    }
-    :before{
-        bottom: 0px;
-        border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    :first-child{
+        border-left: 1px solid #ddd;
     }
 `
-const Arrow = styled.span`
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  display: inline-block;
-  padding: 3px;
-  margin-left: 5px;
-`;
 
-export {Table,TableContainer,TableRow,TableHeaderRow,TableHeaderCell,TableCell,TableFooter,TableStickyCell,TableHeaderStickyColumnsCell,Arrow,TableCellFooter }
+const TableStickyCellFooter = styled(TableCellFooter)`
+    position: -webkit-sticky;
+    position:sticky;
+    left:0;
+`
+
+export {Table,TableContainer,
+    TableRow,TableHeaderRow,
+    TableHeaderCell,TableCell,
+    TableFooter,TableStickyCell,
+    TableHeaderStickyColumnsCell
+    ,TableCellFooter,TableStickyCellFooter }

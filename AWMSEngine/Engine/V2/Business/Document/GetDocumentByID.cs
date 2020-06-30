@@ -98,6 +98,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
             public int areaID;
+            public int areaTypeID;
             public string areaCode;
             public long workQueueID;
             public string sou_workQueueDesArea;
@@ -132,7 +133,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID", reqVO.docTypeID, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("DocumentType_ID", reqVO.docTypeID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 },
                 new SQLOrderByCriteria[] { }, null, null,
                 this.BuVO).FirstOrDefault();
@@ -142,6 +144,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 },
                 this.BuVO);
 
@@ -220,6 +223,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,
@@ -286,6 +290,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,

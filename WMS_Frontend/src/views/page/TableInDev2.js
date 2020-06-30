@@ -288,7 +288,9 @@ const TableDev = (props) => {
       subComponent={true}
       filterable={true}
       filter={true}
+      pagination={true}
       filterData={(filter)=> {console.log(filter)}}
+      customTopRightControl={<div>xccccc</div>}
       //tableStyle={{color:"black"}}
       footerStyle={(data, datafield, col)=>{
         const style = {}

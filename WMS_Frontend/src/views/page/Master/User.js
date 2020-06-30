@@ -35,7 +35,7 @@ const FormInline = styled.div`
 `;
 //======================================================================
 const User = props => {
-
+  const [userPass, setUserPass] = useState();
   const [userPassID, setUserPassID] = useState();
   const [userID, setUserID] = useState();
   const [userRoleData, setUserRoleData] = useState([]);
@@ -79,7 +79,7 @@ const User = props => {
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setUserID(e.original.ID)}}
+        onClick={()=>{setUserID(e.original.ID); setUserPass(e.original)}}
         style={{ marginLeft: "3px" }}>
         <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
       </IconButton>
@@ -244,13 +244,14 @@ const User = props => {
   };
 
   useEffect(()=> {
-    if(userID !== undefined){
+    if(userPass !== undefined){
       Axios.get(
-        window.apipath + "/v2/GetUserRoleAPI?ID=" + userID
+        window.apipath + "/v2/GetUserRoleAPI?ID=" + userPass.ID
       ).then(res => {
         setUserRoleData(res.data.datas)})
     }
-  }, [userID]);
+    return () => setUserPass()
+  }, [userPass]);
 
   useEffect(()=> {
     if(userPassID !== undefined){
@@ -320,11 +321,9 @@ const User = props => {
     open={open} 
     onAccept={(status, rowdata)=> {
       if(!status){
-        setUserID(undefined);
       }
       else{
         UpdateUserRole();
-        setUserID(false)
       }
       setOpen(false)
     }}
@@ -333,16 +332,14 @@ const User = props => {
     columns={relationComponent}
   />});
 
-  const PopupPassword = React.memo(({relationComponent, open}) => {
+  const PopupPassword = React.memo(({open}) => {
     return <AmEditorTable 
     open={openPassword} 
     onAccept={(status, rowdata)=> {
       if(!status){
-        setUserPassID()
       }
       else{
         UpdatePassword();
-        setUserPassID()
       }
       setOpenPassword(false);
     }}
@@ -373,7 +370,6 @@ const User = props => {
   />});
 
   const UpdateUserRole = () => {
-    console.log(updateUserRole)
     let updjson = {
       t: "ams_User_Role",
       pk: "ID",
@@ -384,11 +380,9 @@ const User = props => {
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
       if(res.data._result.status === 1){
-        setUserID();
         setDialogState({type:"success", content:"Success", state:true})
       }
       else{
-        setUserID();
         setDialogState({type:"error", content:res.data._result.message, state:true})
       }
     });
@@ -412,11 +406,9 @@ const User = props => {
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
       if(res.data._result.status === 1){
-        setUserPassID();
         setDialogState({type:"success", content:"Success", state:true})
       }
       else{
-        setUserPassID();
         setDialogState({type:"error", content:res.data._result.message, state:true})
       }
     });

@@ -1,6 +1,5 @@
-import React, {useContext, useState, useEffect, useRef, useLayoutEffect, createRef} from 'react';
-import {Arrow, 
-    Table,
+import React, {useContext, useState, useEffect, useRef, useLayoutEffect} from 'react';
+import {Table,
     TableContainer,
     TableRow,
     TableHeaderRow,
@@ -9,14 +8,16 @@ import {Arrow,
     TableFooter,
     TableStickyCell,
     TableHeaderStickyColumnsCell,
-    TableCellFooter } from "./AmTableStyle";
+    TableCellFooter,
+    TableStickyCellFooter } from "./AmTableStyle";
 import {AmTableContext} from "./AmTableContext";
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+//import Input from "@material-ui/core/Input";
 import Input from "@material-ui/core/Input";
-import AmInput from "../AmInput";
-import Checkbox from "@material-ui/core/Checkbox";
+//import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
-import Radio from "@material-ui/core/Radio";
-import { withStyles } from "@material-ui/core/styles";
+//import Radio from "@material-ui/core/Radio";
+//import { withStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
 const IsEmptyObject = (obj) => {
@@ -31,21 +32,21 @@ const SortDirection = {
     ASC: "asc"
 };
 
-  const CheckboxCustom = withStyles({
-    root: {
-        padding:"0 !important",
-        marginRight:"5px"
-    },
-  })(Checkbox);
+  // const CheckboxCustom = withStyles({
+  //   root: {
+  //       padding:"0 !important",
+  //       marginRight:"5px"
+  //   },
+  // })(Checkbox);
 
-  const RadioCustom = withStyles({
-    root: {
-        padding:"0 !important",
-        marginRight:"5px"
-    },
-  })(Radio);
+  // const RadioCustom = withStyles({
+  //   root: {
+  //       padding:"0 !important",
+  //       marginRight:"5px"
+  //   },
+  // })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
     
@@ -65,7 +66,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         {
             getColumns.unshift({
                 Header: "Row",
-                fixWidth: 20,
+                fixWidth: 45,
                 filterable: false,
                 fixed: "left",
                 sortable: false,
@@ -103,11 +104,10 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                           type="radio"
                           name="selection"
                           value={ele.data[dataKey]}
-                          onKeyPress={e => {
-                              if (e.target.checked) {
-                                  selection.set({data:ele.original, uniq:ele.original[dataKey]});
-                              }
+                          onChange={e => {
+                            selection.set({data:ele.original, uniq:ele.original[dataKey]});
                           }}
+                          disabled={selectionCustom ? selectionCustom(ele.data) : false}
                       />
                       );
                   }
@@ -148,8 +148,8 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                           } else {
                             selection.remove({uniq:dataKey, data:ele.original[dataKey]});
                           }
-                        }
-                      }
+                        }}
+                        disabled={selectionCustom ? selectionCustom(ele.data) : false}
                     />
                     );
                 }
@@ -162,7 +162,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         }
         setColumns([...getColumns]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [Columns, selection.selectionValue, selection.selectAllState, page]);
+      }, [Columns, selection.selectionValue, selection.selectAllState, page,]);
 
     return columns
 }
@@ -174,33 +174,34 @@ const useDataSource = (props, groupBy) => {
   useEffect(() => {
     if(typeof props === "object"){
       const data = props.slice(0, pagination.pageSize);
-
+      let keyObj = [];
       if(groupBy){
-        let groups = _.groupBy(data, (data)=> {
+        let groups = _.groupBy(data, (dt)=> {
           //var findSort = groupItem.find(x => x === sort.sortValue);
           let groupField = "";
-          groupBy.field.forEach(x=> groupField += data[x]);
+          groupBy.field.forEach(x=> groupField += dt[x]);
+          keyObj.push(groupField)
           return groupField;
         });
-        
-        let groupData = _.orderBy(Object.keys(groups), groupBy.field).map((g) => {
-          let grourData = groups[g];
+        keyObj = [...new Set(keyObj)];
+        let groupObj = keyObj.map(x=> groups[x])
+        let groupAllData = _.orderBy(Object.keys(groupObj), groupBy.field).map((g) => {
+          let groupData = groupObj[g];
           let sumBy = {};
           groupBy.sumField.forEach(x=> {
-            sumBy[x] = _.sumBy(grourData, x)
+            sumBy[x] = _.sumBy(groupData, x)
           });
           if(props.groupFooter){
             //g.push({...props.groupFooter(data), "_footer":true})
-            return grourData
+            return groupData
           }
           else{
-            grourData.push({...sumBy, "_footer":true})
-            return grourData
+            groupData.push({...sumBy, "_footer":true})
+            return groupData
           }
         });
         let groupWithSum = []
-        
-        groupData.forEach(x=> groupWithSum = groupWithSum.concat(x))
+        groupAllData.forEach(x=> groupWithSum = groupWithSum.concat(x))
         setDataSource(groupWithSum)
       }else{
         setDataSource(data)
@@ -232,9 +233,9 @@ const AmTableComponent = (props) => {
     const dataSource = useDataSource(props.dataSource, props.groupBy)
     
     const tableSize = useWindowSize(containerRef)
-    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page)
+    const columns = useColumns(props.columns, props.rowNumber, props.selection, props.dataKey, props.clearSelectionChangePage, props.page, props.selectionDisabledCustom)
 
-    return <TableContainer width={props.width} ref={containerRef} height={props.height}>
+    return <TableContainer width={props.width} height={props.height} ref={containerRef}>
           <Table style={props.tableStyle}>
             {GenerateHeader({columns, props, tableSize})}
             {GenerateRow({columns, props, dataSource})}
@@ -266,7 +267,7 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         if (columnType.type !== undefined) {
           if (columnType.type === "datetime") {
             return (
-              <div>
+              <div style={{marginLeft:"2px"}}>
                 {dataRow !== undefined && Moment(dataRow).isValid()
                   ? Moment(dataRow).format(
                       columnType.dateFormat
@@ -278,18 +279,18 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
             );
           }
           else if (columnType.type === "number"){
-            return <div style={{ width: "100%", textAlign: "right" }}>{dataRow}</div>;
+            return <div style={{ width: "100%", paddingRight:"2px", textAlign: "right" }}>{dataRow}</div>;
           }
         }
         else{
-          return dataRow;
+          return <div style={{marginLeft:"2px"}}>{dataRow}</div>;
         }
     };
 
     const renderEmptyData = () => {
       return <div style={{visibility:"hidden"}}>&nbsp;</div>
     }
-
+    let getWidth = 0;
     return columns.map((column, idx) => {
         let createCellData = {
             original: data,
@@ -306,12 +307,15 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
         }
 
         if(column.fixed){
-            return <TableCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
+            let fixedStyle = { };
+            fixedStyle.left = getWidth;
+            getWidth = getWidth + column.fixWidth;
+            return <TableStickyCell className="tableCell" style={column.colStyle === undefined ? {...style, ...fixedStyle} : {...column.colStyle, ...fixedStyle}} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
-            </TableCell>
+            </TableStickyCell>
         }
         else{
-            return <TableCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
+            return <TableCell className="tableCell" style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableCell>
         }
@@ -346,54 +350,46 @@ const GenerateHeader = ({columns,props, tableSize}) => {
 
     const SortHeader = propsChild => {
       const { row, children } = propsChild;
+      const {sortValue, setSort} = sort;
       if (props.sortable) {
         if (row.sortable === undefined || row.sortable === true) {
           let orderBy;
-          if (sort !== undefined && sort !== null && sort !== {}) {
-            if (row.accessor === sort.id) {
-              if (sort.sortDirection === SortDirection.DESC)
-                orderBy = {
-                  id: row.accessor,
-                  sortDirection: SortDirection.ASC
-                };
-              else
-                orderBy = {
-                  id: row.accessor,
-                  sortDirection: SortDirection.DESC
-                };
-            }
-          }
-
+          var sortValueOwn = sortValue.id === row.accessor ? sortValue : null;
           return (
             <div
               style={{ width: "100%" }}
               onClick={() => {
-                if (sort === undefined || sort === null || sort === {}) {
+                if (sortValue === undefined || sortValue === null || IsEmptyObject(sortValue)) {
                   orderBy = {
                     id: row.accessor,
                     sortDirection: SortDirection.DESC
                   };
                 }
-                if (sort !== undefined && sort !== null && sort !== {}) {
-                  if (row.accessor !== sort.id) {
+                if (sortValue !== undefined && sortValue !== null && !IsEmptyObject(sortValue)) {
+                  if (row.accessor === sortValue.id) {
+                    orderBy = {
+                      id: row.accessor,
+                      sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC
+                    };
+                  }else{
                     orderBy = {
                       id: row.accessor,
                       sortDirection: SortDirection.DESC
                     };
                   }
                 }
-                sort.setSort(orderBy);
+                setSort(orderBy);
               }}
             >
               {children}
-              {orderBy === null || orderBy === undefined ? null : orderBy.sortDirection === SortDirection.DESC ? 
+              {sortValueOwn === null || sortValueOwn === undefined ? null : sortValueOwn.sortDirection === SortDirection.DESC ? 
               (
                 <span>
-                  <Arrow style={{transform: "rotate(-135deg)",WebkitTransform: "rotate(-135deg)"}}/>
+                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(0deg)"}}/>
                 </span>
               ) : (
                 <span>
-                  <Arrow style={{transform: "rotate(45deg)",WebkitTransform: "rotate(45deg)"}}/>
+                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(180deg)"}}/>
                 </span>
               )}
             </div>
@@ -433,12 +429,37 @@ const GenerateHeader = ({columns,props, tableSize}) => {
       let getWidth = 0;
       const freeWidth = calculateWidth(columns);
       return columns.map((col, idx) => {
-        //let fixedStyle = {};
         if (col.fixed) {
-          //fixedStyle = { left: getWidth, zIndex: 1000 };
-          getWidth = getWidth + (col.width !== undefined ? col.width : col.fixWidth !== undefined ? col.fixWidth : freeWidth);
+          let fixedStyle = { };
+          fixedStyle.left = getWidth;
+          getWidth = getWidth + col.fixWidth;
+          return <TableHeaderStickyColumnsCell
+            id={`th_${idx}`}
+            style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}
+            key={idx}
+            rowData={col}
+            ref={cellRef.current[idx]}
+            fixWidth={col.fixWidth}
+          >
+            {col.Header === undefined ? (
+              <SortHeader row={col}></SortHeader>
+            ) : 
+            typeof col.Header === "string"  ? (
+              <SortHeader row={col}>{col.Header}</SortHeader>
+            ) : (
+              <SortHeader row={col}>{col.Header(col)}</SortHeader>
+            )}
+            {props.filterable ? (
+              col.filterable === false ? null : typeof col.Filter === "function" ? 
+                (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
+                <div>
+                  <Input style={{width:"100%"}} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                </div>)
+            ) : null}
+          </TableHeaderStickyColumnsCell>
         }
-        return <TableHeaderCell
+        else{
+          return <TableHeaderCell
             id={`th_${idx}`}
             style={{ ...col.style, ...props.headerStyle }}
             key={idx}
@@ -459,12 +480,11 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <AmInput style={{
-                    width:col.fixWidth !== undefined ? col.fixWidth : col.width === undefined ? freeWidth : col.width,
-                  }} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                  <Input style={{width:"100%"}} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
                 </div>)
             ) : null}
           </TableHeaderCell>
+        }
       });
     };
 
@@ -483,7 +503,7 @@ const GenerateFooter = ({columns,props, dataSource}) => {
   }
 }
 
-const GenerateFooterCell = (column,props, dataSource, idx) => {
+const GenerateFooterCell = (column, props, dataSource, idx) => {
     const dataByField = [];
     let totalField = 0;
     dataSource.forEach((data, rowIndex)=> {
@@ -499,14 +519,31 @@ const GenerateFooterCell = (column,props, dataSource, idx) => {
       style = props.footerStyle(dataSource, dataByField, column)
     }
 
+    
+    let getWidth = 0;
+    let fixedStyle = { };
+    fixedStyle.left = getWidth;
+    getWidth = getWidth + column.fixWidth;
     if(column.Footer !== undefined){
-      if(typeof column.Footer === "function")
-        return <TableCellFooter key={idx} style={style}>{column.Footer(dataSource, dataByField, column)}</TableCellFooter>
-      else
-        return <TableCellFooter key={idx} style={style}>{totalField}</TableCellFooter>
+      if(typeof column.Footer === "function"){
+        
+        if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}>{column.Footer(dataSource, dataByField, column)}</TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}>{column.Footer(dataSource, dataByField, column)}</TableCellFooter>
+      }
+      else{
+        if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}>{totalField}</TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}>{totalField}</TableCellFooter>
+      }
     }
     else{
-      return <TableCellFooter key={idx} style={style}> </TableCellFooter>
+      if(column.fixed)
+          return <TableStickyCellFooter key={idx} style={{...style, ...fixedStyle}}></TableStickyCellFooter>
+        else
+          return <TableCellFooter key={idx} style={{...style}}></TableCellFooter>
     }
 }
 

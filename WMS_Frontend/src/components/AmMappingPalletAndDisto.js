@@ -4,6 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
 import Divider from '@material-ui/core/Divider';
 import AmScanQRbyCamera from './AmScanQRbyCamera';
+import AmCheckPalletForReceive from './AmCheckPalletForReceive';
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -29,6 +30,7 @@ import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 import { useTranslation } from 'react-i18next'
 import ToListTree from './function/ToListTree';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import _ from "lodash";
 const Axios = new apicall();
 
@@ -55,7 +57,7 @@ input {
 //   }
 const LabelH = styled.label`
 font-weight: bold;
-  width: 100px;
+  width: 110px;
 `;
 
 const InputDiv = styled.div`
@@ -64,6 +66,30 @@ const InputDiv = styled.div`
         margin: 0;
     }
 `;
+
+function QRIcon(props) {
+    return (
+        <SvgIcon>
+            <path
+                d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
+            />
+        </SvgIcon>
+    );
+}
+const BtnReceive = withStyles(theme => ({
+
+}))(props => {
+    const { classes, onHandleClick, ...other } = props;
+    return (
+        <>
+            <AmButton className="float-right" styleType="confirm"
+                startIcon={<QRIcon />}
+                onClick={onHandleClick}>
+                {'Receive'}
+            </AmButton>
+        </>
+    );
+});
 const DialogTitle = withStyles(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -161,7 +187,7 @@ const BtnAddPallet = (props) => {
         inputTitle,
         inputHead,
         inputBase,
-        ddlWarehouse,
+        // ddlWarehouse,
         ddlArea,
         ddlLocation,
         onSuccessMapping
@@ -184,12 +210,16 @@ const BtnAddPallet = (props) => {
     const [inputBaseCode, setInputBaseCode] = useState(null);
 
     //dropdown Warehouse, Area 
-    const [WarehouseDDL, setWarehouseDDL] = useState(null);
+    // const [WarehouseDDL, setWarehouseDDL] = useState(null);
     const [AreaDDL, setAreaDDL] = useState(null);
     const [LocationDDL, setLocationDDL] = useState(null);
-    const [selWarehouse, setSelWarehouse] = useState(ddlWarehouse && ddlWarehouse.defaultValue ? ddlWarehouse.defaultValue : null);
+    // const [selWarehouse, setSelWarehouse] = useState(ddlWarehouse && ddlWarehouse.defaultValue ? ddlWarehouse.defaultValue : null);
     const [selArea, setSelArea] = useState(ddlArea && ddlArea.defaultValue ? ddlArea.defaultValue : null);
+    const [selLocation, setSelLocation] = useState(null);
 
+    const fileImgRef = useRef();
+    const [imgFile, setImgFile] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
     //AlertDialog
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -197,11 +227,12 @@ const BtnAddPallet = (props) => {
     const [typeDialog, setTypeDialog] = useState("");
 
     //show info base
-    const [showInfoBase, setShowInfoBase] = useState(null);
+    // const [showInfoBase, setShowInfoBase] = useState(null);
     const columns = [
         ...columnsDocItems,
         {
-            width: 160, Header: "จำนวนที่ต้องการรับเข้า", Cell: e =>
+            width: 160, Header: "จำนวนที่ต้องการรับเข้า",
+            Cell: e =>
                 genInputQty(e.original)
         },
 
@@ -247,20 +278,21 @@ const BtnAddPallet = (props) => {
             setInputBaseCode(inputBaseComponent(inputBase));
         }
     }, [inputBaseCode])
-    useEffect(() => {
-        if (WarehouseDDL === null && ddlWarehouse && ddlWarehouse.visible) {
-            GetWarehouseDDL();
-        }
-    }, [WarehouseDDL])
-    useEffect(() => {
-        if (AreaDDL !== null && ddlArea && ddlArea.visible && selWarehouse) {
-            GetAreaDDL(selWarehouse)
-        }
-    }, [selWarehouse])
+    // useEffect(() => {
+    //     if (WarehouseDDL === null && ddlWarehouse && ddlWarehouse.visible) {
+    //         GetWarehouseDDL();
+    //     }
+    // }, [WarehouseDDL])
+    // useEffect(() => {
+    //     if (AreaDDL !== null && ddlArea && ddlArea.visible && selWarehouse) {
+    //         GetAreaDDL(selWarehouse)
+    //     }
+    // }, [selWarehouse])
     useEffect(() => {
 
         if (AreaDDL == null && ddlArea && ddlArea.visible) {
-            GetAreaDDL(selWarehouse)
+            // console.log(dataDocument.document.Des_Warehouse_ID);
+            GetAreaDDL(dataDocument.document.Des_Warehouse_ID);
         }
     }, [AreaDDL])
     useEffect(() => {
@@ -308,12 +340,12 @@ const BtnAddPallet = (props) => {
     };
 
     const onSubmit = () => {
-        // console.log(valueQtyDocItems)
-        // console.log(valueInput)
-        // console.log(dataSelect)
+        console.log(valueQtyDocItems)
+        console.log(valueInput)
+        console.log(dataSelect)
 
         if (valueInput.areaID === undefined ||
-            valueInput.warehouseID === undefined ||
+            // valueInput.warehouseID === undefined ||
             valueInput.baseCode === undefined) {
             alertDialogRenderer("กรุณากรอกข้อมูลให้ครบถ้วน", "warning", true);
         } else {
@@ -333,9 +365,7 @@ const BtnAddPallet = (props) => {
                     ...valueInput,
                     docID: dataDocument.document.ID,
                     docItems: docItems,
-                    // baseCode: valueInput.baseCode,
-                    // warehouseID: valueInput.warehouseID,
-                    // areaID: valueInput.areaID
+                    warehouseID: dataDocument.document.Des_Warehouse_ID
                 }
                 console.log(tempDataReq)
                 Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
@@ -358,18 +388,18 @@ const BtnAddPallet = (props) => {
         }
     }
 
-    async function GetWarehouseDDL() {
-        let newWarehouseQueryStr = Clone(WarehouseQuery);
-        if (ddlWarehouse.customQ !== undefined) {
-            newWarehouseQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlWarehouse.customQ + "]";
-        }
-        await Axios.get(createQueryString(newWarehouseQueryStr)).then(res => {
-            if (res.data.datas) {
-                setWarehouseDDL(inputDDLComponent(ddlWarehouse, res.data.datas))
-            }
-        });
-    }
-    async function GetAreaDDL(selWarehouseID) {
+    // async function GetWarehouseDDL() {
+    //     let newWarehouseQueryStr = Clone(WarehouseQuery);
+    //     if (ddlWarehouse.customQ !== undefined) {
+    //         newWarehouseQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1}," + ddlWarehouse.customQ + "]";
+    //     }
+    //     await Axios.get(createQueryString(newWarehouseQueryStr)).then(res => {
+    //         if (res.data.datas) {
+    //             setWarehouseDDL(inputDDLComponent(ddlWarehouse, res.data.datas))
+    //         }
+    //     });
+    // }
+    async function GetAreaDDL(selWarehouseID, selAreaID) {
         let newAreaQueryStr = Clone(AreaMasterQuery);
         if (selWarehouseID) {
             if (ddlArea.customQ !== undefined) {
@@ -384,7 +414,7 @@ const BtnAddPallet = (props) => {
         }
         await Axios.get(createQueryString(newAreaQueryStr)).then(res => {
             if (res.data.datas) {
-                setAreaDDL(inputDDLComponent(ddlArea, res.data.datas))
+                setAreaDDL(inputDDLComponent(ddlArea, res.data.datas, selAreaID))
                 if (res.data.datas.length === 0) {
                     setSelArea(null)
                     valueInput['areaID'] = null;
@@ -392,7 +422,7 @@ const BtnAddPallet = (props) => {
             }
         });
     }
-    async function GetLocationDDL(selAreaID) {
+    async function GetLocationDDL(selAreaID, selLocationID) {
         let newLocationQueryStr = Clone(LocationMasterQuery);
         if (selAreaID) {
             if (ddlLocation.customQ !== undefined) {
@@ -402,12 +432,12 @@ const BtnAddPallet = (props) => {
             }
             await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
                 if (res.data.datas) {
-                    setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas))
+                    setLocationDDL(inputDDLComponent(ddlLocation, res.data.datas, selLocationID))
                 }
             });
         } else {
             // console.log("set location null")
-            setLocationDDL(inputDDLComponent(ddlLocation, []));
+            setLocationDDL(inputDDLComponent(ddlLocation, [], null));
             valueInput['locationID'] = null;
         }
         // else {
@@ -424,7 +454,7 @@ const BtnAddPallet = (props) => {
         // });
     }
 
-    const inputDDLComponent = (showComponent, Query) => {
+    const inputDDLComponent = (showComponent, Query, valueDef) => {
         if (showComponent.visible) {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
                 <AmDropdown
@@ -438,8 +468,9 @@ const BtnAddPallet = (props) => {
                     ddlMinWidth={330}
                     zIndex={9999}
                     returnDefaultValue={true}
-                    autoDefaultValue={true}
-                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : null}
+                    autoDefaultValue={valueDef ? false : true}
+                    // value={valueDef ? valueDef : null}
+                    defaultValue={valueDef ? valueDef : showComponent.defaultValue ? showComponent.defaultValue : null}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -472,6 +503,7 @@ const BtnAddPallet = (props) => {
                         onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
                     //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                     />
+                    <AmCheckPalletForReceive dataDocument={dataDocument.document} returnResult={(data) => showPalletSelect(data, showComponent.field)} />
                     <AmScanQRbyCamera returnResult={(data) => showRes(data, showComponent.field)} />
                 </div>
             </FormInline>
@@ -486,6 +518,30 @@ const BtnAddPallet = (props) => {
                 ele.value = data;
                 ele.focus();
             }
+        }
+    }
+    const showPalletSelect = (data, field) => {
+        if (data) {
+            renderNewDropdown(data[0].AreaID, data[0].LocationID);
+            let PalletCode = data[0].Pallet;
+
+            let ele = document.getElementById(field);
+            if (ele) {
+                ele.value = PalletCode;
+                ele.focus();
+            }
+        }
+
+
+    }
+    const renderNewDropdown = (areaID, locationID) => {
+        if (areaID) {
+            valueInput['areaID'] = areaID;
+            GetAreaDDL(null, areaID)
+        }
+        if (locationID) {
+            valueInput['locationID'] = locationID;
+            GetLocationDDL(null, locationID)
         }
     }
     const createComponent = (inputList) => {
@@ -631,65 +687,65 @@ const BtnAddPallet = (props) => {
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        if (field === "warehouseID") {
-            setSelWarehouse(value);
-        }
+        // if (field === "warehouseID") {
+        //     setSelWarehouse(value);
+        // }
         if (field === "areaID") {
             setSelArea(value);
         }
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        if (field === "baseCode") {
-            CheckBaseSTO(value);
-        }
+        // if (field === "baseCode") {
+        //     CheckBaseSTO(value);
+        // }
     };
-    const CheckBaseSTO = (val) => {
-        Axios.get(window.apipath + "/v2/GetInfoBaseSTOAPI?baseCode=" + val).then((res) => {
-            if (res.data != null) {
-                if (res.data._result.status === 1) {
-                    if (res.data.id) {
-                        let getallpacks = findPack(res.data);
-                        let checkstatus = _.filter(getallpacks,
-                            function (o) {
-                                return o.eventStatus === 100 || o.eventStatus === 101 || o.eventStatus === 102;
-                            });
-                        let detail = null;
-                        if (checkstatus.length > 0) {
-                            let getinfo = [];
-                            checkstatus.map(x => {
-                                if (x.Ref2) {
-                                    getinfo.push(x.Ref2);
-                                }
-                            });
-                            if (getinfo.length > 0) {
-                                let showinfo = getinfo.map(x => {
-                                    return <Chip size="small" label={x.Ref2} />
-                                });
-                                detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}>
-                                    <label style={{ color: '#007bff' }}>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
-                            } else {
-                                detail = <div style={{ marginTop: '3px' }}>
-                                    <label style={{ color: '#007bff' }}>พาเลทนี้ยังไม่เคยถูกผูกกับ Project ใดๆ</label></div>;
-                            }
-                        } else if (checkstatus.length === 0) {
-                            detail = <div style={{ marginTop: '3px' }}>
-                                <label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label>
-                            </div>
-                        }
-                        setShowInfoBase(detail)
-                    } else {
-                        setShowInfoBase(null)
-                    }
+    // const CheckBaseSTO = (val) => {
+    //     Axios.get(window.apipath + "/v2/GetInfoBaseSTOAPI?baseCode=" + val).then((res) => {
+    //         if (res.data != null) {
+    //             if (res.data._result.status === 1) {
+    //                 if (res.data.id) {
+    //                     let getallpacks = findPack(res.data);
+    //                     let checkstatus = _.filter(getallpacks,
+    //                         function (o) {
+    //                             return o.eventStatus === 100 || o.eventStatus === 101 || o.eventStatus === 102;
+    //                         });
+    //                     let detail = null;
+    //                     if (checkstatus.length > 0) {
+    //                         let getinfo = [];
+    //                         checkstatus.map(x => {
+    //                             if (x.Ref2) {
+    //                                 getinfo.push(x.Ref2);
+    //                             }
+    //                         });
+    //                         if (getinfo.length > 0) {
+    //                             let showinfo = getinfo.map(x => {
+    //                                 return <Chip size="small" label={x.Ref2} />
+    //                             });
+    //                             detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}>
+    //                                 <label style={{ color: '#007bff' }}>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
+    //                         } else {
+    //                             detail = <div style={{ marginTop: '3px' }}>
+    //                                 <label style={{ color: '#007bff' }}>พาเลทนี้ยังไม่เคยถูกผูกกับ Project ใดๆ</label></div>;
+    //                         }
+    //                     } else if (checkstatus.length === 0) {
+    //                         detail = <div style={{ marginTop: '3px' }}>
+    //                             <label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label>
+    //                         </div>
+    //                     }
+    //                     setShowInfoBase(detail)
+    //                 } else {
+    //                     setShowInfoBase(null)
+    //                 }
 
-                } else {
-                    alertDialogRenderer(res.data._result.message, "error", true);
-                }
-            } else {
-                alertDialogRenderer(res.data._result.message, "error", true);
-            }
-        });
-    }
+    //             } else {
+    //                 alertDialogRenderer(res.data._result.message, "error", true);
+    //             }
+    //         } else {
+    //             alertDialogRenderer(res.data._result.message, "error", true);
+    //         }
+    //     });
+    // }
     const findPack = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
         var findpacks = _.filter(mapstosToTree, function (o) { return o.type === 2; });
@@ -702,15 +758,17 @@ const BtnAddPallet = (props) => {
         console.log("clear")
         setValueInput({});
         setValueQtyDocItems({});
-        setWarehouseDDL(null);
+        // setWarehouseDDL(null);
         setAreaDDL(null);
         setLocationDDL(null);
         setInputTitles(null);
         setInputHeader(null);
         setInputBaseCode(null);
-        setShowInfoBase(null);
+        // setShowInfoBase(null);
         setDataSelect([]);
         setDefaultSelect(null);
+        setImgFile(null);
+        setImageFile(null);
     };
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
@@ -724,12 +782,57 @@ const BtnAddPallet = (props) => {
             setShowDialog(null);
         }
     }, [stateDialog, msgDialog, typeDialog]);
+
+    async function onUploadFile() {
+        // console.log(imageFile)
+        // console.log(fileImgRef.current.value)
+        // console.log(imageFile.size);
+        if (imageFile.size > 100000000) //100000000 bytes
+        {
+            alertDialogRenderer("ไฟล์มีขนาดใหญ่เกินกว่า 100 MB ไม่สามารถอัพโหลดได้", "warning", true);
+        }
+        else {
+            let fileBase64 = await toBase64(imageFile)
+            if (valueInput.baseCode) {
+                let filejson = {
+                    baseCode: valueInput.baseCode,
+                    imageBase64: fileBase64
+                }
+                await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
+                    if (res.data._result.status === 1) {
+                        alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
+                    } else {
+                        alertDialogRenderer(res.data._result.message, "error", true);
+                    }
+                });
+            } else {
+                alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
+            }
+        }
+
+    }
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+    const handleFileChange = (event) => {
+        if (event.target.files[0]) {
+            setImgFile(URL.createObjectURL(event.target.files[0]))
+            setImageFile(event.target.files[0])
+        } else {
+            console.log("nofile");
+            setImgFile(null)
+            setImageFile(null)
+        }
+    }
     return (
 
         <AmAux>
             {stateDialog ? showDialog ? showDialog : null : null}
 
-            <AmButton className="float-right" styleType="confirm" onClick={() => setOpen(true)} >{"Receive"}</AmButton>
+            <BtnReceive onHandleClick={() => setOpen(true)} />
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
@@ -746,37 +849,36 @@ const BtnAddPallet = (props) => {
                     {inputTitles && inputTitles.length > 0 ? inputTitles.map((row, idx) => {
                         return row.component(row, idx)
                     }) : null}
-                    {ddlWarehouse && ddlWarehouse.visible ? WarehouseDDL : null}
+                    {/* {ddlWarehouse && ddlWarehouse.visible ? WarehouseDDL : null} */}
+
+                    {inputBase && inputBase.visible ? inputBaseCode : null}
                     {ddlArea && ddlArea.visible ? AreaDDL : null}
                     {ddlLocation && ddlLocation.visible ? LocationDDL : null}
-                    {inputBase && inputBase.visible ? inputBaseCode : null}
-                    {showInfoBase}
+                    {/* {showInfoBase} */}
                     {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                         return row.component(row, idx)
                     }) : null}
+                    <FormInline><LabelH><label htmlFor="img">{t('Select Image')} : </label></LabelH>
+                        {/* <div style={{ display: 'inline-flex', alignItems: 'center' }} > */}
+                        <input ref={fileImgRef} type="file" id="img" name="formFile"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e)}
+                        />
+                        <input type="submit" onClick={onUploadFile} />
+                        {/* </div> */}
+                    </FormInline>
+                    {imgFile ? <img src={imgFile} height='150' /> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    {/* <Table
-                        columns={columns}
-                        pageSize={100}
-                        data={listDocItems}
-                        sortable={false}
-                        selectionType="checkbox"
-                        selection={true}
-                        primaryKey="ID"
-                        currentPage={0}
-                        defaultSelection={defaultSelect}
-                        getSelection={data => setDataSelect(data)}
-                    /> */}
                     <AmTable
-                     columns={columns}
-                     dataKey={"ID"}
-                     dataSource={listDocItems}
-                     selectionDefault={defaultSelect}
-                     selection="checkbox"
-                     selectionData={data => setDataSelect(data)}
-                     rowNumber={true}
-                    //  totalSize={count}
-                     pageSize={100}
+                        columns={columns}
+                        dataKey={"ID"}
+                        dataSource={listDocItems}
+                        selectionDefault={defaultSelect}
+                        selection="checkbox"
+                        selectionData={data => setDataSelect(data)}
+                        rowNumber={true}
+                        //  totalSize={count}
+                        pageSize={100}
                     //  height={500}
                     />
                 </DialogContent>

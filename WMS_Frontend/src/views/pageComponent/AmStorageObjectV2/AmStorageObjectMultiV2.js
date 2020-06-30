@@ -10,8 +10,12 @@ import {
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
+import AmDropdown from '../../../components/AmDropdown';
+import AmDatePicker from '../../../components/AmDate';
 import AmButton from "../../../components/AmButton";
-
+import AmEditorTable from "../../../components/table/AmEditorTable";
+import AmInput from "../../../components/AmInput";
+import AmDialogs from "../../../components/AmDialogs";
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -39,11 +43,18 @@ const FormInline = styled.div`
 const AmStorageObjectMulti = props => {
   const { t } = useTranslation();
 
+
   const [dataSource, setDataSource] = useState([])
   const [count, setCount] = useState(0)
   const [queryViewData, setQueryViewData] = useState();
   const [page, setPage] = useState(1);
   const [iniQuery, setIniQuery] = useState(true);
+  const [selection, setSelection] = useState();
+  const [dialog, setDialog] = useState(false);
+  const [remarkMode, setRemarkMode] = useState(false);
+  const [hold, setHold] = useState(true);
+  const [remark, setRemark] = useState("");
+  const [dialogState, setDialogState] = useState({});
 
   useEffect(() => {
     getData();
@@ -87,11 +98,181 @@ const AmStorageObjectMulti = props => {
 
   }
 
+  const useColumns = (cols) => {
+    const [columns, setColumns] = useState(cols);
+
+    useEffect(() => {
+      const iniCols = [...cols];
+
+      iniCols.forEach(col => {
+        let filterConfig = col.filterConfig;
+        if (filterConfig !== undefined) {
+          if (filterConfig.filterType === "dropdown") {
+            col.Filter = (field, onChangeFilter) => {
+              var checkType = Array.isArray(filterConfig.dataDropDown);
+              if (checkType) {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "label" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.width !== undefined ? filterConfig.width : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  data={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                />
+              }
+              else {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "label" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={200}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  queryApi={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                  ddlType={filterConfig.typeDropDown}
+                />
+              }
+
+            }
+          } else if (filterConfig.filterType === "datetime") {
+            col.width = 350;
+            col.Filter = (field, onChangeFilter) => {
+              return <FormInline>
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                <label>-</label>
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+              </FormInline>
+            }
+          }
+        }
+      })
+      setColumns(iniCols);
+    }, [])
+
+    return { columns };
+  }
+  const { columns } = useColumns(props.iniCols);
+
+  const onHandleEditConfirm = (status) => {
+
+    //var x = onChangeEditor()
+    //console.log(remark)
+    if (status) {
+      onUpdateHold()
+    }
+
+    setDialog(false);
+    setSelection([]);
+  };
+
+
+  const DataGenerateRemark = () => {
+    const columns = [
+      {
+        field: "Option",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
+        required: true
+      }
+    ];
+    return columns.map(y => {
+      return {
+        field: y.field,
+        component: (data = null, cols, key) => {
+          return (
+            <div key={key}>
+              <FormInline>
+                {" "}
+                <LabelH>{"Remark"} : </LabelH>
+                <InputDiv>
+                  <AmInput
+                    id={cols.field}
+                    style={{ width: "270px", margin: "0px" }}
+                    type="input"
+                    onChange={val => {
+                      onChangeEditor(val);
+                    }}
+                  />
+                </InputDiv>
+              </FormInline>
+
+            </div>
+          );
+        }
+      };
+    });
+  };
+  const onChangeEditor = (value) => {
+    setRemark(value)
+    if (selection.length === 0) {
+      setDialogState({ type: "warning", content: "Warning", state: true })
+    } else {
+      //let cloneData = selection;
+      setRemark(value);
+      //setDataSentToAPI(cloneData);
+    }
+  };
+  const onUpdateHold = () => {
+    let bstosID = [];
+
+    if (selection.length > 0) {
+      selection.forEach(rowdata => {
+        bstosID.push(rowdata.ID);
+      });
+      let postdata = {
+        bstosID: bstosID,
+        IsHold: hold ? 1 : 0,
+        remark: remark,
+        remarkMode: remarkMode
+      };
+
+      Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
+        res => {
+          if (res.data._result !== undefined) {
+            if (res.data._result.status === 1) {
+              setDialogState({ type: "success", content: "Success", state: true })
+              getData();
+              Clear();
+            } else {
+              setDialogState({ type: "error", content: res.data._result.message, state: true })
+              getData();
+              Clear();
+            }
+          }
+        }
+      );
+    }
+
+  }
+  const Clear = () => {
+    setSelection([]);
+    setRemark("");
+  };
   //===========================================================
   return (
     <div>
+      <AmDialogs
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
+      <AmEditorTable
+        open={dialog}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+        titleText={"Remark"}
+        data={"text"}
+        columns={DataGenerateRemark()}
+      />
       <AmTable
-        columns={props.iniCols}
+        columns={columns}
         dataKey={"ID"}
         dataSource={dataSource}
         rowNumber={true}
@@ -100,12 +281,43 @@ const AmStorageObjectMulti = props => {
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
+        selection={"checkbox"}
+        selectionData={(data) => {
+          setSelection(data);
+        }}
         onPageChange={p => {
           if (page !== p)
             setPage(p)
           else
             setIniQuery(false)
         }}
+        customTopLeftControl={<div><AmButton
+          style={{ marginRight: "5px" }}
+          styleType="confirm"
+          onClick={() => {
+            setDialog(true)
+          }}
+        >
+          HOLD
+        </AmButton><AmButton
+            style={{ marginRight: "5px" }}
+            styleType="confirm"
+            onClick={() => {
+              setDialog(true)
+              setHold(false)
+            }}
+          >
+            UNHOLD
+        </AmButton><AmButton
+            style={{ marginRight: "5px" }}
+            styleType="confirm"
+            onClick={() => {
+              setDialog(true)
+              setRemarkMode(true)
+            }}
+          >
+            REMARK
+        </AmButton></div>}
       />
 
     </div>

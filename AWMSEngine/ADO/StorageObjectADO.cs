@@ -280,6 +280,7 @@ namespace AWMSEngine.ADO
             param.Add("status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus));
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
+            param.Add("forCustomerID", sto.forCustomerID);
             param.Add("options", sto.options);
             param.Add("orderNo", sto.orderNo);
             param.Add("batch", sto.batch);
@@ -289,7 +290,7 @@ namespace AWMSEngine.ADO
             param.Add("unitID", sto.unitID);
             param.Add("baseQty", sto.baseQty);
             param.Add("baseUnitID", sto.baseUnitID);
-
+            
             param.Add("weiKG", sto.weiKG);
             param.Add("widthM", sto.widthM);
             param.Add("heightM", sto.heightM);

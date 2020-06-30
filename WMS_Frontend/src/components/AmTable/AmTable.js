@@ -1,9 +1,91 @@
 import React, { useContext, useEffect, useState } from "react";
 import AmTableComponent from "./AmTableComponent";
 import { AmTableProvider, AmTableContext } from "./AmTableContext";
-import { } from "./AmPagination";
 import PropTypes from "prop-types"
-import AmPagination from "../table/AmPagination";
+import AmPagination from "./AmPagination";
+import Grid from "@material-ui/core/Grid";
+import _ from "lodash";
+
+const Topbar = React.memo((propsTopbar) => {
+    if(propsTopbar.customTopControl){
+        return <>
+            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
+            <div id="pagination" style={{display:"inline-block", verticalAlign: "middle"}}>
+                {propsTopbar.pagination ? <AmPagination
+                    totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                    pageSize={propsTopbar.pageSize}
+                    resetPage={propsTopbar.resetPage}
+                    onPageChange={page => {
+                        if (propsTopbar.onPageChange !== undefined) {
+                            propsTopbar.onPageChange(page + 1)
+                        }
+                        propsTopbar.page(page + 1)
+                    }}
+                /> : null}
+            </div>
+        </>
+    }
+    else{
+        if(propsTopbar.customTopLeftControl || propsTopbar.customTopRightControl){
+            return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
+                <Grid item xs={6}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
+                </Grid>
+                <Grid item xs={6} style={{textAlign:"right"}}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>
+                        {propsTopbar.pagination ? <AmPagination
+                            totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                            pageSize={propsTopbar.pageSize}
+                            resetPage={propsTopbar.resetPage}
+                            onPageChange={page => {
+                                if (propsTopbar.onPageChange !== undefined) {
+                                    propsTopbar.onPageChange(page + 1)
+                                }
+                                propsTopbar.page(page + 1)
+                            }}
+                        /> : null}
+                    </div>
+                </Grid>
+            </Grid>
+        }
+        else{
+            return propsTopbar.pagination ? <AmPagination
+                totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
+                pageSize={propsTopbar.pageSize}
+                resetPage={propsTopbar.resetPage}
+                onPageChange={page => {
+                    if (propsTopbar.onPageChange !== undefined) {
+                        propsTopbar.onPageChange(page + 1)
+                    }
+                    propsTopbar.page(page + 1)
+                }}
+            /> : null
+        }
+    }
+});
+
+const Bottombar = React.memo((propsBtmbar) => {
+    if(propsBtmbar.customBtmControl){
+        return <>
+            <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmControl}</div>
+        </>
+    }
+    else{
+        if(propsBtmbar.customBtmLeftControl || propsBtmbar.customBtmRightControl){
+            return <Grid container direction="row" justify="space-between" alignItems="flex-end" style={{marginBottom:5}}>
+                <Grid item xs={6}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmLeftControl ? propsBtmbar.customBtmLeftControl : null}</div>
+                </Grid>
+                <Grid item xs={6} style={{textAlign:"right"}}>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsBtmbar.customBtmRightControl ? propsBtmbar.customBtmRightControl : null}</div>
+                </Grid>
+            </Grid>
+        }
+        else
+            return null;
+    }
+});
 
 const AmTable = (props) => {
     return <AmTableProvider>
@@ -30,22 +112,49 @@ const AmTable = (props) => {
             selectionData={props.selectionData}
             selectionDefault={props.selectionDefault}
             clearSelectionChangePage={props.clearSelectionChangePage}
+            customTopControl={props.customTopControl}
+            customTopLeftControl={props.customTopLeftControl}
+            customTopRightControl={props.customTopRightControl}
+            customBtmControl={props.customBtmControl}
+            customBtmLeftControl={props.customBtmLeftControl}
+            customBtmRightControl={props.customBtmRightControl}
+            sortable={props.sortable}
+            sortData={props.sortData}
+            selectionDisabledCustom={props.selectionDisabledCustom}
         />
     </AmTableProvider>
 }
 
 const AmTableSetup = (props) => {
-    const { pagination, filter, selection } = useContext(AmTableContext);
+    const { pagination, filter, selection, sort } = useContext(AmTableContext);
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
 
-    const { selectionData } = props;
+    const { selectionData, sortData, sortable } = props;
 
     useEffect(() => {
         if (props.pageSize)
             pagination.setPageSize(props.pageSize)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.pageSize])
+
+    useEffect(() => {
+        if (sortData !== undefined && sortable)
+            sortData(sort.sortValue)
+        else if(sortData === undefined && sortable){
+            if(sort.sortValue["sortDirection"] !== undefined){
+                if(sort.sortValue["sortDirection"] === "asc"){
+                    let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "asc")
+                    setDataSource(sortLocalData);
+                }
+                else{
+                    let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "desc")
+                    setDataSource(sortLocalData);
+                }
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sort.sortValue,  sortData])
 
     useEffect(() => {
         if (props.filterable)
@@ -69,21 +178,34 @@ const AmTableSetup = (props) => {
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
+            selection.removeAll();
         } else {
             setDataSource(props.dataSource);
+            selection.removeAll();
         }
     }, [page, props.dataSource, props.onPageChange])
 
-    return <>
-        <div id="topbar"></div>
+    return <div style={{maxHeight:props.height}}>
+        <Topbar 
+            customTopControl={props.customTopControl} 
+            customTopLeftControl={props.customTopLeftControl} 
+            customTopRightControl={props.customTopRightControl}
+            totalSize={props.totalSize}
+            onPageChange={props.onPageChange}
+            resetPage={props.resetPage}
+            pageSize={props.pageSize}
+            dataSource={dataSource}
+            pagination={props.pagination}
+            page={(e) => setPage(e)}
+        />
         <AmTableComponent
             dataSource={dataSource}
             width={props.width}
+            height={props.height}
             columns={props.columns}
             cellStyle={props.cellStyle}
             dataKey={props.dataKey}
             rowNumber={props.rowNumber}
-            height={props.height}
             footerStyle={props.footerStyle}
             tableStyle={props.tableStyle}
             headerStyle={props.headerStyle}
@@ -93,24 +215,22 @@ const AmTableSetup = (props) => {
             minRow={props.minRow}
             page={page}
             clearSelectionChangePage={props.clearSelectionChangePage}
+            sortable={props.sortable}
+            selectionDisabledCustom={props.selectionDisabledCustom}
         />
-        <div id="btmbar">
-            <div id="pagination">
-                {props.pagination ? <AmPagination
-                    totalSize={props.totalSize ? props.totalSize : props.dataSource.length}
-                    pageSize={props.pageSize}
-                    resetPage={props.resetPage}
-                    onPageChange={page => {
-                        if (props.onPageChange !== undefined) {
-                            props.onPageChange(page + 1)
-                        }
-                        setPage(page + 1)
-                    }}
-                /> : null}
-            </div>
-            <div style={{ clear: "both" }}></div>
-        </div>
-    </>
+        <Bottombar 
+            customBtmControl={props.customBtmControl} 
+            customBtmLeftControl={props.customBtmLeftControl} 
+            customBtmRightControl={props.customBtmRightControl}
+            totalSize={props.totalSize}
+            onPageChange={props.onPageChange}
+            resetPage={props.resetPage}
+            pageSize={props.pageSize}
+            dataSource={dataSource}
+            pagination={props.pagination}
+            page={(e) => setPage(e)}
+        />
+    </div>
 }
 
 export default AmTable;
@@ -226,6 +346,51 @@ AmTable.propTypes = {
      ** value? : "100%" | 100
     */
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    /**
+     * ตั้งค่าความรูปแบบหัวตาราง
+     ** value? : "100%" | 100
+    */
+    customTopControl:PropTypes.element,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    customTopLeftControl:PropTypes.element,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    customTopRightControl:PropTypes.element,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    customBtmControl:PropTypes.element,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    customBtmLeftControl:PropTypes.element,
+    /**
+     * ตั้งค่าความกว้างของตาราง
+     ** value? : "100%" | 100
+    */
+    customBtmRightControl:PropTypes.element,
+    /**
+     * ตั้งค่าการเปิดปิดการ sort ทั้งตาราง
+     ** value? : true | false
+    */
+    sortable:PropTypes.bool,
+    /**
+     * return ข้อมูลที่ถูกเรียง
+     * value? : {"id": row.accessor,"sortDirection": SortDirection.ASC}
+    */
+   sortData:PropTypes.func,
+   /**
+    * ตั้งค่าความ Selection Disabled
+    ** value? : function return boolean
+   */
+    selectionDisabledCustom:PropTypes.func
 }
 
 AmTable.defaultProps = {
@@ -233,5 +398,7 @@ AmTable.defaultProps = {
     height: 500,
     pageSize: 25,
     clearSelectionChangePage: true,
-    width: "100%"
+    width: "100%",
+    sortable: false,
+    filterable:false
 }

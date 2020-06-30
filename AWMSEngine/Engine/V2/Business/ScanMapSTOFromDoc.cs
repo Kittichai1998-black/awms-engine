@@ -89,9 +89,13 @@ namespace AWMSEngine.Engine.V2.Business
                         {
                             if (getBase.areaID != reqVO.areaID)
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Area ไม่ตรงกัน");
-
-                            if (getBase.parentType == StorageObjectType.LOCATION && getBase.parentID != reqVO.locationID)
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
+                            
+                            if(reqVO.locationID != null)
+                            {
+                                if (getBase.parentType == StorageObjectType.LOCATION && getBase.parentID != reqVO.locationID)
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
+                            }
+                            
                             var getPACK = stolist.Find(y =>
                                 y.id == x.Sou_StorageObject_ID
                                 && y.lot == getDocItem.Lot
@@ -153,6 +157,7 @@ namespace AWMSEngine.Engine.V2.Business
                         parentType = StorageObjectType.BASE,
                         code = pack.Code,
                         eventStatus = StorageObjectEventStatus.NEW,
+                        forCustomerID = getDoc.For_Customer_ID.Value,
                         name = pack.Name,
                         qty = x.Quantity,
                         skuID = pack.SKUMaster_ID,

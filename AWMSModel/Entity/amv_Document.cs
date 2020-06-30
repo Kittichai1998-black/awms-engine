@@ -75,7 +75,7 @@ namespace AWMSModel.Entity
         public string DesWarehouseName;
         public string DesAreaName;
         public string ForCustomerName;
-        public string MovementName;
+        public string DocumentProcessTypeName;
 
         public string Created;
         public string Modified;

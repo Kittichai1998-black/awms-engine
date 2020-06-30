@@ -37,8 +37,7 @@ const SKUMaster = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
-      sortable: false,
+      width: 162,
       filterType:"dropdown",
       filterConfig:{
         filterType:"dropdown",
@@ -50,8 +49,7 @@ const SKUMaster = props => {
     {
       Header: "SKU Code",
       accessor: "Code",
-      fixed: "left",
-      width: 120
+      width: 155
     },
     {
       Header: "SKU Name",
