@@ -496,7 +496,15 @@ const DocumentView = props => {
     }
     setQtyEdit(tempDataReq)
 
-  }
+    }
+
+
+    const onCreatePut = () => {
+        console.log(docID)
+        props.history.push(props.apiCreate + docID)
+
+    }
+
   const onConfirmEdit = () => {
     Axios.post(window.apipath + "/v2/UpdateSTOandDiSTOfromDocAPI", qtyEdit).then((res) => {
       if (res.data != null) {
@@ -555,7 +563,10 @@ const DocumentView = props => {
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     });
-  }
+    }
+
+ 
+
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
@@ -570,9 +581,33 @@ const DocumentView = props => {
       />
       {getHeader()}
       <br />
-      <br />
+          <br />
+          <div>
+              {
+                  props.CreateputAway === true ?
+                      <Grid container>
+                          <Grid item xs container direction="column">
+                          </Grid>
+                          <Grid item>
+                              <div style={{ marginBottom:"5px" }}>
+                      <AmButton styleType="add"
+                          onClick={() => {
+                              onCreatePut();
+                          }}
+                                  >Create</AmButton>
+                              </div>
+                          </Grid>
+                      </Grid>
+                      : null
+              }
+
+          </div>
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
+
+       
+
+
         <AmTable dataKey="ID" columns={columns} pageSize={100} dataSource={data} />
       ) : null}
 
