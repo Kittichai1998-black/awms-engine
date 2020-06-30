@@ -211,9 +211,11 @@ const AmStorageObjectMulti = props => {
     });
   };
   const onChangeEditor = (value) => {
-    setRemark(value)
+    //setRemark(value)
+    // console.log(selection.length)
+    // console.log(selection)
     if (selection.length === 0) {
-      setDialogState({ type: "warning", content: "Warning", state: true })
+      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
     } else {
       //let cloneData = selection;
       setRemark(value);
@@ -296,6 +298,8 @@ const AmStorageObjectMulti = props => {
           styleType="confirm"
           onClick={() => {
             setDialog(true)
+            if (selection.length === 0)
+              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
           }}
         >
           HOLD
@@ -305,6 +309,8 @@ const AmStorageObjectMulti = props => {
             onClick={() => {
               setDialog(true)
               setHold(false)
+              if (selection.length === 0)
+                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
             }}
           >
             UNHOLD
@@ -314,6 +320,8 @@ const AmStorageObjectMulti = props => {
             onClick={() => {
               setDialog(true)
               setRemarkMode(true)
+              if (selection.length === 0)
+                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
             }}
           >
             REMARK
