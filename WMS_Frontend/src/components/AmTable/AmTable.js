@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
 import AmTableComponent from "./AmTableComponent";
 import { AmTableProvider, AmTableContext } from "./AmTableContext";
 import PropTypes from "prop-types"
@@ -16,9 +16,6 @@ const Topbar = React.memo((propsTopbar) => {
                     pageSize={propsTopbar.pageSize}
                     resetPage={propsTopbar.resetPage}
                     onPageChange={page => {
-                        if (propsTopbar.onPageChange !== undefined) {
-                            propsTopbar.onPageChange(page + 1)
-                        }
                         propsTopbar.page(page + 1)
                     }}
                 /> : null}
@@ -39,9 +36,6 @@ const Topbar = React.memo((propsTopbar) => {
                             pageSize={propsTopbar.pageSize}
                             resetPage={propsTopbar.resetPage}
                             onPageChange={page => {
-                                if (propsTopbar.onPageChange !== undefined) {
-                                    propsTopbar.onPageChange(page + 1)
-                                }
                                 propsTopbar.page(page + 1)
                             }}
                         /> : null}
@@ -55,9 +49,6 @@ const Topbar = React.memo((propsTopbar) => {
                 pageSize={propsTopbar.pageSize}
                 resetPage={propsTopbar.resetPage}
                 onPageChange={page => {
-                    if (propsTopbar.onPageChange !== undefined) {
-                        propsTopbar.onPageChange(page + 1)
-                    }
                     propsTopbar.page(page + 1)
                 }}
             /> : null
@@ -178,12 +169,15 @@ const AmTableSetup = (props) => {
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
-            selection.removeAll();
         } else {
             setDataSource(props.dataSource);
-            selection.removeAll();
         }
-    }, [page, props.dataSource, props.onPageChange])
+    }, [page, props.dataSource])
+
+    useEffect(() => {
+        selection.removeAll();
+        props.onPageChange(page)
+    }, [page])
 
     return <div style={{maxHeight:props.height}}>
         <Topbar 
@@ -191,7 +185,6 @@ const AmTableSetup = (props) => {
             customTopLeftControl={props.customTopLeftControl} 
             customTopRightControl={props.customTopRightControl}
             totalSize={props.totalSize}
-            onPageChange={props.onPageChange}
             resetPage={props.resetPage}
             pageSize={props.pageSize}
             dataSource={dataSource}
@@ -223,7 +216,6 @@ const AmTableSetup = (props) => {
             customBtmLeftControl={props.customBtmLeftControl} 
             customBtmRightControl={props.customBtmRightControl}
             totalSize={props.totalSize}
-            onPageChange={props.onPageChange}
             resetPage={props.resetPage}
             pageSize={props.pageSize}
             dataSource={dataSource}
