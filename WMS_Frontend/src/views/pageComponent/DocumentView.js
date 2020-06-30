@@ -586,7 +586,7 @@ const DocumentView = props => {
       <br />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true}/>
+        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
 
       <br />
@@ -636,7 +636,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true}/>
+                    <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true} />
                   ) : null}
                 </Col>
               </Row>
@@ -653,7 +653,7 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="id" columns={columnsDetailDES}  pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true}/>
+                    <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true} />
                   ) : null}
                 </Col>
               </Row>
@@ -669,7 +669,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true}/>
+          <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true} />
         ) : null
       ) : props.openDES === true ? (
         typeDoc ? (
@@ -680,7 +680,7 @@ const DocumentView = props => {
           //   sortable={false}
           //   currentPage={0}
           // />
-          <AmTable dataKey="id" columns={columnsDetailDES}  pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true}/>
+          <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true} />
         ) : null
       ) : (
               ""

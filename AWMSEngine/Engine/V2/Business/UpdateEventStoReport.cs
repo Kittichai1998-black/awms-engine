@@ -17,9 +17,9 @@ namespace AWMSEngine.Engine.Business
         public class TDocReq
         {
             public long[] bstosID;
-            public long eventStatus;
             public int IsHold;
-            public string remark;
+            public string remark; 
+            public bool RemarkMode;
         }
         public class TDocRes
         {
@@ -33,12 +33,18 @@ namespace AWMSEngine.Engine.Business
             List<amt_StorageObject> res = new List<amt_StorageObject>();
             foreach (var bstoid in reqVO.bstosID)
             {
-                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, true, true, this.BuVO);
-                //if (sto.eventStatus != StorageObjectEventStatus.RECEIVED)
-                //    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
-
-
-                this.UpdateHoldStatus(this.Logger, sto, reqVO.remark,reqVO.IsHold, this.BuVO);
+                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, false, true, this.BuVO);
+                if (reqVO.RemarkMode)
+                {
+                    this.UpdateRemark(this.Logger, sto, reqVO.remark, this.BuVO);
+                }
+                else
+                {
+                    if (sto.eventStatus != StorageObjectEventStatus.RECEIVED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
+                    this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                }
+                
 
             res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
 
@@ -50,13 +56,19 @@ namespace AWMSEngine.Engine.Business
         {
             
             sto.IsHold = IsHold;
-            
+            sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
             foreach (var st in sto.mapstos)
             {
                 st.IsHold = IsHold;
-                st.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(st.options, OptionVOConst.OPT_REMARK, remark);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
             }
-             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+        }
+        private void UpdateRemark(AMWLogger logger, StorageObjectCriteria sto, string remark, VOCriteria buVO)
+        {
+
+            sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
     }
 }

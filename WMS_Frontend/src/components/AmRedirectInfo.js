@@ -7,15 +7,18 @@ import ViewList from '@material-ui/icons/ViewList';
 import AmButton from "../components/AmButton";
 
 const AmRedirectInfo = props => {
-  const { api, titleDialog, bodyDialog,
+  const { api, customApi, titleDialog, bodyDialog,
     textLink, type, customIcon, styleTypeBtn,
     startIcon, endIcon, textButton, appendIcon } = props;
   const [openDialogCon, setopenDialogCon] = useState(false);
   const PageDetail = () => {
     if (api) {
       window.open(api);
+    }else if (customApi){
+      customApi()
     }
   };
+
   const handleClickOpenDialog = () => {
     setopenDialogCon(true);
   };
