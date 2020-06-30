@@ -13,7 +13,7 @@ import {Table,
 import {AmTableContext} from "./AmTableContext";
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 //import Input from "@material-ui/core/Input";
-import AmInput from "../AmInput";
+import Input from "@material-ui/core/Input";
 //import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
 //import Radio from "@material-ui/core/Radio";
@@ -66,7 +66,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
         {
             getColumns.unshift({
                 Header: "Row",
-                fixWidth: 40,
+                fixWidth: 45,
                 filterable: false,
                 fixed: "left",
                 sortable: false,
@@ -310,12 +310,12 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
             let fixedStyle = { };
             fixedStyle.left = getWidth;
             getWidth = getWidth + column.fixWidth;
-            return <TableStickyCell style={column.colStyle === undefined ? {...style, ...fixedStyle} : {...column.colStyle, ...fixedStyle}} key={idx}>
+            return <TableStickyCell className="tableCell" style={column.colStyle === undefined ? {...style, ...fixedStyle} : {...column.colStyle, ...fixedStyle}} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableStickyCell>
         }
         else{
-            return <TableCell style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
+            return <TableCell className="tableCell" style={column.colStyle === undefined ? style : column.colStyle} key={idx}>
                 {IsEmptyObject(data) ? renderEmptyData() : (column.Cell === undefined || column.Cell === null) ? renderCellText(column, data[column.accessor]) : column.Cell(createCellData)}
             </TableCell>
         }
@@ -453,9 +453,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <AmInput style={{
-                    width:col.fixWidth !== undefined ? col.fixWidth : col.width === undefined ? freeWidth : col.width,
-                  }} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                  <Input style={{width:"100%"}} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
                 </div>)
             ) : null}
           </TableHeaderStickyColumnsCell>
@@ -482,9 +480,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <AmInput style={{
-                    width:col.fixWidth !== undefined ? col.fixWidth : col.width === undefined ? freeWidth : col.width,
-                  }} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                  <Input style={{width:"100%"}} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
                 </div>)
             ) : null}
           </TableHeaderCell>

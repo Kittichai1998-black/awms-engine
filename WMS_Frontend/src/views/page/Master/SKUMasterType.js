@@ -11,7 +11,6 @@ const SKUMasterType = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
       width: 35,
       sortable: false,
       filterType:"dropdown",
@@ -22,13 +21,14 @@ const SKUMasterType = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "SKU Type Code", accessor: "Code", fixed: "left" },
-    { Header: "SKU Type Name", accessor: "Name", width: 150 },
-    { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
+    { Header: "SKU Type Code", accessor: "Code", fixWidth:300 },
+    { Header: "SKU Type Name", accessor: "Name", fixWidth:150 },
+    { Header: "Update By", accessor: "LastUpdateBy", fixWidth:150  },
     {
       Header: "Update Time",
       accessor: "LastUpdateTime",
-      width: 130,
+      filterable:false,
+      width:130,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
     }

@@ -29,7 +29,7 @@ const TableContainer = styled.div`
 `
 const TableRow = styled.div`
     display:table-row;
-    :hover div{
+    :hover div.tableCell{
         background:#cccccc;
         ${props => props.hover}
     }
@@ -82,16 +82,24 @@ const TableFooter = styled.div`
     display:table-footer-group;
 `
 const TableCellFooter = styled(TableCell)`
+    z-index:500;
+    background:rgb(248,249,250);
+    padding:5px;
     font-weigth:bold;
     position: -webkit-sticky;
     position:sticky;
-    text-align:right;
     bottom:0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    :first-child{
+        border-left: 1px solid #ddd;
+    }
 `
 
-const TableStickyCellFooter = styled(TableCell)`
+const TableStickyCellFooter = styled(TableCellFooter)`
+    position: -webkit-sticky;
     position:sticky;
-    bottom:0;
     left:0;
 `
 

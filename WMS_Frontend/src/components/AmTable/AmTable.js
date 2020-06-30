@@ -178,8 +178,10 @@ const AmTableSetup = (props) => {
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
+            selection.removeAll();
         } else {
             setDataSource(props.dataSource);
+            selection.removeAll();
         }
     }, [page, props.dataSource, props.onPageChange])
 
