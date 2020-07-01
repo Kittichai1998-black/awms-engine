@@ -94,7 +94,7 @@ namespace ProjectAERP.Engine.Document
                             {
                                 skuCode = Sku.Code,
                                 quantity = (decimal)wh_d.Advised_qty,
-                                unitType = wh_d.inventory_unit,
+                                unitType = wh_d.inventory_unit.ToUpper(),
                                 batch = null,
                                 lot = wh_d.Lot,
                                 orderNo = null,
@@ -111,7 +111,7 @@ namespace ProjectAERP.Engine.Document
                         else
                         {
                             //Insert Docitem
-                            var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(Sku.ID.Value, (decimal)wh_d.Advised_qty, StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit).ID.Value);
+                            var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(Sku.ID.Value, (decimal)wh_d.Advised_qty, StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit.ToUpper()).ID.Value);
                             var baseQuantity = baseUnitTypeConvt.baseQty;
 
                             AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(new amt_DocumentItem
@@ -122,8 +122,8 @@ namespace ProjectAERP.Engine.Document
                                 Code = Sku.Code,
                                 Quantity = (decimal)wh_d.Advised_qty,
                                 BaseQuantity = baseQuantity,
-                                UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.inventory_unit).ID,
-                                BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.purchase_unit).ID ,
+                                UnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.inventory_unit.ToUpper()).ID,
+                                BaseUnitType_ID = StaticValue.UnitTypes.FirstOrDefault(x => x.Code == wh_d.purchase_unit.ToUpper()).ID ,
                                 RefID = wh_d.Serial,
                                 Ref2 = reqVO.proj,
                                 Ref1 = reqVO.wh_order,
@@ -312,17 +312,17 @@ namespace ProjectAERP.Engine.Document
 
                 var dataUnit = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_UnitType>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Code",wh_d.purchase_unit, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Code",wh_d.purchase_unit.ToUpper(), SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
-                var unit = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID;
+                var unit = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit.ToUpper()).ID;
                 if (unit == null)
                 {
                     var unitID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(this.BuVO, new ams_UnitType()
                     {
-                        Code = wh_d.purchase_unit,
-                        Name = wh_d.purchase_unit,
+                        Code = wh_d.purchase_unit.ToUpper(),
+                        Name = wh_d.purchase_unit.ToUpper(),
                         ObjectType = StorageObjectType.PACK,
                         Status = EntityStatus.ACTIVE
 
@@ -359,7 +359,7 @@ namespace ProjectAERP.Engine.Document
             }
             else
             {
-               if( sku.UnitType_ID != StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID)
+               if( sku.UnitType_ID != StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit.ToUpper()).ID)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "หน่วยของสินค้าไม่ถูกต้อง");
             }
             return sku;
@@ -471,19 +471,20 @@ namespace ProjectAERP.Engine.Document
         }
         private void ConverterUnit(AMWLogger logger, ERPWHInbound.items wh_d, ams_SKUMaster sku, VOCriteria buVO)
         {
+            var unit =wh_d.inventory_unit.ToUpper();
             var dataUnit = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_UnitType>(
                 new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("Code",wh_d.inventory_unit, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Code",unit, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                 }, this.BuVO).FirstOrDefault();
 
-            var inventoryID = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == wh_d.inventory_unit).ID;
+            var inventoryID = dataUnit == null ? null : StaticValue.UnitTypes.First(x => x.Code == unit).ID;
             if (inventoryID == null)
             {
                 var unitID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_UnitType>(this.BuVO, new ams_UnitType()
                 {
-                    Code = wh_d.inventory_unit,
-                    Name = wh_d.inventory_unit,
+                    Code = unit,
+                    Name = unit,
                     ObjectType = StorageObjectType.PACK,
                     Status = EntityStatus.ACTIVE
 
@@ -525,7 +526,7 @@ namespace ProjectAERP.Engine.Document
                 {
                     SKUMaster_ID = (int)sku.ID.Value,
                     C1_Quantity = 1,
-                    C1_UnitType_ID = (int)StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit).ID,
+                    C1_UnitType_ID = (int)StaticValue.UnitTypes.First(x => x.Code == wh_d.purchase_unit.ToUpper()).ID,
                     C2_Quantity = (decimal)wh_d.conversion,
                     C2_UnitType_ID = (int)inventoryID.Value,
                     Status = EntityStatus.ACTIVE

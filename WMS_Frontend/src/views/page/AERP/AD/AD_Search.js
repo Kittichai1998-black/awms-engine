@@ -33,7 +33,7 @@ const AD_Search = props => {
 
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "MovementType",
+    t: "DocumentProcessType",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "Name AS value,Name AS label",
     g: "",
@@ -184,11 +184,14 @@ const AD_Search = props => {
   const iniCols = [
     { Header: "", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-    { Header: "Movement", accessor: "MovementName", width: 200 },
+    { Header: "Doc.ProcessType", accessor: "DocumentProcessTypeName", width: 230 },
+    // { Header: "Wh Order", accessor: "Ref1", width: 120 },
+    // { Header: "Project", accessor: "Project", width: 100 },
+    //{ Header: "Customer", accessor: "ForCustomer", width: 150 },
     { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
     { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
     // {   Header: "Sou.Customer",   accessor: "SouCustomerName",   width: 150 },
-    { Header: "Remark", accessor: "Remark", width: 150 },
+    //{ Header: "Remark", accessor: "Remark", width: 150 },
     { Header: "Doc. Date", accessor: "DocumentDate", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY" },
     { Header: "Action Time", accessor: "ActionTime", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY HH:mm" }, { Header: "Create", accessor: "Created", width: 200 },
     { Header: "Modify Time", accessor: "LastUpdate", width: 200 }
@@ -206,7 +209,7 @@ const AD_Search = props => {
   const primarySearch = [
     { label: "Event Status", field: "EventStatus", searchType: "dropdown", dropdownData: DocumentEventStatusSearch, fieldDataKey: "Name", fieldLabel: "Name" },
     { label: "Doc No.", field: "Code", searchType: "input" },
-    { label: "Movement", field: "MovementName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
+    { label: "Doc.ProcessType", field: "MovementName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
   ];
   const dataReject = [// {//   field: "souAreaCode",//   type: "dropdow",//   typeDropdow: "search",//   name: "Sou. Area",//   dataDropDow: AreaMasterQuery,//   placeholder: "Sou. Area",//   fieldLabel: ["Code", "Name"]//   //required: true//   //disabled: true// },
     { field: "desAreaCode", type: "dropdow", typeDropdow: "search", name: "Dest. Area", dataDropDow: AreaMasterQuery, placeholder: "Dest. Area", fieldLabel: ["Code", "Name"] },
@@ -253,11 +256,11 @@ const AD_Search = props => {
         expensionSearch={search}
         docTypeCode="2004"
         buttonClose={true}
-        buttonReject={true}
+        buttonReject={false}
         dataReject={dataReject}
-        apiReject={"/v2/RejectADDocAPI"}
+        //apiReject={"/v2/RejectADDocAPI"}
         //apiWorking={""}
-        apiClose={"/v2/CloseDocAPI"}
+        apiClose={"/v2/ClosingDocumentAPI"}
       />
     </div>
   );

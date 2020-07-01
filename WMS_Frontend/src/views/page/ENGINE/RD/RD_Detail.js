@@ -34,7 +34,7 @@ const RD_Detail = props => {
         // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
         { accessor: "SKUMaster_Name", Header: "Item Code" },
         { width: 130, accessor: "OrderNo", Header: "Order No." },
-        { width: 120, accessor: "_qty", Header: "Qty" },
+        { width: 120, accessor: "Quantity", Header: "Qty" },
         { width: 70, accessor: "UnitType_Name", Header: "Unit" }
     ];
 
@@ -84,7 +84,9 @@ const RD_Detail = props => {
             columnsDetailSOU={columnsDetailSOU}
             columnsDetailDES={columnsDetailDES}
             columns={columns}
+            CreateputAway={true}
             typeDoc={"receivedOrder"}
+            apiCreate={"/grDr/createFGwm?docID="}
             typeDocNo={1011}
             docID={getDocID()}
             header={TextHeader}

@@ -7,6 +7,10 @@ import {
 import AmRedirectLog from "../../../components/AmRedirectLog";
 import { StorageObjectEvenstatus } from "../../../components/Models/StorageObjectEvenstatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import Tooltip from '@material-ui/core/Tooltip';
+import queryString from "query-string";
 
 const Axios = new apicall();
 
@@ -18,7 +22,6 @@ const StorageObject = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
       width: 35,
       sortable: false,
       filterType: "dropdown",
@@ -27,14 +30,19 @@ const StorageObject = props => {
         dataDropDown: StorageObjectEvenstatus,
         typeDropDown: "normal"
       },
-      Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+      //Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+      Cell: e => getStatus(e.original.Status)
     },
     {
       Header: "IsHold",
-      accessor: "HoldStatus",
-      fixed: "left",
+      accessor: "IsHold",
       width: 50,
-      sortable: false
+      sortable: false,
+      filterType: "checkbox",
+      filterConfig: {
+        filterType: "checkbox",
+      },
+      Cell: e => getIsHold(e.original.IsHold)
     },
     { Header: "Pallet", accessor: "Pallet", width: 100 },
     {
@@ -45,9 +53,11 @@ const StorageObject = props => {
     {
       Header: "SKU Name",
       accessor: "SKU_Name",
-      width: 100
+      fixWidth: 200,
+
     },
-    { Header: "Warehouse", accessor: "Warehouse", width: 80 },
+    { Header: "Project", accessor: "Project", width: 100 },
+    { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
     { Header: "Lot", accessor: "Lot", width: 80 },
@@ -59,12 +69,16 @@ const StorageObject = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-    { Header: "Remark", accessor: "Remark", width: 100 },
+    { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
       Header: "Received Date",
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      },
       dateFormat: "DD/MM/YYYY HH:mm"
     },
     {
@@ -74,6 +88,28 @@ const StorageObject = props => {
       Cell: e => getRedirectLog(e.original)
     }
   ];
+
+  const getOptions = value => {
+    var qryStr = queryString.parse(value);
+    return qryStr["remark"]
+  }
+  const getIsHold = value => {
+    return value === false ? <div style={{ textAlign: "center" }}>
+      <Tooltip title="NONE" >
+        <RemoveCircle
+          fontSize="small"
+          style={{ color: "#9E9E9E" }}
+        />
+      </Tooltip>
+    </div> : <div style={{ textAlign: "center" }}>
+        <Tooltip title="HOLD" >
+          <CheckCircle
+            fontSize="small"
+            style={{ color: "black" }}
+          />
+        </Tooltip>
+      </div>
+  }
   const getRedirectLog = data => {
     return (
       <div
@@ -111,12 +147,16 @@ const StorageObject = props => {
     }
   ];
 
-  const getNumberQty = value => {
-    return parseInt(value.Qty);
-  };
+
 
   const getStatus = Status => {
-    //console.log(Status)
+    return Status.split("\\n").map(y => (
+      <div style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getStatus1(y)}
+      </div>
+    ));
+  };
+  const getStatus1 = Status => {
     if (Status === "RECEIVING") {
       return <AmStorageObjectStatus key={Status} statusCode={101} />;
     } else if (Status === "RECEIVED") {
@@ -132,9 +172,7 @@ const StorageObject = props => {
     } else {
       return null;
     }
-
   };
-
   return (
     <div>
       <AmStorageObjectMulti

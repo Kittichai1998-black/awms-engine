@@ -70,7 +70,7 @@ const RD_Create_FGCustomer = props => {
     const columsFindPopupSKU = [
         { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
-        { Header: "Unit", accessor: "unitType", width: 100 }
+        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
     ];
 
 
@@ -119,7 +119,7 @@ const RD_Create_FGCustomer = props => {
         },
         {
             Header: "Unit",
-            accessor: "BaseUnitCode",
+            accessor: "UnitTypeCode",
             width: 70,
             style: { textAlign: "center" }
         },
@@ -155,8 +155,7 @@ const RD_Create_FGCustomer = props => {
         t: "SKUMaster",
         q:
             '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:
-            "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        f:"ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -239,7 +238,7 @@ const RD_Create_FGCustomer = props => {
         { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
         { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
         { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
+        { Header: "Unit", accessor: "UnitTypeCode", type: "unitType", codeTranslate: "Unit" }
     ];
 
 
@@ -251,7 +250,7 @@ const RD_Create_FGCustomer = props => {
         { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
-        { Header: "Unit", accessor: "unitType", width: 90 }
+        { Header: "Unit", accessor: "UnitTypeCode", width: 90 }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc

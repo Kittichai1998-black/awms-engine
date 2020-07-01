@@ -1,9 +1,5 @@
 
 import React from "react";
-import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
-import RemoveCircle from "@material-ui/icons/RemoveCircle";
-import CheckCircle from "@material-ui/icons/CheckCircle";
-import Tooltip from '@material-ui/core/Tooltip';
 
 const DataGenerateMulti = (data) => {
 
@@ -32,41 +28,33 @@ const DataGenerateMulti = (data) => {
         <div style={{ marginBottom: "3px" }}>{y}</div>
       ));
     }
-    if (x.Status != null) {
-      x.Status = x.Status.split("\\n").map(y => (
-        <div style={{ marginBottom: "3px", textAlign: "center" }}>
-          {/* {getStatus(y)} */}
-          <div style={{ marginBottom: "3px" }}>{y}</div>
-        </div>
+    if (x.For_Customer != null) {
+      x.For_Customer = x.For_Customer.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
       ));
     }
-    if (x.HoldStatus != null) {
-      x.HoldStatus = x.HoldStatus.split("\\n").map(y => (
-        <div style={{ marginBottom: "3px", textAlign: "center" }}>
-          {getIsHold(y)}
-        </div>
+    if (x.Project != null) {
+      x.Project = x.Project.split("\\n").map(y => (
+        <div style={{ marginBottom: "3px" }}>{y}</div>
       ));
     }
+    // if (x.Status != null) {
+    //   x.Status = x.Status.split("\\n").map(y => (
+    //     <div style={{ marginBottom: "3px", textAlign: "center" }}>
+    //       {/* {getStatus(y)} */}
+    //       <div style={{ marginBottom: "3px" }}>{y}</div>
+    //     </div>
+    //   ));
+    // }
+
+
+
+
+
+
   });
   return data;
 }
 
-const getIsHold = value => {
-  return value === "0" ? <div style={{ textAlign: "center" }}>
-    <Tooltip title="NONE" >
-      <RemoveCircle
-        fontSize="small"
-        style={{ color: "#9E9E9E" }}
-      />
-    </Tooltip>
-  </div> : <div style={{ textAlign: "center" }}>
-      <Tooltip title="HOLD" >
-        <CheckCircle
-          fontSize="small"
-          style={{ color: "black" }}
-        />
-      </Tooltip>
-    </div>
-}
 
 export { DataGenerateMulti }
