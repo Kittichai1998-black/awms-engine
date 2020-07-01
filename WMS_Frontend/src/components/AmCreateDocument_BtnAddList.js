@@ -298,7 +298,7 @@ const BtnAddList = props => {
 
         <DialogContent>
           <AmTable
-            primaryKey="ID"
+            primaryKey={props.primaryKeyTable}
             defaultSelection={defaultSelect}
             data={data}
             columns={props.columns}

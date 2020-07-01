@@ -89,6 +89,7 @@ namespace ProjectAERP.Engine.Document
                     {
                         //Counting
                         this.SendToERPCounting(docs, buVO);
+                        res = new List<long>();
                     }
                     else
                     {
