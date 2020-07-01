@@ -160,13 +160,20 @@ const AmTableSetup = (props) => {
     }, [selection.selectionValue, selectionData])
 
     useEffect(() => {
-        if (props.selectionDefault)
-            selection.addAll(props.selectionDefault)
+        console.log(props.selectionDefault)
+        if (props.selectionDefault !== undefined){
+            console.log(props.selectionDefault.length)
+            if(props.selectionDefault.length > 0){
+                selection.addAll(props.selectionDefault)
+            }
+        }
+            
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.selectionDefault])
 
     useEffect(() => {
-        selection.removeAll();
+        if(props.clearSelectionChangePage)
+            selection.removeAll();
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
