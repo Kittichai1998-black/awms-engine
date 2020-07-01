@@ -471,7 +471,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <Input style={{width:"100%"}} onKeyPress={(value, e1, e2, event) => {if(event.key === "Enter")onChangeFilter(col.accessor, value)}} />
+                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value)}} />
                 </div>)
             ) : null}
           </TableHeaderStickyColumnsCell>
