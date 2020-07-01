@@ -16,24 +16,24 @@ const AD_Detail = props => {
       { label: "Document Date", values: "DocumentDate", type: "date" }
     ],
     [
-      { label: "Movement Type", values: "MovementName" },
+      { label: "Doc. ProcessType", values: "DocumentProcessTypeName" },
       { label: "Action Time", values: "ActionTime", type: "dateTime" }
     ],
-    [
-      { label: "Source Warehouse", values: "SouWarehouseName" },
-      { label: "Destination Warehouse", values: "DesWarehouseName" }
-    ],
+    // [
+    //   { label: "Source Warehouse", values: "SouWarehouseName" },
+    //   { label: "Destination Warehouse", values: "DesWarehouseName" }
+    // ],
     [
       { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-      { label: "Remark", values: "Remark" }
+      { label: "", values: "" }
     ]
   ];
 
   const columns = [
     // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
-    { width: 130, accessor: "OrderNo", Header: "Order No." },
-    { width: 120, accessor: "_qty", Header: "Qty" },
+    { width: 130, accessor: "Lot", Header: "Lot" },
+    //{ width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
@@ -42,8 +42,8 @@ const AD_Detail = props => {
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No." },
-    { width: 110, accessor: "_packQty", Header: "Qty" },
+    { width: 130, accessor: "Lot", Header: "Lot" },
+    //{ width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
@@ -78,13 +78,13 @@ const AD_Detail = props => {
   return (
     <DocView
       openSOU={true}
-      openDES={true}
+      openDES={false}
       optionDocItems={optionDocItems}
       columnsDetailSOU={columnsDetailSOU}
       columnsDetailDES={columnsDetailDES}
       columns={columns}
       typeDoc={"audit"}
-      typeDocNo={1012}
+      typeDocNo={2004}
       docID={getDocID()}
       header={TextHeader}
       buttonBack={true}

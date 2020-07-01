@@ -36,7 +36,7 @@ const Create_GR_DR = props => {
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1, codeTranslate: "Source Warehouse" },
+                    { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
                     { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
                 ],
                 [
@@ -52,16 +52,16 @@ const Create_GR_DR = props => {
             if (headerCreate.length > 0) {
                 setTable(
                     <AmputAndpick
-                        addList={addList}
+                        //addList={addList}
                         docheaderCreate={headerCreate}
-                        columns={columns}
-                        columnEdit={columnEdit}
-                        apicreate={apicreate}
-                        createDocType={"putAway"}
-                        history={props.history}
+                        doccolumns={columns}
+                        doccolumnEdit={columnEdit}
+                        docapicreate={apicreate}
+                        doccreateDocType={"putAway"}
+                        dochistory={props.history}
                         docItemQuery={DocumentItem}
                         doccolumnEditItem={columnEditItem}
-                        apiRes={apiRes}
+                        docapiRes={apiRes}
                     />
                 );
             }
@@ -172,7 +172,7 @@ const Create_GR_DR = props => {
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -267,7 +267,7 @@ const Create_GR_DR = props => {
 
     const columnEdit = [
         { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
-        { Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
+        //{ Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
         { Header: "Batch", accessor: "Batch", type: "input", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", type: "input", codeTranslate: "Lot" },
         { Header: "Order No.", accessor: "OrderNo", type: "input", codeTranslate: "Order No." },
@@ -277,19 +277,19 @@ const Create_GR_DR = props => {
 
     const columnEditItem = [
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Batch", accessor: "batch", codeTranslate: "Batch" },
-        { Header: "Lot",  accessor: "lot",codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "orderNo", codeTranslate: "Order No." },
-        { Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
+        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
+        { Header: "Lot",  accessor: "Lot",codeTranslate: "Lot" },
+        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
+        //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
+        //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
 
 
 
     const columns = [
-        { id: "row", Cell: row => row.index + 1, width: 35 },
+        //{ id: "row", Cell: row => row.index + 1, width: 35 },
+        { Header: "", accessor: "row", width: 35 },
         { Header: "Item Code", accessor: "SKUItems" },
-        { Header: "Pallet", accessor: "Balletcode", width: 110 },
         { Header: "Batch", accessor: "Batch", width: 100 },
         { Header: "Lot", accessor: "Lot", width: 100 },
         { Header: "Order No.", accessor: "OrderNo", width: 100 },

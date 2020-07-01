@@ -524,29 +524,29 @@ const AmCreateDocument = (props) => {
                     <label ref={ref.current[index]}>{texts || dataDocItem[idx][accessori]}</label >
                 </div>
 
-            )
-        } else if (type === "checkbox") {
-            return <div><AmCheckBox
-                label={Header}
-                value={true}
-                //disable={}
-                //checked={true}
-                defaultChecked={true}
-                defaultValue={true}
+                )
+            } else if (type === "checkbox")  {
+                return <div><AmCheckBox
+                    label={Header}
+                    value={true}
+                    //disable={}
+                    //checked={true}
+                    defaultChecked={true}
+                    defaultValue={true}
                 onChange={(e) =>
-                    onChangeEditorCheck(e, idx)
+                   onChangeEditorCheck(e,idx) 
                 }
-            >
-            </AmCheckBox></div>
+                >
+                </AmCheckBox></div>
 
-        }
+            }
     }
 
     const onChangeEditorCheck = (e, idx) => {
-
-        // console.log(dataDocItem)
-        // console.log(e)
-        // console.log(idx)
+        
+        console.log(dataDocItem)
+        console.log(e)
+        console.log(idx)
     }
 
 

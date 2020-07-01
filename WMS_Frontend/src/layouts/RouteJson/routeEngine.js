@@ -115,7 +115,7 @@ const TableV3 = Loadable({
 });
 
 const GR_Create = Loadable({
-  loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
+    loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
   loading: Loading
 });
 const GR_Detail = Loadable({

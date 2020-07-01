@@ -30,7 +30,8 @@ const StorageObject = props => {
         dataDropDown: StorageObjectEvenstatus,
         typeDropDown: "normal"
       },
-      Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+      //Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+      Cell: e => getStatus(e.original.Status)
     },
     {
       Header: "IsHold",
@@ -138,12 +139,16 @@ const StorageObject = props => {
     }
   ];
 
-  const getNumberQty = value => {
-    return parseInt(value.Qty);
-  };
+
 
   const getStatus = Status => {
-    //console.log(Status)
+    return Status.split("\\n").map(y => (
+      <div style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getStatus1(y)}
+      </div>
+    ));
+  };
+  const getStatus1 = Status => {
     if (Status === "RECEIVING") {
       return <AmStorageObjectStatus key={Status} statusCode={101} />;
     } else if (Status === "RECEIVED") {
@@ -159,9 +164,7 @@ const StorageObject = props => {
     } else {
       return null;
     }
-
   };
-
   return (
     <div>
       <AmStorageObjectMulti
