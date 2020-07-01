@@ -1,27 +1,29 @@
-import React, { useState, useEffect, useRef } from "react";
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Pagination from './table/AmPagination';
-import Table from './table/AmTable';
+import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
+import { grey, red } from '@material-ui/core/colors';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InputBase from '@material-ui/core/InputBase';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import Paper from '@material-ui/core/Paper';
+import PropTypes from 'prop-types';
+import React, { useState, useEffect, useRef } from "react";
+import SearchIcon from '@material-ui/icons/Search';
+import styled from 'styled-components'
+import Typography from '@material-ui/core/Typography';
+import { useTranslation } from 'react-i18next'
+import withMobileDialog from '@material-ui/core/withMobileDialog';
+import { withStyles } from '@material-ui/core/styles';
+
 import AmButton from "./AmButton";
 import AmInput from "./AmInput";
-import { withStyles } from '@material-ui/core/styles';
-import withMobileDialog from '@material-ui/core/withMobileDialog';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import SearchIcon from '@material-ui/icons/Search';
-import InputBase from '@material-ui/core/InputBase';
-import styled from 'styled-components'
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { grey, red } from '@material-ui/core/colors';
 import { apicall, createQueryString, Clone } from './function/CoreFunction2'
-import { useTranslation } from 'react-i18next'
+import Pagination from './table/AmPagination';
+import Table from './table/AmTable';
+
 const Axios = new apicall()
 const SearchInput = withStyles(theme => ({
     root: {
@@ -218,6 +220,7 @@ const FindPopup = (props) => {
         placeholder,
         onChange,
         popupref,
+        search,
         ...other
     } = props;
 
@@ -237,14 +240,10 @@ const FindPopup = (props) => {
     const [sort, setSort] = useState(0);
 
     useEffect(() => {
-        // console.log(dataObjects)
-    }, [dataObjects]);
-
-    useEffect(() => {
         if (defaultValue) {
             setDefaultVal(defaultValue);
-            //setValueKey(defaultValue)
         }
+        setValueKey(defaultValue)
     }, [defaultValue]);
     useEffect(() => {
         if (value) {
@@ -331,6 +330,7 @@ const FindPopup = (props) => {
         const res = await Axios.get(qryString).then(res => res)
         if (res.data.datas) {
             getValueKey(res.data.datas[0])
+            onHandleClickChange(res.data.datas[0])
         }
     }
     function getValueKey(showValueData) {
@@ -385,7 +385,7 @@ const FindPopup = (props) => {
         if (queryStrEdit.q) {
             defaultSel = JSON.parse(queryStrEdit.q)
         }
-    // q: '[{"q":[{ "f": "ID", "c":"like", "v": "%aa%"},{ "o": "or","f": "Code", "c":"like", "v": "%aa%"}]}, { "f": "Status", "c":"<", "v": 2}]',
+        // q: '[{"q":[{ "f": "ID", "c":"like", "v": "%aa%"},{ "o": "or","f": "Code", "c":"like", "v": "%aa%"}]}, { "f": "Status", "c":"<", "v": 2}]',
 
         columns.map((item, index) => {
             if (item.accessor !== "") {
@@ -403,17 +403,12 @@ const FindPopup = (props) => {
                 }
             }
         })
-        
-        defaultSel.unshift({"q": newSel})
+
+        defaultSel.unshift({ "q": newSel })
         queryStrEdit.q = JSON.stringify(defaultSel);
         setQuery(queryStrEdit)
         getData(createQueryString(queryStrEdit));
     }
-
-    useEffect(()=>{
-        if(props.clearText)
-            onHandleClickClear();
-    }, [props.clearText])
 
 
     const onHandleClick = (e) => {
@@ -447,18 +442,15 @@ const FindPopup = (props) => {
         setDefaultVal(null);
         onChange(null, null, id, fieldDataKey)
     }
-
-
-
     const calWidth = (columsList) => {
         let tableWidth = 0;
         columsList.forEach((row) => tableWidth = tableWidth + row.width);
         return tableWidth
     }
     return (
-        <div>
+        <>
             <SearchText id={id} popupref={popupref} placeholder={placeholder} styleType={styleType} required={required} value={valueKey} disabled={disabled}
-                onClickOpen={onHandleClickOpen} inputWidth={width} onClickClear={onHandleClickClear} {...other} />
+                onClickOpen={onHandleClickOpen} inputWidth={width} onClickClear={onHandleClickClear}  {...other} />
             <Dialog
                 onClose={onHandleClickClose}
                 aria-labelledby="customized-dialog-title"
@@ -468,9 +460,10 @@ const FindPopup = (props) => {
                 <DialogTitle id="customized-dialog-title" onClose={onHandleClickClose}>
                     {t(labelTitle)}
                 </DialogTitle>
-                <StyledSearch>
+                {search !== false ? <StyledSearch>
                     <SearchInput name="searchSub" styleType={styleType} onClickSearch={onHandleClick} />
-                </StyledSearch>
+                </StyledSearch> : null}
+
                 <DialogContent>
                     <Table
                         //ข้อมูลตาราง
@@ -494,7 +487,7 @@ const FindPopup = (props) => {
                         onPageChange={(page) => setPage(page)} />
                 </DialogActions>
             </Dialog>
-        </div>
+        </>
     );
 
 }

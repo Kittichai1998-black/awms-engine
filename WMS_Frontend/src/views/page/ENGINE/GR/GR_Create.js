@@ -19,7 +19,7 @@ export default props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PackStorageObject",
         q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "*",
+        f: "packID,palletcode,skuCode,skuName,Batch as batch,Lot as lot,OrderNo as orderNo,locationCode,SIZE,SKUItems,Quantity as quantity,unitType",
         g: "",
         s: "[{'f':'packID','od':'ASC'}]",
         sk: 0,
@@ -29,8 +29,8 @@ export default props => {
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "SKUMaster",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code,Name,UnitTypeCode, ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "SKUMasterType_ID", "c":"!=", "v": 50}]',
+        f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -75,6 +75,7 @@ export default props => {
     const addList = {
         queryApi: view_sto,
         columns: columsFindPopup,
+        primaryKeyTable: "packID",
         search: [
             { accessor: "palletcode", placeholder: "Pallet" },
             { accessor: "Code", placeholder: "Reorder (Item Code)" },
@@ -84,32 +85,34 @@ export default props => {
     };
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
+        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Unit", accessor: "unitType", width: 50 }
     ];
 
     const columnEdit = [
         { Header: "Order No.", accessor: "orderNo", type: "input" },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopup },
-        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, required: true },
-        // { Header: "Base Qty", accessor: "quantity", type: "inputNum" },
-        // { Header: "Base Unit", accessor: "unitType", type: "text" },
-        // { Header: "Base Qty", accessor: "Quantity", type: "text" },
-        // { Header: "Base Unit", accessor: "BaseUnitCode", type: "text" },
-        { Header: "Quantity", accessor: "quantity", type: "inputNum" },
+        {
+            // search: false,
+            Header: "SKU Item",
+            accessor: "skuCode",
+            type: "findPopUp",
+            queryApi: SKUMaster,
+            fieldLabel: ["skuCode", "skuName"],
+            columsddl: columsFindPopupSKU,
+            related: ["unitType", "skuName", "SKUItems"],
+            fieldDataKey: "Code", // ref กับ accessor
+            defaultValue: "PJAAN04-0024",
+            required: true
+        },
+        { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
         { Header: "Unit", accessor: "unitType", type: "text" }
     ];
 
     const columns = [
         { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
-        { Header: "Pallet", accessor: "palletcode", width: 110 },
         { Header: "Item Code", accessor: "SKUItems" },
-        // { Header: "Base Qty", accessor: "quantity", width: 90 },
-        // { Header: "Base Unit", accessor: "unitType", width: 70 },
-        // { Header: "Base Qty", accessor: "Quantity", width: 90 },
-        // { Header: "Base Unit", accessor: "BaseUnitCode", width: 90 },
         { Header: "Qty", accessor: "quantity", width: 110 },
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];
@@ -127,6 +130,7 @@ export default props => {
             createDocType={"receive"}
             history={props.history}
             apiRes={apiRes}
+        // singleItem
         />
     )
 };
