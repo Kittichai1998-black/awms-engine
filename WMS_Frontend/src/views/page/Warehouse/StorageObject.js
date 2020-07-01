@@ -38,6 +38,10 @@ const StorageObject = props => {
       accessor: "IsHold",
       width: 50,
       sortable: false,
+      filterType: "checkbox",
+      filterConfig: {
+        filterType: "checkbox",
+      },
       Cell: e => getIsHold(e.original.IsHold)
     },
     { Header: "Pallet", accessor: "Pallet", width: 100 },
@@ -71,6 +75,10 @@ const StorageObject = props => {
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      },
       dateFormat: "DD/MM/YYYY HH:mm"
     },
     {

@@ -90,9 +90,11 @@ const AmStorageObjectMulti = props => {
     });
   }
   const onChangeFilterData = (filterValue) => {
+    console.log(filterValue)
     var res = queryViewData;
     filterValue.forEach(fdata => {
-      res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+      console.log(fdata)
+      res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
     });
     getData(res)
 
@@ -148,6 +150,41 @@ const AmStorageObjectMulti = props => {
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
                 <label>-</label>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "dateTime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+              </FormInline>
+            }
+          } else if (filterConfig.filterType === "checkbox") {
+            col.width = 100;
+            col.Filter = (field, onChangeFilter) => {
+              return <FormInline>
+                <input
+                  id="selectAll"
+                  //checked={selection.selectAllState}
+                  type="checkbox"
+                  onChange={e => {
+                    // if (e.target.checked) {
+                    //   selection.addAll(dataSource)
+                    // } else {
+                    //   selection.removeAll(null);
+                    // }
+
+                    // selection.selectAll(null)
+
+                  }}
+                /><input
+                  id="selectAll"
+                  //checked={selection.selectAllState}
+                  type="checkbox"
+                  onChange={e => {
+                    // if (e.target.checked) {
+                    //   selection.addAll(dataSource)
+                    // } else {
+                    //   selection.removeAll(null);
+                    // }
+
+                    // selection.selectAll(null)
+
+                  }}
+                />
               </FormInline>
             }
           }
