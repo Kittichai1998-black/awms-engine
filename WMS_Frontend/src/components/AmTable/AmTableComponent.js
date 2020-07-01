@@ -46,19 +46,10 @@ const SortDirection = {
   //   },
   // })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom, dataSource) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
     
-    useEffect(() => {
-      if(selectionState){
-        if(clearSelectionChangePage){
-          selection.removeAll()
-        }
-      }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
     useEffect(() => {
         let getColumns = [...Columns];
         
@@ -129,7 +120,6 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                   }else{
                     selection.removeAll(null);
                   }
-
                   selection.selectAll(null)
                   
                 }}
@@ -247,7 +237,6 @@ const AmTableComponent = (props) => {
       props.rowNumber, 
       props.selection, 
       props.dataKey, 
-      props.clearSelectionChangePage, 
       props.page, 
       props.selectionDisabledCustom,
       props.dataSource
