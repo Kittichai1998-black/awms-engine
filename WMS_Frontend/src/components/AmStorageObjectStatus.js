@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
     root: {
         minWidth: '2em',
-        height: '1.725em',
+        height: '1.5em',
     }
 });
 const StorageObjectEventStatus = [
