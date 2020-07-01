@@ -8,7 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 const DataGenerateMulti = (data) => {
 
   data.forEach(x => {
-    console.log(x)
+    // console.log(x)
     if (x.SKU_Code != null) {
       x.SKU_Code = x.SKU_Code.split("\\n").map(y => (
         <div style={{ marginBottom: "3px" }}>{y}</div>

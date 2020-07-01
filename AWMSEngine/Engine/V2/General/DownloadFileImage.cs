@@ -1,6 +1,7 @@
 ﻿using AWMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace AWMSEngine.Engine.V2.General
         }
         public class TRes
         {
-            public Stream stream;
+            public byte[] stream;
             public string contentType;
             public string fileName;
         }
@@ -30,12 +31,20 @@ namespace AWMSEngine.Engine.V2.General
             extension = Path.GetExtension(resFile).Replace(".", ""); 
             string fileName = Path.GetFileName(resFile);
 
-            StreamReader s = new StreamReader(resFile);
-
-            res.stream = s.BaseStream;
-            res.contentType = "image/"+ extension;
-            res.fileName = fileName;
-            return res;
+            //StreamReader s = new StreamReader(resFile);
+            using (Image image = Image.FromFile(resFile))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    image.Save(m, image.RawFormat);
+                    byte[] imageBytes = m.ToArray();
+                    res.stream = imageBytes;
+                    res.contentType = "image/" + extension;
+                    res.fileName = fileName;
+                    return res;
+                }
+            }
+            
         }
         private  byte[] ReadFile(string filePath)
         {

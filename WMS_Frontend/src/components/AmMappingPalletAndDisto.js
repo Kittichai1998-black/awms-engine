@@ -787,29 +787,23 @@ const BtnAddPallet = (props) => {
         // console.log(imageFile)
         // console.log(fileImgRef.current.value)
         // console.log(imageFile.size);
-        if (imageFile.size > 100000000) //100000000 bytes
-        {
-            alertDialogRenderer("ไฟล์มีขนาดใหญ่เกินกว่า 100 MB ไม่สามารถอัพโหลดได้", "warning", true);
-        }
-        else {
-            let fileBase64 = await toBase64(imageFile)
-            if (valueInput.baseCode) {
-                let filejson = {
-                    baseCode: valueInput.baseCode,
-                    imageBase64: fileBase64
-                }
-                await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
-                    if (res.data._result.status === 1) {
-                        alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
-                    } else {
-                        alertDialogRenderer(res.data._result.message, "error", true);
-                    }
-                });
-            } else {
-                alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
-            }
-        }
 
+        let fileBase64 = await toBase64(imageFile)
+        if (valueInput.baseCode) {
+            let filejson = {
+                baseCode: valueInput.baseCode,
+                imageBase64: fileBase64
+            }
+            await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
+                if (res.data._result.status === 1) {
+                    alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
+                } else {
+                    alertDialogRenderer(res.data._result.message, "error", true);
+                }
+            });
+        } else {
+            alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
+        }
     }
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();

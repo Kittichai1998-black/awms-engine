@@ -23,6 +23,7 @@ import AmStorageObjectStatus from "./AmStorageObjectStatus";
 import AmRediRectInfo from './AmRedirectInfo'
 import PhotoIcon from '@material-ui/icons/Photo';
 import { DataGenerateMulti } from "../views/pageComponent/AmStorageObjectV2/SetMulti";
+import AmShowImage from './AmShowImage'
 const Axios = new apicall();
 
 function PalletIcon(props) {
@@ -120,17 +121,7 @@ const DialogActions = withStyles(theme => ({
 const useGetStos = (data) => {
     const [dataSrc, setDataSrc] = useState([]);
     const [count, setCount] = useState(0)
-    const Query = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "r_StorageObjectV2",
-        q: '[{ "f": "Status", "c":"in", "v": "0,1"}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'Pallet','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+
     useEffect(() => {
         let ForCustomer = data.ForCustomer;
 
@@ -142,7 +133,7 @@ const useGetStos = (data) => {
             g: "",
             s: "[{'f':'Pallet','od':'asc'}]",
             sk: 0,
-            l: 100,
+            l: "",
             all: ""
         };
         getData(Query);
@@ -154,6 +145,7 @@ const useGetStos = (data) => {
                 if (res.data.datas) {
                     var resData = DataGenerateMulti(res.data.datas)
                     setDataSrc(resData);
+                    // console.log(res.data.counts)
                     setCount(res.data.counts)
                 }
             });
@@ -165,73 +157,7 @@ const useGetStos = (data) => {
 
     return { dataSrc, count };
 }
-const getPalletDel = (data) => {
-    return <div style={{ display: "flex", maxWidth: '250px' }}>
-        <label>{data}</label>
-        <AmRediRectInfo customApi={()=>getFile(data)} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} />
-    </div>
 
-}
-async function getFile(data) {
-    try {
-        await Axios.get(window.apipath +'/v2/download/download_image?fileName=' + data).then(res => {
-            // if (res.data.datas) {
-                
-            // }
-        });
-
-    } catch (err) {
-         console.log(err)
-    }
-}
-const columnsStorageObject = [
-    {
-        Header: "Status",
-        fixed: "left",
-        width: 35,
-        Cell: e => getStatus(e.original.Status[0].props.children.props.children)
-    },
-    {
-        Header: "IsHold",
-        accessor: "HoldStatus",
-        fixed: "left",
-        width: 50,
-    },
-    {
-        Header: "Pallet",
-        width: 150,
-        Cell: e => getPalletDel(e.original.Pallet)
-    },
-    {
-        Header: "SKU Code",
-        accessor: "SKU_Code",
-        width: 100
-    },
-    {
-        Header: "SKU Name",
-        accessor: "SKU_Name",
-        width: 100
-    },
-    { Header: "Warehouse", accessor: "Warehouse", width: 80 },
-    { Header: "Area", accessor: "Area", width: 100 },
-    { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
-    {
-        Header: "Qty",
-        accessor: "Qty",
-        width: 70,
-        type: "number"
-    },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-    { Header: "Remark", accessor: "Remark", width: 100 },
-    {
-        Header: "Received Date",
-        accessor: "Receive_Time",
-        width: 150,
-        type: "datetime",
-        dateFormat: "DD/MM/YYYY HH:mm"
-    }
-]
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
@@ -252,8 +178,59 @@ const AmCheckPalletForReceive = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
+    // const [showImg, setShowImg] = useState(null);
+    const [srcImg, setSrcImg] = useState(null);
+    const [openIMG, setOpenIMG] = useState(false);
 
 
+    const columnsStorageObject = [
+        {
+            Header: "Status",
+            fixed: "left",
+            fixWidth: 35,
+            Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+        },
+        {
+            Header: "IsHold",
+            accessor: "HoldStatus",
+            fixed: "left",
+            fixWidth: 50,
+        },
+        {
+            Header: "Pallet",
+            width: 150,
+            Cell: e => getPallet(e.original.Pallet)
+        },
+        {
+            Header: "SKU Code",
+            accessor: "SKU_Code",
+            width: 100
+        },
+        {
+            Header: "SKU Name",
+            accessor: "SKU_Name",
+            width: 100
+        },
+        { Header: "Warehouse", accessor: "Warehouse", width: 80 },
+        { Header: "Area", accessor: "Area", width: 100 },
+        { Header: "Location", accessor: "Location", width: 100 },
+        { Header: "Lot", accessor: "Lot", width: 80 },
+        {
+            Header: "Qty",
+            accessor: "Qty",
+            width: 70,
+            type: "number"
+        },
+        { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+        { Header: "Remark", accessor: "Remark", width: 100 },
+        {
+            Header: "Received Date",
+            accessor: "Receive_Time",
+            width: 150,
+            type: "datetime",
+            dateFormat: "DD/MM/YYYY HH:mm"
+        }
+    ]
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -272,7 +249,7 @@ const AmCheckPalletForReceive = (props) => {
         }
     }
     const onHandleClear = () => {
-
+        setDataSelect([])
     }
 
 
@@ -289,10 +266,35 @@ const AmCheckPalletForReceive = (props) => {
             setShowDialog(null);
         }
     }, [stateDialog, msgDialog, typeDialog]);
+
+    const getPallet = (data) => {
+        // let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token");
+        return <div style={{ display: "flex", maxWidth: '250px' }}>
+            <label>{data}</label>
+            {/* <AmShowImage src={link} /> */}
+            <IconButton
+                size="small"
+                aria-label="info"
+                onClick={() => getFile(data)}
+                style={{ marginLeft: "3px" }}
+            >
+                <PhotoIcon fontSize="small" color="primary" />
+            </IconButton>
+            {/* <AmRediRectInfo customApi={()=>getFile(data)} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} /> */}
+        </div>
+
+    }
+    function getFile(data) {
+        setSrcImg(window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token"));
+        setOpenIMG(true)
+        // setShowImg(<AmShowImage src={link} open={openIMG} onClose={(res)=>setOpenIMG(res)} />)
+    }
+    // const handleClickOpenIMG = (res) => {
+    //     setOpenIMG(res);
+    // };
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-
             <IconBtn onHandleClick={handleClickOpen} />
             <Dialog
                 fullScreen={fullScreen}
@@ -315,8 +317,10 @@ const AmCheckPalletForReceive = (props) => {
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}
-                        pageSize={count}
+                        pageSize={200}
                     />
+                    <AmShowImage src={srcImg} open={openIMG} onClose={(res) => setOpenIMG(res)} />
+
                 </DialogContent>
                 <DialogActions>
                     <AmButton styleType="add" onClick={handleConfirm}>
@@ -331,7 +335,7 @@ const AmCheckPalletForReceive = (props) => {
     )
 }
 AmCheckPalletForReceive.propTypes = {
-    dataDocument: PropTypes.object.isRequired 
+    dataDocument: PropTypes.object.isRequired
 };
 
 export default AmCheckPalletForReceive;
