@@ -168,9 +168,11 @@ const AmHeaderputandpick = (props) => {
     }, [doc.datadocItem, doc.dialogItem]);
 
 
-    //useEffect(() => {
-    //    doc.setdocID(props.docIDCreate)
-    //}, [props.docIDCreate])
+    useEffect(() => {
+        console.log(dataSelect)
+    }, [doc.dataSourceItemTB])
+
+
 
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
@@ -525,21 +527,42 @@ const AmHeaderputandpick = (props) => {
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>
-                <AmTable
-                    columns={columns}
-                    dataKey={"ID"}
-                    
-                    dataSource={doc.editdata.length != 0 ? doc.editdata :
-                        doc.datadocItem.length != 0 ? doc.datadocItem :
-                            doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
-                    selectionDefault={dataSelect}
-                    selection="checkbox"
-                    selectionData={data => setDataSelect(data)}
-                    rowNumber={true}
-                    //  totalize={count}
-                    pageSize={100}
-                //height={500}
-                />
+                <div>
+
+                    {doc.dataSourceItemTB.length != 0 ?
+                        <AmTable
+                            columns={columns}
+                            dataKey={"ID"}
+
+                            dataSource={doc.editdata.length != 0 ? doc.editdata :
+                                doc.datadocItem.length != 0 ? doc.datadocItem :
+                                    doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
+                            selectionDefault={dataSelect}
+                            selection="checkbox"
+                            selectionData={data => setDataSelect(data)}
+                            rowNumber={true}
+                            //  totalize={count}
+                            pageSize={100}
+                        //height={500}
+                        />
+
+
+                      :  <AmTable
+                        columns={columns}
+                        dataKey={"ID"}
+
+                        dataSource={doc.editdata.length != 0 ? doc.editdata :
+                            doc.datadocItem.length != 0 ? doc.datadocItem :
+                                doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
+                        //selectionDefault={dataSelect}
+                        selection="checkbox"
+                        selectionData={data => setDataSelect(data)}
+                        rowNumber={true}
+                        //  totalize={count}
+                        pageSize={100}
+                    //height={500}
+                    />}
+                </div>
             </DialogContent>
             <DialogActions>
                 <AmButton
