@@ -516,6 +516,7 @@ const AmCreateDocument = (props) => {
                     </InputDiv>
                 </FormInline>
 
+
             </div>)
         } else if (type === "text") {
             return (
@@ -524,32 +525,9 @@ const AmCreateDocument = (props) => {
                     <label ref={ref.current[index]}>{texts || dataDocItem[idx][accessori]}</label >
                 </div>
 
-                )
-            } else if (type === "checkbox")  {
-                return <div><AmCheckBox
-                    label={Header}
-                    value={true}
-                    //disable={}
-                    //checked={true}
-                    defaultChecked={true}
-                    defaultValue={true}
-                onChange={(e) =>
-                   onChangeEditorCheck(e,idx) 
-                }
-                >
-                </AmCheckBox></div>
-
-            }
+            )
+        }
     }
-
-    const onChangeEditorCheck = (e, idx) => {
-        
-        console.log(dataDocItem)
-        console.log(e)
-        console.log(idx)
-    }
-
-
 
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index, rowError, required) => {
         if (type === "input") {
