@@ -60,9 +60,7 @@ namespace AWMSEngine.APIService
         private class TGetKey
         {
             public string token;
-            public string _token;
             public string apikey;
-            public string _apikey;
             public string ref_id;
         }
 
@@ -114,8 +112,8 @@ namespace AWMSEngine.APIService
                     string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
                     TGetKey getKey = Newtonsoft.Json.JsonConvert.DeserializeObject<TGetKey>(_getKeyJson);
 
-                    token = !string.IsNullOrWhiteSpace(getKey.token) ? getKey.token : getKey._token;
-                    apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
+                    token = getKey.token;
+                    apiKey = getKey.apikey;
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
                 }
 
