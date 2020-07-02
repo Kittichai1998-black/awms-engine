@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Table from "../../components/AmTable/AmTable";
-import { CardFooter } from "reactstrap";
+import React, { useContext, useEffect, useState } from "react";
+import AmTable from "../../components/AmTable/AmTable";
+import Bottom from "@material-ui/core/Button";
+import Button from "@material-ui/core/Button";
 
 const columns=[
   {
@@ -8,7 +9,7 @@ const columns=[
     accessor: 'ID',
     code:'ID',
     //width:200,
-    fixed: 'left',
+    //fixed: 'left',
     style:{},
     //colStyle:{color:"black"},
     sortable:false,
@@ -23,6 +24,7 @@ const columns=[
     code:'Name',
     //width:300,
     sortable:false,
+    //colStyle:{marginLeft:"10px"},
     //style:{background:"blue"}
   },
   {
@@ -31,7 +33,6 @@ const columns=[
     code:'Name2',
     width:200,
     filterable:true,
-    sortable:false,
     Cell:(e)=>{return <div>{e.value}</div>},
     Footer:(data, datafield, col)=>{return <div>Total : {datafield[datafield.length-1].value}</div>}
   },
@@ -41,7 +42,6 @@ const columns=[
     code:'Quantity',
     width:200,
     filterable:true,
-    sortable:false,
     type:"number"
   },
   {
@@ -50,11 +50,11 @@ const columns=[
     code:'Quantity2',
     width:200,
     filterable:true,
+    sortable:true,
     Filter:(field, functionUpdate)=>{
       //onChange(field, "xxx")
       return <input type="input" onKeyPress={(e)=>{if(e.key==="Enter")functionUpdate(field, e.target.value)}}></input>
     },
-    sortable:false,
     type:"number"
   },
   {
@@ -63,7 +63,6 @@ const columns=[
     code:'Name2',
     width:200,
     filterable:true,
-    sortable:false,
   },
   {
     Header: 'Name2',
@@ -71,7 +70,6 @@ const columns=[
     code:'Name2',
     //width:200,
     filterable:true,
-    sortable:false,
   }];
 
 const data = [{
@@ -279,29 +277,38 @@ const data = [{
 
 const TableDev = (props) => {
     return <>
-    <Table container={props} columns={columns} rowNumber={true}
-      height={200}
-      selectionData={(seldata) => {console.log(seldata)}} 
-      dataSource={data}
-      selection="selection"
-      dataKey="ID"
-      subComponent={true}
-      filterable={true}
-      filter={true}
-      pagination={true}
-      filterData={(filter)=> {console.log(filter)}}
-      customTopRightControl={<div>xccccc</div>}
-      //tableStyle={{color:"black"}}
-      footerStyle={(data, datafield, col)=>{
-        const style = {}
-        if(datafield[datafield.length-1].value > 0)
-          //style.background="red"
+      <AmTable 
+        container={props} 
+        columns={columns} 
+        rowNumber={true}
+        height={500}
+        selectionData={(seldata) => {console.log(seldata)}}
+        //selectionDisabledCustom={(data) => {return true}}
+        dataSource={data}
+        selection="checkbox"
+        dataKey="ID"
+        sortable={true}
+        sortData={(e) => console.log(e)}
+        subComponent={true}
+        filterable={true}
+        filter={true}
+        pagination={true}
+        filterData={(filter)=> {console.log(filter)}}
+        customTopLeftControl={<Button>YYY</Button>}
+        customTopRightControl={<Button>XXX</Button>}
+        customBtmLeftControl={<Button>YYY</Button>}
+        customBtmRightControl={<Button>XXX</Button>}
+        //tableStyle={{color:"black"}}
+        footerStyle={(data, datafield, col)=>{
+          const style = {}
+          if(datafield[datafield.length-1].value > 0)
+            //style.background="red"
 
-        return style;
-      }}
-      //headerStyle={{color:"red"}}
-      groupBy={{"field":["Name","Name2"], "sumField":["Quantity","Quantity2"]}}
-    />
+          return style;
+        }}
+        //headerStyle={{color:"red"}}
+        groupBy={{"field":["Name","Name2"], "sumField":["Quantity","Quantity2"]}}
+      />
     </>
 }
 

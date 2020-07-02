@@ -32,7 +32,7 @@ const AreaMaster = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -42,7 +42,7 @@ const AreaMaster = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 100 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 100 },
     { Header: "Name", accessor: "Name", width: 130 },
     { Header: "Warehouse", accessor: "Warehouse_Code", width: 220 },
     { Header: "AreaMasterType", accessor: "AreaMasterType_Code", width: 250 },

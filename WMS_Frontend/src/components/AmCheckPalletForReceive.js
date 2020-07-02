@@ -23,6 +23,11 @@ import AmStorageObjectStatus from "./AmStorageObjectStatus";
 import AmRediRectInfo from './AmRedirectInfo'
 import PhotoIcon from '@material-ui/icons/Photo';
 import { DataGenerateMulti } from "../views/pageComponent/AmStorageObjectV2/SetMulti";
+import AmShowImage from './AmShowImage'
+import Tooltip from '@material-ui/core/Tooltip';
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import queryString from "query-string";
+import CheckCircle from "@material-ui/icons/CheckCircle";
 const Axios = new apicall();
 
 function PalletIcon(props) {
@@ -53,6 +58,13 @@ const IconBtn = withStyles(theme => ({
     );
 });
 const getStatus = Status => {
+    return Status.split("\\n").map((y,idx) => (
+      <div key={idx} style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getStatus1(y)}
+      </div>
+    ));
+  };
+const getStatus1 = Status => {
     if (Status === "NEW") {
         return <AmStorageObjectStatus key={Status} statusCode={100} />;
     } else if (Status === "RECEIVING") {
@@ -120,17 +132,7 @@ const DialogActions = withStyles(theme => ({
 const useGetStos = (data) => {
     const [dataSrc, setDataSrc] = useState([]);
     const [count, setCount] = useState(0)
-    const Query = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "r_StorageObjectV2",
-        q: '[{ "f": "Status", "c":"in", "v": "0,1"}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'Pallet','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+
     useEffect(() => {
         let ForCustomer = data.ForCustomer;
 
@@ -142,7 +144,7 @@ const useGetStos = (data) => {
             g: "",
             s: "[{'f':'Pallet','od':'asc'}]",
             sk: 0,
-            l: 100,
+            l: "",
             all: ""
         };
         getData(Query);
@@ -154,6 +156,7 @@ const useGetStos = (data) => {
                 if (res.data.datas) {
                     var resData = DataGenerateMulti(res.data.datas)
                     setDataSrc(resData);
+                    // console.log(res.data.counts)
                     setCount(res.data.counts)
                 }
             });
@@ -165,73 +168,27 @@ const useGetStos = (data) => {
 
     return { dataSrc, count };
 }
-const getPalletDel = (data) => {
-    return <div style={{ display: "flex", maxWidth: '250px' }}>
-        <label>{data}</label>
-        <AmRediRectInfo customApi={()=>getFile(data)} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} />
-    </div>
-
+const getIsHold = value => {
+    return value === false ? <div style={{ textAlign: "center" }}>
+        <Tooltip title="NONE" >
+            <RemoveCircle
+                fontSize="small"
+                style={{ color: "#9E9E9E" }}
+            />
+        </Tooltip>
+    </div> : <div style={{ textAlign: "center" }}>
+            <Tooltip title="HOLD" >
+                <CheckCircle
+                    fontSize="small"
+                    style={{ color: "black" }}
+                />
+            </Tooltip>
+        </div>
 }
-async function getFile(data) {
-    try {
-        await Axios.get(window.apipath +'/v2/download/download_image?fileName=' + data).then(res => {
-            // if (res.data.datas) {
-                
-            // }
-        });
-
-    } catch (err) {
-         console.log(err)
-    }
-}
-const columnsStorageObject = [
-    {
-        Header: "Status",
-        fixed: "left",
-        width: 35,
-        Cell: e => getStatus(e.original.Status[0].props.children.props.children)
-    },
-    {
-        Header: "IsHold",
-        accessor: "HoldStatus",
-        fixed: "left",
-        width: 50,
-    },
-    {
-        Header: "Pallet",
-        width: 150,
-        Cell: e => getPalletDel(e.original.Pallet)
-    },
-    {
-        Header: "SKU Code",
-        accessor: "SKU_Code",
-        width: 100
-    },
-    {
-        Header: "SKU Name",
-        accessor: "SKU_Name",
-        width: 100
-    },
-    { Header: "Warehouse", accessor: "Warehouse", width: 80 },
-    { Header: "Area", accessor: "Area", width: 100 },
-    { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
-    {
-        Header: "Qty",
-        accessor: "Qty",
-        width: 70,
-        type: "number"
-    },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-    { Header: "Remark", accessor: "Remark", width: 100 },
-    {
-        Header: "Received Date",
-        accessor: "Receive_Time",
-        width: 150,
-        type: "datetime",
-        dateFormat: "DD/MM/YYYY HH:mm"
-    }
-]
+const getOptions = value => {
+    var qryStr = queryString.parse(value);
+    return qryStr["remark"]
+  }
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
@@ -253,7 +210,58 @@ const AmCheckPalletForReceive = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
 
-
+    const columnsStorageObject = [
+        {
+            Header: "Status",
+            // width: 35,
+            Cell: e => getStatus(e.original.Status)
+        },
+        {
+            Header: "IsHold",
+            accessor: "IsHold",
+            width: 50,
+            Cell: e => getIsHold(e.original.IsHold)
+        },
+        {
+            Header: "Pallet",
+            width: 150,
+            Cell: e => getPallet(e.original.Pallet)
+        },
+        {
+            Header: "SKU Code",
+            accessor: "SKU_Code",
+            width: 100
+        },
+        {
+            Header: "SKU Name",
+            accessor: "SKU_Name",
+            width: 100
+        },
+        { Header: "Project", accessor: "Project", width: 100 },
+        { Header: "Customer", accessor: "For_Customer", width: 100 },
+        // { Header: "Warehouse", accessor: "Warehouse", width: 80 },
+        { Header: "Area", accessor: "Area", width: 100 },
+        { Header: "Location", accessor: "Location", width: 100 },
+        { Header: "Lot", accessor: "Lot", width: 80 },
+        {
+            Header: "Qty",
+            accessor: "Qty",
+            width: 70,
+            type: "number"
+        },
+        { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+        {
+            Header: "Remark", accessor: "Remark", width: 100,
+            Cell: e => getOptions(e.original.Options)
+        },
+        {
+            Header: "Received Date",
+            accessor: "Receive_Time",
+            width: 150,
+            type: "datetime",
+            dateFormat: "DD/MM/YYYY HH:mm"
+        }
+    ]
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -266,13 +274,14 @@ const AmCheckPalletForReceive = (props) => {
 
     const handleConfirm = () => {
         if (dataSelect) {
+            console.log(dataSelect)
             returnResult(dataSelect);
             onHandleClear();
             setOpen(false);
         }
     }
     const onHandleClear = () => {
-
+        setDataSelect([])
     }
 
 
@@ -289,10 +298,18 @@ const AmCheckPalletForReceive = (props) => {
             setShowDialog(null);
         }
     }, [stateDialog, msgDialog, typeDialog]);
+
+    const getPallet = (data) => {
+        let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token");
+        return <div style={{ display: "flex", maxWidth: '250px' }}>
+            <label>{data}</label>
+            <AmShowImage src={link} />
+        </div>
+    }
+   
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-
             <IconBtn onHandleClick={handleClickOpen} />
             <Dialog
                 fullScreen={fullScreen}
@@ -312,7 +329,7 @@ const AmCheckPalletForReceive = (props) => {
                         dataKey={"ID"}
                         dataSource={dataSrc}
                         // selectionDefault={defaultSelect}
-                        selection="checkbox"
+                        selection="radio"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}
                         pageSize={count}
@@ -331,7 +348,7 @@ const AmCheckPalletForReceive = (props) => {
     )
 }
 AmCheckPalletForReceive.propTypes = {
-    dataDocument: PropTypes.object.isRequired 
+    dataDocument: PropTypes.object.isRequired
 };
 
 export default AmCheckPalletForReceive;

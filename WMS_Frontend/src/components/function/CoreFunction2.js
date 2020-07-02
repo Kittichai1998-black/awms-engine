@@ -15,7 +15,7 @@ const SettimeAlert = () => {
 class apicall {
 
     get(url) {
-        return Axios.get(url + "&_token=" + localStorage.getItem("Token")).then((res) => {
+        return Axios.get(url + "&token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 0) {
                 if (res.data._result.code === "A0001") {
                     alert(res.data._result.message)
@@ -33,7 +33,7 @@ class apicall {
     post(url, dataR) {
     let data = trimObj(dataR)
         if (data !== undefined) {
-            data._token = localStorage.getItem("Token")
+            data.token = localStorage.getItem("Token")
         }
         return Axios.post(url, data).then((res) => {
             if (res.data._result.status === 0) {
@@ -52,7 +52,7 @@ class apicall {
 
     put(url, dataR) {
         let data = trimObj(dataR)
-        data._token = localStorage.getItem("Token")
+        data.token = localStorage.getItem("Token")
         return Axios.put(url, data).then((res) => {
             if (res.data._result.status === 0) {
                 if (res.data._result.code === "A0001") {
@@ -70,7 +70,7 @@ class apicall {
 
     delete(url, dataR) {
         let data = trimObj(dataR)
-        data._token = localStorage.getItem("Token")
+        data.token = localStorage.getItem("Token")
         return Axios.delete(url, data).then((res) => {
             if (res.data._result.status === 0) {
                 if (res.data._result.code === "A0001") {

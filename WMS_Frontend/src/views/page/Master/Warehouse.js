@@ -22,7 +22,7 @@ const Warehouse = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -32,7 +32,7 @@ const Warehouse = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
     { Header: "Name", accessor: "Name" },
     { Header: "Branch", accessor: "Branch_Code" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
