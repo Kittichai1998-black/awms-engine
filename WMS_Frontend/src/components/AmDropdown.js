@@ -45,18 +45,18 @@ const styles = theme => ({
         padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     },
     singleValue: {
-        fontSize: 16,
+        fontSize: 14,
     },
     placeholder: {
         position: 'absolute',
         left: 0,
-        fontSize: 16,
+        fontSize: 14,
         color: 'rgba(0, 0, 0, 0.38)',
     },
     placeholderDisabled: {
         position: 'absolute',
         left: 0,
-        fontSize: 16,
+        fontSize: 14,
         color: 'rgba(0, 0, 0, 0.18)',
     },
     iconCloseButton: {
@@ -105,7 +105,7 @@ const Menu = props => {
                 maxWidth: props.ddlmaxwidth,
                 backgroundColor: 'white',
                 borderRadius: '4px 4px 0 0',
-                boxShadow: `0 0 0 1px ${shadow}`, 
+                boxShadow: `0 0 0 1px ${shadow}`,
                 marginTop: 8,
                 marginBottom: 0,
                 // padding: '1px 0px',
@@ -310,7 +310,7 @@ const DropdownIndicator1 = withStyles(theme => ({
 const CustomClearText = withStyles(theme => ({
     iconCloseButton: {
         color: grey[400],
-        fontSize: 16,
+        fontSize: 14,
         '&:hover': {
             color: grey[800],
             cursor: 'pointer'
@@ -603,7 +603,7 @@ const DropdownComponent = (props) => {
             {
                 input: (base) => ({
                     ...base,
-                    textAlign:"left",
+                    textAlign: "left",
                     color: theme.palette.text.primary,//rgba(0, 0, 0, 0.87)
                     '& input': {
                         font: 'inherit',

@@ -43,7 +43,7 @@ const FormInline = styled.div`
   }
 `;
 
-const AmStorageObjectMulti = props => {
+const AmSearchDocumentV2 = props => {
   const { t } = useTranslation();
 
 
@@ -54,14 +54,9 @@ const AmStorageObjectMulti = props => {
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
   const [dialog, setDialog] = useState(false);
-  const [remarkMode, setRemarkMode] = useState(false);
-  const [hold, setHold] = useState(true);
-  const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -74,37 +69,24 @@ const AmStorageObjectMulti = props => {
   function getData(data) {
     const Query = {
       queryString: window.apipath + "/v2/SelectDataViwAPI/",
-      t: "r_StorageObject",
-      q: '[{ "f": "Status", "c":"!=", "v": 0}]',
+      t: "Document",
+      q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"}]',
       f: "*",
       g: "",
-      s: "[{'f':'Pallet','od':'asc'}]",
+      s: "[{'f':'ID','od':'desc'}]",
       sk: 0,
-      l: 100,
+      l: 20,
       all: ""
     };
     setQueryViewData(Query)
     var queryStr = createQueryString(data != undefined ? data : Query)
     Axios.get(queryStr).then(res => {
-
-      var respone = DataGenerateMulti(res.data.datas)
-      setDataSource(respone)
+      console.log(res.data.datas)
+      // var respone = DataGenerateMulti(res.data.datas)
+      setDataSource(res.data.datas)
       setCount(res.data.counts)
     });
   }
-  const onChangeFilterData = (filterValue) => {
-    console.log(filterValue)
-    var res = queryViewData;
-    filterValue.forEach(fdata => {
-      if (fdata.customFilter !== undefined)
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-      else
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
-    });
-    getData(res)
-
-  }
-
   const useColumns = (cols) => {
     const [columns, setColumns] = useState(cols);
 
@@ -166,115 +148,15 @@ const AmStorageObjectMulti = props => {
     return { columns };
   }
   const { columns } = useColumns(props.iniCols);
-
-  const onHandleEditConfirm = (status) => {
-
-    //var x = onChangeEditor()
-    //console.log(remark)
-    if (status) {
-      onUpdateHold()
-    }
-
-    setDialog(false);
-    setSelection([]);
-  };
-
-
-  const DataGenerateRemark = () => {
-    const columns = [
-      {
-        field: "Option",
-        type: "input",
-        name: "Remark",
-        placeholder: "Remark",
-        required: true
-      }
-    ];
-    return columns.map(y => {
-      return {
-        field: y.field,
-        component: (data = null, cols, key) => {
-          return (
-            <div key={key}>
-              <FormInline>
-                {" "}
-                <LabelH>{"Remark"} : </LabelH>
-                <InputDiv>
-                  <AmInput
-                    id={cols.field}
-                    style={{ width: "270px", margin: "0px" }}
-                    type="input"
-                    onChange={val => {
-                      onChangeEditor(val);
-                    }}
-                  />
-                </InputDiv>
-              </FormInline>
-
-            </div>
-          );
-        }
-      };
-    });
-  };
-  const onChangeEditor = (value) => {
-    if (selection.length === 0) {
-      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-    } else {
-      setRemark(value);
-    }
-  };
-  const onUpdateHold = () => {
-    let bstosID = [];
-
-    if (selection.length > 0) {
-      selection.forEach(rowdata => {
-        bstosID.push(rowdata.ID);
-      });
-      let postdata = {
-        bstosID: bstosID,
-        IsHold: hold ? 1 : 0,
-        remark: remark,
-        remarkMode: remarkMode
-      };
-
-      Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
-        res => {
-          if (res.data._result !== undefined) {
-            if (res.data._result.status === 1) {
-              setDialogState({ type: "success", content: "Success", state: true })
-              getData();
-              Clear();
-            } else {
-              setDialogState({ type: "error", content: res.data._result.message, state: true })
-              getData();
-              Clear();
-            }
-          }
-        }
-      );
-    }
-
-  }
-  const Clear = () => {
-    setSelection([]);
-    setRemark("");
-  };
   //===========================================================
   return (
     <div>
-      <AmDialogs
+      {/* <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
         open={dialogState.state}
-        content={dialogState.content} />
-      <AmEditorTable
-        open={dialog}
-        onAccept={(status, rowdata) => onHandleEditConfirm(status)}
-        titleText={"Remark"}
-        data={"text"}
-        columns={DataGenerateRemark()}
-      />
+        content={dialogState.content} /> */}
+
       <AmTable
         columns={columns}
         dataKey={"ID"}
@@ -283,7 +165,7 @@ const AmStorageObjectMulti = props => {
         totalSize={count}
         pageSize={100}
         filterable={true}
-        filterData={res => { onChangeFilterData(res) }}
+        filterData={res => { }}
         pagination={true}
         selection={"checkbox"}
         selectionData={(data) => {
@@ -295,42 +177,10 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
-        customTopLeftControl={<div><AmButton
-          style={{ marginRight: "5px" }}
-          styleType="confirm"
-          onClick={() => {
-            setDialog(true)
-            if (selection.length === 0)
-              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-          }}
-        >
-          HOLD
-        </AmButton><AmButton
-            style={{ marginRight: "5px" }}
-            styleType="confirm"
-            onClick={() => {
-              setDialog(true)
-              setHold(false)
-              if (selection.length === 0)
-                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-            }}
-          >
-            UNHOLD
-        </AmButton><AmButton
-            style={{ marginRight: "5px" }}
-            styleType="confirm"
-            onClick={() => {
-              setDialog(true)
-              setRemarkMode(true)
-              if (selection.length === 0)
-                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-            }}
-          >
-            REMARK
-        </AmButton></div>}
+
       />
 
     </div>
   );
 };
-export default AmStorageObjectMulti;
+export default AmSearchDocumentV2;

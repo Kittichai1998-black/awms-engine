@@ -4,7 +4,7 @@ import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
-import AmDocumentSearch from "../../../pageComponent/AmDocumentSearch";
+import AmSearchDocument from "../../../pageComponent/AmSearchDocumentV2/AmSearchDocumentV2";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import DocView from "../../../pageComponent/DocumentView";
 import AmDocumentStatus from "../../../../components/AmDocumentStatus";
@@ -239,8 +239,8 @@ const DocumentSearchSTGT = props => {
         open={previewWarning}
         closeState={e => setPreviewWarning(e)}
       />
-      <AmDocumentSearch
-        columns={iniCols}
+      <AmSearchDocument
+        iniCols={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1001"
