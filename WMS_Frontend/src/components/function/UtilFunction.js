@@ -31,36 +31,13 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             searchSign = "IN";
         }
 
-        if (searchData !== undefined) {
-            if (dataType === "datetime") {
-                if (dateField["dateFrom"]) {
-                    searchData.v = dateField["dateFrom"];
-                    searchData.c = ">=";
-                }
-                if (dateField["dateTo"]) {
-                    searchData.v = dateField["dateTo"];
-                    searchData.c = "<=";
-                }
-            } else {
-                searchData.c = searchSign;
-                searchData.v = searchValue;
-            }
+        if (searchData !== undefined && !dataType) {
+            searchData.c = searchSign;
+            searchData.v = searchValue;
         } else {
             if (dataType === "datetime") {
-                if (dateField["dateFrom"]) {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = dateField["dateFrom"];
-                    createObj.c = ">=";
-                    queryFilter.push(createObj)
-                }
-                if (dateField["dateTo"]) {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = dateField["dateTo"];
-                    createObj.c = "<=";
-                    queryFilter.push(createObj)
-                }
+                let resDateTime = customDateTime(dateField, field, searchValue);
+                queryFilter.push(resDateTime);
             } else {
                 searchData = {};
                 searchData.f = field;
@@ -73,9 +50,27 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     else {
         queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
+    
 
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
+}
+
+const customDateTime = (dateField, field, searchValue) => {
+    if (dateField === "dateFrom") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = ">=";
+        return createObj;
+    }
+    if (dateField === "dateTo") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = "<=";
+        return createObj;
+    }
 }
 
 export { QueryGenerate }
