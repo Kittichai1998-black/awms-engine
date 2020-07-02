@@ -7,6 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 
 const Topbar = React.memo((propsTopbar) => {
+    console.log(propsTopbar.dataSource)
     if(propsTopbar.customTopControl){
         return <>
             <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
@@ -44,6 +45,8 @@ const Topbar = React.memo((propsTopbar) => {
             </Grid>
         }
         else{
+            
+            console.log(propsTopbar.dataSource)
             return propsTopbar.pagination ? <AmPagination
                 totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
                 pageSize={propsTopbar.pageSize}
@@ -409,5 +412,6 @@ AmTable.defaultProps = {
     clearSelectionChangePage: true,
     width: "100%",
     sortable: false,
-    filterable:false
+    filterable:false,
+    dataSource:[]
 }

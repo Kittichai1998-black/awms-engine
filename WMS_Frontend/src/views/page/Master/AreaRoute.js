@@ -32,7 +32,7 @@ const AreaRoute = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -42,7 +42,7 @@ const AreaRoute = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "IOType", accessor: "IOTypeCode", fixed: "left", width: 100 },
+    { Header: "IOType", accessor: "IOTypeCode", fixed: "left", fixWidth: 100 },
     { Header: "Sou Area", accessor: "AreaSou", width: 170 },
     { Header: "Des Area", accessor: "AreaDes" },
     { Header: "Priority", accessor: "Priority", width: 100, type: "number" },

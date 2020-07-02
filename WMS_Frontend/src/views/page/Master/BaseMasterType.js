@@ -30,11 +30,11 @@ const BaseMasterType = props => {
       Header: "",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
     { Header: "Name", accessor: "Name" },
     { Header: "Unit Type", accessor: "UnitType_Code", width: 100 },
     { Header: "Weight", accessor: "Weight", width: 100, type: "number" },

@@ -43,11 +43,11 @@ const PackMasterType = props => {
       Header: "",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Pack Type Code", accessor: "Code", fixed: "left", width: 120 },
+    { Header: "Pack Type Code", accessor: "Code", fixed: "left", fixWidth: 120 },
     { Header: "Pack Type Name", accessor: "Name", width: 150 },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
     { Header: "% Weight Verify", accessor: "ObjectSize_Code" },
