@@ -52,12 +52,14 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                     createObj.f = field;
                     createObj.v = dateField["dateFrom"];
                     createObj.c = ">=";
+                    queryFilter.push(createObj)
                 }
                 if (dateField["dateTo"]) {
                     let createObj = {};
                     createObj.f = field;
                     createObj.v = dateField["dateTo"];
                     createObj.c = "<=";
+                    queryFilter.push(createObj)
                 }
             } else {
                 searchData = {};
