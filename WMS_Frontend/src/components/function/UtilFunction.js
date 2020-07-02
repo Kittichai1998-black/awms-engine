@@ -33,34 +33,17 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
-                if (dateField === "dateFrom") {
-                    searchData.v = searchValue;
-                    searchData.c = ">=";
-                }
-                if (dateField === "dateTo") {
-                    searchData.v = searchValue;
-                    searchData.c = "<=";
-                }
+                delete queryFilter.find(x => x.f === field);
+                let resDateTime = customDateTime(dateField, field, searchValue);
+                queryFilter.push(resDateTime);                
             } else {
                 searchData.c = searchSign;
                 searchData.v = searchValue;
             }
         } else {
             if (dataType === "datetime") {
-                if (dateField === "dateFrom") {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = searchValue;
-                    createObj.c = ">=";
-                    queryFilter.push(createObj)
-                }
-                if (dateField === "dateTo") {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = searchValue;
-                    createObj.c = "<=";
-                    queryFilter.push(createObj)
-                }
+                let resDateTime = customDateTime(dateField, field, searchValue);
+                queryFilter.push(resDateTime);
             } else {
                 searchData = {};
                 searchData.f = field;
@@ -77,6 +60,23 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
+}
+
+const customDateTime = (dateField, field, searchValue) => {
+    if (dateField === "dateFrom") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = ">=";
+        return createObj;
+    }
+    if (dateField === "dateTo") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = "<=";
+        return createObj;
+    }
 }
 
 export { QueryGenerate }
