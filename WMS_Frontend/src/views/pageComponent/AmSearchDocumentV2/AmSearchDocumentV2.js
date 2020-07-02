@@ -153,6 +153,24 @@ const AmSearchDocumentV2 = props => {
     return { columns };
   }
   const { columns } = useColumns(props.iniCols);
+
+  const onChangeFilterData = (filterValue) => {
+    console.log(filterValue)
+    console.log("filterValue")
+    var res = queryViewData;
+    filterValue.forEach(fdata => {
+      console.log(fdata)
+      if (fdata.customFilter !== undefined) {
+        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+        console.log(res)
+      } else
+        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+    });
+
+    getData(res)
+
+  }
+
   //===========================================================
   return (
     <div>
@@ -170,7 +188,7 @@ const AmSearchDocumentV2 = props => {
         totalSize={count}
         pageSize={100}
         filterable={true}
-        filterData={res => { }}
+        filterData={res => { onChangeFilterData(res) }}
         pagination={true}
         selection={"checkbox"}
         selectionData={(data) => {

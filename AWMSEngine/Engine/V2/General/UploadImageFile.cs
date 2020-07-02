@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.General
      
         public class TReq
         {
-            public string baseCode;
+            public string fileName;
             public string imageBase64;
         }
         public class TRes
@@ -63,9 +63,9 @@ namespace AWMSEngine.Engine.V2.General
             
             var filepath = StaticValue.GetConfigValue(ConfigCode.PATH_FOLDER_IMAGES);
             CreateFolder(filepath);
-            DeleteOldFile(filepath, reqVO.baseCode);
+            DeleteOldFile(filepath, reqVO.fileName);
 
-            var fileName = reqVO.baseCode + "." + extension;
+            var fileName = reqVO.fileName + "." + extension;
             var fileFullPath = filepath + "/" + fileName;
 
             //CreateThumbnail(bytes, 800, extension, fileFullPath);
@@ -166,12 +166,17 @@ namespace AWMSEngine.Engine.V2.General
             {
                 orientations = ExifOrientations.Unknown;
             }
+            else
+            {
+                // Return the orientation value.
+                orientations = (ExifOrientations)image.GetPropertyItem(OrientationId).Value[0];
+            }
 
-            // Return the orientation value.
-            orientations = (ExifOrientations)image.GetPropertyItem(OrientationId).Value[0];
             // Orient the result.
             switch (orientations)
             {
+                case ExifOrientations.Unknown:
+                    break;
                 case ExifOrientations.RotateNone:
                     break;
                 case ExifOrientations.RotateNoneFlipX:
@@ -196,7 +201,10 @@ namespace AWMSEngine.Engine.V2.General
                     image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                     break;
             }
-            image.RemovePropertyItem(OrientationId);
+            if (orientation_index > 0)
+            {
+                image.RemovePropertyItem(OrientationId);
+            }
         }
     }
 }
