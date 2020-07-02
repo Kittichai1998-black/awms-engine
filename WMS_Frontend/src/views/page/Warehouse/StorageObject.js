@@ -12,6 +12,8 @@ import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
+import AmShowImage from '../../../components/AmShowImage'
+import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
 
 
 const Axios = new apicall();
@@ -49,7 +51,12 @@ const StorageObject = props => {
       },
       Cell: e => getIsHold(e.original.IsHold)
     },
-    { Header: "Pallet", accessor: "Pallet", width: 100 },
+    {
+      Header: "Pallet",
+      accessor: "Pallet",
+      width: 130,
+      Cell: e => getImgPallet(e.original.Pallet)
+    },
     {
       Header: "SKU Code",
       accessor: "SKU_Code",
@@ -179,6 +186,15 @@ const StorageObject = props => {
       return null;
     }
   };
+
+  const getImgPallet = Pallet => {
+    let link = window.apipath + "/v2/download/download_image?fileName=" + Pallet + "&token=" + localStorage.getItem("Token");
+    return <div style={{ display: "flex", maxWidth: '250px' }}>
+      <label>{Pallet}</label>
+      <AmShowImage src={link} />
+      <AmDialogUploadImage titleDialog={"Upload Image of Pallet : " + Pallet} fileName={Pallet} />
+    </div>
+  }
   return (
     <div>
       <AmStorageObjectMulti

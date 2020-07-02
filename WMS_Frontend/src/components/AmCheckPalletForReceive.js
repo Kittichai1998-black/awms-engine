@@ -28,6 +28,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import queryString from "query-string";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import ListAlt from "@material-ui/icons/ListAlt";
+
 const Axios = new apicall();
 
 function PalletIcon(props) {
@@ -40,8 +42,11 @@ function PalletIcon(props) {
 }
 const IconBtn = withStyles(theme => ({
     iconButton: {
-        padding: 4,
+        padding: 2,
     },
+    fontSizeSmall:{
+        fontSize: 30
+    }
 
 }))(props => {
     const { classes, onHandleClick, ...other } = props;
@@ -51,7 +56,7 @@ const IconBtn = withStyles(theme => ({
                 className={classes.iconButton}
                 onClick={onHandleClick}
                 {...other}>
-                <PalletIcon color="primary" />
+                <ListAlt color="primary" className={classes.fontSizeSmall}/>
             </IconButton>
         </AmToolTip>
         </div>
@@ -300,7 +305,7 @@ const AmCheckPalletForReceive = (props) => {
     }, [stateDialog, msgDialog, typeDialog]);
 
     const getPallet = (data) => {
-        let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token");
+        let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&token=" + localStorage.getItem("Token");
         return <div style={{ display: "flex", maxWidth: '250px' }}>
             <label>{data}</label>
             <AmShowImage src={link} />
