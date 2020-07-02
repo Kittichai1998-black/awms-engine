@@ -33,12 +33,12 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
-                if (dateField["dateFrom"]) {
-                    searchData.v = dateField["dateFrom"];
+                if (dateField === "dateFrom") {
+                    searchData.v = searchValue;
                     searchData.c = ">=";
                 }
-                if (dateField["dateTo"]) {
-                    searchData.v = dateField["dateTo"];
+                if (dateField === "dateTo") {
+                    searchData.v = searchValue;
                     searchData.c = "<=";
                 }
             } else {
@@ -47,17 +47,17 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             }
         } else {
             if (dataType === "datetime") {
-                if (dateField["dateFrom"]) {
+                if (dateField === "dateFrom") {
                     let createObj = {};
                     createObj.f = field;
-                    createObj.v = dateField["dateFrom"];
+                    createObj.v = searchValue;
                     createObj.c = ">=";
                     queryFilter.push(createObj)
                 }
-                if (dateField["dateTo"]) {
+                if (dateField === "dateTo") {
                     let createObj = {};
                     createObj.f = field;
-                    createObj.v = dateField["dateTo"];
+                    createObj.v = searchValue;
                     createObj.c = "<=";
                     queryFilter.push(createObj)
                 }
