@@ -160,9 +160,7 @@ const AmTableSetup = (props) => {
     }, [selection.selectionValue, selectionData])
 
     useEffect(() => {
-        console.log(props.selectionDefault)
         if (props.selectionDefault !== undefined){
-            console.log(props.selectionDefault.length)
             if(props.selectionDefault.length > 0){
                 selection.addAll(props.selectionDefault)
             }

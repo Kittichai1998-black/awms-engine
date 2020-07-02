@@ -24,6 +24,10 @@ import AmRediRectInfo from './AmRedirectInfo'
 import PhotoIcon from '@material-ui/icons/Photo';
 import { DataGenerateMulti } from "../views/pageComponent/AmStorageObjectV2/SetMulti";
 import AmShowImage from './AmShowImage'
+import Tooltip from '@material-ui/core/Tooltip';
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import queryString from "query-string";
+import CheckCircle from "@material-ui/icons/CheckCircle";
 const Axios = new apicall();
 
 function PalletIcon(props) {
@@ -54,6 +58,13 @@ const IconBtn = withStyles(theme => ({
     );
 });
 const getStatus = Status => {
+    return Status.split("\\n").map((y,idx) => (
+      <div key={idx} style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getStatus1(y)}
+      </div>
+    ));
+  };
+const getStatus1 = Status => {
     if (Status === "NEW") {
         return <AmStorageObjectStatus key={Status} statusCode={100} />;
     } else if (Status === "RECEIVING") {
@@ -157,7 +168,27 @@ const useGetStos = (data) => {
 
     return { dataSrc, count };
 }
-
+const getIsHold = value => {
+    return value === false ? <div style={{ textAlign: "center" }}>
+        <Tooltip title="NONE" >
+            <RemoveCircle
+                fontSize="small"
+                style={{ color: "#9E9E9E" }}
+            />
+        </Tooltip>
+    </div> : <div style={{ textAlign: "center" }}>
+            <Tooltip title="HOLD" >
+                <CheckCircle
+                    fontSize="small"
+                    style={{ color: "black" }}
+                />
+            </Tooltip>
+        </div>
+}
+const getOptions = value => {
+    var qryStr = queryString.parse(value);
+    return qryStr["remark"]
+  }
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
@@ -178,23 +209,18 @@ const AmCheckPalletForReceive = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-    // const [showImg, setShowImg] = useState(null);
-    const [srcImg, setSrcImg] = useState(null);
-    const [openIMG, setOpenIMG] = useState(false);
-
 
     const columnsStorageObject = [
         {
             Header: "Status",
-            fixed: "left",
-            fixWidth: 35,
-            Cell: e => getStatus(e.original.Status[0].props.children.props.children)
+            // width: 35,
+            Cell: e => getStatus(e.original.Status)
         },
         {
             Header: "IsHold",
-            accessor: "HoldStatus",
-            fixed: "left",
-            fixWidth: 50,
+            accessor: "IsHold",
+            width: 50,
+            Cell: e => getIsHold(e.original.IsHold)
         },
         {
             Header: "Pallet",
@@ -211,7 +237,9 @@ const AmCheckPalletForReceive = (props) => {
             accessor: "SKU_Name",
             width: 100
         },
-        { Header: "Warehouse", accessor: "Warehouse", width: 80 },
+        { Header: "Project", accessor: "Project", width: 100 },
+        { Header: "Customer", accessor: "For_Customer", width: 100 },
+        // { Header: "Warehouse", accessor: "Warehouse", width: 80 },
         { Header: "Area", accessor: "Area", width: 100 },
         { Header: "Location", accessor: "Location", width: 100 },
         { Header: "Lot", accessor: "Lot", width: 80 },
@@ -222,7 +250,10 @@ const AmCheckPalletForReceive = (props) => {
             type: "number"
         },
         { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-        { Header: "Remark", accessor: "Remark", width: 100 },
+        {
+            Header: "Remark", accessor: "Remark", width: 100,
+            Cell: e => getOptions(e.original.Options)
+        },
         {
             Header: "Received Date",
             accessor: "Receive_Time",
@@ -243,6 +274,7 @@ const AmCheckPalletForReceive = (props) => {
 
     const handleConfirm = () => {
         if (dataSelect) {
+            console.log(dataSelect)
             returnResult(dataSelect);
             onHandleClear();
             setOpen(false);
@@ -268,30 +300,13 @@ const AmCheckPalletForReceive = (props) => {
     }, [stateDialog, msgDialog, typeDialog]);
 
     const getPallet = (data) => {
-        // let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token");
+        let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token");
         return <div style={{ display: "flex", maxWidth: '250px' }}>
             <label>{data}</label>
-            {/* <AmShowImage src={link} /> */}
-            <IconButton
-                size="small"
-                aria-label="info"
-                onClick={() => getFile(data)}
-                style={{ marginLeft: "3px" }}
-            >
-                <PhotoIcon fontSize="small" color="primary" />
-            </IconButton>
-            {/* <AmRediRectInfo customApi={()=>getFile(data)} type={"custom_icon"} customIcon={<PhotoIcon fontSize="small" color="primary" />} /> */}
+            <AmShowImage src={link} />
         </div>
-
     }
-    function getFile(data) {
-        setSrcImg(window.apipath + "/v2/download/download_image?fileName=" + data + "&_token=" + localStorage.getItem("Token"));
-        setOpenIMG(true)
-        // setShowImg(<AmShowImage src={link} open={openIMG} onClose={(res)=>setOpenIMG(res)} />)
-    }
-    // const handleClickOpenIMG = (res) => {
-    //     setOpenIMG(res);
-    // };
+   
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
@@ -314,13 +329,11 @@ const AmCheckPalletForReceive = (props) => {
                         dataKey={"ID"}
                         dataSource={dataSrc}
                         // selectionDefault={defaultSelect}
-                        selection="checkbox"
+                        selection="radio"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}
-                        pageSize={200}
+                        pageSize={count}
                     />
-                    <AmShowImage src={srcImg} open={openIMG} onClose={(res) => setOpenIMG(res)} />
-
                 </DialogContent>
                 <DialogActions>
                     <AmButton styleType="add" onClick={handleConfirm}>

@@ -1,4 +1,5 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -27,6 +28,9 @@ namespace AWMSEngine.Engine.V2.General
             string[] filePaths = Directory.GetFiles(@filepath.ToString());
 
             var resFile = Array.Find(filePaths, s => s.Contains(reqVO.fileName));
+            if(resFile == null)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "Image is not found"); //
+
             string extension;
             extension = Path.GetExtension(resFile).Replace(".", ""); 
             string fileName = Path.GetFileName(resFile);
