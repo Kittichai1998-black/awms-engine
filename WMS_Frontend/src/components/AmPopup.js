@@ -27,13 +27,14 @@ const AmPopup = props => {
   const [defaultTitlePopup, setDefaultTitlePopup] = useState("");
   //const [openPreview, setOpenPreview] = useState(props.openPreview);
   useEffect(() => {
-    if (typePopup === "success") {
+
+    if (props.typePopup === "success") {
       setDefaultTitlePopup("SUCCESS");
-    } else if (typePopup === "error") {
+    } else if (props.typePopup === "error") {
       setDefaultTitlePopup("ERROR");
-    } else if (typePopup === "warning") {
+    } else if (props.typePopup === "warning") {
       setDefaultTitlePopup("WARNING");
-    } else if (typePopup === "info") {
+    } else if (props.typePopup === "info") {
       setDefaultTitlePopup("INFO");
     } else {
       setDefaultTitlePopup("");
@@ -41,6 +42,19 @@ const AmPopup = props => {
   }, []);
 
   useEffect(() => {
+
+    setTypePopup(props.typePopup)
+    if (props.typePopup === "success") {
+      setDefaultTitlePopup("SUCCESS");
+    } else if (props.typePopup === "error") {
+      setDefaultTitlePopup("ERROR");
+    } else if (props.typePopup === "warning") {
+      setDefaultTitlePopup("WARNING");
+    } else if (props.typePopup === "info") {
+      setDefaultTitlePopup("INFO");
+    } else {
+      setDefaultTitlePopup("");
+    }
     if (props.open) setOpen(true);
     else {
       setOpen(false);
@@ -49,6 +63,7 @@ const AmPopup = props => {
 
   useEffect(() => {
     setContent(props.content);
+
   }, [props.content]);
 
   const handleClickOpen = () => {
@@ -70,16 +85,16 @@ const AmPopup = props => {
                 ? colorIcon
                 : "#C5E1A5"
               : typePopup === "info"
-              ? colorIcon
                 ? colorIcon
-                : "#37474F"
-              : colorIcon === "error"
-              ? colorIcon
-                ? colorIcon
-                : "#EF9A9A"
-              : colorIcon
-              ? colorIcon
-              : "#FFF59D"
+                  ? colorIcon
+                  : "#37474F"
+                : colorIcon === "error"
+                  ? colorIcon
+                    ? colorIcon
+                    : "#EF9A9A"
+                  : colorIcon
+                    ? colorIcon
+                    : "#FFF59D"
         }}
       >
         <path d={type} />
@@ -100,16 +115,16 @@ const AmPopup = props => {
                     ? colorBlock
                     : "#4CAF50"
                   : typePopup === "info"
-                  ? colorBlock
                     ? colorBlock
-                    : "#9E9E9E"
-                  : typePopup === "error"
-                  ? colorBlock
-                    ? colorBlock
-                    : "#F44336"
-                  : colorBlock
-                  ? colorBlock
-                  : "#FFA726",
+                      ? colorBlock
+                      : "#9E9E9E"
+                    : typePopup === "error"
+                      ? colorBlock
+                        ? colorBlock
+                        : "#F44336"
+                      : colorBlock
+                        ? colorBlock
+                        : "#FFA726",
               border: "5px",
               width: width ? width : "500px",
               height: height ? height : null
@@ -151,26 +166,26 @@ const AmPopup = props => {
                     ? colorBlock
                     : "#4CAF50"
                   : typePopup === "info"
-                  ? colorBlock
                     ? colorBlock
-                    : "#9E9E9E"
-                  : typePopup === "error"
-                  ? colorBlock
-                    ? colorBlock
-                    : "#F44336"
-                  : colorBlock
-                  ? colorBlock
-                  : "#FFA726"
+                      ? colorBlock
+                      : "#9E9E9E"
+                    : typePopup === "error"
+                      ? colorBlock
+                        ? colorBlock
+                        : "#F44336"
+                      : colorBlock
+                        ? colorBlock
+                        : "#FFA726"
             }}
           >
             {HomeIcon(
               typePopup === "success"
                 ? amIcon[icon ? icon : "Success"]
                 : typePopup === "info"
-                ? amIcon[icon ? icon : "Info"]
-                : typePopup === "error"
-                ? amIcon[icon ? icon : "Error"]
-                : amIcon[icon ? icon : "Warning"]
+                  ? amIcon[icon ? icon : "Info"]
+                  : typePopup === "error"
+                    ? amIcon[icon ? icon : "Error"]
+                    : amIcon[icon ? icon : "Warning"]
             )}{" "}
             {titlePopup ? titlePopup : defaultTitlePopup}
           </DialogTitle>
