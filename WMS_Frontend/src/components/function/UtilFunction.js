@@ -34,17 +34,25 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
-                if (dateField === "dateFrom" && searchData.c === ">=") {
-                    searchData.v = searchValue;
-                    searchData.c = ">=";
+                let findDateType = queryFilter.filter(x => x.f === field);
+
+                if (dateField === "dateFrom") {
+                    let findFrom = findDateType.find(x => x.c === ">=");
+                    if(findFrom === undefined){
+                        let resDateTime = customDateTime(dateField, field, searchValue);
+                        queryFilter.push(resDateTime);
+                    }
+                    else
+                        findFrom.v = searchValue;
                 }
-                else if (dateField === "dateTo" && searchData.c === "<=") {
-                    searchData.v = searchValue;
-                    searchData.c = "<=";
-                }
-                else{
-                    let resDateTime = customDateTime(dateField, field, searchValue);
-                    queryFilter.push(resDateTime);
+                else if (dateField === "dateTo") {
+                    let findFrom = findDateType.find(x => x.c === "<=");
+                    if(findFrom === undefined){
+                        let resDateTime = customDateTime(dateField, field, searchValue);
+                        queryFilter.push(resDateTime);
+                    }
+                    else
+                        findFrom.v = searchValue;
                 }
             } else {
                 searchData.c = searchSign;
