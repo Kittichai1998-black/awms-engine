@@ -168,7 +168,8 @@ const DocumentSearchSTGT = props => {
   ];
 
   const iniCols = [
-    { Header: "", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
+
+    { Header: "Status", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
     { Header: "Doc.ProcessType", accessor: "DocumentProcessTypeName", width: 200 },
     { Header: "Wh Order", accessor: "Ref1", width: 120 },
@@ -183,23 +184,6 @@ const DocumentSearchSTGT = props => {
     { Header: "Modify Time", accessor: "LastUpdate", width: 200 }
   ];
 
-  const search = [
-    { label: "Sou. Warehouse", field: "SouWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
-    { label: "Des. Warehouse", field: "DesWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
-    { label: "Wh Order", field: "Ref1", width: 120, searchType: "input" },
-    { label: "Project", field: "Project", width: 100, searchType: "input" },
-    // {   label: "Sou.Customer",   field: "SouCustomerName",   searchType: "dropdown",   dropdownData: dataCustomer,   fieldDataKey: "Name",   fieldLabel: "Name" },
-    //{ label: "Lot", field: "Lot", searchType: "input" },
-    //{ label: "Remark", field: "Remark", searchType: "input" },
-    { label: "Doc. Date From", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateFrom" },
-    { label: "Doc. Date To", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateTo" }
-  ];
-
-  const primarySearch = [
-    { label: "Event Status", field: "EventStatus", searchType: "dropdown", dropdownData: DocumentEventStatusSearch, fieldDataKey: "Name", fieldLabel: "Name" },
-    { label: "Doc No.", field: "Code", searchType: "input" },
-    { label: "Doc. ProcessType", field: "DocumentProcessTypeName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
-  ];
   const dataReject = [// {//   field: "souAreaCode",//   type: "dropdow",//   typeDropdow: "search",//   name: "Sou. Area",//   dataDropDow: AreaMasterQuery,//   placeholder: "Sou. Area",//   fieldLabel: ["Code", "Name"]//   //required: true//   //disabled: true// },
     { field: "desAreaCode", type: "dropdow", typeDropdow: "search", name: "Dest. Area", dataDropDow: AreaMasterQuery, placeholder: "Dest. Area", fieldLabel: ["Code", "Name"] },
     { field: "desAreaLocationCode", type: "dropdow", typeDropdow: "search", name: "Dest. AreaLocation", dataDropDow: AreaLocationMasterQuery, placeholder: "Des AreaLocation", fieldLabel: ["Code", "Name"] }
@@ -241,8 +225,6 @@ const DocumentSearchSTGT = props => {
       />
       <AmSearchDocument
         iniCols={iniCols}
-        primarySearch={primarySearch}
-        expensionSearch={search}
         docTypeCode="1001"
         buttonClose={true}
         buttonReject={false}

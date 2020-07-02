@@ -56,15 +56,19 @@ const AmSearchDocumentV2 = props => {
   const [dialog, setDialog] = useState(false);
   const [dialogState, setDialogState] = useState({});
 
-
-
   useEffect(() => {
-    if (typeof (page) === "number" && !iniQuery) {
-      const queryEdit = JSON.parse(JSON.stringify(queryViewData));
-      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
-      getData(queryEdit)
-    }
-  }, [page])
+
+    getData()
+
+  }, [])
+
+  // useEffect(() => {
+  //   if (typeof (page) === "number" && !iniQuery) {
+  //     const queryEdit = JSON.parse(JSON.stringify(queryViewData));
+  //     queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+  //     getData(queryEdit)
+  //   }
+  // }, [page])
 
   function getData(data) {
     const Query = {
@@ -78,6 +82,7 @@ const AmSearchDocumentV2 = props => {
       l: 20,
       all: ""
     };
+    console.log("fegrht")
     setQueryViewData(Query)
     var queryStr = createQueryString(data != undefined ? data : Query)
     Axios.get(queryStr).then(res => {
