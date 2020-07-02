@@ -26,7 +26,7 @@ const Permission = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -36,7 +36,7 @@ const Permission = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 200 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 200 },
     { Header: "Name", accessor: "Name", width: 150 },
     { Header: "Description", accessor: "Description", width: 150 },
     {

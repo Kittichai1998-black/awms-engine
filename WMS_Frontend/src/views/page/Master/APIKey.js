@@ -44,11 +44,11 @@ const APIKey = props => {
       Header: "",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 200 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 200 },
     { Header: "Name", accessor: "Name", width: 150 },
     { Header: "Description", accessor: "Description", width: 150 },
     { Header: "APIKey", accessor: "APIKey", width: 200 },
