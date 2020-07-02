@@ -5,7 +5,8 @@ import {
   createQueryString
 } from "../../../components/function/CoreFunction";
 import AmRedirectLog from "../../../components/AmRedirectLog";
-import { StorageObjectEvenstatus } from "../../../components/Models/StorageObjectEvenstatus";
+import { StorageObjectEvenstatus, StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
+import { Hold } from "../../../components/Models/Hold";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
@@ -13,6 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
+
 
 const Axios = new apicall();
 
@@ -24,25 +26,28 @@ const StorageObject = props => {
     {
       Header: "Status",
       accessor: "Status",
-      width: 35,
+      width: 120,
       sortable: false,
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
-        dataDropDown: StorageObjectEvenstatus,
-        typeDropDown: "normal"
+        dataDropDown: StorageObjectEvenstatusTxt,
+        typeDropDown: "normal",
+        widthDD: 105,
       },
-      //Cell: e => getStatus(e.original.Status[0].props.children.props.children)
       Cell: e => getStatus(e.original.Status)
     },
     {
       Header: "IsHold",
       accessor: "IsHold",
-      width: 50,
+      width: 20,
       sortable: false,
-      filterType: "checkbox",
+      filterType: "dropdown",
       filterConfig: {
-        filterType: "checkbox",
+        filterType: "dropdown",
+        dataDropDown: Hold,
+        typeDropDown: "normal",
+        widthDD: 100,
       },
       Cell: e => getIsHold(e.original.IsHold)
     },
@@ -92,6 +97,7 @@ const StorageObject = props => {
       width: 60,
       accessor: "",
       Header: "Log ",
+      filterable: false,
       Cell: e => getRedirectLog(e.original)
     }
   ];

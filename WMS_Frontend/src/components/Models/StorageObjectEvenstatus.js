@@ -5,6 +5,12 @@ const StorageObjectEvenstatus = [
   { label: "AUDITED", value: 104 },
   { label: "PICKING", value: 153 },
 ];
-
-export { StorageObjectEvenstatus }
+const StorageObjectEvenstatusTxt = [
+  { label: "RECEIVING", value: "RECEIVING" },
+  { label: "RECEIVED", value: "RECEIVED" },
+  { label: "AUDITING", value: "AUDITING" },
+  { label: "AUDITED", value: "AUDITED" },
+  { label: "PICKING", value: "PICKING" },
+];
+export { StorageObjectEvenstatus, StorageObjectEvenstatusTxt }
 
