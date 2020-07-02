@@ -13,15 +13,9 @@ const useStyles = makeStyles((theme) => ({
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff'
     },
-    divCenter: {
-        flex: '0 1 auto',
-        display: 'flex',
-        position: 'relative',
-        textAlign: 'center',
-        height: '100%',
-        verticalAlign: 'center !important',
-        alignItems: 'center',
-        justifyContent: 'center'
+    responsive: {
+        width: '100%',
+        height: 'auto'
     }
 }));
 
@@ -38,8 +32,8 @@ export default function SimpleBackdrop(props) {
     useEffect(() => {
         if (open) {
             setCircleLoad(<CircularProgress color='secondary' />)
-            setImgFile(<img id="imgShow" src={props.src} onLoad={loadImage} onError={onError} 
-            style={{ display: 'none', width: '100vw'}} />)
+            setImgFile(<div style={{ maxWidth: 800 }}><img id="imgShow" src={props.src} onLoad={loadImage} onError={onError}
+                style={{ display: 'none' }} className={classes.responsive} /></div>)
         }
 
     }, [open])
@@ -96,12 +90,8 @@ export default function SimpleBackdrop(props) {
                 open={open} onClick={handleClose}
             // transitionDuration={1000}
             >
-                <div
-                // className={classNames(classes.divCenter)}
-                >
-                    {circleLoad ? circleLoad : null}
-                    {imgFile ? imgFile : null}
-                </div>
+                {circleLoad ? circleLoad : null}
+                {imgFile ? imgFile : null}
             </Backdrop>
         </div>
     );
