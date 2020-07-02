@@ -5,7 +5,8 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import {
   apicall,
-  createQueryString
+  createQueryString,
+  IsEmptyObject
 } from "../../../components/function/CoreFunction";
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
@@ -46,10 +47,21 @@ const FormInline = styled.div`
 const AmSearchDocumentV2 = props => {
   const { t } = useTranslation();
 
+  const Query = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "Document",
+    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'desc'}]",
+    sk: 0,
+    l: 20,
+    all: ""
+  };
 
   const [dataSource, setDataSource] = useState([])
   const [count, setCount] = useState(0)
-  const [queryViewData, setQueryViewData] = useState();
+  const [queryViewData, setQueryViewData] = useState(Query);
   const [page, setPage] = useState(1);
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
@@ -57,10 +69,10 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
 
   useEffect(() => {
+    if(!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+      getData(queryViewData)
 
-    getData()
-
-  }, [])
+  }, [queryViewData])
 
   // useEffect(() => {
   //   if (typeof (page) === "number" && !iniQuery) {
@@ -71,20 +83,8 @@ const AmSearchDocumentV2 = props => {
   // }, [page])
 
   function getData(data) {
-    const Query = {
-      queryString: window.apipath + "/v2/SelectDataViwAPI/",
-      t: "Document",
-      q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"}]',
-      f: "*",
-      g: "",
-      s: "[{'f':'ID','od':'desc'}]",
-      sk: 0,
-      l: 20,
-      all: ""
-    };
-    console.log("fegrht")
-    setQueryViewData(Query)
-    var queryStr = createQueryString(data != undefined ? data : Query)
+    var queryStr = createQueryString(data)
+    //console.log(queryStr)
     Axios.get(queryStr).then(res => {
       console.log(res.data.datas)
       // var respone = DataGenerateMulti(res.data.datas)
@@ -155,9 +155,9 @@ const AmSearchDocumentV2 = props => {
   const { columns } = useColumns(props.iniCols);
 
   const onChangeFilterData = (filterValue) => {
-    console.log(filterValue)
+    console.log(queryViewData)
     console.log("filterValue")
-    var res = queryViewData;
+    var res = {};
     filterValue.forEach(fdata => {
       console.log(fdata)
       if (fdata.customFilter !== undefined) {
@@ -167,7 +167,9 @@ const AmSearchDocumentV2 = props => {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
     });
 
-    getData(res)
+    if(!IsEmptyObject(res))
+      setQueryViewData(res)
+    //getData(res)
 
   }
 
