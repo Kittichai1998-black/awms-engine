@@ -73,6 +73,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     else {
         queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
+    
 
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
