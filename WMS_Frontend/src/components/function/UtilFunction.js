@@ -2,6 +2,7 @@
 import moment from "moment";
 
 const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
+    console.log(queryStr)
     var convertFilter = JSON.parse(queryStr.q)
     var queryFilter = [...convertFilter];
     var searchData = queryFilter.find(x => x.f === field);
@@ -31,9 +32,24 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             searchSign = "IN";
         }
 
-        if (searchData !== undefined && !dataType) {
-            searchData.c = searchSign;
-            searchData.v = searchValue;
+        if (searchData !== undefined) {
+            if (dataType === "datetime") {
+                if (dateField === "dateFrom" && searchData.c === ">=") {
+                    searchData.v = searchValue;
+                    searchData.c = ">=";
+                }
+                else if (dateField === "dateTo" && searchData.c === "<=") {
+                    searchData.v = searchValue;
+                    searchData.c = "<=";
+                }
+                else{
+                    let resDateTime = customDateTime(dateField, field, searchValue);
+                    queryFilter.push(resDateTime);
+                }
+            } else {
+                searchData.c = searchSign;
+                searchData.v = searchValue;
+            }
         } else {
             if (dataType === "datetime") {
                 let resDateTime = customDateTime(dateField, field, searchValue);
@@ -51,7 +67,6 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
     
-
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
 }
