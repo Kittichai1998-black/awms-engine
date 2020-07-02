@@ -51,7 +51,7 @@ const StorageObjectStatus = props => {
     return (
         <>
             <IconStatus
-                className={classNames(className, classes.root)} styleType={strStatus}
+                className={classNames(className, classes.root)} styleType={strStatus} widthackground={strStatus}
                 {...other}>{strLabel}</IconStatus>
         </>
     );
