@@ -31,15 +31,9 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             searchSign = "IN";
         }
 
-        if (searchData !== undefined) {
-            if (dataType === "datetime") {
-                delete queryFilter.find(x => x.f === field);
-                let resDateTime = customDateTime(dateField, field, searchValue);
-                queryFilter.push(resDateTime);                
-            } else {
-                searchData.c = searchSign;
-                searchData.v = searchValue;
-            }
+        if (searchData !== undefined && !dataType) {
+            searchData.c = searchSign;
+            searchData.v = searchValue;
         } else {
             if (dataType === "datetime") {
                 let resDateTime = customDateTime(dateField, field, searchValue);
