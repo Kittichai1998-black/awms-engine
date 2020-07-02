@@ -759,6 +759,10 @@ const BtnAddPallet = (props) => {
     const onHandleChangeRadio = (value, field) => {
         valueInput[field] = parseInt(value, 10);
     }
+    const handleClose = () => {
+        onHandleClear();
+        setOpen(false);
+    };
     const onHandleClear = () => {
         console.log("clear")
         setListDocItems([]);
@@ -797,7 +801,7 @@ const BtnAddPallet = (props) => {
         let fileBase64 = await toBase64(imageFile)
         if (valueInput.baseCode) {
             let filejson = {
-                baseCode: valueInput.baseCode,
+                fileName: valueInput.baseCode,
                 imageBase64: fileBase64
             }
             await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
@@ -836,13 +840,13 @@ const BtnAddPallet = (props) => {
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
-                onClose={() => { onHandleClear(); setOpen(false); }}
+                onClose={handleClose}
                 open={open}
                 maxWidth="xl"
             >
                 <DialogTitle
                     id="addpallet-dialog-title"
-                    onClose={() => { onHandleClear(); setOpen(false); }}>
+                    onClose={handleClose}>
                     {"Receive Pallet"}
                 </DialogTitle>
                 <DialogContent>
@@ -870,7 +874,7 @@ const BtnAddPallet = (props) => {
                                 onClick={onUploadFile} >Upload</AmButton>
                         </div>
                     </FormInline>
-                    {imgFile ? <img src={imgFile} height='150' /> : null}
+                    {imgFile ? <div style={{ margin: "5px 0px" }}><img src={imgFile} height='150' /></div> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
                     <AmTable
                         columns={columns}
@@ -886,12 +890,8 @@ const BtnAddPallet = (props) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <AmButton
-                        styleType="add"
-                        onClick={() => {
-                            onSubmit();
-                        }}
-                    >Add</AmButton>
+                    <AmButton styleType="add" onClick={onSubmit} >Add</AmButton>
+                    <AmButton styleType='delete' onClick={handleClose} >Cancel</AmButton>
                 </DialogActions>
             </Dialog>
         </AmAux>
