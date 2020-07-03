@@ -5,7 +5,15 @@ import IconButton from "@material-ui/core/IconButton";
 import AmDialogConfirm from "../components/AmDialogConfirm";
 import ViewList from '@material-ui/icons/ViewList';
 import AmButton from "../components/AmButton";
+import { withStyles } from '@material-ui/core/styles';
 
+const GlobalBtnBaseCss = withStyles({
+  '@global': {
+      '.MuiButtonBase-root': {
+          position: 'unset !important',
+      },
+  },
+})(() => null);
 const AmRedirectInfo = props => {
   const { api, customApi, titleDialog, bodyDialog,
     textLink, type, customIcon, styleTypeBtn,
@@ -24,6 +32,7 @@ const AmRedirectInfo = props => {
   };
   return (
     <div>
+      <GlobalBtnBaseCss />
       {type === "link" ? (
         <Link
           component="button"
