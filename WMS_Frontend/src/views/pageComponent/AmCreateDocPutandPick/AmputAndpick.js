@@ -32,6 +32,8 @@ const AmputAndpick = (props) => {
         </div>
         <div>
             <AmTBputandpick
+                doccolumnEdit={props.doccolumnEdit}
+                doccolumnEditItem={props.doccolumnEditItem}
                 doccolumns={props.doccolumns}
             ></AmTBputandpick>
         </div>

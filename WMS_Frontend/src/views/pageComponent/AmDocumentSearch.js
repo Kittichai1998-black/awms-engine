@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { withStyles } from '@material-ui/core/styles';
 import AmDialogs from "../../components/AmDialogs";
 import AmDropdown from "../../components/AmDropdown";
 import AmInput from "../../components/AmInput";
@@ -55,6 +55,15 @@ const FormInline = styled.div`
     align-items: stretch;
   }
 `;
+
+const GlobalBtnBaseCss = withStyles({
+  '@global': {
+      '.MuiButtonBase-root': {
+          position: 'unset !important',
+      },
+  },
+})(() => null);
+
 const AmDocumentSearch = props => {
   const { t } = useTranslation();
   const query = {
@@ -800,6 +809,7 @@ const AmDocumentSearch = props => {
   // end add by ple
   return (
     <div>
+      <GlobalBtnBaseCss />
       {/*  add by ple */}
       <AmEditorTable
         open={dialogReject}

@@ -238,10 +238,13 @@ const AmMasterData = (props) => {
     const onChangeFilterData = (filterValue) => {
         var res = queryObj;
         filterValue.forEach(fdata => {
-            if (fdata.customFilter !== undefined)
-                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-            else
-                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+            if (fdata.customFilter !== undefined){
+                if(IsEmptyObject(fdata.customFilter)){
+                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                }else{
+                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+                }
+            }
         });
         setQueryObj(res)
     }

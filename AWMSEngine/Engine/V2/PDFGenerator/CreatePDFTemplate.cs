@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             document.Open();
             document.Add(new Paragraph("Hello World"));
             document.Add(new Paragraph(DateTime.Now.ToString()));
-            var qrcode = new QRCodeGenerate().CreateQRCode("PAL0000050");
+            var qrcode = new GenerateTagCode().CreateBarCode("PAL0000050");
             iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
             img.Alignment = Element.ALIGN_MIDDLE;
             //img.SetAbsolutePosition(0, 0);

@@ -225,7 +225,7 @@ const BtnAddList = props => {
 
   useEffect(() => {
     if (searchAction) {
-      let newSel = JSON.parse(props.queryApi.q);
+      let newSel = props.queryApi.q ? JSON.parse(props.queryApi.q) : [];
       Object.keys(keySearch).map((x, idx) => {
         if (keySearch[x]) {
           newSel.push({
@@ -251,7 +251,6 @@ const BtnAddList = props => {
           // }
         }
       });
-
       query.q = JSON.stringify(newSel);
       setQuery({ ...query });
       setSearchAction(false);

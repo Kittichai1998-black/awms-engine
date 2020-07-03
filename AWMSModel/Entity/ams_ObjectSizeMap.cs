@@ -6,7 +6,7 @@ namespace AWMSModel.Entity
 {
     public class ams_ObjectSizeMap : BaseEntitySTD
     {
-        public int OuterObjectSize_ID;
+        public int ObjectSize_ID;
         public int InnerObjectSize_ID;
     }
 }

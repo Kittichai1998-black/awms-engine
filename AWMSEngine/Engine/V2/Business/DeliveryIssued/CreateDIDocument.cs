@@ -70,7 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public long? refDocumentItem_ID;
+                public long? parentDocumentItem_ID;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -182,7 +182,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
-                            refDocumentItem_ID=x.refDocumentItem_ID,
+                            parentDocumentItem_ID = x.parentDocumentItem_ID,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
