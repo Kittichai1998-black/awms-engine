@@ -22,7 +22,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
-            this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID && _ObjectSizes.Any(z => z.ID == y.InnerObjectSize_ID)));
+            this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.ObjectSize_ID == x.ID && _ObjectSizes.Any(z => z.ID == y.InnerObjectSize_ID)));
             return this._ObjectSizes;
         }
         public List<amv_PackUnitConvert> LoadPackUnitConvert(VOCriteria buVO = null)
