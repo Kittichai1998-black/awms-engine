@@ -19,7 +19,7 @@ export default props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PackStorageObject",
         q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "packID,palletcode,skuCode,skuName,Batch as batch,Lot as lot,OrderNo as orderNo,locationCode,SIZE,SKUItems,Quantity as quantity,unitType",
+        f: "packID,palletcode,skuCode,skuName,Batch as batch,Lot as lot,OrderNo as orderNo,locationCode,SIZE,SKUItems,Quantity as quantity,unitType,skuID",
         g: "",
         s: "[{'f':'packID','od':'ASC'}]",
         sk: 0,
@@ -85,14 +85,22 @@ export default props => {
     };
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
+        { Header: "Code", accessor: "skuCode", fixed: "left", width: 100, sortable: true },
+        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Unit", accessor: "unitType", width: 100 }
     ];
 
     const columnEdit = [
         { Header: "Order No.", accessor: "orderNo", type: "input" },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: view_sto, fieldLabel: ["palletcode"], columsddl: columsFindPopupSto, related: ["unitType", "quantity", "SKUItems", "packID", "skuCode"] },
+        {
+            Header: "Pallet",
+            accessor: "palletcode",
+            type: "findPopUp",
+            queryApi: view_sto,
+            fieldLabel: ["palletcode"],
+            columsddl: columsFindPopupSto,
+            related: ["unitType", "quantity", "SKUItems", "packID", "skuCode", "skuID"]
+        },
         {
             // search: false,
             Header: "SKU Item",
@@ -101,9 +109,10 @@ export default props => {
             queryApi: SKUMaster,
             fieldLabel: ["skuCode", "skuName"],
             columsddl: columsFindPopupSKU,
-            related: ["unitType", "skuName", "SKUItems"],
+            related: ["unitType", "skuName", "SKUItems", "skuID"],
+            removeRelated: ["packID", "palletcode"],
             fieldDataKey: "Code", // ref กับ accessor
-            // defaultValue: "PJAAN04-0024",
+            // defaultValue: "2161302001",
             required: true
         },
         // { Header: "Base Qty", accessor: "quantity", type: "inputNum" },
@@ -115,7 +124,7 @@ export default props => {
     ];
 
     const columns = [
-        { id: "row", Cell: row => row.index + 1, width: 35 },
+        // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Pallet", accessor: "palletcode", width: 110 },
         { Header: "Item Code", accessor: "SKUItems" },
