@@ -247,7 +247,7 @@ function Test5(props) {
     }
     async function getFile(data) {
         try {
-            await Axios.get(window.apipath + '/v2/download_image?fileName=' + data + "&_token=" + localStorage.getItem("Token")).then(res => {
+            await Axios.get(window.apipath + '/v2/download_image?fileName=' + data + "&token=" + localStorage.getItem("Token")).then(res => {
 
                 if (res.data._result.status === 1) {
                     console.log(res.data.dataBase64)

@@ -2,6 +2,7 @@
 import moment from "moment";
 
 const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
+    console.log(queryStr)
     var convertFilter = JSON.parse(queryStr.q)
     var queryFilter = [...convertFilter];
     var searchData = queryFilter.find(x => x.f === field);
@@ -33,13 +34,25 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
+                let findDateType = queryFilter.filter(x => x.f === field);
+
                 if (dateField === "dateFrom") {
-                    searchData.v = searchValue;
-                    searchData.c = ">=";
+                    let findFrom = findDateType.find(x => x.c === ">=");
+                    if(findFrom === undefined){
+                        let resDateTime = customDateTime(dateField, field, searchValue);
+                        queryFilter.push(resDateTime);
+                    }
+                    else
+                        findFrom.v = searchValue;
                 }
-                if (dateField === "dateTo") {
-                    searchData.v = searchValue;
-                    searchData.c = "<=";
+                else if (dateField === "dateTo") {
+                    let findFrom = findDateType.find(x => x.c === "<=");
+                    if(findFrom === undefined){
+                        let resDateTime = customDateTime(dateField, field, searchValue);
+                        queryFilter.push(resDateTime);
+                    }
+                    else
+                        findFrom.v = searchValue;
                 }
             } else {
                 searchData.c = searchSign;
@@ -47,18 +60,8 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             }
         } else {
             if (dataType === "datetime") {
-                if (dateField === "dateFrom") {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = searchValue;
-                    createObj.c = ">=";
-                }
-                if (dateField === "dateTo") {
-                    let createObj = {};
-                    createObj.f = field;
-                    createObj.v = searchValue;
-                    createObj.c = "<=";
-                }
+                let resDateTime = customDateTime(dateField, field, searchValue);
+                queryFilter.push(resDateTime);
             } else {
                 searchData = {};
                 searchData.f = field;
@@ -71,9 +74,26 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     else {
         queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
-
+    
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
+}
+
+const customDateTime = (dateField, field, searchValue) => {
+    if (dateField === "dateFrom") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = ">=";
+        return createObj;
+    }
+    if (dateField === "dateTo") {
+        let createObj = {};
+        createObj.f = field;
+        createObj.v = searchValue;
+        createObj.c = "<=";
+        return createObj;
+    }
 }
 
 export { QueryGenerate }

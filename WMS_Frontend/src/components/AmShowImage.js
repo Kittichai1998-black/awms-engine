@@ -1,4 +1,4 @@
-import React,{ useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
@@ -12,6 +12,10 @@ const useStyles = makeStyles((theme) => ({
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff'
+    },
+    responsive: {
+        width: '100%',
+        height: 'auto'
     }
 }));
 
@@ -28,12 +32,19 @@ export default function SimpleBackdrop(props) {
     useEffect(() => {
         if (open) {
             setCircleLoad(<CircularProgress color='secondary' />)
-            setImgFile(<img src={props.src} onLoad={loadImage} onError={onError} />)
+            setImgFile(<div style={{ maxWidth: 800 }}><img id="imgShow" src={props.src} onLoad={loadImage} onError={onError}
+                style={{ display: 'none' }} className={classes.responsive} /></div>)
         }
 
     }, [open])
+
     const loadImage = () => {
-        setCircleLoad(null)
+        var tagImg = document.getElementById("imgShow");
+        if (tagImg.complete) {
+            setCircleLoad(null)
+            tagImg.style.display = "";
+        }
+
     }
     const onError = () => {
         handleClose();
