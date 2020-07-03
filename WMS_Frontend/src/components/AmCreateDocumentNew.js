@@ -42,11 +42,11 @@ input {
     
   }
 `;
+
 const LabelTStyle = {
     "font-weight": "bold",
     width: "200px"
 }
-
 
 const InputDiv = styled.div`
 margin: 5px;
@@ -79,7 +79,6 @@ const colss = [
         width: 130,
         sortable: true,
     }
-
 ];
 
 const useDocumentItemQuery = (docID, DocItemQuery) => {
@@ -108,11 +107,11 @@ const AmCreateDocument = (props) => {
     const [addData, setAddData] = useState(false);
     const [dialog, setDialog] = useState(false);
     const [editData, setEditData] = useState({});
-    const [editDataItem, setEditDataItem] = useState([]);
+    // const [editDataItem, setEditDataItem] = useState([]);
     const [addDataID, setAddDataID] = useState(-1);
     const [title, setTitle] = useState("");
     const [dataSource, setDataSource] = useState([]);
-    const [reload, setReload] = useState();
+    // const [reload, setReload] = useState();
     const [inputError, setInputError] = useState([])
 
     const dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
@@ -127,15 +126,15 @@ const AmCreateDocument = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
     // const [dataUnit, setDataUnit] = useState()
-    const [dataCheck, setDataCheck] = useState()
+    // const [dataCheck, setDataCheck] = useState()
     const [docIds, setdocIds] = useState();
     const DocItemsquery = useDocumentItemQuery(docIds, props.DocItemQuery)
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const [dataDocItem, setdataDocItem] = useState();
     const [dialogItem, setDialogItem] = useState(false);
-    const [ItemBody, setItemBody] = useState();
+    // const [ItemBody, setItemBody] = useState();
     const [relationComponent, setRelationComponent] = useState([]);
-    const [checkItem, setcheckItem] = useState(false);
+    // const [checkItem, setcheckItem] = useState(false);
     const rem = [
         {
             Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => {
@@ -160,13 +159,11 @@ const AmCreateDocument = (props) => {
 
     const columns = props.columns.concat(rem)
 
-
     useEffect(() => {
         if (docIds != undefined) {
             getData()
         }
     }, [docIds])
-
 
     useEffect(() => {
         const getSKuItem = (dataDocItem) => {
@@ -201,11 +198,9 @@ const AmCreateDocument = (props) => {
             );
             let xs = { 'check': true }
             datas.push(xs)
-            // console.log(datas)
             setRelationComponent(datas)
         }
     }, [dataDocItem])
-
 
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
@@ -238,6 +233,7 @@ const AmCreateDocument = (props) => {
             columns={relationComponent}
         />
     });
+
     const getDocItemQuery = (DocItemsquerys) => {
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0) {
@@ -251,12 +247,11 @@ const AmCreateDocument = (props) => {
         })
     }
 
-
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
         dataSource.splice(idx, 1);
-        setDataSource(dataSource);
-        setReload({})
+        setDataSource([...dataSource]);
+        // setReload({})
     }
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
@@ -294,27 +289,31 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const onChangeEditor = (field, data, required, related) => {
-        if (typeof data === "object" && data) {
-            editData[field] = data[field] ? data[field] : data.value
-        } else {
-            editData[field] = data
+    const onChangeEditor = (field, data, required, row) => {
+        if (addData && Object.getOwnPropertyNames(editData).length === 0) {
+            editData["ID"] = addDataID
         }
 
-        if (related && related.length) {
-            let indexField = related.reduce((obj, x) => {
+        if (typeof data === "object" && data) {
+            editData[field] = data[field] ? data[field] : data.value
+        }
+        else {
+            editData[field] = data
+        }
+        
+        if (row.related && row.related.length) {
+            let indexField = row.related.reduce((obj, x) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
             }, {})
-
+            console.log(indexField);
+            
             for (let [key, index] of Object.entries(indexField)) {
                 if (data) {
-                    editData[key] = data[key]
                     if (key === "packID") {
-                        let ID = editData.ID
-                        editData.ID = data.packID
-                        editData.packID = ID
+                        editData.packID_map_skuID = data.packID + "-" + data.skuID
                     }
+                    editData[key] = data[key]
                 } else {
                     delete editData[key]
                 }
@@ -329,10 +328,11 @@ const AmCreateDocument = (props) => {
             }
         }
 
-        if (addData && Object.getOwnPropertyNames(editData).length === 0) {
-            editData["ID"] = addDataID
-
+        if (row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
+            row.removeRelated.forEach(x => delete editData[x])
         }
+
+        setEditData({ ...editData })
 
         if (required) {
             if (!editData[field]) {
@@ -347,60 +347,47 @@ const AmCreateDocument = (props) => {
                 setInputError(arrNew)
             }
         }
-
-        setReload({})
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
-
         if (status) {
             if (!inputError.length) {
-                let chkDataPallet = dataSource.find(x => x.ID === rowdata.ID)
-                let chkDataSku = dataSource.find(x => {
-                    return x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot
-                })
-                if (chkDataPallet) {
-                    for (let key of Object.getOwnPropertyNames(chkDataPallet))
-                        delete chkDataPallet[key]
-                    for (let row in editData) {
-                        chkDataPallet[row] = editData[row]
-                    }
-                    setEditData({})
-                    setInputError([])
-                    setDialog(false)
-                    setDialogItem(false)
-                } else {
-                    if (chkDataSku) {
-                        setStateDialogErr(true)
-                        setMsgDialog("มีข้อมูล SKU นี้แล้ว")
-                    }
-                    else {
-                        if (!addData) {
-                            let _dataSource = dataSource.filter(x => x.ID !== rowdata.packID)
-                            dataSource.length = 0
-                            Object.assign(dataSource, _dataSource)
-                        }
-                        dataSource.push(editData)
-                        setAddDataID(addDataID - 1);
-                        setEditData({})
-                        setInputError([])
-                        setDialog(false)
-                        setDialogItem(false)
-                    }
+                let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
+                let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
+                let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
+                if (chkPallet) {
+                    setStateDialogErr(true)
+                    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+                    return
                 }
-                // setEditData({})
-                // setAddDataID(addDataID - 1);
-                // setDialog(false)
-                // setDialogItem(false)
-                // setInputError([])
+                if (chkSkuNotPallet) {
+                    setStateDialogErr(true)
+                    setMsgDialog("มีข้อมูล SKU นี้แล้ว")
+                    return
+                }
+
+                //Edit
+                if (chkEdit) {
+                    for (let key of Object.getOwnPropertyNames(chkEdit))
+                        delete chkEdit[key]
+                    for (let row in rowdata) {
+                        chkEdit[row] = rowdata[row]
+                    }
+                } else {//Add
+                    dataSource.push(rowdata)
+                    setAddDataID(addDataID - 1);
+                }
+                setEditData({})
+                setInputError([])
+                setDialog(false)
+                setDialogItem(false)
+                setDataSource([...dataSource])
             } else {
                 setInputError(inputError.map(x => x.accessor))
             }
-
         } else {
             setInputError([])
             setEditData({})
-            // setAddDataID(addDataID - 1);
             setDialog(false)
             setDialogItem(false)
         }
@@ -408,7 +395,6 @@ const AmCreateDocument = (props) => {
 
 
     const onHandleEditConfirmItem = (status, rowdata, inputError) => {
-        // console.log(dataDocItem)
         if (dataDocItem.length != 0) {
             dataDocItem.forEach((rowI, i) => {
                 if (status) {
@@ -608,7 +594,7 @@ const AmCreateDocument = (props) => {
                             // data={dataUnit}
                             // returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : ""}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
                     </InputDiv>
@@ -637,7 +623,7 @@ const AmCreateDocument = (props) => {
                             columns={columsddl} //array column สำหรับแสดง table
                             width={width ? width : 300}
                             ddlMinWidth={width ? width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row.related)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                         />
                     </InputDiv>
                 </FormInline>
@@ -888,8 +874,8 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    if (key === "ID" && value > 0)
-                        _docItem.packID = value
+                    // if (key === "ID" && value > 0)
+                    //     _docItem.packID = value
                 }
                 //modify _docItem 
                 //_docItem.options = x.xxx
@@ -902,8 +888,8 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    if (key === "ID" && value > 0)
-                        _docItem.packID = value
+                    // if (key === "ID" && value > 0)
+                    //     _docItem.packID = value
                 }
                 return _docItem
             })
@@ -913,8 +899,8 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    if (key === "ID" && value > 0)
-                        _docItem.packID = value
+                    // if (key === "ID" && value > 0)
+                    //     _docItem.packID = value
                 }
                 return _docItem
             })
@@ -924,8 +910,8 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    if (key === "ID" && value > 0)
-                        _docItem.packID = value
+                    // if (key === "ID" && value > 0)
+                    //     _docItem.packID = value
                 }
                 return _docItem
             })
@@ -935,15 +921,14 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    if (key === "ID" && value > 0)
-                        _docItem.packID = value
+                    // if (key === "ID" && value > 0)
+                    //     _docItem.packID = value
                 }
                 return _docItem
             })
         } else if (props.createDocType === "issueOrder") {
             doc.issuedOrderItem = dataSource.map(x => {
                 //modify
-                //console.log(x.unitType)
                 //x.BaseUnitCode = x.unitType
                 x.RefDocumentItem_ID = null
                 //docItems.options = null
@@ -957,9 +942,6 @@ const AmCreateDocument = (props) => {
                 x.skuCode = x.Code
                 return x
             })
-
-
-
         }
         if (Object.keys(doc).length > countDoc) {
             CreateDocuments(doc)
@@ -980,12 +962,15 @@ const AmCreateDocument = (props) => {
         })
     }
 
-    const FormatData = (data) => {
-        dataSource.length = 0
-        let _dataSource = getUnique(data, props.addList.primaryKeyTable).map(x => ({ ...x, ID: x.packID }))
-        // console.log(_dataSource);
-        Object.assign(dataSource, _dataSource)
-        // return dataSource
+    const FormatDataSource = (data) => {
+        let _addDataID = addDataID
+        let arr = data.map(x => {
+            let obj = { ...x, ID: _addDataID, packID_map_skuID: x.packID + "-" + x.skuID }
+            _addDataID--
+            return obj
+        })
+        setAddDataID(_addDataID)
+        return arr
     }
 
     return (
@@ -1016,13 +1001,13 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
                         {props.addList ? <BtnAddList
-                            primaryKeyTable={props.addList.primaryKeyTable}
+                            primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
                             headerCreate={props.headerCreate}
                             queryApi={props.addList.queryApi}
                             columns={props.addList.columns}
                             search={props.addList.search}
                             textBtn="Add Item List"
-                            onSubmit={(data) => { FormatData(data); setReload({}) }}
+                            onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
                             dataCheck={dataSource}
                         /> : null}
 
@@ -1042,12 +1027,20 @@ const AmCreateDocument = (props) => {
             </Grid>
 
             {/* Table */}
-            <AmTable
+            {/* <AmTable
                 data={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
                 reload={props.reload ? props.reload : reload}
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 sortable={false}
                 pageSize={200}
+            /> */}
+            <AmTable
+                dataKey="ID"
+                columns={props.columnsModifi ? props.columnsModifi : columns}
+                // pageSize={200}
+                dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
+                //   height={200}
+                rowNumber={true}
             />
 
             {/* Btn CREATE */}
@@ -1060,7 +1053,7 @@ const AmCreateDocument = (props) => {
                     </div>
                 </Grid>
             </Grid>
-        </div>
+        </div >
     )
 }
 
