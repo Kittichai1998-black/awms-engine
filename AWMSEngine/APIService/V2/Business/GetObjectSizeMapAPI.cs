@@ -19,7 +19,7 @@ namespace AWMSEngine.APIService.V2.Business
             public long? ObjMapID;
             public string Code;
             public string Name;
-            public long? OuterObjectSize_ID;
+            public long? ObjectSize_ID;
             public long? InnerObjectSize_ID;
             public int ObjectType;
             public EntityStatus? Status;

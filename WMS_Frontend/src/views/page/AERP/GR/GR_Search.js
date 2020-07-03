@@ -153,7 +153,7 @@ const DocumentSearchSTGT = props => {
       },
       dateFormat: "DD/MM/YYYY HH:mm"
     },
-    { Header: "Create", accessor: "Created", width: 200 },
+    { Header: "Create", accessor: "Created", width: 200, customFilter: { accessor: "CreateTime" } },
     { Header: "Modify Time", accessor: "LastUpdate", width: 200 }
   ];
 
@@ -191,7 +191,6 @@ const DocumentSearchSTGT = props => {
         buttonReject={false}
         dataReject={dataReject}
         apiReject={"/v2/RejectGRDocAPI"}
-        //apiWorking={""}
         apiClose={"/v2/ClosingDocumentAPI"}
       />
     </div>
