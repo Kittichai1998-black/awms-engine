@@ -67,9 +67,10 @@ const AmSearchDocumentV2 = props => {
   const [selection, setSelection] = useState();
   const [dialog, setDialog] = useState(false);
   const [dialogState, setDialogState] = useState({});
+  const [remark, setRemark] = useState("");
 
   useEffect(() => {
-    if(!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+    if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
 
   }, [queryViewData])
@@ -161,27 +162,150 @@ const AmSearchDocumentV2 = props => {
     filterValue.forEach(fdata => {
       console.log(fdata)
       if (fdata.customFilter !== undefined) {
+
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-        console.log(res)
+
       } else
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
     });
 
-    if(!IsEmptyObject(res))
+    if (!IsEmptyObject(res))
       setQueryViewData(res)
     //getData(res)
 
   }
+  const generateClose = () => {
+    if (props.buttonClose) {
+      return <AmButton
+        style={{ marginRight: "5px" }}
+        styleType="confirm"
+        onClick={() => {
+          if (selection.length === 0) {
+            setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+          } else
+            onUpdateStatus()
+        }}
+      >
+        CLOSE
+     </AmButton>
+    } else { return null; }
+  }
+  const generateReject = () => {
+    if (props.buttonReject) {
+      return <AmButton
+        style={{ marginRight: "5px" }}
+        styleType="confirm"
+        onClick={() => {
+          setDialog(true)
+          if (selection.length === 0)
+            setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+        }}
+      >
+        REJECT
+     </AmButton>
+    } else { return null; }
+  }
+  const DataGenerateRemark = () => {
+    const columns = [
+      {
+        field: "Option",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
+        required: true
+      }
+    ];
+    return columns.map(y => {
+      return {
+        field: y.field,
+        component: (data = null, cols, key) => {
+          return (
+            <div key={key}>
+              <FormInline>
+                {" "}
+                <LabelH>{"Remark"} : </LabelH>
+                <InputDiv>
+                  <AmInput
+                    id={cols.field}
+                    style={{ width: "270px", margin: "0px" }}
+                    type="input"
+                    onChange={val => {
+                      onChangeEditor(val);
+                    }}
+                  />
+                </InputDiv>
+              </FormInline>
 
+            </div>
+          );
+        }
+      };
+    });
+  };
+  const onChangeEditor = (value) => {
+    if (selection.length === 0) {
+      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+    } else {
+      setRemark(value);
+    }
+  };
+  const onHandleEditConfirm = (status) => {
+    if (status) {
+      onUpdateStatus("reject")
+    }
+
+    setDialog(false);
+    setSelection([]);
+  };
+  const onUpdateStatus = (type) => {
+    let docID = [];
+    if (selection.length > 0) {
+      selection.forEach(rowdata => {
+        docID.push(rowdata.ID);
+      });
+    }
+    Axios.post(window.apipath + (type === "reject" ? props.apiReject : props.apiClose), {
+      docIDs: docID,
+      remark: remark
+    }).then(res => {
+      if (res.data._result !== undefined) {
+        if (res.data._result.status === 1) {
+          setDialogState({ type: "success", content: "Success", state: true })
+
+          if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+            getData(queryViewData)
+
+          Clear();
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+          if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+            getData(queryViewData)
+
+          Clear();
+        }
+      }
+    });
+
+  }
+  const Clear = () => {
+    setSelection([]);
+    setRemark("");
+  };
   //===========================================================
   return (
     <div>
-      {/* <AmDialogs
+      <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
         open={dialogState.state}
-        content={dialogState.content} /> */}
-
+        content={dialogState.content} />
+      <AmEditorTable
+        open={dialog}
+        onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+        titleText={"Remark"}
+        data={"text"}
+        columns={DataGenerateRemark()}
+      />
       <AmTable
         columns={columns}
         dataKey={"ID"}
@@ -202,7 +326,7 @@ const AmSearchDocumentV2 = props => {
           else
             setIniQuery(false)
         }}
-
+        customTopLeftControl={<div>{generateClose()}{generateReject()}</div>}
       />
 
     </div>
