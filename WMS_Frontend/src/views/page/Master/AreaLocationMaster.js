@@ -49,7 +49,8 @@ const AreaLocationMaster = props => {
     {
       Header: "Status",
       accessor: "Status",
-      width: 35,
+      fixed:"left",
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -59,7 +60,7 @@ const AreaLocationMaster = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Area Code", accessor: "AreaCode",  width: 150 },
+    { Header: "Area Code", accessor: "AreaCode",fixed:"left",  fixWidth: 150 },
     { Header: "Code", accessor: "Code", width: 150 },
     { Header: "Name", accessor: "Name", width: 200 },
     { Header: "Gate", accessor: "Gate", width: 100 },

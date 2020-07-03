@@ -68,7 +68,6 @@ const FuncTestSetEle = (
           style={{ width: "270px", margin: "0px" }}
           placeholder={placeholder}
           type="input"
-          //value={data ? data[cols.field]:""}
           onChange={val => {
             onChangeEditor(val);
           }}

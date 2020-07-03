@@ -7,6 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 
 const Topbar = React.memo((propsTopbar) => {
+    console.log(propsTopbar.dataSource)
     if(propsTopbar.customTopControl){
         return <>
             <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopControl}</div>
@@ -44,6 +45,8 @@ const Topbar = React.memo((propsTopbar) => {
             </Grid>
         }
         else{
+            
+            console.log(propsTopbar.dataSource)
             return propsTopbar.pagination ? <AmPagination
                 totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
                 pageSize={propsTopbar.pageSize}
@@ -112,6 +115,7 @@ const AmTable = (props) => {
             sortable={props.sortable}
             sortData={props.sortData}
             selectionDisabledCustom={props.selectionDisabledCustom}
+            clearSelectionChangeData={props.clearSelectionChangeData}
         />
     </AmTableProvider>
 }
@@ -160,9 +164,7 @@ const AmTableSetup = (props) => {
     }, [selection.selectionValue, selectionData])
 
     useEffect(() => {
-        console.log(props.selectionDefault)
         if (props.selectionDefault !== undefined){
-            console.log(props.selectionDefault.length)
             if(props.selectionDefault.length > 0){
                 selection.addAll(props.selectionDefault)
             }
@@ -172,8 +174,9 @@ const AmTableSetup = (props) => {
     }, [props.selectionDefault])
 
     useEffect(() => {
-        if(props.clearSelectionChangePage)
+        if(props.clearSelectionChangeData){
             selection.removeAll();
+        }
         if (props.onPageChange === undefined) {
             let dataSlice = props.dataSource.slice(((page - 1) * (props.pageSize)), ((page - 1) * (props.pageSize)) + props.pageSize);
             setDataSource(dataSlice);
@@ -183,6 +186,9 @@ const AmTableSetup = (props) => {
     }, [page, props.dataSource])
 
     useEffect(() => {
+        if(props.clearSelectionChangePage){
+            selection.removeAll();
+        }
         if(typeof props.onPageChange === "function")
             props.onPageChange(page)
     }, [page])
@@ -218,6 +224,7 @@ const AmTableSetup = (props) => {
             clearSelectionChangePage={props.clearSelectionChangePage}
             sortable={props.sortable}
             selectionDisabledCustom={props.selectionDisabledCustom}
+            clearSelectionChangeData={props.clearSelectionChangeData}
         />
         <Bottombar 
             customBtmControl={props.customBtmControl} 
@@ -337,10 +344,15 @@ AmTable.propTypes = {
     */
     selectionDefault: PropTypes.array,
     /**
-     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูบที่เลือกเมื่อเปลี่ยนหน้า
+     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูลที่เลือกเมื่อเปลี่ยนหน้า
      ** value? : true | false
     */
     clearSelectionChangePage: PropTypes.bool,
+    /**
+     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูลที่เลือกเมื่อเปลี่ยน-hv,^]
+     ** value? : true | false
+    */
+    clearSelectionChangeData: PropTypes.bool,
     /**
      * ตั้งค่าความกว้างของตาราง
      ** value? : "100%" | 100
@@ -400,5 +412,6 @@ AmTable.defaultProps = {
     clearSelectionChangePage: true,
     width: "100%",
     sortable: false,
-    filterable:false
+    filterable:false,
+    dataSource:[]
 }

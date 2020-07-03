@@ -8,6 +8,7 @@ using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -56,14 +57,42 @@ namespace AWMSEngine.APIService
             this.BuVO.SqlTransaction_Commit();
         }
 
-        private class _GetKey
+        private class TGetKey
         {
             public string token;
-            public string _token;
             public string apikey;
-            public string _apikey;
             public string ref_id;
         }
+
+        private class TLock
+        {
+            public int Owner;
+            public string KeyLock;
+        }
+        private static List<TLock> lockRequests = new List<TLock>();
+        private object GetKeyLock(string token, long apiServiceID)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return new object();
+            string keyLock = token + "/" + apiServiceID;
+            TLock _lock = lockRequests.FirstOrDefault(x => x.KeyLock == keyLock);
+            if(_lock == null)
+            {
+                _lock = new TLock() { KeyLock = keyLock, Owner = this.GetHashCode() };
+                lockRequests.Add(_lock);
+            }
+            else
+            {
+                _lock.Owner = this.GetHashCode();
+            }
+
+            return _lock;
+        }
+        private void RemoveKeyLock()
+        {
+            lockRequests.RemoveAll(x => x.Owner == this.GetHashCode());
+        }
+    
 
         public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
@@ -81,10 +110,10 @@ namespace AWMSEngine.APIService
                 if (request != null)
                 {
                     string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-                    _GetKey getKey = Newtonsoft.Json.JsonConvert.DeserializeObject<_GetKey>(_getKeyJson);
+                    TGetKey getKey = Newtonsoft.Json.JsonConvert.DeserializeObject<TGetKey>(_getKeyJson);
 
-                    token = !string.IsNullOrWhiteSpace(getKey.token) ? getKey.token : getKey._token;
-                    apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
+                    token = getKey.token;
+                    apiKey = getKey.apikey;
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
                 }
 
@@ -157,11 +186,15 @@ namespace AWMSEngine.APIService
                 //-----------VALIDATE PERMISSION
                 this.Permission(token, tokenInfo, apiKey, apiKeyInfo);
 
-                this.BuVO.SqlTransaction_Begin();
-                var res = this.ExecuteEngineManual();
-                response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
-                this.BuVO.SqlTransaction_Commit();
+                lock (this.GetKeyLock(token, this.APIServiceID))
+                {
 
+                    this.BuVO.SqlTransaction_Begin();
+                    var res = this.ExecuteEngineManual();
+                    response = new ResponseObject().Execute(this.Logger, this.BuVO, res);
+                    this.BuVO.SqlTransaction_Commit();
+
+                }
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
@@ -201,6 +234,7 @@ namespace AWMSEngine.APIService
             }
             finally
             {
+                this.RemoveKeyLock();
                 this.BuVO.SqlConnection_Close();
                 try
                 {

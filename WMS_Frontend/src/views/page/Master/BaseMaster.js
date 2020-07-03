@@ -46,7 +46,7 @@ const BaseMaster = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType: "dropdown",
       filterConfig: {
@@ -56,7 +56,7 @@ const BaseMaster = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
+    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
     { Header: "Name", accessor: "Name", width: 150 },
     { Header: "Base Type", accessor: "BaseMasterType_Code", width: 200 },
     { Header: "Size", accessor: "ObjectSize_Code", width: 200 },

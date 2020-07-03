@@ -43,7 +43,7 @@ const styles = theme => ({
     backgroundColor: 'rgba(0,0,0,.85)',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: '2300'
+    zIndex: '99999999'
   },
   divsub: {
     flex: '0 1 auto',

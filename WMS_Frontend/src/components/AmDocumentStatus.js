@@ -11,16 +11,15 @@ const styles = theme => ({
   }
 });
 const DocumentEventStatus = [
-  { status: "NEW", code: 10, label: "NW" },
-  { status: "WORKING", code: 11, label: "WK" },
-  { status: "WORKED", code: 12, label: "WK" },
-  { status: "WAIT_FOR_WORKED", code: 812, label: "WA" },
-  { status: "REMOVING", code: 21, label: "RM" },
-  { status: "REMOVED", code: 22, label: "RM" },
+  { status: "NEW", code: 10, label: "NEW" },
+  { status: "WORKING", code: 11, label: "WORKING" },
+  { status: "WORKED", code: 12, label: "WORKED" },
+  { status: "REMOVING", code: 21, label: "REMOVING" },
+  { status: "REMOVED", code: 22, label: "REMOVED" },
   // {status:'REJECTING' , code:23,},
-  { status: "REJECTED", code: 24, label: "RJ" },
-  { status: "CLOSING", code: 31, label: "CS" },
-  { status: "CLOSED", code: 32, label: "CS" }
+  { status: "REJECTED", code: 24, label: "REJECTED" },
+  { status: "CLOSING", code: 31, label: "CLOSING" },
+  { status: "CLOSED", code: 32, label: "CLOSED" }
 ];
 
 const DocumentStatus = props => {

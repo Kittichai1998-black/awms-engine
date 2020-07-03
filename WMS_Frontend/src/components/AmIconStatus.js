@@ -20,7 +20,7 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         verticalAlign: 'baseline',
         // padding: '0.175rem 0.45rem 0.2rem 0.5rem',
-        width: 'auto',
+        width: '100px',
         fontFamily: [
             '-apple-system',
             'BlinkMacSystemFont',
@@ -126,9 +126,9 @@ const styles = theme => ({
         color: '#fff',
     },
     RETURN: {
-       /* background: '#ffc107',
-        border: '2px solid #ffc107',
-        color: '#fff',*/
+        /* background: '#ffc107',
+         border: '2px solid #ffc107',
+         color: '#fff',*/
         background: '#ffc107',
         border: '2px solid #ffc107',
         color: '#2f353a',
@@ -168,7 +168,7 @@ const styles = theme => ({
         border: '2px solid #ffc107',
         color: '#000',
     },
-    QUALITY_CONTROL:{
+    QUALITY_CONTROL: {
         /*background: '#fffbf1',
         border: '2px solid #212121',
         color: '#212121',*/
@@ -176,19 +176,19 @@ const styles = theme => ({
         border: '2px solid #ffc107',
         color: '#2f353a',
     },
-    PARTIAL:{
-       /* background: '#fffbf1',
-        border: '2px solid #ffc107',
-        color: '#ffc107',*/
+    PARTIAL: {
+        /* background: '#fffbf1',
+         border: '2px solid #ffc107',
+         color: '#ffc107',*/
         background: '#ffc107',
         border: '2px solid #ffc107',
         color: '#2f353a',
     },
-    PASS:{
+    PASS: {
         background: '#357a38',
         border: '2px solid #357a38',
         color: '#ffffff',
-        
+
     }
 });
 
