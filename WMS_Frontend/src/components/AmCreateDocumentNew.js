@@ -290,7 +290,7 @@ const AmCreateDocument = (props) => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
-        if (addData && Object.getOwnPropertyNames(editData).length === 0) {
+        if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
 
@@ -306,8 +306,6 @@ const AmCreateDocument = (props) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
             }, {})
-            console.log(indexField);
-            
             for (let [key, index] of Object.entries(indexField)) {
                 if (data) {
                     if (key === "packID") {
@@ -368,7 +366,7 @@ const AmCreateDocument = (props) => {
 
                 //Edit
                 if (chkEdit) {
-                    for (let key of Object.getOwnPropertyNames(chkEdit))
+                    for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
                     for (let row in rowdata) {
                         chkEdit[row] = rowdata[row]
