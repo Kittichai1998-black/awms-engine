@@ -23,7 +23,7 @@ const ObjectSizeMap = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 35,
+      fixWidth: 35,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -38,7 +38,7 @@ const ObjectSizeMap = props => {
       Header: "OuterObjectSize",
       accessor: "OutCode",
       fixed: "left",
-      width: 200
+      fixWidth: 200
     },
     { Header: "InnerObjectSize", accessor: "InCode", width: 200 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },

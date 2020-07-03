@@ -33,7 +33,7 @@ const WebPage = props => {
             Header: "Status",
             accessor: "Status",
             fixed: "left",
-            width: 35,
+            fixWidth: 35,
             sortable: false,
             filterType:"dropdown",
             filterConfig:{
@@ -44,7 +44,7 @@ const WebPage = props => {
             },
             Cell: e => getStatus(e.original)
           },
-        { Header: "Code", accessor: "Code", fixed: "left", width: 120 },
+        { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
         { Header: "Name", accessor: "Name", width: 200 },
         { Header: "Seq No.", accessor: "Seq", width: 70 },
         { Header: "Path Level 1", accessor: "PathLV1", width: 100 },

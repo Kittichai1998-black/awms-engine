@@ -37,7 +37,7 @@ const SKUMaster = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      width: 162,
+      fixWidth: 162,
       filterType:"dropdown",
       filterConfig:{
         filterType:"dropdown",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import classNames from 'classnames';
 import CloseIcon from "@material-ui/icons/Close";
 import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
@@ -31,6 +32,7 @@ import Pagination from "./table/AmPagination";
 import { useTranslation } from 'react-i18next'
 import ToListTree from './function/ToListTree';
 import SvgIcon from '@material-ui/core/SvgIcon';
+import PublishIcon from '@material-ui/icons/Publish';
 import _ from "lodash";
 const Axios = new apicall();
 
@@ -176,6 +178,9 @@ const styles = (theme) => ({
             margin: theme.spacing(0.2),
         },
     },
+    leftIcon: {
+        marginRight: '',
+    },
 });
 const BtnAddPallet = (props) => {
     const {
@@ -200,7 +205,7 @@ const BtnAddPallet = (props) => {
     const [open, setOpen] = useState(false);
     const [listDocItems, setListDocItems] = useState([]);
     const [dataSelect, setDataSelect] = useState([]);
-    const [defaultSelect, setDefaultSelect] = useState();
+    const [defaultSelect, setDefaultSelect] = useState([]);
 
     const [valueQtyDocItems, setValueQtyDocItems] = useState({});
     const [valueInput, setValueInput] = useState({});
@@ -522,8 +527,8 @@ const BtnAddPallet = (props) => {
     }
     const showPalletSelect = (data, field) => {
         if (data) {
-            renderNewDropdown(data[0].AreaID, data[0].LocationID);
-            let PalletCode = data[0].Pallet;
+            renderNewDropdown(data.AreaID, data.LocationID);
+            let PalletCode = data.Pallet;
 
             let ele = document.getElementById(field);
             if (ele) {
@@ -754,8 +759,13 @@ const BtnAddPallet = (props) => {
     const onHandleChangeRadio = (value, field) => {
         valueInput[field] = parseInt(value, 10);
     }
+    const handleClose = () => {
+        onHandleClear();
+        setOpen(false);
+    };
     const onHandleClear = () => {
         console.log("clear")
+        setListDocItems([]);
         setValueInput({});
         setValueQtyDocItems({});
         // setWarehouseDDL(null);
@@ -766,7 +776,7 @@ const BtnAddPallet = (props) => {
         setInputBaseCode(null);
         // setShowInfoBase(null);
         setDataSelect([]);
-        setDefaultSelect(null);
+        setDefaultSelect([]);
         setImgFile(null);
         setImageFile(null);
     };
@@ -787,29 +797,23 @@ const BtnAddPallet = (props) => {
         // console.log(imageFile)
         // console.log(fileImgRef.current.value)
         // console.log(imageFile.size);
-        if (imageFile.size > 100000000) //100000000 bytes
-        {
-            alertDialogRenderer("ไฟล์มีขนาดใหญ่เกินกว่า 100 MB ไม่สามารถอัพโหลดได้", "warning", true);
-        }
-        else {
-            let fileBase64 = await toBase64(imageFile)
-            if (valueInput.baseCode) {
-                let filejson = {
-                    baseCode: valueInput.baseCode,
-                    imageBase64: fileBase64
-                }
-                await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
-                    if (res.data._result.status === 1) {
-                        alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
-                    } else {
-                        alertDialogRenderer(res.data._result.message, "error", true);
-                    }
-                });
-            } else {
-                alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
-            }
-        }
 
+        let fileBase64 = await toBase64(imageFile)
+        if (valueInput.baseCode) {
+            let filejson = {
+                fileName: valueInput.baseCode,
+                imageBase64: fileBase64
+            }
+            await Axios.post(window.apipath + "/v2/upload_image/", filejson).then(res => {
+                if (res.data._result.status === 1) {
+                    alertDialogRenderer("อัพโหลดไฟล์รูปภาพ " + res.data.fileName + " สำเร็จ", "success", true);
+                } else {
+                    alertDialogRenderer(res.data._result.message, "error", true);
+                }
+            });
+        } else {
+            alertDialogRenderer("กรุณากรอกหมายเลขพาเลท", "warning", true);
+        }
     }
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -836,13 +840,13 @@ const BtnAddPallet = (props) => {
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
-                onClose={() => { onHandleClear(); setOpen(false); }}
+                onClose={handleClose}
                 open={open}
                 maxWidth="xl"
             >
                 <DialogTitle
                     id="addpallet-dialog-title"
-                    onClose={() => { onHandleClear(); setOpen(false); }}>
+                    onClose={handleClose}>
                     {"Receive Pallet"}
                 </DialogTitle>
                 <DialogContent>
@@ -859,15 +863,18 @@ const BtnAddPallet = (props) => {
                         return row.component(row, idx)
                     }) : null}
                     <FormInline><LabelH><label htmlFor="img">{t('Select Image')} : </label></LabelH>
-                        {/* <div style={{ display: 'inline-flex', alignItems: 'center' }} > */}
-                        <input ref={fileImgRef} type="file" id="img" name="formFile"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e)}
-                        />
-                        <input type="submit" onClick={onUploadFile} />
-                        {/* </div> */}
+                        <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                            <input ref={fileImgRef} type="file" id="img" name="formFile"
+                                accept="image/*" style={{ maxWidth: "230px" }}
+                                onChange={(e) => handleFileChange(e)}
+                            />
+                            {/* <input type="submit" onClick={onUploadFile} /> */}
+                            <AmButton styleType="confirm_outline"
+                                startIcon={<PublishIcon size="small" className={classNames(classes.leftIcon)} />}
+                                onClick={onUploadFile} >Upload</AmButton>
+                        </div>
                     </FormInline>
-                    {imgFile ? <img src={imgFile} height='150' /> : null}
+                    {imgFile ? <div style={{ margin: "5px 0px" }}><img src={imgFile} height='150' /></div> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
                     <AmTable
                         columns={columns}
@@ -883,12 +890,8 @@ const BtnAddPallet = (props) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <AmButton
-                        styleType="add"
-                        onClick={() => {
-                            onSubmit();
-                        }}
-                    >Add</AmButton>
+                    <AmButton styleType="add" onClick={onSubmit} >Add</AmButton>
+                    <AmButton styleType='delete' onClick={handleClose} >Cancel</AmButton>
                 </DialogActions>
             </Dialog>
         </AmAux>

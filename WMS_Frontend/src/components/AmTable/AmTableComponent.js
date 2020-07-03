@@ -46,19 +46,10 @@ const SortDirection = {
   //   },
   // })(Radio);
 
-const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionChangePage, page, selectionCustom, dataSource) => {
+const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
     
-    useEffect(() => {
-      if(selectionState){
-        if(clearSelectionChangePage){
-          selection.removeAll()
-        }
-      }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
     useEffect(() => {
         let getColumns = [...Columns];
         
@@ -129,7 +120,6 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, clearSelectionC
                   }else{
                     selection.removeAll(null);
                   }
-
                   selection.selectAll(null)
                   
                 }}
@@ -247,7 +237,6 @@ const AmTableComponent = (props) => {
       props.rowNumber, 
       props.selection, 
       props.dataKey, 
-      props.clearSelectionChangePage, 
       props.page, 
       props.selectionDisabledCustom,
       props.dataSource
@@ -471,7 +460,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value)}} />
+                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
                 </div>)
             ) : null}
           </TableHeaderStickyColumnsCell>
@@ -498,7 +487,7 @@ const GenerateHeader = ({columns,props, tableSize}) => {
               col.filterable === false ? null : typeof col.Filter === "function" ? 
                 (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value)}} />
+                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
                 </div>)
             ) : null}
           </TableHeaderCell>

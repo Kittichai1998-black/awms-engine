@@ -17,7 +17,8 @@ import { withStyles } from "@material-ui/core/styles";
 import AmAux from "./AmAux";
 import AmButton from "./AmButton";
 import AmInput from "./AmInput";
-import AmTable from "./table/AmTable";
+// import AmTable from "./table/AmTable";
+import AmTable from "./AmTable/AmTable";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 
@@ -199,8 +200,8 @@ const BtnAddList = props => {
         if (res.data.datas) {
           setData([...res.data.datas]);
           setTotalSize(res.data.counts);
-          let data = props.dataCheck || [];
-          setDefaultSelect([...dataSelect, ...data]);
+          // let data = props.dataCheck || [];
+          setDefaultSelect([...props.dataCheck]);
         }
       });
     }
@@ -218,13 +219,13 @@ const BtnAddList = props => {
     if (sort) {
       // const queryEdit = JSON.parse(JSON.stringify(query));
       query.s = '[{"f":"' + sort.field + '", "od":"' + sort.order + '"}]';
-      setQuery({ ...query });
+      // setQuery({ ...query });
     }
   }, [sort]);
 
   useEffect(() => {
     if (searchAction) {
-      let newSel = JSON.parse(props.queryApi.q);
+      let newSel = props.queryApi.q ? JSON.parse(props.queryApi.q) : [];
       Object.keys(keySearch).map((x, idx) => {
         if (keySearch[x]) {
           newSel.push({
@@ -250,7 +251,6 @@ const BtnAddList = props => {
           // }
         }
       });
-
       query.q = JSON.stringify(newSel);
       setQuery({ ...query });
       setSearchAction(false);
@@ -298,6 +298,24 @@ const BtnAddList = props => {
 
         <DialogContent>
           <AmTable
+            dataKey={props.primaryKeyTable}
+            columns={props.columns}
+            // pageSize={200}
+            dataSource={data}
+            //   height={200}
+            rowNumber={true}
+            style={{ maxHeight: "390px" }}
+            pageSize={props.queryApi.l || 20}
+            // sortable
+            // sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
+            selectionDefault={defaultSelect}
+            currentPage={page}
+            selection={true}
+            // selectionType="checkbox"
+            selectionData={data => setDataSelect(data)}
+          />
+
+          {/* <AmTable
             primaryKey={props.primaryKeyTable}
             defaultSelection={defaultSelect}
             data={data}
@@ -317,7 +335,7 @@ const BtnAddList = props => {
           //         <AmButton style={{ margin: "5px" }} styleType="add" onClick={() => { props.onSubmit(dataSelect); setOpen(false); }}>OK</AmButton>
           //     </div>
           // }
-          />
+          /> */}
         </DialogContent>
         <DialogActions>
           <Pagination

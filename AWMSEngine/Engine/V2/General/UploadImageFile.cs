@@ -10,6 +10,8 @@ using System.Linq;
 using System.Reflection;
 using AMWUtil.Common;
 using System.Threading.Tasks;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 
 namespace AWMSEngine.Engine.V2.General
 {
@@ -18,14 +20,28 @@ namespace AWMSEngine.Engine.V2.General
      
         public class TReq
         {
-            public string baseCode;
+            public string fileName;
             public string imageBase64;
         }
         public class TRes
         {
             public string fileName;
         }
-        protected override UploadImageFile.TRes ExecuteEngine(TReq reqVO)
+        // Orientations.
+        public const int OrientationId = 0x0112; //274
+        public enum ExifOrientations
+        {
+            Unknown = 0,
+            RotateNone = 1,
+            RotateNoneFlipX = 2,
+            Rotate180FlipNone = 3,
+            Rotate180FlipX = 4,
+            Rotate90FlipX = 5,
+            Rotate90FlipNone = 6,
+            Rotate270FlipX = 7,
+            Rotate270FlipNone = 8,
+        }
+        protected override TRes ExecuteEngine(TReq reqVO)
         {
             string[] strings = reqVO.imageBase64.Split(",");
 
@@ -47,22 +63,39 @@ namespace AWMSEngine.Engine.V2.General
             
             var filepath = StaticValue.GetConfigValue(ConfigCode.PATH_FOLDER_IMAGES);
             CreateFolder(filepath);
-            DeleteOldFile(filepath, reqVO.baseCode);
+            DeleteOldFile(filepath, reqVO.fileName);
 
-            var fileName = reqVO.baseCode + "." + extension;
+            var fileName = reqVO.fileName + "." + extension;
             var fileFullPath = filepath + "/" + fileName;
 
-            //if (File.Exists(fileFullPath))
-            //{
-            //    File.Delete(fileFullPath);
-            //}
+            //CreateThumbnail(bytes, 800, extension, fileFullPath);
             Image image;
+             
             using (MemoryStream ms = new MemoryStream(bytes))
             {
-                 
                 image = Image.FromStream(ms);
 
-                image.Save(fileFullPath, ParseImageFormat(extension));
+                // Get the PropertyItems property from image.
+                ImageOrientation(image);
+
+                int w, h;
+                if(image.Width > image.Height)
+                {
+                    w = 800;
+                    h = (int)((double)image.Height * (800.0f / (double)image.Width));
+                }
+                else
+                {
+                    h = 800;
+                    w = (int)((double)image.Width * (800.0f / (double)image.Height));
+                }
+                Bitmap resizedImage = new Bitmap(w, h);
+                using (Graphics gfx = Graphics.FromImage(resizedImage))
+                {
+                    gfx.DrawImage(image, new Rectangle(0, 0, w, h),
+                        new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);
+                }
+                resizedImage.Save(fileFullPath);
             }
             var res = new TRes() {
                 fileName = fileName
@@ -78,8 +111,6 @@ namespace AWMSEngine.Engine.V2.General
         private void CreateFolder(string filePath)
         {
             // Specify the directory you want to manipulate.
-            //string path = @filePath;
-
             try
             {
                 // Determine whether the directory exists.
@@ -102,6 +133,7 @@ namespace AWMSEngine.Engine.V2.General
             finally { }
         }
 
+         
         private void DeleteOldFile(string filePath, string fileName)
         {
             DirectoryInfo diInfo = new DirectoryInfo(filePath);
@@ -118,6 +150,60 @@ namespace AWMSEngine.Engine.V2.General
                     }
                 }
               
+            }
+        }
+
+        // Return the image's orientation.
+        private void ImageOrientation(Image image)
+        {
+            ExifOrientations orientations = new ExifOrientations();
+            // Get the index of the orientation property.
+            int orientation_index =
+                Array.IndexOf(image.PropertyIdList, OrientationId);
+
+            // If there is no such property, return Unknown.
+            if (orientation_index < 0)
+            {
+                orientations = ExifOrientations.Unknown;
+            }
+            else
+            {
+                // Return the orientation value.
+                orientations = (ExifOrientations)image.GetPropertyItem(OrientationId).Value[0];
+            }
+
+            // Orient the result.
+            switch (orientations)
+            {
+                case ExifOrientations.Unknown:
+                    break;
+                case ExifOrientations.RotateNone:
+                    break;
+                case ExifOrientations.RotateNoneFlipX:
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    break;
+                case ExifOrientations.Rotate180FlipNone:
+                    image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    break;
+                case ExifOrientations.Rotate180FlipX:
+                    image.RotateFlip(RotateFlipType.Rotate180FlipX);
+                    break;
+                case ExifOrientations.Rotate90FlipX:
+                    image.RotateFlip(RotateFlipType.Rotate90FlipX);
+                    break;
+                case ExifOrientations.Rotate90FlipNone:
+                    image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    break;
+                case ExifOrientations.Rotate270FlipX:
+                    image.RotateFlip(RotateFlipType.Rotate270FlipX);
+                    break;
+                case ExifOrientations.Rotate270FlipNone:
+                    image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    break;
+            }
+            if (orientation_index > 0)
+            {
+                image.RemovePropertyItem(OrientationId);
             }
         }
     }
