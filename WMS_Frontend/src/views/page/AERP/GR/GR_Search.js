@@ -19,75 +19,8 @@ const Axios = new apicall();
 
 //======================================================================
 const DocumentSearchSTGT = props => {
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const [dataMovementType, setDataMovementType] = useState();
-  const [dataCustomer, setDataCustomer] = useState();
-  const [dataWarehouse, setDataWarehouse] = useState();
-  const [previewError, setPreviewError] = useState(false);
-  const [previewWarning, setPreviewWarning] = useState(false);
-  const [previewInfo, setPreviewInfo] = useState(false);
-  const [textError, setTextError] = useState("");
-  const [textWarning, setTextWarning] = useState("");
-  const [typePopup, setTypePopup] = useState("");
 
   const [dialogState, setDialogState] = useState({});
-
-  const MovementTypeQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "DocumentProcessType",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "Name AS value,Name AS label",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const AreaLocationMasterQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "AreaLocationMaster",
-    q:
-      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "AreaMaster_ID", "c":"=", "v": 16}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const WarehouseQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Warehouse",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "Name AS value,concat(Code, ' : ' ,Name) AS label",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const AreaMasterQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "AreaMaster",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 16}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const getData = () => {
-    Axios.get(createQueryString(MovementTypeQuery)).then(res => {
-      setDataMovementType(res.data.datas);
-    });
-    Axios.get(createQueryString(WarehouseQuery)).then(row => {
-      setDataWarehouse(row.data.datas);
-    });
-  };
 
   const GeneratePopup = (data) => {
     var dataGenerate = DataGeneratePopup(data)
@@ -151,16 +84,23 @@ const DocumentSearchSTGT = props => {
       filterConfig: {
         filterType: "datetime",
       },
-      dateFormat: "DD/MM/YYYY HH:mm"
+      dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
     },
-    { Header: "Create", accessor: "Created", width: 200, customFilter: { accessor: "CreateTime" } },
-    { Header: "Modify Time", accessor: "LastUpdate", width: 200 }
+    {
+      Header: "Create", accessor: "Created", width: 200,
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      },
+      dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "CreateTime" }
+    },
+    {
+      Header: "Modify Time", accessor: "LastUpdate", width: 200,
+      filterable: false,
+    }
   ];
 
-  const dataReject = [// {//   field: "souAreaCode",//   type: "dropdow",//   typeDropdow: "search",//   name: "Sou. Area",//   dataDropDow: AreaMasterQuery,//   placeholder: "Sou. Area",//   fieldLabel: ["Code", "Name"]//   //required: true//   //disabled: true// },
-    { field: "desAreaCode", type: "dropdow", typeDropdow: "search", name: "Dest. Area", dataDropDow: AreaMasterQuery, placeholder: "Dest. Area", fieldLabel: ["Code", "Name"] },
-    { field: "desAreaLocationCode", type: "dropdow", typeDropdow: "search", name: "Dest. AreaLocation", dataDropDow: AreaLocationMasterQuery, placeholder: "Des AreaLocation", fieldLabel: ["Code", "Name"] }
-  ];
+
   const getRedirect = data => {
     return (
       <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
@@ -189,7 +129,6 @@ const DocumentSearchSTGT = props => {
         docTypeCode="1001"
         buttonClose={true}
         buttonReject={false}
-        dataReject={dataReject}
         apiReject={"/v2/RejectGRDocAPI"}
         apiClose={"/v2/ClosingDocumentAPI"}
       />

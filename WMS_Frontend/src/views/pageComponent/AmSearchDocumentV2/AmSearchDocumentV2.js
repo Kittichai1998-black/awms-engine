@@ -75,13 +75,13 @@ const AmSearchDocumentV2 = props => {
 
   }, [queryViewData])
 
-  // useEffect(() => {
-  //   if (typeof (page) === "number" && !iniQuery) {
-  //     const queryEdit = JSON.parse(JSON.stringify(queryViewData));
-  //     queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
-  //     getData(queryEdit)
-  //   }
-  // }, [page])
+  useEffect(() => {
+    if (typeof (page) === "number" && !iniQuery) {
+      const queryEdit = JSON.parse(JSON.stringify(queryViewData));
+      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+      getData(queryEdit)
+    }
+  }, [page])
 
   function getData(data) {
     var queryStr = createQueryString(data)
@@ -140,9 +140,9 @@ const AmSearchDocumentV2 = props => {
             col.width = 350;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
-                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
                 <label>-</label>
-                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "datetime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
               </FormInline>
             }
           }
@@ -156,21 +156,21 @@ const AmSearchDocumentV2 = props => {
   const { columns } = useColumns(props.iniCols);
 
   const onChangeFilterData = (filterValue) => {
-    console.log(queryViewData)
-    console.log("filterValue")
     var res = {};
     filterValue.forEach(fdata => {
-      console.log(fdata)
       if (fdata.customFilter !== undefined) {
+        if (IsEmptyObject(fdata.customFilter)) {
+          res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+        } else {
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+        }
+      }
 
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-
-      } else
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
     });
 
     if (!IsEmptyObject(res))
       setQueryViewData(res)
+
     //getData(res)
 
   }

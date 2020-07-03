@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import {
   apicall,
-  createQueryString
+  createQueryString, IsEmptyObject
 } from "../../../components/function/CoreFunction";
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
@@ -45,11 +45,21 @@ const FormInline = styled.div`
 
 const AmStorageObjectMulti = props => {
   const { t } = useTranslation();
-
+  const Query = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "r_StorageObject",
+    q: '[{ "f": "Status", "c":"!=", "v": 0}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
 
   const [dataSource, setDataSource] = useState([])
   const [count, setCount] = useState(0)
-  const [queryViewData, setQueryViewData] = useState();
+  const [queryViewData, setQueryViewData] = useState(Query);
   const [page, setPage] = useState(1);
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
@@ -59,9 +69,11 @@ const AmStorageObjectMulti = props => {
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+      getData(queryViewData)
+
+  }, [queryViewData])
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -72,19 +84,9 @@ const AmStorageObjectMulti = props => {
   }, [page])
 
   function getData(data) {
-    const Query = {
-      queryString: window.apipath + "/v2/SelectDataViwAPI/",
-      t: "r_StorageObject",
-      q: '[{ "f": "Status", "c":"!=", "v": 0}]',
-      f: "*",
-      g: "",
-      s: "[{'f':'Pallet','od':'asc'}]",
-      sk: 0,
-      l: 100,
-      all: ""
-    };
-    setQueryViewData(Query)
-    var queryStr = createQueryString(data != undefined ? data : Query)
+
+    //setQueryViewData(Query)
+    var queryStr = createQueryString(data)
     Axios.get(queryStr).then(res => {
 
       var respone = DataGenerateMulti(res.data.datas)
@@ -93,15 +95,21 @@ const AmStorageObjectMulti = props => {
     });
   }
   const onChangeFilterData = (filterValue) => {
-    console.log(filterValue)
-    var res = queryViewData;
+    var res = {};
     filterValue.forEach(fdata => {
-      if (fdata.customFilter !== undefined)
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
-      else
-        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+      console.log(fdata)
+      if (fdata.customFilter !== undefined) {
+        if (IsEmptyObject(fdata.customFilter)) {
+          res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+        } else {
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+        }
+      }
+
     });
-    getData(res)
+
+    if (!IsEmptyObject(res))
+      setQueryViewData(res)
 
   }
 
@@ -152,9 +160,9 @@ const AmStorageObjectMulti = props => {
             col.width = 350;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
-                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
                 <label>-</label>
-                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { dataType: "datetime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
               </FormInline>
             }
           }
