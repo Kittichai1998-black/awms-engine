@@ -68,7 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string ref1;
                 public string ref2;
                 public string options;
-                public long? refDocumentItem_ID;
+                public long? parentDocumentItem_ID;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
@@ -186,7 +186,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
-                            refDocumentItem_ID = x.refDocumentItem_ID,
+                            parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,

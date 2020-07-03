@@ -266,11 +266,11 @@ const Create_GR_DR = props => {
     ];
 
     const columnEdit = [
-        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
+        { Header: "Item Code", accessor: "SKUItems", type: "text"},
         //{ Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
-        { Header: "Batch", accessor: "Batch", type: "input", codeTranslate: "Batch" },
-        { Header: "Lot", accessor: "Lot", type: "input", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", type: "input", codeTranslate: "Order No." },
+        { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
+        { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
+        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "Order No." },
         { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Quantity" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" }
     ];
