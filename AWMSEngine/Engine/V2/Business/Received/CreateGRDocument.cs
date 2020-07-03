@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string batch;
                 public string lot;
 
-                public long? refDocumentItem_ID;
+                public long? parentDocumentItem_ID;
 
                 public string ref1;
                 public string ref2;
@@ -167,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             baseQuantity = x.basequantity,
                             quantity = x.quantity,
                             unitType = x.unitType,
-                            refDocumentItem_ID = x.refDocumentItem_ID,
+                            parentDocumentItem_ID = x.parentDocumentItem_ID,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,

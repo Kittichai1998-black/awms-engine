@@ -78,7 +78,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public DateTime? expireDate;
                 public DateTime? productionDate;
 
-                public long? refDocumentItem_ID;
+                public long? parentDocumentItem_ID;
                 public string orderNo;
                 public string batch;
                 public string lot;
@@ -289,7 +289,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Ref3 = Item.ref3,
                     RefID = Item.refID,
 
-                    RefDocumentItem_ID = Item.refDocumentItem_ID,
+                    ParentDocumentItem_ID = Item.parentDocumentItem_ID,
 
                     EventStatus = Item.eventStatus,
                     DocItemStos = Item.docItemStos

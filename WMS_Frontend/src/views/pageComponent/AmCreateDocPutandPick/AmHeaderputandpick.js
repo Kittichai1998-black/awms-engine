@@ -79,7 +79,7 @@ const DialogTitle = withStyles(theme => ({
                 aria-label="Close"
                 size="small"
                 className={classes.closeButton}
-                onClick={onClose}
+                //onClick={onClose}
             >
                 <CloseIcon fontSize="inherit" />
             </IconButton>
@@ -137,7 +137,7 @@ const AmHeaderputandpick = (props) => {
     const columns = [
         ...props.doccolumnEditItem,
         {
-            width: 160, Header: "Quantity", Cell: e =>
+            width: 160, Header: "Quantity", accessor: "Quantity", Cell: e =>
                 genInputQty(e.original)
         },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
@@ -167,10 +167,6 @@ const AmHeaderputandpick = (props) => {
         }
     }, [doc.datadocItem, doc.dialogItem]);
 
-
-    useEffect(() => {
-        console.log(dataSelect)
-    }, [doc.dataSourceItemTB])
 
 
 
@@ -292,7 +288,7 @@ const AmHeaderputandpick = (props) => {
                 });
             }
         }
-        doc.setdialogItem(false)
+        //doc.setdialogItem(false)
     }
 
     const onSubmitAddItem = () => {
@@ -302,6 +298,7 @@ const AmHeaderputandpick = (props) => {
                     if (valueQtyDocItems[x.ID] !== undefined) {
                         return x.Quantity = valueQtyDocItems[x.ID].recQty
                     } else {
+                        console.log(valueQtyDocItems[x.ID].recQty)
                         if (x.Qty && doc.dataSourceItemTB.length === 0) {
                             return x.Quantity = x.Quantity - x.Qty
                         }
@@ -315,16 +312,19 @@ const AmHeaderputandpick = (props) => {
                     }
 
                 })
-
-                if (doc.editdata.length != 0) {
-                    //doc.setdataSourceItemTB(dataSelect);
-
-                } else {
-
+                if (doc.dataSourceItemTB.length === 0) {
                     doc.setdataSourceItemTB(dataSelect);
                     doc.setdialogItem(false)
+                } else {
+                    dataSelect.forEach((x, i) => {
+                        doc.dataSourceItemTB.push(dataSelect[i])
+                    })
+                  
+                    doc.setdialogItem(false)
+                    
 
                 }
+                
             } else {
                 dia.setdailogMsg("Quantity Max");
                 dia.setdailogErr(true)
@@ -508,10 +508,11 @@ const AmHeaderputandpick = (props) => {
 
 
     const onHandleClear = () => {
-        doc.setdatadocItem([])
+        //doc.setdatadocItem([])
         doc.setdocID(0)
         doc.setdialogItem(false)
     }
+
 
     return <div>
         {getHeaderCreate()}
@@ -528,40 +529,18 @@ const AmHeaderputandpick = (props) => {
             </DialogTitle>
             <DialogContent>
                 <div>
-
-                    {doc.dataSourceItemTB.length != 0 ?
-                        <AmTable
-                            columns={columns}
-                            dataKey={"ID"}
-
-                            dataSource={doc.editdata.length != 0 ? doc.editdata :
-                                doc.datadocItem.length != 0 ? doc.datadocItem :
-                                    doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
-                            selectionDefault={dataSelect}
-                            selection="checkbox"
-                            selectionData={data => setDataSelect(data)}
-                            rowNumber={true}
-                            //  totalize={count}
-                            pageSize={100}
-                        //height={500}
-                        />
-
-
-                      :  <AmTable
+                    <AmTable
                         columns={columns}
                         dataKey={"ID"}
-
-                        dataSource={doc.editdata.length != 0 ? doc.editdata :
-                            doc.datadocItem.length != 0 ? doc.datadocItem :
-                                doc.dataSourceItemTB ? doc.dataSourceItemTB : []}
-                        //selectionDefault={dataSelect}
+                        dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
+                        selectionDefault={doc.dataSourceItemTB}         
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}
                         //  totalize={count}
                         pageSize={100}
                     //height={500}
-                    />}
+                    />
                 </div>
             </DialogContent>
             <DialogActions>
