@@ -90,7 +90,8 @@ const StorageObject = props => {
       filterType: "datetime",
       filterConfig: {
         filterType: "datetime",
-      },
+      }
+      , customFilter: { field: "Receive_Time" },
       dateFormat: "DD/MM/YYYY HH:mm"
     },
     {

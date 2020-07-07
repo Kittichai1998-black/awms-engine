@@ -246,15 +246,11 @@ const SKUMaster = props => {
     }
   ];
   const getStatus = value => {
-    if (value.Status === "0" || value.Status === 0) {
-      return <AmEntityStatus key={0} statusCode={0} />;
-    } else if (value.Status === "1" || value.Status === 1) {
-      return <AmEntityStatus key={1} statusCode={1} />;
-    } else if (value.Status === "2" || value.Status === 2) {
-      return <AmEntityStatus key={2} statusCode={2} />;
-    } else {
+    if (value.Status){
+      return <AmEntityStatus statusCode={value.Status} />;
+    }else{
       return null;
-    }
+    } 
   };
 
   return (

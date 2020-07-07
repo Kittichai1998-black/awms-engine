@@ -43,7 +43,13 @@ const LabelH = styled.label`
 font-weight: bold;
   width: 110px;
 `;
-
+const GlobalBtnBaseCss = withStyles({
+    '@global': {
+        '.MuiButtonBase-root': {
+            position: 'unset !important',
+        },
+    },
+})(() => null);
 const DialogTitle = withStyles(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -167,7 +173,7 @@ const AmDialogUploadImage = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-
+            <GlobalBtnBaseCss />
             <IconButton
                 size="small"
                 aria-label="info"
@@ -197,9 +203,9 @@ const AmDialogUploadImage = (props) => {
                             />
                         </div>
                     </FormInline>
-                        {imgFile ? 
-                        <div style={{ margin: "5px 0px", textAlign: "center" }}><img src={imgFile} style={{ maxHeight: 350 }} /></div>
-                        : null}
+                        {imgFile ?
+                            <div style={{ margin: "5px 0px", textAlign: "center" }}><img src={imgFile} style={{ maxHeight: 350 }} /></div>
+                            : null}
                     </div>
                 </DialogContent>
                 <DialogActions>

@@ -143,7 +143,7 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
+            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
@@ -161,7 +161,7 @@ namespace AWMSEngine.ADO
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
-            param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
+            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
 
             param.Add("@eventStatus", docItem.EventStatus);
@@ -735,7 +735,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@ID", docItem.ID);
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@refDocumentItem_ID", docItem.RefDocumentItem_ID);
+            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoIcon from '@material-ui/icons/Photo';
@@ -16,9 +17,18 @@ const useStyles = makeStyles((theme) => ({
     responsive: {
         width: '100%',
         height: 'auto'
-    }
+    },
+    icon: {
+        marginLeft: "3px"
+    },
 }));
-
+const GlobalBtnBaseCss = withStyles({
+    '@global': {
+        '.MuiButtonBase-root': {
+            position: 'unset !important',
+        },
+    },
+})(() => null);
 export default function SimpleBackdrop(props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
@@ -76,12 +86,13 @@ export default function SimpleBackdrop(props) {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-
+            <GlobalBtnBaseCss />
             <IconButton
                 size="small"
                 aria-label="info"
                 onClick={handleToggle}
                 style={{ marginLeft: "3px" }}
+                className={classes.icon}
             >
                 <PhotoIcon fontSize="small" color="primary" />
             </IconButton>

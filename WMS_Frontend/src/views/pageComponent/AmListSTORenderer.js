@@ -108,8 +108,8 @@ const AmListSTORenderer = (props) => {
             <ListItem alignItems="center" divider disableGutters className={classnames(classes.guttersHead, row.isFocus ? classes.bgFocus : null)}>
                 <ListItemAvatar className={classnames(classes.listItemAvatarRoot)}>
                     {_.find(EntityEventStatus, function (o) { return o.code === row.eventStatus; }) != null ?
-                        <AmEntityStatus statusCode={row.eventStatus} className={classes.avatarStatus} />
-                        : <AmStorageObjectStatus statusCode={row.eventStatus} className={classes.avatarStatus} />
+                        <AmEntityStatus statusCode={row.eventStatus} className={classes.avatarStatus} labelShort={true} />
+                        : <AmStorageObjectStatus statusCode={row.eventStatus} className={classes.avatarStatus} labelShort={true} />
                     }
                 </ListItemAvatar>
                 <ListItemText disableTypography
@@ -155,7 +155,7 @@ const AmListSTORenderer = (props) => {
         return <div key={i}>
             <ListItem key={i} alignItems="flex-start" disableGutters className={classnames(classes.gutters, row.isFocus ? classes.bgFocus : null)}>
                 <ListItemAvatar className={classnames(classes.listItemAvatarRoot)}>
-                    <AmStorageObjectStatus statusCode={row.eventStatus} className={classes.avatarStatus} />
+                    <AmStorageObjectStatus statusCode={row.eventStatus} className={classes.avatarStatus} labelShort={true} />
                 </ListItemAvatar>
                 <ListItemText disableTypography
                     primary={<div className={classnames(classes.divLevel1)}><label className={classes.textNowrap}><span className={classes.labelHead}>{row.code}</span>{" : " + row.name}</label></div>}

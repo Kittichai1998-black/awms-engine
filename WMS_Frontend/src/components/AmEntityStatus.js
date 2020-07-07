@@ -5,32 +5,34 @@ import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
     root: {
-        width: '1.725em',
+        minWidth: '1.725em',
         height: '1.725em',
     }
 });
 const EntityEventStatus = [
-    { status: 'INACTIVE', code: 0, label: 'I' }, //เเดง
-    { status: 'ACTIVE', code: 1, label: 'A' }, //เขียว
-    { status: 'REMOVE', code: 2, label: 'R' }, //เทา
-    { status: 'DONE', code: 3, label: 'D' }, //
+    { status: 'INACTIVE', code: 0, label: 'INACTIVE', labelShort: 'I' }, //เเดง
+    { status: 'ACTIVE', code: 1, label: 'ACTIVE', labelShort: 'A' }, //เขียว
+    { status: 'REMOVE', code: 2, label: 'REMOVE', labelShort: 'R' }, //เทา
+    { status: 'DONE', code: 3, label: 'DONE', labelShort: 'D' }, //
 ]
 
 
 const EntityStatus = props => {
-    const { statusCode, classes, className, styleType, ...other } = props;
+    const { statusCode, classes, className, styleType, labelShort, ...other } = props;
     const result = EntityEventStatus.filter(row => { return row.code === statusCode });
     let strStatus = "";
     let strLabel = "";
+    let strLabelShort = "";
     if (result.length > 0) {
         strStatus = result[0].status
         strLabel = result[0].label
+        strLabelShort = result[0].labelShort
     }
     return (
         <>
             <IconStatus
                 className={classNames(className, classes.root)} styleType={strStatus}
-                {...other}>{strLabel}</IconStatus>
+                {...other}>{labelShort ? strLabelShort : strLabel}</IconStatus>
         </>
     );
 };
