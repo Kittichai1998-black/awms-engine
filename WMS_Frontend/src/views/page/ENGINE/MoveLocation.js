@@ -1,20 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import AmMoveLocation from "../../pageComponent/AmMoveLocation";
+import AmMoveLocation from "../../pageComponent/AmMoveLocation/AmMoveLocation";
 import {
   apicall,
   createQueryString
 } from "../../../components/function/CoreFunction";
-import AmEntityStatus from "../../../components/AmEntityStatus";
-import {
-  AmTable,
-  AmFilterTable,
-  AmPagination
-} from "../../../components/table";
-import AmInput from "../../../components/AmInput";
+
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import Pagination from "../../../components/table/AmPagination";
-import AmDialogs from "../../../components/AmDialogs";
+
+import AmDropdown from "../../../components/AmDropdown";
 const Axios = new apicall();
 
 //======================================================================
@@ -39,7 +33,24 @@ const LabelH = styled.label`
   // font-weight: bold;
   width: 100px;
 `;
+const LabelDD = {
+  fontWeight: "bold",
+  width: "100px"
+};
+const WarehouseQuery = {
+  queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  t: "Warehouse",
+  q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
+  f: "*",
+  g: "",
+  s: "[{'f':'ID','od':'asc'}]",
+  sk: 0,
+  l: 100,
+  all: ""
+};
 const MoveLocation = props => {
+  const { t } = useTranslation();
+  const [warehouse, setWarehouse] = useState(1);
   const columns = [
     {
       field: "Priority",
@@ -98,11 +109,37 @@ const MoveLocation = props => {
   ];
   return (
     <div>
-
+      <FormInline>
+        {" "}
+        <label style={LabelDD}>
+          {t("Warehouse")} :{" "}
+        </label>
+        <AmDropdown
+          id={"WH"}
+          placeholder={"Select Warehouse..."}
+          fieldDataKey={"ID"}
+          fieldLabel={["Code", "Name"]}
+          labelPattern=" : "
+          width={250}
+          ddlMinWidth={200}
+          zIndex={1000}
+          defaultValue={1}
+          queryApi={WarehouseQuery}
+          onChange={(value, dataObject, inputID, fieldDataKey) =>
+            //getData(value)
+            //console.log(value)
+            setWarehouse(value)
+          }
+          ddlType={"normal"}
+        />{" "}
+      </FormInline>
+      <br />
       <AmMoveLocation
         columns={iniCols}
         dataAdd={columns}
         syncWC={false}
+        warehouse={warehouse}
+
       ></AmMoveLocation>
 
     </div>

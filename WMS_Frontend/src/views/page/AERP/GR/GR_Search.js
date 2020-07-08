@@ -74,6 +74,7 @@ const DocumentSearchSTGT = props => {
         filterType: "datetime",
       },
       dateFormat: "DD/MM/YYYY"
+      , customFilter: { field: "DocumentDate" }
     },
     {
       Header: "Action Time",

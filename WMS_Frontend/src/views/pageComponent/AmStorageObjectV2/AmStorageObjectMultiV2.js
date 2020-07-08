@@ -101,7 +101,7 @@ const AmStorageObjectMulti = props => {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
         } else {
-          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
       } else {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
@@ -251,11 +251,13 @@ const AmStorageObjectMulti = props => {
           if (res.data._result !== undefined) {
             if (res.data._result.status === 1) {
               setDialogState({ type: "success", content: "Success", state: true })
-              getData();
+              if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+                getData(queryViewData);
               Clear();
             } else {
               setDialogState({ type: "error", content: res.data._result.message, state: true })
-              getData();
+              if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+                getData(queryViewData);
               Clear();
             }
           }
