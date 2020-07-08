@@ -704,21 +704,24 @@ const ProcessQueueDetail = (props) => {
             <Memo documentData={documents.documentListValue} cols={columns}/>
         }
         <Grid container>
-            <Grid item xs="6">
-                <AmButton
-                    style={{marginTop:20, float:"left"}}
-                    styleType="delete" 
-                    disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0} 
-                    onClick={() => {documents.clearDocument()}
-                    }>Clear</AmButton>
-            </Grid>
-            <Grid item xs="6">
-                <FormInline style={{marginTop:20, float:"right", clear:"both"}}>
-                    {props.waveProcess ? <><label style={{marginRight:"10px"}}>Auto Run : </label>
+            <Grid item xs="12">
+                    <AmButton
+                        style={{float:"left"}}
+                        styleType="delete" 
+                        disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0} 
+                        onClick={() => {documents.clearDocument()}
+                        }>Clear</AmButton>
+                    <AmButton
+                        style={{marginLeft:10,float:"right"}}
+                        styleType="info" 
+                        disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0} 
+                        onClick={onClickProcessQueue}>Process Queue</AmButton>  
+                <FormInline style={{float:"right"}}>{props.waveProcess ? <><label style={{marginRight:"10px"}}>Auto Run : </label>
                     <CheckboxCustom onClick={event => {
                         event.stopPropagation();
                         setFlagAuto(event.target.checked)
                     }} checked={flagAuto}/></> : null}
+                    
                     <label style={{marginRight:"10px"}}>Area : </label>
                     <AmDropdown
                         disabled={documents.documentListValue.length === 0 ? true : false}
@@ -739,12 +742,9 @@ const ProcessQueueDetail = (props) => {
                         }}
                         returnDefaultValue={true}
                     />
-                    <AmButton
-                        style={{marginLeft:10}}
-                        styleType="info" 
-                        disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0} 
-                        onClick={onClickProcessQueue}>Process Queue</AmButton>
                 </FormInline>
+                    
+                <div style={{clear:"both"}}></div>
             </Grid>
         </Grid>
     </>
