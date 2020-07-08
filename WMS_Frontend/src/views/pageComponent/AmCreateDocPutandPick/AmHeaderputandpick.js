@@ -158,14 +158,14 @@ const AmHeaderputandpick = (props) => {
     }, [createDocumentData])
 
     useEffect(() => {
-        if (doc.datadocItem && doc.dialogItem) {
+        if (doc.datadocItem ) {
             let newItems = _.filter(doc.datadocItem, function (o) { return o._balanceQty > 0; });
             //setListDocItems(newItems)
             //setDefaultSelect([...newItems]);
             saveDefaultInputQTY(newItems)
 
         }
-    }, [doc.datadocItem, doc.dialogItem]);
+    }, [doc.datadocItem]);
 
 
 
@@ -187,6 +187,7 @@ const AmHeaderputandpick = (props) => {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
                     doc.setdatadocItem(res.data.datas);
+                    doc.setdataSet(res.data.datas)
                     doc.setdialogItem(true)
                 } else {
 
@@ -537,7 +538,7 @@ const AmHeaderputandpick = (props) => {
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
-                        dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
+                        dataSource={doc.dataSet != 0 ? doc.dataSet : []}
                         selectionDefault={doc.dataSourceItemTB}         
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
