@@ -164,6 +164,8 @@ const AmSearchDocumentV2 = props => {
         } else {
           res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
+      } else {
+        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
       }
 
     });
