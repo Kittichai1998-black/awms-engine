@@ -11,6 +11,7 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
+import AmToolTip from "./AmToolTip";
 import PropTypes from "prop-types";
 // import SearchIcon from '@material-ui/icons/Search';
 import styled from "styled-components";
@@ -33,6 +34,7 @@ import { useTranslation } from 'react-i18next'
 import ToListTree from './function/ToListTree';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import PublishIcon from '@material-ui/icons/Publish';
+import ListAlt from "@material-ui/icons/ListAlt";
 import _ from "lodash";
 const Axios = new apicall();
 
@@ -90,6 +92,28 @@ const BtnReceive = withStyles(theme => ({
                 {'Receive'}
             </AmButton>
         </>
+    );
+});
+const IconBtn = withStyles(theme => ({
+    iconButton: {
+        padding: 2,
+    },
+    fontSizeSmall: {
+        fontSize: 30
+    }
+
+}))(props => {
+    const { classes, onHandleClick, ...other } = props;
+    return (
+        <div><AmToolTip title={"List Pallet"} placement={"top"}>
+            <IconButton
+                className={classes.iconButton}
+                onClick={onHandleClick}
+                {...other}>
+                <ListAlt color="primary" className={classes.fontSizeSmall} />
+            </IconButton>
+        </AmToolTip>
+        </div>
     );
 });
 const DialogTitle = withStyles(theme => ({
@@ -508,6 +532,7 @@ const BtnAddPallet = (props) => {
                         onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, showComponent.field, null, event)}
                     //onChangeV2={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                     />
+                     
                     <AmCheckPalletForReceive dataDocument={dataDocument.document} returnResult={(data) => showPalletSelect(data, showComponent.field)} />
                     <AmScanQRbyCamera returnResult={(data) => showRes(data, showComponent.field)} />
                 </div>
@@ -515,7 +540,7 @@ const BtnAddPallet = (props) => {
         } else {
             return null;
         }
-    }
+    } 
     const showRes = (data, field) => {
         if (data) {
             let ele = document.getElementById(field);
@@ -701,56 +726,8 @@ const BtnAddPallet = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // if (field === "baseCode") {
-        //     CheckBaseSTO(value);
-        // }
-    };
-    // const CheckBaseSTO = (val) => {
-    //     Axios.get(window.apipath + "/v2/GetInfoBaseSTOAPI?baseCode=" + val).then((res) => {
-    //         if (res.data != null) {
-    //             if (res.data._result.status === 1) {
-    //                 if (res.data.id) {
-    //                     let getallpacks = findPack(res.data);
-    //                     let checkstatus = _.filter(getallpacks,
-    //                         function (o) {
-    //                             return o.eventStatus === 100 || o.eventStatus === 101 || o.eventStatus === 102;
-    //                         });
-    //                     let detail = null;
-    //                     if (checkstatus.length > 0) {
-    //                         let getinfo = [];
-    //                         checkstatus.map(x => {
-    //                             if (x.Ref2) {
-    //                                 getinfo.push(x.Ref2);
-    //                             }
-    //                         });
-    //                         if (getinfo.length > 0) {
-    //                             let showinfo = getinfo.map(x => {
-    //                                 return <Chip size="small" label={x.Ref2} />
-    //                             });
-    //                             detail = <div style={{ marginTop: '3px' }} className={classes.rootChip}>
-    //                                 <label style={{ color: '#007bff' }}>พาเลทนี้มีสินค้าที่ผูกกับเอกสาร : </label>{showinfo}</div>;
-    //                         } else {
-    //                             detail = <div style={{ marginTop: '3px' }}>
-    //                                 <label style={{ color: '#007bff' }}>พาเลทนี้ยังไม่เคยถูกผูกกับ Project ใดๆ</label></div>;
-    //                         }
-    //                     } else if (checkstatus.length === 0) {
-    //                         detail = <div style={{ marginTop: '3px' }}>
-    //                             <label style={{ color: 'red' }}>พาเลทนี้ไม่สามารถนำมาใช้งานได้ กรุณาเลือกพาเลทใหม่</label>
-    //                         </div>
-    //                     }
-    //                     setShowInfoBase(detail)
-    //                 } else {
-    //                     setShowInfoBase(null)
-    //                 }
-
-    //             } else {
-    //                 alertDialogRenderer(res.data._result.message, "error", true);
-    //             }
-    //         } else {
-    //             alertDialogRenderer(res.data._result.message, "error", true);
-    //         }
-    //     });
-    // }
+        
+    }; 
     const findPack = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
         var findpacks = _.filter(mapstosToTree, function (o) { return o.type === 2; });

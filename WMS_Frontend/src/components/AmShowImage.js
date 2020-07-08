@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 const GlobalBtnBaseCss = withStyles({
     '@global': {
         '.MuiButtonBase-root': {
-            position: 'unset !important',
+            position: 'unset',
         },
     },
 })(() => null);

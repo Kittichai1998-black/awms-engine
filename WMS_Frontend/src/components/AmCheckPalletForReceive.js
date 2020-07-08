@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import IconButton from '@material-ui/core/IconButton';
+import styled from "styled-components";
 import Dialog from '@material-ui/core/Dialog';
 import AmDialogs from './AmDialogs'
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -12,6 +13,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+import Moment from "moment";
 import AmTable from "./AmTable/AmTable";
 import AmButton from "./AmButton";
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -29,9 +31,40 @@ import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import queryString from "query-string";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import ListAlt from "@material-ui/icons/ListAlt";
-
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 const Axios = new apicall();
 
+const FormInline = styled.div`
+
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+// input {
+//     margin: 5px 0 0 0;
+//   }
+const LabelH = styled.label`
+font-weight: bold;
+  width: 110px;
+`;
+
+const InputDiv = styled.div`
+    margin: 5px;
+    @media (max-width: 800px) {
+        margin: 0;
+    }
+`;
 function PalletIcon(props) {
     return (
         <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +77,7 @@ const IconBtn = withStyles(theme => ({
     iconButton: {
         padding: 2,
     },
-    fontSizeSmall:{
+    fontSizeSmall: {
         fontSize: 30
     }
 
@@ -56,39 +89,13 @@ const IconBtn = withStyles(theme => ({
                 className={classes.iconButton}
                 onClick={onHandleClick}
                 {...other}>
-                <ListAlt color="primary" className={classes.fontSizeSmall}/>
+                <ListAlt color="primary" className={classes.fontSizeSmall} />
             </IconButton>
         </AmToolTip>
         </div>
     );
 });
-const getStatus = Status => {
-    return Status.split("\\n").map((y,idx) => (
-      <div key={idx} style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getStatus1(y)}
-      </div>
-    ));
-  };
-const getStatus1 = Status => {
-    if (Status === "NEW") {
-        return <AmStorageObjectStatus key={Status} statusCode={100} />;
-    } else if (Status === "RECEIVING") {
-        return <AmStorageObjectStatus key={Status} statusCode={101} />;
-    } else if (Status === "RECEIVED") {
-        return <AmStorageObjectStatus key={Status} statusCode={102} />;
-    } else if (Status === "AUDITING") {
-        return <AmStorageObjectStatus key={Status} statusCode={103} />;
-    } else if (Status === "AUDITED") {
-        return <AmStorageObjectStatus key={Status} statusCode={104} />;
-    } else if (Status === "PICKING") {
-        return <AmStorageObjectStatus key={Status} statusCode={153} />;
-    } else if (Status === "PICKED") {
-        return <AmStorageObjectStatus key={Status} statusCode={154} />;
-    } else {
-        return null;
-    }
 
-};
 const DialogTitle = withStyles(theme => ({
     root: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -134,66 +141,34 @@ const DialogActions = withStyles(theme => ({
     }
 }))(MuiDialogActions);
 
-const useGetStos = (data) => {
-    const [dataSrc, setDataSrc] = useState([]);
-    const [count, setCount] = useState(0)
-
-    useEffect(() => {
-        let ForCustomer = data.ForCustomer;
-
-        const Query = {
-            queryString: window.apipath + "/v2/SelectDataViwAPI/",
-            t: "r_StorageObjectV2",
-            q: '[{ "f": "For_Customer", "c":"like", "v": "%' + ForCustomer + '%"}]',
-            f: "*",
-            g: "",
-            s: "[{'f':'Pallet','od':'asc'}]",
-            sk: 0,
-            l: "",
-            all: ""
-        };
-        getData(Query);
-    }, []);
-
-    async function getData(qryString) {
-        try {
-            await Axios.get(createQueryString(qryString)).then(res => {
-                if (res.data.datas) {
-                    var resData = DataGenerateMulti(res.data.datas)
-                    setDataSrc(resData);
-                    // console.log(res.data.counts)
-                    setCount(res.data.counts)
-                }
-            });
-
-        } catch (err) {
-            setDataSrc([]);
-        }
+const STOQuery = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "r_StorageObjectV2",
+    q: '',
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: "",
+    all: ""
+};
+const RenderTable = React.memo(({ open, dataSource, columns, onSelectData }) => {
+    if (open && dataSource.length > 0) {
+        return <AmTable
+            columns={columns}
+            dataKey={"ID"}
+            dataSource={dataSource}
+            selection="radio"
+            selectionData={data => onSelectData(data)}
+            rowNumber={true}
+            pageSize={dataSource.length}
+        />
+    } else {
+        return null;
     }
 
-    return { dataSrc, count };
-}
-const getIsHold = value => {
-    return value === false ? <div style={{ textAlign: "center" }}>
-        <Tooltip title="NONE" >
-            <RemoveCircle
-                fontSize="small"
-                style={{ color: "#9E9E9E" }}
-            />
-        </Tooltip>
-    </div> : <div style={{ textAlign: "center" }}>
-            <Tooltip title="HOLD" >
-                <CheckCircle
-                    fontSize="small"
-                    style={{ color: "black" }}
-                />
-            </Tooltip>
-        </div>
-}
-const getOptions = value => {
-    var qryStr = queryString.parse(value);
-    return qryStr["remark"]
-  }
+
+});
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
@@ -207,19 +182,38 @@ const AmCheckPalletForReceive = (props) => {
     const [open, setOpen] = useState(false);
     const [dataSelect, setDataSelect] = useState([]);
 
-    const { dataSrc, count } = useGetStos(dataDocument);
-
+    const [dataSrc, setDataSrc] = useState([]);
     //AlertDialog
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
 
+    // useEffect(() => {
+    //     if (open) {
+    //         let ForCustomer = dataDocument.ForCustomer;
+    //         let newSTOQuery = Clone(STOQuery);
+    //         newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'}]";
+    //         Axios.get(createQueryString(newSTOQuery)).then(res => {
+    //             if (res.data.datas) {
+    //                 setDataSrc(res.data.datas);
+    //             }
+    //         });
+
+    //     }
+    // }, [open])
+    useEffect(() => {
+        if (dataSrc !== null && dataSrc.length > 0)
+            setOpen(true);
+    }, [dataSrc])
     const columnsStorageObject = [
         {
             Header: "Status",
-            // width: 35,
-            Cell: e => getStatus(e.original.Status)
+            width: 100,
+            Cell: e => {
+                let _status = e.original.Status.split("\\n");
+                return <div style={{ textAlign: "center" }}>{getStatus1(_status[0])}</div>
+            }
         },
         {
             Header: "IsHold",
@@ -230,35 +224,10 @@ const AmCheckPalletForReceive = (props) => {
         {
             Header: "Pallet",
             width: 150,
-            Cell: e => getPallet(e.original.Pallet)
+            Cell: e => getPallet(e.original)
         },
-        {
-            Header: "SKU Code",
-            accessor: "SKU_Code",
-            width: 100
-        },
-        {
-            Header: "SKU Name",
-            accessor: "SKU_Name",
-            width: 100
-        },
-        { Header: "Project", accessor: "Project", width: 100 },
-        { Header: "Customer", accessor: "For_Customer", width: 100 },
-        // { Header: "Warehouse", accessor: "Warehouse", width: 80 },
         { Header: "Area", accessor: "Area", width: 100 },
         { Header: "Location", accessor: "Location", width: 100 },
-        { Header: "Lot", accessor: "Lot", width: 80 },
-        {
-            Header: "Qty",
-            accessor: "Qty",
-            width: 70,
-            type: "number"
-        },
-        { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
-        {
-            Header: "Remark", accessor: "Remark", width: 100,
-            Cell: e => getOptions(e.original.Options)
-        },
         {
             Header: "Received Date",
             accessor: "Receive_Time",
@@ -268,7 +237,15 @@ const AmCheckPalletForReceive = (props) => {
         }
     ]
     const handleClickOpen = () => {
-        setOpen(true);
+
+        let ForCustomer = dataDocument.ForCustomer;
+        let newSTOQuery = Clone(STOQuery);
+        newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'}]";
+        Axios.get(createQueryString(newSTOQuery)).then(res => {
+            if (res.data.datas) {
+                setDataSrc(res.data.datas);
+            }
+        });
     };
 
     const handleClose = () => {
@@ -279,13 +256,13 @@ const AmCheckPalletForReceive = (props) => {
 
     const handleConfirm = () => {
         if (dataSelect) {
-            console.log(dataSelect)
             returnResult(dataSelect);
             onHandleClear();
             setOpen(false);
         }
     }
     const onHandleClear = () => {
+        setDataSrc([])
         setDataSelect([])
     }
 
@@ -304,51 +281,151 @@ const AmCheckPalletForReceive = (props) => {
         }
     }, [stateDialog, msgDialog, typeDialog]);
 
+    const getStatus1 = Status => {
+        if (Status === "NEW") {
+            return <AmStorageObjectStatus key={Status} statusCode={100} />;
+        } else if (Status === "RECEIVING") {
+            return <AmStorageObjectStatus key={Status} statusCode={101} />;
+        } else if (Status === "RECEIVED") {
+            return <AmStorageObjectStatus key={Status} statusCode={102} />;
+        } else if (Status === "AUDITING") {
+            return <AmStorageObjectStatus key={Status} statusCode={103} />;
+        } else if (Status === "AUDITED") {
+            return <AmStorageObjectStatus key={Status} statusCode={104} />;
+        } else if (Status === "PICKING") {
+            return <AmStorageObjectStatus key={Status} statusCode={153} />;
+        } else if (Status === "PICKED") {
+            return <AmStorageObjectStatus key={Status} statusCode={154} />;
+        } else {
+            return null;
+        }
+
+    };
     const getPallet = (data) => {
-        let link = window.apipath + "/v2/download/download_image?fileName=" + data + "&token=" + localStorage.getItem("Token");
+        let link = window.apipath + "/v2/download/download_image?fileName=" + data.Pallet + "&token=" + localStorage.getItem("Token");
+        let columnsPack = [
+            {
+                Header: "SKU Code",
+                accessor: "SKU_Code",
+                width: 100
+            },
+            {
+                Header: "SKU Name",
+                accessor: "SKU_Name",
+                width: 100
+            },
+            { Header: "Project", accessor: "Project", width: 100 },
+            { Header: "Lot", accessor: "Lot", width: 80 },
+            {
+                Header: "Qty",
+                accessor: "Qty",
+                width: 70,
+                type: "number"
+            },
+            { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+
+        ]
+        let dataPack = [];
+        let countPack = data.SKU_Code.toString().split("\\n").length;
+        let arraySKUCode = data.SKU_Code != null ? data.SKU_Code.toString().split("\\n") : null;
+        let arraySKUName = data.SKU_Name != null ? data.SKU_Name.toString().split("\\n") : null;
+        let arrayProject = data.Project != null ? data.Project.toString().split("\\n") : null;
+        let arrayLot = data.Lot != null ? data.Lot.toString().split("\\n") : null;
+        let arrayQty = data.Qty != null ? data.Qty.toString().split("\\n") : null;
+        let arrayBase_Unit = data.Base_Unit != null ? data.Base_Unit.toString().split("\\n") : null;
+
+        for (let i = 0; i < countPack; i++) {
+            dataPack.push(
+                {
+                    ID: i,
+                    SKU_Code: arraySKUCode != null && arraySKUCode[i] ? arraySKUCode[i] : "",
+                    SKU_Name: arraySKUName != null && arraySKUName[i] ? arraySKUName[i] : "",
+                    Project: arrayProject != null && arrayProject[i] ? arrayProject[i] : "",
+                    Lot: arrayLot != null && arrayLot[i] ? arrayLot[i] : "",
+                    Qty: arrayQty != null && arrayQty[i] ? arrayQty[i] : "",
+                    Base_Unit: arrayBase_Unit != null && arrayBase_Unit[i] ? arrayBase_Unit[i] : "",
+                }
+            )
+        }
+        let datashow = null;
+        if (dataPack != null && dataPack.length > 0) {
+            datashow = <AmTable
+                columns={columnsPack}
+                dataKey={"ID"}
+                dataSource={dataPack}
+                rowNumber={true}
+                pageSize={dataPack.length}
+            />
+        }
+
+
         return <div style={{ display: "flex", maxWidth: '250px' }}>
-            <label>{data}</label>
+            <label>{data.Pallet}</label>
             <AmShowImage src={link} />
+            <AmRediRectInfo type={"customdialog"}
+                customIcon={<FormatListBulletedIcon fontSize='small' color={"primary"} />}
+                titleDialog="Detail of pallet"
+                bodyDialog={datashow}
+            />
         </div>
     }
-   
+    const getIsHold = value => {
+        return value === false ? <div style={{ textAlign: "center" }}>
+            <Tooltip title="NONE" >
+                <RemoveCircle
+                    fontSize="small"
+                    style={{ color: "#9E9E9E" }}
+                />
+            </Tooltip>
+        </div> : <div style={{ textAlign: "center" }}>
+                <Tooltip title="HOLD" >
+                    <CheckCircle
+                        fontSize="small"
+                        style={{ color: "black" }}
+                    />
+                </Tooltip>
+            </div>
+    }
+    const getOptions = value => {
+        var qryStr = queryString.parse(value);
+        return qryStr["remark"]
+    }
+
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
             <IconBtn onHandleClick={handleClickOpen} />
-            <Dialog
-                fullScreen={fullScreen}
-                aria-labelledby="addpallet-dialog-title"
-                onClose={handleClose}
-                open={open}
-                maxWidth="xl"
-            >
-                <DialogTitle
-                    id="addpallet-dialog-title"
-                    onClose={handleClose}>
-                    {"List Pallet"}
-                </DialogTitle>
-                <DialogContent>
-                    <AmTable
-                        columns={columnsStorageObject}
-                        dataKey={"ID"}
-                        dataSource={dataSrc}
-                        // selectionDefault={defaultSelect}
-                        selection="radio"
-                        selectionData={data => setDataSelect(data)}
-                        rowNumber={true}
-                        pageSize={count}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <AmButton styleType="add" onClick={handleConfirm}>
-                        Confirm
+            {dataSrc !== null && dataSrc.length > 0 ?
+                <Dialog
+                    fullScreen={fullScreen}
+                    aria-labelledby="addpallet-dialog-title"
+                    onClose={handleClose}
+                    open={open}
+                    maxWidth="xl"
+                >
+                    <DialogTitle
+                        id="addpallet-dialog-title"
+                        onClose={handleClose}>
+                        {"List Pallet"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <RenderTable
+                            dataSource={dataSrc}
+                            open={open}
+                            columns={columnsStorageObject}
+                            onSelectData={sel => setDataSelect(sel)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <AmButton styleType="add" onClick={handleConfirm}>
+                            Confirm
                     </AmButton>
-                    <AmButton onClick={handleClose} styleType='delete'>
-                        Cancel
+                        <AmButton onClick={handleClose} styleType='delete'>
+                            Cancel
                     </AmButton>
-                </DialogActions>
-            </Dialog>
+                    </DialogActions>
+                </Dialog>
+                : null}
         </div>
     )
 }

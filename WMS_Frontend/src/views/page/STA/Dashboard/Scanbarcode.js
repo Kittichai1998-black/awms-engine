@@ -1059,7 +1059,7 @@ const Scanbarcode = (props) => {
                                                                             if (value === null || value === undefined) {
                                                                                 setMsgDialog("กรุณาใส่ SI. ")
                                                                                 setStateDialog(true)
-                                                                            } else if (value.lenght < 7) {
+                                                                            } else if (value.lengt < 7) {
                                                                                 setMsgDialog("กรุณา SI. ให้ถูกต้อง")
                                                                                 setStateDialog(true)
                                                                             } else {
@@ -1080,7 +1080,7 @@ const Scanbarcode = (props) => {
                                                                             if (value === null || value === undefined) {
                                                                                 setMsgDialog("กรุณาใส่ Reoder ")
                                                                                 setStateDialog(true)
-                                                                            } else if (value.lenght < 7) {
+                                                                            } else if (value.length < 7) {
                                                                                 setMsgDialog("กรุณา Reoder ให้ถูกต้อง")
                                                                             } else {
                                                                                     updateNoQRData("left", "code", value);
