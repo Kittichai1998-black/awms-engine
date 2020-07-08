@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 const GlobalBtnBaseCss = withStyles({
   '@global': {
       '.MuiButtonBase-root': {
-          position: 'unset !important',
+          position: 'unset',
       },
   },
 })(() => null);
@@ -77,6 +77,8 @@ const AmRedirectInfo = props => {
             close={a => setopenDialogCon(a)}
             bodyDialog={bodyDialog}
             textCancel="Close"
+            styleDialog={{padding: "5px 15px"}}
+            styleDialogTitle={{padding: "4px"}}
           />
         </div>
       ) : type === "custom_button_dialog" ? (

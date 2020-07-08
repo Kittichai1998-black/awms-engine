@@ -59,7 +59,7 @@ const FormInline = styled.div`
 const GlobalBtnBaseCss = withStyles({
   '@global': {
       '.MuiButtonBase-root': {
-          position: 'unset !important',
+          position: 'unset',
       },
   },
 })(() => null);

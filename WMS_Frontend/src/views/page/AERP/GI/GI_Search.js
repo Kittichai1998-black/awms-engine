@@ -55,7 +55,7 @@ const GI_Search = props => {
         filterType: "dropdown",
         dataDropDown: DocumentEventStatus,
         typeDropDown: "normal",
-        widthDD: 150,
+        widthDD: 170,
       },
       Cell: dataRow => GeneratePopup(dataRow.original)
     },

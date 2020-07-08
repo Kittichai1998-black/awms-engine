@@ -153,7 +153,7 @@ const BtnPickingOnFloor = (props) => {
     const [open, setOpen] = useState(false);
     const [listDocItems, setListDocItems] = useState([]);
     const [dataSelect, setDataSelect] = useState([]);
-    const [defaultSelect, setDefaultSelect] = useState();
+    const [defaultSelect, setDefaultSelect] = useState([]);
 
     //AlertDialog
     const [showDialog, setShowDialog] = useState(null);
@@ -222,7 +222,7 @@ const BtnPickingOnFloor = (props) => {
     }
     const onHandleClear = () => {
         setDataSelect([]);
-        setDefaultSelect(null);
+        setDefaultSelect([]);
     }
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);

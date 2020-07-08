@@ -6,6 +6,7 @@ using System.Drawing;
 using QRCoder;
 using System.IO;
 using AMWUtil.Exception;
+using Zen.Barcode;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
 {
@@ -61,7 +62,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 Image image;
                 Zen.Barcode.Code128BarcodeDraw brCode =
                 Zen.Barcode.BarcodeDrawFactory.Code128WithChecksum;
-                image = brCode.Draw(textCode, 60);
+                image = brCode.Draw(textCode, 60, 1);
+                
                 using (MemoryStream ms = new MemoryStream())
                 {
                     image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
