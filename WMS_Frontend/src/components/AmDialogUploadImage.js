@@ -46,7 +46,7 @@ font-weight: bold;
 const GlobalBtnBaseCss = withStyles({
     '@global': {
         '.MuiButtonBase-root': {
-            position: 'unset !important',
+            position: 'unset',
         },
     },
 })(() => null);

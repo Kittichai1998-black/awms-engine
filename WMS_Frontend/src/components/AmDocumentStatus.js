@@ -11,27 +11,29 @@ const styles = theme => ({
   }
 });
 const DocumentEventStatus = [
-  { status: "NEW", code: 10, label: "NEW" },
-  { status: "WORKING", code: 11, label: "WORKING" },
-  { status: "WORKED", code: 12, label: "WORKED" },
-  { status: "REMOVING", code: 21, label: "REMOVING" },
-  { status: "REMOVED", code: 22, label: "REMOVED" },
+  { status: "NEW", code: 10, label: "NEW", labelShort: 'N' },
+  { status: "WORKING", code: 11, label: "WORKING", labelShort: 'WK' },
+  { status: "WORKED", code: 12, label: "WORKED", labelShort: 'WK' },
+  { status: "REMOVING", code: 21, label: "REMOVING", labelShort: 'RM' },
+  { status: "REMOVED", code: 22, label: "REMOVED", labelShort: 'RM' },
   // {status:'REJECTING' , code:23,},
-  { status: "REJECTED", code: 24, label: "REJECTED" },
-  { status: "CLOSING", code: 31, label: "CLOSING" },
-  { status: "CLOSED", code: 32, label: "CLOSED" }
+  { status: "REJECTED", code: 24, label: "REJECTED", labelShort: 'RJ' },
+  { status: "CLOSING", code: 31, label: "CLOSING", labelShort: 'CS' },
+  { status: "CLOSED", code: 32, label: "CLOSED", labelShort: 'CS' }
 ];
 
 const DocumentStatus = props => {
-  const { statusCode, classes, className, styleType, ...other } = props;
+  const { statusCode, classes, className, styleType, labelShort, ...other } = props;
   const result = DocumentEventStatus.filter(row => {
     return row.code === statusCode;
   });
   let strStatus = "";
   let strLabel = "";
+  let strLabelShort = "";
   if (result.length > 0) {
     strStatus = result[0].status;
     strLabel = result[0].label;
+    strLabelShort = result[0].labelShort
   }
   return (
     <div style={{ display: "inline-block" }}>
@@ -40,7 +42,7 @@ const DocumentStatus = props => {
         styleType={strStatus}
         {...other}
       >
-        {strLabel}
+        {labelShort ? strLabelShort : strLabel}
       </IconStatus>
     </div>
   );

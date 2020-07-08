@@ -298,9 +298,14 @@ const AmHeaderputandpick = (props) => {
                     if (valueQtyDocItems[x.ID] !== undefined) {
                         return x.Quantity = valueQtyDocItems[x.ID].recQty
                     } else {
-                        console.log(valueQtyDocItems[x.ID].recQty)
+
                         if (x.Qty && doc.dataSourceItemTB.length === 0) {
-                            return x.Quantity = x.Quantity - x.Qty
+                            let Quantitys = x.Quantity - x.Qty
+                            if (Quantitys > 0) {
+                                return x.Quantity = Quantitys
+                            } else {
+                                return x.Quantity = x.Quantity
+                            }
                         }
                         else if (x.Qty === undefined) {
 

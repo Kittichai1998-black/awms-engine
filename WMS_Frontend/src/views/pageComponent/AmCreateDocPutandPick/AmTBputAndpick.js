@@ -78,15 +78,17 @@ const AmTBputAndpick = (props) => {
                 for (let row in doc.editdata) {
                     checkdata[row] = doc.editdata[row]
                 }
-           
+
             }
+            setdialog(false)
+          
         }
-        setdialog(false)
+        
     }
 
 
     const onChangeEditor = (value, key) => {
-        if (value !== 0) {
+        if (value !== 0 && value > 0) {
             if ( doc.editdata[0]['Quantity'] !== undefined) { 
                 if (value > doc.editdata[0]['Quantity']) {
                     dia.setdailogErr(true)
@@ -96,7 +98,6 @@ const AmTBputAndpick = (props) => {
                 }
             }
             doc.editdata[0][key] = value
-            console.log(doc.dataSourceItemTB)
         } else {
             dia.setdailogErr(true)
             dia.setdailogMsg("Qty < 0")
