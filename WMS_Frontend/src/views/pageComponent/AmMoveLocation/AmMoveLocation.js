@@ -1,37 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { apicall, createQueryString } from '../../components/function/CoreFunction'
-import AmDialogs from "../../components/AmDialogs";
-import AmButton from "../../components/AmButton";
-import AmInput from "../../components/AmInput";
-import AmEditorTable from "../../components/table/AmEditorTable";
-import {
-  indigo,
-  deepPurple,
-  lightBlue,
-  red,
-  grey,
-  green
-} from "@material-ui/core/colors";
+import { apicall, createQueryString, IsEmptyObject } from '../../../components/function/CoreFunction'
+import AmDialogs from "../../../components/AmDialogs";
+import AmEditorTable from "../../../components/table/AmEditorTable";
+import { DataGenerateElePopMove } from "../AmMoveLocation/RanderElePopMove";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
-import AmTable from "../../components/AmTable/AmTable";
+import AmTable from "../../../components/AmTable/AmTable";
 import EditIcon from "@material-ui/icons/MoveToInbox";
 import OfflinePinIcon from "@material-ui/icons/OfflinePin";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import IconButton from "@material-ui/core/IconButton";
-import LabelT from "../../components/AmLabelMultiLanguage";
+import LabelT from "../../../components/AmLabelMultiLanguage";
 import Grid from '@material-ui/core/Grid';
-import Clone from "../../components/function/Clone";
-import AmStorageObjectStatus from "../../components/AmStorageObjectStatus";
+import Clone from "../../../components/function/Clone";
+
 import styled from "styled-components";
 import Tooltip from '@material-ui/core/Tooltip';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import AmDropdown from "../../components/AmDropdown";
-import AmFindPopup from '../../components/AmFindPopup';
-import { QueryGenerate } from '../../components/function/UtilFunction';
+
+import AmFindPopup from '../../../components/AmFindPopup';
+import { QueryGenerate } from '../../../components/function/UtilFunction';
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -90,16 +81,8 @@ const LabelH = {
   fontWeight: "bold",
   width: "200px"
 };
-const LabelDD = {
-  fontWeight: "bold",
-  width: "100px"
-};
-const LabelD = {
-  width: "120px"
-};
 const AmMoveLocation = props => {
   const { t } = useTranslation();
-  const [warehouse, setWarehouse] = useState(1);
   const iniCols = [
     {
       Header: "Code",
@@ -107,7 +90,17 @@ const AmMoveLocation = props => {
       fixed: "left"
 
     }]
-
+  const Query = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "WorkQueueSto",
+    q: '[{ "f": "Warehouse_ID", "c":"=", "v": ' + props.warehouse + '}]',
+    f: "*",
+    g: "",
+    s: '[{"f":"Pallet","od":"asc"}]',
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const LocationQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "AreaLocationMaster",
@@ -119,41 +112,43 @@ const AmMoveLocation = props => {
     l: 100,
     all: ""
   };
-  const WarehouseQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Warehouse",
-    q: "[{ 'f': 'Status', 'c':'!=', 'v': 0}]",
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  //const [query, setQuery] = useState(Query);
+  const [page, setPage] = useState(1);
+  const [iniQuery, setIniQuery] = useState(true);
+  const [dataSource, setDataSource] = useState([])
+  const [dialog, setDialog] = useState(false);
+  const [dialogConfirm, setDialogConfirm] = useState(false);
+  const [dialogDataText, setDialogDataText] = useState("");
+  const [valueDataFindPopup, setValueDataFindPopup] = useState({});
+  const [valueDataRadio, setValueDataRadio] = useState(0);
+  const [count, setCount] = useState(0)
+  const [dialogState, setDialogState] = useState({});
+  const [queryViewData, setQueryViewData] = useState(Query);
   useEffect(() => {
-    getData();
-  }, []);
-  const [queryWorkQueueSto, setQueryWorkQueueSto] = useState();
-  function getData(val, data) {
-    const Query = {
-      queryString: window.apipath + "/v2/SelectDataViwAPI/",
-      t: "WorkQueueSto",
-      q: '[{ "f": "Warehouse_ID", "c":"=", "v": ' + (val !== undefined ? val : warehouse) + '}]',
-      f: "*",
-      g: "",
-      s: '[{"f":"Pallet","od":"asc"}]',
-      sk: 0,
-      l: 100,
-      all: ""
-    };
-    setQueryWorkQueueSto(Query)
-    var queryStr = createQueryString(data != undefined ? data : Query)
+    setQueryViewData(Query)
+  }, [props.warehouse])
+
+
+  useEffect(() => {
+    if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+      getData(queryViewData)
+  }, [queryViewData])
+
+
+
+  useEffect(() => {
+    if (typeof (page) === "number" && !iniQuery) {
+      const queryEdit = JSON.parse(JSON.stringify(queryViewData));
+      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
+      getData(queryEdit)
+    }
+  }, [page])
+
+  function getData(data) {
+    var queryStr = createQueryString(data)
     Axios.get(queryStr).then(res => {
       setDataSource(res.data.datas)
       setCount(res.data.counts)
     });
-
   }
 
   const [editData, setEditData] = useState();
@@ -194,8 +189,6 @@ const AmMoveLocation = props => {
     </Tooltip>;
   }
   const getButtonDoneAndCancel = (e) => {
-
-
     return <div><Tooltip title="Done">
 
       <OfflinePinIcon
@@ -228,27 +221,6 @@ const AmMoveLocation = props => {
 
   }
   const { columns } = useColumns(props.columns);
-  const [page, setPage] = useState(1);
-  const [iniQuery, setIniQuery] = useState(true);
-  const [dataSource, setDataSource] = useState([])
-  const [dialog, setDialog] = useState(false);
-  const [dialogConfirm, setDialogConfirm] = useState(false);
-  const [dialogDataText, setDialogDataText] = useState("");
-  const [valueDataFindPopup, setValueDataFindPopup] = useState({});
-  const [valueDataRadio, setValueDataRadio] = useState(0);
-  const [openSuccess, setOpenSuccess] = useState(false);
-  const [openError, setOpenError] = useState(false);
-  const [textError, setTextError] = useState("");
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    if (typeof (page) === "number" && !iniQuery) {
-      const queryEdit = JSON.parse(JSON.stringify(queryWorkQueueSto));
-      queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
-      //setQueryObj(queryEdit)
-      getData(warehouse, queryEdit)
-    }
-  }, [page])
 
   const RanderEle = () => {
     if (props.dataAdd) {
@@ -265,98 +237,11 @@ const AmMoveLocation = props => {
       });
     }
   };
-  const getStatus = value => {
-    if (value === "RECEIVED") {
-      return <AmStorageObjectStatus key={"RECEIVED"} statusCode={102} />;
-    } else if (value === "AUDITED") {
-      return <AmStorageObjectStatus key={"AUDITED"} statusCode={104} />;
-    } else if (value === "CONSOLIDATED") {
-      return <AmStorageObjectStatus key={"CONSOLIDATED"} statusCode={156} />;
-    } else {
-      return null;
-    }
-  }
+
   const RanderElePopMove = (data) => {
     return (
       <div>
-        <Grid container spacing={3} >
-          <Grid item xs={6} style={{ padding: "5px" }}>
-            <FormInline>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelH}>{"Warehouse : "}</label>
-                </FormInline>
-              </Grid>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelD}>{data.Warehouse}</label>
-                </FormInline>
-              </Grid>
-            </FormInline>
-          </Grid>
-          <Grid item xs={6} style={{ padding: "5px" }}>
-            <FormInline>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelH}>{"Current Area : "}</label>
-                </FormInline>
-              </Grid>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelD}>{data.Area}</label>
-                </FormInline>
-              </Grid>
-            </FormInline>
-          </Grid>
-        </Grid>
-        {/* == */}
-        <Grid container spacing={3}>
-          <Grid item xs={6} style={{ padding: "5px" }}>
-            <FormInline>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelH}>{"Base : "}</label>
-                </FormInline>
-              </Grid>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelD}>{data.Pallet}</label>
-                </FormInline>
-              </Grid>
-            </FormInline>
-          </Grid>
-          <Grid item xs={6} style={{ padding: "5px" }}>
-            <FormInline>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelH}>{"Current Location : "}</label>
-                </FormInline>
-              </Grid>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelD}>{data.Location}</label>
-                </FormInline>
-              </Grid>
-            </FormInline>
-          </Grid>
-        </Grid>
-        {/* == */}
-        <Grid container spacing={3} >
-          <Grid item xs={6} style={{ padding: "5px", paddingBottom: "10px" }}>
-            <FormInline>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelH}>{"Status : "}</label>
-                </FormInline>
-              </Grid>
-              <Grid item xs={6} >
-                <FormInline>
-                  <label style={LabelD}>{getStatus(data.PackStatus)}</label>
-                </FormInline>
-              </Grid>
-            </FormInline>
-          </Grid>
-        </Grid>
+        {DataGenerateElePopMove(data)}
         {getEleCheckbox()}
         {getEleFindLocation()}
 
@@ -420,12 +305,13 @@ const AmMoveLocation = props => {
     Axios.post(window.apipath + "/v2/MoveLocaionAPI", updjson).then(res => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
-          setOpenSuccess(true);
-          getData(warehouse);
+          setDialogState({ type: "success", content: "Success", state: true })
+          if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+            getData(queryViewData)
         } else {
-          setOpenError(true);
-          setTextError(res.data._result.message);
-          getData(warehouse);
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+          if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
+            getData(queryViewData)
         }
       }
 
@@ -475,7 +361,6 @@ const AmMoveLocation = props => {
 
   const onHandledataConfirm = (status, rowdata, type) => {
     if (status) {
-      //setDialogDataText()
       updateDoneAndCancel(type)
     } else {
       setDialogConfirm(false)
@@ -504,55 +389,34 @@ const AmMoveLocation = props => {
   };
 
   const onChangeFilterData = (filterValue) => {
-    var res = queryWorkQueueSto;
+    var res = {};
     filterValue.forEach(fdata => {
-      res = QueryGenerate({ ...queryWorkQueueSto }, fdata.field, fdata.value)
+      if (fdata.customFilter !== undefined) {
+        if (IsEmptyObject(fdata.customFilter)) {
+          res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+        } else {
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+        }
+      } else {
+        res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
+      }
+
     });
-    getData(warehouse, res)
-    //setQueryWorkQueueSto(res)
+
+    if (!IsEmptyObject(res))
+      setQueryViewData(res)
+
+    //getData(res)
+
   }
   return (
     <div>
       <AmDialogs
-        typePopup={"success"}
-        onAccept={e => {
-          setOpenSuccess(e);
-        }}
-        open={openSuccess}
-        content={"Success"}
-      ></AmDialogs>
-      <AmDialogs
-        typePopup={"error"}
-        onAccept={e => {
-          setOpenError(e);
-        }}
-        open={openError}
-        content={textError}
-      ></AmDialogs>
-      <FormInline>
-        {" "}
-        <label style={LabelDD}>
-          {t("Warehouse")} :{" "}
-        </label>
-        <AmDropdown
-          id={"WH"}
-          placeholder={"Select Warehouse..."}
-          fieldDataKey={"ID"}
-          fieldLabel={["Code", "Name"]}
-          labelPattern=" : "
-          width={250}
-          ddlMinWidth={200}
-          zIndex={1000}
-          defaultValue={1}
-          queryApi={WarehouseQuery}
-          onChange={(value, dataObject, inputID, fieldDataKey) =>
-            getData(value)
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
 
-          }
-          ddlType={"normal"}
-        />{" "}
-      </FormInline>
-      <br />
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandlePopupConfirm(status, rowdata)}

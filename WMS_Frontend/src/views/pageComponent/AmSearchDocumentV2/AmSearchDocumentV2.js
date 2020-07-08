@@ -85,10 +85,7 @@ const AmSearchDocumentV2 = props => {
 
   function getData(data) {
     var queryStr = createQueryString(data)
-    //console.log(queryStr)
     Axios.get(queryStr).then(res => {
-      console.log(res.data.datas)
-      // var respone = DataGenerateMulti(res.data.datas)
       setDataSource(res.data.datas)
       setCount(res.data.counts)
     });
@@ -162,7 +159,8 @@ const AmSearchDocumentV2 = props => {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
         } else {
-          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
       } else {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)

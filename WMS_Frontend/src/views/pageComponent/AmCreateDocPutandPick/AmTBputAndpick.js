@@ -97,7 +97,7 @@ const AmTBputAndpick = (props) => {
                     doc.editdata[0][key] = value
                 }
             }
-            doc.editdata[0][key] = value
+            //doc.editdata[0][key] = value
         } else {
             dia.setdailogErr(true)
             dia.setdailogMsg("Qty < 0")
@@ -114,7 +114,7 @@ const AmTBputAndpick = (props) => {
 
     const onSubmitSetItem = () => {
         doc.seteditdata([]);
-        doc.setdataSet(doc.datadocItem)
+        //doc.setdataSet(doc.datadocItem)
         doc.setdialogItem(true)
     }
 
