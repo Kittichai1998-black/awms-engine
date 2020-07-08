@@ -34,8 +34,11 @@ namespace ProjectAERP.Engine.Document
                     throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มีพบเอกสารของ amw_refId : "+ reqVO.amw_refId);
 
 
-                new ClosedDocument().Execute(this.Logger, this.BuVO, doc);
-
+                var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, doc);
+                if(resClosed == null || resClosed.Count() == 0)
+                {
+                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่สามารถปิดเอกสารได้");
+                }
 
                 var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.FirstOrDefault(), this.BuVO);
 
