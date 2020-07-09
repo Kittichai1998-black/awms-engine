@@ -4,7 +4,7 @@ import {
   apicall,
   createQueryString
 } from "../../../components/function/CoreFunction";
-
+import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
@@ -74,7 +74,16 @@ const MoveLocation = props => {
     {
       Header: "Status",
       accessor: "PackStatus",
-      width: 100
+      width: 100,
+      sortable: false,
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: StorageObjectEvenstatusTxt,
+        typeDropDown: "normal",
+        widthDD: 105,
+      }
+
     },
     {
       Header: "Current Area",
@@ -126,8 +135,6 @@ const MoveLocation = props => {
           defaultValue={1}
           queryApi={WarehouseQuery}
           onChange={(value, dataObject, inputID, fieldDataKey) =>
-            //getData(value)
-            //console.log(value)
             setWarehouse(value)
           }
           ddlType={"normal"}
