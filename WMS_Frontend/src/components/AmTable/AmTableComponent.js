@@ -52,7 +52,6 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
     
     useEffect(() => {
         let getColumns = [...Columns];
-        
         if (rowNumber) 
         {
             getColumns.unshift({
@@ -93,6 +92,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
                       return (
                       <input
                           type="radio"
+                          id={"selection_" + ele.original[dataKey]}
                           name="selection"
                           value={ele.data[dataKey]}
                           onChange={e => {
@@ -131,18 +131,15 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
             colStyle:{textAlign:"center"},
             sortable: false,
             Cell: ele => {
-                if(ele.original[dataKey] !== undefined){
-                  let chkSel = selection.selectionValue.find(x=> x[dataKey] === ele.original[dataKey])
-                  
+                if(ele.original[dataKey] !== undefined){                  
                   return (
                     <input
                         id={"selection_" + ele.original[dataKey]}
                         type="checkbox"
                         name="selection"
-                        checked={chkSel !== undefined}
                         value={ele.data[dataKey]}
                         onChange={e => {
-                          if (chkSel === undefined) {
+                          if (e.target.checked) {
                             selection.add({data:ele.original, uniq:dataKey});
                           } else {
                             selection.remove({uniq:dataKey, data:ele.original[dataKey]});
@@ -161,7 +158,20 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
         }
         setColumns([...getColumns]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [Columns, selection.selectionValue, selection.selectAllState, dataSource]);
+      }, [Columns, selection.selectAllState, dataSource]);
+
+    useEffect(() => {
+      selection.selectionValue.forEach(x=> {
+        document.getElementById("selection_"+ x[dataKey]).checked = true;
+      });
+      if(!selection.selectAllState && selection.selectionValue.length === 0){
+        let getDataKey = dataSource.map(res => {return res[dataKey]});
+        getDataKey.forEach(dk => {
+          if(document.getElementById("selection_"+ dk) !== null)
+            document.getElementById("selection_"+ dk).checked = false;
+        });
+      }
+    }, [selection.selectionValue, selection.selectAllState, dataSource])
 
     return columns
 }
@@ -244,7 +254,7 @@ const AmTableComponent = (props) => {
 
     return <TableContainer width={props.width} height={props.height} ref={containerRef}>
           <Table style={props.tableStyle}>
-            {GenerateHeader({columns, props, tableSize})}
+            <GenerateHeader columns={columns} props={props} tableSize={tableSize}/>
             {GenerateRow({columns, props, dataSource})}
             {GenerateFooter({columns, props, dataSource})}
           </Table>
@@ -269,7 +279,7 @@ const GenerateRow = ({columns,props, dataSource}) => {
   </>
 }
 
-const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
+const GenerateCell = React.memo(({columns, data, rowIndex, cellStyle}) => {
     const renderCellText = (columnType, dataRow) => {
         if (columnType.type !== undefined) {
           if (columnType.type === "datetime") {
@@ -327,176 +337,7 @@ const GenerateCell = ({columns, data, rowIndex, cellStyle}) => {
             </TableCell>
         }
     })
-}
-
-const GenerateHeader = ({columns,props, tableSize}) => {
-    const {sort, filter} = useContext(AmTableContext);
-    const cellRef = useRef([])
-    //const [cellSize, setCellSize] = useState([])
-    //const [cellResize, setCellResize] = useState([])
-
-    //const arrLength = columns.length;
-
-    // if (cellRef.current.length !== arrLength) {
-    //   // add or remove refs
-    //     cellRef.current = Array(arrLength).fill().map((_, i) => cellRef.current[i] || createRef());
-    // }
-
-    // useLayoutEffect(() => {
-    //   function updateSize() {
-    //     const arr = [];
-    //     cellRef.current.forEach(e => {
-    //       arr.push(e.current.offsetWidth);
-    //     });
-    //     setCellSize([...arr])
-    //   }
-    //   window.addEventListener('resize', updateSize);
-    //   updateSize();
-    //   return () => window.removeEventListener('resize', updateSize);
-    // }, [cellRef, columns]);
-
-    const SortHeader = propsChild => {
-      const { row, children } = propsChild;
-      const {sortValue, setSort} = sort;
-      if (props.sortable) {
-        if (row.sortable === undefined || row.sortable === true) {
-          let orderBy;
-          var sortValueOwn = sortValue.id === row.accessor ? sortValue : null;
-          return (
-            <div
-              style={{ width: "100%" }}
-              onClick={() => {
-                if (sortValue === undefined || sortValue === null || IsEmptyObject(sortValue)) {
-                  orderBy = {
-                    id: row.accessor,
-                    sortDirection: SortDirection.DESC
-                  };
-                }
-                if (sortValue !== undefined && sortValue !== null && !IsEmptyObject(sortValue)) {
-                  if (row.accessor === sortValue.id) {
-                    orderBy = {
-                      id: row.accessor,
-                      sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC
-                    };
-                  }else{
-                    orderBy = {
-                      id: row.accessor,
-                      sortDirection: SortDirection.DESC
-                    };
-                  }
-                }
-                setSort(orderBy);
-              }}
-            >
-              {children}
-              {sortValueOwn === null || sortValueOwn === undefined ? null : sortValueOwn.sortDirection === SortDirection.DESC ? 
-              (
-                <span>
-                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(0deg)"}}/>
-                </span>
-              ) : (
-                <span>
-                  <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(180deg)"}}/>
-                </span>
-              )}
-            </div>
-          );
-        } else {
-          return <div style={{ width: "100%" }}>{children}</div>;
-        }
-      } else {
-        return <div style={{ width: "100%" }}>{children}</div>;
-      }
-    };
-
-    const onChangeFilter = (field, value, customFilter) => {
-      filter.setFilter({field, value, customFilter})
-    };
-
-    const calculateWidth = (cols) => {
-      let totalWidth = 0;
-      let countNotSet = 0;
-      cols.forEach((x,idx) => {
-        if(x.fixWidth !== undefined){
-          totalWidth += x.fixWidth;
-        }
-        else if(x.width !== undefined){
-          totalWidth += x.width;
-        }
-        else{
-          countNotSet++;
-        }
-      });
-      let cellWidth = tableSize[0] - totalWidth;
-      totalWidth = Math.round(cellWidth/countNotSet);
-      return totalWidth;
-    }
-
-    const RenderTableHeader = () => {
-      let getWidth = 0;
-      const freeWidth = calculateWidth(columns);
-      return columns.map((col, idx) => {
-        if (col.fixed) {
-          let fixedStyle = { };
-          fixedStyle.left = getWidth;
-          getWidth = getWidth + col.fixWidth;
-          return <TableHeaderStickyColumnsCell
-            id={`th_${idx}`}
-            style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}
-            key={idx}
-            rowData={col}
-            ref={cellRef.current[idx]}
-            fixWidth={col.fixWidth}
-          >
-            {col.Header === undefined ? (
-              <SortHeader row={col}></SortHeader>
-            ) : 
-            typeof col.Header === "string"  ? (
-              <SortHeader row={col}>{col.Header}</SortHeader>
-            ) : (
-              <SortHeader row={col}>{col.Header(col)}</SortHeader>
-            )}
-            {props.filterable ? (
-              col.filterable === false ? null : typeof col.Filter === "function" ? 
-                (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
-                <div>
-                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
-                </div>)
-            ) : null}
-          </TableHeaderStickyColumnsCell>
-        }
-        else{
-          return <TableHeaderCell
-            id={`th_${idx}`}
-            style={{ ...col.style, ...props.headerStyle }}
-            key={idx}
-            rowData={col}
-            ref={cellRef.current[idx]}
-            width={col.width === undefined ? freeWidth : col.width}
-            fixWidth={col.fixWidth}
-          >
-            {col.Header === undefined ? (
-              <SortHeader row={col}></SortHeader>
-            ) : 
-            typeof col.Header === "string"  ? (
-              <SortHeader row={col}>{col.Header}</SortHeader>
-            ) : (
-              <SortHeader row={col}>{col.Header(col)}</SortHeader>
-            )}
-            {props.filterable ? (
-              col.filterable === false ? null : typeof col.Filter === "function" ? 
-                (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
-                <div>
-                  <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
-                </div>)
-            ) : null}
-          </TableHeaderCell>
-        }
-      });
-    };
-
-    return <TableHeaderRow>{RenderTableHeader()}</TableHeaderRow>;
-  };
+});
 
 const GenerateFooter = ({columns,props, dataSource}) => {
   let findFooter = columns.filter(x=> x.Footer !== undefined)
@@ -553,5 +394,163 @@ const GenerateFooterCell = (column, props, dataSource, idx) => {
           return <TableCellFooter key={idx} style={{...style}}></TableCellFooter>
     }
 }
+
+
+const GenerateHeader = React.memo(({columns,props, tableSize}) => {
+  const {sort, filter} = useContext(AmTableContext);
+  const cellRef = useRef([])
+  
+  // useEffect(() => {
+  //   console.log("tableSize")
+  // }, [tableSize])
+  // useEffect(() => {
+  //   console.log("columns")
+  // }, [columns])
+  // useEffect(() => {
+  //   console.log("props")
+  // }, [props])
+
+  const SortHeader = propsChild => {
+    const { row, children } = propsChild;
+    const {sortValue, setSort} = sort;
+    if (props.sortable) {
+      if (row.sortable === undefined || row.sortable === true) {
+        let orderBy;
+        var sortValueOwn = sortValue.id === row.accessor ? sortValue : null;
+        return (
+          <div
+            style={{ width: "100%" }}
+            onClick={() => {
+              if (sortValue === undefined || sortValue === null || IsEmptyObject(sortValue)) {
+                orderBy = {
+                  id: row.accessor,
+                  sortDirection: SortDirection.DESC
+                };
+              }
+              if (sortValue !== undefined && sortValue !== null && !IsEmptyObject(sortValue)) {
+                if (row.accessor === sortValue.id) {
+                  orderBy = {
+                    id: row.accessor,
+                    sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC
+                  };
+                }else{
+                  orderBy = {
+                    id: row.accessor,
+                    sortDirection: SortDirection.DESC
+                  };
+                }
+              }
+              setSort(orderBy);
+            }}
+          >
+            {children}
+            {sortValueOwn === null || sortValueOwn === undefined ? null : sortValueOwn.sortDirection === SortDirection.DESC ? 
+            (
+              <span>
+                <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(0deg)"}}/>
+              </span>
+            ) : (
+              <span>
+                <ArrowDropUpIcon style={{transition:"transform 2s", transform: "rotate(180deg)"}}/>
+              </span>
+            )}
+          </div>
+        );
+      } else {
+        return <div style={{ width: "100%" }}>{children}</div>;
+      }
+    } else {
+      return <div style={{ width: "100%" }}>{children}</div>;
+    }
+  };
+
+  const onChangeFilter = (field, value, customFilter) => {
+    filter.setFilter({field, value, customFilter})
+  };
+
+  const calculateWidth = (cols) => {
+    let totalWidth = 0;
+    let countNotSet = 0;
+    cols.forEach((x,idx) => {
+      if(x.fixWidth !== undefined){
+        totalWidth += x.fixWidth;
+      }
+      else if(x.width !== undefined){
+        totalWidth += x.width;
+      }
+      else{
+        countNotSet++;
+      }
+    });
+    let cellWidth = tableSize[0] - totalWidth;
+    totalWidth = Math.round(cellWidth/countNotSet);
+    return totalWidth;
+  }
+
+  const RenderTableHeader = () => {
+    let getWidth = 0;
+    const freeWidth = calculateWidth(columns);
+    return columns.map((col, idx) => {
+      if (col.fixed) {
+        let fixedStyle = { };
+        fixedStyle.left = getWidth;
+        getWidth = getWidth + col.fixWidth;
+        return <TableHeaderStickyColumnsCell
+          id={`th_${idx}`}
+          style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}
+          key={idx}
+          rowData={col}
+          ref={cellRef.current[idx]}
+          fixWidth={col.fixWidth}
+        >
+          {col.Header === undefined ? (
+            <SortHeader row={col}></SortHeader>
+          ) : 
+          typeof col.Header === "string"  ? (
+            <SortHeader row={col}>{col.Header}</SortHeader>
+          ) : (
+            <SortHeader row={col}>{col.Header(col)}</SortHeader>
+          )}
+          {props.filterable ? (
+            col.filterable === false ? null : typeof col.Filter === "function" ? 
+              (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
+              <div>
+                <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+              </div>)
+          ) : null}
+        </TableHeaderStickyColumnsCell>
+      }
+      else{
+        return <TableHeaderCell
+          id={`th_${idx}`}
+          style={{ ...col.style, ...props.headerStyle }}
+          key={idx}
+          rowData={col}
+          ref={cellRef.current[idx]}
+          width={col.width === undefined ? freeWidth : col.width}
+          fixWidth={col.fixWidth}
+        >
+          {col.Header === undefined ? (
+            <SortHeader row={col}></SortHeader>
+          ) : 
+          typeof col.Header === "string"  ? (
+            <SortHeader row={col}>{col.Header}</SortHeader>
+          ) : (
+            <SortHeader row={col}>{col.Header(col)}</SortHeader>
+          )}
+          {props.filterable ? (
+            col.filterable === false ? null : typeof col.Filter === "function" ? 
+              (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
+              <div>
+                <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+              </div>)
+          ) : null}
+        </TableHeaderCell>
+      }
+    });
+  };
+
+  return <TableHeaderRow>{RenderTableHeader()}</TableHeaderRow>;
+});
 
 export default AmTableComponent;
