@@ -28,6 +28,7 @@ const GI_Detail = props => {
   ];
 
   const columns = [
+    { width: 100, Header: "Code", accessor: "SKUMaster_Code" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "advice", Header: "Advice" },
     { width: 130, accessor: "RefID", Header: "Serial" },

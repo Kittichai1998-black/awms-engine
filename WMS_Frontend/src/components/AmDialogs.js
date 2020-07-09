@@ -129,7 +129,8 @@ const AmDialogs = props => {
               paddingInlineStart: "10px",
               paddingRight: "10px",
               width: width ? width : null,
-              height: height ? height : null
+              height: height ? height : null,
+              zIndex: 999999999999999999999
             }
           },
           MuiIconButton: {
@@ -158,7 +159,7 @@ const AmDialogs = props => {
           />
         }
 
-        <Snackbar
+        <Snackbar //style={{ zIndex: 1400 }}
           anchorOrigin={{
             vertical: "top",
             horizontal: "right"
