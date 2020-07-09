@@ -20,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
+import AmDropdown from '../../../components/AmDropdown';
 import AmFindPopup from '../../../components/AmFindPopup';
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 const Axios = new apicall();
@@ -173,7 +173,48 @@ const AmMoveLocation = props => {
           ) : getButtonMove(e)}
         </IconButton>
       })
+
       iniCols.push(...cols)
+      iniCols.forEach(col => {
+        let filterConfig = col.filterConfig;
+        if (filterConfig !== undefined) {
+          if (filterConfig.filterType === "dropdown") {
+            col.Filter = (field, onChangeFilter) => {
+              var checkType = Array.isArray(filterConfig.dataDropDown);
+              if (checkType) {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  data={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                />
+              }
+              else {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  queryApi={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                  ddlType={filterConfig.typeDropDown}
+                />
+              }
+
+            }
+          }
+        }
+      })
       setColumns(iniCols);
     }, [])
 
