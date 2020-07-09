@@ -162,7 +162,8 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
 
     useEffect(() => {
       selection.selectionValue.forEach(x=> {
-        document.getElementById("selection_"+ x[dataKey]).checked = true;
+        if(document.getElementById("selection_"+ x[dataKey]) !== null)
+          document.getElementById("selection_"+ x[dataKey]).checked = true;
       });
       if(!selection.selectAllState && selection.selectionValue.length === 0){
         let getDataKey = dataSource.map(res => {return res[dataKey]});
