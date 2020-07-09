@@ -187,6 +187,7 @@ const BtnPickingOnFloor = (props) => {
             let listStos = []
             for (let [key, value] of Object.entries(dataSelect)) {
                 listStos.push({
+                    rootID: value.rootID,
                     packID: value.id,
                     distoID: value.distoID,
                     docItemID: value.docItemID
