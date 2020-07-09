@@ -28,7 +28,7 @@ const GR_Detail = props => {
   ];
 
   const columns = [
-    // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
+    { width: 100, accessor: "SKUMaster_Code", Header: "Code" },
     { accessor: "SKUMaster_Name", Header: "Item Code" },
     { width: 130, accessor: "advice", Header: "Advice" },
     { width: 130, accessor: "RefID", Header: "Serial" },
@@ -88,7 +88,7 @@ const GR_Detail = props => {
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      // defaultValue: 5,
+      defaultValue: 21,
       required: true,
       customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
@@ -100,7 +100,7 @@ const GR_Detail = props => {
       placeholder: "Select Location",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      // defaultValue: 14,
+      defaultValue: 1540,
       required: false,
     },
     inputTitle: [

@@ -160,6 +160,7 @@ const AmTableSetup = (props) => {
     useEffect(() => {
         if (selectionData !== undefined) {
             selectionData(selection.selectionValue)
+            console.log(selection.selectionValue)
         }
     }, [selection.selectionValue, selectionData])
 
