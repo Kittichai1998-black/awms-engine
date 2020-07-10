@@ -82,12 +82,6 @@ const Bottombar = React.memo((propsBtmbar) => {
 });
 
 const AmTable = (props) => {
-    const [selectionDefault, setSelectionDefault] = useState([])
-
-    useEffect(() => {
-        setSelectionDefault(selectionDefault)
-    }, [selectionDefault])
-
     return <AmTableProvider>
         <AmTableSetup
             dataSource={props.dataSource}
