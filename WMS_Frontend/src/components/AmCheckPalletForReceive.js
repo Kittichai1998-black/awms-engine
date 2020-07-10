@@ -256,10 +256,10 @@ const AmCheckPalletForReceive = (props) => {
 
     const handleConfirm = () => {
         if (dataSelect) {
-            if (dataSelect.AreaTypeID != 30) {
+            if (dataSelect[0].AreaTypeID != 30) {
                 alertDialogRenderer("ขณะนี้พาเลทอยู่ใน ASRS จึงไม่สามารถนำมาใช้งานได้", "warning", true)
             } else {
-                returnResult(dataSelect);
+                returnResult(dataSelect[0]);
                 onHandleClear();
                 setOpen(false);
             }
