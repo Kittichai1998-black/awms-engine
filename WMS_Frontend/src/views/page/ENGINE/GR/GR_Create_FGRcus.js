@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_FGwm = props => {
+const RD_Create_FGRcus = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,11 +31,12 @@ const RD_Create_FGwm = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_WM", valueTexts: "1011", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_RETURN_CUS", valueTexts: "1291", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1, codeTranslate: "Source Warehouse" },
+
+                    { label: "Source Warehouse", type: "dropdown", key: "sourceWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
                     { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
                 ],
                 [
@@ -212,7 +213,7 @@ const RD_Create_FGwm = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1292}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -261,4 +262,4 @@ const RD_Create_FGwm = props => {
         {table}</div>;
 };
 
-export default RD_Create_FGwm;
+export default RD_Create_FGRcus;

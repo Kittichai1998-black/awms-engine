@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_PMwm = props => {
+const RD_Create_FGCustomer = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,11 +31,11 @@ const RD_Create_PMwm = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "PM_TRANSFER_WM", valueTexts: "6011", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1, codeTranslate: "Source Warehouse" },
+                    { label: "Source Warehouse", type: "dropdown", key: "sourceWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
                     { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
                 ],
                 [
@@ -119,7 +119,7 @@ const RD_Create_PMwm = props => {
         },
         {
             Header: "Unit",
-            accessor: "BaseUnitCode",
+            accessor: "UnitTypeCode",
             width: 70,
             style: { textAlign: "center" }
         },
@@ -142,7 +142,7 @@ const RD_Create_PMwm = props => {
         q:
             '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
         f:
-            "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
+            "ID,palletcode,Code,Batch,Name,Quantity,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
         g: "",
         s: "[{'f':'ID','od':'ASC'}]",
         sk: 0,
@@ -155,8 +155,7 @@ const RD_Create_PMwm = props => {
         t: "SKUMaster",
         q:
             '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:
-            "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        f:"ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -166,7 +165,7 @@ const RD_Create_PMwm = props => {
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -212,7 +211,7 @@ const RD_Create_PMwm = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":6011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -239,7 +238,7 @@ const RD_Create_PMwm = props => {
         { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
         { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
         { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
+        { Header: "Unit", accessor: "UnitTypeCode", type: "unitType", codeTranslate: "Unit" }
     ];
 
 
@@ -251,7 +250,7 @@ const RD_Create_PMwm = props => {
         { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
-        { Header: "Unit", accessor: "unitType", width: 90 }
+        { Header: "Unit", accessor: "UnitTypeCode", width: 90 }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
@@ -261,4 +260,4 @@ const RD_Create_PMwm = props => {
         {table}</div>;
 };
 
-export default RD_Create_PMwm;
+export default RD_Create_FGCustomer;
