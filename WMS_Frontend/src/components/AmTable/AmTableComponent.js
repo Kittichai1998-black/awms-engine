@@ -49,8 +49,20 @@ const SortDirection = {
 const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
+
+    useEffect(() => {
+      console.log("Columns")
+    }, [Columns])
+    useEffect(() => {
+      console.log("selection.selectAllState")
+    }, [selection.selectAllState])
+    useEffect(() => {
+      console.log("dataSource")
+    }, [dataSource])
     
     useEffect(() => {
+      
+        console.log("New Columns")
         let getColumns = [...Columns];
         if (rowNumber) 
         {
@@ -516,7 +528,9 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                <Input style={{width:"100%", background:"white"}} 
+                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
+                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderStickyColumnsCell>
@@ -543,7 +557,9 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}} onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                <Input style={{width:"100%", background:"white"}} 
+                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
+                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderCell>
