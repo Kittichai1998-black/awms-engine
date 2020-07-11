@@ -61,6 +61,7 @@ const Create_GR_DR = props => {
                         dochistory={props.history}
                         docItemQuery={DocumentItem}
                         doccolumnEditItem={columnEditItem}
+                        doccolumnEditItemSet={columnEditItemSet}
                         docapiRes={apiRes}
                     />
                 );
@@ -283,6 +284,17 @@ const Create_GR_DR = props => {
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
+
+
+    const columnEditItemSet = [
+        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
+        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
+        //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
+        //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
+    ];
+
 
 
 

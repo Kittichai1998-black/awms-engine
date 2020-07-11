@@ -26,6 +26,7 @@ const AmputAndpick = (props) => {
                 docheaderCreate={props.docheaderCreate}
                 docItemQuery={props.docItemQuery}
                 doccolumnEditItem={props.doccolumnEditItem}
+                doccolumnEditItemSet={props.doccolumnEditItemSet}
                 //docIDCreate={getDocID()}
             >
             </AmHeaderputandpick>

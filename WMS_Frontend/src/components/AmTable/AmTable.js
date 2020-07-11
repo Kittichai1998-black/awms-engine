@@ -6,6 +6,13 @@ import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 
+const IsEmptyObject = (obj) => {
+    if(typeof(obj) === "object")
+        return Object.keys(obj).length === 0 && obj.constructor === Object
+    else
+        return false;
+}
+
 const Topbar = React.memo((propsTopbar) => {
     // console.log(propsTopbar.dataSource)
     if(propsTopbar.customTopControl){
@@ -134,9 +141,14 @@ const AmTableSetup = (props) => {
     }, [props.pageSize])
 
     useEffect(() => {
-        if (sortData !== undefined && sortable)
-            sortData(sort.sortValue)
-        else if(sortData === undefined && sortable){
+        if (sortData !== undefined && sortable && !IsEmptyObject(sort.sortValue)){
+            if(sort.sortValue.send === false){
+                let sortDT = sort.sortValue
+                sortData({id:sortDT.id, sortDirection:sortDT.sortDirection})
+                sortDT.send = true;
+            }
+        }
+        else if(sortData === undefined && sortable && !IsEmptyObject(sort.sortValue)){
             if(sort.sortValue["sortDirection"] !== undefined){
                 if(sort.sortValue["sortDirection"] === "asc"){
                     let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "asc")
@@ -169,12 +181,12 @@ const AmTableSetup = (props) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataSource])
+    
     useEffect(() => {
-        if (selectionData !== undefined) {
+        if (selectionData !== undefined && !IsEmptyObject(selection.selectionValue)) {
             selectionData(selection.selectionValue)
         }
     }, [selection.selectionValue, selectionData])
-
 
     useEffect(() => {
         if(props.clearSelectionChangeData){

@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,8 +18,6 @@ namespace AMWUtil.Logger
         //public FileStream FileLogger { get; set; }
         private string _LogRefID;
         public string LogRefID { get { return this._LogRefID; } }
-        private string _LogName;
-        public string LogName { get { return _LogName; } }
         public string SubServiceName { get; set; }
         private string _ServiceName { get; set; }
         private string _FileName { get; set; }
@@ -26,60 +25,41 @@ namespace AMWUtil.Logger
 
 
 
-        public AMWLogger(string fileName, string logName, string serviceName, bool isLogging = true)
+        public AMWLogger(string fileName, string serviceName, bool isLogging = true)
         {
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
-            this._LogName = logName;
             this._ServiceName = serviceName;
             this._FileName = fileName;
             this._IsLogging = isLogging;
-            //this.FileLogger = File.Open(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-            //this.UpdateLastUse();
-            //this.LogBeginTransaction();
+
         }
-        
 
 
 
+        public static object lockLogWrite = new object();
         public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
             if (!this._IsLogging)
                 return;
 
-            message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
-                                        DateTime.Now,
-                                        this.LogRefID,
-                                        logLV,
-                                        this._ServiceName,
-                                        sourceFile.Split('\\').Last(),
-                                        lineNumber,
-                                        message.Replace("\r", string.Empty).Replace("\n", @"\n"));
-            /*lock (AMWLoggerManager.LogMessagesTMPLock)
+            lock (this)
             {
-                AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this._FileName, message));
-            }*/
-
-            lock (AMWLoggerManager.LogMessagesTMPLockSet)
-                AMWLoggerManager.LogQueueMessagesTMP.Enqueue(this._FileName + "," + message);
-            
-            Task.Run(() =>
-            {
-                lock (AMWLoggerManager.LogMessagesTMPLockWrite)
+                using (var fw = new StreamWriter(this._FileName, true))
                 {
-                    string d = null;
-                    lock (AMWLoggerManager.LogMessagesTMPLockSet)
-                        d = AMWLoggerManager.LogQueueMessagesTMP.Dequeue();
-                    if (d == null)
-                        return;
-                    string[] msg = d.Split(',', 2);
-                    using (var fw = new StreamWriter(msg[0], true))
-                    {
-                        fw.WriteLine(msg[1]);
-                        fw.Flush();
-                    }
+                    message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
+                                            DateTime.Now,
+                                            this.LogRefID,
+                                            logLV,
+                                            this._ServiceName,
+                                            sourceFile.Split('\\').Last(),
+                                            lineNumber,
+                                            message.Replace("\r", string.Empty).Replace("\n", @"\n"));
+                    fw.WriteLine(message);
+                    fw.Flush();
                 }
-                this.Dispose();
-            });
+            }
+
+
         }
 
 
