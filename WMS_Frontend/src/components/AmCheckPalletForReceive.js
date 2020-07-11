@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import IconButton from '@material-ui/core/IconButton';
 import styled from "styled-components";
@@ -169,121 +169,33 @@ const RenderTable = React.memo(({ open, dataSource, columns, onSelectData }) => 
 
 
 });
+
+function AlertDialog(open, setting, onAccept) {
+    if (open && setting) {
+        return <AmDialogs typePopup={setting.type} content={setting.message}
+            onAccept={(e) => onAccept(e)} open={open}></AmDialogs>
+    } else {
+        return null;
+    }
+}
+
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
+        open,
+        close,
         dataDocument,
+        onError,
         returnResult
     } = props;
     const { t } = useTranslation()
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const [open, setOpen] = useState(false);
     const [dataSelect, setDataSelect] = useState([]);
-
     const [dataSrc, setDataSrc] = useState([]);
-    //AlertDialog
-    const [showDialog, setShowDialog] = useState(null);
-    const [stateDialog, setStateDialog] = useState(false);
-    const [msgDialog, setMsgDialog] = useState("");
-    const [typeDialog, setTypeDialog] = useState("");
-
-    // useEffect(() => {
-    //     if (open) {
-    //         let ForCustomer = dataDocument.ForCustomer;
-    //         let newSTOQuery = Clone(STOQuery);
-    //         newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'}]";
-    //         Axios.get(createQueryString(newSTOQuery)).then(res => {
-    //             if (res.data.datas) {
-    //                 setDataSrc(res.data.datas);
-    //             }
-    //         });
-
-    //     }
-    // }, [open])
-    useEffect(() => {
-        if (dataSrc !== null && dataSrc.length > 0)
-            setOpen(true);
-    }, [dataSrc])
-    const columnsStorageObject = [
-        {
-            Header: "Status",
-            width: 100,
-            Cell: e => {
-                let _status = e.original.Status.split("\\n");
-                return <div style={{ textAlign: "center" }}>{getStatus1(_status[0])}</div>
-            }
-        },
-        {
-            Header: "IsHold",
-            accessor: "IsHold",
-            width: 50,
-            Cell: e => getIsHold(e.original.IsHold)
-        },
-        {
-            Header: "Pallet",
-            width: 150,
-            Cell: e => getPallet(e.original)
-        },
-        { Header: "Area", accessor: "Area", width: 100 },
-        { Header: "Location", accessor: "Location", width: 100 },
-        {
-            Header: "Received Date",
-            accessor: "Receive_Time",
-            width: 150,
-            type: "datetime",
-            dateFormat: "DD/MM/YYYY HH:mm"
-        }
-    ]
-    const handleClickOpen = () => {
-
-        let ForCustomer = dataDocument.ForCustomer;
-        let newSTOQuery = Clone(STOQuery);
-        newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'}]";
-        Axios.get(createQueryString(newSTOQuery)).then(res => {
-            if (res.data.datas) {
-                setDataSrc(res.data.datas);
-            }
-        });
-    };
-
-    const handleClose = () => {
-        onHandleClear();
-        setOpen(false);
-    };
-
-
-    const handleConfirm = () => {
-        if (dataSelect) {
-            if (dataSelect[0].AreaTypeID != 30) {
-                alertDialogRenderer("ขณะนี้พาเลทอยู่ใน ASRS จึงไม่สามารถนำมาใช้งานได้", "warning", true)
-            } else {
-                returnResult(dataSelect[0]);
-                onHandleClear();
-                setOpen(false);
-            }
-        }
-    }
-    const onHandleClear = () => {
-        setDataSrc([])
-        setDataSelect([])
-    }
-
-
-    //AlertDialog
-    const alertDialogRenderer = (message, type, state) => {
-        setMsgDialog(message);
-        setTypeDialog(type);
-        setStateDialog(state);
-    }
-    useEffect(() => {
-        if (msgDialog && stateDialog && typeDialog) {
-            setShowDialog(<AmDialogs typePopup={typeDialog} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >);
-        } else {
-            setShowDialog(null);
-        }
-    }, [stateDialog, msgDialog, typeDialog]);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [settingAlert, setSettingAlert] = useState(null);
 
     const getStatus1 = Status => {
         if (Status === "NEW") {
@@ -319,6 +231,7 @@ const AmCheckPalletForReceive = (props) => {
                 width: 100
             },
             { Header: "Project", accessor: "Project", width: 100 },
+            { Header: "Customer", accessor: "ForCustomer", width: 100 },
             { Header: "Lot", accessor: "Lot", width: 80 },
             {
                 Header: "Qty",
@@ -334,6 +247,7 @@ const AmCheckPalletForReceive = (props) => {
         let arraySKUCode = data.SKU_Code != null ? data.SKU_Code.toString().split("\\n") : null;
         let arraySKUName = data.SKU_Name != null ? data.SKU_Name.toString().split("\\n") : null;
         let arrayProject = data.Project != null ? data.Project.toString().split("\\n") : null;
+        let arrayCustomer = data.For_Customer != null ? data.For_Customer.toString().split("\\n") : null;
         let arrayLot = data.Lot != null ? data.Lot.toString().split("\\n") : null;
         let arrayQty = data.Qty != null ? data.Qty.toString().split("\\n") : null;
         let arrayBase_Unit = data.Base_Unit != null ? data.Base_Unit.toString().split("\\n") : null;
@@ -345,6 +259,7 @@ const AmCheckPalletForReceive = (props) => {
                     SKU_Code: arraySKUCode != null && arraySKUCode[i] ? arraySKUCode[i] : "",
                     SKU_Name: arraySKUName != null && arraySKUName[i] ? arraySKUName[i] : "",
                     Project: arrayProject != null && arrayProject[i] ? arrayProject[i] : "",
+                    ForCustomer: arrayCustomer != null && arrayCustomer[i] ? arrayCustomer[i] : "",
                     Lot: arrayLot != null && arrayLot[i] ? arrayLot[i] : "",
                     Qty: arrayQty != null && arrayQty[i] ? arrayQty[i] : "",
                     Base_Unit: arrayBase_Unit != null && arrayBase_Unit[i] ? arrayBase_Unit[i] : "",
@@ -394,42 +309,139 @@ const AmCheckPalletForReceive = (props) => {
         var qryStr = queryString.parse(value);
         return qryStr["remark"]
     }
+    const columnsStorageObject = [
+        {
+            Header: "Status",
+            width: 100,
+            Cell: e => {
+                let _status = e.original.Status.split("\\n");
+                return <div style={{ textAlign: "center" }}>{getStatus1(_status[0])}</div>
+            }
+        },
+        {
+            Header: "IsHold",
+            accessor: "IsHold",
+            width: 50,
+            Cell: e => getIsHold(e.original.IsHold)
+        },
+        {
+            Header: "Pallet",
+            width: 150,
+            Cell: e => getPallet(e.original)
+        },
+        { Header: "Area", accessor: "Area", width: 100 },
+        { Header: "Location", accessor: "Location", width: 100 },
+        {
+            Header: "Received Date",
+            accessor: "Receive_Time",
+            width: 150,
+            type: "datetime",
+            dateFormat: "DD/MM/YYYY HH:mm"
+        }
+    ]
+    useEffect(() => {
+        if (open && dataDocument) {
+            loadData()
+        }
+    }, [open])
+    async function loadData() {
+
+        let ForCustomer = dataDocument.ForCustomer;
+        let Project = dataDocument.Ref2;
+        let newSTOQuery = Clone(STOQuery);
+        newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'},{'f':'Project', 'c':'like','v': '%" + Project + "%'}]";
+        await Axios.get(createQueryString(newSTOQuery)).then(res => {
+            if (res.data._result.status === 1) {
+                if (res.data.counts === 0) {
+                    onHandleClear();
+                    onError("warning", "ไม่พบข้อมูลพาเลท")
+                } else {
+                    setDataSrc(res.data.datas);
+                }
+            } else {
+                onHandleClear();
+                onError("error", res.data._result.message)
+            }
+        });
+    };
+
+    const handleClose = () => {
+        onHandleClear();
+        close(false);
+    };
+
+
+    const handleConfirm = () => {
+        if (dataSelect) {
+            if (dataSelect[0].AreaTypeID != 30) {
+                alertDialogRenderer("warning", "ขณะนี้พาเลทอยู่ใน ASRS จึงไม่สามารถนำมาใช้งานได้")
+            } else {
+                returnResult(dataSelect[0]);
+                // close(false);
+                onHandleClear();
+            }
+        }
+    }
+    const onHandleClear = () => {
+        setDataSrc([])
+        setDataSelect([])
+    }
+    const alertDialogRenderer = (type, message) => {
+        setSettingAlert({ type: type, message: message });
+        setOpenAlert(true)
+    }
+    const onAccept = (data) => {
+        setOpenAlert(data)
+        if (data === false) {
+            setSettingAlert(null)
+        }
+    }
+    const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
 
     return (
         <div>
-            {stateDialog ? showDialog ? showDialog : null : null}
-            <IconBtn onHandleClick={handleClickOpen} />
-            {dataSrc !== null && dataSrc.length > 0 ?
-                <Dialog
-                    fullScreen={fullScreen}
-                    aria-labelledby="addpallet-dialog-title"
-                    onClose={handleClose}
-                    open={open}
-                    maxWidth="xl"
-                >
-                    <DialogTitle
-                        id="addpallet-dialog-title"
-                        onClose={handleClose}>
-                        {"List Pallet"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <RenderTable
+            {/* {stateDialog ? showDialog ? showDialog : null : null} */}
+            {/* <IconBtn onHandleClick={handleClickOpen} /> */}
+            {DialogAlert}
+            <Dialog
+                fullScreen={fullScreen}
+                aria-labelledby="addpallet-dialog-title"
+                onClose={handleClose}
+                open={open}
+                maxWidth="xl"
+            >
+                <DialogTitle
+                    id="addpallet-dialog-title"
+                    onClose={handleClose}>
+                    {"List Pallet"}
+                </DialogTitle>
+                <DialogContent>
+                    {/* <RenderTable
                             dataSource={dataSrc}
                             open={open}
                             columns={columnsStorageObject}
                             onSelectData={sel => setDataSelect(sel)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <AmButton styleType="add" onClick={handleConfirm}>
-                            Confirm
+                        /> */}
+                    <AmTable
+                        columns={columnsStorageObject}
+                        dataKey={"ID"}
+                        dataSource={dataSrc}
+                        selection="radio"
+                        selectionData={data => setDataSelect(data)}
+                        rowNumber={true}
+                        pageSize={dataSrc.length}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <AmButton styleType="add" onClick={handleConfirm}>
+                        Confirm
                     </AmButton>
-                        <AmButton onClick={handleClose} styleType='delete'>
-                            Cancel
+                    <AmButton onClick={handleClose} styleType='delete'>
+                        Cancel
                     </AmButton>
-                    </DialogActions>
-                </Dialog>
-                : null}
+                </DialogActions>
+            </Dialog>
+
         </div>
     )
 }

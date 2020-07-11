@@ -71,7 +71,7 @@ const InputDiv = styled.div`
     }
 `;
 
-function QRIcon(props) {
+function ReceiveIcon(props) {
     return (
         <SvgIcon>
             <path
@@ -87,7 +87,7 @@ const BtnReceive = withStyles(theme => ({
     return (
         <>
             <AmButton className="float-right" styleType="confirm"
-                startIcon={<QRIcon />}
+                startIcon={<ReceiveIcon />}
                 onClick={onHandleClick}>
                 {'Receive'}
             </AmButton>
