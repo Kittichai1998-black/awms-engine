@@ -158,21 +158,23 @@ const AmTableSetup = (props) => {
     }, [filter.filterValue])
 
     useEffect(() => {
+        if (props.selectionDefault !== undefined){
+            if(props.selectionDefault.length > 0 && dataSource.length > 0){
+                if(page > 1 && props.clearSelectionChangeData){
+                    selection.removeAll();
+                }else{
+                    selection.addAll(props.selectionDefault)
+                }
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataSource])
+    useEffect(() => {
         if (selectionData !== undefined) {
             selectionData(selection.selectionValue)
-            console.log(selection.selectionValue)
         }
     }, [selection.selectionValue, selectionData])
 
-    useEffect(() => {
-        if (props.selectionDefault !== undefined){
-            if(props.selectionDefault.length > 0){
-                selection.addAll(props.selectionDefault)
-            }
-        }
-            
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.selectionDefault])
 
     useEffect(() => {
         if(props.clearSelectionChangeData){

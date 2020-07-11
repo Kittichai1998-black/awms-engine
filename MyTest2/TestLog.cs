@@ -1,7 +1,9 @@
 ﻿using AMWUtil.DataAccess;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using Quartz;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,28 +54,34 @@ namespace MyTest2
         [Fact]
         public void Loging()
         {
-            Queue<string> q = new Queue<string>();
-            q.Enqueue("1");
-            q.Enqueue("2");
-            q.Enqueue("3");
-            string a1 = q.Dequeue();
-            q.Enqueue("4");
-            string a2 = q.Dequeue();
-            string a3 = q.Dequeue();
-
             AMWUtil.Logger.AMWLoggerManager.InitInstant(@"D:\logs\{MachineName}\{Date}\", @"{LogName}.{Date}.log");
-            //int ii = 0;
-            for (int x = 1; x <= 1000; x++)
+            DateTime startTime = DateTime.Now;
+            for (int x = 1; x <= 10; x++)
             {
+                int i9 = x;
                 Task.Run(() =>
                 {
-                    string ii = DateTime.Now.Ticks.ToString();
-                    var log1 = AMWUtil.Logger.AMWLoggerManager.GetLogger("TOM12", "ALL");
-                    for (int i = 1; i <= 100; i++)
+                    try
                     {
-                        log1.LogInfo(ii +'.'+ i.ToString("000"));
+                        string ii = i9.ToString("0000");
+                        var log1 = AMWUtil.Logger.AMWLoggerManager.GetLogger("TOM-"+ii, "ALL");
+                        for (int i = 1; i <= 10000; i++)
+                        {
+                            log1.LogInfo(ii + '.' + i.ToString("000"));
+                        }
+                        lock (this)
+                        {
+                            using (StreamWriter sw = new StreamWriter(@"D:\logs\AMW618040\20200711\diff.txt", true))
+                            {
+                                sw.WriteLine((DateTime.Now.Ticks - startTime.Ticks).ToString("#:000:0000"));
+                                sw.Flush();
+                            }
+                        }
                     }
-                    string ii2 = "xx";
+                    catch (Exception ex)
+                    {
+                        this.sysout.WriteLine(ex.Message);
+                    }
                 });
             }
 
