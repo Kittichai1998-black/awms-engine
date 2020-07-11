@@ -29,7 +29,6 @@ import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
-import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
 import AmReceivePallet from '../../components/AmReceivePallet';
 import AmPickingOnFloor from '../../components/AmPickingOnFloor';
 import AmInput from '../../components/AmInput'
@@ -468,27 +467,6 @@ const DocumentView = props => {
     }
   };
 
-
-  const CreateBtnAddPallet = () => {
-    if (eventStatus === 10) {
-      return <BtnAddPallet
-        dataDocument={dataDoc}
-        dataDocItems={data}
-        apiCreate={props.addPalletMapSTO.apiCreate ?? null}
-        columnsDocItems={props.addPalletMapSTO.columnsDocItems}
-        inputHead={props.addPalletMapSTO.inputHead}
-        inputTitle={props.addPalletMapSTO.inputTitle}
-        inputBase={props.addPalletMapSTO.inputBase}
-        // ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
-        ddlArea={props.addPalletMapSTO.ddlArea}
-        ddlLocation={props.addPalletMapSTO.ddlLocation}
-        onSuccessMapping={(data) => ReturnMapping(data)}
-      />
-    }
-    else {
-      return null;
-    }
-  }
   const CreateBtnPicking = () => {
     if (eventStatus === 11) {
       return <AmPickingOnFloor
@@ -677,7 +655,6 @@ const DocumentView = props => {
       <br />
       <br />
       {props.useAddPalletMapSTO ?
-        // CreateBtnAddPallet()
         <>
           <BtnReceive onHandleClick={handleClickOpen}/>
           {renderDialogReceivePallet}
