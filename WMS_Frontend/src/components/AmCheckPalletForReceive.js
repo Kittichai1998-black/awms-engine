@@ -170,15 +170,6 @@ const RenderTable = React.memo(({ open, dataSource, columns, onSelectData }) => 
 
 });
 
-function AlertDialog(open, setting, onAccept) {
-    if (open && setting) {
-        return <AmDialogs typePopup={setting.type} content={setting.message}
-            onAccept={(e) => onAccept(e)} open={open}></AmDialogs>
-    } else {
-        return null;
-    }
-}
-
 const AmCheckPalletForReceive = (props) => {
     const {
         classes,
@@ -354,13 +345,13 @@ const AmCheckPalletForReceive = (props) => {
             if (res.data._result.status === 1) {
                 if (res.data.counts === 0) {
                     onHandleClear();
-                    onError("warning", "ไม่พบข้อมูลพาเลท")
+                    onError(false, "warning", "ไม่พบข้อมูลพาเลท")
                 } else {
                     setDataSrc(res.data.datas);
                 }
             } else {
                 onHandleClear();
-                onError("error", res.data._result.message)
+                onError(false, "error", res.data._result.message)
             }
         });
     };
@@ -374,7 +365,7 @@ const AmCheckPalletForReceive = (props) => {
     const handleConfirm = () => {
         if (dataSelect) {
             if (dataSelect[0].AreaTypeID != 30) {
-                alertDialogRenderer("warning", "ขณะนี้พาเลทอยู่ใน ASRS จึงไม่สามารถนำมาใช้งานได้")
+                onError(true, "warning", "ขณะนี้พาเลทอยู่ใน ASRS จึงไม่สามารถนำมาใช้งานได้")
             } else {
                 returnResult(dataSelect[0]);
                 // close(false);
@@ -386,23 +377,11 @@ const AmCheckPalletForReceive = (props) => {
         setDataSrc([])
         setDataSelect([])
     }
-    const alertDialogRenderer = (type, message) => {
-        setSettingAlert({ type: type, message: message });
-        setOpenAlert(true)
-    }
-    const onAccept = (data) => {
-        setOpenAlert(data)
-        if (data === false) {
-            setSettingAlert(null)
-        }
-    }
-    const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
-
+    
+     
     return (
         <div>
-            {/* {stateDialog ? showDialog ? showDialog : null : null} */}
-            {/* <IconBtn onHandleClick={handleClickOpen} /> */}
-            {DialogAlert}
+             
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"

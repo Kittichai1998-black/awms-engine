@@ -230,7 +230,7 @@ function ListPalletDialog(open, close, dataDocument, onSelectPallet, handleError
             open={open}
             close={(val) => close(val)}
             dataDocument={dataDocument.document}
-            onError={(type,msg)=>handleError(type,msg)}
+            onError={(show, type, msg)=>handleError(show, type,msg)}
             returnResult={(sel) => onSelectPallet(sel)}
         />
     }
@@ -477,8 +477,8 @@ const AmReceivePallet = (props) => {
       const handleOnClose = (val) => {
         setOpenDialogPallet(val);
       }
-      const handleError =(type, message)=>{
-        setOpenDialogPallet(false);
+      const handleError =(show, type, message)=>{
+        setOpenDialogPallet(show);
         alertDialogRenderer(type, message)
       }
     const onSelectPallet =(data)=>{
