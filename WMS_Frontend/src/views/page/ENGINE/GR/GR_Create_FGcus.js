@@ -68,9 +68,9 @@ const RD_Create_FGCustomer = props => {
 
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
+        { Header: "Code", accessor: "skuCode", fixed: "left", width: 100, sortable: true },
+        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Unit", accessor: "unitType", width: 100 }
     ];
 
 
@@ -153,9 +153,8 @@ const RD_Create_FGCustomer = props => {
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "SKUMaster",
-        q:
-            '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:"ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "SKUMasterType_ID", "c":"!=", "v": 50}]',
+        f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -232,25 +231,38 @@ const RD_Create_FGCustomer = props => {
     ];
 
     const columnEdit = [
-        { Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
-        { Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
+        {
+            // search: false,
+            Header: "SKU Item",
+            accessor: "skuCode",
+            type: "findPopUp",
+            queryApi: SKUMaster,
+            fieldLabel: ["skuCode", "skuName"],
+            columsddl: columsFindPopupSKU,
+            related: ["unitType", "skuName", "SKUItems"],
+            fieldDataKey: "Code", // ref กับ accessor
+            defaultValue: "PJAAN04-0024",
+            required: true
+        },
+        //{ Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
+        //{ Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
         { Header: "Batch", accessor: "batch", type: "input", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
         { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
         { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "UnitTypeCode", type: "unitType", codeTranslate: "Unit" }
+        { Header: "Unit", accessor: "unitType", type: "unitType", codeTranslate: "Unit" }
     ];
 
 
     const columns = [
         { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item Code", accessor: "SKUItems" },
-        { Header: "Pallet", accessor: "palletcode", width: 110 },
+        //{ Header: "Pallet", accessor: "palletcode", width: 110 },
         { Header: "Batch", accessor: "batch", width: 100 },
         { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 90 }
+        { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
