@@ -50,19 +50,17 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
 
-    useEffect(() => {
-      console.log("Columns")
-    }, [Columns])
-    useEffect(() => {
-      console.log("selection.selectAllState")
-    }, [selection.selectAllState])
-    useEffect(() => {
-      console.log("dataSource")
-    }, [dataSource])
+    // useEffect(() => {
+    //   console.log("Columns")
+    // }, [Columns])
+    // useEffect(() => {
+    //   console.log("selection.selectAllState")
+    // }, [selection.selectAllState])
+    // useEffect(() => {
+    //   console.log("dataSource")
+    // }, [dataSource])
     
     useEffect(() => {
-      
-        console.log("New Columns")
         let getColumns = [...Columns];
         if (rowNumber) 
         {
@@ -413,16 +411,6 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
   const {sort, filter} = useContext(AmTableContext);
   const cellRef = useRef([])
   
-  // useEffect(() => {
-  //   console.log("tableSize")
-  // }, [tableSize])
-  // useEffect(() => {
-  //   console.log("columns")
-  // }, [columns])
-  // useEffect(() => {
-  //   console.log("props")
-  // }, [props])
-
   const SortHeader = propsChild => {
     const { row, children } = propsChild;
     const {sortValue, setSort} = sort;
@@ -437,19 +425,22 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
               if (sortValue === undefined || sortValue === null || IsEmptyObject(sortValue)) {
                 orderBy = {
                   id: row.accessor,
-                  sortDirection: SortDirection.DESC
+                  sortDirection: SortDirection.DESC,
+                  send:false
                 };
               }
               if (sortValue !== undefined && sortValue !== null && !IsEmptyObject(sortValue)) {
                 if (row.accessor === sortValue.id) {
                   orderBy = {
                     id: row.accessor,
-                    sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC
+                    sortDirection: sortValue.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC,
+                    send:false
                   };
                 }else{
                   orderBy = {
                     id: row.accessor,
-                    sortDirection: SortDirection.DESC
+                    sortDirection: SortDirection.DESC,
+                    send:false
                   };
                 }
               }
