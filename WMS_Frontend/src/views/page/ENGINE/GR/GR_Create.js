@@ -110,7 +110,7 @@ export default props => {
     ];
 
     const columns = [
-        { id: "row", Cell: row => row.index + 1, width: 35 },
+        // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Item Code", accessor: "SKUItems" },
         { Header: "Qty", accessor: "quantity", width: 110 },

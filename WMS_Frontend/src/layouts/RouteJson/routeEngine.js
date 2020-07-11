@@ -115,7 +115,7 @@ const TableV3 = Loadable({
 });
 
 const GR_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create"),
   loading: Loading
 });
 const GR_Detail = Loadable({
@@ -231,105 +231,98 @@ const GR_Create_WIPwm = Loadable({
 });
 
 const ID_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create"),
+  loading: Loading
 });
 
 
 const ID_Create_EMPwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_EMPwm"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_EMPwm"),
+  loading: Loading
 });
 
 const ID_Create_FGcus = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGcus"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGcus"),
+  loading: Loading
 });
 
 const ID_Create_FGwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGwm"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_FGwm"),
+  loading: Loading
 });
 
 const ID_Create_RAWsup = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWsup"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWsup"),
+  loading: Loading
 });
 
 const ID_Create_RAWwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWwm"),
-   loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_RAWwm"),
+  loading: Loading
 });
 
 const ID_Create_STOcus = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOcus"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOcus"),
+  loading: Loading
 });
 
 const ID_Create_STOsup = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOsup"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOsup"),
+  loading: Loading
 });
 
 const ID_Create_STOwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOwm "),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_STOwm "),
+  loading: Loading
 });
 
 const ID_Create_WIPsup = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPsup"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPsup"),
+  loading: Loading
 });
 
 const ID_Create_WIPwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPwm"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Create_WIPwm"),
+  loading: Loading
 });
 const ID_Search = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Search"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Search"),
+  loading: Loading
 });
 
 const ID_Detail = Loadable({
-    loader: () => import("../../views/page/ENGINE/ID/ID_Detail"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/ID/ID_Detail"),
+  loading: Loading
 });
 
 const Create_GR_RD = Loadable({
-    loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR"),
+  loading: Loading
 });
 
 const Create_GR_DR_FGwm = Loadable({
-    loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR _FGwm"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/GRByDR/Create_GR_DR _FGwm"),
+  loading: Loading
 });
 const MoveLocation = Loadable({
-    loader: () => import("../../views/page/ENGINE/MoveLocation"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
+  loading: Loading
+});
+const ReceivePalletByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loading: Loading
 });
 
 
 const routes = [
   { path: "/sto/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/workqueue/done", name: "Done WorkQueue", compoment: DoneWorkQueue, exact: true },
+
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
-    { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
-    { path: "/receive/createFGcus", name: "GR CreateforCus", compoment: GR_Create_Customer, exact: true },
-    { path: "/receive/createFGwm", name: "GR CreateforWM", compoment: GR_Create_WM, exact: true },
-    { path: "/receive/createFGsup", name: "GR CreateforSUP", compoment: GR_Create_SUP, exact: true },
-    { path: "/receive/createFGRcus", name: "GR CreateforSUP", compoment: GR_Create_FGRcus, exact: true },
-    { path: "/receive/createFGRwm", name: "GR CreateforRwm", compoment: GR_Create_FGRwm, exact: true },
-    { path: "/receive/createPMwm", name: "GR CreateforSUP", compoment: GR_Create_PMwm, exact: true },
-    { path: "/receive/createPMsup", name: "GR CreateforRwm", compoment: GR_Create_PMsup, exact: true },
-    { path: "/receive/createRAWwm", name: "GR CreateforSUP", compoment: GR_Create_RAWwm, exact: true },
-    { path: "/receive/createRAWsup", name: "GR CreateforRwm", compoment: GR_Create_RAWsup, exact: true },
-    { path: "/receive/createWIPcus", name: "GR CreateforSUP", compoment: GR_Create_WIPcus, exact: true },
-    { path: "/receive/createWIPwm", name: "GR CreateforSUP", compoment: GR_Create_WIPwm, exact: true },
-   
+  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
@@ -346,21 +339,21 @@ const routes = [
 
 
 
-    { path: "/IssueOrder/create", name: "ID Create", compoment: ID_Create, exact: true },
-    { path: "/IssueOrder/createFGcus", name: "ID_Create_FGcus", compoment: ID_Create_FGcus, exact: true },
-    { path: "/IssueOrder/createFGwm", name: "ID_Create_FGwm", compoment: ID_Create_FGwm, exact: true },
-    { path: "/IssueOrder/createRAWwm", name: "ID_Create_RAWwm", compoment: ID_Create_RAWwm, exact: true },
-    { path: "/IssueOrder/createRAWsup", name: "ID_Create_RAWsup", compoment: ID_Create_RAWsup, exact: true },
-    { path: "/IssueOrder/createSTOcus", name: "ID_Create_STOcus", compoment: ID_Create_STOcus, exact: true },
-    { path: "/IssueOrder/createSTOsup", name: "ID_Create_STOsup", compoment: ID_Create_STOsup, exact: true },
-    { path: "/IssueOrder/createSTOwm", name: "ID_Create_STOwm", compoment: ID_Create_STOwm, exact: true },
-    { path: "/IssueOrder/createWIPsup", name: "ID_Create_WIPsup", compoment: ID_Create_WIPsup, exact: true },
-    { path: "/IssueOrder/createWIPwm", name: "ID_Create_WIPwm", compoment: ID_Create_WIPwm, exact: true },
-    { path: "/IssueOrder/detail", name: "ID View", compoment: ID_Detail, exact: true },
-    { path: "/IssueOrder/search", name: "ID Search", compoment: ID_Search, exact: true },
+  { path: "/IssueOrder/create", name: "ID Create", compoment: ID_Create, exact: true },
+  { path: "/IssueOrder/createFGcus", name: "ID_Create_FGcus", compoment: ID_Create_FGcus, exact: true },
+  { path: "/IssueOrder/createFGwm", name: "ID_Create_FGwm", compoment: ID_Create_FGwm, exact: true },
+  { path: "/IssueOrder/createRAWwm", name: "ID_Create_RAWwm", compoment: ID_Create_RAWwm, exact: true },
+  { path: "/IssueOrder/createRAWsup", name: "ID_Create_RAWsup", compoment: ID_Create_RAWsup, exact: true },
+  { path: "/IssueOrder/createSTOcus", name: "ID_Create_STOcus", compoment: ID_Create_STOcus, exact: true },
+  { path: "/IssueOrder/createSTOsup", name: "ID_Create_STOsup", compoment: ID_Create_STOsup, exact: true },
+  { path: "/IssueOrder/createSTOwm", name: "ID_Create_STOwm", compoment: ID_Create_STOwm, exact: true },
+  { path: "/IssueOrder/createWIPsup", name: "ID_Create_WIPsup", compoment: ID_Create_WIPsup, exact: true },
+  { path: "/IssueOrder/createWIPwm", name: "ID_Create_WIPwm", compoment: ID_Create_WIPwm, exact: true },
+  { path: "/IssueOrder/detail", name: "ID View", compoment: ID_Detail, exact: true },
+  { path: "/IssueOrder/search", name: "ID Search", compoment: ID_Search, exact: true },
 
-    { path: "/grDr/create", name: "Create_GR_RD", compoment: Create_GR_RD, exact: true },
-    { path: "/grDr/createFGwm", name: "Create_GR_RD", compoment: Create_GR_DR_FGwm, exact: true },
+  { path: "/grDr/create", name: "Create_GR_RD", compoment: Create_GR_RD, exact: true },
+  { path: "/grDr/createFGwm", name: "Create_GR_RD", compoment: Create_GR_DR_FGwm, exact: true },
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/test", name: "base1", compoment: Test1, exact: true },
@@ -389,7 +382,7 @@ const routes = [
   { path: "/tpcq", name: "TestProcessQueue ", compoment: TestProcessQueueV2, exact: true },
   { path: "/twmn", name: "TestWaveManagement", compoment: TestWaveManagement, exact: true },
   { path: "/tbid", name: "TableV2", compoment: TableV2, exact: true },// { path: "/dashboard", name: "Dashboard IN/OUT", compoment: dashboard_in_out, exact: true }
-    { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
+  { path: "/tbidV2", name: "TableV2", compoment: TableV3, exact: true }
 ];
 
 export default routes;
