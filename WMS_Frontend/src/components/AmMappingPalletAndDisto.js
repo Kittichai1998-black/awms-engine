@@ -369,9 +369,9 @@ const BtnAddPallet = (props) => {
     };
 
     const onSubmit = () => {
-        console.log(valueQtyDocItems)
-        console.log(valueInput)
-        console.log(dataSelect)
+        // console.log(valueQtyDocItems)
+        // console.log(valueInput)
+        // console.log(dataSelect)
 
         if (valueInput.areaID === undefined ||
             // valueInput.warehouseID === undefined ||
@@ -484,6 +484,7 @@ const BtnAddPallet = (props) => {
     }
 
     const inputDDLComponent = (showComponent, Query, valueDef) => {
+        console.log(valueDef)
         if (showComponent.visible) {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
                 <AmDropdown
@@ -497,9 +498,9 @@ const BtnAddPallet = (props) => {
                     ddlMinWidth={330}
                     zIndex={9999}
                     returnDefaultValue={true}
-                    autoDefaultValue={valueDef ? false : true}
+                    autoDefaultValue={valueDef != undefined ? false : true}
                     // value={valueDef ? valueDef : null}
-                    defaultValue={valueDef ? valueDef : showComponent.defaultValue ? showComponent.defaultValue : null}
+                    defaultValue={valueDef != undefined ? valueDef : showComponent.defaultValue ? showComponent.defaultValue : null}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}

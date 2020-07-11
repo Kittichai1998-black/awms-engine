@@ -5,7 +5,7 @@ import {
   createQueryString
 } from "../../../components/function/CoreFunction";
 import AmRedirectLog from "../../../components/AmRedirectLog";
-import { StorageObjectEvenstatus, StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
+import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { Hold } from "../../../components/Models/Hold";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
