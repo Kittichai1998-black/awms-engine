@@ -96,9 +96,7 @@ const AmputAndpickManage = (props) => {
     }
 
     const CreateDocuments = (CreateData) => {
-        console.log(CreateData)
-        Axios.post(window.apipath + props.docapicreate, CreateData).then((res) => {
-            
+        Axios.post(window.apipath + props.docapicreate, CreateData).then((res) => { 
             if (res.data._result.status) {
                 dia.setdailogMsg("Create Document success Document ID = " + res.data.ID);
                 dia.setdailogSuc(true)
