@@ -69,7 +69,7 @@ const DialogConfirm = props => {
         aria-describedby='alert-dialog-slide-description'
         maxWidth={props.maxWidth ? props.maxWidth : 'md'}
       >
-        <DialogTitle id='alert-dialog-slide-title' style={props.styleDialogTitle}>
+        <DialogTitle id='alert-dialog-slide-title' onClose={handleClose} style={props.styleDialogTitle}>
           {t(props.titleDialog)}
         </DialogTitle>
         <DialogContent style={props.styleDialog} dividers>
