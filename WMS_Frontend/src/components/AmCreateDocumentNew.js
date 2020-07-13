@@ -855,6 +855,7 @@ const AmCreateDocument = (props) => {
             options: null,
             expireDate: null,
             productionDate: null,
+            parentDocumentItemID: null,
             docItemStos: [],
             baseStos: []
         }
@@ -903,7 +904,7 @@ const AmCreateDocument = (props) => {
                 return _docItem
             })
         } else if (props.createDocType === "receive") {
-            doc.receiveItems = dataSource.map(x => {
+            doc.receivedOrderItem = dataSource.map(x => {
                 let _docItem = { ...docItem }
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)

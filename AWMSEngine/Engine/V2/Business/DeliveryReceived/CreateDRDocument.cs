@@ -14,7 +14,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
         public class TReq
         {
-            public long? parentDocumentID;
+            public long? parentDocument_ID;
             public string refID;
             public string ref1;
             public string ref2;
@@ -142,7 +142,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
-                    parentDocumentID = reqVO.parentDocumentID,
+                    parentDocumentID = reqVO.parentDocument_ID,
                     lot = reqVO.lot,
                     batch = reqVO.batch,
                     forCustomerID =
