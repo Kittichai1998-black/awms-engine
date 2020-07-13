@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class GetInfoBaseSTOAPI : BaseAPIService
     {
-        public GetInfoBaseSTOAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetInfoBaseSTOAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         protected override dynamic ExecuteEngineManual()

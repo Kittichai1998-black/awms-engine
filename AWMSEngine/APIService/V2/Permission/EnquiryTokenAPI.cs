@@ -11,7 +11,7 @@ namespace AWMSEngine.APIService.V2.Permission
 {
     public class EnquiryTokenAPI : BaseAPIService
     {
-        public EnquiryTokenAPI(ControllerBase controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
+        public EnquiryTokenAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
         {
         }
 

@@ -8,7 +8,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class ScanMapStoAPI : BaseAPIService
     { 
-        public ScanMapStoAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public ScanMapStoAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         protected override dynamic ExecuteEngineManual()

@@ -11,7 +11,7 @@ namespace AWMSEngine.APIService.V2.Data
 {
     public class SelectDataLogAPI : BaseAPIService
     {
-        public SelectDataLogAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public SelectDataLogAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

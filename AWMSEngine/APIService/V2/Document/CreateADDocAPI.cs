@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.V2.Document
 {
     public class CreateADDocAPI : BaseAPIService
     {
-        public CreateADDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public CreateADDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
