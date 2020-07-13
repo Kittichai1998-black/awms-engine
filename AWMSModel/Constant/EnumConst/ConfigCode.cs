@@ -57,6 +57,14 @@ namespace AWMSModel.Constant.EnumConst
         AFT_Customer_RequireFields,
         /// Path folder images 
         [EnumValueAttribute(ValueString = "PATH_FOLDER_IMAGES")]
-        PATH_FOLDER_IMAGES
+        PATH_FOLDER_IMAGES,
+        [EnumValueAttribute(ValueString = "Noti_Email_Sender")]
+        Noti_Email_Sender,
+        [EnumValueAttribute(ValueString = "Noti_Email_Sender_Password")]
+        Noti_Email_Sender_Password,
+        [EnumValueAttribute(ValueString = "Noti_Email_SMTP_Port")]
+        Noti_Email_SMTP_Port,
+        [EnumValueAttribute(ValueString = "Noti_Email_SMTP_Host")]
+        Noti_Email_SMTP_Host,
     }
 }
