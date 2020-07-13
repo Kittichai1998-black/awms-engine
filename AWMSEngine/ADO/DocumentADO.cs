@@ -103,12 +103,10 @@ namespace AWMSEngine.ADO
                 param.Add("@ref1", doc.Ref1);
                 param.Add("@ref2", doc.Ref2);
                 param.Add("@ref3", doc.Ref3);
+                param.Add("@ref4", doc.Ref4);
 
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
-                param.Add("@batch", doc.Batch);
-                param.Add("@lot", doc.Lot);
-            
-               
+
                 param.Add("@remark", doc.Remark);
                 param.Add("@eventStatus", doc.EventStatus);
                 param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
@@ -143,7 +141,6 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
@@ -161,7 +158,7 @@ namespace AWMSEngine.ADO
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
-            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
+            param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
 
             param.Add("@eventStatus", docItem.EventStatus);
@@ -735,7 +732,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@ID", docItem.ID);
             param.Add("@document_ID", docItem.Document_ID);
-            param.Add("@refDocumentItem_ID", docItem.ParentDocumentItem_ID);
+            param.Add("@ParentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);

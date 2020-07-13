@@ -117,7 +117,7 @@ export default props => {
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
+    const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
     const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return (

@@ -52,7 +52,7 @@ const RD_Create_FGCustomer = props => {
             if (headerCreate.length > 0) {
                 setTable(
                     <AmCreateDocument
-                        addList={addList}
+                        //addList={addList}
                         headerCreate={headerCreate}
                         columns={columns}
                         columnEdit={columnEdit}
@@ -67,71 +67,8 @@ const RD_Create_FGCustomer = props => {
     }, [dataMovementTypeCUS]);
 
 
-    const columsFindPopupSKU = [
-        { Header: "Code", accessor: "skuCode", fixed: "left", width: 100, sortable: true },
-        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
-        { Header: "Unit", accessor: "unitType", width: 100 }
-    ];
 
-
-    const columsFindpopUpPALC = [
-        {
-            Header: "Pallet Code",
-            accessor: "palletcode",
-            width: 110,
-            style: { textAlign: "center" }
-        },
-       
-        {
-            Header: "SI",
-            accessor: "orderNo",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        { Header: "Reorder/Brand", accessor: "SKUItems" },
-        {
-            Header: "Size",
-            accessor: "Size",
-            width: 50
-        },
-        {
-            Header: "Carton No",
-            accessor: "Carton",
-            width: 100,
-            Cell: e => getCarton(e.original)
-        },
-        // { Header: "SKU Code", accessor: 'Code', width: 110 },
-        // { Header: "SKU Name", accessor: 'Name', width: 170 },
-        {
-            Header: "Location",
-            accessor: "LocationCode",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-        // { Header: 'Batch', accessor: 'Batch', width: 100,  style: { textAlign: "center" }  },
-        // { Header: 'Batch', accessor: 'Batch' },
-
-        {
-            Header: "Quantity",
-            accessor: "Quantity",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-        {
-            Header: "Unit",
-            accessor: "UnitTypeCode",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
-        {
-            Header: "Remark",
-            accessor: "remark",
-            width: 110,
-            style: { textAlign: "center" }
-        }
-    ];
-
+   
     const getCarton = value => {
         var qryStr = queryString.parse(value.Options);
         return qryStr["carton_no"];
@@ -173,24 +110,7 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-    const addList = {
-        queryApi: PalletCode,
-        columns: columsFindpopUpPALC,
-        search: [
-            {
-                accessor: "palletcode",
-                placeholder: "Pallet Code"
-            },
-            {
-                accessor: "orderNo",
-                placeholder: "SI"
-            },
-            { accessor: "Code", placeholder: "Reorder" },
-            { accessor: "Size", placeholder: "Size" },
-            { accessor: "LocationCode", placeholder: "Location" },
-            { accessor: "remark", placeholder: "Remark" }
-        ]
-    };
+
 
     const getStatusGI = value => {
         console.log(value);
@@ -219,18 +139,14 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-    const columsFindpopUp = [
-        {
-            Header: "Reorder",
-            accessor: "Code",
-            fixed: "left",
-            width: 130,
-            sortable: true
-        },
-        { Header: "Brand", accessor: "Name", width: 200, sortable: true }
+    const columsFindPopupSKU = [
+        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Unit", accessor: "unitType", width: 50 }
     ];
 
     const columnEdit = [
+        { Header: "Order No.", accessor: "orderNo", type: "input" },
         {
             // search: false,
             Header: "SKU Item",
@@ -244,23 +160,14 @@ const RD_Create_FGCustomer = props => {
             defaultValue: "PJAAN04-0024",
             required: true
         },
-        //{ Header: "Item Code", accessor: "SKUItems", type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["SKUItems"], columsddl: columsFindPopupSKU, codeTranslate: "Item Code", required: true },
-        //{ Header: "Pallet", accessor: "palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
-        { Header: "Batch", accessor: "batch", type: "input", codeTranslate: "Batch" },
-        { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
-        { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "unitType", type: "unitType", codeTranslate: "Unit" }
+        { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
+        { Header: "Unit", accessor: "unitType", type: "text" }
     ];
 
-
     const columns = [
-        { id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Item Code", accessor: "SKUItems" },
-        //{ Header: "Pallet", accessor: "palletcode", width: 110 },
-        { Header: "Batch", accessor: "batch", width: 100 },
-        { Header: "Lot", accessor: "lot", width: 100 },
+        // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
+        { Header: "Item Code", accessor: "SKUItems" },
         { Header: "Qty", accessor: "quantity", width: 110 },
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];
