@@ -40,6 +40,7 @@ const GI_Detail = props => {
   ];
   const columnsDetailSOU = [
     { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+    { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
     { width: 100, accessor: "rootCode", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
