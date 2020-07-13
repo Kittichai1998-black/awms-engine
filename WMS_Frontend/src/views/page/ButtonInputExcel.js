@@ -477,7 +477,7 @@ function Test5(props) {
                 </AmButton>
                 {' - '}
                 <br />
-                <AmButton styleType="dark" style={{ lineHeight: 1.5 }}
+                <AmButton styleType="dark" style={{ lineHeight: 1.5 }} disabled
                     startIcon={<SaveIcon className={classNames(classes.leftIcon)} />}>
                     {'Test dark'}
                 </AmButton>

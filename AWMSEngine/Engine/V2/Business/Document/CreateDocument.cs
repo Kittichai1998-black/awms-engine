@@ -62,6 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string ref1;
             public string ref2;
             public string ref3;
+            public string ref4;
             public List<Item> Items;
             public class Item
             {
@@ -173,9 +174,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
-                DocumentProcessType_ID = reqVO.documentProcessTypeID,
-                Batch = reqVO.batch,
-                Lot = reqVO.lot,
+                DocumentProcessType_ID = reqVO.documentProcessTypeID,          
                 Options = reqVO.options,
                 Remark = reqVO.remark,
 
