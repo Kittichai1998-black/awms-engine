@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 //import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 
@@ -255,18 +255,9 @@ const SKUMaster = props => {
 
   return (
     <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"SKUMaster"}
-        table={"ams_SKUMaster"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
+        sortable={true}
         columnsFilter={columnsFilter}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}

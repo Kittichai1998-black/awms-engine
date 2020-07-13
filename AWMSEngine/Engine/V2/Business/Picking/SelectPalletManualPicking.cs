@@ -173,8 +173,6 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 {
                     docID = x.ID.Value,
                     docCode = x.Code,
-                    lot = x.Lot,
-                    batch = x.Batch,
                     destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
                     pickItems = pickItemList,
                     movement = ADO.DataADO.GetInstant().SelectByID<ams_DocumentProcessType>(x.DocumentProcessType_ID, this.BuVO).Name,

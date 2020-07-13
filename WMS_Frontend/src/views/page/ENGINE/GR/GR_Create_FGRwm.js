@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_FGCustomer = props => {
+const RD_Create_FGRwm = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,11 +31,12 @@ const RD_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_RETURN_WM", valueTexts: "1291", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1, codeTranslate: "Source Warehouse" },
+
+                    { label: "Source Warehouse", type: "dropdown", key: "sourceWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
                     { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
                 ],
                 [
@@ -119,7 +120,7 @@ const RD_Create_FGCustomer = props => {
         },
         {
             Header: "Unit",
-            accessor: "UnitTypeCode",
+            accessor: "BaseUnitCode",
             width: 70,
             style: { textAlign: "center" }
         },
@@ -155,7 +156,8 @@ const RD_Create_FGCustomer = props => {
         t: "SKUMaster",
         q:
             '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:"ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+        f:
+            "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -211,7 +213,7 @@ const RD_Create_FGCustomer = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1291}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -238,7 +240,7 @@ const RD_Create_FGCustomer = props => {
         { Header: "Lot", accessor: "lot", type: "input", codeTranslate: "Lot" },
         { Header: "Order No.", accessor: "orderNo", type: "input", codeTranslate: "Order No." },
         { Header: "Quantity", accessor: "quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "UnitTypeCode", type: "unitType", codeTranslate: "Unit" }
+        { Header: "Unit", accessor: "unitType", type: "text", codeTranslate: "Unit" }
     ];
 
 
@@ -250,7 +252,7 @@ const RD_Create_FGCustomer = props => {
         { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 90 }
+        { Header: "Unit", accessor: "unitType", width: 90 }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
@@ -260,4 +262,4 @@ const RD_Create_FGCustomer = props => {
         {table}</div>;
 };
 
-export default RD_Create_FGCustomer;
+export default RD_Create_FGRwm;

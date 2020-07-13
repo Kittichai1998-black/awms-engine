@@ -9,7 +9,7 @@ import {
 
 const Axios = new apicall();
 
-const RD_Create_PMsup = props => {
+const RD_Create_FGSUP = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
@@ -31,11 +31,12 @@ const RD_Create_PMsup = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "PM_TRANSFER_SUP", valueTexts: "6013", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: " FG_TRANSFER_SUP", valueTexts: "1013", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1, codeTranslate: "Source Warehouse" },
+
+                    { label: "Source Warehouse", type: "dropdown", key: "sourceWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
                     { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
                 ],
                 [
@@ -212,7 +213,7 @@ const RD_Create_PMsup = props => {
     const MovementTypeQuery2 = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":6013}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1013}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -256,9 +257,8 @@ const RD_Create_PMsup = props => {
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
     const apiRes = "/receiveOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
-
     return <div>
         {table}</div>;
 };
 
-export default RD_Create_PMsup;
+export default RD_Create_FGSUP;

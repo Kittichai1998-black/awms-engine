@@ -370,6 +370,7 @@ function ButtonStyle(props) {
         classes,
         className,
         styleType,
+        //disabled = false,
         onClick,
         onMouseDown,
         onMouseUp,

@@ -41,6 +41,7 @@ const GR_Detail = props => {
 
   const columnsDetailSOU = [
     { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+    { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
     { width: 100, accessor: "rootCode", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Pack Code" },
     { accessor: "packName", Header: "Pack Name" },
@@ -66,7 +67,6 @@ const GR_Detail = props => {
   };
 
   const addPalletMapSTO = {
-    apiCreate: '/v2/ScanMapStoFromDocAPI',
     // columnsDocItems: colListDocItems,
     // ddlWarehouse: {
     //   visible: true,
@@ -90,7 +90,7 @@ const GR_Detail = props => {
       fieldDataKey: "ID",
       defaultValue: 21,
       required: true,
-      customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
+      // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
     ddlLocation: {
       visible: true,
@@ -117,14 +117,12 @@ const GR_Detail = props => {
     {
       visible: true,
       field: "baseCode",
-      type: "input",
       name: "Pallet Code",
       placeholder: "Pallet Code",
       maxLength: 10,
-      required: true,
-      validate: /^.+$/,
     },
   }
+  
   //received
   //issued
   return (

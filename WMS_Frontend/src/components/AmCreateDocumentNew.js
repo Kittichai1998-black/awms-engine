@@ -300,8 +300,8 @@ const AmCreateDocument = (props) => {
         else {
             editData[field] = data
         }
-        
-        if (row.related && row.related.length) {
+
+        if (row && row.related && row.related.length) {
             let indexField = row.related.reduce((obj, x) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
@@ -326,7 +326,7 @@ const AmCreateDocument = (props) => {
             }
         }
 
-        if (row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
+        if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
             row.removeRelated.forEach(x => delete editData[x])
         }
 
@@ -855,6 +855,7 @@ const AmCreateDocument = (props) => {
             options: null,
             expireDate: null,
             productionDate: null,
+            parentDocumentItemID: null,
             docItemStos: [],
             baseStos: []
         }
@@ -903,7 +904,7 @@ const AmCreateDocument = (props) => {
                 return _docItem
             })
         } else if (props.createDocType === "receive") {
-            doc.receiveItems = dataSource.map(x => {
+            doc.receivedOrderItem = dataSource.map(x => {
                 let _docItem = { ...docItem }
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)

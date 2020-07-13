@@ -471,7 +471,7 @@ const DropdownComponent = (props) => {
     useEffect(() => {
         if (defaultVal && upreturnDefaultValue) {
             if (valueData) {
-                onChange(defaultVal, valueData, id, fieldDataKey);
+                onChange(valueData[fieldDataKey], valueData, id, fieldDataKey);
             } else {
                 onChange(null, null, id, fieldDataKey);
             }
@@ -488,11 +488,17 @@ const DropdownComponent = (props) => {
 
         if (optionList) {
             if (optionList.length > 0) {
+
                 if (value) {
                     getDefaultByValue(value);
                 }
                 else if (defaultVal) {
-                    getDefaultByValue(defaultVal);
+                    let hasOpt = optionList.some(opt => opt[fieldDataKey] === defaultVal)
+                    if (hasOpt) {
+                        getDefaultByValue(defaultVal);
+                    } else {
+                        getDefaultByValue(null);
+                    }
                 }
                 else if (autoDefaultValue) {
                     getDefaultByValue(null);
