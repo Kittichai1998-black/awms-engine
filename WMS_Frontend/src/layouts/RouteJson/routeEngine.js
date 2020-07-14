@@ -320,7 +320,8 @@ const routes = [
 
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
-  { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+    { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+    { path: "/receive/createCus", name: "GR Create_Cus", compoment: GR_Create_Customer, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
 

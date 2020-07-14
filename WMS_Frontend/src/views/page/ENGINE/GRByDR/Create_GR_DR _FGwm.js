@@ -10,44 +10,94 @@ import {
 const Axios = new apicall();
 
 const Create_GR_DR = props => {
-    const [dataWarehouse, setDataWarehouse] = useState("");
     const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
     const [table, setTable] = useState(null);
+    const [dataDocument, setdataDocument] = useState();
+
 
     useEffect(() => {
-        Axios.get(createQueryString(MovementTypeQuery2)).then(res => {
-            if (res.data.datas) {
-                setDataMovementTypeCUS(res.data.datas[0].Name);
-            }
-        });
-    }, []);
+        var headerCreate = [] 
+        if (dataDocument === undefined) {
+            headerCreate = [
 
-    useEffect(() => {
-        // getURL()
-        if (dataMovementTypeCUS !== "") {
-            var headerCreate = [
-                [{ label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc }],
                 [
-                    { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
+                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "", valueTexts: "1012", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
-                    { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
+                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
+                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "",  codeTranslate: "Des Warehouse" }
                 ],
                 [
-                    { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
+                    { label: "For Customer", type: "labeltext", key: "forCustomerID", valueTexts: "", codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                 ],
+
+                [
+
+                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
+                ]
+
+            ];
+
+        } else {
+            console.log(dataDocument)
+            let DocumentProcessTypeName = dataDocument.DocumentProcessTypeName 
+            let DocumentProcessType_ID = dataDocument.DocumentProcessType_ID
+            let SouCustomerName = dataDocument.SouCustomerName
+            let Sou_Customer_ID = dataDocument.Sou_Customer_ID
+            let SouWarehouseName = dataDocument.SouWarehouseName
+            let Sou_Warehouse_ID = dataDocument.Sou_Warehouse_ID
+            let SouSupplierName = dataDocument.SouSupplierName
+            let Sou_Supplier_ID = dataDocument.Sou_Supplier_ID
+            let DesWarehouseName = dataDocument.DesWarehouseName
+            let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
+            let ForCustomerName = dataDocument.ForCustomerName
+            let For_Customer_ID = dataDocument.For_Customer_ID
+
+            let Source;
+            if (SouWarehouseName !== null) {
+                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
+            } else if (SouCustomerName !== null) {
+                Source = { label: "Source Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
+            } else if (SouSupplierName !== null) {
+                Source = { label: "Source Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
+
+            } else {
+                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: '', valueTexts: '', codeTranslate: "Source Warehouse" }
+            }
+
+            headerCreate = [
+
+                [
+                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                ],
+                [
+                    { label: "Process Type", type: "labeltext", key: "movementTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
+                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                ],
+                [
+                    Source,
+                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
+                ],
+                [
+                    { label: "For Customer", type: "labeltext", key: "forCustomerID", texts: ForCustomerName, valueTexts: For_Customer_ID, codeTranslate: "For Customer" },
+                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
+                ],
+
                 [
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
             ];
+
+        }
+
 
             if (headerCreate.length > 0) {
                 setTable(
@@ -58,7 +108,9 @@ const Create_GR_DR = props => {
                         doccolumnEdit={columnEdit}
                         docapicreate={apicreate}
                         doccreateDocType={"putAway"}
+                        doctypeDocNo={1011}
                         dochistory={props.history}
+                        onChangeDoument={(e) => { setdataDocument(e) }}
                         docItemQuery={DocumentItem}
                         doccolumnEditItem={columnEditItem}
                         doccolumnEditItemSet={columnEditItemSet}
@@ -66,19 +118,15 @@ const Create_GR_DR = props => {
                     />
                 );
             }
-        }
-    }, [dataMovementTypeCUS]);
+        
+    }, [dataDocument]);
 
     const columsDoc = [
         { Header: "Code", accessor: "Code" }
     ]
 
 
-    const columsFindPopupSKU = [
-        { Header: "Code", accessor: "Code", fixed: "left", width: 100, sortable: true },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true },
-        { Header: "Unit", accessor: "UnitTypeCode", width: 100 }
-    ];
+
 
 
     const columsFindpopUpPALC = [
@@ -115,8 +163,7 @@ const Create_GR_DR = props => {
             width: 90,
             style: { textAlign: "center" }
         },
-        // { Header: 'Batch', accessor: 'Batch', width: 100,  style: { textAlign: "center" }  },
-        // { Header: 'Batch', accessor: 'Batch' },
+
 
         {
             Header: "Quantity",
@@ -157,19 +204,7 @@ const Create_GR_DR = props => {
         all: ""
     };
 
-    const SKUMaster = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "SKUMaster",
-        q:
-            '[{ "f": "Status", "c":"<", "v": 2}]',
-        f:
-            "ID,Code,Name,UnitTypeCode,ID as SKUID,concat(Code, ' : ' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
@@ -183,28 +218,6 @@ const Create_GR_DR = props => {
     };
 
 
-    const addList = {
-        queryApi: PalletCode,
-        columns: columsFindpopUpPALC,
-        search: [
-            {
-                accessor: "palletcode",
-                placeholder: "Pallet Code"
-            },
-            {
-                accessor: "OrderNo",
-                placeholder: "SI"
-            },
-            { accessor: "Code", placeholder: "Reorder" },
-            { accessor: "Size", placeholder: "Size" },
-            { accessor: "LocationCode", placeholder: "Location" },
-            { accessor: "remark", placeholder: "Remark" }
-        ]
-    };
-
-    const getStatusGI = value => {
-        console.log(value);
-    };
     const CustomerQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Customer",
@@ -232,7 +245,7 @@ const Create_GR_DR = props => {
     const DocumentDR = {
         queryString: window.apipath + "/v2/SelectDataTrxAPI/",
         t: "Document",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011},{ "f": "DocumentProcessType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

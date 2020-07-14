@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string forCustomerCode;
             public string batch;
             public string lot;
-            public DocumentProcessTypeID movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -168,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     docTypeId = DocumentTypeID.DELIVERY_RECEIVED,
                     eventStatus = reqVO.eventStatus,
-                    documentProcessTypeID = reqVO.movementTypeID,
+                    documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.receivedOrderItem.Select(
