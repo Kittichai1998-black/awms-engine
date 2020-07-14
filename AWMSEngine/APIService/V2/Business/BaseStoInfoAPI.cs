@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class BaseStoInfoAPI : BaseAPIService
     {
-        public BaseStoInfoAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public BaseStoInfoAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

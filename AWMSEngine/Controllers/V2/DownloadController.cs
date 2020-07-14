@@ -11,17 +11,18 @@ using AMWUtil.PropertyFile;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net;
+using Microsoft.AspNetCore.SignalR;
+using AWMSEngine.HubService;
+using DinkToPdf.Contracts;
 
 namespace AWMSEngine.Controllers.V2
 {
     [Route("download")]
     [ApiController]
-    public class BaseDownloadController : ControllerBase
+    public class DownloadController : BaseController
     {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-        public BaseDownloadController(IWebHostEnvironment hostingEnvironment)
+        public DownloadController(IHubContext<CommonMessageHub> commonMsgHub, IWebHostEnvironment hostingEnvironment, IConverter converter) : base(commonMsgHub, hostingEnvironment, converter)
         {
-            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet("get_log")]

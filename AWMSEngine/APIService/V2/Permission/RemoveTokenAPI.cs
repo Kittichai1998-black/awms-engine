@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine.V2.General;
+﻿using AWMSEngine.Controllers.V2;
+using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -12,7 +13,7 @@ namespace AWMSEngine.APIService.V2.Permission
 {
     public class RemoveTokenAPI : BaseAPIService
     {
-        public RemoveTokenAPI(ControllerBase controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
+        public RemoveTokenAPI(BaseController controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
         {
         }
 

@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.V2.ASRS
     public class GetLocationInfoAPI : BaseAPIService
     {
 
-        public GetLocationInfoAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetLocationInfoAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

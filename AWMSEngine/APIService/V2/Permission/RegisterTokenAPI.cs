@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.V2.Permission
 {
     public class RegisterTokenAPI : BaseAPIService
     {
-        public RegisterTokenAPI(ControllerBase controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
+        public RegisterTokenAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
         {
         }
 

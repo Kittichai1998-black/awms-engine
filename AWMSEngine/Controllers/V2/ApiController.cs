@@ -8,6 +8,7 @@ using AMWUtil.Common;
 using AWMSEngine.HubService;
 using AWMSModel.Criteria;
 using DinkToPdf.Contracts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -16,13 +17,10 @@ namespace AWMSEngine.Controllers.V2
 {
     [Route("v2")]
     [ApiController]
-    public class BaseV2Controller : ControllerBase
+    public class ApiController : BaseController
     {
-        public readonly IHubContext<CommonMessageHub> HubService;
-
-        public BaseV2Controller(IHubContext<CommonMessageHub> hubContext)
+        public ApiController(IHubContext<CommonMessageHub> commonMsgHub, IWebHostEnvironment hostingEnvironment, IConverter converter) : base(commonMsgHub, hostingEnvironment, converter)
         {
-            this.HubService = hubContext;
         }
 
         [HttpGet("time")]

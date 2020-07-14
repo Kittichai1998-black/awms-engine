@@ -8,24 +8,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AWMSModel.Constant.StringConst;
 using AMWUtil.PropertyFile;
+using Microsoft.AspNetCore.SignalR;
+using AWMSEngine.HubService;
+using DinkToPdf.Contracts;
 
 namespace AWMSEngine.Controllers.V2
 {
     [Route("v2/backoffice")]
     [ApiController]
-    public class BaseV2BackOfficeController : ControllerBase
+    public class BackOfficeController : BaseController
     {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-        public BaseV2BackOfficeController(IWebHostEnvironment hostingEnvironment)
+        public BackOfficeController(IHubContext<CommonMessageHub> commonMsgHub, IWebHostEnvironment hostingEnvironment, IConverter converter) : base(commonMsgHub, hostingEnvironment, converter)
         {
-            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet("info")]
         public dynamic info()
         {
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            string rootDir = _hostingEnvironment.WebRootPath ?? _hostingEnvironment.ContentRootPath;
+            string rootDir = HostingEnvironment.WebRootPath ?? HostingEnvironment.ContentRootPath;
             var dllNames = Directory.GetFiles(rootDir);
             List<dynamic> dllInfos = new List<dynamic>();
             foreach (var dllName in dllNames)
