@@ -55,5 +55,14 @@ namespace AWMSEngine.ADO
                 }, buVO);
             return notiPost;
         }
+        public List<amt_NotifyPost> GetNotifyPostByUserID(int userId, int? limit, long? skip, VOCriteria buVO)
+        {
+            var param = new Dapper.DynamicParameters();
+            param.Add("userId", userId);
+            param.Add("l", limit);
+            param.Add("sk", skip);
+            var notiPost = DataADO.GetInstant().QuerySP<amt_NotifyPost>("SP_GET_NOTIFY", param, buVO);
+            return notiPost;
+        }
     }
 }
