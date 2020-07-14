@@ -6,7 +6,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class UpdateIssuedPickingManualAPI : BaseAPIService
     {
-        public UpdateIssuedPickingManualAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public UpdateIssuedPickingManualAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

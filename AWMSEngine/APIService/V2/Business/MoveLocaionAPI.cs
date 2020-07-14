@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class MoveLocaionAPI : BaseAPIService
     {
-        public MoveLocaionAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public MoveLocaionAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
      

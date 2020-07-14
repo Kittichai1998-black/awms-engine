@@ -5,7 +5,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class RejectedLDDocAPI : BaseAPIService
     {
-        public RejectedLDDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public RejectedLDDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

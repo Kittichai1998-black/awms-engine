@@ -10,9 +10,9 @@ namespace AWMSEngine.APIService
         Result _result { get; set; }
         public class Result
         {
-            int status;
-            string code;
-            string message;
+            public int status;
+            public string code;
+            public string message;
         }
     }
 }

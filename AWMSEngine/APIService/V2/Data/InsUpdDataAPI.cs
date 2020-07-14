@@ -5,7 +5,7 @@ namespace AWMSEngine.APIService.V2.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
-        public InsUpdDataAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public InsUpdDataAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

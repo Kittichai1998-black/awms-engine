@@ -178,6 +178,8 @@ const AmMasterData = (props) => {
             return;
     });
 
+    console.log(props.columnsFilter)
+
     const { columns, editData, removeData } = useColumns(props.columns);
     const [updateData, setUpdateData] = useState();
     const [dialogState, setDialogState] = useState({});
@@ -186,6 +188,8 @@ const AmMasterData = (props) => {
     const [editorColumns, setEditorColumns] = useState(props.dataEdit);
     const { dataSource, count } = useQueryData(queryObj);
     const [popupTitle, setPopupTitle] = useState();
+    const [sort, setSort] = useState({});
+
     const updateRow = (tableUpd, update, url) => {
         const updateData = (table, data) => {
             let updJson = {
@@ -212,6 +216,13 @@ const AmMasterData = (props) => {
     }
 
     useEffect(() => {
+        if(!IsEmptyObject(sort)){
+            queryObj.s = '[{"f":"' + sort.id + '","od":"' + sort.sortDirection + '"}]';
+            setQueryObj({...queryObj})
+        }
+    }, [sort])
+
+    useEffect(() => {
         setPopupTitle("Remove")
         setUpdateData(removeData)
         setEditorColumns([{
@@ -227,7 +238,6 @@ const AmMasterData = (props) => {
     }, [editData])
 
     useEffect(() => {
-        console.log(page)
         if (typeof (page) === "number" && !iniQuery) {
             const queryEdit = JSON.parse(JSON.stringify(queryObj));
             queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
@@ -283,6 +293,11 @@ const AmMasterData = (props) => {
         </FormInline>
         <div style={{ clear: "both" }}></div>
         <AmTable
+            sortable={props.sortable ? props.sortable : false}
+            sortData={(dt) => {
+                if(props.sortable)
+                    setSort(dt)
+            }}
             columns={columns}
             dataKey={props.codeInclude ? "Code" : "ID"}
             dataSource={dataSource}

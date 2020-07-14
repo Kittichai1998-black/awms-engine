@@ -5,16 +5,24 @@ using System.Threading.Tasks;
 using System.Web;
 using AMWUtil.Common;
 using AWMSEngine.APIService.V2.Permission;
+using AWMSEngine.HubService;
+using DinkToPdf.Contracts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 namespace AWMSEngine.Controllers.V2
 {
     [Route("v2/token")]
     [ApiController]
-    public class BaseV2TokenController : Controller
+    public class TokenController : BaseController
     {
+        public TokenController(IHubContext<CommonMessageHub> commonMsgHub, IWebHostEnvironment hostingEnvironment, IConverter converter) : base(commonMsgHub, hostingEnvironment, converter)
+        {
+        }
+
         [HttpPost("register")]  
         public dynamic RegisterToken([FromBody] dynamic request)
         {

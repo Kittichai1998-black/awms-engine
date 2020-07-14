@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace AWMSEngine.APIService.V2.Wave
 {
     public class DoneDistoWaveSeqAPI : BaseAPIService
     {
-        public DoneDistoWaveSeqAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneDistoWaveSeqAPI(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

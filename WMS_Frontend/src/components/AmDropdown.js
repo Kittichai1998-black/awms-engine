@@ -463,7 +463,6 @@ const DropdownComponent = (props) => {
 
     useEffect(() => {
         if (defaultVal && upreturnDefaultValue) {
-            console.log(valueData)
             if (valueData) {
                 onChange(valueData[fieldDataKey], valueData, id, fieldDataKey);
             } else {

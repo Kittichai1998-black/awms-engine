@@ -34,7 +34,8 @@ import { useTranslation } from 'react-i18next'
 import ToListTree from './function/ToListTree';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import PublishIcon from '@material-ui/icons/Publish';
-import ListAlt from "@material-ui/icons/ListAlt";
+import ListAlt from '@material-ui/icons/ListAlt';
+import DeleteForever from '@material-ui/icons/DeleteForever';
 import _ from "lodash";
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 const Axios = new apicall();
@@ -58,7 +59,9 @@ const styles = (theme) => ({
         fontWeight: 'bold',
         width: '110px'
     },
-
+    fontSizeSmall: {
+        fontSize: 30
+    }
 });
 const FormInline = styled.div`
 
@@ -90,14 +93,14 @@ const IconBtn = withStyles(theme => ({
     }
 
 }))(props => {
-    const { classes, onHandleClick, ...other } = props;
+    const { classes, title, onHandleClick, children, ...other } = props;
     return (
-        <div><AmToolTip title={"List Pallet"} placement={"top"}>
+        <div><AmToolTip title={title} placement={"top"}>
             <IconButton
                 className={classes.iconButton}
                 onClick={onHandleClick}
                 {...other}>
-                <ListAlt color="primary" className={classes.fontSizeSmall} />
+                {children}
             </IconButton>
         </AmToolTip>
         </div>
@@ -169,24 +172,10 @@ const LocationMasterQuery = {
     l: 100,
     all: "",
 }
-// function TableContent(open, columns, dataTable, onSelect) {
-//     if (open && columns && dataTable) {
-//         console.log("run table")
-//         return <AmTable
-//             columns={columns}
-//             dataKey={"ID"}
-//             dataSource={dataTable.listDocItems}
-//             selectionDefault={dataTable.defaultSelect}
-//             selection="checkbox"
-//             selectionData={data => onSelect(data)}
-//             rowNumber={true}
-//             pageSize={dataTable.listDocItems.length}
-//         />
-//     }
-// }
+
 function TitleContent(open, settingField, dataDoc) {
     if (open && settingField && settingField.length > 0) {
-        return settingField.map((x,i) => {
+        return settingField.map((x, i) => {
             let returnVal = "";
             if (x.customShow) {
                 returnVal = x.customShow(dataDoc);
@@ -230,7 +219,7 @@ function ListPalletDialog(open, close, dataDocument, onSelectPallet, handleError
             open={open}
             close={(val) => close(val)}
             dataDocument={dataDocument.document}
-            onError={(show, type, msg)=>handleError(show, type,msg)}
+            onError={(show, type, msg) => handleError(show, type, msg)}
             returnResult={(sel) => onSelectPallet(sel)}
         />
     }
@@ -304,11 +293,12 @@ const AmReceivePallet = (props) => {
     const [areaSel, setAreaSel] = useState(null);
     const [locationSel, setLocationSel] = useState(null);
     const [openDialogPallet, setOpenDialogPallet] = useState(false);
-    
+
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
 
     const [imgFile, setImgFile] = useState(null)
+    const [btnUpload, setBtnUpload] = useState(true)
 
     let columns = [
         { accessor: "SKUMaster_Name", Header: "Item Code" },
@@ -436,6 +426,7 @@ const AmReceivePallet = (props) => {
         reader.onerror = error => reject(error);
     });
     const handleFileChange = async (event) => {
+        console.log(event)
         if (event.target.files[0]) {
             setImgFile(URL.createObjectURL(event.target.files[0]))
             let fileBase64 = await toBase64(event.target.files[0])
@@ -461,6 +452,15 @@ const AmReceivePallet = (props) => {
 
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
+        if (field === "baseCode") {
+            if (value) {
+                document.getElementById("contained-button-file").disabled = false;
+                setBtnUpload(false)
+            }else{
+                document.getElementById("contained-button-file").disabled = true;
+                setBtnUpload(true)
+            }
+        }
         if (field === "areaID") {
             setAreaSel(value)
         }
@@ -473,15 +473,15 @@ const AmReceivePallet = (props) => {
     }
     const handleClickOpen = () => {
         setOpenDialogPallet(true);
-      };
-      const handleOnClose = (val) => {
+    };
+    const handleOnClose = (val) => {
         setOpenDialogPallet(val);
-      }
-      const handleError =(show, type, message)=>{
+    }
+    const handleError = (show, type, message) => {
         setOpenDialogPallet(show);
         alertDialogRenderer(type, message)
-      }
-    const onSelectPallet =(data)=>{
+    }
+    const onSelectPallet = (data) => {
         if (data) {
             setOpenDialogPallet(false)
             // renderNewDropdown(data.AreaID, data.LocationID);
@@ -507,7 +507,6 @@ const AmReceivePallet = (props) => {
     const listCheckPallet = useMemo(() => ListPalletDialog(openDialogPallet, handleOnClose, dataDocument, onSelectPallet, handleError), [openDialogPallet, dataDocument]);
     const areaDDL = useMemo(() => AreaDDLContent(open, setting.ddlArea, dataSrcArea, valueInput.areaID, onHandleChangeInput), [open, setting.ddlArea, dataSrcArea, valueInput.areaID])
     const areaLocationDDL = useMemo(() => AreaLocationDDLContent(open, setting.ddlLocation, dataSrcLocation, valueInput.locationID, onHandleChangeInput), [open, setting.ddlLocation, dataSrcLocation, valueInput.locationID])
-    // const tableDocItems = useMemo(() => TableContent(open, columns, dataTable, onSelect), [open, columns, dataTable])
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
     async function QueryArea() {
         await Axios.get(createQueryString(AreaMasterQuery)).then(res => {
@@ -519,7 +518,6 @@ const AmReceivePallet = (props) => {
 
     async function QueryAreaLocation(selAreaID) {
         let newLocationQueryStr = Clone(LocationMasterQuery)
-        // valueInput['locationID'] = null;
         if (selAreaID) {
             newLocationQueryStr.q = "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'AreaMaster_ID', c:'=', 'v': " + selAreaID + "}]";
             await Axios.get(createQueryString(newLocationQueryStr)).then(res => {
@@ -542,6 +540,21 @@ const AmReceivePallet = (props) => {
             }
         }
     }
+    const handleClickRemove = async () => {
+        if (valueInput.baseCode) {
+            let filejson = {
+                fileName: valueInput.baseCode
+            }
+            await Axios.post(window.apipath + "/v2/remove_image/", filejson).then(res => {
+                if (res.data._result.status === 1) {
+                    alertDialogRenderer("success", "ลบไฟล์รูปภาพสำเร็จ");
+                    setImgFile(null)
+                } else {
+                    alertDialogRenderer("error", res.data._result.message)
+                }
+            });
+        }
+    }
     return (
         <>
             {DialogAlert}
@@ -561,7 +574,7 @@ const AmReceivePallet = (props) => {
                     {title}
                     <div style={{ display: 'inline-flex', alignItems: 'center' }} >
                         {pallet}
-                        <IconBtn onHandleClick={handleClickOpen} />
+                        <IconBtn title="List Pallet" onHandleClick={handleClickOpen}><ListAlt color="primary" className={classes.fontSizeSmall} /></IconBtn>
                         {listCheckPallet}
                         <AmScanQRbyCamera returnResult={(data) => showRes(data)} />
                     </div>
@@ -575,20 +588,22 @@ const AmReceivePallet = (props) => {
                             className={classes.input}
                             id="contained-button-file"
                             type="file"
+                            disabled={btnUpload}
                             onChange={(e) => handleFileChange(e)}
                         />
                         <label htmlFor="contained-button-file">
                             <AmButton
+                                id="button-file"
                                 variant="contained" component="span"
                                 styleType="confirm_outline"
+                                disabled={btnUpload}
                                 startIcon={<PhotoCamera size="small" className={classNames(classes.leftIcon)} />}
                             >Upload</AmButton>
                         </label>
+                        {imgFile ? <IconBtn title="Remove Image" onHandleClick={handleClickRemove}><DeleteForever color="secondary" className={classes.fontSizeSmall} /></IconBtn> : null}
                     </FormInline>
                     {imgFile ? <div style={{ margin: "5px 0px" }}><img src={imgFile} height='150' /></div> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    {/* {tableDocItems} */}
-
                     {open && dataTable ?
                         <AmTable
                             columns={columns}

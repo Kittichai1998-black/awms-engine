@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.V2.ASRS
 {
     public class PostAlertMessageAPI : BaseAPIService
     {
-        public PostAlertMessageAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public PostAlertMessageAPI(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
@@ -21,8 +21,8 @@ namespace AWMSEngine.APIService.V2.ASRS
         {
             WMSAlert.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<WMSAlert.TReq>(this.RequestVO);
             var res = new WMSAlert().Execute(this.Logger, this.BuVO, req);
-            var hub = (BaseV2Controller)this.ControllerAPI;
-            hub.HubService.Clients.All.SendAsync("alert", res);
+            var hub = this.ControllerAPI;
+            hub.CommonMsgHub.Clients.All.SendAsync("alert", res);
             return null;
 
         }

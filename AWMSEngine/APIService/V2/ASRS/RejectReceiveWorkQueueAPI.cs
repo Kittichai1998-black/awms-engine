@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.ASRS
 {
     public class RejectReceiveWorkQueueAPI : BaseAPIService
     {
-        public RejectReceiveWorkQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public RejectReceiveWorkQueueAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

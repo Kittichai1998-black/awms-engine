@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Controllers.V2;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
     
     public class DoneWorkQueueAPI : BaseAPIService
     {
-        public DoneWorkQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneWorkQueueAPI(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
