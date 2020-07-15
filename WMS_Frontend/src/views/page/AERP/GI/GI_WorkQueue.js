@@ -1,7 +1,6 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
 
-const ProcessQueue = () => {
   const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
   const colDocumentItem = [
     { "accessor": "Code", "Header": "Code", "sortable": false, "width": 300 },
@@ -84,6 +83,8 @@ const ProcessQueue = () => {
     fieldHeader: [{ "accessor": "Code", "label": "Code" }, { "accessor": "RefID", "label": "RefID" }]
   }
 
+const ProcessQueue = () => {
+  
   // const customDesArea = (area, doc, warehouse) => {
   //   return area.filter(x => x.desWarehouseID === warehouse)
   // }

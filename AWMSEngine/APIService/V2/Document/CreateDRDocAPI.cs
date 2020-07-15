@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.Document
 {
     public class CreateDRDocAPI : BaseAPIService
     {
-        public CreateDRDocAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public CreateDRDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

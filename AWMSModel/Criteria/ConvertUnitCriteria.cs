@@ -7,7 +7,7 @@ namespace AWMSModel.Criteria
     public class ConvertUnitCriteria
     {
         public long packMaster_ID;
-        public string? packMaster_Code;
+        public string packMaster_Code;
         public long skuMaster_ID;
         public string skuMaster_Code;
         //public decimal stdWeiKg;

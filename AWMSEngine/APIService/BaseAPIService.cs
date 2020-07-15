@@ -3,6 +3,7 @@ using AMWUtil.DataAccess.Http;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.ADO;
+using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -22,7 +23,7 @@ namespace AWMSEngine.APIService
     {
         public long APIServiceID;
         public VOCriteria BuVO { get; set; }
-        public ControllerBase ControllerAPI { get; set; }
+        public BaseController ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
         public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
         public bool IsAuthenAuthorize { get; set; }
@@ -31,7 +32,7 @@ namespace AWMSEngine.APIService
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true)
+        public BaseAPIService(BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true)
         {
             this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
@@ -63,7 +64,6 @@ namespace AWMSEngine.APIService
             public string apikey;
             public string ref_id;
         }
-
         private class TLock
         {
             public int Owner;
@@ -106,6 +106,8 @@ namespace AWMSEngine.APIService
             try
             {
                 this.BuVO = new VOCriteria();
+                this.BuVO.Set(BusinessVOConst.KEY_BASE_CONTROLLER, this.ControllerAPI);
+
                 //------GET token || apikey
                 if (request != null)
                 {
@@ -188,7 +190,6 @@ namespace AWMSEngine.APIService
 
                 lock (this.GetKeyLock(token, this.APIServiceID))
                 {
-
                     this.BuVO.SqlTransaction_Begin();
                     var res = this.ExecuteEngineManual();
                     response = new ResponseObject().Execute(this.Logger, this.BuVO, res);

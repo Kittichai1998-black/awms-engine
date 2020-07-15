@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.ASRS
 {
     public class EnquiryWorkQueueAPI : BaseAPIService
     {
-        public EnquiryWorkQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public EnquiryWorkQueueAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

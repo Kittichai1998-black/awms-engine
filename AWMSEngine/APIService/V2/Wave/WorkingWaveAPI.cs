@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.Wave
 {
     public class WorkingWaveAPI : BaseAPIService
     {
-        public WorkingWaveAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WorkingWaveAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

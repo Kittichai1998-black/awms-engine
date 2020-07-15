@@ -105,7 +105,7 @@ const AmTable = (props) => {
             filterable={props.filterable}
             filterData={props.filterData}
             pageSize={props.pageSize}
-            minRow={props.minRow}
+            minRows={props.minRows}
             pagination={props.pagination}
             onPageChange={props.onPageChange}
             totalSize={props.totalSize}
@@ -234,7 +234,7 @@ const AmTableSetup = (props) => {
             groupBy={props.groupBy}
             selection={props.selection}
             filterable={props.filterable}
-            minRow={props.minRow}
+            minRows={props.minRows}
             page={page}
             clearSelectionChangePage={props.clearSelectionChangePage}
             sortable={props.sortable}
@@ -332,7 +332,7 @@ AmTable.propTypes = {
      * จำนวน row ขั้นต่ำ
      ** value? : 5
     */
-    minRow: PropTypes.number,
+    minRows: PropTypes.number,
     /**
      * เปิดปิดการใช้งาน pagination
      ** value? : true | false
@@ -421,7 +421,7 @@ AmTable.propTypes = {
 }
 
 AmTable.defaultProps = {
-    minRow: 5,
+    minRows: 5,
     height: 500,
     pageSize: 25,
     clearSelectionChangePage: true,

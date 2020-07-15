@@ -7,7 +7,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class DownloadLogFileByRefIDAPI : BaseAPIService
     { 
-        public DownloadLogFileByRefIDAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DownloadLogFileByRefIDAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         protected override dynamic ExecuteEngineManual()

@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class DoneWorkQueueOnFloorAPI : BaseAPIService
     {
-        public DoneWorkQueueOnFloorAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneWorkQueueOnFloorAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

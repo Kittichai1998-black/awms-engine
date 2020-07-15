@@ -24,7 +24,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             public DateTime actualTime;
             
         }
-        public UpdateStoLocationAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public UpdateStoLocationAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

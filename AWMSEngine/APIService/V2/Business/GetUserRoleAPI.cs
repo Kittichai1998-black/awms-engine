@@ -9,7 +9,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class GetUserRoleAPI : BaseAPIService
     {
-        public GetUserRoleAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetUserRoleAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

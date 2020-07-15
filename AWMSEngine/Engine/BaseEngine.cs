@@ -3,10 +3,13 @@ using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AMWUtil.Validation;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Controllers.V2;
+using AWMSEngine.HubService;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -22,6 +25,15 @@ namespace AWMSEngine.Engine
         where TRes : class
     {
         protected abstract TRes ExecuteEngine(TReq reqVO);
+
+        protected BaseController BaseController
+        {
+            get => this.BuVO.Get<BaseController>(BusinessVOConst.KEY_BASE_CONTROLLER);
+        }
+        protected IHubContext<CommonMessageHub> CommonMsgHub
+        {
+            get => this.BuVO.Get<BaseController>(BusinessVOConst.KEY_BASE_CONTROLLER).CommonMsgHub;
+        }
 
         public VOCriteria BuVO { get; set; }
         public StaticValueManager StaticValue { get; set; }

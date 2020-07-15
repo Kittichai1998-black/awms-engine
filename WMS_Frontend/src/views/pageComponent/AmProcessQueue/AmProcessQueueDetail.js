@@ -13,7 +13,7 @@ import queryString from "query-string";
 import AmDropdown from "../../../components/AmDropdown";
 import Checkbox from "@material-ui/core/Checkbox";
 import styled from 'styled-components';
-import AmTable from '../../../components/table/AmTable';
+import AmTable from '../../../components/AmTable';
 import {ProcessQueueContext} from './ProcessQueueContext';
 import { Grid } from "@material-ui/core";
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -190,6 +190,7 @@ const useArea = (areaQuery, doc, customArea, warehouse) => {
     const [area, setArea] = useState([])
     
     useEffect(()=> {
+        console.log(areaQuery)
         Axios.get(createQueryString(areaQuery)).then(res => {
             setArea(res.data.datas);
         });
@@ -627,11 +628,11 @@ const ProcessQueueDetail = (props) => {
                         {genDocumentHeader(doc)}
                     </Grid>
                     <AmTable width={"100%"}
-                        loading ={false}
                         columns={cols}
-                        data={doc.docItems}
+                        dataSourceata={doc.docItems}
                         sortable={false}
-                        primaryKey="ID"
+                        filterable={false}
+                        dataKey="ID"
                         pageSize={1000}
                         minRows={3}/>
                 </>
@@ -861,10 +862,10 @@ const ConfirmDialog = (props) => {
             <div style={{width:"100%"}}>
                 <AmTable 
                     columns={columns} 
-                    data={x.processResult}
-                    loading ={false}
+                    dataSource={x.processResult}
                     sortable={false}
-                    primaryKey="pstoID"
+                    filterable={false}
+                    dataKey="pstoID"
                     pageSize={1000}
                     minRows={3}
                 />

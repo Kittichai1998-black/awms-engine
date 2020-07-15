@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AWMSEngine.HubService;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,14 +16,12 @@ namespace AWMSEngine.Controllers.V2
 {
     [Route("api/pdfcreator")]
     [ApiController]
-    public class BasePDFCreatorController : ControllerBase
+    public class PDFCreatorController : BaseController
     {
-        private IConverter _converter;
-
-        public BasePDFCreatorController(IConverter converter)
+        public PDFCreatorController(IHubContext<CommonMessageHub> commonMsgHub, IWebHostEnvironment hostingEnvironment, IConverter converter) : base(commonMsgHub, hostingEnvironment, converter)
         {
-            _converter = converter;
         }
+
         [HttpGet]
         public IActionResult CreatePDF()
         {
@@ -54,7 +55,7 @@ namespace AWMSEngine.Controllers.V2
 
             //_converter.Convert(pdf);
             //return Ok("Successfully created PDF document.");
-            var file = _converter.Convert(pdf);
+            var file = Converter.Convert(pdf);
             return File(file, "application/pdf");
             //return File(file, "application/pdf", "EmployeeReport.pdf");
         }

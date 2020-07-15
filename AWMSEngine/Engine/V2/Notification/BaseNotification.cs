@@ -24,6 +24,8 @@ namespace AWMSEngine.Engine.V2.Notification
             public string Subject;
             public dynamic Body;
             public string Signature;
+            public string Tag1;
+            public string Tag2;
         }
 
 
@@ -62,7 +64,9 @@ namespace AWMSEngine.Engine.V2.Notification
                     Title = data.Subject,
                     Message = AMWUtil.Common.ObjectUtil.Json(data.Body),
                     PostTime = DateTime.Now,
-                    Status = EntityStatus.ACTIVE
+                    Status = EntityStatus.ACTIVE,
+                    Tag1 = data.Tag1,
+                    Tag2 = data.Tag2,
                 }, this.BuVO);
 
             if (groupEmail != null)

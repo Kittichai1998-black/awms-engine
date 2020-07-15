@@ -7,7 +7,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class RejectGRDocAPI : BaseAPIService
     { 
-        public RejectGRDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public RejectGRDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         protected override dynamic ExecuteEngineManual()

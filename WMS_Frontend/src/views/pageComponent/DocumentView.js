@@ -183,9 +183,6 @@ const DocumentView = props => {
 
   const getData = () => {
     //========================================================================================================
-    console.log(props.typeDocNo);
-    console.log(typeDoc)
-    // console.log(props);
 
     Axios.get(
       window.apipath +
@@ -535,7 +532,6 @@ const DocumentView = props => {
 
 
   const onCreatePut = () => {
-    console.log(docID)
     props.history.push(props.apiCreate + docID)
 
   }
