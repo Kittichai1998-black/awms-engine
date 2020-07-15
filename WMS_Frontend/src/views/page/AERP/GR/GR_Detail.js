@@ -145,6 +145,8 @@ const GR_Detail = props => {
       useAddPalletMapSTO={true}
       addPalletMapSTO={addPalletMapSTO}
       buttonConfirmMappingSTO={true}
+      //================================
+      addPrintBarcode={true}
     />
   );
 };

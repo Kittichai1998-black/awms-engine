@@ -45,7 +45,11 @@ namespace AWMSModel.Entity
         public string OrderNo;
         public string DesCustomer;
         public string DesCustomerName;
-       
+
+        public decimal Volume;
+        public decimal MinInnerVolume;
+        public decimal MaxInnerVolume;
+
 
 
 

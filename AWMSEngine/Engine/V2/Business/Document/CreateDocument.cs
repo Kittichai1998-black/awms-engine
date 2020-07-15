@@ -174,8 +174,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
                 DocumentProcessType_ID = reqVO.documentProcessTypeID,
-                Batch = reqVO.batch,
-                Lot = reqVO.lot,
                 Options = reqVO.options,
                 Remark = reqVO.remark,
 

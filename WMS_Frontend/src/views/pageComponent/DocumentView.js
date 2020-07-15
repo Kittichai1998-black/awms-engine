@@ -36,6 +36,7 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
+import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -134,6 +135,8 @@ const DocumentView = props => {
   const [stateDialog, setStateDialog] = useState(false);
   const [msgDialog, setMsgDialog] = useState("");
   const [typeDialog, setTypeDialog] = useState("");
+
+  const [selection, setSelection] = useState();
 
   useEffect(() => {
     getData();
@@ -509,14 +512,14 @@ const DocumentView = props => {
     }
     setQtyEdit(tempDataReq)
 
-    }
+  }
 
 
-    const onCreatePut = () => {
-        console.log(docID)
-        props.history.push(props.apiCreate + docID)
+  const onCreatePut = () => {
+    console.log(docID)
+    props.history.push(props.apiCreate + docID)
 
-    }
+  }
 
   const onConfirmEdit = () => {
     Axios.post(window.apipath + "/v2/UpdateSTOandDiSTOfromDocAPI", qtyEdit).then((res) => {
@@ -576,9 +579,9 @@ const DocumentView = props => {
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     });
-    }
+  }
 
- 
+
 
   return (
     <div>
@@ -592,32 +595,39 @@ const DocumentView = props => {
         customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setOpenDialogEditQty(false); setQtyEdit({}); }}>{t("Cancel")}</AmButton>}
 
       />
+
       {getHeader()}
       <br />
-          <br />
-          <div>
-              {
-                  props.CreateputAway === true ?
-                      <Grid container>
-                          <Grid item xs container direction="column">
-                          </Grid>
-                          <Grid item>
-                              <div style={{ marginBottom:"5px" }}>
-                      <AmButton styleType="add"
-                          onClick={() => {
-                              onCreatePut();
-                          }}
-                                  >Create</AmButton>
-                              </div>
-                          </Grid>
-                      </Grid>
-                      : null
-              }
+      <br />
+      <div>
+        {
+          props.CreateputAway === true ?
+            <Grid container>
+              <Grid item xs container direction="column">
+              </Grid>
+              <Grid item>
+                <div style={{ marginBottom: "5px" }}>
+                  <AmButton styleType="add"
+                    onClick={() => {
+                      onCreatePut();
+                    }}
+                  >Create</AmButton>
+                </div>
+              </Grid>
+            </Grid>
+            : null
+        }
 
-          </div>
+      </div>
+      <AmPrintBarCode data={selection} />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
+        <AmTable dataKey="ID"
+          selection={"checkbox"}
+          selectionData={(data) => {
+            console.log(data)
+            setSelection(data);
+          }} columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
 
       <br />

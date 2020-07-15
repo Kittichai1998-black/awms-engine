@@ -627,8 +627,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     ID = null,
                     Code = null,
                     ParentDocument_ID = di.ParentDocID == 0 ? null : di.ParentDocID,
-                    Lot = null,
-                    Batch = null,
                     For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                     Sou_Customer_ID = null,
                     Sou_Supplier_ID = null,

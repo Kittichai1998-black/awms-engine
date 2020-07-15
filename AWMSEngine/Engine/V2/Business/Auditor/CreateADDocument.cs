@@ -123,8 +123,6 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 ID = null,
                 Code = null,
                 ParentDocument_ID = null,
-                Lot = reqVO.lot,
-                Batch = reqVO.batch,
                 For_Customer_ID =
                     reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                     string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
