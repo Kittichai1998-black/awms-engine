@@ -6,6 +6,13 @@ import AmPagination from "./AmPagination";
 import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 
+const IsEmptyObject = (obj) => {
+    if(typeof(obj) === "object")
+        return Object.keys(obj).length === 0 && obj.constructor === Object
+    else
+        return false;
+}
+
 const Topbar = React.memo((propsTopbar) => {
     // console.log(propsTopbar.dataSource)
     if(propsTopbar.customTopControl){
@@ -98,7 +105,7 @@ const AmTable = (props) => {
             filterable={props.filterable}
             filterData={props.filterData}
             pageSize={props.pageSize}
-            minRow={props.minRow}
+            minRows={props.minRows}
             pagination={props.pagination}
             onPageChange={props.onPageChange}
             totalSize={props.totalSize}
@@ -134,9 +141,14 @@ const AmTableSetup = (props) => {
     }, [props.pageSize])
 
     useEffect(() => {
-        if (sortData !== undefined && sortable)
-            sortData(sort.sortValue)
-        else if(sortData === undefined && sortable){
+        if (sortData !== undefined && sortable && !IsEmptyObject(sort.sortValue)){
+            if(sort.sortValue.send === false){
+                let sortDT = sort.sortValue
+                sortData({id:sortDT.id, sortDirection:sortDT.sortDirection})
+                sortDT.send = true;
+            }
+        }
+        else if(sortData === undefined && sortable && !IsEmptyObject(sort.sortValue)){
             if(sort.sortValue["sortDirection"] !== undefined){
                 if(sort.sortValue["sortDirection"] === "asc"){
                     let sortLocalData = _.orderBy([...props.dataSource], sort.sortValue["id"], "asc")
@@ -158,21 +170,23 @@ const AmTableSetup = (props) => {
     }, [filter.filterValue])
 
     useEffect(() => {
-        if (selectionData !== undefined) {
-            selectionData(selection.selectionValue)
-            console.log(selection.selectionValue)
-        }
-    }, [selection.selectionValue, selectionData])
-
-    useEffect(() => {
         if (props.selectionDefault !== undefined){
-            if(props.selectionDefault.length > 0){
-                selection.addAll(props.selectionDefault)
+            if(props.selectionDefault.length > 0 && dataSource.length > 0){
+                if(page > 1 && props.clearSelectionChangeData){
+                    selection.removeAll();
+                }else{
+                    selection.addAll(props.selectionDefault)
+                }
             }
         }
-            
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.selectionDefault])
+    }, [dataSource])
+    
+    useEffect(() => {
+        if (selectionData !== undefined && !IsEmptyObject(selection.selectionValue)) {
+            selectionData(selection.selectionValue)
+        }
+    }, [selection.selectionValue, selectionData])
 
     useEffect(() => {
         if(props.clearSelectionChangeData){
@@ -220,7 +234,7 @@ const AmTableSetup = (props) => {
             groupBy={props.groupBy}
             selection={props.selection}
             filterable={props.filterable}
-            minRow={props.minRow}
+            minRows={props.minRows}
             page={page}
             clearSelectionChangePage={props.clearSelectionChangePage}
             sortable={props.sortable}
@@ -318,7 +332,7 @@ AmTable.propTypes = {
      * จำนวน row ขั้นต่ำ
      ** value? : 5
     */
-    minRow: PropTypes.number,
+    minRows: PropTypes.number,
     /**
      * เปิดปิดการใช้งาน pagination
      ** value? : true | false
@@ -407,7 +421,7 @@ AmTable.propTypes = {
 }
 
 AmTable.defaultProps = {
-    minRow: 5,
+    minRows: 5,
     height: 500,
     pageSize: 25,
     clearSelectionChangePage: true,

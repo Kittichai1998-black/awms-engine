@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.V2.Document
 {
     public class CreateSODocAPI : BaseAPIService
     {
-        public CreateSODocAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public CreateSODocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

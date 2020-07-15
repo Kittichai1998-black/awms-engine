@@ -8,7 +8,7 @@ namespace AWMSEngine.APIService.V2.Common
 {
     public class GetStaticValueAPI : BaseAPIService
     {
-        public GetStaticValueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetStaticValueAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

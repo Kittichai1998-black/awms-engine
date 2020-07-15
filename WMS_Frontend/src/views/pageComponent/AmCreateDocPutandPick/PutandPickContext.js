@@ -15,6 +15,7 @@ const initialState = {
     "datadocItem": [],
     "dataSet": [],
     "dialogItem": false,
+    "dialogItemSet": false,
     "dataSourceItemTB": [],
     "dailogErr": false,
     "dailogSuc": false,
@@ -49,6 +50,12 @@ const DocReducer = (state, action) => {
             return {
                 ...state,
                 "dialogItem": action.value,
+
+            }
+        }  case "OPENITEM": {
+            return {
+                ...state,
+                "dialogItemSet": action.value,
 
             }
         } case "ADDDATATB": {
@@ -124,6 +131,8 @@ const DocAction = () => {
     const setdatadocItem = (value) => dispatch({ type: "ADDITEM", value })
     const datadocItem = state.datadocItem;
     const setdialogItem = (value) => dispatch({ type: "OPEN", value })
+    const dialogItemSet = state.dialogItemSet;
+    const setdialogItemSet = (value) => dispatch({ type: "OPENITEM", value })
     const dialogItem = state.dialogItem;
     const setdataSourceItemTB = (value) => dispatch({ type: "ADDDATATB", value })
     const dataSourceItemTB = state.dataSourceItemTB;
@@ -135,7 +144,7 @@ const DocAction = () => {
     const dataCreate = state.dataCreate;
     const setdatasetTB = (value) => dispatch({ type: "DATASETTB", value })
     const datasetTB = state.datasetTB;
-    return { docID, setdocID, datadocItem, setdatadocItem, dialogItem, setdialogItem, setdataSourceItemTB, dataSourceItemTB, seteditdata, editdata, setdataSet, dataSet, setdataCreate, dataCreate, setdatasetTB,datasetTB}
+    return { docID, setdocID, datadocItem, setdatadocItem, dialogItem, setdialogItem, dialogItemSet, setdialogItemSet, setdataSourceItemTB, dataSourceItemTB, seteditdata, editdata, setdataSet, dataSet, setdataCreate, dataCreate, setdatasetTB,datasetTB}
 }
 
 const DialogsAction = () => {

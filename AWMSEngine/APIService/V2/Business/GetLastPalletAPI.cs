@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class GetLastPalletAPI : BaseAPIService
     {
-        public GetLastPalletAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetLastPalletAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

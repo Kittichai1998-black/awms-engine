@@ -11,7 +11,7 @@ namespace AWMSEngine.APIService.V2.Document
     
     public class WorkedDocumentAPI : BaseAPIService
     {
-        public WorkedDocumentAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WorkedDocumentAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

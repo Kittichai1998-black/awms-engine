@@ -14,7 +14,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
         public class TReq
         {
-            public long? parentDocumentID;
+            public long? parentDocument_ID;
             public string refID;
             public string ref1;
             public string ref2;
@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string forCustomerCode;
             public string batch;
             public string lot;
-            public DocumentProcessTypeID movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -142,7 +142,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
-                    parentDocumentID = reqVO.parentDocumentID,
+                    parentDocumentID = reqVO.parentDocument_ID,
                     lot = reqVO.lot,
                     batch = reqVO.batch,
                     forCustomerID =
@@ -168,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     docTypeId = DocumentTypeID.DELIVERY_RECEIVED,
                     eventStatus = reqVO.eventStatus,
-                    documentProcessTypeID = reqVO.movementTypeID,
+                    documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.receivedOrderItem.Select(

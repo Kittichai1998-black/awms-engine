@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.V2.Permission
 { 
     public class ListMenuAPI : BaseAPIService
     {
-        public ListMenuAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public ListMenuAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         

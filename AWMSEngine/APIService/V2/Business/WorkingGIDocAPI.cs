@@ -7,7 +7,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class WorkingGIDocAPI : BaseAPIService
     { 
-        public WorkingGIDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public WorkingGIDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

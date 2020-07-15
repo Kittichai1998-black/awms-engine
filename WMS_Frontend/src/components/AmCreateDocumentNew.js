@@ -81,24 +81,7 @@ const colss = [
     }
 ];
 
-const useDocumentItemQuery = (docID, DocItemQuery) => {
-    const [docItemsQuery, setDocItemsQuery] = useState(DocItemQuery)
 
-    useEffect(() => {
-        if (DocItemQuery != null && docID != undefined) {
-            let objQuery = DocItemQuery;
-            if (objQuery !== null) {
-                let Itemsqry = JSON.parse(objQuery.q);
-                Itemsqry.push({ 'f': 'Document_ID', 'c': '=', 'v': docID })
-                objQuery.q = JSON.stringify(Itemsqry);
-
-            }
-
-            setDocItemsQuery(objQuery)
-        }
-    }, [docID])
-    return docItemsQuery
-}
 
 
 
@@ -128,12 +111,12 @@ const AmCreateDocument = (props) => {
     // const [dataUnit, setDataUnit] = useState()
     // const [dataCheck, setDataCheck] = useState()
     const [docIds, setdocIds] = useState();
-    const DocItemsquery = useDocumentItemQuery(docIds, props.DocItemQuery)
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const [dataDocItem, setdataDocItem] = useState();
     const [dialogItem, setDialogItem] = useState(false);
     // const [ItemBody, setItemBody] = useState();
     const [relationComponent, setRelationComponent] = useState([]);
+    const [headerBody, setheaderBody] = useState();
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
         {
@@ -160,68 +143,11 @@ const AmCreateDocument = (props) => {
     const columns = props.columns.concat(rem)
 
     useEffect(() => {
-        if (docIds != undefined) {
-            getData()
-        }
-    }, [docIds])
+        setheaderBody(getHeaderCreate())
+    }, [props.headerCreate])
 
-    useEffect(() => {
-        const getSKuItem = (dataDocItem) => {
-            if (dataDocItem !== undefined && dataDocItem.length != 0) {
-                setDialogItem(true)
-            }
-            return dataDocItem.map((x, idx) => {
-                return props.columnEditItem.map((row, i) => {
 
-                    return {
-                        "field": row.accessor,
-                        "component": (data = null, cols, key) => {
-                            let rowError = inputError.length ? inputError.some(x => { return x === row.accessor }) : false;
-                            return <div key={key}>
-
-                                {getTypeEditorItem(row, i, rowError, idx)}
-
-                            </div>
-                        }
-                    }
-                })
-            })
-        }
-        if (dataDocItem !== undefined && dataDocItem.length != 0) {
-            var datas = []
-            getSKuItem(dataDocItem).forEach(x =>
-                x.forEach(y =>
-                    datas.push(y)
-
-                )
-
-            );
-            let xs = { 'check': true }
-            datas.push(xs)
-            setRelationComponent(datas)
-        }
-    }, [dataDocItem])
-
-    const getDocItem = () => {
-        return window.apipath + "/v2/GetSPSearchAPI?"
-            + "&docID=" + docIds
-            + "&spname=DOCITEM_LISTDRANDDI";
-    }
-
-    const getData = () => {
-        if (getDocItem != undefined) {
-            Axios.get(getDocItem()).then(res => {
-                if (res.data.datas == undefined || res.data.datas.length == 0) {
-                    getDocItemQuery(DocItemsquery)
-                } else if (res.data.datas.length != 0) {
-                    setEditData(res.data.datas);
-                    setdataDocItem(res.data.datas);
-                }
-
-            })
-        }
-
-    }
+  
 
     const PopupObjSize = React.memo(({ relationComponent, open }) => {
         return <AmEditorTable
@@ -263,8 +189,16 @@ const AmCreateDocument = (props) => {
                 key: key,
             }
         });
+        if (key === 'documentProcessTypeID') {
+            props.onChangeProcessType(value);
+            console.log(value)
+            createDocumentData[key] = value
+            setcreateDocumentData(createDocumentData)
+        
+        }
         createDocumentData[key] = value
         setcreateDocumentData(createDocumentData)
+     
     }
 
     //เช็ตค่าที่หัวของหน้าใน Findpopup
@@ -300,8 +234,8 @@ const AmCreateDocument = (props) => {
         else {
             editData[field] = data
         }
-        
-        if (row.related && row.related.length) {
+
+        if (row && row.related && row.related.length) {
             let indexField = row.related.reduce((obj, x) => {
                 obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
                 return obj
@@ -326,7 +260,7 @@ const AmCreateDocument = (props) => {
             }
         }
 
-        if (row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
+        if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
             row.removeRelated.forEach(x => delete editData[x])
         }
 
@@ -455,63 +389,6 @@ const AmCreateDocument = (props) => {
         }
     }
 
-
-
-    const getTypeEditorItem = ({ type, Header, accessori, accessor, data, cols, row, idddl, queryApi,
-        columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, required }, index, rowError, idx) => {
-        if (type === "inputNum") {
-            return (<div>
-                <FormInline>
-                    <FormInline>
-                        <LabelT style={LabelTStyle}>{Header} :</LabelT>
-                    </FormInline>
-                    <InputDiv>
-
-                        <FormInline>{TextInputnum ? (
-                            <FormInline>
-                                <AmInput
-                                    required={required}
-                                    error={rowError}
-                                    // helperText={inputError.length ? "required field" : false}
-                                    inputRef={ref.current[index]}
-                                    defaultValue={dataDocItem[idx] !== null && dataDocItem[idx] !== {} && dataDocItem[idx]["qtyrandom"] !== undefined ?
-                                        dataDocItem[idx][accessori].replace("%", "") : ""}
-                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
-                                    type="number"
-                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
-                                <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
-                                    <LabelT>{TextInputnum}</LabelT>
-                                </div>
-                            </FormInline>
-                        ) : (
-                                <AmInput
-                                    required={required}
-                                    error={rowError}
-                                    //disable={checkItem[idx] ? checkIem[idx] : false}
-                                    // helperText={inputError.length ? "required field" : false}
-                                    inputRef={ref.current[index]}
-                                    defaultValue={dataDocItem[idx]['Qty'] ? dataDocItem[idx][accessori] - dataDocItem[idx]['Qty'] :
-                                        dataDocItem[idx][accessori] ? dataDocItem[idx][accessori] : ""}
-                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
-                                    type="number"
-                                    onChange={(ele) => { onChangeEditor(cols.field, ele, required, idx) }} />
-                            )
-                        }</FormInline>
-                    </InputDiv>
-                </FormInline>
-
-
-            </div>)
-        } else if (type === "text") {
-            return (
-                <div>
-                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
-                    <label ref={ref.current[index]}>{texts || dataDocItem[idx][accessori]}</label >
-                </div>
-
-            )
-        }
-    }
 
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index, rowError, required) => {
         if (type === "input") {
@@ -819,8 +696,7 @@ const AmCreateDocument = (props) => {
             documentProcessTypeID: null,
             forCustomerCode: null,
             forCustomerID: null,
-            lot: null,
-            movementTypeID: null,
+            lot: null,        
             options: null,
             orderNo: null,
             parentDocumentID: null,
@@ -855,11 +731,14 @@ const AmCreateDocument = (props) => {
             options: null,
             expireDate: null,
             productionDate: null,
+            parentDocumentItemID: null,
             docItemStos: [],
             baseStos: []
         }
 
         //map Header
+        console.log(doc)
+        console.log(createDocumentData)
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
@@ -903,7 +782,7 @@ const AmCreateDocument = (props) => {
                 return _docItem
             })
         } else if (props.createDocType === "receive") {
-            doc.receiveItems = dataSource.map(x => {
+            doc.receivedOrderItem = dataSource.map(x => {
                 let _docItem = { ...docItem }
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
@@ -990,7 +869,7 @@ const AmCreateDocument = (props) => {
 
             <PopupObjSize relationComponent={relationComponent} open={dialogItem} />
             {/* Header */}
-            {getHeaderCreate()}
+            {headerBody}
 
             {/* Btn ADD */}
             <Grid container>

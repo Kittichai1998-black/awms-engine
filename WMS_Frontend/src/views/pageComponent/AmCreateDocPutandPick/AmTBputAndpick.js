@@ -83,11 +83,13 @@ const AmTBputAndpick = (props) => {
             setdialog(false)
           
         }
+        setdialog(false)
         
     }
 
 
     const onChangeEditor = (value, key) => {
+
         if (value !== 0 && value > 0) {
             if ( doc.editdata[0]['Quantity'] !== undefined) { 
                 if (value > doc.editdata[0]['Quantity']) {
@@ -104,7 +106,6 @@ const AmTBputAndpick = (props) => {
 
         }
 
-
     }
     const setRemoveData = (id, e) => {
         let idx = doc.dataSourceItemTB.findIndex(x => x.ID === id);
@@ -113,9 +114,10 @@ const AmTBputAndpick = (props) => {
     }
 
     const onSubmitSetItem = () => {
-        doc.seteditdata([]);
+        //doc.seteditdata([]);
+        doc.setdialogItemSet(true)
         //doc.setdataSet(doc.datadocItem)
-        doc.setdialogItem(true)
+        //doc.setdialogItem(true)
     }
 
 

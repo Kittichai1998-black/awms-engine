@@ -117,6 +117,7 @@ namespace AWMSModel.Criteria
             }
         }
 
+
         public SqlConnection SqlConnection
         {
             get { return this.Get<SqlConnection>(BusinessVOConst.KEY_DB_CONNECTION); }

@@ -24,6 +24,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /.vs/VSWorkspaceState.json
+/public/index.html
 /.vs/ProjectSettings.json
 /.vs/WMS_Frontend/v15/.suo
 .vs/slnx.sqlite

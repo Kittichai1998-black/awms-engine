@@ -1,12 +1,13 @@
 import Grid from "@material-ui/core/Grid";
 import moment from "moment";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext,useMemo } from "react";
 import styled from "styled-components";
 import {
   withStyles,
   MuiThemeProvider,
   createMuiTheme
 } from "@material-ui/core/styles";
+import SvgIcon from '@material-ui/core/SvgIcon';
 import AmDialogs from '../../components/AmDialogs'
 import Table from "../../components/table/AmTable";
 import AmTable from "../../components/AmTable/AmTable";
@@ -28,7 +29,7 @@ import AmButton from "../../components/AmButton";
 import { useTranslation } from "react-i18next";
 import LabelT from "../../components/AmLabelMultiLanguage";
 import { apicall } from '../../components/function/CoreFunction'
-import BtnAddPallet from '../../components/AmMappingPalletAndDisto';
+import AmReceivePallet from '../../components/AmReceivePallet';
 import AmPickingOnFloor from '../../components/AmPickingOnFloor';
 import AmInput from '../../components/AmInput'
 import IconButton from "@material-ui/core/IconButton";
@@ -36,7 +37,6 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
-import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -97,7 +97,47 @@ const LabelH = {
   fontWight: "bold",
   width: "200px"
 };
+ 
+function ReceiveIcon(props) {
+  return (
+      <SvgIcon>
+          <path
+              d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
+          />
+      </SvgIcon>
+  );
+}
+const BtnReceive = withStyles(theme => ({
 
+}))(props => {
+  const { classes, onHandleClick, ...other } = props;
+  return (
+      <>
+          <AmButton className="float-right" styleType="confirm"
+              startIcon={<ReceiveIcon />}
+              onClick={onHandleClick}>
+              {'Receive'}
+          </AmButton>
+      </>
+  );
+});
+function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocItems, onConfirm) {
+  if (status === 10 && open) {
+    console.log("xxxxx tr")
+    console.log(open)
+
+    return <AmReceivePallet
+      open={open}
+      close={(val) => close(val)}
+      setting={setting}
+      dataDocument={dataDocument}
+      dataDocItems={dataDocItems}
+      onConfirm={(data) => onConfirm(data)}
+    />
+  } else {
+    return null;
+  }
+}
 const DocumentView = props => {
   const { t } = useTranslation();
   const [statusdoc, setStatusdoc] = useState(0);
@@ -135,9 +175,7 @@ const DocumentView = props => {
   const [stateDialog, setStateDialog] = useState(false);
   const [msgDialog, setMsgDialog] = useState("");
   const [typeDialog, setTypeDialog] = useState("");
-
-  const [selection, setSelection] = useState();
-
+  const [openReceive, setOpenReceive] = useState(false);
   useEffect(() => {
     getData();
     // console.log(props.optionDocItems);
@@ -145,9 +183,6 @@ const DocumentView = props => {
 
   const getData = () => {
     //========================================================================================================
-    console.log(props.typeDocNo);
-    console.log(typeDoc)
-    // console.log(props);
 
     Axios.get(
       window.apipath +
@@ -429,27 +464,6 @@ const DocumentView = props => {
     }
   };
 
-
-  const CreateBtnAddPallet = () => {
-    if (eventStatus === 10) {
-      return <BtnAddPallet
-        dataDocument={dataDoc}
-        dataDocItems={data}
-        apiCreate={props.addPalletMapSTO.apiCreate ?? null}
-        columnsDocItems={props.addPalletMapSTO.columnsDocItems}
-        inputHead={props.addPalletMapSTO.inputHead}
-        inputTitle={props.addPalletMapSTO.inputTitle}
-        inputBase={props.addPalletMapSTO.inputBase}
-        // ddlWarehouse={props.addPalletMapSTO.ddlWarehouse}
-        ddlArea={props.addPalletMapSTO.ddlArea}
-        ddlLocation={props.addPalletMapSTO.ddlLocation}
-        onSuccessMapping={(data) => ReturnMapping(data)}
-      />
-    }
-    else {
-      return null;
-    }
-  }
   const CreateBtnPicking = () => {
     if (eventStatus === 11) {
       return <AmPickingOnFloor
@@ -463,6 +477,8 @@ const DocumentView = props => {
     }
   }
   const ReturnMapping = (res) => {
+    console.log(res)
+    setOpenReceive(res);
     getData()
   }
 
@@ -516,7 +532,6 @@ const DocumentView = props => {
 
 
   const onCreatePut = () => {
-    console.log(docID)
     props.history.push(props.apiCreate + docID)
 
   }
@@ -581,8 +596,18 @@ const DocumentView = props => {
     });
   }
 
-
-
+  const handleClickOpen = () => {
+    setOpenReceive(true);
+  };
+  const handleOnClose = (val) => {
+    setOpenReceive(val);
+  }
+  const renderDialogReceivePallet = useMemo(() =>
+    PalletMapSTOMeomo(openReceive, handleOnClose,
+      eventStatus, props.addPalletMapSTO,
+      dataDoc, data, ReturnMapping),
+    [openReceive, eventStatus, props.addPalletMapSTO,
+      dataDoc, data])
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
@@ -595,7 +620,6 @@ const DocumentView = props => {
         customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setOpenDialogEditQty(false); setQtyEdit({}); }}>{t("Cancel")}</AmButton>}
 
       />
-
       {getHeader()}
       <br />
       <br />
@@ -619,21 +643,19 @@ const DocumentView = props => {
         }
 
       </div>
-      <AmPrintBarCode data={selection} />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable dataKey="ID"
-          selection={"checkbox"}
-          selectionData={(data) => {
-            console.log(data)
-            setSelection(data);
-          }} columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
+        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
-
+      
       <br />
       <br />
       {props.useAddPalletMapSTO ?
-        CreateBtnAddPallet()
+        <>
+          <BtnReceive onHandleClick={handleClickOpen}/>
+          {renderDialogReceivePallet}
+        </>
+
         : null}
       {props.usePickingOnFloor ?
         CreateBtnPicking()
