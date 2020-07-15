@@ -11,32 +11,41 @@ const Axios = new apicall();
 
 const RD_Create_FGCustomer = props => {
     const [dataWarehouse, setDataWarehouse] = useState("");
-    const [dataMovementTypeCUS, setDataMovementTypeCUS] = useState("");
+    const [CodeprocessType, setCodeprocessType] = useState(0);
     const [table, setTable] = useState(null);
+    const [HeaderDoc, setHeaderDoc] = useState([]);
+
 
     useEffect(() => {
-        Axios.get(createQueryString(MovementTypeQuery2)).then(res => {
-            if (res.data.datas) {
-                setDataMovementTypeCUS(res.data.datas[0].Name);
+        if (CodeprocessType !== "" && CodeprocessType !== null) {
+            var CodeprocessTypeStr = CodeprocessType.toString();
+            var ProcessTypeID = CodeprocessTypeStr.substring(3)
+            var DataprocessTypeID = {};
+            if (ProcessTypeID === '') {
+                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+            } else if (ProcessTypeID === '1') {
+                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+            } else if (ProcessTypeID === '2') {
+                DataprocessTypeID = { label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" }
+            } else if (ProcessTypeID === '3') {
+                DataprocessTypeID = { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" }
+            } else {
+                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
-        });
-    }, []);
 
-    useEffect(() => {
-        // getURL()
-        if (dataMovementTypeCUS !== "") {
+
             var headerCreate = [
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012", codeTranslate: "Movement Type" },
+                    { label: "Process Type", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 1010, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "dropdown", key: "sourceWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
-                    { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Destination Customer" }
+                    DataprocessTypeID,
+                    { label: "Des Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ],
                 [
                     { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
@@ -46,46 +55,36 @@ const RD_Create_FGCustomer = props => {
 
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
-               
+
             ];
 
-            if (headerCreate.length > 0) {
-                setTable(
-                    <AmCreateDocument
-                        //addList={addList}
-                        headerCreate={headerCreate}
-                        columns={columns}
-                        columnEdit={columnEdit}
-                        apicreate={apicreate}
-                        createDocType={"receiveOrder"}
-                        history={props.history}
-                        apiRes={apiRes}
-                  />
-                );
-            }
+            setHeaderDoc(headerCreate)
+
+
+        } else {
+
         }
-    }, [dataMovementTypeCUS]);
+    }, [CodeprocessType]);
+
+    useEffect(() => {
+        if (HeaderDoc.length > 0) {
+            setTable(
+                <AmCreateDocument
+                    //addList={addList}
+                    headerCreate={HeaderDoc}
+                    onChangeProcessType={((e) => { setCodeprocessType(e) })}
+                    columns={columns}
+                    columnEdit={columnEdit}
+                    apicreate={apicreate}
+                    createDocType={"receiveOrder"}
+                    history={props.history}
+                    apiRes={apiRes}
+                />
+            );
+        }
 
 
-
-   
-    const getCarton = value => {
-        var qryStr = queryString.parse(value.Options);
-        return qryStr["carton_no"];
-    };
-    const PalletCode = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f:
-            "ID,palletcode,Code,Batch,Name,Quantity,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 20,
-        all: ""
-    };
+    }, [HeaderDoc, CodeprocessType])
 
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -111,10 +110,6 @@ const RD_Create_FGCustomer = props => {
     };
 
 
-
-    const getStatusGI = value => {
-        console.log(value);
-    };
     const CustomerQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Customer",
@@ -127,10 +122,24 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-    const MovementTypeQuery2 = {
+    const SupplierQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "Supplier",
+        q: '[{ "f": "Status", "c":"<", "v": 2},]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+
+
+    const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,Code,Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -173,7 +182,7 @@ const RD_Create_FGCustomer = props => {
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
-    const apiRes = "/receiveOrder/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;

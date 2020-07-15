@@ -40,7 +40,8 @@ namespace AWMSModel.Entity
 
         public long? Wave_ID;
         public long? For_Customer_ID;
-    
+
+
         public DocumentEventStatus EventStatus;
 
         public List<amt_DocumentItem> DocumentItems;
