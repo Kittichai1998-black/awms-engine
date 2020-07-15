@@ -312,6 +312,10 @@ const ReceivePalletByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
   loading: Loading
 });
+const GR_PalletByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loading: Loading
+});
 
 
 const routes = [
@@ -323,6 +327,7 @@ const routes = [
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
