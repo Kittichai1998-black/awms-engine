@@ -29,7 +29,20 @@ class apicall {
       }
     );
   }
-
+  getload(url, filename) {
+    window.loading.onLoading();
+    window.loading.onLoading();
+    return Axios.get(url + "&token=" + localStorage.getItem("Token"), { responseType: "blob" }).then(
+      res => {
+        window.loading.onLoaded();
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+      });
+  }
   post(url, dataR) {
     window.loading.onLoading();
     let data = trimObj(dataR);
@@ -49,7 +62,22 @@ class apicall {
       return res;
     });
   }
-
+  postload(url, dataR, filename) {
+    window.loading.onLoading();
+    let data = trimObj(dataR);
+    if (data !== undefined) {
+      data.token = localStorage.getItem("Token");
+    }
+    return Axios.post(url, data, { responseType: "blob" }).then(res => {
+      window.loading.onLoaded();
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    });
+  }
   put(url, dataR) {
     window.loading.onLoading();
     let data = trimObj(dataR);
@@ -110,10 +138,10 @@ const createQueryString = select => {
 };
 
 const IsEmptyObject = (obj) => {
-  if(typeof(obj) === "object")
-      return Object.keys(obj).length === 0 && obj.constructor === Object
+  if (typeof (obj) === "object")
+    return Object.keys(obj).length === 0 && obj.constructor === Object
   else
-      return false;
+    return false;
 }
 
 const Clone = obj => {
@@ -193,7 +221,7 @@ function trimObj(obj) {
 
   if (!Array.isArray(obj) && typeof obj != "object") return obj;
   return Object.keys(obj).reduce(
-    function(acc, key) {
+    function (acc, key) {
       acc[key.trim()] =
         typeof obj[key] == "string" ? obj[key].trim() : trimObj(obj[key]);
       return acc;
