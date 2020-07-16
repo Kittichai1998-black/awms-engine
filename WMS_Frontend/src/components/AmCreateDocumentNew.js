@@ -101,7 +101,8 @@ const AmCreateDocument = (props) => {
         arr[el.key] = el.valueTexts || el.defaultValue
         return arr
     }, {})
-    const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
+    const [dataHeaders, setdataHeaders] = useState(dataHeader)
+    const [createDocumentData, setcreateDocumentData] = useState(dataHeaders);
     // const [valueText, setValueText] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
@@ -146,7 +147,24 @@ const AmCreateDocument = (props) => {
         setheaderBody(getHeaderCreate())
     }, [props.headerCreate])
 
+    useEffect(() => { 
+        let dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+            arr[el.key] = el.valueTexts || el.defaultValue
+            return arr
+        }, {})
+        console.log(dataHeader)
+        setdataHeaders(dataHeader)
+    }, [props.headerCreate])
 
+    useEffect(() => {
+        if (dataHeaders !== undefined)
+            setcreateDocumentData();
+        setcreateDocumentData(dataHeaders)
+    }, [dataHeaders])
+
+    useEffect(() => {
+        setcreateDocumentData(createDocumentData)
+    }, [createDocumentData])
   
 
     const PopupObjSize = React.memo(({ relationComponent, open }) => {
@@ -190,10 +208,10 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            props.onChangeProcessType(value);
-            console.log(value)
+            props.onChangeProcessType(value);        
             createDocumentData[key] = value
             setcreateDocumentData(createDocumentData)
+           
         
         }
         createDocumentData[key] = value
@@ -538,6 +556,8 @@ const AmCreateDocument = (props) => {
     }
 
     const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
+      
+
         if (type === "date") {
             return (
                 <AmDate
@@ -590,6 +610,9 @@ const AmCreateDocument = (props) => {
         } else if (type === "labeltext") {
             //getTextsValue(key, valueTexts)
             return <label>{texts}</label>
+       
+
+           
         } else if (type === "dropdown") {
             return (
                 <AmDropdown
@@ -736,9 +759,6 @@ const AmCreateDocument = (props) => {
             baseStos: []
         }
 
-        //map Header
-        console.log(doc)
-        console.log(createDocumentData)
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
@@ -820,6 +840,7 @@ const AmCreateDocument = (props) => {
                 return x
             })
         }
+        console.log(doc)
         if (Object.keys(doc).length > countDoc) {
             CreateDocuments(doc)
         }

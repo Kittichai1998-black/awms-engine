@@ -127,6 +127,7 @@ const AmHeaderputandpick = (props) => {
         return arr
     }, {})
 
+    //const Dataheades = usedataHeader(props.docheaderCreate)
     const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
@@ -147,14 +148,20 @@ const AmHeaderputandpick = (props) => {
 
 
     useEffect(() => {
-        if (doc.docID != 0) {
+        if (doc.docID != 0 && doc.docID !== undefined) {
             getData();
         }
     }, [doc.docID])
 
     useEffect(() => {
+        if (props.docIDCreate !== undefined) {
+            doc.setdocID(props.docIDCreate)
+
+        }
+    }, [props.docIDCreate])
+
+    useEffect(() => {
         if (doc.dialogItemSet === true) {
-            console.log(dataSelect)
             getDataSet();
         }
     }, [doc.dialogItemSet])
@@ -165,6 +172,12 @@ const AmHeaderputandpick = (props) => {
         }
     }, [createDocumentData])
 
+    useEffect(() => {
+       let  dataHeader = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+            arr[el.key] = el.valueTexts || el.defaultValue
+            return arr
+       }, {})    
+    }, [props.docheaderCreate])
 
     useEffect(() => {
         if (doc.datadocItem ) {
@@ -269,7 +282,6 @@ const AmHeaderputandpick = (props) => {
         });
         if (key === 'documentProcessTypeID') {
             props.onChangeProcessType(value);
-            console.log(value)
             createDocumentData[key] = value
             setcreateDocumentData(createDocumentData)
 
@@ -343,8 +355,7 @@ const AmHeaderputandpick = (props) => {
             if (valueQtyDocItems.length != 0) {
                 dataSelect2 = [...dataSelect].map((x, idx) => {
                     let CheckID;
-                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);
-                    console.log(found)
+                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);                 
                     if (found < 0) { 
                         CheckID = true
                     }
@@ -353,8 +364,7 @@ const AmHeaderputandpick = (props) => {
                     } else {
                         if (valueQtyDocItems[x.ID] !== undefined) {
                             x.Quantity = valueQtyDocItems[x.ID].recQty
-                            console.log(valueQtyDocItems[x.ID].recQty)
-
+              
                         } else {
 
                             if (x.Qty) {
@@ -526,7 +536,11 @@ const AmHeaderputandpick = (props) => {
         } else if (type === "labeltext") {
             //getTextsValue(key, valueTexts)
             return <label>{texts}</label>
-        } else if (type === "dropdown") {
+        } else if (type === "labeltext" && valueTexts !== undefined) {
+             let docData = createDocumentData
+            docData[key] = valueTexts
+           return setcreateDocumentData(docData)
+        }  else if (type === "dropdown") {
             return (
                 <AmDropdown
                     id={idddls}

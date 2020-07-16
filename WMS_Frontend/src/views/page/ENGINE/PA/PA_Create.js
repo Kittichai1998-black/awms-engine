@@ -25,7 +25,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "", valueTexts: "1012", codeTranslate: "Movement Type" },
+                    { label: "Movement Type", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -45,7 +45,6 @@ const Create_GR_DR = props => {
             ];
 
         } else {
-            console.log(dataDocument)
             let DocumentProcessTypeName = dataDocument.DocumentProcessTypeName 
             let DocumentProcessType_ID = dataDocument.DocumentProcessType_ID
             let SouCustomerName = dataDocument.SouCustomerName
@@ -58,13 +57,13 @@ const Create_GR_DR = props => {
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
             let ForCustomerName = dataDocument.ForCustomerName
             let For_Customer_ID = dataDocument.For_Customer_ID
-
+            console.log(SouWarehouseName)
             let Source;
-            if (SouWarehouseName !== null) {
+            if (SouWarehouseName != null) {
                 Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
-            } else if (SouCustomerName !== null) {
+            } else if (SouCustomerName != null) {
                 Source = { label: "Source Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
-            } else if (SouSupplierName !== null) {
+            } else if (SouSupplierName != null) {
                 Source = { label: "Source Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
 
             } else {
@@ -78,7 +77,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process Type", type: "labeltext", key: "movementTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
+                    { label: "Process Type", type: "labeltext", key: "documentProcessTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
