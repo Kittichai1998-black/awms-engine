@@ -11,7 +11,7 @@ namespace ProjectAERP.APIService.Document
 {
     public class DoneQueueClosedAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public DoneQueueClosedAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneQueueClosedAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

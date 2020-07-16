@@ -198,6 +198,10 @@ const ReceivePalletByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
   loading: Loading
 });
+const GR_PalletByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loading: Loading
+});
 
 
 const routes = [

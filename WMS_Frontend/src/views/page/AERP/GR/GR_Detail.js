@@ -67,19 +67,6 @@ const GR_Detail = props => {
   };
 
   const addPalletMapSTO = {
-    // columnsDocItems: colListDocItems,
-    // ddlWarehouse: {
-    //   visible: true,
-    //   field: "warehouseID",
-    //   typeDropdown: "search",
-    //   name: "Warehouse",
-    //   placeholder: "Select Warehouse",
-    //   fieldLabel: ["Code", "Name"],
-    //   fieldDataKey: "ID",
-    //   // defaultValue: 1,
-    //   required: true,
-    //   // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
-    // },
     ddlArea: {
       visible: true,
       field: "areaID",
@@ -143,6 +130,8 @@ const GR_Detail = props => {
       useAddPalletMapSTO={true}
       addPalletMapSTO={addPalletMapSTO}
       buttonConfirmMappingSTO={true}
+      //================================
+      addPrintBarcode={true}
     />
   );
 };

@@ -50,12 +50,52 @@ namespace AWMSEngine.Controllers.V2
                 string _fileName = (string)res.fileName;
                 return File(_stream, _contentType, _fileName);
             }
+            else if (res._result.status == 1 && res.stream is FileStream)
+            {
+                FileStream _stream = (FileStream)res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File(_stream, _contentType, _fileName);
+            }
             else
             {
                 string _message = (string)res._message;
                 return this.NotFound(_message);
             }
         }
+
+        [HttpPost("download/{serviceCode}")]
+        public async Task<IActionResult> PostDownloadAPIService([FromBody]dynamic request, string serviceCode)
+        {
+            var res = ExecuteAPI(serviceCode, "post", true, request);
+            if (res._result.status == 1 && res.stream is Stream)
+            {
+                Stream _stream = (Stream)res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File(_stream, _contentType, _fileName);
+            }
+            else if (res._result.status == 1 && res.stream is byte[])
+            {
+                byte[] _stream = (byte[])res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File(_stream, _contentType, _fileName);
+            }
+            else if(res._result.status == 1 && res.stream is FileStream)
+            {
+                FileStream _stream = (FileStream)res.stream;
+                string _contentType = (string)res.contentType;
+                string _fileName = (string)res.fileName;
+                return File(_stream, _contentType, _fileName);
+            }
+            else
+            {
+                string _message = (string)res._message;
+                return this.NotFound(_message);
+            }
+        }
+
         [HttpGet("{serviceCode}")]
         public dynamic GetAPIService(string serviceCode)
         {

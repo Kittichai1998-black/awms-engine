@@ -23,8 +23,8 @@ namespace AWMSModel.Entity
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
         public long? For_Customer_ID;
-        public string Batch;
-        public string Lot;
+        //public string Batch;
+        //public string Lot;
         public string Options;
         public string Remark;
         public DateTime? ActionTime;

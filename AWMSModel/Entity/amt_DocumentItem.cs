@@ -26,6 +26,7 @@ namespace AWMSModel.Entity
         public string Ref1;
         public string Ref2;
         public string Ref3;
+        public string Ref4;
         public string ItemNo;
         public DocumentEventStatus EventStatus;
         public decimal? ActualBaseQuantity;
