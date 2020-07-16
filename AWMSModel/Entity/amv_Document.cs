@@ -64,6 +64,7 @@ namespace AWMSModel.Entity
         public string ForCustomer;
 
         public string SouCustomerName;
+        public string SouSupplierCode;
         public string SouSupplierName;
         public string SouBranchName;
         public string TransportName;
