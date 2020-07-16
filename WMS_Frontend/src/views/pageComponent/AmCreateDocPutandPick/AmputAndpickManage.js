@@ -29,8 +29,7 @@ const AmputAndpickManage = (props) => {
             documentProcessTypeID: null,
             forCustomerCode: null,
             forCustomerID: null,
-            lot: null,
-            movementTypeID: null,
+            lot: null,    
             options: null,
             orderNo: null,
             parentDocumentID: null,
@@ -78,7 +77,6 @@ const AmputAndpickManage = (props) => {
       
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
-               
                 x.unitType = x.UnitType_Code
                 x.RefDocumentItem_ID = x.ID
                 x.Options = null
@@ -89,8 +87,9 @@ const AmputAndpickManage = (props) => {
         } else {
 
         }
+        console.log(docs)
         if (Object.keys(docs).length > countDoc) {
-            CreateDocuments(docs, doc.dataSourceItemTB)
+            //CreateDocuments(docs)
         }
 
     }

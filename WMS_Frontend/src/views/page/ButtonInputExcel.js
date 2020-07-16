@@ -264,18 +264,24 @@ function Test5(props) {
             let reqjson = {
                 "listsCode": [
                     {
-                        "code": "PAL0000015",
-                        "title": "FINISHED GOODS",  // มี 2แบบ 1. FINISHED GOODS 2. PACKING MATERIAL
-                        "options": "itemName=ยาธาตุน้ำขาวตรากระตายบิน" +
-                            "&lotNo=20A328&controlNo=123456&supplier=AAAAA&codeNo=54321&"+
-                            "receivedDate=15/04/2020&qtyReceived=124กล่อง/3พาเลท&palletNo=3/3"
+                        "code": "N|1|1|100",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0024&lotNo=ssd&controlNo=aa&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/4"
                     },
                     {
-                        "code": "PAL0000016",
-                        "title": "PACKING MATERIAL",  // มี 2แบบ 1. FINISHED GOODS 2. PACKING MATERIAL
-                        "options": "itemName=ยาธาตุน้ำขาวตรากระตายบิน2" +
-                            "&lotNo=30A328&controlNo=123456&supplier=AAAAA&codeNo=54321&"+
-                            "receivedDate=15/04/2020&qtyReceived=124กล่อง/3พาเลท&palletNo=3/3"
+                        "code": "N|2|1,2|50,50",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0024,PJAAN04-0026&lotNo=ssd,ssd1&controlNo=aa,aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=50,50&palletNo=2/4"
+                    },
+                    {
+                        "code": "N|3|2|100",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=3/4"
+                    },
+                    {
+                        "code": "N|4|2|10",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=10&palletNo=4/4"
                     }
                 ],
                 "layoutType": 91
