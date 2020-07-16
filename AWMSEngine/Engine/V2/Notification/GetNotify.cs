@@ -24,6 +24,7 @@ namespace AWMSEngine.Engine.V2.Notification
             public List<MessageDetail> messageDetails;
             public class MessageDetail
             {
+                public long postID;
                 public string message;
                 public string subject;
                 public DateTime datetime;
@@ -40,6 +41,7 @@ namespace AWMSEngine.Engine.V2.Notification
             {
                 messageDetails.Add(new TRes.MessageDetail()
                 {
+                    postID = x.ID.Value,
                     subject = x.Title,
                     message = x.Message,
                     datetime = x.CreateTime

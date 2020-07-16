@@ -274,10 +274,10 @@ const AmTableComponent = (props) => {
 
 const GenerateRow = ({columns,props, dataSource}) => {
   let customDataSource = [...dataSource];
-  if(customDataSource.length < props.minRow){
+  if(customDataSource.length < props.minRows){
     let rowCount = 0;
 
-    while(rowCount < props.minRow - customDataSource.length){
+    while(rowCount < props.minRows - customDataSource.length){
       customDataSource.push({})
     }
   }
