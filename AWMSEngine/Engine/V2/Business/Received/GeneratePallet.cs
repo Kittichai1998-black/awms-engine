@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         }
         public class TRes
         {
-            public string layoutType;
+            public int layoutType;
             public List<pallet_list_item> listsCode;
         }
         public class pallet_list
@@ -98,7 +98,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             res = new TRes()
             {
-                layoutType = "91",
+                layoutType = 91,
                 listsCode = listItem
             };
 
