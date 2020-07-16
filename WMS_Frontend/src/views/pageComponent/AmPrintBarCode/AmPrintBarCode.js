@@ -65,6 +65,9 @@ const AmPrintBarCode = props => {
   const [valueDataRadio, setValueDataRadio] = useState(0);
   const [valueQtyDocItems, setValueQtyDocItems] = useState({});
   const [dataSourceGenPallet, setDataSourceGenPallet] = useState([])
+  const [min, setMin] = useState(1);
+  const [max, setMax] = useState(999);
+  const [genData, setGenData] = useState(false);
 
   useEffect(() => {
     getData()
@@ -84,9 +87,7 @@ const AmPrintBarCode = props => {
     };
 
     var queryStr = createQueryString(Query)
-    console.log(queryStr)
     Axios.get(queryStr).then(res => {
-      console.log(res)
       setDataSource(res.data.datas)
     });
   }
@@ -109,6 +110,7 @@ const AmPrintBarCode = props => {
   };
   const handleRadioChange = (checked, val) => {
     setValueDataRadio(val)
+    onHandleChangeGeneratePallet()
     return null;
   };
   const DataGeneratePopup = () => {
@@ -138,7 +140,12 @@ const AmPrintBarCode = props => {
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Min : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="input"
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
-          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          //onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onKeyPress={(value, obj, element, event) => {
+            if (event.key === "Enter")
+              setMin(value)
+            onHandleChangeGeneratePallet("minVolume", value)
+          }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
@@ -146,18 +153,24 @@ const AmPrintBarCode = props => {
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Max : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="input"
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
-          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          //onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onKeyPress={(value, obj, element, event) => {
+            if (event.key === "Enter")
+              setMax(value)
+            onHandleChangeGeneratePallet("maxVolume", value)
+          }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
       <br />
     </div>
   };
-  const onHandleChangeInputQTY = (value, element, event, docItemID) => {
-
-    console.log(valueDataRadio)
-    console.log(props.data)
-
+  const onHandleChangeGeneratePallet = (field, value) => {
+    // console.log(value)
+    // console.log(valueDataRadio)
+    // console.log(props.data)
+    // console.log(min)
+    setGenData(true)
     var itemList = [];
     var item = {};
     props.data.forEach(ele => {
@@ -173,17 +186,14 @@ const AmPrintBarCode = props => {
 
     const dataSend = {
       mode: valueDataRadio,
-      minVolume: 1,
-      maxVolume: 100,
-      supplierName: "",
-      supplierCode: "",
+      minVolume: parseInt(min),
+      maxVolume: parseInt(max),
+      supplierName: props.SouSupplierName,
+      supplierCode: props.SouSupplierCode,
       Item: itemList
     }
-
     console.log(dataSend)
     Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
-
-      console.log(res)
       setDataSourceGenPallet(res.data)
     });
 
@@ -191,19 +201,50 @@ const AmPrintBarCode = props => {
   };
   const onHandledataConfirm = (status, rowdata) => {
     if (status) {
-      onClickLoadPDF()
+
+      if (!genData) {
+        var itemList = [];
+        var item = {};
+        props.data.forEach(ele => {
+          item = {
+            docItemID: ele.ID,
+            lot: ele.Lot,
+            orderNo: ele.OrderNo,
+            code: ele.Code,
+            vol: 150
+          }
+        });
+        itemList.push(item)
+
+        const dataSend = {
+          mode: valueDataRadio,
+          minVolume: 1,
+          maxVolume: 999,
+          supplierName: props.SouSupplierName,
+          supplierCode: props.SouSupplierCode,
+          Item: itemList
+        }
+        console.log(dataSend)
+        Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
+          //setDataSourceGenPallet(res.data)
+          onClickLoadPDF(res.data)
+        });
+      } else {
+        onClickLoadPDF()
+      }
+
+      //onClickLoadPDF()
     } else {
       setDialog(false)
     }
     return null
   }
-  const onClickLoadPDF = async () => {
+  const onClickLoadPDF = async (data) => {
     console.log(dataSourceGenPallet)
+
     try {
-      let reqjson = {
-        dataSourceGenPallet
-      }
-      await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
+
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data == null ? dataSourceGenPallet : data, "printcode.pdf").then();
 
     } catch (err) {
       console.log(err)
