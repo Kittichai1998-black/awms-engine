@@ -22,7 +22,7 @@ const RD_Create_FGCustomer = props => {
             var ProcessTypeID = CodeprocessTypeStr.substring(3)
             var DataprocessTypeID = {};
             if (ProcessTypeID === '') {
-                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             } else if (ProcessTypeID === '1') {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             } else if (ProcessTypeID === '2') {
@@ -30,7 +30,7 @@ const RD_Create_FGCustomer = props => {
             } else if (ProcessTypeID === '3') {
                 DataprocessTypeID = { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" }
             } else {
-                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+               // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
 
 
@@ -53,7 +53,7 @@ const RD_Create_FGCustomer = props => {
                 ],
                 [
 
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
+                    { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
             ];

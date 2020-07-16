@@ -8,7 +8,7 @@ namespace AWMSEngine.APIService.V2.Notify
 {
     public class GetNotifyAPI : BaseAPIService
     {
-        public GetNotifyAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public GetNotifyAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
