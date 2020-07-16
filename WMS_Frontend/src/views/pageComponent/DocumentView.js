@@ -1,6 +1,6 @@
 import Grid from "@material-ui/core/Grid";
 import moment from "moment";
-import React, { useState, useEffect, useContext,useMemo } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
 import {
   withStyles,
@@ -37,6 +37,7 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
+import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -97,14 +98,14 @@ const LabelH = {
   fontWight: "bold",
   width: "200px"
 };
- 
+
 function ReceiveIcon(props) {
   return (
-      <SvgIcon>
-          <path
-              d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
-          />
-      </SvgIcon>
+    <SvgIcon>
+      <path
+        d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
+      />
+    </SvgIcon>
   );
 }
 const BtnReceive = withStyles(theme => ({
@@ -112,13 +113,13 @@ const BtnReceive = withStyles(theme => ({
 }))(props => {
   const { classes, onHandleClick, ...other } = props;
   return (
-      <>
-          <AmButton className="float-right" styleType="confirm"
-              startIcon={<ReceiveIcon />}
-              onClick={onHandleClick}>
-              {'Receive'}
-          </AmButton>
-      </>
+    <>
+      <AmButton className="float-right" styleType="confirm"
+        startIcon={<ReceiveIcon />}
+        onClick={onHandleClick}>
+        {'Receive'}
+      </AmButton>
+    </>
   );
 });
 function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocItems, onConfirm) {
@@ -176,6 +177,7 @@ const DocumentView = props => {
   const [msgDialog, setMsgDialog] = useState("");
   const [typeDialog, setTypeDialog] = useState("");
   const [openReceive, setOpenReceive] = useState(false);
+  const [selection, setSelection] = useState();
   useEffect(() => {
     getData();
     // console.log(props.optionDocItems);
@@ -643,16 +645,21 @@ const DocumentView = props => {
         }
 
       </div>
+      <AmPrintBarCode data={selection} />
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
+        <AmTable selection={"checkbox"}
+          selectionData={(data) => {
+            console.log(data)
+            setSelection(data);
+          }} dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
-      
+
       <br />
       <br />
       {props.useAddPalletMapSTO ?
         <>
-          <BtnReceive onHandleClick={handleClickOpen}/>
+          <BtnReceive onHandleClick={handleClickOpen} />
           {renderDialogReceivePallet}
         </>
 
