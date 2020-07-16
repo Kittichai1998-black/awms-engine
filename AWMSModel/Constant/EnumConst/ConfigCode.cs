@@ -66,5 +66,10 @@ namespace AWMSModel.Constant.EnumConst
         Noti_Email_SMTP_Port,
         [EnumValueAttribute(ValueString = "Noti_Email_SMTP_Host")]
         Noti_Email_SMTP_Host,
+
+        [EnumValueAttribute(ValueString = "TOKEN_EXPIRE_HR")]
+        TOKEN_EXPIRE_HR,
+        [EnumValueAttribute(ValueString = "TOKEN_EXTEND_HR")]
+        TOKEN_EXTEND_HR,
     }
 }
