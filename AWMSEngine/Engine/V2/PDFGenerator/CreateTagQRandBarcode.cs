@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Rectangle = iTextSharp.text.Rectangle;
-using static AWMSEngine.Engine.V2.PDFGenerator.PDFGenerator;
 using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
