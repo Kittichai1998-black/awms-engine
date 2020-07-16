@@ -64,6 +64,7 @@ const AmPrintBarCode = props => {
   const [dataSource, setDataSource] = useState([])
   const [valueDataRadio, setValueDataRadio] = useState(0);
   const [valueQtyDocItems, setValueQtyDocItems] = useState({});
+  const [dataSourceGenPallet, setDataSourceGenPallet] = useState([])
 
   useEffect(() => {
     getData()
@@ -137,7 +138,7 @@ const AmPrintBarCode = props => {
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Min : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="input"
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
-          onChange={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
@@ -145,7 +146,7 @@ const AmPrintBarCode = props => {
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Max : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="input"
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
-          onChange={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
@@ -153,20 +154,67 @@ const AmPrintBarCode = props => {
     </div>
   };
   const onHandleChangeInputQTY = (value, element, event, docItemID) => {
-    // setValueQtyDocItems({
-    //   ...valueQtyDocItems, [element.id]: {
-    //     recQty: parseFloat(value),
-    //     docItemID: docItemID
-    //   }
-    // });
+
+    console.log(valueDataRadio)
+    console.log(props.data)
+
+    var itemList = [];
+    var item = {};
+    props.data.forEach(ele => {
+      item = {
+        docItemID: ele.ID,
+        lot: ele.Lot,
+        orderNo: ele.OrderNo,
+        code: ele.Code,
+        vol: 150
+      }
+    });
+    itemList.push(item)
+
+    const dataSend = {
+      mode: valueDataRadio,
+      minVolume: 1,
+      maxVolume: 100,
+      supplierName: "",
+      supplierCode: "",
+      Item: itemList
+    }
+
+    console.log(dataSend)
+    Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
+
+      console.log(res)
+      setDataSourceGenPallet(res.data)
+    });
+
 
   };
+  const onHandledataConfirm = (status, rowdata) => {
+    if (status) {
+      onClickLoadPDF()
+    } else {
+      setDialog(false)
+    }
+    return null
+  }
+  const onClickLoadPDF = async () => {
+    console.log(dataSourceGenPallet)
+    try {
+      let reqjson = {
+        dataSourceGenPallet
+      }
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <div>
 
       <AmEditorTable
         open={dialog}
-        onAccept={(status, rowdata) => console.log("s")}
+        onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
         titleText={"Generate BarCode Detail"}
         data={props.data}
         columns={RanderEle()}
