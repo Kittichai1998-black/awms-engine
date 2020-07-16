@@ -12,7 +12,7 @@ namespace ProjectAERP.APIService.Document
 {
     public class ClosingManualAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public ClosingManualAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public ClosingManualAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         public class TReq

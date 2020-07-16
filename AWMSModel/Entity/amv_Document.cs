@@ -23,8 +23,8 @@ namespace AWMSModel.Entity
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
         public long? For_Customer_ID;
-        public string Batch;
-        public string Lot;
+        //public string Batch;
+        //public string Lot;
         public string Options;
         public string Remark;
         public DateTime? ActionTime;
@@ -64,6 +64,7 @@ namespace AWMSModel.Entity
         public string ForCustomer;
 
         public string SouCustomerName;
+        public string SouSupplierCode;
         public string SouSupplierName;
         public string SouBranchName;
         public string TransportName;
@@ -76,6 +77,7 @@ namespace AWMSModel.Entity
         public string DesAreaName;
         public string ForCustomerName;
         public string DocumentProcessTypeName;
+        public long? DocumentProcessType_ID;
 
         public string Created;
         public string Modified;

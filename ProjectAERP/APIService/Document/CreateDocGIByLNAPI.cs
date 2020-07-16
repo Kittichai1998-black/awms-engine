@@ -10,7 +10,7 @@ namespace ProjectAERP.APIService.Document
 {
     public class CreateDocGIByLNAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public CreateDocGIByLNAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public CreateDocGIByLNAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

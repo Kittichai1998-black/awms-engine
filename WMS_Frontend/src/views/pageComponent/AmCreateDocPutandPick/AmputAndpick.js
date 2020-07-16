@@ -10,7 +10,7 @@ import queryString from "query-string";
 
 const AmputAndpick = (props) => {
     const { doc, dia } = useContext(PutandPickContext)
-     
+
 
     const getDocID = () => {
         //return props.dochistory.location.search
@@ -20,6 +20,7 @@ const AmputAndpick = (props) => {
         }
         return ID;
     };
+
     return <PutandPickProvider>
         <div>
             <AmHeaderputandpick
@@ -27,8 +28,10 @@ const AmputAndpick = (props) => {
                 docItemQuery={props.docItemQuery}
                 doccolumnEditItem={props.doccolumnEditItem}
                 doccolumnEditItemSet={props.doccolumnEditItemSet}
-                //docIDCreate={getDocID()}
-            >
+                onChangeDoument={props.onChangeDoument}
+                doctypeDocNo={props.doctypeDocNo}
+                docIDCreate={getDocID()}
+        >
             </AmHeaderputandpick>
         </div>
         <div>

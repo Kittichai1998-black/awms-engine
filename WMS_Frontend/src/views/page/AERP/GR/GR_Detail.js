@@ -67,19 +67,6 @@ const GR_Detail = props => {
   };
 
   const addPalletMapSTO = {
-    // columnsDocItems: colListDocItems,
-    // ddlWarehouse: {
-    //   visible: true,
-    //   field: "warehouseID",
-    //   typeDropdown: "search",
-    //   name: "Warehouse",
-    //   placeholder: "Select Warehouse",
-    //   fieldLabel: ["Code", "Name"],
-    //   fieldDataKey: "ID",
-    //   // defaultValue: 1,
-    //   required: true,
-    //   // customQ: "{ 'f': 'ID', 'c':'=', 'v': 1}"
-    // },
     ddlArea: {
       visible: true,
       field: "areaID",
@@ -88,7 +75,7 @@ const GR_Detail = props => {
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 21,
+      defaultValue: 4,
       required: true,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
@@ -100,7 +87,7 @@ const GR_Detail = props => {
       placeholder: "Select Location",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 1540,
+      defaultValue: 1541,
       required: false,
     },
     inputTitle: [
@@ -143,6 +130,8 @@ const GR_Detail = props => {
       useAddPalletMapSTO={true}
       addPalletMapSTO={addPalletMapSTO}
       buttonConfirmMappingSTO={true}
+      //================================
+      addPrintBarcode={true}
     />
   );
 };
