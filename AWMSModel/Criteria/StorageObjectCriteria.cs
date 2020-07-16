@@ -61,6 +61,7 @@ namespace AWMSModel.Criteria
         public long? skuTypeID;
         public string skuTypeName;
         public long? forCustomerID;
+        public long? transportObject_ID;
 
         public ObjectSize objectSize;
         public class ObjectSize
