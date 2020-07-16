@@ -27,6 +27,7 @@ namespace AWMSModel.Criteria
         public string orderNo;
         public string lot;
         public string batch;
+        public string cartonNo;
         public decimal qty;
         public long unitID;
         public string unitCode;
@@ -43,6 +44,7 @@ namespace AWMSModel.Criteria
         public decimal volume;
         public decimal innerVolume;
 
+        public DateTime? incubationDate;
         public DateTime? productDate;
         public DateTime? expiryDate;
         public bool isFocus;
@@ -52,7 +54,10 @@ namespace AWMSModel.Criteria
         public string refID;
         public string ref1;
         public string ref2;
+        public string ref3;
+        public string ref4;
         public int IsHold;
+        public int AuditStatus;
         public long? skuTypeID;
         public string skuTypeName;
         public long? forCustomerID;

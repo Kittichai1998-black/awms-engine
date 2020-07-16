@@ -285,7 +285,8 @@ namespace AWMSEngine.ADO
             param.Add("orderNo", sto.orderNo);
             param.Add("batch", sto.batch);
             param.Add("lot", sto.lot);
-
+            param.Add("cartonNo", sto.cartonNo);
+            
             param.Add("qty", sto.qty);
             param.Add("unitID", sto.unitID);
             param.Add("baseQty", sto.baseQty);
@@ -299,11 +300,15 @@ namespace AWMSEngine.ADO
             param.Add("actionBy", buVO.ActionBy);
             param.Add("productDate", sto.productDate);
             param.Add("expiryDate", sto.expiryDate);
+            param.Add("incubationDate", sto.incubationDate);
 
             param.Add("refID", sto.refID);
             param.Add("ref1", sto.ref1);
             param.Add("ref2", sto.ref2);
+            param.Add("ref3", sto.ref3);
+            param.Add("ref4", sto.ref4);
             param.Add("IsHold", sto.IsHold);
+            param.Add("auditStatus", sto.AuditStatus);
 
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
