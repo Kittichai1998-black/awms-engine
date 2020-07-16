@@ -115,7 +115,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             p4 = new Font(font_p, 16);
             p5 = new Font(font_p, 14);
             p6 = new Font(font_p, 12);
-            p7 = new Font(font_H, 10);
+            p7 = new Font(font_p, 10);
         }
 
 
@@ -186,7 +186,6 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             listsCode.ForEach(info => {
                 document.Add(GetHeaderQR(info.title, info.code));
                 document.Add(GetDetail(info.options));
-                //document.Add(new Paragraph(info.title, h4));
                 document.NewPage();
             });
 
@@ -237,7 +236,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 
             PdfPCell headerTableCell_1 = new PdfPCell(png);
             headerTableCell_1.HorizontalAlignment = Element.ALIGN_CENTER;
-            headerTableCell_0.VerticalAlignment = Element.ALIGN_MIDDLE;
+            headerTableCell_1.VerticalAlignment = Element.ALIGN_MIDDLE;
             headerTableCell_1.Padding = 1f;
             headerTable.AddCell(headerTableCell_1);
             
@@ -255,23 +254,93 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             var receivedDate = jsond[OptionConst.OPT_RECEIVED_DATE].Value ?? "";
             var qtyReceived = jsond[OptionConst.OPT_QTY_RECEIVED].Value ?? "";
             var palletNo = jsond[OptionConst.OPT_PALLET_NO].Value ?? "";
-            PdfPTable table = new PdfPTable(2);
+            PdfPTable table = new PdfPTable(4);
             table.TotalWidth = 422f;
             table.HorizontalAlignment = 0;
             table.DefaultCell.Border = Rectangle.BOX;
             //table.SpacingBefore = 5;
-            //table.SpacingAfter = 20;
+            //table.SpacingAfter = 5;
 
-            PdfPCell tableCell_0 = new PdfPCell(new Phrase("Item Name ", h6));
-            tableCell_0.HorizontalAlignment = Element.ALIGN_LEFT;
-            tableCell_0.VerticalAlignment = Element.ALIGN_MIDDLE;
-            tableCell_0.Border = Rectangle.NO_BORDER;
-            table.AddCell(tableCell_0);
-            PdfPCell tableCell_1 = new PdfPCell(new Phrase(itemName, p6));
-            tableCell_1.HorizontalAlignment = Element.ALIGN_LEFT;
-            tableCell_1.VerticalAlignment = Element.ALIGN_MIDDLE;
-            tableCell_1.Border = Rectangle.BOTTOM_BORDER;
-            table.AddCell(tableCell_1);
+            float[] tableColWidth = new float[4];
+            tableColWidth[0] = 80f;
+            tableColWidth[1] = 187f;
+            tableColWidth[2] = 65f;
+            tableColWidth[3] = 90f;
+            table.SetWidths(tableColWidth);
+            table.LockedWidth = true;
+            //row1
+            PdfPCell tableCell_0 = new PdfPCell(new Phrase("Item Name ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            PdfPCell tableCell_1 = new PdfPCell(new Phrase(itemName, p7));
+            tableCell_1.Colspan = 3;
+            table.AddCell(SetInfoCol(tableCell_1));
+
+            //row 2
+            tableCell_0 = new PdfPCell(new Phrase("Lot no. ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            tableCell_1 = new PdfPCell(new Phrase(lotNo, p7));
+            tableCell_1.Colspan = 3;
+            table.AddCell(SetInfoCol(tableCell_1));
+
+            //row3
+            tableCell_0 = new PdfPCell(new Phrase("Control no. ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            tableCell_1 = new PdfPCell(new Phrase(controlNo, p7));
+            tableCell_1.Colspan = 3;
+            table.AddCell(SetInfoCol(tableCell_1));
+            //row4
+            tableCell_0 = new PdfPCell(new Phrase("Supplier ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            tableCell_1 = new PdfPCell(new Phrase(supplier, p7));
+            table.AddCell(SetInfoCol(tableCell_1));
+
+            PdfPCell tableCell_2 = new PdfPCell(new Phrase("Code no. ", h7));
+            table.AddCell(SetHeaderCol(tableCell_2));
+
+            PdfPCell tableCell_3 = new PdfPCell(new Phrase(codeNo, p7));
+            table.AddCell(SetInfoCol(tableCell_3));
+
+            //row5
+            tableCell_0 = new PdfPCell(new Phrase("Quantity Received ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            tableCell_1 = new PdfPCell(new Phrase(qtyReceived, p7));
+            tableCell_1.Colspan = 3;
+            table.AddCell(SetInfoCol(tableCell_1));
+            //row6
+            tableCell_0 = new PdfPCell(new Phrase("Received Date ", h7));
+            table.AddCell(SetHeaderCol(tableCell_0));
+
+            tableCell_1 = new PdfPCell(new Phrase(receivedDate, p7));
+            table.AddCell(SetInfoCol(tableCell_1));
+
+            tableCell_2 = new PdfPCell(new Phrase("Pallet No. ", h7));
+            table.AddCell(SetHeaderCol(tableCell_2));
+
+            tableCell_3 = new PdfPCell(new Phrase(palletNo, p7));
+            table.AddCell(SetInfoCol(tableCell_3));
+
+            PdfPCell SetHeaderCol(PdfPCell pCell)
+            {
+                pCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                pCell.Border = Rectangle.NO_BORDER;
+                pCell.PaddingTop = 15f;
+                return pCell;
+            }
+            PdfPCell SetInfoCol(PdfPCell pCell)
+            {
+                pCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                pCell.Border = Rectangle.BOTTOM_BORDER;
+                pCell.PaddingTop = 15f;
+                pCell.PaddingBottom = 5f;
+                return pCell;
+            }
             return table;
         }
     }
