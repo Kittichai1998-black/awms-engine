@@ -12,35 +12,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 {
     public class GenerateTagCode //: BaseEngine<GenerateTagCode.TReq, GenerateTagCode.TRes>
     {
-        //public class TReq
-        //{
-        //    public string textCode;
-        //    public CodeType codeType;
-        //}
-        //public enum CodeType
-        //{
-        //    BARCODE = 0,
-        //    QRCODE = 1
-        //}
-        //public class TRes
-        //{
-        //    public byte[] byteTag;
-        //}
-        //protected override TRes ExecuteEngine(TReq reqVO)
-        //{
-        //    TRes res = new TRes();
-
-        //    if(reqVO.codeType == CodeType.BARCODE)
-        //    {
-        //       res.byteTag = CreateBarCode(reqVO.textCode);
-        //    }
-        //    else
-        //    {
-        //        res.byteTag = CreateQRCode(reqVO.textCode);
-
-        //    }
-        //    throw new NotImplementedException();
-        //}
+       
         public byte[] CreateQRCode(string textCode)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();

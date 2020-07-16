@@ -9,17 +9,36 @@ import {
 
 const Axios = new apicall();
 
+
+
+
 const RD_Create_FGCustomer = props => {
-    const [dataWarehouse, setDataWarehouse] = useState("");
     const [CodeprocessType, setCodeprocessType] = useState(0);
     const [table, setTable] = useState(null);
     const [HeaderDoc, setHeaderDoc] = useState([]);
+    const [skuType, setskuType] = useState(99);
+    const [columSKU, setcolumSKU] = useState();
+    const [skuquery, setskuquery] = useState();
+
+    const SKUMaster = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "SKUMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
 
     useEffect(() => {
         if (CodeprocessType !== "" && CodeprocessType !== null) {
             var CodeprocessTypeStr = CodeprocessType.toString();
             var ProcessTypeID = CodeprocessTypeStr.substring(3)
+            var ProcesTypeSKU = CodeprocessTypeStr.substring(2,3,4)
+            setskuType(ProcesTypeSKU);
             var DataprocessTypeID = {};
             if (ProcessTypeID === '') {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
@@ -74,7 +93,7 @@ const RD_Create_FGCustomer = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     columns={columns}
-                    columnEdit={columnEdit}
+                    columnEdit={columSKU}
                     apicreate={apicreate}
                     createDocType={"receiveOrder"}
                     history={props.history}
@@ -82,21 +101,48 @@ const RD_Create_FGCustomer = props => {
                 />
             );
         }
-
+        setskuquery(SKUMaster)
 
     }, [HeaderDoc, CodeprocessType])
 
-    const SKUMaster = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "SKUMaster",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "SKUMasterType_ID", "c":"!=", "v": 50}]',
-        f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+
+    useEffect(() => {
+       
+        if (SKUMaster) {
+            let objQuery = SKUMaster;
+            if (objQuery !== null && skuType !== undefined) {
+                let skuqry = JSON.parse(objQuery.q);
+                skuqry.push({ 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType })
+                objQuery.q = JSON.stringify(skuqry);
+
+            }
+
+            setskuquery(objQuery)
+        }
+
+        var columnEdit = [
+            { Header: "Order No.", accessor: "orderNo", type: "input" },
+            {
+                // search: false,
+                Header: "SKU Item",
+                accessor: "skuCode",
+                type: "findPopUp",
+                queryApi: skuquery,
+                fieldLabel: ["skuCode", "skuName"],
+                columsddl: columsFindPopupSKU,
+                related: ["unitType", "skuName", "SKUItems"],
+                fieldDataKey: "Code", // ref กับ accessor
+                //defaultValue: "PJAAN04-0024",
+                required: true
+            },
+            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
+            { Header: "Unit", accessor: "unitType", type: "text" }
+        ];
+
+        setcolumSKU(columnEdit)
+    }, [skuType])
+
+
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
@@ -154,25 +200,7 @@ const RD_Create_FGCustomer = props => {
         { Header: "Unit", accessor: "unitType", width: 50 }
     ];
 
-    const columnEdit = [
-        { Header: "Order No.", accessor: "orderNo", type: "input" },
-        {
-            // search: false,
-            Header: "SKU Item",
-            accessor: "skuCode",
-            type: "findPopUp",
-            queryApi: SKUMaster,
-            fieldLabel: ["skuCode", "skuName"],
-            columsddl: columsFindPopupSKU,
-            related: ["unitType", "skuName", "SKUItems"],
-            fieldDataKey: "Code", // ref กับ accessor
-            defaultValue: "PJAAN04-0024",
-            required: true
-        },
-        { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
-        { Header: "Unit", accessor: "unitType", type: "text" }
-    ];
-
+  
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Order No.", accessor: "orderNo", width: 100 },
