@@ -259,6 +259,39 @@ function Test5(props) {
             console.log(err)
         }
     }
+    const onClickLoadPDF = async () => {
+        try {
+            let reqjson = {
+                "listsCode": [
+                    {
+                        "code": "N|1|1|100",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0024&lotNo=ssd&controlNo=aa&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/4"
+                    },
+                    {
+                        "code": "N|2|1,2|50,50",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0024,PJAAN04-0026&lotNo=ssd,ssd1&controlNo=aa,aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=50,50&palletNo=2/4"
+                    },
+                    {
+                        "code": "N|3|2|100",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=3/4"
+                    },
+                    {
+                        "code": "N|4|2|10",
+                        "title": "FINISHED GOODS",
+                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=10&palletNo=4/4"
+                    }
+                ],
+                "layoutType": 91
+            }
+            await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
     return (
         <div>
             <span>หน้านี้จะโหลดข้อมูล 100 rows ก่อนทันที </span>
@@ -337,7 +370,7 @@ function Test5(props) {
                     {'Test add'}
                 </AmButton>
                 {' - '}
-                <AmButton styleType="add_clear">
+                <AmButton styleType="add_clear" onClick={onClickLoadPDF}>
                     {'Test add'}
                 </AmButton>
                 {' - '}

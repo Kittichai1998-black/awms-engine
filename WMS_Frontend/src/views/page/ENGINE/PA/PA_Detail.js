@@ -146,18 +146,19 @@ const GR_Detail = props => {
             openDES={true}
             optionDocItems={optionDocItems}
             columnsDetailSOU={columnsDetailSOU}
-            columnsDetailDES={columnsDetailDES}
-            CreateputAway={true}
-            apiCreate={'/putaway/create?docID='}
+            columnsDetailDES={columnsDetailDES}  
+            apiCreate={'/grDr/createFGwm'}
             columns={columns}
             typeDoc={"received"}
-            typeDocNo={1011}
+            typeDocNo={1001}
             docID={getDocID()}
             header={TextHeader}
             buttonBack={true}
             linkBack={"/receive/search"}
             history={props.history}
-      
+            useAddPalletMapSTO={true}
+            addPalletMapSTO={addPalletMapSTO}
+            buttonConfirmMappingSTO={true}
         />
     );
 };

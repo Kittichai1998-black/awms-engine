@@ -127,6 +127,7 @@ const AmHeaderputandpick = (props) => {
         return arr
     }, {})
 
+    //const Dataheades = usedataHeader(props.docheaderCreate)
     const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
@@ -147,14 +148,20 @@ const AmHeaderputandpick = (props) => {
 
 
     useEffect(() => {
-        if (doc.docID != 0) {
+        if (doc.docID != 0 && doc.docID !== undefined) {
             getData();
         }
     }, [doc.docID])
 
     useEffect(() => {
+        if (props.docIDCreate !== undefined) {
+            doc.setdocID(props.docIDCreate)
+
+        }
+    }, [props.docIDCreate])
+
+    useEffect(() => {
         if (doc.dialogItemSet === true) {
-            console.log(dataSelect)
             getDataSet();
         }
     }, [doc.dialogItemSet])
@@ -165,6 +172,12 @@ const AmHeaderputandpick = (props) => {
         }
     }, [createDocumentData])
 
+    useEffect(() => {
+       let  dataHeader = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+            arr[el.key] = el.valueTexts || el.defaultValue
+            return arr
+       }, {})    
+    }, [props.docheaderCreate])
 
     useEffect(() => {
         if (doc.datadocItem ) {
@@ -196,6 +209,7 @@ const AmHeaderputandpick = (props) => {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
                     doc.setdatadocItem(res.data.datas);
+                   
                     doc.setdialogItem(true)
                 } else {
                     getDocItemQuery(DocItemsquery)
@@ -266,6 +280,12 @@ const AmHeaderputandpick = (props) => {
                 key: key,
             }
         });
+        if (key === 'documentProcessTypeID') {
+            props.onChangeProcessType(value);
+            createDocumentData[key] = value
+            setcreateDocumentData(createDocumentData)
+
+        }
         createDocumentData[key] = value
         setcreateDocumentData(createDocumentData)
     }
@@ -286,6 +306,10 @@ const AmHeaderputandpick = (props) => {
     const onHandleChangeFindpopupDoc = (value, dataObject, inputID, fieldDataKey, pair, key) => {
         if (value != undefined) {
             doc.setdocID(value)
+            if (value !== undefined) {
+                Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.doctypeDocNo + "&docID=" +
+                    value + "&getMapSto=true").then((res => props.onChangeDoument(res.data.document)))
+            }
 
         }
     }
@@ -324,66 +348,89 @@ const AmHeaderputandpick = (props) => {
     }
 
     const onSubmitAddItem = () => {
-        let dataSelect2 = [];
-        console.log(dataSelect)
-        console.log(doc.dataSourceItemTB)
-        if (dataSelect.length != 0 ) {
+        let dataSelect2 =[];
+        let Checkdataselect = 0;
+  
+        if (dataSelect.length != 0) {
             if (valueQtyDocItems.length != 0) {
                 dataSelect2 = [...dataSelect].map((x, idx) => {
-                    if (valueQtyDocItems[x.ID] !== undefined) {
-                        x.Quantity = valueQtyDocItems[x.ID].recQty
-               
-                    } else {
-
-                        if (x.Qty && doc.dataSourceItemTB.length === 0 ) {
-                            let Quantitys = x.Quantity - x.Qty
-                            if (Quantitys > 0) {
-                                x.Quantity = Quantitys
-                            } else {
-                            }
-                        
-                        }
-                        else if (x.Qty === undefined) {
-                        } else if (x.Quantity === 0) {
-                            dia.setdailogMsg("Document dupicate")
-                            dia.setdailogErr(true)
-                        }
+                    let CheckID;
+                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);                 
+                    if (found < 0) { 
+                        CheckID = true
                     }
-                    return x;
+                    if (!CheckID) {
+                        return Checkdataselect = 1
+                    } else {
+                        if (valueQtyDocItems[x.ID] !== undefined) {
+                            x.Quantity = valueQtyDocItems[x.ID].recQty
+              
+                        } else {
+
+                            if (x.Qty) {
+                                let Quantitys = x.Quantity - x.Qty
+                                if (Quantitys > 0) {
+                                    x.Quantity = Quantitys
+                                } else {
+                                   
+                                }
+
+                            }
+                            else if (x.Qty === undefined) {
+
+                            } else if (x.Quantity === 0) {
+                                dia.setdailogMsg("Document dupicate")
+                                dia.setdailogErr(true)
+                            }
+                        }
+                        return x;
+
+                    }
                 })
-                if (doc.dataSourceItemTB.length === 0) {
-                    doc.setdataSourceItemTB(dataSelect2);
+
+                if (Checkdataselect === 1) {
+                    dia.setdailogMsg("SKUItem dupicate")
+                    dia.setdailogErr(true)
+                    Checkdataselect = 0
+                    
+                } else {
+                    if (doc.dataSourceItemTB.length === 0) {
+                        doc.setdataSourceItemTB(dataSelect2);
+                        doc.setdialogItem(false)
+                    } else {
+                        dataSelect2.forEach((x, i) => {
+                            doc.dataSourceItemTB.push(dataSelect2[i])
+                        })
+
+                        doc.setdialogItem(false)
+                    }
+                }
+
+                } else {
+                    dia.setdailogMsg("Quantity Max");
+                    dia.setdailogErr(true)
+                    //doc.setdataSourceItemTB(dataSelect);
+                }
+
+                
+
+            } else {
+                if (doc.editdata.length != 0) {
+                    let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
+                    doc.dataSourceItemTB.splice(idx, 1);
+                    doc.setdataSourceItemTB([...doc.dataSourceItemTB])
                     doc.setdialogItem(false)
                 } else {
-                    dataSelect2.forEach((x, i) => {
-                        doc.dataSourceItemTB.push(dataSelect2[i])
-                    })
-                  
-                    doc.setdialogItem(false)
-                    
-
+                    dia.setdailogMsg("Seelct SKU Pls");
+                    dia.setdailogErr(true)
                 }
-                
-            } else {
-                dia.setdailogMsg("Quantity Max");
-                dia.setdailogErr(true)
-                //doc.setdataSourceItemTB(dataSelect);
-
-            }
-
-        } else {
-            if (doc.editdata.length != 0) {
-                let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
-                doc.dataSourceItemTB.splice(idx, 1);
-                doc.setdataSourceItemTB([...doc.dataSourceItemTB])
-                doc.setdialogItem(false)
-            } else {
-                dia.setdailogMsg("Seelct SKU Pls");
-                dia.setdailogErr(true)
-            }
         }
-        doc.seteditdata([]);
-        setDataSelect([]);
+
+            doc.seteditdata([]);
+            setDataSelect([]);
+        doc.setdialogItem(false)
+      
+         
     }
 
     const genInputQty = (datarow) => {
@@ -415,8 +462,6 @@ const AmHeaderputandpick = (props) => {
             onChange={(value, obj, element, event) => onChangeEditor(value, obj, element, event, datarow)}
         />
     }
-
-
 
     const getHeaderCreate = () => {
         return props.docheaderCreate.map((x, xindex) => {
@@ -491,7 +536,11 @@ const AmHeaderputandpick = (props) => {
         } else if (type === "labeltext") {
             //getTextsValue(key, valueTexts)
             return <label>{texts}</label>
-        } else if (type === "dropdown") {
+        } else if (type === "labeltext" && valueTexts !== undefined) {
+             let docData = createDocumentData
+            docData[key] = valueTexts
+           return setcreateDocumentData(docData)
+        }  else if (type === "dropdown") {
             return (
                 <AmDropdown
                     id={idddls}

@@ -417,15 +417,8 @@ const DropdownComponent = (props) => {
 
     useEffect(() => {
         if (queryApi) {
-            if (optionList === null || optionList === undefined) {
-                // queryApi.l = 0;
-                getData(createQueryString(queryApi));
-            } else {
-                if (optionList.length === 0) {
-                    // queryApi.l = 0;
-                    getData(createQueryString(queryApi));
-                }
-            }
+            getData(createQueryString(queryApi));
+            
         } else if (data) {
             var dataOptions = data;
             dataOptions.forEach(datas => {
