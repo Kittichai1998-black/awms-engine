@@ -208,8 +208,7 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    doc.setdatadocItem(res.data.datas);
-                   
+                    doc.setdatadocItem(res.data.datas);                   
                     doc.setdialogItem(true)
                 } else {
                     getDocItemQuery(DocItemsquery)
@@ -436,13 +435,21 @@ const AmHeaderputandpick = (props) => {
     const genInputQty = (datarow) => {
         let defaultQty;
 
-            if (datarow.Qty != undefined && doc.dataSourceItemTB.length == 0 && datarow.Quantity - datarow.Qty > 0) {
-                defaultQty = datarow.Quantity - datarow.Qty
-            } else if (datarow.Quantity - datarow.Qty > 0) {
-                defaultQty = datarow.Quantity - datarow.Qty
-            } else {
-                defaultQty = datarow.Quantity
-            }
+        if (datarow.Qty != undefined && doc.dataSourceItemTB.length == 0 && datarow.Quantity - datarow.Qty > 0) {
+            defaultQty = datarow.Quantity - datarow.Qty
+        } else if (datarow.Quantity - datarow.Qty > 0) {
+            defaultQty = datarow.Quantity - datarow.Qty
+        } else if (datarow.Quantity - datarow.Qty === 0) {
+            defaultQty = '-'
+            //doc.setdailogMsg('Item not found')
+            //doc.setdailogErr(true)
+            //doc.dialogItem(false)
+            //doc.setdatadocItem();
+           
+            
+        } else {
+            defaultQty = datarow.Quantity
+        }
 
             return <AmInput id={datarow.ID}
                 style={{ width: "100px" }}
