@@ -285,11 +285,6 @@ const AmMasterData = (props) => {
                 styleType="add"
                 onClick={onClickAdd}>{"Add"}
             </AmButton>
-            <AmButton
-                style={{ marginRight: "5px", float: "right" }}
-                styleType="add"
-                onClick={onClickAdd}>{"Add"}
-            </AmButton>
         </FormInline>
         <div style={{ clear: "both" }}></div>
         <AmTable
