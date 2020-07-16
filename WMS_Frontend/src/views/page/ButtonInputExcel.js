@@ -259,6 +259,33 @@ function Test5(props) {
             console.log(err)
         }
     }
+    const onClickLoadPDF = async () => {
+        try {
+            let reqjson = {
+                "listsCode": [
+                    {
+                        "code": "PAL0000015",
+                        "title": "FINISHED GOODS",  // มี 2แบบ 1. FINISHED GOODS 2. PACKING MATERIAL
+                        "options": "itemName=ยาธาตุน้ำขาวตรากระตายบิน" +
+                            "&lotNo=20A328&controlNo=123456&supplier=AAAAA&codeNo=54321&"+
+                            "receivedDate=15/04/2020&qtyReceived=124กล่อง/3พาเลท&palletNo=3/3"
+                    },
+                    {
+                        "code": "PAL0000016",
+                        "title": "PACKING MATERIAL",  // มี 2แบบ 1. FINISHED GOODS 2. PACKING MATERIAL
+                        "options": "itemName=ยาธาตุน้ำขาวตรากระตายบิน2" +
+                            "&lotNo=30A328&controlNo=123456&supplier=AAAAA&codeNo=54321&"+
+                            "receivedDate=15/04/2020&qtyReceived=124กล่อง/3พาเลท&palletNo=3/3"
+                    }
+                ],
+                "layoutType": 91
+            }
+            await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
     return (
         <div>
             <span>หน้านี้จะโหลดข้อมูล 100 rows ก่อนทันที </span>
@@ -337,7 +364,7 @@ function Test5(props) {
                     {'Test add'}
                 </AmButton>
                 {' - '}
-                <AmButton styleType="add_clear">
+                <AmButton styleType="add_clear" onClick={onClickLoadPDF}>
                     {'Test add'}
                 </AmButton>
                 {' - '}
