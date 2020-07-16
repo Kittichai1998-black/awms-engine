@@ -262,30 +262,21 @@ function Test5(props) {
     const onClickLoadPDF = async () => {
         try {
             let reqjson = {
+                "layoutType": 0,
                 "listsCode": [
                     {
-                        "code": "N|1|1|100",
-                        "title": "FINISHED GOODS",
-                        "options": "itemName=PJAAN04-0024&lotNo=ssd&controlNo=aa&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/4"
+                        "code": "PAL0000001"
                     },
                     {
-                        "code": "N|2|1,2|50,50",
-                        "title": "FINISHED GOODS",
-                        "options": "itemName=PJAAN04-0024,PJAAN04-0026&lotNo=ssd,ssd1&controlNo=aa,aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=50,50&palletNo=2/4"
-                    },
-                    {
-                        "code": "N|3|2|100",
-                        "title": "FINISHED GOODS",
-                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=100&palletNo=3/4"
-                    },
-                    {
-                        "code": "N|4|2|10",
-                        "title": "FINISHED GOODS",
-                        "options": "itemName=PJAAN04-0026&lotNo=ssd1&controlNo=aa1&supplier=XX&codeNo=NO01&receivedDate=07/16/2020&qtyReceived=10&palletNo=4/4"
+                        "code": "PAL0000002"
                     }
-                ],
-                "layoutType": 91
+                ]
             }
+            // let reqjson = {
+            //     "layoutType": 91,
+            //     "listsCode":
+            //         [{ "code": "N|1|20381|100", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/2" }, { "code": "N|2|20381|50", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=50&palletNo=2/2" }]
+            // }
             await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
 
         } catch (err) {
