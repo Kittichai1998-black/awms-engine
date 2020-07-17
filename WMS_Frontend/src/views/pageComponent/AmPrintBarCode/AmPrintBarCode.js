@@ -97,6 +97,7 @@ const AmPrintBarCode = props => {
   const genDataPalletList = () => {
     var itemList = [];
     var item = {};
+    // console.log(props.data)
     props.data.forEach(ele => {
       item = {
         docItemID: ele.ID,
@@ -107,8 +108,9 @@ const AmPrintBarCode = props => {
         skuType: ele.SKUMasterTypeName
 
       }
+      itemList.push(item)
     });
-    itemList.push(item)
+
 
     const dataSend = {
       mode: valueDataRadio,
@@ -128,11 +130,13 @@ const AmPrintBarCode = props => {
   };
   const RanderEle = () => {
     if (props.data) {
-      return props.data.map(y => {
+
+      const columns = [{ field: "Code" }]
+      return columns.map(y => {
         return {
           component: (data, cols, key) => {
             return (
-              <div key={key}>
+              <div >
                 {DataGenerateRadio()}
                 {DataGeneratePopup()}
                 <br />
@@ -142,6 +146,7 @@ const AmPrintBarCode = props => {
           }
         };
       });
+
     }
   };
   const handleRadioChange = (checked, val) => {
@@ -178,7 +183,10 @@ const AmPrintBarCode = props => {
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
           onKeyPress={(value, obj, element, event) => {
             if (event.key === "Enter") {
-              console.log(value)
+
+              if (value === "")
+                setDialogState({ type: "warning", content: "กรุณากรอกข้อมูล MinVolume", state: true })
+
               onHandleChangeGeneratePallet({ min: value }, valueDataRadio)
             }
           }}
@@ -191,6 +199,10 @@ const AmPrintBarCode = props => {
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
           onKeyPress={(value, obj, element, event) => {
             if (event.key === "Enter") {
+
+              if (value === "")
+                setDialogState({ type: "warning", content: "กรุณากรอกข้อมูล MaxVolume", state: true })
+
               onHandleChangeGeneratePallet({ max: value }, valueDataRadio)
             }
 
@@ -214,8 +226,9 @@ const AmPrintBarCode = props => {
         code: ele.Code,
         vol: (ele.Volume * ele.BaseQuantity)
       }
+      itemList.push(item)
     });
-    itemList.push(item)
+
 
     const dataSend = {
       mode: mode,
@@ -260,12 +273,14 @@ const AmPrintBarCode = props => {
       Clear()
     }
   }
+
   const Clear = () => {
     setDataItemsSend()
     setValueQty({ min: 1, max: 999 })
     setValueDataRadio(1)
     setGenData(false)
   }
+
   return (
     <div>
       <AmDialogs
@@ -280,6 +295,7 @@ const AmPrintBarCode = props => {
         data={props.data}
         columns={RanderEle()}
       />
+
       <AmButton
         style={{ marginRight: "5px" }}
         styleType="confirm"

@@ -646,10 +646,16 @@ const DocumentView = props => {
         }
 
       </div>
-      <AmPrintBarCode data={selection}
-        SouSupplierCode={dataHeader.SouSupplier}
-        SouSupplierName={dataHeader.SouSupplierName}
-      />
+      {props.usePrintBarcodePallet ?
+        <>
+          <AmPrintBarCode data={selection}
+            SouSupplierCode={dataHeader.SouSupplier}
+            SouSupplierName={dataHeader.SouSupplierName}
+          />
+        </>
+
+        : null}
+
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
         <AmTable selection={"checkbox"}
