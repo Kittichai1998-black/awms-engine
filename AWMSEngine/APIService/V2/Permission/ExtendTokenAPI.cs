@@ -23,8 +23,7 @@ namespace AWMSEngine.APIService.V2.Permission
             var res1 = new ExtendToken().Execute(this.Logger, this.BuVO,
                 new ExtendToken.TReqModel()
                 {
-                    Token = this.RequestVO.token,
-                    ExtendKey = this.RequestVO.extendKey
+                    Token = this.RequestVO.token
                 });
 
             return res1;

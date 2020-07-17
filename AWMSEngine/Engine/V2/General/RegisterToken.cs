@@ -64,12 +64,7 @@ namespace AWMSEngine.Engine.V2.General
             {
                 var user = ADO.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
                              {
-                                new SQLConditionCriteria("username",reqVO.Username, SQLOperatorType.EQUALS),
-                                new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
-                             }, this.BuVO).FirstOrDefault();
-                var clientSecret = ADO.DataADO.GetInstant().SelectBy<ams_ClientSecret>(new SQLConditionCriteria[]
-                             {
-                                new SQLConditionCriteria("SecretKey",reqVO.SecretKey, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("code",reqVO.Username, SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                              }, this.BuVO).FirstOrDefault();
 
@@ -79,10 +74,7 @@ namespace AWMSEngine.Engine.V2.General
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.A0010);
                 }
-                if(clientSecret == null)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0011);
-                }
+
                 var permissions = ADO.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
 
                 TokenCriteria token = new TokenCriteria()
@@ -97,8 +89,8 @@ namespace AWMSEngine.Engine.V2.General
                         uid = user.ID.Value,
                         ucode = user.Code,
                         uname = user.Name,
-                        exp = DateTime.Now.AddHours(12),
-                        extend = DateTime.Now.AddHours(13),
+                        exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXPIRE_HR).Get<int>()),
+                        extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>()),
                         pms = permissions.Select(x=>x.ID.Value).ToArray()
                     }
                 };
@@ -108,6 +100,7 @@ namespace AWMSEngine.Engine.V2.General
 
                 amt_Token tokenModel = new amt_Token()
                 {
+                    ExpireTime = token.BodyDecode.exp,
                     Token = tokenVal
                 };
                 return tokenModel;
