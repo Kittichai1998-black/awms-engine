@@ -10,6 +10,7 @@ namespace AWMSModel.Entity
     {
         public string Password;
         public string SaltPassword;
+        public string SecretKey;
         public string EmailAddress;
         public string LineID;
         public string FacebookID;

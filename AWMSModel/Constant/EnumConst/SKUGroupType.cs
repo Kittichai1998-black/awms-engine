@@ -6,11 +6,13 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum SKUGroupType
     {
-        FG = 1,
+        RAW = 1,
         WIP = 2,
-        EMP = 3,
-        RAW = 4,
-        STO = 5,
-        DOC = 6
+        SG = 3,
+        FG = 4,
+        PM = 5,
+        EMP = 8,
+        OTH = 9,
+        STO = 99
     }
 }

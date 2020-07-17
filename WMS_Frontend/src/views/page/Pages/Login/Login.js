@@ -24,6 +24,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { Route, Redirect } from "react-router-dom";
 import DefaultLayout from "../../../../layouts/defaultLayout";
 import { createQueryString } from '../../../../components/function/CoreFunction';
+import queryString from "query-string";
 import _ from "lodash";
 import Axios from "axios";
 const AmButton = React.lazy(() => import('../../../../components/AmButton'));
@@ -186,15 +187,19 @@ const Login = props => {
             };
             Axios.post(window.apipath + "/v2/token/register", valueForm, config)
                 .then(res => {
-                    console.log(res)
                     if (res.data._result !== undefined) {
                         if (res.data._result.status === 1) {
+                            var split_token = res.data.Token.split(".");
+                            var desc_token = atob(split_token[1]);
+                            var json_dec = JSON.parse(desc_token)
+                            //console.log(json_dec)
+                            
+                            //index 1 decode ด้วย base64 ได้string json เเปลงเปนopj เเล้วเอามาเเมพ 
                             savetoSession("Token", res.data.Token);
-                            //savetoSession("ClientSecret_SecretKey", res.data.ClientSecret_SecretKey);
-                            savetoSession("ExtendKey", res.data.ExtendKey);
-                            savetoSession("User_ID", res.data.User_ID);
-                            savetoSession("ExpireTime", res.data.ExpireTime);
-                            savetoSession("Username", valueForm.username);
+                            savetoSession("ExtendTime", json_dec.extend);
+                            savetoSession("User_ID", json_dec.uid);
+                            savetoSession("ExpireTime", json_dec.exp);
+                            savetoSession("Username", json_dec.ucode);
                             GetMenu(res.data.Token);
                             // let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
                             // GetStaticValue(reqSelect);
