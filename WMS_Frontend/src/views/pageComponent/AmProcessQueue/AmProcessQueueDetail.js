@@ -629,7 +629,7 @@ const ProcessQueueDetail = (props) => {
                     </Grid>
                     <AmTable width={"100%"}
                         columns={cols}
-                        dataSourceata={doc.docItems}
+                        dataSource={doc.docItems}
                         sortable={false}
                         filterable={false}
                         dataKey="ID"
