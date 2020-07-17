@@ -153,11 +153,11 @@ namespace AWMSEngine.Engine.V2.Business
                     option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
                     StorageObjectCriteria packSto = new StorageObjectCriteria()
                     {
-                        parentID = idBaseSto.Value,
+                        parentID = idBaseSto,
                         parentType = StorageObjectType.BASE,
                         code = pack.Code,
                         eventStatus = StorageObjectEventStatus.NEW,
-                        forCustomerID = getDoc.For_Customer_ID.Value,
+                        forCustomerID = getDoc.For_Customer_ID,
                         name = pack.Name,
                         qty = x.Quantity,
                         skuID = pack.SKUMaster_ID,
