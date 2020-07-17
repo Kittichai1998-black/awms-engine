@@ -1,4 +1,5 @@
-﻿using AMWUtil.DataAccess.Http;
+﻿using AMWUtil.Common;
+using AMWUtil.DataAccess.Http;
 using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Entity;
@@ -145,8 +146,8 @@ namespace AWMSModel.Criteria
         {
             get
             {
-                var tokenInfo = this.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
-                if (tokenInfo != null) return tokenInfo.User_ID;
+                var tokenInfo = this.Get<TokenCriteria>(BusinessVOConst.KEY_TOKEN_INFO);
+                if (tokenInfo != null) return (int)tokenInfo.BodyDecode.uid;
                 return 0;
             }
         }

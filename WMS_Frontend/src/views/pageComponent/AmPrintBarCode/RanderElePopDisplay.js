@@ -1,5 +1,4 @@
 import React from "react";
-import Grid from '@material-ui/core/Grid';
 import styled from "styled-components";
 
 const FormInline = styled.div`
@@ -35,7 +34,7 @@ const LabelDQty = {
 const DataGenerateElePopDisplay = (data) => {
 
   return data.map((pack, index) => {
-    console.log(pack)
+    // console.log(pack)
     return (<div key={index}>
       <FormInline>
         <label style={LabelH}>{"Item Code : "}</label>

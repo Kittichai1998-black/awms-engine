@@ -30,6 +30,7 @@ namespace AWMSModel.Entity
         public string Document_Code;
         public string SKUMaster_Code;
         public string SKUMaster_Name;
+        public string SKUMasterTypeName;
         public string PackMaster_Code;
         public string PackMaster_Name;
 

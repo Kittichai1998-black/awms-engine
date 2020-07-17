@@ -5,6 +5,7 @@ using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -62,6 +63,7 @@ namespace AWMSEngine.APIService
         {
             public string token;
             public string apikey;
+            public string secretKey;
             public string ref_id;
         }
         private class TLock
@@ -93,16 +95,12 @@ namespace AWMSEngine.APIService
             lockRequests.RemoveAll(x => x.Owner == this.GetHashCode());
         }
     
-
         public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
             dynamic response = null;
             dynamic result = new ExpandoObject();
             long dbLogID = 0;
-            string token = null;
-            string apiKey = null;
-            ams_APIKey apiKeyInfo = null;
-
+            TGetKey getKey = null;
             try
             {
                 this.BuVO = new VOCriteria();
@@ -111,34 +109,41 @@ namespace AWMSEngine.APIService
                 //------GET token || apikey
                 if (request != null)
                 {
-                    string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
-                    TGetKey getKey = Newtonsoft.Json.JsonConvert.DeserializeObject<TGetKey>(_getKeyJson);
-
-                    token = getKey.token;
-                    apiKey = getKey.apikey;
+                    getKey = ObjectUtil.JsonCast<TGetKey>(request);
                     this.BuVO.Set(BusinessVOConst.KEY_TRXREFID, getKey.ref_id);
                 }
 
-                //-------CREATE FILE LOGGING
-                amt_Token tokenInfo = null; 
-                if (!string.IsNullOrWhiteSpace(token))
+                //-------CREATE FILE LOGGING & Decode TOKEN,APIKEY
+                TokenCriteria tokenInfo = null;
+                ams_APIKey apiKeyInfo = null;
+                if (getKey != null && !string.IsNullOrWhiteSpace(getKey.token) && getKey.token.Count(x => x == '.') == 2)
                 {
-                    tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
-                    if (tokenInfo != null)
-                    {
-                        var user = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo.User_ID, this.BuVO);
-                        this.Logger = AMWLoggerManager.GetLogger(user.Code, this.GetType().Name);
-                    }
+                    var tk = getKey.token.Split('.');
+                    tokenInfo = new TokenCriteria();
+                    tokenInfo.HeadEncode = tk[0];
+                    tokenInfo.BodyEncode = tk[1];
+                    tokenInfo.SignatureEncode = tk[2];
+                    tokenInfo.HeadDecode = EncryptUtil.Base64Decode(tk[0]).Json<TokenCriteria.TokenHead>();
+                    tokenInfo.BodyDecode = EncryptUtil.Base64Decode(tk[1]).Json<TokenCriteria.TokenBody>();
+                    this.Logger = AMWLoggerManager.GetLogger(tokenInfo.BodyDecode.ucode, this.GetType().Name);
                 }
-                else if (!string.IsNullOrWhiteSpace(apiKey))
+                else if (getKey != null && !string.IsNullOrWhiteSpace(getKey.apikey))
                 {
-                    apiKeyInfo = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("APIKey", apiKey, this.BuVO).FirstOrDefault();
+                    apiKeyInfo = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>(
+                            new SQLConditionCriteria[]{
+                                new SQLConditionCriteria("APIKey", getKey.apikey, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                            }, this.BuVO).FirstOrDefault();
+
                     if (apiKeyInfo != null)
                         this.Logger = AMWLoggerManager.GetLogger(apiKeyInfo.APIKey, this.GetType().Name, apiKeyInfo.IsLogging);
                 }
-                if (this.Logger == null)
+
+                if(tokenInfo == null && apiKeyInfo == null)
                 {
                     this.Logger = AMWLoggerManager.GetLogger("(no_key)", this.GetType().Name);
+                    if(this.IsAuthenAuthorize)
+                        throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
                 this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.BaseMSSQLAccess<DataADO>.GetInstant().CreateConnection());
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
@@ -146,12 +151,14 @@ namespace AWMSEngine.APIService
 
                 //-------START FILE LOGGING
                 this.Logger.LogInfo("############## START_TRANSACTION ##############");
+                this.Logger.LogInfo("token=" + getKey.token);
+                this.Logger.LogInfo("token=" + getKey.apikey);
                 string _request_str = ObjectUtil.Json(request);
                 this.Logger.LogInfo("request=" + _request_str);
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
-                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
+                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, getKey.token);
+                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, getKey.apikey);
                 this.BuVO.Set(BusinessVOConst.KEY_FINAL_DB_LOG,
                     new FinalDatabaseLogCriteria()
                     {
@@ -186,9 +193,9 @@ namespace AWMSEngine.APIService
                 }
 
                 //-----------VALIDATE PERMISSION
-                this.Permission(token, tokenInfo, apiKey, apiKeyInfo);
+                this.VerifyPermission(tokenInfo, apiKeyInfo);
 
-                lock (this.GetKeyLock(token, this.APIServiceID))
+                lock (this.GetKeyLock(getKey.token, this.APIServiceID))
                 {
                     this.BuVO.SqlTransaction_Begin();
                     var res = this.ExecuteEngineManual();
@@ -245,7 +252,7 @@ namespace AWMSEngine.APIService
                         response = new { _result = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESULT_API) };
                     }
 
-                    if (apiKeyInfo == null || apiKeyInfo.IsLogging)
+                    if (this.Logger.IsLogging)
                     {
                         int _status = result.status;
                         string _code = result.code;
@@ -267,7 +274,7 @@ namespace AWMSEngine.APIService
                     this.Logger.LogInfo("response=" + _response_str);
                     this.Logger.LogInfo("############## END_TRANSACTION ##############");
 
-                    if (!string.IsNullOrEmpty(apiKey))
+                    if (!string.IsNullOrEmpty(getKey.apikey))
                         result.stacktrace = null;
                 }
                 catch (Exception ex)
@@ -295,37 +302,53 @@ namespace AWMSEngine.APIService
         //}
 
 
-        protected void Permission(string token,amt_Token tokenInfo,string apiKey, ams_APIKey apiKeyInfo)
+        protected void VerifyPermission(TokenCriteria tokenInfo,ams_APIKey apiKeyInfo)
         {
             //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
-            this.Logger.LogInfo("token=" + token);
 
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
-            this.Logger.LogInfo("apikey=" + apiKey);
 
             if (!this.IsAuthenAuthorize)
                 return;
             this.Logger.LogInfo("AuthenAuthorize!");
 
-            ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
+            //ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
 
-            if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
-            if (!string.IsNullOrEmpty(token) && tokenInfo == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Not Found");
-            if (tokenInfo == null && apiKeyInfo == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Key Not Found");
 
-            if (tokenInfo != null)
-            {
-                if (DateTime.Now > tokenInfo.ExpireTime)
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Expire");
-            }
 
-            var userInfo = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo != null ? tokenInfo.User_ID : apiKeyInfo.User_ID, this.BuVO);
+            var userInfo = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo != null ? tokenInfo.BodyDecode.uid : apiKeyInfo.User_ID, this.BuVO);
             if (userInfo != null)
                 this.Logger.LogInfo("username=" + userInfo.Code);
+
+            //VALIDATE TOKEN
+            if (tokenInfo != null)
+            {
+                if (DateTime.Now > tokenInfo.BodyDecode.exp)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0012);
+                }
+                if (tokenInfo.HeadDecode.typ.Equals("jwt"))
+                {
+
+                    if (tokenInfo.HeadDecode.enc.Equals("sha256"))
+                    {
+                        if (!tokenInfo.SignatureEncode.Equals(
+                            EncryptUtil.GenerateSHA256String(tokenInfo.HeadEncode + "." + tokenInfo.BodyEncode + "." + userInfo.SecretKey)))
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.A0013);
+                        }
+                    }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.A0013);
+                    }
+                }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0013);
+                }
+            }
         }
     }
 }

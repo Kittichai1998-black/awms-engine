@@ -18,10 +18,10 @@ namespace AMWUtil.Logger
         //public FileStream FileLogger { get; set; }
         private string _LogRefID;
         public string LogRefID { get { return this._LogRefID; } }
+        public bool IsLogging { get; set; }
         public string SubServiceName { get; set; }
         private string _ServiceName { get; set; }
         private string _FileName { get; set; }
-        private bool _IsLogging { get; set; }
 
 
 
@@ -30,7 +30,7 @@ namespace AMWUtil.Logger
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
             this._ServiceName = serviceName;
             this._FileName = fileName;
-            this._IsLogging = isLogging;
+            this.IsLogging = isLogging;
 
         }
 
@@ -39,7 +39,7 @@ namespace AMWUtil.Logger
         public static object lockLogWrite = new object();
         public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            if (!this._IsLogging)
+            if (!this.IsLogging)
                 return;
 
             lock (this)

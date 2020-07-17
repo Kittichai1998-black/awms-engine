@@ -14,7 +14,7 @@ namespace AWMSEngine.Engine.V2.General
     {
         public class TReqModel
         {
-            public string Token;
+            public int userID;
         }
         public class TResModel
         {
@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override TResModel ExecuteEngine(TReqModel reqVO)
         {
-            var tokenModel = ADO.UserInterfaceADO.GetInstant().ListMenu(reqVO.Token, this.BuVO);
+            var tokenModel = ADO.UserInterfaceADO.GetInstant().ListMenu(reqVO.userID, this.BuVO);
             List<MenuPage> pagelist;
             List<MenuGroup> menugroup = new List<MenuGroup>();
 

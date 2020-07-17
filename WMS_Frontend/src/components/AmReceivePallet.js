@@ -314,11 +314,12 @@ const AmReceivePallet = (props) => {
         if (open && dataDocument && dataDocItems) {
             console.log("show")
             let newItems = _.filter(dataDocItems, function (o) { return o._balanceQty > 0; });
-
+            newItems = newItems.map(x => { return { ...x, SubID: x.ID + x.UnitType_Code } });
             let _dataTable = {
-                listDocItems: newItems,
+                listDocItems: [...newItems],
                 defaultSelect: [...newItems]
             };
+            console.log(_dataTable)
             setDataTable(_dataTable)
             QueryArea();
             saveDefaultInputQTY(newItems)
@@ -456,7 +457,7 @@ const AmReceivePallet = (props) => {
             if (value) {
                 document.getElementById("contained-button-file").disabled = false;
                 setBtnUpload(false)
-            }else{
+            } else {
                 document.getElementById("contained-button-file").disabled = true;
                 setBtnUpload(true)
             }
@@ -604,10 +605,11 @@ const AmReceivePallet = (props) => {
                     </FormInline>
                     {imgFile ? <div style={{ margin: "5px 0px" }}><img src={imgFile} height='150' /></div> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
+                    {dataTable ? console.log(dataTable.defaultSelect) : null}
                     {open && dataTable ?
                         <AmTable
                             columns={columns}
-                            dataKey={"ID"}
+                            dataKey={"SubID"}
                             dataSource={dataTable.listDocItems}
                             selectionDefault={dataTable.defaultSelect}
                             selection="checkbox"
