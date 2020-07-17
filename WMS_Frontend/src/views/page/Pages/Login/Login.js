@@ -192,9 +192,6 @@ const Login = props => {
                             var split_token = res.data.Token.split(".");
                             var desc_token = atob(split_token[1]);
                             var json_dec = JSON.parse(desc_token)
-                            //console.log(json_dec)
-                            
-                            //index 1 decode ด้วย base64 ได้string json เเปลงเปนopj เเล้วเอามาเเมพ 
                             savetoSession("Token", res.data.Token);
                             savetoSession("ExtendTime", json_dec.extend);
                             savetoSession("User_ID", json_dec.uid);
