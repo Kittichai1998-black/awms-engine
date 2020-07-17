@@ -168,11 +168,11 @@ const checkstatus = () => {
     const d2 = new Date();
     if (d1 > d2) {
         sessionStorage.setItem('Token', localStorage.getItem('Token'));
-        sessionStorage.setItem(
-            'ClientSecret_SecretKey',
-            localStorage.getItem('ClientSecret_SecretKey')
-        );
-        sessionStorage.setItem('ExtendKey', localStorage.getItem('ExtendKey'));
+        // sessionStorage.setItem(
+        //     'ClientSecret_SecretKey',
+        //     localStorage.getItem('ClientSecret_SecretKey')
+        // );
+        sessionStorage.setItem('ExtendTime', localStorage.getItem('ExtendTime'));
         sessionStorage.setItem('User_ID', localStorage.getItem('User_ID'));
         sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
         sessionStorage.setItem('Username', localStorage.getItem('Username'));
@@ -181,7 +181,7 @@ const checkstatus = () => {
         localStorage.removeItem("Token");
         localStorage.removeItem("MenuItems");
         localStorage.removeItem("ExpireTime");
-        localStorage.removeItem("ExtendKey");
+        localStorage.removeItem("ExtendTime");
         localStorage.removeItem("Username");
         sessionStorage.clear();
         return <Redirect from='/' to='/login' />;
