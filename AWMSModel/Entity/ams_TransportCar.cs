@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_Transporter : BaseEntitySTD
+    public class ams_TransportCar : BaseEntitySTD
     {
     }
 }
