@@ -21,7 +21,7 @@ namespace AWMSModel.Criteria
         List<ams_PackMasterType> PackMasterTypes { get; }
         List<ams_SKUMasterType> SKUMasterTypes { get; }
         List<ams_APIService> APIServices { get; }
-        List<ams_Transporter> Transports { get; }
+        List<ams_TransportCar> TransportCars { get; }
         List<ams_UnitType> UnitTypes { get; }
         List<amv_PackUnitConvert> PackUnitConverts { get; }
 
