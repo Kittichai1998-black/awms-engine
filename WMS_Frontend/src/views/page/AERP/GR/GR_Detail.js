@@ -109,7 +109,7 @@ const GR_Detail = props => {
       maxLength: 10,
     },
   }
-  
+
   //received
   //issued
   return (
@@ -131,7 +131,7 @@ const GR_Detail = props => {
       addPalletMapSTO={addPalletMapSTO}
       buttonConfirmMappingSTO={true}
       //================================
-      addPrintBarcode={true}
+      usePrintBarcodePallet={true}
     />
   );
 };

@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.General
                     if (tokenInfo.HeadDecode.enc.Equals("sha256"))
                     {
                         if (!tokenInfo.SignatureEncode.Equals(
-                            EncryptUtil.GenerateSHA256String(tokenInfo.HeadDecode + "." + tokenInfo.BodyEncode + "." + userInfo.SecretKey)))
+                            EncryptUtil.GenerateSHA256String(tokenInfo.HeadEncode + "." + tokenInfo.BodyEncode + "." + userInfo.SecretKey)))
                         {
                             throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                         }
@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
             }
-            tokenInfo.BodyDecode.exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>());
+            tokenInfo.BodyDecode.exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXPIRE_HR).Get<int>());
             tokenInfo.BodyDecode.extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>());
 
             tokenInfo.BodyEncode = EncryptUtil.Base64Encode(tokenInfo.BodyDecode.Json());
