@@ -75,7 +75,7 @@ const GR_Detail = props => {
       placeholder: "Select Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 21,
+      defaultValue: 4,
       required: true,
       // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
     },
@@ -87,7 +87,7 @@ const GR_Detail = props => {
       placeholder: "Select Location",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "ID",
-      defaultValue: 1540,
+      defaultValue: 1541,
       required: false,
     },
     inputTitle: [
@@ -109,7 +109,7 @@ const GR_Detail = props => {
       maxLength: 10,
     },
   }
-  
+
   //received
   //issued
   return (
@@ -131,7 +131,7 @@ const GR_Detail = props => {
       addPalletMapSTO={addPalletMapSTO}
       buttonConfirmMappingSTO={true}
       //================================
-      addPrintBarcode={true}
+      usePrintBarcodePallet={true}
     />
   );
 };

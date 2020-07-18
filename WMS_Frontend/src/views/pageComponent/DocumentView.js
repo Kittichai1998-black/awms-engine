@@ -206,6 +206,7 @@ const DocumentView = props => {
         //============================================================================
 
         res.data.document.documentItems.forEach(row => {
+
           var sumQty = 0;
           var sumBaseQty = 0;
           res.data.sou_bstos
@@ -645,12 +646,21 @@ const DocumentView = props => {
         }
 
       </div>
-      <AmPrintBarCode data={selection} />
+      {props.usePrintBarcodePallet ?
+        <>
+          <AmPrintBarCode data={selection}
+            SouSupplierCode={dataHeader.SouSupplier}
+            SouSupplierName={dataHeader.SouSupplierName}
+          // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+          />
+        </>
+
+        : null}
+
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
         <AmTable selection={"checkbox"}
           selectionData={(data) => {
-            console.log(data)
             setSelection(data);
           }} dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}

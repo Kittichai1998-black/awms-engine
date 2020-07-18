@@ -11,9 +11,12 @@ import AmButton from "../../../components/AmButton";
 import AmInput from "../../../components/AmInput";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { DataGenerateElePopDisplay } from "../AmPrintBarCode/RanderElePopDisplay";
+import { DataGenerateElePalletListDisplay } from "../AmPrintBarCode/RanderEleListPalletDisplay ";
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
+import AmDialogs from "../../../components/AmDialogs";
+
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -58,17 +61,19 @@ const AmPrintBarCode = props => {
     all: ""
   };
 
-  const [queryViewData, setQueryViewData] = useState(Query);
+  //const [queryViewData, setQueryViewData] = useState(Query);
   const [dialog, setDialog] = useState(false);
-  const [dataItems, setDataItems] = useState();
+  const [dataItemsSend, setDataItemsSend] = useState();
   const [dataSource, setDataSource] = useState([])
-  const [valueDataRadio, setValueDataRadio] = useState(0);
-  const [valueQtyDocItems, setValueQtyDocItems] = useState({});
+  const [valueDataRadio, setValueDataRadio] = useState(1);
+  const [valueQty, setValueQty] = useState({ min: 1, max: 999 });
   const [dataSourceGenPallet, setDataSourceGenPallet] = useState([])
+  const [genData, setGenData] = useState(false);
+  const [dialogState, setDialogState] = useState({});
+
 
   useEffect(() => {
     getData()
-    console.log("hguhgirug")
   }, [])
   function getData() {
     const Query = {
@@ -84,31 +89,70 @@ const AmPrintBarCode = props => {
     };
 
     var queryStr = createQueryString(Query)
-    console.log(queryStr)
     Axios.get(queryStr).then(res => {
-      console.log(res)
       setDataSource(res.data.datas)
     });
-  }
 
+  }
+  const genDataPalletList = () => {
+    var itemList = [];
+    var item = {};
+    // console.log(props.data)
+    props.data.forEach(ele => {
+      item = {
+        docItemID: ele.ID,
+        lot: ele.Lot,
+        orderNo: ele.OrderNo,
+        code: ele.Code,
+        skuType: ele.SKUMasterTypeName,
+        vol: ele.Volume * ele.BaseQuantity,
+        skuType: ele.SKUMasterTypeName
+
+      }
+      itemList.push(item)
+    });
+
+
+    const dataSend = {
+      mode: valueDataRadio,
+      minVolume: 1,
+      maxVolume: 999,
+      supplierName: props.SouSupplierName,
+      supplierCode: props.SouSupplierCode,
+      Item: itemList
+    }
+    // console.log(dataSend)
+    setDataItemsSend(dataSend)
+    Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
+      // console.log(res.data)
+      setDataItemsSend(res.data)
+    });
+    return null;
+  };
   const RanderEle = () => {
     if (props.data) {
-      return props.data.map(y => {
+
+      const columns = [{ field: "Code" }]
+      return columns.map(y => {
         return {
           component: (data, cols, key) => {
             return (
-              <div key={key}>
+              <div >
                 {DataGenerateRadio()}
                 {DataGeneratePopup()}
+                <br />
+                {DataGenerateElePalletListDisplay(dataItemsSend)}
               </div>
             );
           }
         };
       });
+
     }
   };
   const handleRadioChange = (checked, val) => {
     setValueDataRadio(val)
+    onHandleChangeGeneratePallet(valueQty, val)
     return null;
   };
   const DataGeneratePopup = () => {
@@ -121,43 +165,58 @@ const AmPrintBarCode = props => {
         <FormControlLabel value="0"
           control={
             <Radio color="primary"
-              checked={valueDataRadio === 0}
-              onChange={(checked) => handleRadioChange(checked, 0)}
+              checked={valueDataRadio === 1}
+              onChange={(checked) => handleRadioChange(checked, 1)}
             />}
           label="Single"
         /><FormControlLabel value="1"
           control={
             <Radio color="primary"
             />}
-          checked={valueDataRadio === 1}
+          checked={valueDataRadio === 0}
           label="Multi"
-          onChange={(checked) => handleRadioChange(checked, 1)} />
+          onChange={(checked) => handleRadioChange(checked, 0)} />
         <br />
       </div>
-      <FormInline>{console.log(dataSource[0].MinInnerVolume)}
+      <FormInline>
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Min : "}</label>
-        <AmInput id={"field"} style={{ width: "60px" }} type="input"
+        <AmInput id={"field"} style={{ width: "60px" }} type="number"
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
-          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onKeyPress={(value, obj, element, event) => {
+            if (event.key === "Enter") {
+
+              if (value === "")
+                setDialogState({ type: "warning", content: "กรุณากรอกข้อมูล MinVolume", state: true })
+
+              onHandleChangeGeneratePallet({ min: value }, valueDataRadio)
+            }
+          }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
       <FormInline>
         <label style={{ fontWeight: "bold", width: "50px" }}>{"Max : "}</label>
-        <AmInput id={"field"} style={{ width: "60px" }} type="input"
+        <AmInput id={"field"} style={{ width: "60px" }} type="number"
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
-          onBlur={(value, element, event) => onHandleChangeInputQTY(value, element, event)}
+          onKeyPress={(value, obj, element, event) => {
+            if (event.key === "Enter") {
+
+              if (value === "")
+                setDialogState({ type: "warning", content: "กรุณากรอกข้อมูล MaxVolume", state: true })
+
+              onHandleChangeGeneratePallet({ max: value }, valueDataRadio)
+            }
+
+          }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
       <br />
     </div>
   };
-  const onHandleChangeInputQTY = (value, element, event, docItemID) => {
-
-    console.log(valueDataRadio)
-    console.log(props.data)
-
+  const onHandleChangeGeneratePallet = (value, mode) => {
+    setValueQty({ min: value.min, max: value.max })
+    setGenData(true)
     var itemList = [];
     var item = {};
     props.data.forEach(ele => {
@@ -166,52 +225,72 @@ const AmPrintBarCode = props => {
         lot: ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
-        vol: 150
+        skuType: ele.SKUMasterTypeName,
+        vol: (ele.Volume * ele.BaseQuantity)
       }
+      itemList.push(item)
     });
-    itemList.push(item)
+
 
     const dataSend = {
-      mode: valueDataRadio,
-      minVolume: 1,
-      maxVolume: 100,
-      supplierName: "",
-      supplierCode: "",
+      mode: mode,
+      minVolume: value === undefined ? 1 : (value.min === undefined ? 1 : parseInt(value.min)),
+      maxVolume: value === undefined ? 999 : (value.max === undefined ? 999 : parseInt(value.max)),
+      supplierName: props.SouSupplierName,
+      supplierCode: props.SouSupplierCode,
       Item: itemList
     }
-
-    console.log(dataSend)
+    // console.log(dataSend)
     Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
-
-      console.log(res)
+      // console.log(res.data)
       setDataSourceGenPallet(res.data)
+      setDataItemsSend(res.data)
     });
 
 
   };
   const onHandledataConfirm = (status, rowdata) => {
     if (status) {
-      onClickLoadPDF()
+      if (!genData) {
+        onClickLoadPDF(dataItemsSend)
+      } else {
+        onClickLoadPDF()
+      }
     } else {
       setDialog(false)
+      Clear()
     }
-    return null
-  }
-  const onClickLoadPDF = async () => {
-    console.log(dataSourceGenPallet)
-    try {
-      let reqjson = {
-        dataSourceGenPallet
-      }
-      await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf").then();
 
+  }
+  const onClickLoadPDF = async (data) => {
+    try {
+      // console.log(data)
+      // console.log(dataSourceGenPallet)
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data == undefined ? dataSourceGenPallet : data, "printcode.pdf").then();
+      setDialog(false)
+      setDialogState({ type: "success", content: "Success", state: true })
+      Clear()
     } catch (err) {
-      console.log(err)
+      setDialogState({ type: "error", content: err.message, state: true })
+      Clear()
     }
   }
+
+  const Clear = () => {
+    setDataItemsSend()
+    setValueQty({ min: 1, max: 999 })
+    setValueDataRadio(1)
+    setGenData(false)
+  }
+
+
   return (
     <div>
-
+      <AmDialogs
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
@@ -219,14 +298,17 @@ const AmPrintBarCode = props => {
         data={props.data}
         columns={RanderEle()}
       />
+
       <AmButton
         style={{ marginRight: "5px" }}
         styleType="confirm"
         onClick={() => {
-          console.log(props.data)
-          // setDataItems(props.data)
-          setDialog(true)
-
+          if (props.data.length === 0) {
+            setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+          } else {
+            genDataPalletList()
+            setDialog(true)
+          }
         }}
       >
         BARCODE

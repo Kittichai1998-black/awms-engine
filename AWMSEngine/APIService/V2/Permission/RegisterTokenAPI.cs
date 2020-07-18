@@ -1,7 +1,9 @@
 ﻿using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Validation;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace AWMSEngine.APIService.V2.Permission
         protected override dynamic ExecuteEngineManual()
         {
             new RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO, null);
-            
+
             var res1 = new RegisterToken().Execute(this.Logger, this.BuVO,
                 new RegisterToken.TReqModel()
                 {

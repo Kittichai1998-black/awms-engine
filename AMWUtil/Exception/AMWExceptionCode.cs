@@ -33,6 +33,9 @@ namespace AMWUtil.Exception
         [AMWExceptionCodeAttribute("V0103", DefaultMessage = "parameter type ใน method '{0}' ไม่ตรงกับ field ที่นำมา validate")]
         V0_METHOD_PARAMETER_TYPE_NOT_EQ,
 
+        [AMWExceptionCodeAttribute("V0103", DefaultMessage = "develop menu not found.")]
+        V0_DEVMENU_NOT_FOUND,
+
 
 
 
@@ -78,15 +81,21 @@ namespace AMWUtil.Exception
         S0004,
 
 
-        /// <summary>Authentication Error</summary>
-        [AMWExceptionCodeAttribute("A0001", DefaultMessage = "{0}")]
-        A0001,
-        /// <summary>Authorization Error</summary>
-        [AMWExceptionCodeAttribute("A0002", DefaultMessage = "{0}")]
-        A0002,
-        /// <summary>Token Error : {0}</summary>
-        [AMWExceptionCodeAttribute("A0003", DefaultMessage = "{0}")]
-        A0003,
+        /// <summary>Username หรือ Password ไม่ถูกต้อง</summary>
+        [AMWExceptionCodeAttribute("A0010", DefaultMessage = "Username หรือ Password ไม่ถูกต้อง")]
+        A0010,
+        /// <summary>SecretKey ไม่ถูกต้อง</summary>
+        [AMWExceptionCodeAttribute("A0011", DefaultMessage = "SecretKey ไม่ถูกต้อง")]
+        A0011,
+        /// <summary>Token หมดอายุ</summary>
+        [AMWExceptionCodeAttribute("A0012", DefaultMessage = "Token หมดอายุ")]
+        A0012,
+        /// <summary>Token ไม่ถูกต้อง</summary>
+        [AMWExceptionCodeAttribute("A0013", DefaultMessage = "Token ไม่ถูกต้อง")]
+        A0013,
+        /// <summary>ไม่สามารถ Login ผ่าน LDAP ได้</summary>
+        [AMWExceptionCodeAttribute("A0010", DefaultMessage = "Username หรือ Password ไม่ถูกต้อง")]
+        A0014,
 
 
         [AMWExceptionCodeAttribute("U0000", DefaultMessage = "UKNOW : {0}")]

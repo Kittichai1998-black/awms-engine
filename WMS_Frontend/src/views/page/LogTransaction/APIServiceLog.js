@@ -14,6 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import ViewList from '@material-ui/icons/ViewList';
 import PageView from '@material-ui/icons/Pageview';
 import SvgIcon from '@material-ui/core/SvgIcon';
+import AmInput from "../../../components/AmInput";
 
 const Axios = new apicall();
 const styles = theme => ({
@@ -35,18 +36,29 @@ const APIServiceLog = (props) => {
     q: '',
     f: "ID, LogRefID, APIService_Name,InputText, OutputText, ResultMessage,StartTime,EndTime",
     g: "",
-    s: "[{'f':'ID','od':'desc'},{'f':'StartTime','od':'desc'}]",
+    s: "[{'f':'StartTime','od':'desc'}]",
     sk: 0,
     l: 100,
     all: ""
   };
-
+  const queryAPIServiceAPI = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI",
+    t: "APIService",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+  };
   const onChangeFilter = (condition, field, value) => {
     let obj = [...filterData];
     if (value === "") {
       obj = obj.filter(x => x.f !== field);
     } else {
       let row = obj.find(x => x.f === field);
+      console.log(row)
       if (row === null || row === undefined) {
         obj.push(
           {
@@ -60,7 +72,27 @@ const APIServiceLog = (props) => {
     }
     setFilterData(obj)
   };
-
+  const onChange = (condition, field, value) => {
+    let obj = [...filterData];
+    if (value === "") {
+      obj = obj.filter(x => x.f !== field);
+    } else {
+      let row = obj.find(x => x.f === field);
+      console.log(row)
+      if (row === null || row === undefined) {
+        obj.push(
+          {
+            f: field, c: "like", v: value
+          }
+        )
+      }
+      else {
+        row.c = "like"
+        row.v = value;
+      }
+    }
+    setFilterData(obj)
+  };
   const onChangeFilterDateTime = (value, field, type) => {
     let datetimeRange = datetime;
     if (value === null || value === undefined) {
@@ -142,27 +174,78 @@ const APIServiceLog = (props) => {
           </label>
           <AmDropdown
             width="200px"
+            ddlMinWidth="200px"
             zIndex={1000}
             placeholder={"Select Service"}
-            value={selection}
-            data={[
-              { "label": "Register Work Queue", "value": 13 },
-              { "label": "Process Queue", "value": 88 },
-              { "label": "Confirm Process Queue", "value": 89 },
-              { "label": "Working Work Queue", "value": 16 },
-              { "label": "Done Work Queue", "value": 9 },
-            ]}
-            ddlType="normal"
+            fieldDataKey="ID"
+            fieldLabel={["Name"]}
+            queryApi={queryAPIServiceAPI}
+            ddlType={"search"}
             onChange={value => {
               onChangeFilter(condition, rowC.field, value)
-              setSelection(value)
+              // setSelection(value)
             }
             }
           />
         </div>
       );
     }
-  }, {
+  },
+  {
+    field: "InputText",
+    component: (condition, rowC, idx) => {
+      return (
+        <div key={idx} style={{ display: "inline-flex" }}>
+          <label
+            style={{
+              padding: "0 0 0 20px",
+              width: "140px",
+              paddingTop: "10px"
+            }}
+          >
+            {t("Input")} :{" "}
+          </label>
+          <AmInput
+            width="200px"
+            id={"InputText"}
+            // placeholder={placeholder}
+            type="input"
+            onChange={value => {
+              onChange(condition, rowC.field, value)
+            }}
+          />
+        </div>
+      );
+    }
+  },
+  {
+    field: "OutputText",
+    component: (condition, rowC, idx) => {
+      return (
+        <div key={idx} style={{ display: "inline-flex" }}>
+          <label
+            style={{
+              padding: "0 0 0 20px",
+              width: "140px",
+              paddingTop: "10px"
+            }}
+          >
+            {t("Output")} :{" "}
+          </label>
+          <AmInput
+            width="200px"
+            id={"OutputText"}
+            // placeholder={placeholder}
+            type="input"
+            onChange={value => {
+              onChange(condition, rowC.field, value)
+            }}
+          />
+        </div>
+      );
+    }
+  },
+  {
     field: "dateFrom",
     component: (condition, rowC, idx) => {
       return (
@@ -248,7 +331,7 @@ const APIServiceLog = (props) => {
         <Divider />
         <br />
         <Typography variant="h6">{"Output"}</Typography>
-        {data.OutputText ? showReactJsonView("Output-Text", JSON.parse(data.OutputText))
+        {data.InputText ? showReactJsonView("Output-Text", JSON.parse(data.OutputText))
           : <label>Data Not Found.</label>}
       </div>
       return (

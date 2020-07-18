@@ -8,6 +8,9 @@ using System.DirectoryServices;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
+using AMWUtil.Common;
+using Org.BouncyCastle.Ocsp;
 
 namespace AWMSEngine.Engine.V2.General
 {
@@ -43,7 +46,7 @@ namespace AWMSEngine.Engine.V2.General
                     );
 
                 if (!ldapRes)
-                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "LDAP Login Fail");
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0014);
                 else
                 {
                     amt_Token tokenModel = ADO.TokenADO.GetInstant().Register(
@@ -59,13 +62,47 @@ namespace AWMSEngine.Engine.V2.General
             }
             else
             {
-                amt_Token tokenModel = ADO.TokenADO.GetInstant().Register(
-                        reqVO.Username,
-                        reqVO.Password,
-                        reqVO.SecretKey,
-                        0,
-                        true,
-                         this.BuVO);
+                var user = ADO.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
+                             {
+                                new SQLConditionCriteria("code",reqVO.Username, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                             }, this.BuVO).FirstOrDefault();
+
+                if (user == null || 
+                    !user.Password.Equals(
+                        EncryptUtil.GenerateSHA256String(EncryptUtil.GenerateSHA256String(reqVO.Password)+user.SaltPassword)))
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0010);
+                }
+
+                var permissions = ADO.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
+
+                TokenCriteria token = new TokenCriteria()
+                {
+                    HeadDecode = new TokenCriteria.TokenHead()
+                    {
+                        typ = "jwt",
+                        enc = "sha256",
+                    },
+                    BodyDecode = new TokenCriteria.TokenBody()
+                    {
+                        uid = user.ID.Value,
+                        ucode = user.Code,
+                        uname = user.Name,
+                        exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXPIRE_HR).Get<int>()),
+                        extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>()),
+                        pms = permissions.Select(x=>x.ID.Value).ToArray()
+                    }
+                };
+                string tokenVal = EncryptUtil.Base64Encode(token.HeadDecode.Json()) + "." + EncryptUtil.Base64Encode(token.BodyDecode.Json());
+                token.SignatureEncode = EncryptUtil.GenerateSHA256String(tokenVal + "." + user.SecretKey);
+                tokenVal = tokenVal + "." + token.SignatureEncode;
+
+                amt_Token tokenModel = new amt_Token()
+                {
+                    ExpireTime = token.BodyDecode.exp,
+                    Token = tokenVal
+                };
                 return tokenModel;
             }
         }

@@ -77,7 +77,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             return this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public List<ams_Transporter> LoadTransport(VOCriteria buVO = null)
+        public List<ams_TransportCar> LoadTransport(VOCriteria buVO = null)
         {
             return null;
             //return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transporter>("status", 1, buVO ?? new VOCriteria()));

@@ -20,7 +20,7 @@ namespace AWMSEngine.APIService.V2.Permission
         protected override dynamic ExecuteEngineManual()
         {
             var res1 = new ListMenu().Execute(this.Logger, this.BuVO,
-                new ListMenu.TReqModel() { Token = this.RequestVO.token });
+                new ListMenu.TReqModel() { userID = this.BuVO.ActionBy });
 
             return res1;
         }

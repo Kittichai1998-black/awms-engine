@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         }
         public class TRes
         {
-            public string layoutType;
+            public int layoutType;
             public List<pallet_list_item> listsCode;
         }
         public class pallet_list
@@ -48,6 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string lot;
             public string orderNo;
             public string docItemID;
+            public string skuType;
         }
         public class Item
         {
@@ -56,6 +57,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public int vol;
             public string lot;
             public string orderNo;
+            public string skuType;
 
         }
 
@@ -65,13 +67,25 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<Item> Items = reqVO.item;
             List<Pallet> pallets = new List<Pallet>();           
             List<Pallet> findPalletX = new List<Pallet>();
+
+            var itemVol = reqVO.item.Sum(x=>x.vol);
+            if (itemVol < reqVO.minVolume)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า minVolume");
+
+            //foreach(var it in reqVO.item)
+            //{
+            //    if(it.vol < reqVO.minVolume)
+            //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า ");
+            //}
+
+
             if (reqVO.mode == 1)
             {
-                findPalletX = findPallet(Items, 100, 1, pallets, 100, 1);
+                findPalletX = findPallet(Items, reqVO.maxVolume, 1, pallets, reqVO.maxVolume, 1);
             }
             else
             {
-                findPalletX = findPallet(Items, 100, 1, pallets, 100, 0);
+                findPalletX = findPallet(Items, reqVO.maxVolume, 1, pallets, reqVO.maxVolume, 0);
             }
             var pallet_list = findPalletX.GroupBy(x => x.bcode).Select(x => new { palletsNO = x.Key, palletsDetail = x.ToList() }).ToList();
             List<pallet_list_item> listItem = new List<pallet_list_item>();
@@ -81,13 +95,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var pcode = string.Join(',', pts.palletsDetail.Select(x => x.pcode));
                 var pID = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
                 var vol = string.Join(',', pts.palletsDetail.Select(x => x.vol));
-                var lot = string.Join(',', pts.palletsDetail.Select(x => x.lot));
-                var orderNo = string.Join(',', pts.palletsDetail.Select(x => x.orderNo));
+                var lot = string.Join(',', pts.palletsDetail.FindAll(x=> string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
+                var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
+                var skutype = string.Join(',', pts.palletsDetail.Select(x => x.skuType));
 
                 listItem.Add(new pallet_list_item()
                 {
                     code = "N|" + pts.palletsNO + "|" + pID + "|" + vol,
-                    title = "FINISHED GOODS",
+                    title = skutype,
                     options = "itemName="+ pcode +
                               "&lotNo="+ lot + "&controlNo="+ orderNo + 
                               "&supplier="+reqVO.supplierName+"&codeNo="+ reqVO.supplierCode +
@@ -98,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             res = new TRes()
             {
-                layoutType = "91",
+                layoutType = 91,
                 listsCode = listItem
             };
 
@@ -130,6 +145,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 pallet.lot = itemData.lot;
                 pallet.orderNo = itemData.orderNo;
                 pallet.docItemID = itemData.docItemID;
+                pallet.skuType = itemData.skuType;
 
                 if (mode == 0)
                 {
