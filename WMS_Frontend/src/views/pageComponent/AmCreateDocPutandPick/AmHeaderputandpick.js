@@ -400,7 +400,6 @@ const AmHeaderputandpick = (props) => {
                         dataSelect2.forEach((x, i) => {
                             doc.dataSourceItemTB.push(dataSelect2[i])
                         })
-
                         doc.setdialogItem(false)
                     }
                 }
@@ -410,8 +409,6 @@ const AmHeaderputandpick = (props) => {
                     dia.setdailogErr(true)
                     //doc.setdataSourceItemTB(dataSelect);
                 }
-
-                
 
             } else {
                 if (doc.editdata.length != 0) {
