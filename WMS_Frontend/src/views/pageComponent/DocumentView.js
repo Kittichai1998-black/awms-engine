@@ -651,6 +651,7 @@ const DocumentView = props => {
           <AmPrintBarCode data={selection}
             SouSupplierCode={dataHeader.SouSupplier}
             SouSupplierName={dataHeader.SouSupplierName}
+          // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
           />
         </>
 

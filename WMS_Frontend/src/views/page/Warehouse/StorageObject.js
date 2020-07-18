@@ -108,21 +108,26 @@ const StorageObject = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-    return value === false ? <div style={{ textAlign: "center" }}>
-      <Tooltip title="NONE" >
-        <RemoveCircle
-          fontSize="small"
-          style={{ color: "#9E9E9E" }}
-        />
-      </Tooltip>
-    </div> : <div style={{ textAlign: "center" }}>
-        <Tooltip title="HOLD" >
-          <CheckCircle
+    console.log(value)
+    if (value !== undefined) {
+      return value === false ? <div style={{ textAlign: "center" }}>
+        <Tooltip title="NONE" >
+          <RemoveCircle
             fontSize="small"
-            style={{ color: "black" }}
+            style={{ color: "#9E9E9E" }}
           />
         </Tooltip>
-      </div>
+      </div> : <div style={{ textAlign: "center" }}>
+          <Tooltip title="HOLD" >
+            <CheckCircle
+              fontSize="small"
+              style={{ color: "black" }}
+            />
+          </Tooltip>
+        </div>
+    } else {
+      return null
+    }
   }
   const getRedirectLog = data => {
     return (

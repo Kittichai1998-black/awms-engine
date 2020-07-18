@@ -95,8 +95,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var pcode = string.Join(',', pts.palletsDetail.Select(x => x.pcode));
                 var pID = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
                 var vol = string.Join(',', pts.palletsDetail.Select(x => x.vol));
-                var lot = string.Join(',', pts.palletsDetail.Select(x => x.lot));
-                var orderNo = string.Join(',', pts.palletsDetail.Select(x => x.orderNo));
+                var lot = string.Join(',', pts.palletsDetail.FindAll(x=> string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
+                var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
                 var skutype = string.Join(',', pts.palletsDetail.Select(x => x.skuType));
 
                 listItem.Add(new pallet_list_item()
