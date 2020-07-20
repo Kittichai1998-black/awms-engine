@@ -136,11 +136,26 @@ const checkstatus = () => {
         // window.location.replace("/login");
     }
 };
-const convertLang = l => {
-    return l === "EN" ? "English" : "ไทย"
-}
+
 function useInterval(callback, delay) {
     const savedCallback = useRef();
+
+    // Remember the latest function.
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    // Set up the interval.
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            let id = setInterval(tick, delay);
+            return () => clearInterval(id);
+        }
+    }, [delay]);
+}
 
 const MainContainer = React.memo(({route, path}) => {
     console.log("switch route")
@@ -167,9 +182,6 @@ const Default = props => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [routes, setRoutes] = useState([]);
     const [openLangHeader, setOpenLangHeader] = useState(false)
-    const [lang, setLang] = useState(() => {
-        return localStorage.getItem("Lang") ? convertLang(localStorage.getItem("Lang")) : localStorage.setItem("Lang", "EN"), convertLang(localStorage.getItem("Lang"))
-    })
     const { t, i18n } = useTranslation()
 
     const [menuVisible, setMenuVisible] = useState({ visibility: "visible" });

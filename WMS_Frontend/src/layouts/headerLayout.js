@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Redirect } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -129,6 +130,39 @@ const convertLang = l => {
   return l === "EN" ? "English" : "ไทย"
 }
 
+const checkstatus = () => {
+  const d1 = new Date(localStorage.ExpireTime);
+  const d2 = new Date();
+  if (d1 > d2) {
+      sessionStorage.setItem('Token', localStorage.getItem('Token'));
+      // sessionStorage.setItem(
+      //     'ClientSecret_SecretKey',
+      //     localStorage.getItem('ClientSecret_SecretKey')
+      // );
+      sessionStorage.setItem('ExtendTime', localStorage.getItem('ExtendTime'));
+      sessionStorage.setItem('User_ID', localStorage.getItem('User_ID'));
+      sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
+      sessionStorage.setItem('Username', localStorage.getItem('Username'));
+  } else {
+      localStorage.removeItem("User_ID");
+      localStorage.removeItem("Token");
+      localStorage.removeItem("MenuItems");
+      localStorage.removeItem("ExpireTime");
+      localStorage.removeItem("ExtendTime");
+      localStorage.removeItem("Username");
+      sessionStorage.clear();
+      return <Redirect from='/' to='/login' />;
+  }
+
+  if (
+      sessionStorage.getItem('Token') === null ||
+      sessionStorage.getItem('Token') === undefined
+  ) {
+      return <Redirect from='/' to='/login' />;
+      // window.location.replace("/login");
+  }
+};
+
 export default (props) => {
   const {notify, sidebar} = useContext(LayoutContext);
 
@@ -217,6 +251,7 @@ export default (props) => {
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
+          onClick={() => checkstatus()}
         >
           <AccountCircle />
         </IconButton>
