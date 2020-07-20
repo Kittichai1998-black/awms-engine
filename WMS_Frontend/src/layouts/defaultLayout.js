@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useState, useContext, useRef, useEffect,useLayoutEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
+import Axios from "axios";
 import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
@@ -24,6 +25,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import route from './route';
 import iconMenuTree from '../components/AmIconMenu';
 import { useTranslation } from 'react-i18next';
+import moment from "moment";
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -107,11 +109,11 @@ const checkstatus = () => {
     const d2 = new Date();
     if (d1 > d2) {
         sessionStorage.setItem('Token', localStorage.getItem('Token'));
-        sessionStorage.setItem(
-            'ClientSecret_SecretKey',
-            localStorage.getItem('ClientSecret_SecretKey')
-        );
-        sessionStorage.setItem('ExtendKey', localStorage.getItem('ExtendKey'));
+        // sessionStorage.setItem(
+        //     'ClientSecret_SecretKey',
+        //     localStorage.getItem('ClientSecret_SecretKey')
+        // );
+        sessionStorage.setItem('ExtendTime', localStorage.getItem('ExtendTime'));
         sessionStorage.setItem('User_ID', localStorage.getItem('User_ID'));
         sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
         sessionStorage.setItem('Username', localStorage.getItem('Username'));
@@ -120,7 +122,7 @@ const checkstatus = () => {
         localStorage.removeItem("Token");
         localStorage.removeItem("MenuItems");
         localStorage.removeItem("ExpireTime");
-        localStorage.removeItem("ExtendKey");
+        localStorage.removeItem("ExtendTime");
         localStorage.removeItem("Username");
         sessionStorage.clear();
         return <Redirect from='/' to='/login' />;
@@ -137,6 +139,8 @@ const checkstatus = () => {
 const convertLang = l => {
     return l === "EN" ? "English" : "ไทย"
 }
+function useInterval(callback, delay) {
+    const savedCallback = useRef();
 
 const MainContainer = React.memo(({route, path}) => {
     console.log("switch route")
@@ -177,16 +181,46 @@ const Default = props => {
     function useWindowSize(ref) {
         const [size, setSize] = useState([0, 0]);
         useLayoutEffect(() => {
-          function updateSize() {
-              if(ref !== undefined)
-                setSize([ref.current.offsetWidth, window.innerHeight-120]);
-          }
-          window.addEventListener('resize', updateSize);
-          updateSize();
-          return () => window.removeEventListener('resize', updateSize);
+            function updateSize() {
+                if (ref !== undefined)
+                    setSize([ref.current.offsetWidth, window.innerHeight - 120]);
+            }
+            window.addEventListener('resize', updateSize);
+            updateSize();
+            return () => window.removeEventListener('resize', updateSize);
         }, []);
         return size;
     }
+    useInterval(() => {
+        var now = moment();
+        var exp = moment(localStorage.getItem("ExpireTime"));
+        var duration = moment.duration(exp.diff(now));
+        // console.log(duration)
+        var durDays = duration.days();
+        var durHours = duration.hours();
+        var durMin = duration.minutes();
+
+        if (durDays === 0 && durHours === 0 && durMin <= 10) {
+            var token = { token: localStorage.getItem("Token") }
+            Axios.put(window.apipath + "/v2/token/extend", token).then(res => {
+                if (res.data._result.status === 1) {
+                    var split_token = res.data.Token.split(".");
+                    var desc_token = atob(split_token[1]);
+                    var json_dec = JSON.parse(desc_token)
+                    savetoSession("ExtendTime", json_dec.extend);
+                    savetoSession("ExpireTime", json_dec.exp);
+ 
+                } else if (res.data._result.status === 0) {
+                    alert(res.data._result.message)
+                }
+            });
+        }
+
+    }, 10000);
+    const savetoSession = (name, data) => {
+        localStorage.setItem(name, data);
+        sessionStorage.setItem(name, localStorage.getItem([name]));
+    };
 
     const size = useWindowSize(refContainer)
 
@@ -216,7 +250,7 @@ const Default = props => {
         localStorage.removeItem("Token");
         localStorage.removeItem("MenuItems");
         localStorage.removeItem("ExpireTime");
-        localStorage.removeItem("ExtendKey");
+        localStorage.removeItem("ExtendTime");
         localStorage.removeItem("Username");
         i18n.changeLanguage("EN")
     };
@@ -308,14 +342,14 @@ const Default = props => {
             return routes.map((x, idx) => {
                 if (x.text.toString().toLowerCase() === Path[1]) {
                     return <div key={idx} style={{ float: "left", lineHeight: "29px", marginLeft: "5px" }}>
-                       <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
-                      {t(x.text)}
-                       </Typography>  
-                        
+                        <Typography color="textPrimary" style={matches ? ({ fontSize: '0.8rem' }) : ({ fontSize: '1rem' })}>
+                            {t(x.text)}
+                        </Typography>
+
                     </div>
                 }
                 else {
-                 /* return <div key={idx}></div>*/
+                    /* return <div key={idx}></div>*/
                 }
             });
         }

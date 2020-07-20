@@ -312,7 +312,7 @@ const AmSearchDocumentV2 = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={100}
+        pageSize={20}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
