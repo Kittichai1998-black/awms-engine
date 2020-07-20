@@ -51,14 +51,25 @@ const DevInfo = props => {
   }, []);
 
   function getData(data) {
+    console.log(data)
+    if (data !== null && data !== undefined && data !== "") {
 
-    Axios.get(
-      window.apipath +
-      "/v2/dev_info?menu=link"
-    ).then(res => {
-      setDataSource(res.data.rows)
-      setCount(res.data.rows.length)
-    });
+      Axios.get(
+        window.apipath +
+        "/v2/dev_info?menu=link&find=" + data
+      ).then(res => {
+        setDataSource(res.data.rows)
+        setCount(res.data.rows.length)
+      });
+    } else {
+      Axios.get(
+        window.apipath +
+        "/v2/dev_info?menu=link"
+      ).then(res => {
+        setDataSource(res.data.rows)
+        setCount(res.data.rows.length)
+      });
+    }
 
   }
   const getLink = link => {
@@ -88,6 +99,7 @@ const DevInfo = props => {
             onKeyPress={(value, obj, element, event) => {
               if (event.key === "Enter") {
                 console.log(value)
+                getData(value)
               }
             }}
           />
