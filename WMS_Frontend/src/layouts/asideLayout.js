@@ -12,7 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import PropTypes from 'prop-types';
 import purple from '@material-ui/core/colors/purple';
-import React, { useReducer, useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,8 +21,7 @@ import {
   createMuiTheme
 } from '@material-ui/core/styles';
 
-import { LocationContext } from '../reducers/context';
-import { menuToggle, initialState } from '../reducers/menuReducer';
+import { LayoutContext } from '../reducers/context';
 import route from './route';
 
 const theme = createMuiTheme({
@@ -55,20 +54,12 @@ const styles = theme => ({
 
 const Aside = props => {
   const { t, i18n } = useTranslation();
-  const [state, dispatch] = useReducer(menuToggle, initialState.menuToggle);
+  const { sidebar } = useContext(LayoutContext)
   const { classes } = props;
-  const [locat, dispatchLocat] = useContext(LocationContext);
-  const [icon, setIcon] = useState(props.icon);
-  const [iconChild, setIconChild] = useState(props.iconChild);
-  const [colorLink, setColorLink] = useState(props.colorLink);
-  const [backgroundColorChild, setBackgroundColorChild] = useState(
-    props.backgroundColorChild
-  );
-  const [backgroundColor, setBackgroundColor] = useState(props.backgroundColor);
   const [routes, setRoutes] = useState([]);
 
   function onHandleClickToggle(menuID) {
-    dispatch({ type: 'expand', menuID: menuID });
+    sidebar.setMenuToggle({ type: 'expand', menuID: menuID });
   }
 
   function HomeIcon(type) {
@@ -91,7 +82,7 @@ const Aside = props => {
         <List
           component='nav'
           className={classes.root}
-          style={{ backgroundColor: backgroundColor }}
+          style={{ backgroundColor: props.backgroundColor }}
         >
           {routes.map((x, idx) => {
             if (x.child) {
@@ -100,16 +91,15 @@ const Aside = props => {
                   <ListItem
                     divider
                     button
-                    onClick={() => onHandleClickToggle(x.text)}
+                    onClick={() => {onHandleClickToggle(x.text)}}
                   >
-                    {icon === true
+                    {props.icon === true
                       ? x.icon === null
                         ? ''
                         : HomeIcon(x.icon)
                       : null}
                     <ListItemText primary={t(x.text.trim())} />
-                    {/* <ListItemText primary={x.text} /> */}
-                    {state.menuID === x.text && state.toggle === true ? (
+                    {sidebar.menuToggle.menuID === x.text && sidebar.menuToggle.toggle === true ? (
                       <ExpandLess />
                     ) : (
                       <ExpandMore />
@@ -119,7 +109,7 @@ const Aside = props => {
                     return (
                       <Collapse
                         key={idx2}
-                        in={state.menuID === x.text ? state.toggle : false}
+                        in={sidebar.menuToggle.menuID === x.text ? sidebar.menuToggle.toggle : false}
                         timeout='auto'
                         unmountOnExit
                       >
@@ -128,8 +118,8 @@ const Aside = props => {
                             style={{
                               backgroundColor:
                                 y.to !== props.history.location.pathname
-                                  ? colorLink
-                                  : backgroundColorChild
+                                  ? props.colorLink
+                                  : props.backgroundColorChild
                             }}
                             divider
                             button
@@ -141,7 +131,7 @@ const Aside = props => {
                               aria-hidden='true'
                             ></span>
                             {HomeIcon('')}
-                            {iconChild === true
+                            {props.iconChild === true
                               ? y.iconChild === null
                                 ? ''
                                 : HomeIcon(y.iconSub)
