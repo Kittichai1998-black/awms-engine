@@ -144,28 +144,27 @@ const AmCreateDocument = (props) => {
     const columns = props.columns.concat(rem)
 
     useEffect(() => {
-        setheaderBody(getHeaderCreate())
-    }, [props.headerCreate])
-
-    useEffect(() => { 
         let dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
             arr[el.key] = el.valueTexts || el.defaultValue
             return arr
         }, {})
-        console.log(dataHeader)
         setdataHeaders(dataHeader)
+        setheaderBody(getHeaderCreate(props.headerCreate))
+        //setcreateDocumentData();
     }, [props.headerCreate])
 
     useEffect(() => {
         if (dataHeaders !== undefined)
-            setcreateDocumentData();
-        setcreateDocumentData(dataHeaders)
-    }, [dataHeaders])
+            console.log(createDocumentData)
+        setcreateDocumentData(createDocumentData) 
+        //setcreateDocumentData(dataHeaders)
+    }, [props.headerCreate])
 
-    useEffect(() => {
-        setcreateDocumentData(createDocumentData)
-    }, [createDocumentData])
-  
+    //useEffect(() => {
+    //    console.log(createDocumentData)
+    //    setcreateDocumentData(createDocumentData)  
+    //}, [createDocumentData])
+
 
     const PopupObjSize = React.memo(({ relationComponent, open }) => {
         return <AmEditorTable
@@ -208,15 +207,17 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            props.onChangeProcessType(value);        
-            createDocumentData[key] = value
+            console.log(dataObject)
+            props.onChangeProcessType(dataObject.OwnerGroupType);
+            props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
+            createDocumentData[key] = dataObject.ID
             setcreateDocumentData(createDocumentData)
-           
-        
+
+
         }
         createDocumentData[key] = value
         setcreateDocumentData(createDocumentData)
-     
+
     }
 
     //เช็ตค่าที่หัวของหน้าใน Findpopup
@@ -556,7 +557,7 @@ const AmCreateDocument = (props) => {
     }
 
     const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
-      
+
 
         if (type === "date") {
             return (
@@ -610,9 +611,9 @@ const AmCreateDocument = (props) => {
         } else if (type === "labeltext") {
             //getTextsValue(key, valueTexts)
             return <label>{texts}</label>
-       
 
-           
+
+
         } else if (type === "dropdown") {
             return (
                 <AmDropdown
@@ -681,8 +682,8 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getHeaderCreate = () => {
-        return props.headerCreate.map((x, xindex) => {
+    const getHeaderCreate = (headerCreate) => {
+        return headerCreate.map((x, xindex) => {
             return (
                 <Grid key={xindex} container>
                     {x.map((y, yindex) => {
@@ -719,12 +720,13 @@ const AmCreateDocument = (props) => {
             documentProcessTypeID: null,
             forCustomerCode: null,
             forCustomerID: null,
-            lot: null,        
+            lot: null,
             options: null,
             orderNo: null,
             parentDocumentID: null,
             ref1: null,
             ref2: null,
+            ref4: null,
             refID: null,
             remark: null,
             souAreaMasterCode: null,
@@ -758,7 +760,7 @@ const AmCreateDocument = (props) => {
             docItemStos: [],
             baseStos: []
         }
-
+        console.log(createDocumentData)
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
@@ -840,9 +842,9 @@ const AmCreateDocument = (props) => {
                 return x
             })
         }
-        console.log(doc)
+        //console.log(doc)
         if (Object.keys(doc).length > countDoc) {
-            CreateDocuments(doc)
+            // CreateDocuments(doc)
         }
     }
 
