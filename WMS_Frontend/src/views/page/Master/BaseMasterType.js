@@ -30,11 +30,17 @@ const BaseMasterType = props => {
       Header: "",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name" },
     { Header: "Unit Type", accessor: "UnitType_Code", width: 100 },
     { Header: "Weight", accessor: "Weight", width: 100, type: "number" },
