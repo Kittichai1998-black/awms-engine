@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
     root: {
         minWidth: '1.725em',
-        height: '1.725em',
+        height: '1.5em',
     }
 });
 const EntityEventStatus = [
@@ -19,7 +19,7 @@ const EntityEventStatus = [
 
 const EntityStatus = props => {
     const { statusCode, classes, className, styleType, labelShort, ...other } = props;
-    const result = EntityEventStatus.filter(row => { return row.code === statusCode });
+    const result = EntityEventStatus.filter(row => { return row.code === parseInt(statusCode) });
     let strStatus = "";
     let strLabel = "";
     let strLabelShort = "";

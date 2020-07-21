@@ -253,7 +253,6 @@ function Test6(props) {
     //ค่าที่ส่งกลับมา ของcomponent AmDropdown, AmMultiDropdown, AmFindPopup,
     //value, dataObject, inputID=ไอดีของinput, fieldDataKey=ชื่อฟิล์ดที่ลิงค์กับtableในdb
     const onHandleChange = (value, dataObject, inputID, fieldDataKey) => {
-        // console.log(event)
         // if (inputID === "txtCode") {
         //     setValueText({
         //         ...valueText, [inputID]: {
@@ -275,6 +274,7 @@ function Test6(props) {
    
     //ค่าที่ส่งกลับมา ของcomponent AmDropdown, AmMultiDropdown, AmFindPopup,
     const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey) => {
+        console.log(dataObject)
         setValueText({
             ...valueText, [inputID]: {
                 value: value,
