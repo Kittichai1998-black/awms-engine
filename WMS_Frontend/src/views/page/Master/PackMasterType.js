@@ -40,14 +40,19 @@ const PackMasterType = props => {
 
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
-      sortable: false,
+      fixWidth: 162,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Pack Type Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Pack Type Code", accessor: "Code", width: 120 },
     { Header: "Pack Type Name", accessor: "Name", width: 150 },
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
     { Header: "% Weight Verify", accessor: "ObjectSize_Code" },

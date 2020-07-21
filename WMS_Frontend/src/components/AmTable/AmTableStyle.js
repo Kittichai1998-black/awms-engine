@@ -53,6 +53,7 @@ const TableCell = styled.div`
 const TableHeaderCell = styled(TableCell)`
     width:${props => `${props.fixWidth ? props.fixWidth : props.width}px`};
     ${props => props.fixWidth ? `min-width:${props.fixWidth}px` : props.width ? `min-width:${props.width}px` : "min-width:150px"}
+    ${props => props.fixWidth ? `max-width:${props.fixWidth}px` : ""}
     text-align:center;
     z-index:500;
     background:rgb(248,249,250);
