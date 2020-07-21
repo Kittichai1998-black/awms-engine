@@ -33,6 +33,9 @@ namespace AMWUtil.Exception
         [AMWExceptionCodeAttribute("V0103", DefaultMessage = "parameter type ใน method '{0}' ไม่ตรงกับ field ที่นำมา validate")]
         V0_METHOD_PARAMETER_TYPE_NOT_EQ,
 
+        [AMWExceptionCodeAttribute("V0103", DefaultMessage = "develop menu not found.")]
+        V0_DEVMENU_NOT_FOUND,
+
 
 
 

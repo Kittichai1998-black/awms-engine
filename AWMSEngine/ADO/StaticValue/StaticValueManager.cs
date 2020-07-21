@@ -58,8 +58,8 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices ?? this.LoadAPIService(); }
 
-        private List<ams_Transporter> _Transports;
-        public List<ams_Transporter> Transports { get => this._Transports ?? this.LoadTransport(); }
+        private List<ams_TransportCar> _TransportCars;
+        public List<ams_TransportCar> TransportCars { get => this._TransportCars ?? this.LoadTransport(); }
 
         private List<ams_UnitType> _UnitTypes;
         public List<ams_UnitType> UnitTypes { get => this._UnitTypes ?? this.LoadUnitType(); }
@@ -132,7 +132,7 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_Customer).Name) this._Customers = null;
                 else if (tableName == typeof(ams_Supplier).Name) this._Suppliers = null;
                 else if (tableName == typeof(ams_APIService).Name) this._APIServices = null;
-                else if (tableName == typeof(ams_Transporter).Name) this._Transports = null;
+                else if (tableName == typeof(ams_TransportCar).Name) this._TransportCars = null;
                 else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
                 else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
                 else if (tableName == typeof(ams_BaseMasterType).Name) this._BaseMasterTypes = null;

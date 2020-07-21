@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import queryString from "query-string";
+import Grid from '@material-ui/core/Grid';
 const FormInline = styled.div`
   display: flex;
   flex-flow: row wrap;
@@ -25,18 +26,19 @@ const LabelDD = {
   fontWeight: "bold",
   width: "100px"
 };
-const LabelD = {
-  width: "150px"
+const LabelHtemName = {
+  fontWeight: "bold",
+  width: "100px"
 };
 const LabelDQty = {
-  width: "60px"
+  width: "50px"
 };
 const LabelDPallet = {
   width: "120px"
 };
 const LabelHPallet = {
   fontWeight: "bold",
-  width: "100px"
+  width: "80px"
 };
 const LabelPallet = {
   fontWeight: "bold",
@@ -47,21 +49,30 @@ const LabelPalletNo = {
   width: "50px"
 };
 const DataGenerateElePalletListDisplay = (data) => {
-  // console.log(data.listsCode)
+
   if (data.listsCode !== undefined) {
     return data.listsCode.map((pt, index) => {
       var qryStr = queryString.parse(pt.options);
-      return (<div key={index}>
-        <FormInline>
-          <label style={LabelPallet}>{"Pallet No. : "}</label>
-          <label style={LabelPalletNo}>{qryStr.palletNo}</label>
-          <label style={LabelHPallet}>{"Item Name : "}</label>
-          <label style={LabelDPallet}>{qryStr.itemName}</label>
-          <label style={LabelHPallet}>{"Volume : "}</label>
-          <label style={LabelDPallet}>{qryStr.qtyReceived}</label>
-        </FormInline>
-      </div>
-      )
+      var itemName_list = qryStr.itemName.split(',');
+      var qtyReceived_list = qryStr.qtyReceived.split(',');
+      return <div>
+        <Grid container spacing={3} >
+          <Grid item xs style={{ padding: 2 }} >
+            <FormInline style={{ width: "150px" }}>
+              <label style={LabelPallet}>{"Pallet No. : "}</label>
+              <label style={LabelPalletNo}>{qryStr.palletNo}</label>
+            </FormInline>
+          </Grid>
+          <Grid item xs style={{ padding: 2 }}>
+            <label style={LabelDPallet}> {itemName_list.map(ele => <>{ele}<br /></>)}</label>
+          </Grid>
+          <Grid item xs style={{ padding: 2 }}>
+            <FormInline style={{ width: "150px" }}>
+              <label style={LabelDQty}> {qtyReceived_list.map(ele => <>{ele}<br /></>)}</label>
+            </FormInline>
+          </Grid>
+        </Grid></div >
+
     });
   }
 }

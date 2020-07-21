@@ -9,44 +9,54 @@ import {
 
 const Axios = new apicall();
 
-
+const SKUMaster = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "SKUMaster",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+};
 
 
 const RD_Create_FGCustomer = props => {
-    const [CodeprocessType, setCodeprocessType] = useState(0);
+    const [CodeprocessType, setCodeprocessType] = useState(1);
     const [table, setTable] = useState(null);
     const [HeaderDoc, setHeaderDoc] = useState([]);
-    const [skuType, setskuType] = useState(99);
+    const [skuType, setskuType] = useState(9999);
     const [columSKU, setcolumSKU] = useState();
-    const [skuquery, setskuquery] = useState();
-
-    const SKUMaster = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "SKUMaster",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+    const [skuquery, setskuquery] = useState(SKUMaster);
 
 
     useEffect(() => {
-        if (CodeprocessType !== "" && CodeprocessType !== null) {
-            var CodeprocessTypeStr = CodeprocessType.toString();
-            var ProcessTypeID = CodeprocessTypeStr.substring(3)
-            var ProcesTypeSKU = CodeprocessTypeStr.substring(2,3,4)
-            setskuType(ProcesTypeSKU);
-            var DataprocessTypeID = {};
-            if (ProcessTypeID === '') {
-                DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
-            } else if (ProcessTypeID === '1') {
+        
+        if (skuType === 9999) {
+            if (SKUMaster) {
+                setskuType(1)
+                let objQuery = SKUMaster;
+                if (objQuery !== null && skuType !== undefined && skuType !== 0) {
+                    let skuqry = JSON.parse(objQuery.q);
+                    skuqry.push({ 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType })
+                    objQuery.q = JSON.stringify(skuqry);
+
+                }
+
+                setskuquery(objQuery)
+                setskuType(0)
+            }
+        }
+       
+        if (CodeprocessType !== "" && CodeprocessType !== null) {    
+            var DataprocessTypeID = CodeprocessType;
+            console.log(DataprocessTypeID)
+            if (CodeprocessType === 1) {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
-            } else if (ProcessTypeID === '2') {
+            } else if (CodeprocessType === 2) {
                 DataprocessTypeID = { label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" }
-            } else if (ProcessTypeID === '3') {
+            } else if (CodeprocessType === 3) {
                 DataprocessTypeID = { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" }
             } else {
                // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
@@ -78,7 +88,7 @@ const RD_Create_FGCustomer = props => {
             ];
 
             setHeaderDoc(headerCreate)
-
+          
 
         } else {
 
@@ -92,6 +102,7 @@ const RD_Create_FGCustomer = props => {
                     //addList={addList}
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
+                    onChangeProcesTypeSKU={((e) => { setskuType(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
@@ -101,16 +112,16 @@ const RD_Create_FGCustomer = props => {
                 />
             );
         }
-        setskuquery(SKUMaster)
+     
 
     }, [HeaderDoc, CodeprocessType])
 
 
     useEffect(() => {
        
-        if (SKUMaster) {
+        if (SKUMaster && skuType === 0) {
             let objQuery = SKUMaster;
-            if (objQuery !== null && skuType !== undefined) {
+            if (objQuery !== null && skuType !== undefined && skuType !== 0 && skuType !== 9999) {
                 let skuqry = JSON.parse(objQuery.q);
                 skuqry.push({ 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType })
                 objQuery.q = JSON.stringify(skuqry);
@@ -119,6 +130,8 @@ const RD_Create_FGCustomer = props => {
 
             setskuquery(objQuery)
         }
+        setskuType(0)
+
 
         var columnEdit = [
             { Header: "Order No.", accessor: "orderNo", type: "input" },
@@ -140,6 +153,7 @@ const RD_Create_FGCustomer = props => {
         ];
 
         setcolumSKU(columnEdit)
+        //setskuquery()
     }, [skuType])
 
 
@@ -186,7 +200,7 @@ const RD_Create_FGCustomer = props => {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "DocumentProcessType",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code,Name",
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,

@@ -13,6 +13,10 @@ const ButtonInputExcel = Loadable({
   loader: () => import("../../views/page/ButtonInputExcel"),
   loading: Loading
 });
+const DevInfo = Loadable({
+  loader: () => import("../../views/page/ENGINE/DevInfo"),
+  loading: Loading
+});
 const FindpopupDDL = Loadable({
   loader: () => import("../../views/page/FindpopupDDL"),
   loading: Loading
@@ -238,6 +242,7 @@ const TestPanel = Loadable({
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
+  { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
   { path: "/testMasterV2", name: "base5", compoment: testMasterV2, exact: true },
   { path: "/TestPicking", name: "Inbound Progress", compoment: TestPicking, exact: true },
   { path: "/monitor/receiving", name: "Inbound Progress", compoment: MonitorIO, exact: true },
