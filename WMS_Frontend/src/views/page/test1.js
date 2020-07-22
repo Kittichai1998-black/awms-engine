@@ -4,7 +4,6 @@ import Table from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
-import { LocationContext } from '../../reducers/context';
 import Aside from '../../layouts/asideLayout';
 import AmMenuTree from "../ComponentCore/AmMenuTree";
 import Test2 from '../page/test2'
@@ -18,13 +17,7 @@ import Button from '@material-ui/core/Button';
 
 const Test1 = (props) => {
     const [data, setData] = useState();
-    const [locat, dispatchLocat] = useContext(LocationContext);
-   // const [locat, dispatchLocat] = useContext(LocationContext);
     const [preview, setPreview] = useState(true);
-
-    useEffect(()=>
-        {dispatchLocat({type:"open",location:props.history.location.pathname})}
-    ,[])
 
     
 

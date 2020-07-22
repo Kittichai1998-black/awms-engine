@@ -319,6 +319,7 @@ const ObjectSize = props => {
   return (
     <div>
       <PopupObjSize relationComponent={relationComponent} open={open}/>
+      
       <AmDialogs
             typePopup={dialogState.type}
             onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}

@@ -38,6 +38,7 @@ const InputComponent = ({config, defaultData, response}) => {
             placeholder={config.placeholder}
             style={{width:"200px"}}
             type= "input"
+            required={config.required}
             value={!IsEmptyObject(value) ? value.value : defaultData !== undefined ? defaultData : ""}
             onChangeV2={(value)=>{setValue({field:config.field, value:value}); response({field:config.field, value:value})}}/>
         </FormInline>
@@ -70,6 +71,7 @@ const DropDownComponent = ({config, response, defaultData, queryData}) => {
         return <FormInline> <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
         <AmDropdown
             id={config.field}
+            required={config.required}
             placeholder={config.placeholder}
             fieldDataKey={config.fieldValue === undefined ? "value" : config.fieldValue}
             fieldLabel={config.fieldLabel === undefined ? ["label"] : config.fieldLabel}
@@ -90,6 +92,7 @@ const FindPopupComponent = ({config, response, columns, queryData, defaultData})
     const [selection, setSelection] = useState({});
     return  <FormInline><label style={{margin:"0px", width:"150px",paddingLeft:"20px"}}>{config.name} : </label><AmFindPopup
       id={config.field}
+      required={config.required}
       placeholder={config.placeholder}
       fieldDataKey={config.fieldValue}
       fieldLabel={config.fieldLabel}

@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Redirect } from 'react-router-dom';
+import NotifyBox from "./NotifyMessageBox";
 
 const drawerWidth = 240;
 
@@ -130,39 +131,6 @@ const convertLang = l => {
   return l === "EN" ? "English" : "ไทย"
 }
 
-const checkstatus = () => {
-  const d1 = new Date(localStorage.ExpireTime);
-  const d2 = new Date();
-  if (d1 > d2) {
-      sessionStorage.setItem('Token', localStorage.getItem('Token'));
-      // sessionStorage.setItem(
-      //     'ClientSecret_SecretKey',
-      //     localStorage.getItem('ClientSecret_SecretKey')
-      // );
-      sessionStorage.setItem('ExtendTime', localStorage.getItem('ExtendTime'));
-      sessionStorage.setItem('User_ID', localStorage.getItem('User_ID'));
-      sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
-      sessionStorage.setItem('Username', localStorage.getItem('Username'));
-  } else {
-      localStorage.removeItem("User_ID");
-      localStorage.removeItem("Token");
-      localStorage.removeItem("MenuItems");
-      localStorage.removeItem("ExpireTime");
-      localStorage.removeItem("ExtendTime");
-      localStorage.removeItem("Username");
-      sessionStorage.clear();
-      return <Redirect from='/' to='/login' />;
-  }
-
-  if (
-      sessionStorage.getItem('Token') === null ||
-      sessionStorage.getItem('Token') === undefined
-  ) {
-      return <Redirect from='/' to='/login' />;
-      // window.location.replace("/login");
-  }
-};
-
 export default (props) => {
   const {notify, sidebar} = useContext(LayoutContext);
 
@@ -204,10 +172,55 @@ export default (props) => {
     setOpen((prevOpen) => !prevOpen);
   };
 
+  const handleLogout = event => {
+    setOpen(false);
+    sessionStorage.clear();
+    localStorage.removeItem("User_ID");
+    localStorage.removeItem("Token");
+    localStorage.removeItem("MenuItems");
+    localStorage.removeItem("ExpireTime");
+    localStorage.removeItem("ExtendTime");
+    localStorage.removeItem("Username");
+    //window.open("/login", "_self")
+  };
+
   const handleClose = (event) => {
     //if (accountRef.current && accountRef.current.contains(event.target)) 
       //return;
     setOpen(false);
+  };
+
+  const checkstatus = () => {
+    const d1 = new Date(localStorage.ExpireTime);
+    const d2 = new Date();
+    if (d1 > d2) {
+        sessionStorage.setItem('Token', localStorage.getItem('Token'));
+        // sessionStorage.setItem(
+        //     'ClientSecret_SecretKey',
+        //     localStorage.getItem('ClientSecret_SecretKey')
+        // );
+        sessionStorage.setItem('ExtendTime', localStorage.getItem('ExtendTime'));
+        sessionStorage.setItem('User_ID', localStorage.getItem('User_ID'));
+        sessionStorage.setItem('ExpireTime', localStorage.getItem('ExpireTime'));
+        sessionStorage.setItem('Username', localStorage.getItem('Username'));
+    } else {
+        localStorage.removeItem("User_ID");
+        localStorage.removeItem("Token");
+        localStorage.removeItem("MenuItems");
+        localStorage.removeItem("ExpireTime");
+        localStorage.removeItem("ExtendTime");
+        localStorage.removeItem("Username");
+        sessionStorage.clear();
+        return <Redirect from='/' to='/login' />;
+    }
+
+    if (
+        sessionStorage.getItem('Token') === null ||
+        sessionStorage.getItem('Token') === undefined
+    ) {
+        return <Redirect from='/' to='/login' />;
+        // window.location.replace("/login");
+    }
   };
 
   const renderMenu = (ref, item) => (
@@ -251,7 +264,7 @@ export default (props) => {
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
-          onClick={() => checkstatus()}
+          onClick={() => handleLogout()}
         >
           <AccountCircle />
         </IconButton>
@@ -301,6 +314,7 @@ export default (props) => {
 }
   return (
     <div className={classes.grow}>
+      {checkstatus()}
       <AppBar position='fixed' className={classNames(classes.appBar, {[classes.appBarShift]: sidebar.sidebarToggle})}>
         <Toolbar>
           {!sidebar.sidebarToggle ? <IconButton
@@ -326,7 +340,7 @@ export default (props) => {
               aria-label="notifications" 
               color="inherit"
               ref={notifyRef}
-              onClick={() => {handleToggle(); setRef(notifyRef); setItem([{label:"ENGLISH", onClick:()=> console.log("noti")},{label:"ไทย", onClick:()=> console.log("noti")}])}}
+              onClick={() => {notify.setNotifyState(true)}}
             >
               <Badge badgeContent={notify.notifyCount} color="secondary">
                 <NotificationsIcon />
@@ -336,7 +350,7 @@ export default (props) => {
               aria-label="notifications" 
               color="inherit"
               ref={langRef}
-              onClick={() => {handleToggle(); setRef(notifyRef); setItem([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}])}}
+              onClick={() => {handleToggle(); setRef(langRef); setItem([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}])}}
             >
               <Typography
                 aria-haspopup='true'
@@ -354,7 +368,9 @@ export default (props) => {
               aria-controls={open ? 'menu-list-grow' : undefined}
               aria-label="account of current user"
               aria-haspopup="true"
-              onClick={() => {handleToggle(); setRef(accountRef); setItem([{label:"Logout", onClick:()=> console.log("user")}])}}
+              onClick={() => {
+                handleToggle(); setRef(accountRef); setItem([{label:"Logout", onClick:()=> handleLogout()}])
+              }}
               color="inherit"
             >
                 <AccountCircle />
@@ -384,6 +400,7 @@ export default (props) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu(ref, item)}
+      <NotifyBox btnRef={notifyRef}/>
     </div>
   );
 }
