@@ -228,13 +228,14 @@ const ObjectSize = props => {
         { Header: "Name", accessor: "Name", width: 250 }
       ];
 
+      console.log(objSizeData)
       if(objSizeData !== undefined && objSizeData.length > 0){
+        console.log("xx")
         setOpen(true)
       }
 
       const defaultValue = () => {
-        let newData = objSizeData.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null));
-        return newData.map(x => {return {...x, _tempID:x.Name+x.ID}})
+        return objSizeData.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
         {
@@ -244,8 +245,8 @@ const ObjectSize = props => {
               <div key={key}>
                 <AmTable
                   columns={objSizeCols}
-                  dataKey={"_tempID"}
-                  dataSource={objSizeData.map(x=> {return {...x, _tempID:x.Name+x.ID}})}
+                  dataKey={"ID"}
+                  dataSource={objSizeData}
                   selection={"checkbox"}
                   selectionData={sel => {
                     var select = [...sel];
@@ -318,6 +319,7 @@ const ObjectSize = props => {
   return (
     <div>
       <PopupObjSize relationComponent={relationComponent} open={open}/>
+      
       <AmDialogs
             typePopup={dialogState.type}
             onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}

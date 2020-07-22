@@ -294,8 +294,6 @@ const AmMasterData = (props) => {
             columns={columns}
             dataKey={props.codeInclude ? "Code" : "ID"}
             dataSource={dataSource}
-            selection="ckeckbox"
-            selectionData={(x) => console.log(x)}
             filterable={true}
             filterData={res => { onChangeFilterData(res) }}
             rowNumber={true}
