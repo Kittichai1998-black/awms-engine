@@ -1,7 +1,7 @@
 import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const Warehouse = props => {
@@ -24,11 +24,11 @@ const Warehouse = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType:"dropdown",
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -61,7 +61,7 @@ const Warehouse = props => {
     },
     {
       field: "Branch_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,
@@ -89,7 +89,7 @@ const Warehouse = props => {
     },
     {
       field: "Branch_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,
