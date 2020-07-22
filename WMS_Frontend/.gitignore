@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/public/index.html
 /.vs/slnx.sqlite
 /.vs/slnx.sqlite-journal
 /.pnp
@@ -24,7 +25,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /.vs/VSWorkspaceState.json
-/public/index.html
 /.vs/ProjectSettings.json
 /.vs/WMS_Frontend/v15/.suo
 .vs/slnx.sqlite

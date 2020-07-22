@@ -264,8 +264,6 @@ const AmMasterData = (props) => {
     }
 
     return <>
-    {
-    console.log(props.columns)}
         <AmMasterEditorData config={{ required: true, title: popupTitle }}
             editorColumns={editorColumns}
             editData={updateData}

@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Redirect } from 'react-router-dom';
+import NotifyBox from "./NotifyMessageBox";
 
 const drawerWidth = 240;
 
@@ -326,7 +327,7 @@ export default (props) => {
               aria-label="notifications" 
               color="inherit"
               ref={notifyRef}
-              onClick={() => {handleToggle(); setRef(notifyRef); setItem([{label:"ENGLISH", onClick:()=> console.log("noti")},{label:"ไทย", onClick:()=> console.log("noti")}])}}
+              onClick={() => {notify.setNotifyState(true)}}
             >
               <Badge badgeContent={notify.notifyCount} color="secondary">
                 <NotificationsIcon />
@@ -336,7 +337,7 @@ export default (props) => {
               aria-label="notifications" 
               color="inherit"
               ref={langRef}
-              onClick={() => {handleToggle(); setRef(notifyRef); setItem([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}])}}
+              onClick={() => {handleToggle(); setRef(langRef); setItem([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}])}}
             >
               <Typography
                 aria-haspopup='true'
@@ -384,6 +385,7 @@ export default (props) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu(ref, item)}
+      <NotifyBox btnRef={notifyRef}/>
     </div>
   );
 }

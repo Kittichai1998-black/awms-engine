@@ -93,7 +93,10 @@ const ProcessQueueHeader = (props) => {
     const [clearText, setClearText] = useState(false);
 
     useEffect(()=>{
-      setWarehouseID(props.warehouseDefault === undefined || props.warehouseDefault === "" ? null : props.warehouseDefault);
+      if(props.warehouseDefault === undefined || props.warehouseDefault === ""){
+        setWarehouseID(props.warehouseDefault.ID);
+        warehouse.setWarehouse(props.warehouseDefault)
+      }
       documentDetail.setDocumentDetail(props.documentDetail)
 
       var qrObj =  queryString.parse(window.location.search)
