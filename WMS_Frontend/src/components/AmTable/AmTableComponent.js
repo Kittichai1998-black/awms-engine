@@ -49,7 +49,6 @@ const SortDirection = {
 const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
-
     // useEffect(() => {
     //   console.log("Columns")
     // }, [Columns])
@@ -138,7 +137,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
             filterable: false,
             fixed: "left",
             fixWidth: 20,
-            colStyle:{textAlign:"center"},
+            colStyle:{textAlign:"center",},
             sortable: false,
             Cell: ele => {
                 if(ele.original[dataKey] !== undefined){                  
@@ -469,7 +468,10 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
   };
 
   const onChangeFilter = (field, value, customFilter) => {
-    filter.setFilter({field, value, customFilter})
+    if(customFilter === undefined)
+      filter.setFilter({field, value})
+    else
+      filter.setFilter({field, value, customFilter})
   };
 
   const calculateWidth = (cols) => {
@@ -499,6 +501,7 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
         let fixedStyle = { };
         fixedStyle.left = getWidth;
         getWidth = getWidth + col.fixWidth;
+        console.log(col.fixed, col.fixWidth)
         return <TableHeaderStickyColumnsCell
           id={`th_${idx}`}
           style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}

@@ -257,7 +257,6 @@ const SKUMaster = props => {
     <div>
       <AmMaster
         columnsFilterPrimary={primarySearch}
-        sortable={true}
         columnsFilter={columnsFilter}
         tableQuery={"SKUMaster"}
         table={"ams_SKUMaster"}

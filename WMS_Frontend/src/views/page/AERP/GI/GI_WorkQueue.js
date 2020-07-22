@@ -59,7 +59,7 @@ import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "AreaRouteV2",
     q:
-      '[{ "f": "IOType", "c":"=", "v": 1}, { "f": "souAreaID", "c":"=", "v": 5}]',
+      '[{ "f": "IOType", "c":"=", "v": 1}, { "f": "souAreaID", "c":"=", "v": 2}]',
     f: "desAreaCode as Code, desAreaID as ID, desAreaName as Name, desWarehouseID",
     g: "",
     s: "[{'f':'ID','od':'asc'},]",

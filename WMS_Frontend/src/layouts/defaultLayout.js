@@ -6,61 +6,32 @@ import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
     MuiThemeProvider,
-    createMuiTheme
 } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { NavLink, Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import {  Route, Switch, Redirect } from 'react-router-dom';
 import routeLink from './routeLink';
 import AmMenuBar from './asideLayout';
-import { HeaderContext } from '../reducers/context';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import PermIdentity from '@material-ui/icons/PermIdentity';
-import Exit from '@material-ui/icons/ExitToApp';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import route from './route';
-import SvgIcon from '@material-ui/core/SvgIcon';
 import iconMenuTree from '../components/AmIconMenu';
-import { NONAME } from 'dns';
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-const theme = createMuiTheme({
-    overrides: {
-        MuiDrawer: {
-            subhepaperAnchorDockedLeftading: {
-                borderRight: '0px'
-            }
-        }
-    },
-    typography: {
-        useNextVariants: true
-    },
-    typography: {
-        useNextVariants: true
-    }
-});
+
+import { LayoutContext } from '../reducers/context';
+
+import Header from "./headerLayout";
 
 const drawerWidth = 240;
 
@@ -70,20 +41,6 @@ const styles = theme => ({
             aa: theme.palette.secondary.main
         },
         display: 'flex'
-    },
-    appBar: {
-        transition: theme.transitions.create(["margin", "width"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen
-        })
-    },
-    appBarShift: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-        transition: theme.transitions.create(["margin", "width"], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen
-        })
     },
     menuButton: {
         marginLeft: 5,
@@ -120,7 +77,7 @@ const styles = theme => ({
         justifyContent: 'flex-end'
     },
     content: {
-        width: `calc(100% - ${drawerWidth}px)`,
+        width: '100%',
         flexGrow: 1,
         padding: theme.spacing(1),
         transition: theme.transitions.create('margin', {
@@ -130,19 +87,12 @@ const styles = theme => ({
         marginLeft: -drawerWidth
     },
     contentShift: {
+        width: `calc(100% - ${240}px)`,
         transition: theme.transitions.create("margin", {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen
         }),
         marginLeft: 0
-    },
-    menuItem: {
-        "&:focus": {
-            backgroundColor: theme.palette.primary.main,
-            '& $primary, & $icon': {
-                color: theme.palette.common.white
-            }
-        }
     },
     primary: {},
     listItemText: {
@@ -151,16 +101,7 @@ const styles = theme => ({
     },
     icon: {
         marginRight: 0
-    },
-    username: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-        marginRight: 10,
-        "&:hover": {
-            cursor: "pointer"
-        }
-    },
+    }
 });
 
 const checkstatus = () => {
@@ -195,9 +136,7 @@ const checkstatus = () => {
         // window.location.replace("/login");
     }
 };
-const convertLang = l => {
-    return l === "EN" ? "English" : "ไทย"
-}
+
 function useInterval(callback, delay) {
     const savedCallback = useRef();
 
@@ -217,22 +156,39 @@ function useInterval(callback, delay) {
         }
     }, [delay]);
 }
+
+const MainContainer = React.memo(({route, path}) => {
+    console.log("switch route")
+    return <Switch>
+        {route.map((x, idx) => (
+            <Route
+                key={idx}
+                path={x.path}
+                exact={x.exact}
+                name={x.name}
+                render={rprops => {
+                    return <x.compoment {...rprops} />;
+                }}
+            />
+        ))}
+        <Redirect to="/404" />
+    </Switch>
+});
+
 const Default = props => {
-    const [state, dispatch] = useContext(HeaderContext);
     const { classes, theme } = props;
     const [open, setOpen] = useState(true);
     const [openMenuHeader, setOpenMenuHeader] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [routes, setRoutes] = useState([]);
     const [openLangHeader, setOpenLangHeader] = useState(false)
-    const [lang, setLang] = useState(() => {
-        return localStorage.getItem("Lang") ? convertLang(localStorage.getItem("Lang")) : localStorage.setItem("Lang", "EN"), convertLang(localStorage.getItem("Lang"))
-    })
     const { t, i18n } = useTranslation()
 
     const [menuVisible, setMenuVisible] = useState({ visibility: "visible" });
 
     const refContainer = useRef();
+
+    const {sidebar} = useContext(LayoutContext);
 
     function useWindowSize(ref) {
         const [size, setSize] = useState([0, 0]);
@@ -282,13 +238,13 @@ const Default = props => {
 
     // const openMenuHeader = Boolean(anchorEl);
     const handleDrawerOpen = () => {
-        setOpen(true);
+        sidebar.setSidebarToggle(true);
     };
 
     // console.log(size)
 
     const handleDrawerClose = () => {
-        setOpen(false);
+        sidebar.setSidebarToggle(false);
     };
     const handleClose = event => {
         // setAnchorEl(null);
@@ -299,14 +255,6 @@ const Default = props => {
         setOpenLangHeader(false)
     };
 
-    const handleMenuToggle = () => {
-        setOpenMenuHeader(!openMenuHeader);
-        setOpenLangHeader(false)
-    };
-    const handleLangToggle = () => {
-        setOpenLangHeader(!openLangHeader);
-        setOpenMenuHeader(false);
-    };
     const handleLogout = event => {
         handleClose(event);
         sessionStorage.clear();
@@ -319,29 +267,7 @@ const Default = props => {
         i18n.changeLanguage("EN")
     };
     const matches = useMediaQuery('(max-width:400px)');
-    const divLingLogo = {
-
-        width: '4vw',
-        display: 'inline-block',
-        height: '2.5vw',
-        lineHeight: '2.5vw',
-        Float: 'Left',
-        marginLeft: '1vw',
-        fontSize: '2.2vw'
-
-    };
-    const divLingLogo_phone = {
-
-        width: '4vw',
-        display: 'inline-block',
-        height: '2.5vw',
-        lineHeight: '2.5vw',
-        Float: 'Left',
-        marginLeft: '1vw',
-        fontSize: '0.7rem'
-
-    };
-
+    
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
@@ -441,15 +367,6 @@ const Default = props => {
         }
     };
 
-    const changeLang = (l) => {
-        if (lang !== l) {
-            localStorage.setItem('Lang', l)
-            setLang(convertLang(l))
-            i18n.changeLanguage(l)
-        }
-        setOpenLangHeader(false)
-    }
-
     useEffect(() => {
         if (props.width === "xs") {
             setMenuVisible({ visibility: "hidden" })
@@ -461,258 +378,18 @@ const Default = props => {
         }
     }, [props.width])
 
-    const LogoIn = () => {
-        return (<a
-            href='/'
-            style={{
-                display: 'inline-block',
-                width: 'auto',
-                textDecoration: 'none',
-                color: '#FFF'
-            }}>
-            {matches ? (
-                <img
-                    src={require('../assets/logo/logo.png')}
-                    style={{
-
-                        width: '35px',
-                        display: 'inline-block'
-                    }}
-                    alt=''
-                />
-            ) : (
-                    <img
-                        src={require('../assets/logo/logo.png')}
-                        style={{
-                            float: 'left',
-                            width: '4vw',
-                            display: 'inline-block'
-                        }}
-                        alt=''
-                    />
-                )}
-            {matches ? (
-                ''
-            ) : (
-                    <div style={divLingLogo}>AMS</div>
-                )}
-
-        </a>
-        )
-    }
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
                 {checkstatus()}
                 <CssBaseline />
-                <AppBar
-                    position='fixed'
-                    className={classNames(classes.appBar, {
-                        [classes.appBarShift]: open
-                    })}
-                >
-                    <Toolbar
-                        disableGutters={!open}
-                        classes={{
-                            gutters: classes.gutters
-                        }}
-                    >
-                        <IconButton
-                            color='inherit'
-                            aria-label='Open drawer'
-                            onClick={() => {
-                                handleDrawerOpen();
-                                setMenuVisible({ visibility: "visible" })
-                            }}
-                            className={classNames(classes.menuButton, open && classes.hide)}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography
-                            variant='h6'
-                            color='inherit'
-                            noWrap
-                            className={classes.grow}
-                        >
-                            {LogoIn()}
-                        </Typography>
-                        {/* แสดงชื่อ Username และ Menu=> Profile, Logout */}
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                {/* <IconButton
-                  buttonRef={node => {
-                    
-                    setAnchorEl(node);
-                  }}
-                  aria-owns={openLangHeader ? 'lang-appbar' : undefined}
-                  aria-haspopup='true'
-                  onClick={handleLangToggle}
-                  color='inherit'
-                  className={classes.accountButton}
-                >
-                  <AccountCircle />
-                </IconButton> */}
-                                <Typography
-                                    aria-owns={openLangHeader ? 'lang-appbar' : undefined}
-                                    aria-haspopup='true'
-                                    variant='subtitle2'
-                                    color='inherit'
-                                    className={classes.username}
-                                    onClick={handleLangToggle}
-                                >
-                                    {lang}
-                                    <ArrowDropDownIcon />
-                                </Typography>
-
-                                <IconButton
-                                    buttonRef={node => {
-                                        setAnchorEl(node);
-                                    }}
-                                    aria-owns={openMenuHeader ? 'menu-appbar' : undefined}
-                                    aria-haspopup='true'
-                                    onClick={handleMenuToggle}
-                                    color='inherit'
-                                    className={classes.accountButton}
-                                >
-                                    <AccountCircle />
-                                </IconButton>
-
-                                <Typography
-                                    aria-owns={openMenuHeader ? 'menu-appbar' : undefined}
-                                    aria-haspopup='true'
-                                    variant='subtitle1'
-                                    color='inherit'
-                                    className={classes.username}
-                                    onClick={handleMenuToggle}
-                                >
-                                    {localStorage.getItem('Username')}
-                                    <ArrowDropDownIcon />
-                                </Typography>
-                            </div>
-
-
-                            <Popper
-                                open={openLangHeader}
-                                // anchorEl={anchorEl}
-                                transition
-                                disablePortal
-                                style={{ position: "fixed", left: null, top: null }}
-                            >
-                                {({ TransitionProps, placement }) => {
-                                    return (
-                                        <Grow
-                                            {...TransitionProps}
-                                            id='lang-appbar'
-                                            style={{
-                                                transformOrigin:
-                                                    placement === 'bottom' ? 'center top' : 'center bottom'
-                                            }}
-                                        >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={handleClose}>
-                                                    <MenuList>
-                                                        {/* <MenuItem className={classes.menuItem} onClick={handleClose} >
-                            <ListItemIcon className={classes.icon}>
-                              <PermIdentity />
-                            </ListItemIcon>
-                            <ListItemText classes={{ primary: classes.primary, root: classes.listItemText }} inset primary="Profile" />
-                          </MenuItem> */}
-                                                        <MenuItem
-                                                            className={classes.menuItem}
-                                                            onClick={() => changeLang("EN")}
-                                                        >
-                                                            {/* <ListItemIcon className={classes.icon}>
-                                <Exit />
-                              </ListItemIcon> */}
-                                                            <ListItemText
-                                                                classes={{
-                                                                    primary: classes.primary,
-                                                                    root: classes.listItemText
-                                                                }}
-                                                                inset
-                                                                primary='English'
-                                                            />
-                                                        </MenuItem>
-                                                        <MenuItem
-                                                            className={classes.menuItem}
-                                                            onClick={() => changeLang("TH")}
-                                                        >
-                                                            {/* <ListItemIcon className={classes.icon}>
-                                <Exit />
-                              </ListItemIcon> */}
-                                                            <ListItemText
-                                                                classes={{
-                                                                    primary: classes.primary,
-                                                                    root: classes.listItemText
-                                                                }}
-                                                                inset
-                                                                primary='ไทย'
-                                                            />
-                                                        </MenuItem>
-                                                    </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )
-                                }}
-                            </Popper>
-
-                            <Popper
-                                open={openMenuHeader}
-                                anchorEl={anchorEl}
-                                transition
-                                disablePortal
-                            >
-                                {({ TransitionProps, placement }) => (
-                                    <Grow
-                                        {...TransitionProps}
-                                        id='menu-appbar'
-                                        style={{
-                                            transformOrigin:
-                                                placement === 'bottom' ? 'center top' : 'center bottom'
-                                        }}
-                                    >
-                                        <Paper>
-                                            <ClickAwayListener onClickAway={handleClose}>
-                                                <MenuList>
-                                                    {/* <MenuItem className={classes.menuItem} onClick={handleClose} >
-                            <ListItemIcon className={classes.icon}>
-                              <PermIdentity />
-                            </ListItemIcon>
-                            <ListItemText classes={{ primary: classes.primary, root: classes.listItemText }} inset primary="Profile" />
-                          </MenuItem> */}
-                                                    <MenuItem
-                                                        className={classes.menuItem}
-                                                        onClick={handleLogout}
-                                                    >
-                                                        <ListItemIcon className={classes.icon}>
-                                                            <Exit />
-                                                        </ListItemIcon>
-                                                        <ListItemText
-                                                            classes={{
-                                                                primary: classes.primary,
-                                                                root: classes.listItemText
-                                                            }}
-                                                            inset
-                                                            primary={t('Log Out')}
-                                                        />
-                                                    </MenuItem>
-                                                </MenuList>
-                                            </ClickAwayListener>
-                                        </Paper>
-                                    </Grow>
-                                )}
-                            </Popper>
-                        </div>
-                        {/*--end แสดงชื่อ Username และ Menu=> Profile, Logout --*/}
-                    </Toolbar>
-                </AppBar>
+                <Header/>
                 <Drawer
                     style={menuVisible}
                     className={classes.drawer}
                     variant='persistent'
                     anchor='left'
-                    open={open}
+                    open={sidebar.sidebarToggle}
                     classes={{
                         paper: classes.drawerPaper
                     }}
@@ -738,7 +415,7 @@ const Default = props => {
                 </Drawer>
                 <main
                     className={classNames(classes.content, {
-                        [classes.contentShift]: open
+                        [classes.contentShift]: sidebar.sidebarToggle
                     })}
                 >
                     <div className={classes.drawerHeader} />
@@ -758,22 +435,8 @@ const Default = props => {
                             {NavicateBarN()}
                         </Breadcrumbs>
                     </Paper>
-                    <div ref={refContainer} style={{ width: "100%", height: size[1] }}>
-                        <Switch>
-
-                            {routeLink.map((x, idx) => (
-                                <Route
-                                    key={idx}
-                                    path={x.path}
-                                    exact={x.exact}
-                                    name={x.name}
-                                    render={rprops => {
-                                        return <x.compoment {...rprops} />;
-                                    }}
-                                />
-                            ))}
-                            <Redirect to="/404" />
-                        </Switch>
+                    <div ref={refContainer} style={{width:"100%", height:size[1] }}>
+                        <MainContainer route={routeLink} path={window.location.pathname}/>
                     </div>
                 </main>
             </div>

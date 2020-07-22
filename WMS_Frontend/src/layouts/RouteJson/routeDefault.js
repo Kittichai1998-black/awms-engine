@@ -185,6 +185,14 @@ const WorkQueueLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
   loading: Loading
 });
+const ShipmentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/ShipmentPlanLog"),
+  loading: Loading
+});
+const TransportObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/TransportObjectLog"),
+  loading: Loading
+});
 const DocumentLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/DocumentLog"),
   loading: Loading
@@ -198,10 +206,19 @@ const DocumentItemStorageObjectLog = Loadable({
     import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
   loading: Loading
 });
+const WaveLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveLog"),
+  loading: Loading
+});
+const WaveSeqLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveSeqLog"),
+  loading: Loading
+});
 const WorkQueue = Loadable({
   loader: () => import("../../views/page/Warehouse/WorkQueue"),
   loading: Loading
 });
+
 const DownloadLog = Loadable({
   loader: () => import("../../views/page/ENGINE/DownloadLog"),
   loading: Loading
@@ -275,6 +292,10 @@ let routes = [
   { path: "/log/docitemlog", name: "Document Item Log", compoment: DocumentItemLog, exact: true },
   { path: "/log/docitemstolog", name: "Document Item Storage Object Log", compoment: DocumentItemStorageObjectLog, exact: true },
   { path: "/log/workqueuelog", name: "Work Queue Log", compoment: WorkQueueLog, exact: true },
+  { path: "/log/shipmentlog", name: "Shipment Plan Log", compoment: ShipmentLog, exact: true },
+  { path: "/log/transportlog", name: "Transport Object Log", compoment: TransportObjectLog, exact: true },
+  { path: "/log/wavelog", name: "Wave Log", compoment: WaveLog, exact: true },
+  { path: "/log/waveseqlog", name: "Wave Seq Log", compoment: WaveSeqLog, exact: true },
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
