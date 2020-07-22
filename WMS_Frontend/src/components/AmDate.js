@@ -37,6 +37,7 @@ const AmDate = props => {
           dataReturndefault.fieldDataObject = TimeNow;
           props.onChange(dataReturndefault);
         } else {
+          console.log(props.defaultValue)
           dataReturndefault.fieldID = fieldID;
           dataReturndefault.fieldDataKey = DateNow;
           dataReturndefault.fieldDataObject = DateNow;
@@ -63,8 +64,8 @@ const AmDate = props => {
         props.onChange(null);
       } else {
         dataReturn.fieldID = fieldID;
-        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm");
-        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm");
+        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm:ss");
+        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm:ss");
         props.onChange(dataReturn);
       }
     } else if (tDate === "time") {
@@ -96,8 +97,8 @@ const AmDate = props => {
         props.onBlur(null);
       } else {
         dataReturn.fieldID = fieldID;
-        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm");
-        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm");
+        dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm:ss");
+        dataReturn.fieldDataObject = text.format("YYYY-MM-DDTHH:mm:ss");
         props.onBlur(dataReturn);
       }
     } else if (tDate === "time") {

@@ -51,7 +51,6 @@ const DevInfo = props => {
   }, []);
 
   function getData(data) {
-    console.log(data)
     if (data !== null && data !== undefined && data !== "") {
 
       Axios.get(
