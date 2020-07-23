@@ -232,7 +232,7 @@ const BtnAddList = props => {
             o: "and",
             f: x,
             c: "like",
-            v: encodeURIComponent(keySearch[x])
+            v: keySearch[x]
           });
           // if (idx === 0) {
           //     newSel.push({

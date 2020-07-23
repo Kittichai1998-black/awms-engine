@@ -57,7 +57,19 @@ const WarehouseQuery = {
     all: "",
 }
 
-const steps = ['Warehouse', 'Pallet', 'Barcode', 'Location']
+const AreaMasterQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "AreaMaster",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+}
+
+const steps = ['Warehouse', 'Pallet', 'Area', 'Barcode', 'Location']
 
 // function useWindowSize(ref) {
 //     const [size, setSize] = useState([0, 0]);
@@ -88,15 +100,28 @@ const AmMappingHH = (props) => {
     // const [width] = useWindowSize(containerRef)
 
     useEffect(() => {
-        switch (activeStep) {
-            case 2:
-                Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-                    console.log(editData);
-                    console.log(res);
-                    handleBack()
-                })
+        switch (steps[activeStep - 1]) {
+            case "Pallet":
+                console.log("Pallet");
+                // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
+                //     console.log(editData);
+                //     console.log(res);
+                //     handleBack()
+                // })
                 break;
-
+            case "Area":
+                // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
+                //     console.log(editData);
+                //     console.log(res);
+                //     handleBack()
+                // })
+                // Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
+                //     console.log(editData);
+                //     console.log(res);
+                //     handleBack()
+                // })
+                break;
+            default: break;
 
         }
         // effect
@@ -113,9 +138,9 @@ const AmMappingHH = (props) => {
     //         return
     // }
 
-    function getStepContent(step) {
-        switch (step) {
-            case 0:
+    function getStepContent(index) {
+        switch (steps[index]) {
+            case "Warehouse":
                 return (
                     <FormGroup>
                         <Label style={LabelStyle}>Warehouse</Label>
@@ -141,7 +166,7 @@ const AmMappingHH = (props) => {
                         />
                     </FormGroup>
                 );
-            case 1:
+            case "Pallet":
                 return (
                     <FormGroup>
                         <Label style={LabelStyle}>Pallet</Label>
@@ -149,7 +174,7 @@ const AmMappingHH = (props) => {
                             // required={true}
                             // error={true}
                             autoFocus
-                            // defaultValue={""}
+                            defaultValue={editData.scanCode ? editData.scanCode : ""}
                             // validate={true}
                             // msgError="Error"
                             // regExp={""}
@@ -159,7 +184,7 @@ const AmMappingHH = (props) => {
                         />
                     </FormGroup>
                 )
-            case 2:
+            case "Barcode":
                 return (
                     <TreeView
                         // selectRow={true}
