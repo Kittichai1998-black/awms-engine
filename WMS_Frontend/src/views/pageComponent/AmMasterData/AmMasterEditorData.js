@@ -17,7 +17,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
             if(config.type === "input"){
                 return <InputComponent key={key} 
                     config={config} 
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                     response={(e)=>{if(!IsEmptyObject(e)){
                         data[e.field] =  e.value
                     }
@@ -34,7 +34,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                             }
                         }
                     }}
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                     queryData={config.dataDropDown}
                 />
             }
@@ -50,7 +50,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     }}
                     columns={config.findPopupColumns}
                     queryData={config.findPopopQuery}
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                 />
             }
         }

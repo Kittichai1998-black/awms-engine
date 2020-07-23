@@ -462,7 +462,7 @@ const DropdownComponent = (props) => {
     }, [defaultValue]);
 
     useEffect(() => {
-        if (defaultVal && upreturnDefaultValue) {
+        if ((defaultVal !== undefined && defaultVal !== null) && upreturnDefaultValue) {
             if (valueData) {
                 onChange(valueData[fieldDataKey], valueData, id, fieldDataKey);
             } else {
@@ -485,7 +485,7 @@ const DropdownComponent = (props) => {
                 if (value) {
                     getDefaultByValue(value);
                 }
-                else if (defaultVal) {
+                else if (defaultVal !== undefined && defaultVal !== null) {
                     let hasOpt = optionList.some(opt => opt[fieldDataKey] === defaultVal)
                     if (hasOpt) {
                         getDefaultByValue(defaultVal);
@@ -553,7 +553,7 @@ const DropdownComponent = (props) => {
         if (optionList.length > 0) {
             let valuearray = null;
             let dataoption = [...optionList];
-            if (value) {
+            if (value !== undefined && value !== null) {
                 dataoption.forEach((val, index) => {
 
                     if (String(value) === String(val[fieldDataKey])) {

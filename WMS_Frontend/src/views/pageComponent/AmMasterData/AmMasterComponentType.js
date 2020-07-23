@@ -101,7 +101,7 @@ const FindPopupComponent = ({config, response, columns, queryData, defaultData})
       labelTitle={config.title}
       queryApi={queryData}
       columns={columns}
-      defaultValue={defaultData !== undefined ? defaultData.toString() : ""}
+      defaultValue={defaultData !== undefined ? defaultData : ""}
       width={300}
       onChange={(value, dataObject, inputID, fieldDataKey) => {setSelection(dataObject); response(dataObject, value)}}
   /></FormInline>
