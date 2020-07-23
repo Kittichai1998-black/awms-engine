@@ -427,7 +427,7 @@ const DropdownComponent = (props) => {
             });
             setOptionList(dataOptions);
             if (data.length === 0) {
-                if (defaultValue && returnDefaultValue) {
+                if (defaultValue !== undefined && returnDefaultValue) {
                     setReturnDefaultValue(false)
                     setValueData(null);
                     setDefaultVal(null);
@@ -442,7 +442,7 @@ const DropdownComponent = (props) => {
                 }
             } else {
                 setValueData(null);
-                if (defaultValue && returnDefaultValue) {
+                if (defaultValue !== undefined && returnDefaultValue) {
                     setReturnDefaultValue(true)
                     setDefaultVal(defaultValue);
                 } else if (autoDefaultValue && returnDefaultValue) {
@@ -456,7 +456,7 @@ const DropdownComponent = (props) => {
     }, [queryApi, data]);
 
     useEffect(() => {
-        if (defaultValue) {
+        if (defaultValue !== undefined) {
             setDefaultVal(defaultValue);
         }
     }, [defaultValue]);

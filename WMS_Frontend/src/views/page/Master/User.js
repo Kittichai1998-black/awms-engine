@@ -249,7 +249,7 @@ const User = props => {
       ).then(res => {
         setUserRoleData(res.data.datas)})
     }
-    return () => setUserPass(null)
+    return () => setUserPass()
   }, [userPass]);
 
   useEffect(()=> {

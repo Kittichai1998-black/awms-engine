@@ -62,8 +62,8 @@ const DropDownComponent = ({config, response, defaultData, queryData}) => {
           zIndex={99999999}
           value={selection !== undefined && selection !== null ? selection[config.field] : ""}
           queryApi={queryData}
-          defaultValue={defaultData ? defaultData:""}
-          onChange={(value, dataObject, inputID, fieldDataKey) => {console.log(value); setSelection(dataObject); response(dataObject, value)}}
+          defaultValue={defaultData}
+          onChange={(value, dataObject, inputID, fieldDataKey) => {setSelection(dataObject); response(dataObject, value)}}
           ddlType={"search"}
         /> 
       </FormInline>
@@ -80,7 +80,7 @@ const DropDownComponent = ({config, response, defaultData, queryData}) => {
             zIndex={99999999}
             value={selection !== undefined && selection !== null ? selection[config.field] : ""}
             data={queryData}
-            defaultValue={defaultData !== undefined ? defaultData.toString() : ""}
+            defaultValue={defaultData}
             onChange={(value, dataObject, inputID, fieldDataKey) => {setSelection(dataObject); response(dataObject, value)}}
             ddlType={"normal"}
         /> 

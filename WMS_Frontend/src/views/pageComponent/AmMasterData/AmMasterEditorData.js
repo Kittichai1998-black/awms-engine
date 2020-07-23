@@ -66,13 +66,10 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         });
     }
     const cols = genEditorField(editorColumns)
-
     return <AmEditorTable 
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
         onAccept={(status, rowdata)=> {
-            //var res = response(status, rowdata)
-            console.log(editorColumns)
             var updateData = {ID:null, Status:1, Revision:1}
             let chkRequire = []
 
@@ -94,7 +91,6 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                 setPopState(false)
             }
             else{
-                console.log(chkRequire.find(x => !x) !== undefined)
                 if(chkRequire.find(x => !x) !== undefined){
                     response(status, {messageError:"กรุณากรอกข้อมูลไห้ครบ"})
                 }else{

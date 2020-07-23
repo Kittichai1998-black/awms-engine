@@ -253,6 +253,9 @@ const AmMasterData = (props) => {
                     res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
                 }
             }
+            else{
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+            }
         });
         setQueryObj(res)
     }
