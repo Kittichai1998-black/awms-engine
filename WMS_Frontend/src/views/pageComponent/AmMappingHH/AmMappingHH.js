@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useLayoutEffect, useEffect } from 'react';
 // import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -11,12 +11,17 @@ import styled from 'styled-components'
 // import CardContent from '@material-ui/core/CardContent';
 // import Card from '@material-ui/core/Card';
 import Box from '@material-ui/core/Box';
-import AmInput from '../../components/AmInput'
-import AmDropdown from '../../components/AmDropdown'
-import Label from '../../components/AmLabelMultiLanguage'
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel'
-import FormHelperText from '@material-ui/core/FormHelperText'
+import AmInput from '../../../components/AmInput'
+import AmDropdown from '../../../components/AmDropdown'
+import Label from '../../../components/AmLabelMultiLanguage'
+import { apicall, createQueryString, Clone, DateTimeConverter, FilterURL, IsEmptyObject } from '../../../components/function/CoreFunction'
+// import FormControl from '@material-ui/core/FormControl';
+// import InputLabel from '@material-ui/core/InputLabel'
+// import FormHelperText from '@material-ui/core/FormHelperText'
+import useSteps from './useSteps'
+import TreeView from 'deni-react-treeview'
+
+const Axios = new apicall()
 
 const LabelStyle = {
     fontWeight: "bold",
@@ -44,7 +49,7 @@ const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Warehouse",
     q: '[{ "f": "Status", "c":"=", "v": 1}]',
-    f: "*",
+    f: "ID as warehouseID,Name,Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -52,26 +57,56 @@ const WarehouseQuery = {
     all: "",
 }
 
+const steps = ['Warehouse', 'Pallet', 'Barcode', 'Location']
+
+// function useWindowSize(ref) {
+//     const [size, setSize] = useState([0, 0]);
+//     useLayoutEffect(() => {
+//         function updateSize() {
+//             console.log(ref);
+//             if (ref.current)
+//                 setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
+//         }
+//         window.addEventListener('resize', updateSize);
+//         updateSize();
+//         return () => window.removeEventListener('resize', updateSize);
+//     }, []);
+//     return size;
+// }
+
 const AmMappingHH = (props) => {
     // const classes = useStyles();
-    const [activeStep, setActiveStep] = React.useState(0);
-    const steps = getSteps();
+    // const [activeStep, setActiveStep] = useState(0);
+    const [datasTreeView, setDatasTreeView] = useState([])
+    const [editData, setEditData] = useState({})
+    const [activeStep, handleNext, handleBack, handleReset] = useSteps(0)
+    // const steps = steps;
+    // const tableSize = useWindowSize(containerRef)
+    const treeview = useRef();
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
+    // const containerRef = useRef()
+    // const [width] = useWindowSize(containerRef)
 
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
+    useEffect(() => {
+        switch (activeStep) {
+            case 2:
+                Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
+                    console.log(editData);
+                    console.log(res);
+                    handleBack()
+                })
+                break;
 
-    const handleReset = () => {
-        setActiveStep(0);
-    };
 
-    function getSteps() {
-        return ['Warehouse', 'Pallet', 'Barcode', 'Location'];
-    }
+        }
+        // effect
+        // return () => {
+        //     cleanup
+        // }
+    }, [activeStep])
+
+
+
 
     // const createElementEditor = () => {
     //     if (props.elementEditor)
@@ -91,7 +126,7 @@ const AmMappingHH = (props) => {
                             // id={idddl}
                             // DDref={ref.current[index]}
                             placeholder="Select"
-                            fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldDataKey="warehouseID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                             fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             // width={300} //กำหนดความกว้างของช่อง input
@@ -101,7 +136,7 @@ const AmMappingHH = (props) => {
                             // data={dataUnit}
                             returnDefaultValue={true}
                             defaultValue={1}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeForm(1, dataObject)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeForm(fieldDataKey, dataObject)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
                     </FormGroup>
@@ -111,24 +146,59 @@ const AmMappingHH = (props) => {
                     <FormGroup>
                         <Label style={LabelStyle}>Pallet</Label>
                         <AmInput
+                            // required={true}
+                            // error={true}
                             autoFocus
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeForm(1, dataObject)}
-                            onKeyPress={(value, dataObject, inputID, fieldDataKey) => onChangeForm(1, dataObject)}
+                            // defaultValue={""}
+                            // validate={true}
+                            // msgError="Error"
+                            // regExp={""}
+                            // onChange={(value, dataObject, inputID, fieldDataKey) => onChangeForm(1, value)}
+                            // onKeyPress={(value, dataObject, inputID, fieldDataKey) => onChangeForm(1, value)}
+                            onKeyUp={(value, dataObject, inputID, fieldDataKey) => onChangeForm("scanCode", value)}
                         />
                     </FormGroup>
                 )
             case 2:
-                return `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`;
+                return (
+                    <TreeView
+                        // selectRow={true}
+                        ref={treeview}
+                        showCheckbox={true}
+                        // onExpanded={GetFile}
+                        // onSelectItem={DownloadFile}
+                        items={datasTreeView}
+                    // style={{width: "",height: ""}}
+                    />
+                )
             default:
                 return 'Unknown step';
         }
     }
 
-    const onChangeForm = (form, data) => {
-        console.log(form, data);
+    const onChangeForm = (field, data) => {
+        // console.log(field, data);
+        if (data) {
+            let _editData = Clone(editData)
+            if (typeof data === "object") {
+                _editData[field] = data[field] && data[field]
+            }
+            else {
+                _editData[field] = data
+            }
+            console.log(_editData);
+            setEditData(_editData)
+        }
+
+
+        // console.log(typeof {});
+        // let test = {}
+        // console.log(IsEmptyObject(null));
+        // console.log(data);
+
+        // if (data) {
+        //     _editData[field] = data
+        // }
     }
     return (
         <>
