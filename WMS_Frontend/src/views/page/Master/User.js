@@ -50,7 +50,6 @@ const User = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
       fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
@@ -250,7 +249,7 @@ const User = props => {
       ).then(res => {
         setUserRoleData(res.data.datas)})
     }
-    return () => setUserPass()
+    return () => setUserPass(null)
   }, [userPass]);
 
   useEffect(()=> {
@@ -341,6 +340,7 @@ const User = props => {
       else{
         UpdatePassword();
       }
+      setUserPassID()
       setOpenPassword(false);
     }}
     titleText={"Password"} 

@@ -72,21 +72,39 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         open={popupState} 
         onAccept={(status, rowdata)=> {
             //var res = response(status, rowdata)
+            console.log(editorColumns)
             var updateData = {ID:null, Status:1, Revision:1}
+            let chkRequire = []
+
             if(rowdata !== undefined){
                 if(rowdata["ID"] !== null)
                     updateData["ID"] = rowdata["ID"]
-                    editorColumns.forEach(x => {
+                    chkRequire = editorColumns.map(x => {
                     if(rowdata[x.field] !== undefined){
                         updateData[x.field] = rowdata[x.field]
                     }
+                    if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
+                        return false;
+                    else 
+                        return true;
                 });
             }
-            response(status, !status ? null : updateData)
+            
+            if(!status){
+                setPopState(false)
+            }
+            else{
+                console.log(chkRequire.find(x => !x) !== undefined)
+                if(chkRequire.find(x => !x) !== undefined){
+                    response(status, {messageError:"กรุณากรอกข้อมูลไห้ครบ"})
+                }else{
+                    response(status, updateData);
+                    setPopState(false)
+                }
+            }
             //if(res.result === 1){
             //    setPopState(false)
             //}
-            setPopState(false)
         }} 
         titleText={config.title} 
         data={editData}

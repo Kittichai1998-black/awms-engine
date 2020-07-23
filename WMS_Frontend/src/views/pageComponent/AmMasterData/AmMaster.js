@@ -268,7 +268,9 @@ const AmMasterData = (props) => {
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
-                if (status) {
+                if(data.messageError !== undefined){
+                    setDialogState({ type: "error", content: data.messageError, state: true })
+                }else{
                     updateRow(props.table, data, props.updateURL);
                 }
             }} />

@@ -235,9 +235,12 @@ const Permission = props => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
-      if(!status)
+      if(!status){
         setOpen(false)
+        setRoleID(null)
+      }
       else{
+        setRoleID(null)
         UpdatePermissionMap();
         setOpen(false)
       }
