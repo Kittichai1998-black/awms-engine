@@ -17,7 +17,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
             if(config.type === "input"){
                 return <InputComponent key={key} 
                     config={config} 
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                     response={(e)=>{if(!IsEmptyObject(e)){
                         data[e.field] =  e.value
                     }
@@ -34,7 +34,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                             }
                         }
                     }}
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                     queryData={config.dataDropDown}
                 />
             }
@@ -50,7 +50,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     }}
                     columns={config.findPopupColumns}
                     queryData={config.findPopopQuery}
-                    defaultData={data ? data[field] : ""}
+                    defaultData={data !== undefined ? data[field] : ""}
                 />
             }
         }
@@ -66,27 +66,41 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         });
     }
     const cols = genEditorField(editorColumns)
-
     return <AmEditorTable 
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
         onAccept={(status, rowdata)=> {
-            //var res = response(status, rowdata)
             var updateData = {ID:null, Status:1, Revision:1}
+            let chkRequire = []
+
             if(rowdata !== undefined){
                 if(rowdata["ID"] !== null)
                     updateData["ID"] = rowdata["ID"]
-                    editorColumns.forEach(x => {
+                    chkRequire = editorColumns.map(x => {
                     if(rowdata[x.field] !== undefined){
                         updateData[x.field] = rowdata[x.field]
                     }
+                    if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
+                        return false;
+                    else 
+                        return true;
                 });
             }
-            response(status, !status ? null : updateData)
+            
+            if(!status){
+                setPopState(false)
+            }
+            else{
+                if(chkRequire.find(x => !x) !== undefined){
+                    response(status, {messageError:"กรุณากรอกข้อมูลไห้ครบ"})
+                }else{
+                    response(status, updateData);
+                    setPopState(false)
+                }
+            }
             //if(res.result === 1){
             //    setPopState(false)
             //}
-            setPopState(false)
         }} 
         titleText={config.title} 
         data={editData}

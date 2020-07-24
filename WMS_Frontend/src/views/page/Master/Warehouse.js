@@ -98,7 +98,7 @@ const Warehouse = props => {
     },
     {
       field: "Status",
-      type: "status",
+      type: "dropdown",
       typeDropDown: "normal",
       name: "Status",
       dataDropDown: EntityEventStatus,
@@ -112,7 +112,7 @@ const Warehouse = props => {
   const columnsFilter = [
     {
       field: "Branch_Code",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,

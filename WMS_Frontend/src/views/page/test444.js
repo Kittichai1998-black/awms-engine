@@ -5,7 +5,6 @@ import Date from '../../components/AmDate'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
-import { LocationContext } from '../../reducers/context';
 import Axios from 'axios';
 import { Button } from "@material-ui/core";
 import color from "@material-ui/core/colors/yellow";

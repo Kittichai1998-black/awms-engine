@@ -140,7 +140,7 @@ const AreaRoute = props => {
     },
     {
       field: "Status",
-      type: "status",
+      type: "dropdown",
       typeDropDown: "normal",
       name: "Status",
       dataDropDown: EntityEventStatus,

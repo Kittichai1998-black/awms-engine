@@ -50,7 +50,6 @@ const User = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
       fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
@@ -341,6 +340,7 @@ const User = props => {
       else{
         UpdatePassword();
       }
+      setUserPassID()
       setOpenPassword(false);
     }}
     titleText={"Password"} 

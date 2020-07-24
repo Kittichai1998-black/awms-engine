@@ -158,7 +158,6 @@ function useInterval(callback, delay) {
 }
 
 const MainContainer = React.memo(({route, path}) => {
-    console.log("switch route")
     return <Switch>
         {route.map((x, idx) => (
             <Route
@@ -246,26 +245,7 @@ const Default = props => {
     const handleDrawerClose = () => {
         sidebar.setSidebarToggle(false);
     };
-    const handleClose = event => {
-        // setAnchorEl(null);
-        if (anchorEl.contains(event.target)) {
-            return;
-        }
-        setOpenMenuHeader(false);
-        setOpenLangHeader(false)
-    };
 
-    const handleLogout = event => {
-        handleClose(event);
-        sessionStorage.clear();
-        localStorage.removeItem("User_ID");
-        localStorage.removeItem("Token");
-        localStorage.removeItem("MenuItems");
-        localStorage.removeItem("ExpireTime");
-        localStorage.removeItem("ExtendTime");
-        localStorage.removeItem("Username");
-        i18n.changeLanguage("EN")
-    };
     const matches = useMediaQuery('(max-width:400px)');
     
     let Path = window.location.pathname.split('/');

@@ -253,6 +253,9 @@ const AmMasterData = (props) => {
                     res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
                 }
             }
+            else{
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+            }
         });
         setQueryObj(res)
     }
@@ -264,13 +267,13 @@ const AmMasterData = (props) => {
     }
 
     return <>
-    {
-    console.log(props.columns)}
         <AmMasterEditorData config={{ required: true, title: popupTitle }}
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
-                if (status) {
+                if(data.messageError !== undefined){
+                    setDialogState({ type: "error", content: data.messageError, state: true })
+                }else{
                     updateRow(props.table, data, props.updateURL);
                 }
             }} />
@@ -296,8 +299,6 @@ const AmMasterData = (props) => {
             columns={columns}
             dataKey={props.codeInclude ? "Code" : "ID"}
             dataSource={dataSource}
-            selection="ckeckbox"
-            selectionData={(x) => console.log(x)}
             filterable={true}
             filterData={res => { onChangeFilterData(res) }}
             rowNumber={true}

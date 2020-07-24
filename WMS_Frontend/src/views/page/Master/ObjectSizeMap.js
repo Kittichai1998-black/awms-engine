@@ -35,7 +35,7 @@ const ObjectSizeMap = props => {
       Cell: e => getStatus(e.original)
     },
     {
-      Header: "OuterObjectSize",
+      Header: "ObjectSize",
       accessor: "OutCode",
       fixed: "left",
       fixWidth: 200

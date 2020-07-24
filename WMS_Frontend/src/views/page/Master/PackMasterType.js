@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+
 
 //======================================================================
 const PackMasterType = props => {
@@ -33,10 +30,6 @@ const PackMasterType = props => {
     l: 100,
     all: ""
   };
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
 
   const iniCols = [
     {
@@ -82,19 +75,19 @@ const PackMasterType = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"]
     }
@@ -117,28 +110,28 @@ const PackMasterType = props => {
     },
     {
       field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "ObjectSize_ID",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -159,30 +152,30 @@ const PackMasterType = props => {
   const columnsFilter = [
     {
       field: "UnitTypeCode",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
+      dataDropDown: UnitTypeQuery,
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "ObjectSize_Code",
-      type: "dropdow",
-      typeDropdow: "search",
+      type: "dropdown",
+      typeDropDown: "search",
       name: "% Weight Verify",
-      dataDropDow: ObjectSizeQuery,
+      dataDropDown: ObjectSizeQuery,
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -218,7 +211,7 @@ const PackMasterType = props => {
   };
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"PackMasterType"}
@@ -227,6 +220,19 @@ const PackMasterType = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"PackMasterType"}
+        table={"ams_PackMasterType"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        pageSize={25}
+        tableType="view"
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );
