@@ -285,11 +285,14 @@ const ObjectSize = props => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
-      if(!status)
+      if(!status){
         setOpen(false)
+        setEditObjectSizeID(null)
+      }
       else{
         UpdateObjectSizeMap();
         setOpen(false)
+        setEditObjectSizeID(null)
       }
     }}
     titleText={"Object Size"} 

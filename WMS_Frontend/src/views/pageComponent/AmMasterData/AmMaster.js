@@ -253,6 +253,9 @@ const AmMasterData = (props) => {
                     res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
                 }
             }
+            else{
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+            }
         });
         setQueryObj(res)
     }
@@ -268,7 +271,9 @@ const AmMasterData = (props) => {
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
-                if (status) {
+                if(data.messageError !== undefined){
+                    setDialogState({ type: "error", content: data.messageError, state: true })
+                }else{
                     updateRow(props.table, data, props.updateURL);
                 }
             }} />
