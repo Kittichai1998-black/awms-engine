@@ -240,7 +240,7 @@ const AmMappingHH = () => {
                                 queryApi={AreaMasterQuery}
                                 // data={dataUnit}
                                 // returnDefaultValue={true}
-                                defaultValue={""}
+                                defaultValue={editData.areaID ? editData.areaID : null}
                                 onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("areaID", dataObject)}
                                 ddlType={"search"} //รูปแบบ Dropdown 
                             />
@@ -261,7 +261,7 @@ const AmMappingHH = () => {
                                 queryApi={areaLocationMasterQuery}
                                 // data={dataUnit}
                                 // returnDefaultValue={true}
-                                defaultValue={""}
+                                defaultValue={editData.locationCode ? editData.locationCode : null}
                                 onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("locationCode", dataObject)}
                                 ddlType={"search"} //รูปแบบ Dropdown 
                             />
@@ -373,9 +373,9 @@ const AmMappingHH = () => {
                         handleNext()
                         _requiredField.area = false
                         Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-                            console.log(editData);
+                            // console.log(editData);
                             console.log(res);
-                            handleBack()
+                            // handleBack()
                         })
                     } else {
                         _requiredField.area = true
