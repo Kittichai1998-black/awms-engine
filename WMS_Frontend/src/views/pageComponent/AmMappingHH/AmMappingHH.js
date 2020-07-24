@@ -107,7 +107,7 @@ const AmMappingHH = () => {
     // const classes = useStyles();
     // const [activeStep, setActiveStep] = useState(0);
     const [datasTreeView, setDatasTreeView] = useState([])
-    const [editData, setEditData] = useState({})
+    const [editData, setEditData] = useState({ action: 1, amount: 1, mode: 0, rootOptions: "_done_des_estatus=12&_mvt=1011" })
     const [activeStep, handleNext, handleBack, handleReset] = useSteps(0)
     // const steps = steps;
     // const tableSize = useWindowSize(containerRef)
@@ -183,7 +183,7 @@ const AmMappingHH = () => {
                             // error={rowError}
                             // helperText={inputError.length ? "required field" : false}
                             // id={idddl}
-                            DDref={ref.current[0]}
+                            // DDref={ref.current[0]}
                             placeholder="Select"
                             fieldDataKey="warehouseID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                             fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
@@ -206,7 +206,7 @@ const AmMappingHH = () => {
                         <Label style={LabelStyle}>Pallet</Label>
                         <AmInput
                             required={true}
-                            inputRef={ref.current[1]}
+                            // inputRef={ref.current[1]}
                             error={requiredField.pallet}
                             autoFocus
                             defaultValue={editData.scanCode ? editData.scanCode : ""}
@@ -229,7 +229,7 @@ const AmMappingHH = () => {
                                 error={requiredField.area}
                                 // helperText={inputError.length ? "required field" : false}
                                 // id={idddl}
-                                DDref={ref.current[2]}
+                                // DDref={ref.current[2]}
                                 placeholder={"Select"}
                                 fieldDataKey="areaID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                                 fieldLabel={["Code", "Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
@@ -241,7 +241,7 @@ const AmMappingHH = () => {
                                 // data={dataUnit}
                                 // returnDefaultValue={true}
                                 defaultValue={editData.areaID ? editData.areaID : null}
-                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("areaID", dataObject)}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("areaID", dataObject, null, ['locationCode'])}
                                 ddlType={"search"} //รูปแบบ Dropdown 
                             />
                         </FormGroup>
@@ -249,8 +249,8 @@ const AmMappingHH = () => {
                             <Label style={LabelStyle}>Location</Label>
                             <AmDropdown
                                 // helperText={inputError.length ? "required field" : false}
-                                // id={idddl}
-                                DDref={ref.current[3]}
+                                // id={"locationCode"}
+                                // DDref={ref.current[3]}
                                 placeholder={"Select"}
                                 fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                                 fieldLabel={["locationCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
@@ -274,7 +274,7 @@ const AmMappingHH = () => {
                     <>
                         <TreeView
                             selectRow={true}
-                            ref={ref.current[4]}
+                            // ref={ref.current[4]}
                             showCheckbox={true}
                             // onExpanded={GetFile}
                             // onSelectItem={DownloadFile}
@@ -287,7 +287,7 @@ const AmMappingHH = () => {
                             <Label style={LabelStyle}>QR</Label>
                             <AmInput
                                 required={true}
-                                inputRef={ref.current[5]}
+                                // inputRef={ref.current[5]}
                                 // error={true}
                                 autoFocus
                                 defaultValue={editData.scanCode ? editData.scanCode : ""}
@@ -318,6 +318,8 @@ const AmMappingHH = () => {
                             _editData[value] = data[key]
                         }
                     }
+                if (removeRelated)
+                    removeRelated.forEach(x => delete _editData[x])
             } else {
                 _editData[field] = data
             }
