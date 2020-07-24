@@ -372,6 +372,11 @@ const AmMappingHH = () => {
                     if (_editData.areaID) {
                         handleNext()
                         _requiredField.area = false
+                        Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
+                            console.log(editData);
+                            console.log(res);
+                            handleBack()
+                        })
                     } else {
                         _requiredField.area = true
                     }
@@ -379,16 +384,7 @@ const AmMappingHH = () => {
                 } else if (step === "back") {
                     handleBack()
                 }
-                // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
-                //     console.log(editData);
-                //     console.log(res);
-                //     handleBack()
-                // })
-                // Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-                //     console.log(editData);
-                //     console.log(res);
-                //     handleBack()
-                // })
+
                 break;
             case "Barcode":
                 if (step === "next") {
@@ -405,16 +401,6 @@ const AmMappingHH = () => {
                 } else if (step === "back") {
                     handleBack()
                 }
-                // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
-                //     console.log(editData);
-                //     console.log(res);
-                //     handleBack()
-                // })
-                // Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-                //     console.log(editData);
-                //     console.log(res);
-                //     handleBack()
-                // })
                 break;
             default: break;
 
@@ -469,7 +455,6 @@ const AmMappingHH = () => {
                     </Step>
                 ))}
             </Stepper>
-            {/* <input type="text" ref={ref.current[6]} /> */}
             {
                 activeStep === steps.length && (
                     <Paper square elevation={0} style={{ padding: "24px" }}>
