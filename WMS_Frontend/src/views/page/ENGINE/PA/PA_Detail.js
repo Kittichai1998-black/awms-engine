@@ -146,7 +146,7 @@ const GR_Detail = props => {
             openDES={true}
             optionDocItems={optionDocItems}
             columnsDetailSOU={columnsDetailSOU}
-            columnsDetailDES={columnsDetailDES}  
+            columnsDetailDES={columnsDetailDES}
             apiCreate={'/grDr/createFGwm'}
             columns={columns}
             typeDoc={"received"}
@@ -159,6 +159,7 @@ const GR_Detail = props => {
             useAddPalletMapSTO={true}
             addPalletMapSTO={addPalletMapSTO}
             buttonConfirmMappingSTO={true}
+            usePrintBarcodePallet={true}
         />
     );
 };
