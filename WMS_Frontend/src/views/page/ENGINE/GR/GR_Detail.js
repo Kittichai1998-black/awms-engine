@@ -157,7 +157,8 @@ const GR_Detail = props => {
             buttonBack={true}
             linkBack={"/receive/search"}
             history={props.history}
-      
+
+
         />
     );
 };
