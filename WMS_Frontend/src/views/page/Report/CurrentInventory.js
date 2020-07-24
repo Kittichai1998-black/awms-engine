@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AmReport from '../../../components/AmReport'
+import AmReport from '../../pageComponent/AmReportV2/AmReport'
 import AmButton from '../../../components/AmButton'
 import AmFindPopup from '../../../components/AmFindPopup'
 import { apicall } from '../../../components/function/CoreFunction'
@@ -65,9 +65,9 @@ const CurrentInventory = (props) => {
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
 
-    useEffect(() => {
-        onGetDocument()
-    }, [page])
+    // useEffect(() => {
+    //     onGetDocument()
+    // }, [page])
 
     const onGetALL = () => {
         return window.apipath + "/v2/GetSPReportAPI?"
@@ -240,6 +240,7 @@ const CurrentInventory = (props) => {
     const comma = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+
     return (
         <div className={classes.root}>
             <AmReport
