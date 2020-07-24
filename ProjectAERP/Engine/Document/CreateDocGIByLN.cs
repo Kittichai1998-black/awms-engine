@@ -97,7 +97,7 @@ namespace ProjectAERP.Engine.Document
                                 quantity = (decimal)wh_d.Advised_qty,
                                 unitType = wh_d.inventory_unit.ToUpper(),
                                 batch = null,
-                                lot = wh_d.Lot,
+                                lot = wh_d.Lot == ""? null: wh_d.Lot,
                                 orderNo = null,
                                 refID = wh_d.Serial,
                                 ref1 = reqVO.wh_order,
@@ -118,7 +118,7 @@ namespace ProjectAERP.Engine.Document
                             AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(new amt_DocumentItem
                             {
                                 Document_ID = docGR.ID.Value,
-                                Lot = wh_d.Lot,
+                                Lot = wh_d.Lot == "" ? null : wh_d.Lot,
                                 Options = optionsItems,
                                 Code = Sku.Code,
                                 Quantity = (decimal)wh_d.Advised_qty,
@@ -390,7 +390,7 @@ namespace ProjectAERP.Engine.Document
             AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(new amt_DocumentItem
             {
                 Document_ID = docUpdate.Document_ID,
-                Lot = wh_d.Lot,
+                Lot = wh_d.Lot == "" ? null : wh_d.Lot,
                 Options = optionsItems,
                 Code = sku.Code,
                 Quantity = (decimal)wh_d.Advised_qty,
