@@ -93,7 +93,7 @@ const ProcessQueueHeader = (props) => {
     const [clearText, setClearText] = useState(false);
 
     useEffect(()=>{
-      if(props.warehouseDefault === undefined || props.warehouseDefault === ""){
+      if(props.warehouseDefault === undefined && props.warehouseDefault === ""){
         setWarehouseID(props.warehouseDefault.ID);
         warehouse.setWarehouse(props.warehouseDefault)
       }
