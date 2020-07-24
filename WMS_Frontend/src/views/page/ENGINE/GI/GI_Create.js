@@ -23,7 +23,7 @@ export default props => {
         g: "",
         s: "[{'f':'packID','od':'ASC'}]",
         sk: 0,
-        l: 100,
+        l: 20,
         all: ""
     };
     const SKUMaster = {
