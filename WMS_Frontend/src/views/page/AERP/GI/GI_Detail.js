@@ -33,8 +33,8 @@ const GI_Detail = props => {
     { width: 130, accessor: "advice", Header: "Advice" },
     { width: 130, accessor: "RefID", Header: "Serial" },
     { width: 130, accessor: "Lot", Header: "Lot" },
-    { width: 120, accessor: "_baseqty", Header: "BaseQty" },
-    { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
+    // { width: 120, accessor: "_baseqty", Header: "BaseQty" },
+    // { width: 70, accessor: "BaseUnitType_Code", Header: "BaseUnit" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Code", Header: "Unit" }
   ];
@@ -48,7 +48,16 @@ const GI_Detail = props => {
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
-
+  const columnsPickingonFloor = [
+    { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+    { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
+    { width: 100, accessor: "rootCode", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "Pack Code" },
+    { accessor: "packName", Header: "Pack Name" },
+    { width: 125, accessor: "Lot", Header: "Lot" },
+    { width: 110, accessor: "distoQtyMax", Header: "Qty" },
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+  ];
   const columnsDetailDES = [
     //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
     { width: 100, accessor: "code ", Header: "Pallet" },
@@ -93,6 +102,7 @@ const GI_Detail = props => {
       linkBack={"/issue/search"}
       history={props.history}
       usePickingOnFloor={true}
+      columnsPickingonFloor={columnsPickingonFloor}
     />
   );
 };
