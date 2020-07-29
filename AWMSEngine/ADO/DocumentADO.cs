@@ -177,7 +177,7 @@ namespace AWMSEngine.ADO
 
             docItem.ID = docItemTmp.ID;
             if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
-                docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; this.InsertMappingSTO(x, buVO); });
+                docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; DistoADO.GetInstant().Insert(x, buVO); });
             
             /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
@@ -198,6 +198,7 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
+        /*
         public long UpdateMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
         {
             return UpdateMappingSTO(disto_id, null, null, null, null, status, buVO);
@@ -252,7 +253,7 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
             docItemSto.ID = param.Get<long>("@resID");
             return docItemSto;
-        }
+        }*/
 
         public amt_Document Get(long docID, VOCriteria buVO)
         {
@@ -449,7 +450,7 @@ namespace AWMSEngine.ADO
             string orderNo, string batch, string lot, string options, VOCriteria buVO)
         {
             var docItems = ADO.DocumentADO.GetInstant()
-                       .ListItem(DocumentTypeID.GOODS_RECEIVED, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, options, buVO);
+                       .ListItem(DocumentTypeID.PUTAWAY, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, options, buVO);
                        //.Where(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
 
             List<amt_DocumentItem> res = new List<amt_DocumentItem>();

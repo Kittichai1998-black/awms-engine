@@ -112,7 +112,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
                 if(waveSeq.End_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATED)
                 {
-                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, StorageObjectEventStatus.ALLOCATING, null, StorageObjectEventStatus.ALLOCATED, this.BuVO);
                     disto.Status = EntityStatus.ACTIVE;
                 }
@@ -239,7 +239,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 disto.BaseQuantity = baseQty;
             disto.Status = EntityStatus.ACTIVE;
             disto.Des_StorageObject_ID = desSto.id.Value;
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
+            ADO.DistoADO.GetInstant().Update(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
         }
         private void InsertDisto(amt_DocumentItemStorageObject disto, StorageObjectCriteria desSto, decimal qty, decimal baseQty, decimal remainQty)
         {
@@ -247,7 +247,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             disto.BaseQuantity = baseQty;
             disto.Status = EntityStatus.ACTIVE;
             disto.Des_StorageObject_ID = desSto.id.Value;
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
+            ADO.DistoADO.GetInstant().Update(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, EntityStatus.ACTIVE, this.BuVO);
 
             if (remainQty - baseQty > 0)
             {
@@ -257,7 +257,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 newDisto.Quantity = null;
                 newDisto.BaseQuantity = null;
                 newDisto.Status = EntityStatus.INACTIVE;
-                ADO.DistoADO.GetInstant().Create(newDisto, this.BuVO);
+                ADO.DistoADO.GetInstant().Insert(newDisto, this.BuVO);
             }
         }
         private StorageObjectCriteria GetDesPatialSTO(amt_DocumentItemStorageObject disto, StorageObjectCriteria souPsto, StorageObjectCriteria desBsto, StorageObjectCriteria oldPack, amt_WaveSeq waveSeq, decimal baseQty, decimal remainQty)
@@ -347,7 +347,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             {
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                 souPsto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, 0, 0, EntityStatus.DONE, this.BuVO);
+                ADO.DistoADO.GetInstant().Update(disto.ID.Value, disto.Sou_StorageObject_ID, 0, 0, EntityStatus.DONE, this.BuVO);
                 return souPsto;
             }
             else if (pickQty == null)

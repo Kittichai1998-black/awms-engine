@@ -127,7 +127,7 @@ namespace AWMSEngine.Engine.V2.Business
                         getSTO_PACK.baseQty += baseQuantity.Value;
 
                         var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(getSTO_PACK, BuVO);
-                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(getdisto[0].ID.Value, null, getSTO_PACK.qty, getSTO_PACK.baseQty, EntityStatus.INACTIVE, BuVO);
+                        ADO.DistoADO.GetInstant().Update(getdisto[0].ID.Value, null, getSTO_PACK.qty, getSTO_PACK.baseQty, EntityStatus.INACTIVE, BuVO);
                     }
                     else
                     {
@@ -190,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business
                         Des_StorageObject_ID = resStopack,
                         Status = EntityStatus.ACTIVE
                     };
-                    var disto = ADO.DocumentADO.GetInstant().InsertMappingSTO(new_disto, BuVO);
+                    var disto = ADO.DistoADO.GetInstant().Insert(new_disto, BuVO);
                 }
 
             });

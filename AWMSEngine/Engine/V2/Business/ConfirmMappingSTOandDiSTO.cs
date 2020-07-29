@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (docs == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document");
 
-            if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+            if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY)
             {
                 if (docs.EventStatus == DocumentEventStatus.NEW)
                 {
@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                             set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
 
-                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
+                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
                         });
                     });
 

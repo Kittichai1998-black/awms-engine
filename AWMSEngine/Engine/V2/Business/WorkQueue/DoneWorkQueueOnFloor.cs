@@ -60,7 +60,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             { //เบิกหมด
                                 ADO.StorageObjectADO.GetInstant().UpdateStatus(pickPack.packID, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
 
-                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(pickPack.distoID, pickPack.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                                ADO.DistoADO.GetInstant().Update(pickPack.distoID, pickPack.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
                             }
                             else
                             {
@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 {
                                     ADO.StorageObjectADO.GetInstant().UpdateStatus(pickPack.packID, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
 
-                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, pickPack.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, pickPack.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
                                 }
                                 else
                                 {
@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     issuedSto.mapstos = null;
                                     issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
                                     var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
 
                                     var distoAll = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                                                         {
@@ -120,7 +120,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatus(pickPack.packID, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
-                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(pickPack.distoID, pickPack.packID, null, null, EntityStatus.REMOVE, this.BuVO);
+                            ADO.DistoADO.GetInstant().Update(pickPack.distoID, pickPack.packID, null, null, EntityStatus.REMOVE, this.BuVO);
 
                         }
 
@@ -175,7 +175,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //        { //เบิกหมด
             //            ADO.StorageObjectADO.GetInstant().UpdateStatus(x.packID, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
 
-            //            ADO.DocumentADO.GetInstant().UpdateMappingSTO(x.distoID, x.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
+            //            ADO.DistoADO.GetInstant().Update(x.distoID, x.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
             //        }
             //        else
             //        {
@@ -188,7 +188,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //            {
             //                ADO.StorageObjectADO.GetInstant().UpdateStatus(x.packID, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
 
-            //                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, x.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
+            //                ADO.DistoADO.GetInstant().Update(disto.ID.Value, x.packID, stopack.qty, stopack.baseQty, EntityStatus.ACTIVE, this.BuVO);
             //            }
             //            else 
             //            {
@@ -202,7 +202,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //                issuedSto.mapstos = null;
             //                issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
             //                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-            //                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+            //                ADO.DistoADO.GetInstant().Update(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
 
             //                var distoAll = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
             //                                    {
@@ -235,7 +235,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //    {
             //        ADO.StorageObjectADO.GetInstant().UpdateStatus(x.packID, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
-            //        ADO.DocumentADO.GetInstant().UpdateMappingSTO(x.distoID, x.packID, null, null, EntityStatus.REMOVE, this.BuVO);
+            //        ADO.DistoADO.GetInstant().Update(x.distoID, x.packID, null, null, EntityStatus.REMOVE, this.BuVO);
 
             //    }
 
