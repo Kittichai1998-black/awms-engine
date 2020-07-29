@@ -373,38 +373,40 @@ const AmReceivePallet = (props) => {
             valueInput.baseCode == undefined) {
             alertDialogRenderer("warning", "กรุณากรอกข้อมูลให้ครบถ้วน")
         } else {
-
-            let docItems = []
-            for (let [key, value] of Object.entries(valueQtyDocItems)) {
-                let checkselect = _.filter(dataSelect, _.matches({ 'ID': value.docItemID }))
-                if (checkselect && checkselect.length > 0) {
-                    docItems.push({ ID: value.docItemID, Quantity: parseFloat(value.recQty) })
+            if (valueInput.baseCode.length === 10) {
+                let docItems = []
+                for (let [key, value] of Object.entries(valueQtyDocItems)) {
+                    let checkselect = _.filter(dataSelect, _.matches({ 'ID': value.docItemID }))
+                    if (checkselect && checkselect.length > 0) {
+                        docItems.push({ ID: value.docItemID, Quantity: parseFloat(value.recQty) })
+                    }
                 }
-            }
-            if (docItems.length === 0) {
-                alertDialogRenderer("warning", "กรุณาเลือกรายการสินค้า และระบุจำนวนที่ต้องการรับเข้า")
-            } else {
-                let tempDataReq = {
-                    ...valueInput,
-                    docID: dataDocument.document.ID,
-                    docItems: docItems,
-                    warehouseID: dataDocument.document.Des_Warehouse_ID
-                }
-                Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
-                    if (res.data != null) {
-                        if (res.data._result.status === 1) {
-                            alertDialogRenderer("success", "สร้างพาเลทสินค้าสำเร็จ")
-                            onHandleClear();
-                            onConfirm(false)
+                if (docItems.length === 0) {
+                    alertDialogRenderer("warning", "กรุณาเลือกรายการสินค้า และระบุจำนวนที่ต้องการรับเข้า")
+                } else {
+                    let tempDataReq = {
+                        ...valueInput,
+                        docID: dataDocument.document.ID,
+                        docItems: docItems,
+                        warehouseID: dataDocument.document.Des_Warehouse_ID
+                    }
+                    Axios.post(window.apipath + apiCreate, tempDataReq).then((res) => {
+                        if (res.data != null) {
+                            if (res.data._result.status === 1) {
+                                alertDialogRenderer("success", "สร้างพาเลทสินค้าสำเร็จ")
+                                onHandleClear();
+                                onConfirm(false)
+                            } else {
+                                alertDialogRenderer("error", res.data._result.message)
+                            }
                         } else {
                             alertDialogRenderer("error", res.data._result.message)
                         }
-                    } else {
-                        alertDialogRenderer("error", res.data._result.message)
-                    }
-                });
+                    });
+                }
+            }else{
+                alertDialogRenderer("error", "กรุณากรอกหมายเลขพาเลทให้ครบ 10 หลัก")
             }
-
         }
     }
     const handleClose = () => {
@@ -431,7 +433,7 @@ const AmReceivePallet = (props) => {
         if (event.target.files[0]) {
             setImgFile(URL.createObjectURL(event.target.files[0]))
             let fileBase64 = await toBase64(event.target.files[0])
-            if (valueInput.baseCode) {
+            if (valueInput.baseCode && valueInput.baseCode.length === 10) {
                 let filejson = {
                     fileName: valueInput.baseCode,
                     imageBase64: fileBase64
@@ -454,7 +456,7 @@ const AmReceivePallet = (props) => {
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         if (field === "baseCode") {
-            if (value) {
+            if (value && value.length === 10) {
                 document.getElementById("contained-button-file").disabled = false;
                 setBtnUpload(false)
             } else {

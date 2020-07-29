@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.V2.General
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<DevManagement>(this.RequestVO);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<DevManagement.TReq>(this.RequestVO);
             var res = new DevManagement().Execute(this.Logger, this.BuVO, req);
             return res;
         }

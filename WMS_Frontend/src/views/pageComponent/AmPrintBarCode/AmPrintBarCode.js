@@ -104,6 +104,7 @@ const AmPrintBarCode = props => {
         lot: ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
+        skuType: ele.SKUMasterTypeName,
         vol: ele.Volume * ele.BaseQuantity,
         skuType: ele.SKUMasterTypeName
 
@@ -224,6 +225,7 @@ const AmPrintBarCode = props => {
         lot: ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
+        skuType: ele.SKUMasterTypeName,
         vol: (ele.Volume * ele.BaseQuantity)
       }
       itemList.push(item)
@@ -280,6 +282,7 @@ const AmPrintBarCode = props => {
     setValueDataRadio(1)
     setGenData(false)
   }
+
 
   return (
     <div>

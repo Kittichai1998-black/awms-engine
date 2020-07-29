@@ -12,7 +12,7 @@ const Customer = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -22,7 +22,7 @@ const Customer = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
     { Header: "Description", accessor: "Description" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },

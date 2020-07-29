@@ -13,6 +13,10 @@ const ButtonInputExcel = Loadable({
   loader: () => import("../../views/page/ButtonInputExcel"),
   loading: Loading
 });
+const DevInfo = Loadable({
+  loader: () => import("../../views/page/ENGINE/DevInfo"),
+  loading: Loading
+});
 const FindpopupDDL = Loadable({
   loader: () => import("../../views/page/FindpopupDDL"),
   loading: Loading
@@ -181,6 +185,14 @@ const WorkQueueLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
   loading: Loading
 });
+const ShipmentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/ShipmentPlanLog"),
+  loading: Loading
+});
+const TransportObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/TransportObjectLog"),
+  loading: Loading
+});
 const DocumentLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/DocumentLog"),
   loading: Loading
@@ -194,10 +206,19 @@ const DocumentItemStorageObjectLog = Loadable({
     import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
   loading: Loading
 });
+const WaveLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveLog"),
+  loading: Loading
+});
+const WaveSeqLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveSeqLog"),
+  loading: Loading
+});
 const WorkQueue = Loadable({
   loader: () => import("../../views/page/Warehouse/WorkQueue"),
   loading: Loading
 });
+
 const DownloadLog = Loadable({
   loader: () => import("../../views/page/ENGINE/DownloadLog"),
   loading: Loading
@@ -221,6 +242,7 @@ const TestPanel = Loadable({
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
+  { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
   { path: "/testMasterV2", name: "base5", compoment: testMasterV2, exact: true },
   { path: "/TestPicking", name: "Inbound Progress", compoment: TestPicking, exact: true },
   { path: "/monitor/receiving", name: "Inbound Progress", compoment: MonitorIO, exact: true },
@@ -270,6 +292,10 @@ let routes = [
   { path: "/log/docitemlog", name: "Document Item Log", compoment: DocumentItemLog, exact: true },
   { path: "/log/docitemstolog", name: "Document Item Storage Object Log", compoment: DocumentItemStorageObjectLog, exact: true },
   { path: "/log/workqueuelog", name: "Work Queue Log", compoment: WorkQueueLog, exact: true },
+  { path: "/log/shipmentlog", name: "Shipment Plan Log", compoment: ShipmentLog, exact: true },
+  { path: "/log/transportlog", name: "Transport Object Log", compoment: TransportObjectLog, exact: true },
+  { path: "/log/wavelog", name: "Wave Log", compoment: WaveLog, exact: true },
+  { path: "/log/waveseqlog", name: "Wave Seq Log", compoment: WaveSeqLog, exact: true },
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },

@@ -50,7 +50,7 @@ const LabelPalletNo = {
 };
 const DataGenerateElePalletListDisplay = (data) => {
 
-  if (data.listsCode !== undefined) {
+  if (data != undefined && data.listsCode !== undefined) {
     return data.listsCode.map((pt, index) => {
       var qryStr = queryString.parse(pt.options);
       var itemName_list = qryStr.itemName.split(',');

@@ -1,43 +1,28 @@
-import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
-import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
+import React from "react";
+//import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
-const Axios = new apicall();
+import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const BaseMasterType = props => {
-  const UnitTypeQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "UnitType",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 2}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
-  const EntityEventStatus = [
-    { label: "INACTIVE", value: 0 },
-    { label: "ACTIVE", value: 1 }
-  ];
-
   const iniCols = [
     {
-      Header: "",
+      Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
+      },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name" },
-    { Header: "Unit Type", accessor: "UnitType_Code", width: 100 },
-    { Header: "Weight", accessor: "Weight", width: 100, type: "number" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -61,23 +46,6 @@ const BaseMasterType = props => {
       name: "Base Type Name",
       placeholder: "Name",
       required: true
-    },
-    {
-      field: "Weight",
-      type: "input",
-      name: "Weight",
-      placeholder: "Weight",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"],
-      required: true
     }
   ];
 
@@ -97,27 +65,11 @@ const BaseMasterType = props => {
       validate: /^.+$/
     },
     {
-      field: "Weight",
-      type: "input",
-      name: "Weight",
-      placeholder: "Weight",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "UnitType_ID",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"]
-    },
-    {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -137,28 +89,11 @@ const BaseMasterType = props => {
   ];
   const columnsFilter = [
     {
-      field: "Weight",
-      type: "input",
-      name: "Weight",
-      placeholder: "Weight",
-      validate: /^[0-9\.]+$/
-    },
-    {
-      field: "UnitType_Code",
-      type: "dropdow",
-      typeDropdow: "search",
-      name: "Unit Type",
-      dataDropDow: UnitTypeQuery,
-      placeholder: "Unit Type",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
-    },
-    {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {
@@ -194,7 +129,7 @@ const BaseMasterType = props => {
   };
   return (
     <div>
-      <MasterData
+      {/* <MasterData
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"BaseMasterType"}
@@ -203,6 +138,20 @@ const BaseMasterType = props => {
         iniCols={iniCols}
         dataEdit={columnsEdit}
         history={props.history}
+      /> */}
+      <AmMaster
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"BaseMasterType"}
+        table={"ams_BaseMasterType"}
+        dataAdd={columns}
+        history={props.history}
+        columns={iniCols}
+        dataEdit={columnsEdit}
+        tableType="view"
+        pageSize={25}
+        height={500}
+        updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
     </div>
   );

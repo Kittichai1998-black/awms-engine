@@ -249,7 +249,7 @@ const PackMaster = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -260,12 +260,11 @@ const PackMaster = props => {
       Cell: e => getStatus(e.original)
     },
     {
-      Header: window.project === "TAP" ? "Part NO." : "SKU Code",
+      Header: "SKU Code",
       accessor: "SKUMaster",
-      fixed: "left",
       width: 120
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
     {
       Header: "Gross Weight",

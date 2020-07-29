@@ -1,7 +1,7 @@
 import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const Warehouse = props => {
@@ -22,17 +22,17 @@ const Warehouse = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
-      filterType:"dropdown",
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name" },
     { Header: "Branch", accessor: "Branch_Code" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
@@ -61,7 +61,7 @@ const Warehouse = props => {
     },
     {
       field: "Branch_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,
@@ -89,7 +89,7 @@ const Warehouse = props => {
     },
     {
       field: "Branch_ID",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,
@@ -98,7 +98,7 @@ const Warehouse = props => {
     },
     {
       field: "Status",
-      type: "status",
+      type: "dropdown",
       typeDropDown: "normal",
       name: "Status",
       dataDropDown: EntityEventStatus,
@@ -112,7 +112,7 @@ const Warehouse = props => {
   const columnsFilter = [
     {
       field: "Branch_Code",
-      type: "dropdow",
+      type: "dropdown",
       typeDropDown: "search",
       name: "Branch",
       dataDropDown: BranchQuery,

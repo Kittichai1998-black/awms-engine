@@ -29,18 +29,28 @@ class apicall {
       }
     );
   }
-  getload(url, filename) {
-    window.loading.onLoading();
+  getload(url, filename, typeLoad) {
     window.loading.onLoading();
     return Axios.get(url + "&token=" + localStorage.getItem("Token"), { responseType: "blob" }).then(
       res => {
         window.loading.onLoaded();
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename); //or any other extension
-        document.body.appendChild(link);
-        link.click();
+        if (typeLoad === "preview") {
+          var file = new Blob([res.data], { type: 'application/pdf' });
+          if (file) {
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+            window.URL.revokeObjectURL(fileURL);
+          }
+        } else {
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
       });
   }
   post(url, dataR) {
@@ -62,7 +72,7 @@ class apicall {
       return res;
     });
   }
-  postload(url, dataR, filename) {
+  postload(url, dataR, filename, typeLoad) {
     window.loading.onLoading();
     let data = trimObj(dataR);
     if (data !== undefined) {
@@ -70,12 +80,23 @@ class apicall {
     }
     return Axios.post(url, data, { responseType: "blob" }).then(res => {
       window.loading.onLoaded();
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename); //or any other extension
-      document.body.appendChild(link);
-      link.click();
+      if (typeLoad === "preview") {
+        var file = new Blob([res.data], { type: 'application/pdf' });
+        if (file) {
+          var fileURL = URL.createObjectURL(file);
+          window.open(fileURL);
+          window.URL.revokeObjectURL(fileURL);
+        }
+      } else {
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
     });
   }
   put(url, dataR) {
