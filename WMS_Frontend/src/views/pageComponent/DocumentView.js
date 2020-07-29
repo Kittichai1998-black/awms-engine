@@ -472,8 +472,8 @@ const DocumentView = props => {
     if (eventStatus === 11) {
       return <AmPickingOnFloor
         dataDocument={dataDoc}
-        dataItemsSource={dataDetailSOU}
-        columnsItemsSource={columnsDetailSOU}
+        dataItemsSource={[...dataDetailSOU]}
+        columnsItemsSource={props.columnsPickingonFloor}
         onSuccess={(data) => ReturnMapping(data)}
       />
     } else {

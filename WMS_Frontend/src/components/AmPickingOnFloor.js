@@ -126,13 +126,7 @@ const useColumns = (cols) => {
 
     useEffect(() => {
         const iniCols = [...cols];
-        var new_iniCols = iniCols.filter(x => x.accessor != "status");
-
-        new_iniCols.push({
-            width: 150,
-            Header: "Area Location",
-            Cell: e => <label>{e.original.areaCode}{e.original.areaLocationCode ? " : " + e.original.areaLocationCode : ""}</label>
-        })
+        var new_iniCols = iniCols.filter(x => x.accessor !== "status");
         setColumns(new_iniCols)
     }, [])
     return { columns };
