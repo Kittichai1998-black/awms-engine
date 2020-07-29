@@ -42,7 +42,7 @@ namespace AWMSEngine.ADO
         }
         public amt_DocumentItemStorageObject Insert(amt_DocumentItemStorageObject disto, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "ID", "IsLastSeq", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_DISTO_PUT",
@@ -74,7 +74,7 @@ namespace AWMSEngine.ADO
         }
         public long Update(amt_DocumentItemStorageObject disto, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "IsLastSeq", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_DISTO_PUT",
