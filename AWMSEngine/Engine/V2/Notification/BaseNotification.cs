@@ -21,15 +21,15 @@ namespace AWMSEngine.Engine.V2.Notification
         }
         public class NotifyData
         {
-            public string Subject;
-            public dynamic Body;
+            public string Title;
+            public dynamic Message;
             public string Signature;
             public string Tag1;
             public string Tag2;
         }
 
 
-        protected abstract string GetCode();
+        protected abstract string GetCode(dynamic reqVO);
         protected abstract NotifyData LoadData(dynamic reqVO);
         protected abstract EmailFormat GetMessageEmail(dynamic reqVO,dynamic data);
         protected abstract string GetMessageLine(dynamic reqVO, dynamic data);
@@ -39,10 +39,7 @@ namespace AWMSEngine.Engine.V2.Notification
         protected override dynamic ExecuteEngine(dynamic reqVO)
         {
             NotifyData data = LoadData(reqVO);
-            EmailFormat sendEmail = GetMessageEmail(reqVO, data);
-            string sendLine = GetMessageLine(reqVO, data);
-            string sendFacebook = GetMessageFacebook(reqVO, data);
-            var codeNotification = this.GetCode();
+            string codeNotification = this.GetCode(reqVO);
 
             var noti = ADO.NotificationADO.GetInstant().Get(codeNotification, this.BuVO);
             var userIDs = noti.notifyUsers.Select(x => x.User_ID).ToArray();
@@ -61,8 +58,8 @@ namespace AWMSEngine.Engine.V2.Notification
                 {
                     ID=null,
                     Notify_ID = noti.ID.Value,
-                    Title = data.Subject,
-                    Message = AMWUtil.Common.ObjectUtil.Json(data.Body),
+                    Title = data.Title,
+                    Message = AMWUtil.Common.ObjectUtil.Json(data.Message),
                     PostTime = DateTime.Now,
                     Status = EntityStatus.ACTIVE,
                     Tag1 = data.Tag1,
@@ -71,6 +68,7 @@ namespace AWMSEngine.Engine.V2.Notification
 
             if (groupEmail != null)
             {
+                EmailFormat sendEmail = GetMessageEmail(reqVO, data);
                 if (groupEmail.userIDs.Count > 0)
                 {
                     var emailData = new AMWUtil.DataAccess.Http.EmailNotification.TReq()
@@ -96,11 +94,13 @@ namespace AWMSEngine.Engine.V2.Notification
             }
             if (groupLine != null)
             {
-                if(groupLine.userIDs.Count > 0)
+                string sendLine = GetMessageLine(reqVO, data);
+                if (groupLine.userIDs.Count > 0)
                     user.Select(x => x.EmailAddress).Distinct().ToList().ForEach(x => {AMWUtil.DataAccess.Http.LineAccess.Notify(this.Logger, x, sendLine);});
             }
             if (groupFacebook != null)
             {
+                string sendFacebook = GetMessageFacebook(reqVO, data);
                 if (groupFacebook.userIDs.Count > 0)
                 {
 
