@@ -87,21 +87,12 @@ const paginationReducer = (state, action) => {
 const filterReducer = (state, action) => {
     switch(action.type){
         case "add" : {
-            if(action.payload.customFilter === undefined){
-                let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
-                if(action.payload.value !== undefined)
+            let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+            if(action.payload.value !== undefined)
                     filterData.push(action.payload)
-                return {
-                    ...state,
-                    "filter":filterData
-                }
-            }else{
-                let filterData = [...state.filter];
-                filterData.push(action.payload)
-                return {
-                    ...state,
-                    "filter":filterData
-                }
+            return {
+                ...state,
+                "filter":filterData
             }
         }
         case "removeall" : {

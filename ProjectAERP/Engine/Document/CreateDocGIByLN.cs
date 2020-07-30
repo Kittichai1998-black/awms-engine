@@ -257,7 +257,7 @@ namespace ProjectAERP.Engine.Document
                                 new SQLConditionCriteria("EventStatus",DocumentEventStatus.NEW,SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("ref1",wh_order,SQLOperatorType.EQUALS),
-                                new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED,SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PICKING,SQLOperatorType.EQUALS),
                    }, this.BuVO).FirstOrDefault();
 
             var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
