@@ -38,6 +38,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
+import CropFreeIcon from '@material-ui/icons/CropFree';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -471,8 +472,8 @@ const DocumentView = props => {
     if (eventStatus === 11) {
       return <AmPickingOnFloor
         dataDocument={dataDoc}
-        dataItemsSource={dataDetailSOU}
-        columnsItemsSource={columnsDetailSOU}
+        dataItemsSource={[...dataDetailSOU]}
+        columnsItemsSource={props.columnsPickingonFloor}
         onSuccess={(data) => ReturnMapping(data)}
       />
     } else {
@@ -667,13 +668,24 @@ const DocumentView = props => {
 
       <br />
       <br />
-      {props.useAddPalletMapSTO ?
+      {props.useAddPalletMapSTO && eventStatus === 10 ?
         <>
-          <BtnReceive onHandleClick={handleClickOpen} />
+          <AmButton className="float-right" styleType="confirm"
+            startIcon={<ReceiveIcon />}
+            onClick={handleClickOpen}>
+            {'Receive'}
+          </AmButton>
           {renderDialogReceivePallet}
-        </>
+        </> : null}
 
-        : null}
+      {props.useScanBarcode && eventStatus === 10 ?
+        <AmButton className="float-right" styleType="info"
+          style={{ marginRight: '5px' }}
+          startIcon={<CropFreeIcon />}
+          onClick={() => window.open("/receive/mappinghh")}>
+          {'Scan'}
+        </AmButton> : null}
+
       {props.usePickingOnFloor ?
         CreateBtnPicking()
         : null}

@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(getStoPack, this.BuVO);
 
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.baseQty, EntityStatus.INACTIVE, BuVO);
+            ADO.DistoADO.GetInstant().Update(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.baseQty, EntityStatus.INACTIVE, BuVO);
 
             return null;
         }

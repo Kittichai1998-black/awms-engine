@@ -78,8 +78,6 @@ const GR_Detail = props => {
         { width: 70, accessor: "UnitType_Code", Header: "Unit" }
     ];
     const addPalletMapSTO = {
-        apiCreate: '/v2/ScanMapStoFromDocAPI',
-        // columnsDocItems: colListDocItems,
         ddlArea: {
             visible: true,
             field: "areaID",
@@ -124,18 +122,7 @@ const GR_Detail = props => {
             maxLength: 10,
             required: true,
             validate: /^.+$/,
-        },
-        // [
-        //   {
-        //     field: "baseCode",
-        //     placeholder: "Pallet Code",
-        //     required: true,
-        //     type: "input",
-        //     name: "Pallet Code",
-        //     maxLength: 10,
-        //     validate: /^.+$/,
-        //   }
-        // ]
+        }, 
     }
 
     //received
@@ -160,6 +147,7 @@ const GR_Detail = props => {
             addPalletMapSTO={addPalletMapSTO}
             buttonConfirmMappingSTO={true}
             usePrintBarcodePallet={true}
+            useScanBarcode={true}
         />
     );
 };

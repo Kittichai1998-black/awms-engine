@@ -160,7 +160,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
                     options = reqVO.options,
-                    docTypeId = DocumentTypeID.GOODS_ISSUED,
+                    docTypeId = DocumentTypeID.PICKING,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,

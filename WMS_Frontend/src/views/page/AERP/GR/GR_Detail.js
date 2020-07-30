@@ -107,6 +107,8 @@ const GR_Detail = props => {
       name: "Pallet Code",
       placeholder: "Pallet Code",
       maxLength: 10,
+      required: true,
+      validate: /^.+$/,
     },
   }
 

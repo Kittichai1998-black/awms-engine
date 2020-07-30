@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business
                 }
             }
 
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDiSTO.ID.Value, EntityStatus.REMOVE, this.BuVO);
+            ADO.DistoADO.GetInstant().Update(getDiSTO.ID.Value, EntityStatus.REMOVE, this.BuVO);
 
 
             return null;

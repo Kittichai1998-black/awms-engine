@@ -1,14 +1,8 @@
-﻿using AWMSEngine.HubService;
-using AWMSModel.Constant.EnumConst;
+﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using Microsoft.AspNetCore.SignalR;
-using Org.BouncyCastle.Ocsp;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Notification
 {

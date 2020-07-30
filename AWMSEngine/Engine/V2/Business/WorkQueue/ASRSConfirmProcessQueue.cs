@@ -37,9 +37,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             StorageObjectEventStatus stoNextEventStatus;
 
-            if (docs.First().DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+            if (docs.First().DocumentType_ID == DocumentTypeID.PICKING)
                 stoNextEventStatus = StorageObjectEventStatus.PICKING;
-            else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
+            else if (docs.First().DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
                 stoNextEventStatus = StorageObjectEventStatus.AUDITING;
             else
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not " + docs.First().DocumentType_ID + " not Support");
@@ -104,7 +104,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Status = rsto.lockOnly ? EntityStatus.ACTIVE : EntityStatus.INACTIVE,
                     WorkQueue_ID = rsto.workQueueID,
                 }).ToList();
-                _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(_distos, this.BuVO);
+                _distos = ADO.DistoADO.GetInstant().Insert(_distos, this.BuVO);
                 distos.AddRange(_distos);
 
             };
@@ -170,10 +170,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                         gsto.StorageObject.ForEach(sto =>
                         {
-                            var disto = ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
+                            var disto = ADO.DistoADO.GetInstant().Insert(new amt_DocumentItemStorageObject()
                             {
                                 DocumentItem_ID = res.DocumentItems.First().ID,
-                                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+                                DocumentType_ID = DocumentTypeID.PICKING,
                                 BaseQuantity = sto.BaseQuantity,
                                 BaseUnitType_ID = sto.BaseUnitType_ID,
                                 Quantity = sto.Quantity,

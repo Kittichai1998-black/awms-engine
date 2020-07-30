@@ -1,16 +1,10 @@
-﻿using AWMSEngine.Common;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Entity;
+﻿using AWMSModel.Entity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.DirectoryServices;
-using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AMWUtil.Common;
-using Org.BouncyCastle.Ocsp;
 
 namespace AWMSEngine.Engine.V2.General
 {

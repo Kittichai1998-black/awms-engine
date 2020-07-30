@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             var stopacks = this.ListPackSTOIDs(reqVO.stomap);
-            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.PUTAWAY, this.BuVO);
 
             stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.Sou_StorageObject_ID == x.id));
 
@@ -68,7 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 Des_AreaMaster_ID = des_AreaMaster_ID,
                 Options = null,
                 DocumentDate = DateTime.Now,
-                DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
+                DocumentType_ID = DocumentTypeID.PUTAWAY,
                 ID = null,
                 EventStatus = DocumentEventStatus.WORKING,
                 RefID = null,

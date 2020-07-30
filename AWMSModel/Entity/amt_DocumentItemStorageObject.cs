@@ -7,6 +7,7 @@ namespace AWMSModel.Entity
 {
     public class amt_DocumentItemStorageObject : BaseEntityID
     {
+        public bool IsLastSeq;
         public long? DocumentItem_ID;
         public DocumentTypeID? DocumentType_ID;
         public long? WorkQueue_ID;
