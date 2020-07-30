@@ -501,7 +501,6 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
         let fixedStyle = { };
         fixedStyle.left = getWidth;
         getWidth = getWidth + col.fixWidth;
-        console.log(col.fixed, col.fixWidth)
         return <TableHeaderStickyColumnsCell
           id={`th_${idx}`}
           style={{ ...col.style, ...props.headerStyle, ...fixedStyle }}
@@ -524,7 +523,7 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
               <div>
                 <Input style={{width:"100%", background:"white"}} 
                   onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
-                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderStickyColumnsCell>
