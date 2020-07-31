@@ -154,13 +154,13 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
         //--------------GET Feature & Config
-        public bool IsFeature(FeatureCode code)
+        public bool IsFeature(FeatureCode code, DocumentProcessTypeID? processType = null)
         {
             string c = code.Attribute<EnumValueAttribute>().ValueString;
             var feature = this.Features.FirstOrDefault(x => x.Code == c);
             return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
         }
-        public bool IsFeature(string code)
+        public bool IsFeature(string code, DocumentProcessTypeID? processType = null)
         {
             string c = code;
             var feature = this.Features.FirstOrDefault(x => x.Code == c);

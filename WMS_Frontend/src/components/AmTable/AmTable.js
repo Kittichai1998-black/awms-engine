@@ -131,8 +131,14 @@ const AmTableSetup = (props) => {
     const { pagination, filter, selection, sort } = useContext(AmTableContext);
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
+    const [resetPage, setResetPage] = useState(props.resetPage)
 
     const { selectionData, sortData, sortable } = props;
+
+    useEffect(() => {
+        if(resetPage)
+            setResetPage(false)
+    }, [resetPage])
 
     useEffect(() => {
         if (props.pageSize)
@@ -164,8 +170,10 @@ const AmTableSetup = (props) => {
     }, [sort.sortValue,  sortData])
 
     useEffect(() => {
-        if (props.filterable)
+        if (props.filterable){
             props.filterData(filter.filterValue)
+            setResetPage(true)
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter.filterValue])
 
@@ -214,7 +222,7 @@ const AmTableSetup = (props) => {
             customTopLeftControl={props.customTopLeftControl} 
             customTopRightControl={props.customTopRightControl}
             totalSize={props.totalSize}
-            resetPage={props.resetPage}
+            resetPage={resetPage}
             pageSize={props.pageSize}
             dataSource={dataSource}
             pagination={props.pagination}
@@ -246,7 +254,7 @@ const AmTableSetup = (props) => {
             customBtmLeftControl={props.customBtmLeftControl} 
             customBtmRightControl={props.customBtmRightControl}
             totalSize={props.totalSize}
-            resetPage={props.resetPage}
+            resetPage={resetPage}
             pageSize={props.pageSize}
             dataSource={dataSource}
             pagination={props.pagination}
