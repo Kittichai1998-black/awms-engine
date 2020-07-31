@@ -7,11 +7,13 @@ import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { indigo, deepPurple, lightBlue, red, grey, green } from '@material-ui/core/colors';
 import styled from 'styled-components'
 // import CardContent from '@material-ui/core/CardContent';
 // import Card from '@material-ui/core/Card';
 import Box from '@material-ui/core/Box';
 import AmInput from '../../../components/AmInput'
+import AmButton from '../../../components/AmButton'
 import AmDropdown from '../../../components/AmDropdown'
 import Label from '../../../components/AmLabelMultiLanguage'
 import { apicall, createQueryString, Clone, DateTimeConverter, FilterURL, IsEmptyObject } from '../../../components/function/CoreFunction'
@@ -21,6 +23,8 @@ import { apicall, createQueryString, Clone, DateTimeConverter, FilterURL, IsEmpt
 import useSteps from './useSteps'
 import TreeView from 'deni-react-treeview'
 import { AiFillDelete } from 'react-icons/ai';
+import './AmMappingHH.scss'
+import AmDialogs from '../../../components/AmDialogs'
 
 const Axios = new apicall()
 
@@ -103,7 +107,8 @@ const actionButtons = [
 //     return size;
 // }
 
-const AmMappingHH = () => {
+const AmMappingHH = (props) => {
+    const { classes } = props
     // const classes = useStyles();
     // const [activeStep, setActiveStep] = useState(0);
     const [datasTreeView, setDatasTreeView] = useState([])
@@ -113,7 +118,9 @@ const AmMappingHH = () => {
     // const tableSize = useWindowSize(containerRef)
     const [areaLocationMasterQuery, setAreaLocationMasterQuery] = useState()
     const ref = useRef([0, 1, 2, 3, 4, 5, 6, 7].map(() => createRef()))
-    const [requiredField, setRequiredField] = useState({ pallet: false, area: false })
+    const [requiredField, setRequiredField] = useState({ pallet: false, area: false, qr: false })
+
+    const [dialog, setDialog] = useState({ type: null, text: null, open: false })
     // const containerRef = useRef()
     // const treeview = useRef()
     // const [width] = useWindowSize(containerRef)
@@ -272,30 +279,33 @@ const AmMappingHH = () => {
             case "Barcode":
                 return (
                     <>
-                        <TreeView
-                            selectRow={true}
-                            // ref={ref.current[4]}
-                            showCheckbox={true}
-                            // onExpanded={GetFile}
-                            // onSelectItem={DownloadFile}
-                            actionButtons={actionButtons}
-                            items={datasTreeView}
-                            onActionButtonClick={onActionButtonClick}
-                        // style={{width: "",height: ""}}
-                        />
+                        <div className="theme-customization">
+                            <TreeView
+                                selectRow={true}
+                                // ref={ref.current[4]}
+                                // showCheckbox={true}
+                                // onExpanded={GetFile}
+                                // onSelectItem={DownloadFile}
+                                actionButtons={actionButtons}
+                                items={datasTreeView}
+                                onActionButtonClick={onActionButtonClick}
+                            // style={{width: "",height: ""}}
+                            />
+                        </div>
                         <FormGroup>
                             <Label style={LabelStyle}>QR</Label>
                             <AmInput
+                                error={requiredField.qr}
                                 required={true}
                                 // inputRef={ref.current[5]}
                                 // error={true}
                                 autoFocus
-                                defaultValue={editData.scanCode ? editData.scanCode : ""}
+                                defaultValue={editData.qr ? editData.qr : ""}
                                 // validate={true}
                                 // msgError="Error"
                                 // regExp={""}
-                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("scanCode", value)}
-                                onKeyPress={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("scanCode", value)}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("qr", value)}
+                                onKeyPress={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("qr", value)}
                             // onKeyUp={(value, dataObject, inputID, fieldDataKey) => onChangeEditor("scanCode", value)}
                             />
                         </FormGroup>
@@ -308,32 +318,35 @@ const AmMappingHH = () => {
 
     const onChangeEditor = (field, data, related, removeRelated) => {
         // console.log(field, data);
-        if (data) {
-            let _editData = Clone(editData)
-            if (typeof data === "object") {
-                _editData[field] = data[field] && data[field]
-                if (related)
-                    for (let [key, value] of Object.entries(related)) {
-                        if (key in data) {
-                            _editData[value] = data[key]
-                        }
+        let _editData = Clone(editData)
+        if (typeof data === "object" && data) {
+            _editData[field] = data[field] && data[field]
+            if (related)
+                for (let [key, value] of Object.entries(related)) {
+                    if (key in data) {
+                        _editData[value] = data[key]
                     }
-                if (removeRelated)
-                    removeRelated.forEach(x => delete _editData[x])
-            } else {
-                _editData[field] = data
-            }
+                }
+            if (removeRelated)
+                removeRelated.forEach(x => delete _editData[x])
+        } else {
+            // if (field === 'qr') {
+            //     const _data = data.split("|")
+            // } else {
+            _editData[field] = data
+            // }
 
-            console.log(_editData);
-            setEditData(_editData)
+        }
 
-            if (field === "areaID") {
-                let _AreaLocationMasterQuery = { ...AreaLocationMasterQuery }
-                let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
-                query.push({ f: "AreaMaster_ID", c: "=", v: data[field] })
-                _AreaLocationMasterQuery.q = JSON.stringify(query)
-                setAreaLocationMasterQuery(_AreaLocationMasterQuery)
-            }
+        console.log(_editData);
+        setEditData(_editData)
+
+        if (field === "areaID") {
+            let _AreaLocationMasterQuery = { ...AreaLocationMasterQuery }
+            let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
+            query.push({ f: "AreaMaster_ID", c: "=", v: data[field] })
+            _AreaLocationMasterQuery.q = JSON.stringify(query)
+            setAreaLocationMasterQuery(_AreaLocationMasterQuery)
         }
 
 
@@ -372,12 +385,25 @@ const AmMappingHH = () => {
                     let _editData = Clone(editData)
                     let _requiredField = { ...requiredField }
                     if (_editData.areaID) {
-                        handleNext()
+
                         _requiredField.area = false
                         Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
                             // console.log(editData);
                             console.log(res);
                             // handleBack()
+                            if (res.data._result.status) {
+                                const _datasTreeView = [
+                                    {
+                                        id: res.data.id,
+                                        text: res.data.code
+                                    }
+                                ]
+                                handleNext()
+                                setDatasTreeView(_datasTreeView)
+                            } else {
+                                setDialog({ type: "error", text: res.data._result.message, open: true })
+                            }
+
                         })
                     } else {
                         _requiredField.area = true
@@ -390,16 +416,32 @@ const AmMappingHH = () => {
                 break;
             case "Barcode":
                 if (step === "next") {
-                    // let _editData = Clone(editData)
-                    // let _requiredField = { ...requiredField }
-                    // if (_editData.areaID) {
-                    //     handleNext()
-                    //     _requiredField.area = false
-                    // } else {
-                    //     _requiredField.area = true
-                    // }
-                    // setRequiredField(_requiredField)
+                    let _editData = Clone(editData)
+                    let _requiredField = { ...requiredField }
+                    if (_editData.qr) {
+                        _requiredField.qr = false
+                        Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
+                            
+                            // console.log(editData);
+                            console.log(res);
+                            // handleBack()
+                            // if (res.data._result.status) {
+                            //     const _datasTreeView = [
+                            //         {
+                            //             id: res.data.id,
+                            //             text: res.data.code
+                            //         }
+                            //     ]
+                            //     handleNext()
+                            //     setDatasTreeView(_datasTreeView)
+                            // } else {
+                            //     setDialog({ type: "error", text: res.data._result.message, open: true })
+                            // }
 
+                        })
+                    } else {
+                        _requiredField.qr = true
+                    }
                 } else if (step === "back") {
                     handleBack()
                 }
@@ -423,50 +465,65 @@ const AmMappingHH = () => {
             default:
         }
     }
+
     return (
         <>
-            <Stepper activeStep={activeStep} orientation="vertical">
-                {steps.map((label, index) => (
-                    <Step key={label}>
-                        <StepLabel><Label>{label}</Label></StepLabel>
-                        <StepContent>
-                            <Typography>
-                                <Box
+            <AmDialogs typePopup={dialog.type} content={dialog.text} onAccept={(e) => { setDialog({ open: e }) }} open={dialog.open}></AmDialogs >
+            <Box
+                boxShadow={2}
+                // p={2}
+                style={{ borderRadius: "5px" }}
+            >
+                <Stepper activeStep={activeStep} orientation="vertical">
+                    {steps.map((label, index) => (
+                        <Step key={label}>
+                            <StepLabel>
+                                <Typography variant="h6">
+                                    <Label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}>{label}</Label>
+                                </Typography>
+                            </StepLabel>
+                            <StepContent>
+                                <Typography>
+                                    {/* <Box
                                     boxShadow={2}
                                     p={2}
                                     style={{ borderRadius: "5px" }}
-                                >{getStepContent(index)}</Box>
-                            </Typography>
-                            <div style={{ marginTop: '16px' }}>
-                                <Button
-                                    disabled={activeStep === 0}
-                                    onClick={() => handleStep("back")}
-                                    style={{ margin: "8px 8px 0 0" }}
-                                >
-                                    <Label>Back</Label>
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => handleStep("next")}
-                                    style={{ margin: "8px 8px 0 0" }}
-                                ><Label>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Label>
-                                </Button>
-                            </div>
-                        </StepContent>
-                    </Step>
-                ))}
-            </Stepper>
-            {
-                activeStep === steps.length && (
-                    <Paper square elevation={0} style={{ padding: "24px" }}>
-                        <Typography>All steps completed - you&apos;re finished</Typography>
-                        <Button onClick={handleReset} style={{ margin: "8px 8px 0 0" }}>
-                            Reset
+                                > */}
+                                    {getStepContent(index)}
+                                    {/* </Box> */}
+                                </Typography>
+                                <div style={{ marginTop: '16px', textAlign: 'end' }}>
+                                    <AmButton
+                                        styleType="dark_clear"
+                                        disabled={activeStep === 0}
+                                        onClick={() => handleStep("back")}
+                                        style={{ margin: "8px 8px 0 0" }}
+                                    >
+                                        Back
+                                </AmButton>
+                                    <AmButton
+                                        variant="contained"
+                                        styleType="confirm"
+                                        onClick={() => handleStep("next")}
+                                        style={{ margin: "8px 8px 0 0" }}
+                                    >{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                    </AmButton>
+                                </div>
+                            </StepContent>
+                        </Step>
+                    ))}
+                </Stepper>
+                {
+                    activeStep === steps.length && (
+                        <Paper square elevation={0} style={{ padding: "24px" }}>
+                            <Typography>All steps completed - you&apos;re finished</Typography>
+                            <Button onClick={handleReset} style={{ margin: "8px 8px 0 0" }}>
+                                Reset
                         </Button>
-                    </Paper>
-                )
-            }
+                        </Paper>
+                    )
+                }
+            </Box>
         </>
     )
 }
