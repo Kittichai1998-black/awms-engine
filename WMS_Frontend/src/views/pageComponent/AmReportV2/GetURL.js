@@ -18,36 +18,23 @@ const FormInline = styled.div`
   }
 `;
 var dataSet = {};
-const DataGenerateURL = (data, fileNameTable) => {
-  console.log(data)
-  if (data !== undefined) {
+const DataGenerateURL = (valueText, fileNameTable) => {
+  console.log(valueText)
+  if (valueText !== undefined) {
     if (fileNameTable === "CURINV") {
-      // console.log(data.field)
-      var x = DataURL(data)
-      console.log(x)
+      return window.apipath + "/v2/GetSPReportAPI?"
+        + "&packCode=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
+        + "&packName=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
+        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+        + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
+        + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
+
+        + "&spname=CURRENTINV_STOSUM";
 
     }
   }
 
-  return x;
-
-}
-const DataURL = (data) => {
-  console.log(data.field)
-  var packCode = data.field === "Code" ? (data.value === undefined || data.value === null ? '' : encodeURIComponent(data.value.trim())) : '';
-  var packName = data.field === "Name" ? (data.value === undefined || data.value === null ? '' : encodeURIComponent(data.value.trim())) : '';
-  var orderNo = data.field === "orderNo" ? (data.value === undefined || data.value === null ? '' : encodeURIComponent(data.value.trim())) : '';
-  var batch = data.field === "batch" ? (data.value === undefined || data.value === null ? '' : encodeURIComponent(data.value.trim())) : '';
-  var lot = data.field === "lot" ? (data.value === undefined || data.value === null ? '' : encodeURIComponent(data.value.trim())) : '';
-
-  return window.apipath + "/v2/GetSPReportAPI?"
-    + "&packCode=" + packCode
-    + "&packName=" + packName
-    + "&orderNo=" + orderNo
-    + "&batch=" + batch
-    + "&lot=" + lot
-
-    + "&spname=CURRENTINV_STOSUM";
+  //return null;
 
 }
 

@@ -101,6 +101,10 @@ const CurrentInventory = Loadable({
   loader: () => import("../../views/page/Report/CurrentInventory"),
   loading: Loading
 });
+const CurrentInventoryV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/CurrentInventory"),
+  loading: Loading
+});
 const StockCard = Loadable({
   loader: () => import("../../views/page/Report/StockCard"),
   loading: Loading
@@ -302,6 +306,8 @@ let routes = [
   { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
+
+  { path: "/report/currentinventoryV2", name: "Current Inventory", compoment: CurrentInventoryV2, exact: true },
 ];
 
 export default routes;

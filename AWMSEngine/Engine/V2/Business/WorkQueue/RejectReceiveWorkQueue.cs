@@ -56,7 +56,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     docItemIDs.Add(disto.DocumentItem_ID.Value);
 
                 disto.Status = EntityStatus.REMOVE;
-                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
+                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
             });
 
             var getAutoDoc = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_AUTO_DOC);

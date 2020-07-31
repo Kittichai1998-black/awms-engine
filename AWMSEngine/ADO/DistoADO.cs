@@ -1,6 +1,7 @@
 ﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
+using Org.BouncyCastle.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,19 +33,16 @@ namespace AWMSEngine.ADO
                 }, buVO);
             return distos;
         }
-        public amt_DocumentItemStorageObject Create(amt_DocumentItemStorageObject disto, VOCriteria buVO)
+
+
+        public List<amt_DocumentItemStorageObject> Insert(List<amt_DocumentItemStorageObject> docItemSto, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@documentItemID", disto.DocumentItem_ID);
-            param.Add("@sou_storageObjectID", disto.Sou_StorageObject_ID);
-            param.Add("@sou_WaveSeqID", disto.Sou_WaveSeq_ID);
-            param.Add("@des_storageObjectID", disto.Des_StorageObject_ID);
-            param.Add("@des_WaveSeqID", disto.Des_WaveSeq_ID);
-            param.Add("@workqueue_id", disto.WorkQueue_ID);
-            param.Add("@qty", disto.Quantity);
-            param.Add("@unitID", disto.UnitType_ID);
-            param.Add("@baseQty", disto.BaseQuantity);
-            param.Add("@baseUnitID", disto.BaseUnitType_ID);
+            docItemSto.ForEach(x => Insert(x, buVO));
+            return docItemSto;
+        }
+        public amt_DocumentItemStorageObject Insert(amt_DocumentItemStorageObject disto, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "ID", "IsLastSeq", "DocumentType_ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_DISTO_PUT",
@@ -54,20 +52,29 @@ namespace AWMSEngine.ADO
             disto.ID = param.Get<long>("@resID");
             return disto;
         }
-        public amt_DocumentItemStorageObject Update(amt_DocumentItemStorageObject disto, VOCriteria buVO)
+
+        public long Update(long disto_id, EntityStatus status, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@id", disto.ID);
-            param.Add("@documentItemID", disto.DocumentItem_ID);
-            param.Add("@sou_storageObjectID", disto.Sou_StorageObject_ID);
-            param.Add("@sou_WaveSeqID", disto.Sou_WaveSeq_ID);
-            param.Add("@des_storageObjectID", disto.Des_StorageObject_ID);
-            param.Add("@des_WaveSeqID", disto.Des_WaveSeq_ID);
-            param.Add("@workqueue_id", disto.WorkQueue_ID);
-            param.Add("@qty", disto.Quantity);
-            param.Add("@unitID", disto.UnitType_ID);
-            param.Add("@baseQty", disto.BaseQuantity);
-            param.Add("@baseUnitID", disto.BaseUnitType_ID);
+            return Update(new amt_DocumentItemStorageObject() { ID = disto_id, Status = status }, buVO);
+        }
+        public long Update(long disto_id, long workQueueID, EntityStatus status, VOCriteria buVO)
+        {
+            return Update(new amt_DocumentItemStorageObject() { ID = disto_id, WorkQueue_ID = workQueueID, Status = status }, buVO);
+        }
+        public long Update(long disto_id, long? des_StorageObjectID, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
+        {
+            return Update(new amt_DocumentItemStorageObject()
+            {
+                ID = disto_id,
+                Des_StorageObject_ID = des_StorageObjectID,
+                Quantity = qty,
+                BaseQuantity = baseQty,
+                Status = status
+            }, buVO);
+        }
+        public long Update(amt_DocumentItemStorageObject disto, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(disto, "IsLastSeq", "DocumentType_ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_DISTO_PUT",
@@ -75,7 +82,7 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
             disto.ID = param.Get<long>("@resID");
-            return disto;
+            return disto.ID.Value;
         }
         public amt_DocumentItemStorageObject Get(long ID, VOCriteria buVO)
         {

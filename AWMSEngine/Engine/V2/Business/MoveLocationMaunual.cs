@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.V2.Business
                 Status = EntityStatus.ACTIVE
             };
 
-            var distoData =  AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+            var distoData =  AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, buVO);
             return distoData;
         }
 

@@ -49,64 +49,63 @@ const AmReport = props => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0)
   const [iniQuery, setIniQuery] = useState(true);
-  //const [queryViewData, setQueryViewData] = useState(onGetALL());
-  const onGetALL = () => {
-    return window.apipath + "/v2/GetSPReportAPI?"
-      // + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
-      // + "&packName=" + (valueText.packName === undefined || valueText.packName === null ? '' : encodeURIComponent(valueText.packName.trim()))
-      // + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-      // + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-      // + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
 
-      + "&spname=CURRENTINV_STOSUM";
-  }
-  // useEffect(() => {
-  //   if (typeof (page) === "number" && !iniQuery) {
-  //     const queryEdit = JSON.parse(JSON.stringify(queryViewData));
-  //     queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
-  //     getData(queryEdit)
-  //   }
-  // }, [page])
   useEffect(() => {
-    getData()
-  }, [])
-  const getData = (data) => {
+    getData(props.inc)
+  }, [page])
 
-    //var pathGetAPI = DataGenerateURL(data, props.fileNameTable)
-    // let pathGetAPI = onGetALL() +
-    //   "&page=" + (page === undefined || null ? 0 : page)
-    //   + "&limit=" + (count === undefined || null ? 100 : count);
-    let pathGetAPI = onGetALL()
-    Axios.get(pathGetAPI).then((res) => {
-      if (res) {
-        if (res.data._result.status !== 0) {
-          console.log(res.data.datas)
-          // setDataSource(res.data.datas)
-          // setCount(res.data.counts)
-        }
-      }
-    });
+  const getValue = (value, inputID) => {
+    if (value && value.toString().includes("*")) {
+      value = value.replace(/\*/g, "%");
+    }
+    valueText[inputID] = value;
   }
+  // const onHandleChangeInput = (value, inputID) => {
+  //   getValue(value, inputID);
+  // };
+
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
       console.log(fdata)
-      getData(fdata)
-      // if (fdata.customFilter !== undefined) {
-      //   if (IsEmptyObject(fdata.customFilter)) {
-      //     res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
-      //   } else {
-      //     res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
-      //   }
-      // } else {
-      //   res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
-      // }
+      getValue(fdata.value, fdata.field)
+      setPage(1)
+      getData()
 
     });
-    // if (!IsEmptyObject(res))
-    //   setQueryViewData(res)
-
   }
+
+  const getData = (data) => {
+    console.log(count)
+    console.log(page)
+    // console.log(data)
+    // if (data !== undefined) {
+    //   var pathAPI = props.inc
+    // } else {
+    //   var pathAPI = DataGenerateURL(valueText, props.fileNameTable)
+    // }
+    var pathAPI = DataGenerateURL(valueText, props.fileNameTable)
+    console.log(pathAPI)
+    // let pathGetAPI = pathAPI +
+    //   "&page=0"
+    //   + "&limit=100";
+    //console.log(pathGetAPI)
+    let pathGetAPI = pathAPI +
+      "&page=" + (page - 1)
+      + "&limit=100" //+ (count === 0 || count === undefined ? 100 : count);
+    // let pathGetAPI = onGetALL()
+
+    Axios.get(pathGetAPI).then((res) => {
+      if (res) {
+        if (res.data._result.status !== 0) {
+
+          setDataSource(res.data.datas)
+          setCount(res.data.datas[0] ? res.data.datas[0].totalRecord : 0)
+        }
+      }
+    });
+  }
+
   //===========================================================
   return (
     <div>
@@ -120,8 +119,13 @@ const AmReport = props => {
         pageSize={100}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
-      //pagination={true}
-
+        pagination={true}
+        onPageChange={p => {
+          if (page !== p)
+            setPage(p)
+          else
+            setIniQuery(false)
+        }}
       />
 
     </div>

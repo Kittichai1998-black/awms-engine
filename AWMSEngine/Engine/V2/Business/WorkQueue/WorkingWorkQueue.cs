@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID.Value, null, false, true, this.BuVO);
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
             var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
-            if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
+            if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT)
             {
                 var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                 var listDisto = new List<amt_DocumentItemStorageObject>();
@@ -174,7 +174,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                             var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, remainBaseQty.Value, updSto.baseUnitID);
                                             disto.Quantity = qtyConvert.newQty;
 
-                                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
+                                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
                                         }
                                     }
                                 }
@@ -195,7 +195,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, sto.baseQty, sto.baseUnitID);
             disto.Quantity = qtyConvert.newQty;
 
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
+            ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
 
             return disto;
         }

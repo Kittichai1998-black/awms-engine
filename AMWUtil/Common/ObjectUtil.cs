@@ -51,6 +51,50 @@ namespace AMWUtil.Common
             return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
         }
 
+        public static T ConvertTextFormatToModel<T>(string txt,string format)
+            where T : class, new()
+        {
+            T t = new T();
+            txt = txt.Replace("|", "&pi;");
+            format = format.Replace("|", "&pi;");
+            var fKeys = Regex.Matches(format, "{[^}]*}");
+            string f2 = format;// Regex.Replace(format, "{[^}]*}", "(.*)");
+            for (int i = 0; i < fKeys.Count(); i++)
+            {
+                var k = fKeys[i].Value.Substring(1, fKeys[i].Value.Length - 2).Split(":",2);
+                if (k.Length == 1)
+                    f2 = Regex.Replace(f2, fKeys[i].Value, "(.*)");
+                else
+                    f2 = Regex.Replace(f2, fKeys[i].Value, "(.{" + k[1].Trim() + "})");
+            }
+
+            if (!Regex.IsMatch(txt, "^" + f2 + "$"))
+                return null;
+
+            string fValsReplate = string.Empty;
+            for (int i = 1; i <= fKeys.Count(); i++)
+            {
+                if (!string.IsNullOrEmpty(fValsReplate))
+                    fValsReplate += "&Split;";
+                fValsReplate += "$"+i;
+            }
+            var fVals = Regex.Replace(txt, f2, fValsReplate).Split("&Split;");
+
+            for (int i = 0; i < fKeys.Count(); i++)
+            {
+                var k = fKeys[i].Value.Substring(1, fKeys[i].Value.Length - 2).Split(":",2)[0].Trim();
+                var v = fVals[i];
+                var field1 = t.GetType().GetField(k);
+                var prop1 = t.GetType().GetProperty(k);
+                if (field1 != null)
+                    field1.SetValue(t, v);
+                else if (prop1 != null)
+                    prop1.SetValue(t, v);
+            }
+
+            return t;
+        }
+
         public static T Get<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
