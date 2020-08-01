@@ -125,6 +125,11 @@ const DailySTOCounting = Loadable({
   loading: Loading
 });
 
+const DailySTOAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOAudit"),
+  loading: Loading
+});
+
 const DailySTOSumReceive = Loadable({
   loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
   loading: Loading
@@ -139,7 +144,10 @@ const DailySTOSumCounting = Loadable({
   loading: Loading
 });
 
-
+const DailySTOSumAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumAudit"),
+  loading: Loading
+});
 const ScanPalletMove = Loadable({
   loader: () => import("../../views/page/Warehouse/ScanPalletMoveLocation.js"),
   loading: Loading
@@ -268,9 +276,11 @@ let routes = [
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
+  { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/setting/skuconvertor", name: "base5", compoment: PackMaster, exact: true },
   { path: "/setting/sku", name: "base5", compoment: SKUMaster, exact: true },
   { path: "/setting/skutype", name: "base5", compoment: SKUMasterType, exact: true },

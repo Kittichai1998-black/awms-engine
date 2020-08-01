@@ -35,7 +35,7 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
 
       + "&spname=CURRENTINV_STOSUM";
 
-  } else if (fileNameTable === "DAILYSTO_RECEIVE" || fileNameTable === "DAILYSTO_ISSUE" || fileNameTable === "DAILYSTO_COUNTING") {
+  } else if (fileNameTable === "DAILYSTO_RECEIVE" || fileNameTable === "DAILYSTO_ISSUE" || fileNameTable === "DAILYSTO_COUNTING" || fileNameTable === "DAILYSTO_AUDIT") {
     if (IsEmptyObject(valueText)) {
       valueText.fromDate = moment().format("YYYY-MM-DD")
       valueText.toDate = moment().format("YYYY-MM-DD")
@@ -65,7 +65,7 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&docProcessTypeID=" + (valueText.Description === undefined || valueText.Description === null ? '' : encodeURIComponent(valueText.Description))
       + "&spname=DAILY_STOCKCARD";
 
-  } else if (fileNameTable === "DAILYSTO_SUM_RECEIVE" || fileNameTable === "DAILYSTO_SUM_ISSUE" || fileNameTable === "DAILYSTO_SUM_COUNTING") {
+  } else if (fileNameTable === "DAILYSTO_SUM_RECEIVE" || fileNameTable === "DAILYSTO_SUM_ISSUE" || fileNameTable === "DAILYSTO_SUM_COUNTING" || fileNameTable === "DAILYSTO_SUM_AUDIT") {
 
     if (IsEmptyObject(valueText)) {
 
