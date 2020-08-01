@@ -12,9 +12,7 @@ import { DataGenerateURL } from "../AmReportV2/GetURL";
 import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import AmButton from "../../../components/AmButton";
-import AmEditorTable from "../../../components/table/AmEditorTable";
-import AmInput from "../../../components/AmInput";
-import AmDialogs from "../../../components/AmDialogs";
+
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -49,79 +47,134 @@ const AmReport = props => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0)
   const [iniQuery, setIniQuery] = useState(true);
-  //const [queryViewData, setQueryViewData] = useState(onGetALL());
-  const onGetALL = () => {
-    return window.apipath + "/v2/GetSPReportAPI?"
-      // + "&packCode=" + (valueText.packCode === undefined || valueText.packCode === null ? '' : encodeURIComponent(valueText.packCode.trim()))
-      // + "&packName=" + (valueText.packName === undefined || valueText.packName === null ? '' : encodeURIComponent(valueText.packName.trim()))
-      // + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-      // + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-      // + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
 
-      + "&spname=CURRENTINV_STOSUM";
-  }
-  // useEffect(() => {
-  //   if (typeof (page) === "number" && !iniQuery) {
-  //     const queryEdit = JSON.parse(JSON.stringify(queryViewData));
-  //     queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(queryEdit.l, 10);
-  //     getData(queryEdit)
-  //   }
-  // }, [page])
   useEffect(() => {
-    getData()
-  }, [])
-  const getData = (data) => {
+    if (!iniQuery)
+      getData()
+  }, [page])
 
-    //var pathGetAPI = DataGenerateURL(data, props.fileNameTable)
-    // let pathGetAPI = onGetALL() +
-    //   "&page=" + (page === undefined || null ? 0 : page)
-    //   + "&limit=" + (count === undefined || null ? 100 : count);
-    let pathGetAPI = onGetALL()
-    Axios.get(pathGetAPI).then((res) => {
-      if (res) {
-        if (res.data._result.status !== 0) {
-          console.log(res.data.datas)
-          // setDataSource(res.data.datas)
-          // setCount(res.data.counts)
-        }
-      }
-    });
+  const getValue = (value, inputID) => {
+    if (value && value.toString().includes("*")) {
+      value = value.replace(/\*/g, "%");
+    }
+    valueText[inputID] = value;
   }
+
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
       console.log(fdata)
-      getData(fdata)
-      // if (fdata.customFilter !== undefined) {
-      //   if (IsEmptyObject(fdata.customFilter)) {
-      //     res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
-      //   } else {
-      //     res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
-      //   }
-      // } else {
-      //   res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
-      // }
+      if (IsEmptyObject(fdata.customFilter)) {
+        getValue(fdata.value, fdata.field)
+      } else {
+        if (fdata.customFilter !== undefined) {
+          getValue(fdata.value, fdata.customFilter.dateField)
+        } else {
+          getValue(fdata.value, fdata.field)
+        }
+      }
+
 
     });
-    // if (!IsEmptyObject(res))
-    //   setQueryViewData(res)
-
+    setPage(1)
+    getData()
   }
+
+  const getData = () => {
+
+    var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
+    let pathGetAPI = pathAPI +
+      "&page=" + (page - 1)
+      + "&limit=100"
+    Axios.get(pathGetAPI).then((res) => {
+      if (res) {
+        if (res.data._result.status !== 0) {
+          setDataSource(res.data.datas)
+          setCount(res.data.datas[0] ? res.data.datas[0].totalRecord : 0)
+        }
+      }
+    });
+  }
+  const useColumns = (cols) => {
+    const [columns, setColumns] = useState(cols);
+
+    useEffect(() => {
+      const iniCols = [...cols];
+
+      iniCols.forEach(col => {
+        let filterConfig = col.filterConfig;
+        if (filterConfig !== undefined) {
+          if (filterConfig.filterType === "dropdown") {
+            col.Filter = (field, onChangeFilter) => {
+              var checkType = Array.isArray(filterConfig.dataDropDown);
+              if (checkType) {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  data={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                />
+              }
+              else {
+                return <AmDropdown
+                  id={field}
+                  placeholder={col.placeholder}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "ID" : filterConfig.fieldDataKey}
+                  fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                  labelPattern=" : "
+                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
+                  zIndex={1000}
+                  queryApi={filterConfig.dataDropDown}
+                  onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                  ddlType={filterConfig.typeDropDown}
+                />
+              }
+
+            }
+          } else if (filterConfig.filterType === "datetime") {
+            col.width = 200;
+            col.Filter = (field, onChangeFilter) => {
+              return <div>
+                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} TypeDate={"date"} fieldID="fromDate" onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) }} />
+                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
+              </div>
+            }
+          }
+        }
+      })
+      setColumns(iniCols);
+    }, [])
+
+    return { columns };
+  }
+  const { columns } = useColumns(props.columnTable);
   //===========================================================
   return (
     <div>
 
       <AmTable
-        columns={props.columnTable}
-        dataKey={"Code"}
+        columns={columns}
+        dataKey={props.tableKey}
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
         pageSize={100}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
-      //pagination={true}
-
+        pagination={true}
+        onPageChange={p => {
+          if (page !== p)
+            setPage(p)
+          else
+            setIniQuery(false)
+        }}
       />
 
     </div>
