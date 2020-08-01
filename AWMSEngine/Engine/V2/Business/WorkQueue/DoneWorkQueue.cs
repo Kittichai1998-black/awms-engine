@@ -111,7 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         docItems = ManageDocumentOutput(reqVO, docs, queueTrx, docItems, stos);
 
                         //check sto ว่ายังมี pack อยุ่ในพาเลทมั้ย ถ้าไม่มี ให้ลบพาเลท REMOVED ถ้าเหลือให้เปลี่ยนเป็น RECEIVED
-                        if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                        if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                         {
                             //check sto ว่ายังมี pack อยุ่ในพาเลทมั้ย ถ้าไม่มี ให้ลบพาเลท REMOVED ถ้าเหลือให้เปลี่ยนเป็น RECEIVED
                             var stos2 = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
@@ -145,7 +145,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 }
 
-                var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { reqVO = reqVO, workQ = workQueueRes, document = docs });
+                //var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { reqVO = reqVO, workQ = workQueueRes, document = docs });
 
 
                 return workQueueRes;
@@ -276,7 +276,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
 
-                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                            if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                             {
                                 distos.ToList().ForEach(disto =>
                                 {
@@ -316,7 +316,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
                                         if (remainBaseQty >= sto.baseQty) //1500 > 1000
                                         { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
-                                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                                            if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                                             {
                                                     disto = UpdateSTOFull(sto, disto);
                                                 }
@@ -342,8 +342,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                                             if (updSto.baseQty == 0)
                                             {
-                                                if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                                            {
+                                                if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                                                {
                                                     disto = UpdateSTOFull(sto, disto);
                                                 }
                                                 else
@@ -407,7 +407,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     {
                                         if (sto.baseQty == disto.BaseQuantity)
                                         {
-                                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                                            if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                                             {
                                                 disto = UpdateSTOFull(sto, disto);
                                             }
@@ -426,7 +426,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                                             if (updSto.baseQty == 0)
                                             {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
-                                                if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                                                if (true)//StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
                                                 {
                                                     disto = UpdateSTOFull(sto, disto);
                                                 }

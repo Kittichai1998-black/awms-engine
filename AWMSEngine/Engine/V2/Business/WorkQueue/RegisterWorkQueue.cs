@@ -59,7 +59,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
-            var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
+            StorageObjectCriteria res = null;// this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
             if (res == null)
             {
                 ////DF Code
@@ -192,7 +192,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            List<amt_DocumentItem> res = null;// this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
                 var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
@@ -304,7 +304,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, TReq reqVO)
         {
-            SPOutAreaLineCriteria res = this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            SPOutAreaLineCriteria res = null;// this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
                 if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))

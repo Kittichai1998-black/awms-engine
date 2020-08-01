@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         }
         protected override List<amt_DocumentItemStorageObject> ExecuteEngine(TReq reqVO)
         {
-            var res = this.ExectProject<TReq, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, reqVO);
+            //var res = this.ExectProject<TReq, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, reqVO);
             return null;
         }
     }

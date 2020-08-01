@@ -25,7 +25,7 @@ namespace AWMSEngine.ADO
             //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             try
             {
-                var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
+                var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfigValue<string>(apiConfigName);
                 var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
                 return res;
             }
