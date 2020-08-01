@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AmReport from '../../../components/AmReport'
+import AmReport from '../../pageComponent/AmReportV2/AmReport'
 import AmButton from '../../../components/AmButton'
 import AmFindPopup from '../../../components/AmFindPopup'
 import { apicall } from '../../../components/function/CoreFunction'
@@ -76,145 +76,45 @@ const DailySTOSumCounting = (props) => {
         l: 100,
         all: "",
     }
-    const DocCodeQuery = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI",
-        t: "Document",
-        q: '[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
 
-    useEffect(() => {
-        onGetDocument()
-    }, [page])
-
-    const onGetALL = () => {
-        return window.apipath + "/v2/GetSPReportAPI?"
-            + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom))
-            + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo))
-            + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
-            + "&docProcessTypeID=" + (valueText.documentProcessType === undefined || valueText.documentProcessType === null ? '' : encodeURIComponent(valueText.documentProcessType))
-            + "&docType=2004"
-            + "&spname=DAILY_STOSUM";
-    }
-
-    const onGetDocument = () => {
-        let pathGetAPI = onGetALL() +
-            "&page=" + (page === undefined || null ? 0 : page)
-            + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
-
-        Axios.get(pathGetAPI).then((rowselect1) => {
-            if (rowselect1) {
-                if (rowselect1.data._result.status !== 0) {
-                    setdatavalue(rowselect1.data.datas)
-                    setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
-
-                }
-            }
-        })
-    }
-
-    const getValue = (value, inputID) => {
-        if (value && value.toString().includes("*")) {
-            value = value.replace(/\*/g, "%");
-        }
-        valueText[inputID] = value;
-    }
-    const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
-        getValue(value, inputID);
-    };
-    const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
-        getValue(value, inputID);
-        if (event && event.key == 'Enter') {
-            onGetDocument();
-        }
-    };
-    const onHandleChangeSelect = (value, dataObject, inputID, fieldDataKey, event) => {
-        getValue(value, inputID);
-        onGetDocument();
-    };
-    const GetBodyReports = () => {
-        return <div style={{ display: "inline-block" }}>
-            <FormInline><LabelH>{t("Doc No.")} : </LabelH>
-                <AmInput
-                    id={"docCode"}
-                    type="input"
-                    style={{ width: "300px" }}
-                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "docCode", null, event)}
-                    onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "docCode", null, event)}
-                />
-            </FormInline>
-            <FormInline><LabelH>{t("Doc.Process")} : </LabelH>
-                <AmDropdown
-                    id={'documentProcessType'}
-                    fieldDataKey={"ID"}
-                    fieldLabel={["Code", "Name"]}
-                    labelPattern=" : "
-                    width={300}
-                    placeholder="Select Doc.Process Type"
-                    ddlMinWidth={300}
-                    zIndex={1000}
-                    returnDefaultValue={true}
-                    queryApi={MVTQuery}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeSelect(value, dataObject, 'documentProcessType', fieldDataKey, null)}
-                    ddlType={'search'}
-                />
-            </FormInline>
-            <FormInline><LabelH>{t("Date From")} : </LabelH>
-                <AmDate
-                    id={"dateFrom"}
-                    TypeDate={"date"}
-                    style={{ width: "300px" }}
-                    defaultValue={true}
-                    // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateFrom", null, null)}
-                    FieldID={"dateFrom"} >
-                </AmDate>
-            </FormInline>
-            <FormInline><LabelH>{t("Date To")} : </LabelH>
-                <AmDate
-                    id={"dateTo"}
-                    TypeDate={"date"}
-                    style={{ width: "300px" }}
-                    defaultValue={true}
-                    // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeSelect(value ? value.fieldDataKey : '', value, "dateTo", null, null)}
-                    FieldID={"dateTo"} >
-                </AmDate>
-            </FormInline>
-        </div>
-
-    }
-    const customBtnSelect = () => {
-        return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
-    }
     const columns = [
-        { Header: 'Date', accessor: 'createDate', type: 'datetime', dateFormat: 'DD/MM/YYYY', width: 90, sortable: false },
+        {
+            Header: 'Date', accessor: 'createDate', type: 'datetime', width: 130, sortable: false,
+            filterType: "datetime",
+            filterConfig: {
+                filterType: "datetime",
+            }
+            , customFilter: { field: "CreateTime" },
+            dateFormat: "DD/MM/YYYY"
+        },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
-        { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: 'pstoName', width: 150, sortable: false },
-        { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
-        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
-        // { Header: 'Ref No.', accessor: 'docRefID', width: 100, sortable: false },
-        // { Header: 'Ref1', accessor: 'docRef1', width: 100, sortable: false },
-        // { Header: 'Ref2', accessor: 'docRef2', width: 100, sortable: false },
         {
-            Header: 'Qty', accessor: 'qty', width: 70, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString())
+            Header: 'Doc.Process', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            filterConfig: {
+                filterType: "dropdown",
+                fieldLabel: ["Name"],
+                dataDropDown: MVTQuery,
+                typeDropDown: "normal",
+                widthDD: 220,
+            },
         },
-        { Header: 'Unit', accessor: 'unitType', width: 70, sortable: false },
+        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, filterable: false, },
+        { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
+        { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, filterable: false, },
+        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, filterable: false, },
+        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false, filterable: false, },
         {
-            Header: 'Base Qty', accessor: 'baseQty', width: 70, sortable: false,
+            Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
             Footer: true,
-            "Cell": (e) => comma(e.value.toString())
+            "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
-        { Header: 'Base Unit', accessor: 'baseUnitType', width: 70, sortable: false },
+        { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false, filterable: false, },
+        {
+            Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
+            Footer: true,
+            "Cell": (e) => comma(e.value.toString()), filterable: false,
+        },
+        { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
     ];
     const getRedirect = (data) => {
         if (data.indexOf(',') > 0) {
@@ -236,17 +136,13 @@ const DailySTOSumCounting = (props) => {
     return (
         <div className={classes.root}>
             <AmReport
-                bodyHeadReport={GetBodyReports()}
                 columnTable={columns}
                 dataTable={datavalue}
-                pageSize={pageSize}
-                pages={(x) => setPage(x)}
-                totalSize={totalSize}
-                renderCustomButton={customBtnSelect()}
-                exportApi={onGetALL()}
-                fileNameTable={"DAILYSTO_SUM_COUNTING"}
                 excelFooter={true}
+                fileNameTable={"DAILYSTO_SUM_COUNTING"}
+                typeDoc={2004}
                 page={true}
+                tableKey={"docID"}
             ></AmReport>
         </div>
     )
