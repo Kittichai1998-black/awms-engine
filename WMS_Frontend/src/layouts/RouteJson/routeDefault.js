@@ -105,6 +105,10 @@ const CurrentInventoryV2 = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
   loading: Loading
 });
+const StockCardV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/StockCard"),
+  loading: Loading
+});
 const StockCard = Loadable({
   loader: () => import("../../views/page/Report/StockCard"),
   loading: Loading
@@ -113,12 +117,24 @@ const DailySTOReceive = Loadable({
   loader: () => import("../../views/page/Report/DailySTOReceive"),
   loading: Loading
 });
+const DailySTOReceiveV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOReceive"),
+  loading: Loading
+});
 const DailySTOIssue = Loadable({
   loader: () => import("../../views/page/Report/DailySTOIssue"),
   loading: Loading
 });
+const DailySTOIssueV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOIssue"),
+  loading: Loading
+});
 const DailySTOCounting = Loadable({
   loader: () => import("../../views/page/Report/DailySTOCounting"),
+  loading: Loading
+});
+const DailySTOCountingV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOCounting"),
   loading: Loading
 });
 const DailySTOSumReceive = Loadable({
@@ -129,8 +145,22 @@ const DailySTOSumIssue = Loadable({
   loader: () => import("../../views/page/Report/DailySTOSumIssue"),
   loading: Loading
 });
+
 const DailySTOSumCounting = Loadable({
   loader: () => import("../../views/page/Report/DailySTOSumCounting"),
+  loading: Loading
+});
+const DailySTOSumReceiveV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
+  loading: Loading
+});
+const DailySTOSumIssueV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumIssue"),
+  loading: Loading
+});
+
+const DailySTOSumCountingV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumCounting"),
   loading: Loading
 });
 const ScanPalletMove = Loadable({
@@ -308,6 +338,13 @@ let routes = [
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
 
   { path: "/report/currentinventoryV2", name: "Current Inventory", compoment: CurrentInventoryV2, exact: true },
+  { path: "/report/StockCardV2", name: "Current Inventory", compoment: StockCardV2, exact: true },
+  { path: "/report/receiveV2", name: "Receive Report", compoment: DailySTOReceiveV2, exact: true },
+  { path: "/report/issueV2", name: "Issue Report", compoment: DailySTOIssueV2, exact: true },
+  { path: "/report/audit", name: "Audit Report", compoment: DailySTOCountingV2, exact: true },
+  { path: "/report/dailyreceivesumV2", name: "Receive Summary Report ", compoment: DailySTOSumReceiveV2, exact: true },
+  { path: "/report/dailyissuesumV2", name: "Issue Summary Report ", compoment: DailySTOSumIssueV2, exact: true },
+  { path: "/report/dailycountsumV2", name: "Counting Summary Report ", compoment: DailySTOSumCountingV2, exact: true },
 ];
 
 export default routes;
