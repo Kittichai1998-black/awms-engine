@@ -40,54 +40,7 @@ namespace MyTest2
             AWMSEngine.ADO.DataADO data3 = new AWMSEngine.ADO.DataADO();
 
         }
-        [Fact]
-        public void TestASCIIFile()
-        {// Print the header.
-            var v = CodePagesEncodingProvider.Instance.GetEncoding(874);
-            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance.GetEncoding(874));
-            Console.Write("CodePage identifier and name     ");
-            Console.WriteLine("WindowsCodePage");
-
-            // For every encoding, get the Windows code page for it.
-            foreach (EncodingInfo ei in Encoding.GetEncodings())
-            {
-                string sout = string.Empty;
-                Encoding e = ei.GetEncoding();
-
-                sout += string.Format("{0,-6} {1,-25} ", ei.CodePage, ei.Name);
-                sout +=  string.Format("{0,-6} ", e.WindowsCodePage);
-
-                // Mark the ones that are different.
-                if (ei.CodePage != e.WindowsCodePage)
-                    sout += ("*");
-
-                sysout.WriteLine(sout);
-            }
-
-            System.IO.StreamReader sr = new System.IO.StreamReader(@"D:\logs\buf_prd.csv", CodePagesEncodingProvider.Instance.GetEncoding(874), true);
-
-            int i = 0;
-            CsvHelper.CsvParser csv = new CsvHelper.CsvParser(sr);
-            string[] line;
-            try
-            {
-                while ((line = csv.Read()) != null)
-                {
-                    i++;
-                    string s = i + "|";
-                    for (int c = 0; c < line.Length; c++)
-                    {
-                        string f1 = UTF8toASCII(line[c]);
-                        string f2 = End1ToEnd2(line[c]);
-
-                        s += line[c]+"|";
-                    }
-                    sysout.WriteLine(s + "|");
-
-                }
-            }
-            catch { return; }
-        }
+       
 
         public static string UTF8toASCII(string text)
         {

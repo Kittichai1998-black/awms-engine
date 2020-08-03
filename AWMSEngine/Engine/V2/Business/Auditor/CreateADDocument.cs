@@ -145,7 +145,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
 
-                DocumentType_ID = DocumentTypeID.AUDIT,
+                DocumentType_ID = DocumentTypeID.PHYSICAL_COUNT,
                 DocumentProcessType_ID = reqVO.documentProcessTypeID,
                 EventStatus = reqVO.eventStatus,
 

@@ -100,7 +100,7 @@ namespace ProjectAERP.Engine.Document
                         var qtylistItem = listItem.Sum(x => x.BaseQuantity);
                         //if (qtyDisto == qtylistItem)
                         //{
-                            if(docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                            if(docs.DocumentType_ID == DocumentTypeID.PUTAWAY)
                             {
                                 this.SendToERP_IN(docs, buVO);
                                 res = new List<long>() ;

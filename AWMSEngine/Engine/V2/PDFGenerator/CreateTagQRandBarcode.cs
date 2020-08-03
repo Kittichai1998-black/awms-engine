@@ -1,14 +1,9 @@
-﻿using AMWUtil.Exception;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Rectangle = iTextSharp.text.Rectangle;
 using AMWUtil.Common;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
 {

@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
         }
         protected override List<long> ExecuteEngine(List<long> reqVO)
         {
-            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
+            List<long> res = null;
             if (res == null)
             {
                 var docLists = new List<long>();
@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     var distoGroupByWQ = distos.GroupBy(grp => grp.WorkQueue_ID, (key, g) => new { WorkQueueID = key, DiSTOs = g.ToList() });
                                     foreach (var di in distoGroupByWQ)
                                     {
-                                        if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED || docs.DocumentType_ID == DocumentTypeID.AUDIT)
+                                        if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY || docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
                                         {
                                             if (di.WorkQueueID == null)
                                             {

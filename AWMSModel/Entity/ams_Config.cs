@@ -4,8 +4,11 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_Config : ams_Feature
+    public class ams_Config : BaseEntityCreateModify
     {
-        public string DataStyle; 
+        public string Namespace;
+        public string DataType;
+        public string DataKey;
+        public string DataValue;
     }
 }

@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
         }
         protected override List<long> ExecuteEngine(TReq reqVO)
         {
-            var res = this.ExectProject<TReq, List<long>>(FeatureCode.EXEWM_DoneQueueWorked, reqVO);
+            List<long> res = null;// this.ExectProject<TReq, List<long>>(FeatureCode.EXEWM_DoneQueueWorked, reqVO);
             if (res == null)
             {
                 var docLists = new List<long>();
@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                                     docItemID.ForEach(y =>
                                     {
-                                        if (StaticValue.IsFeature("WORKED_FROM_QTYSUM")) //case1
+                                        if (false)//StaticValue.IsFeature("WORKED_FROM_QTYSUM")) //case1
                                         {
                                             if (reqVO.flag)
                                             {

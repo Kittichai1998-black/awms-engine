@@ -98,7 +98,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                                 var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
 
-                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
                             }
                             ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(stos.id.Value, this.BuVO,
                             new KeyValuePair<string, object>[]
@@ -106,7 +106,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     new KeyValuePair<string, object>("EventStatus",StorageObjectEventStatus.RECEIVED)
                             });
                             var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
 
                             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,
                                 null, null,

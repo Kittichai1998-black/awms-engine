@@ -26,7 +26,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TRes
         {
             public List<RootStoProcess> confirmResult;
-            public List<amt_Document> docGRCrossDocks;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -37,8 +36,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             StorageObjectEventStatus stoNextEventStatus;
 
-            if (docs.First().DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+            if (docs.First().DocumentType_ID == DocumentTypeID.PICKING)
                 stoNextEventStatus = StorageObjectEventStatus.PICKING;
+            else if (docs.First().DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
+                stoNextEventStatus = StorageObjectEventStatus.COUNTING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
                 stoNextEventStatus = StorageObjectEventStatus.AUDITING;
             else
@@ -104,7 +105,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Status = rsto.lockOnly ? EntityStatus.ACTIVE : EntityStatus.INACTIVE,
                     WorkQueue_ID = rsto.workQueueID,
                 }).ToList();
-                _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(_distos, this.BuVO);
+                _distos = ADO.DistoADO.GetInstant().Insert(_distos, this.BuVO);
                 distos.AddRange(_distos);
 
             };
@@ -170,10 +171,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                         gsto.StorageObject.ForEach(sto =>
                         {
-                            var disto = ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
+                            var disto = ADO.DistoADO.GetInstant().Insert(new amt_DocumentItemStorageObject()
                             {
                                 DocumentItem_ID = res.DocumentItems.First().ID,
-                                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+                                DocumentType_ID = DocumentTypeID.PICKING,
                                 BaseQuantity = sto.BaseQuantity,
                                 BaseUnitType_ID = sto.BaseUnitType_ID,
                                 Quantity = sto.Quantity,
@@ -186,29 +187,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     });
                 }
 
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, 
-                    null, 
-                    EntityStatus.ACTIVE, 
-                    stoNextEventStatus, 
-                    true, 
-                    x.stoDoneSouEventStatus, 
-                    x.stoDoneDesEventStatus, 
-                    this.BuVO);
+                x.docItems.ForEach(doci =>
+                {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatus(
+                        doci.pstoID,
+                        null,
+                        EntityStatus.ACTIVE,
+                        stoNextEventStatus,
+                        this.BuVO);
+                });
+                
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
-            var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
+            //var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
 
             this.WCSSendQueue(rstos);
 
-            return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs };
+            return new TRes() { confirmResult = rstos };
         }
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
         {
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
-            var groupQueueWcs = Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
+            WCSQueueADO.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
             if (groupQueueWcs == null)
             {
                 var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
@@ -330,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 StorageObjectEventStatus? stoDoneSouEventStatus = null;
                 StorageObjectEventStatus? stoDoneDesEventStatus = null;
                 var doc = ADO.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
-                var statusSTO = Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
+                ProcessQueueDoneStatus statusSTO = null;// Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
                 if (statusSTO != null)
                 {
                     stoDoneSouEventStatus = statusSTO.stoDoneSouEventStatus;

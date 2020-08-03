@@ -47,6 +47,8 @@ namespace AWMSEngine.Engine.V2.Develop
                     return this.Menu_StaticValue(reqVO.find);
                 case "loadstaticvalue":
                     return this.Menu_LoadStaticValue(reqVO.find);
+                case "serverinfo":
+                    return this.Menu_LoadStaticValue(reqVO.find);
                 default:
                     throw new AMWException(this.Logger, AMWExceptionCode.V0_DEVMENU_NOT_FOUND);
             }
@@ -104,6 +106,15 @@ namespace AWMSEngine.Engine.V2.Develop
 
         private TRes Menu_LoadStaticValue(string find)
         {
+            this.StaticValue.LoadAll();
+            TRes res = new TRes() { rows = new List<TRes.TRow>() };
+            res.rows.Add(new TRes.TRow("Load StaticValues Success", "", ""));
+            return res;
+        }
+
+        private TRes Menu_Serverinfo(string find)
+        {
+            //this.BaseController.Response.
             this.StaticValue.LoadAll();
             TRes res = new TRes() { rows = new List<TRes.TRow>() };
             res.rows.Add(new TRes.TRow("Load StaticValues Success", "", ""));

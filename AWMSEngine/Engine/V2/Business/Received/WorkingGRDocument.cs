@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             var checkWorking = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                 new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING),
-                        new KeyValuePair<string,object>("DocumentType_ID",DocumentTypeID.GOODS_RECEIVED),
+                        new KeyValuePair<string,object>("DocumentType_ID",DocumentTypeID.PUTAWAY),
                         new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO);
 
