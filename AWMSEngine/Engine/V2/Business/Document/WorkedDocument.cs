@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                             }
                                         }
                                         else //case
-                                        {
+                                        { ///ต้องเเก้ไข ถ้า disto อัพเดทเป็น done ครบแล้ว ให้อัพเดทเอกสารเปน WORKED
                                             if (distos.FindAll(z => z.DocumentItem_ID == y).TrueForAll(z => z.Status == EntityStatus.ACTIVE))
                                             {
                                                 ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);

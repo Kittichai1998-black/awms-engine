@@ -84,7 +84,7 @@ class apicall {
         var file = new Blob([res.data], { type: 'application/pdf' });
         if (file) {
           var fileURL = URL.createObjectURL(file);
-          window.open(fileURL);
+          window.open(fileURL,'_blank');
           window.URL.revokeObjectURL(fileURL);
         }
       } else {
