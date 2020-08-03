@@ -24,5 +24,7 @@ namespace AWMSModel.Constant.EnumConst
         TOKEN_EXPIRE_HR,
         [EnumValueAttribute(ValueString = "AUTHEN.TOKEN.TOKEN_EXTEND_HR")]
         TOKEN_EXTEND_HR,
+        [EnumValueAttribute(ValueString = "AUTHEN.TOKEN.LDAP")]
+        TOKEN_LDAP,
     }
 }

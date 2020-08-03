@@ -72,12 +72,13 @@ const DialogConfirm = props => {
         <DialogTitle id='alert-dialog-slide-title' onClose={handleClose} style={props.styleDialogTitle}>
           {t(props.titleDialog)}
         </DialogTitle>
-        <DialogContent style={props.styleDialog} dividers>
+        {props.Texts || props.bodyDialog && <DialogContent style={props.styleDialog} dividers>
           <DialogContentText id='alert-dialog-slide-title'>
             {props.Texts}
           </DialogContentText>
           {props.bodyDialog}
-        </DialogContent>
+        </DialogContent>}
+
         <DialogActions>
           {props.customAcceptBtn ? (
             props.customAcceptBtn

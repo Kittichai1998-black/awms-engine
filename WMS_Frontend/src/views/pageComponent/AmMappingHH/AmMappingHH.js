@@ -1,4 +1,5 @@
 import React, { useRef, useState, useLayoutEffect, useEffect, createRef } from 'react';
+
 // import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -25,6 +26,10 @@ import TreeView from 'deni-react-treeview'
 import { AiFillDelete } from 'react-icons/ai';
 import './AmMappingHH.scss'
 import AmDialogs from '../../../components/AmDialogs'
+// import AmDialogConfirm from '../../../components/AmDialogConfirm'
+import AmEditorTable from '../../../components/table/AmEditorTable'
+import useSwitch from '../../../components/Hook/useSwitch'
+import useGenerateFieldAmEditorTable from './useGenerateFieldAmEditorTable'
 
 const Axios = new apicall()
 
@@ -43,11 +48,11 @@ label {
 input {
     vertical-align: middle;
 }
-@media (max-width: 800px) {
-    flex-direction: column;
-    align-items: stretch;
+// @media (max-width: 800px) {
+//     flex-direction: column;
+//     align-items: stretch;
     
-  }
+//   }
 `;
 
 const WarehouseQuery = {
@@ -74,23 +79,20 @@ const AreaMasterQuery = {
     all: "",
 }
 
-const AreaLocationMasterQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "AreaLocationMaster",
-    q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1}]',
-    f: "Code as locationCode,ID",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: "",
-}
-
 const steps = ['Warehouse', 'Pallet', 'Area', 'Barcode', 'Location']
 
 const actionButtons = [
     (<AiFillDelete size="15" color="#ff704d" />)
 ];
+
+const detailPack = [
+    { label: "GR", accessor: "docCode", type: "text", type: "text" },
+    { label: "PA", accessor: "docCode", type: "text" },
+    { label: "SKUItem", accessor: "SKUItem" },
+    { label: "Batch", accessor: "Batch", type: "text" },
+    { label: "Lot", accessor: "Lot", type: "text" },
+    { label: "Quantity", accessor: ["Quantity", "unitType"], type: "inputNum" }
+]
 
 // function useWindowSize(ref) {
 //     const [size, setSize] = useState([0, 0]);
@@ -108,76 +110,59 @@ const actionButtons = [
 // }
 
 const AmMappingHH = (props) => {
-    const { classes } = props
+
     // const classes = useStyles();
     // const [activeStep, setActiveStep] = useState(0);
+    const [itemSelect, setItemSelect] = useState()
+    const [GenerateFieldAmEditorTable, dataAmEditorTable] = useGenerateFieldAmEditorTable(detailPack, itemSelect)
     const [datasTreeView, setDatasTreeView] = useState([])
-    const [editData, setEditData] = useState({ action: 1, amount: 1, mode: 0, rootOptions: "_done_des_estatus=12&_mvt=1011" })
+    const [editData, setEditData] = useState(
+        {
+            warehouseID: 1,
+            action: 1,
+            amount: 1,
+            mode: 0,
+            rootOptions: "_done_des_estatus=12&_mvt=1011",
+            datas: [],
+            scanCode: "THIP000001",
+            areaID: 14,
+            qr: "N|1|20386,20291|160,100"
+        }
+    )
+    const [dataModal, setDataModal] = useState({})
     const [activeStep, handleNext, handleBack, handleReset] = useSteps(0)
+    const [isOpen, open, close] = useSwitch(0)
     // const steps = steps;
     // const tableSize = useWindowSize(containerRef)
     const [areaLocationMasterQuery, setAreaLocationMasterQuery] = useState()
-    const ref = useRef([0, 1, 2, 3, 4, 5, 6, 7].map(() => createRef()))
+    // const ref = useRef([0, 1, 2, 3, 4, 5, 6, 7].map(() => createRef()))
     const [requiredField, setRequiredField] = useState({ pallet: false, area: false, qr: false })
 
     const [dialog, setDialog] = useState({ type: null, text: null, open: false })
+
+
+    const AreaLocationMasterQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaLocationMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1}]',
+        f: "Code as locationCode,ID",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+    }
     // const containerRef = useRef()
     // const treeview = useRef()
     // const [width] = useWindowSize(containerRef)
+    // console.log(width);
 
     // useEffect(() => {
-    //     console.log(ref);
-    //     // console.log(treeview);
-
-    //     switch (steps[activeStep - 1]) {
-    //         case "Pallet":
-    //             console.log("Pallet");
-    //             let _editData = Clone(editData)
-    //             if (!_editData.scanCode) {
-    //                 handleBack()
-    //                 let _requiredField = { ...requiredField }
-    //                 _requiredField.pallet = true
-    //                 setRequiredField(_requiredField)
-    //             }
-
-    //             // console.log(ref);
-    //             // console.log(ref.current[1]);
-    //             // console.log(treeview);
-
-    //             // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
-    //             //     console.log(editData);
-    //             //     console.log(res);
-    //             //     handleBack()
-    //             // })
-    //             break;
-    //         case "Area":
-    //             // Axios.get(createQueryString(AreaMasterQuery)).then(res => {
-    //             //     console.log(editData);
-    //             //     console.log(res);
-    //             //     handleBack()
-    //             // })
-    //             // Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-    //             //     console.log(editData);
-    //             //     console.log(res);
-    //             //     handleBack()
-    //             // })
-    //             break;
-    //         default: break;
-
+    //     if (datasTreeView.length) {
+    //         console.log(treeview);
+    //         // treeview.current && treeview.current.api.load()
     //     }
-    //     // effect
-    //     // return () => {
-    //     //     cleanup
-    //     // }
-    // }, [activeStep])
-
-
-
-
-    // const createElementEditor = () => {
-    //     if (props.elementEditor)
-    //         return
-    // }
+    // }, [datasTreeView])
 
     function getStepContent(index) {
         switch (steps[index]) {
@@ -200,8 +185,8 @@ const AmMappingHH = (props) => {
                             // valueData={"Name"} //ค่า value ที่เลือก
                             queryApi={WarehouseQuery}
                             // data={dataUnit}
-                            returnDefaultValue={true}
-                            defaultValue={1}
+                            // returnDefaultValue={true}
+                            defaultValue={editData.warehouseID ? editData.warehouseID : null}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(fieldDataKey, dataObject)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
@@ -215,7 +200,7 @@ const AmMappingHH = (props) => {
                             required={true}
                             // inputRef={ref.current[1]}
                             error={requiredField.pallet}
-                            autoFocus
+                            // autoFocus
                             defaultValue={editData.scanCode ? editData.scanCode : ""}
                             // validate={true}
                             // msgError="Error"
@@ -281,15 +266,22 @@ const AmMappingHH = (props) => {
                     <>
                         <div className="theme-customization">
                             <TreeView
-                                selectRow={true}
-                                // ref={ref.current[4]}
+                                // selectRow={true}
+                                // ref={treeview}
+                                // Expanded
                                 // showCheckbox={true}
-                                // onExpanded={GetFile}
-                                // onSelectItem={DownloadFile}
-                                actionButtons={actionButtons}
+                                // onExpanded={clicktest}
+                                onSelectItem={(item, actionButton) => {
+                                    if (item.layer !== 1) {
+                                        open();
+                                        setItemSelect(item);
+                                        console.log(item);
+                                    }
+                                }}
+                                // actionButtons={actionButtons}
                                 items={datasTreeView}
-                                onActionButtonClick={onActionButtonClick}
-                            // style={{width: "",height: ""}}
+                                // onActionButtonClick={(item, actionButton) => { open(); setItemRemove(item) }}
+                                style={{ width: "100%", height: "" }}
                             />
                         </div>
                         <FormGroup>
@@ -311,13 +303,63 @@ const AmMappingHH = (props) => {
                         </FormGroup>
                     </>
                 )
+            case "Location":
+                return (
+                    <>
+                        <div className="theme-customization">
+                            <TreeView
+                                // selectRow={true}
+                                // ref={treeview}
+                                // Expanded
+                                // showCheckbox={true}
+                                // onExpanded={clicktest}
+                                onSelectItem={(item, actionButton) => {
+                                    if (item.layer !== 1) {
+                                        open();
+                                        setItemSelect(item);
+                                        console.log(item);
+                                    }
+                                }}
+                                // actionButtons={actionButtons}
+                                items={datasTreeView}
+                                // onActionButtonClick={(item, actionButton) => { open(); setItemRemove(item) }}
+                                style={{ width: "100%", height: "" }}
+                            />
+                        </div>
+                        {generateListLabel(detailPack)}
+                    </>
+                )
             default:
                 return 'Unknown step';
         }
     }
 
+    const generateListLabel = (obj) => {
+        return editData.datas.map(x => {
+            return (
+                <Box
+
+                    boxShadow={2}
+                    p={2}
+                    style={{ borderRadius: "5px", marginTop: "5px" }}
+                >
+                    {obj.map((y, yi) => {
+                        return (
+                            <>
+                                <FormGroup key={yi}>
+                                    <Label style={{ fontWeight: "bold" }}>{y.label} : </Label>
+                                    <label>{Array.isArray(y.accessor) ? y.accessor.map((z, zi) => x[y.accessor[zi]]).join(" ") : x[y.accessor]}</label>
+                                </FormGroup>
+                            </>
+                        )
+                    })}
+                </Box>
+            )
+        })
+    }
+
     const onChangeEditor = (field, data, related, removeRelated) => {
-        // console.log(field, data);
+        console.log(field, data);
         let _editData = Clone(editData)
         if (typeof data === "object" && data) {
             _editData[field] = data[field] && data[field]
@@ -330,34 +372,20 @@ const AmMappingHH = (props) => {
             if (removeRelated)
                 removeRelated.forEach(x => delete _editData[x])
         } else {
-            // if (field === 'qr') {
-            //     const _data = data.split("|")
-            // } else {
             _editData[field] = data
-            // }
-
         }
 
         console.log(_editData);
         setEditData(_editData)
 
-        if (field === "areaID") {
-            let _AreaLocationMasterQuery = { ...AreaLocationMasterQuery }
+        if (field === "areaID" && data) {
+            // let _AreaLocationMasterQuery = { ...AreaLocationMasterQuery }
             let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
             query.push({ f: "AreaMaster_ID", c: "=", v: data[field] })
-            _AreaLocationMasterQuery.q = JSON.stringify(query)
-            setAreaLocationMasterQuery(_AreaLocationMasterQuery)
+            AreaLocationMasterQuery.q = JSON.stringify(query)
+            console.log(AreaLocationMasterQuery);
+            setAreaLocationMasterQuery(AreaLocationMasterQuery)
         }
-
-
-        // console.log(typeof {});
-        // let test = {}
-        // console.log(IsEmptyObject(null));
-        // console.log(data);
-
-        // if (data) {
-        //     _editData[field] = data
-        // }
     }
 
     const handleStep = (step) => {
@@ -367,9 +395,9 @@ const AmMappingHH = (props) => {
                 break
             case "Pallet":
                 if (step === "next") {
-                    let _editData = Clone(editData)
+                    // let _editData = Clone(editData)
                     let _requiredField = { ...requiredField }
-                    if (_editData.scanCode) {
+                    if (editData.scanCode) {
                         handleNext()
                         _requiredField.pallet = false
                     } else {
@@ -382,28 +410,25 @@ const AmMappingHH = (props) => {
                 break;
             case "Area":
                 if (step === "next") {
-                    let _editData = Clone(editData)
+                    // let _editData = Clone(editData)
                     let _requiredField = { ...requiredField }
-                    if (_editData.areaID) {
+                    if (editData.areaID) {
 
                         _requiredField.area = false
                         Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
                             // console.log(editData);
-                            console.log(res);
+                            // console.log(res);
                             // handleBack()
                             if (res.data._result.status) {
-                                const _datasTreeView = [
-                                    {
-                                        id: res.data.id,
-                                        text: res.data.code
-                                    }
-                                ]
-                                handleNext()
+                                const _datasTreeView = [{ id: res.data.id, text: res.data.code, children: [], expanded: true, layer: 1 }]
+                                const _editData = { ...editData }
+                                _editData.datas = []
+                                setEditData(_editData)
                                 setDatasTreeView(_datasTreeView)
+                                handleNext()
                             } else {
                                 setDialog({ type: "error", text: res.data._result.message, open: true })
                             }
-
                         })
                     } else {
                         _requiredField.area = true
@@ -412,31 +437,34 @@ const AmMappingHH = (props) => {
                 } else if (step === "back") {
                     handleBack()
                 }
-
                 break;
             case "Barcode":
                 if (step === "next") {
-                    let _editData = Clone(editData)
+                    // let _editData = Clone(editData)
                     let _requiredField = { ...requiredField }
-                    if (_editData.qr) {
+                    if (editData.qr) {
                         _requiredField.qr = false
-                        Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
-                            
-                            // console.log(editData);
-                            console.log(res);
-                            // handleBack()
-                            // if (res.data._result.status) {
-                            //     const _datasTreeView = [
-                            //         {
-                            //             id: res.data.id,
-                            //             text: res.data.code
-                            //         }
-                            //     ]
-                            //     handleNext()
-                            //     setDatasTreeView(_datasTreeView)
-                            // } else {
-                            //     setDialog({ type: "error", text: res.data._result.message, open: true })
-                            // }
+                        Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${editData.qr}`).then(res => {
+                            if (res.data._result.status) {
+                                // console.log(res);
+                                const _datasTreeView = [...datasTreeView]
+                                const _editData = { ...editData }
+                                _editData.qr = null
+                                res.data.datas.forEach(x => {
+                                    if (!editData.datas.find(y => y.dociID === x.dociID)) {
+                                        _datasTreeView[0].children.push({ id: x.dociID, text: `${x.SKUItem} | ${x.Quantity} ${x.unitType}`, isLeaf: true, showRoot: true, ...x })
+                                        _editData.datas.push(x)
+                                    }
+                                })
+                                handleNext()
+
+                                // console.log(_editData);
+                                setEditData(_editData)
+                                setDatasTreeView(_datasTreeView)
+
+                            } else {
+                                setDialog({ type: "error", text: res.data._result.message, open: true })
+                            }
 
                         })
                     } else {
@@ -444,30 +472,48 @@ const AmMappingHH = (props) => {
                     }
                 } else if (step === "back") {
                     handleBack()
+                } else if (step === "reset") {
+                    handleReset()
                 }
+                break;
+            case "Location":
+                if (step === "put")
+                    handleBack()
                 break;
             default: break;
 
         }
-        // effect
-        // return () => {
-        //     cleanup
-        // }
     }
 
-    const onActionButtonClick = (item, actionButton) => {
-        console.log(item, actionButton);
-        const buttonName = actionButton.type.name;
-        switch (buttonName) {
-            case 'AiFillDelete':
-                alert('Action: trash, Item: ' + item.text);
-                break;
-            default:
+    const removeItem = () => {
+        if (itemSelect.layer) {
+            // pallet
+        } else {
+            // pack
         }
     }
 
     return (
         <>
+            <AmEditorTable
+                style={{ width: "600px", height: "500px" }}
+                titleText={"title"}
+                open={isOpen}
+                onAccept={(status, rowdata, inputError) => { close(); console.log(status, rowdata); }}
+                data={dataAmEditorTable}
+                objColumnsAndFieldCheck={{ objColumn: detailPack, fieldCheck: "accessor" }}
+                columns={GenerateFieldAmEditorTable()}
+            />
+            {/* <AmDialogConfirm
+                open={isOpen}
+                close={close}
+                // bodyDialog={"Do you want to remove?"}
+                titleDialog={"Do you want to remove?"}
+                // Texts="Do you want to remove?"
+                //styleDialog={{ width: "1500px", height: "500px" }}
+                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={removeItem}>OK</AmButton>}
+                customCancelBtn={<AmButton styleType="delete_clear" onClick={close}>Cancel</AmButton>}
+            /> */}
             <AmDialogs typePopup={dialog.type} content={dialog.text} onAccept={(e) => { setDialog({ open: e }) }} open={dialog.open}></AmDialogs >
             <Box
                 boxShadow={2}
@@ -493,21 +539,33 @@ const AmMappingHH = (props) => {
                                     {/* </Box> */}
                                 </Typography>
                                 <div style={{ marginTop: '16px', textAlign: 'end' }}>
-                                    <AmButton
-                                        styleType="dark_clear"
-                                        disabled={activeStep === 0}
-                                        onClick={() => handleStep("back")}
-                                        style={{ margin: "8px 8px 0 0" }}
-                                    >
-                                        Back
-                                </AmButton>
+                                    {activeStep !== 0 &&
+                                        <AmButton
+                                            styleType="dark_clear"
+                                            // disabled={activeStep === 0}
+                                            onClick={() => handleStep("back")}
+                                            style={{ margin: "8px 8px 0 0" }}
+                                        >
+                                            Back
+                                        </AmButton>}
+
                                     <AmButton
                                         variant="contained"
                                         styleType="confirm"
-                                        onClick={() => handleStep("next")}
+                                        onClick={() => handleStep(activeStep === steps.length - 1 ? 'put' : 'next')}
                                         style={{ margin: "8px 8px 0 0" }}
-                                    >{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                    >{activeStep === steps.length - 1 ? 'Put' : 'Next'}
                                     </AmButton>
+                                    {steps[activeStep] === "Barcode" && editData.datas.length ?
+                                        <AmButton
+                                            styleType="confirm_outline"
+                                            // disabled={activeStep === 0}
+                                            onClick={() => handleStep("reset")}
+                                            style={{ margin: "8px 8px 0 0" }}
+                                        >
+                                            Confirm
+                                        </AmButton> : null}
+
                                 </div>
                             </StepContent>
                         </Step>

@@ -12,9 +12,18 @@
     .deni-react-treeview-item-container {
       height: 36px;
 
+      .icon-and-text {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .expand-button.hasChild {
+        display: none;
+      }
+
       .action-buttons-container .action-button {
-        visibility: visible;
-        opacity: 1;
+        // visibility: visible;
+        // opacity: 1;
       }
       /* changing the font color, and padding top and bottom (left is not recommended) */
       .icon-and-text {
