@@ -618,7 +618,7 @@ function Test5(props) {
             {/* <img src={window.apipath + "/v2/download/download_image?fileName=" + "PAL0000020" + "&_token=" + localStorage.getItem("Token")} height={200} /> */}
 
             <a href={window.apipath +
-                "/v2/download/print_tag_code?fileName=MasterData_.pdf&token=" +
+                "/v2/download/print_pdf?fileName=MasterData_.pdf&token=" +
                 localStorage.getItem("Token")}
                 target="_blank">View PDF</a>
             <a href={window.apipath + "/v2/download/download_image?fileName=" + "AMW0000003" + "&token=" + localStorage.getItem("Token")} target="_blank">download me</a>
