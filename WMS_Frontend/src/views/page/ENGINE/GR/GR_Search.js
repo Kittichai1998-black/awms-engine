@@ -251,7 +251,7 @@ const DocumentSearchSTGT = props => {
         columns={iniCols}
         primarySearch={primarySearch}
         expensionSearch={search}
-        docTypeCode="1011"
+        docTypeCode="1001"
         buttonClose={true}
         buttonReject={true}
         dataReject={dataReject}
