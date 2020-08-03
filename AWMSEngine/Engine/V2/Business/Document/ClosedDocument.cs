@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
         }
         protected override List<long> ExecuteEngine(List<long> reqVO)
         {
-            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
+            List<long> res = null;
             if (res == null)
             {
                 var docLists = new List<long>();

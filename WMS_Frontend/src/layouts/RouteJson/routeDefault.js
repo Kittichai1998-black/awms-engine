@@ -98,39 +98,54 @@ const ScanPalletInfo = Loadable({
   loading: Loading
 });
 const CurrentInventory = Loadable({
-  loader: () => import("../../views/page/Report/CurrentInventory"),
-  loading: Loading
-});
-const CurrentInventoryV2 = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
   loading: Loading
 });
+
+const StockCardV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/StockCard"),
+  loading: Loading
+});
 const StockCard = Loadable({
-  loader: () => import("../../views/page/Report/StockCard"),
+  loader: () => import("../../views/page/NewReport/StockCard"),
   loading: Loading
 });
 const DailySTOReceive = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOReceive"),
+  loader: () => import("../../views/page/NewReport/DailySTOReceive"),
   loading: Loading
 });
+
 const DailySTOIssue = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOIssue"),
+  loader: () => import("../../views/page/NewReport/DailySTOIssue"),
   loading: Loading
 });
+
 const DailySTOCounting = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOCounting"),
+  loader: () => import("../../views/page/NewReport/DailySTOCounting"),
   loading: Loading
 });
+
+const DailySTOAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOAudit"),
+  loading: Loading
+});
+
 const DailySTOSumReceive = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumReceive"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
   loading: Loading
 });
 const DailySTOSumIssue = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumIssue"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumIssue"),
   loading: Loading
 });
+
 const DailySTOSumCounting = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumCounting"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumCounting"),
+  loading: Loading
+});
+
+const DailySTOSumAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumAudit"),
   loading: Loading
 });
 const ScanPalletMove = Loadable({
@@ -261,9 +276,11 @@ let routes = [
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
+  { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/setting/skuconvertor", name: "base5", compoment: PackMaster, exact: true },
   { path: "/setting/sku", name: "base5", compoment: SKUMaster, exact: true },
   { path: "/setting/skutype", name: "base5", compoment: SKUMasterType, exact: true },
@@ -307,7 +324,6 @@ let routes = [
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
 
-  { path: "/report/currentinventoryV2", name: "Current Inventory", compoment: CurrentInventoryV2, exact: true },
 ];
 
 export default routes;

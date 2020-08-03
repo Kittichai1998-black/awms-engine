@@ -65,112 +65,9 @@ const CurrentInventory = (props) => {
     const [page, setPage] = useState(0);
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
-
-    // useEffect(() => {
-    //     onGetDocument()
-    // }, [page])
-
-    // const onGetALL = () => {
-    //     return window.apipath + "/v2/GetSPReportAPI?"
-    //         + "&packCode=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
-    //         + "&packName=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
-    //         + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-    //         + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-    //         + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
-
-    //         + "&spname=CURRENTINV_STOSUM";
-    // }
-    // const onGetDocument = () => {
-    //     let pathGetAPI = onGetALL() +
-    //         "&page=" + (page === undefined || null ? 0 : page)
-    //         + "&limit=" + (pageSize === undefined || null ? 100 : pageSize);
-
-    //     Axios.get(pathGetAPI).then((rowselect1) => {
-    //         if (rowselect1) {
-    //             if (rowselect1.data._result.status !== 0) {
-    //                 setdatavalue(rowselect1.data.datas)
-    //                 setTotalSize(rowselect1.data.datas[0] ? rowselect1.data.datas[0].totalRecord : 0)
-    //             }
-    //         }
-    //     });
-    // }
-
-    // const getValue = (value, inputID) => {
-    //     if (value && value.toString().includes("*")) {
-    //         value = value.replace(/\*/g, "%");
-    //     }
-    //     valueText[inputID] = value;
-    // }
-    // const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
-    //     getValue(value, inputID);
-    // };
-    // const onHandleEnterInput = (value, dataObject, inputID, fieldDataKey, event) => {
-    //     getValue(value, inputID);
-    //     if (event && event.key == 'Enter') {
-    //         //onGetDocument();
-    //     }
-    // };
-    // const GetBodyReports = () => {
-    //     return <div style={{ display: "inline-block" }}>
-    //         <FormInline>
-    //             <LabelH>{t(window.project === "TAP" ? "Part NO." : 'SKU Code')} : </LabelH>
-    //             <AmInput
-    //                 id={"packCode"}
-    //                 type="input"
-    //                 style={{ width: "300px" }}
-    //                 onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
-    //                 onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packCode", null, event)}
-    //             />
-    //         </FormInline>
-    //         <FormInline>
-    //             <LabelH>{t(window.project === "TAP" ? "Part Name" : 'SKU Name')} : </LabelH>
-    //             <AmInput
-    //                 id={"packName"}
-    //                 type="input"
-    //                 style={{ width: "300px" }}
-    //                 onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packName", null, event)}
-    //                 onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "packName", null, event)}
-    //             />
-    //         </FormInline>
-    //         <FormInline>
-    //             <LabelH>{t("Batch")} : </LabelH>
-    //             <AmInput
-    //                 id={"batch"}
-    //                 type="input"
-    //                 style={{ width: "300px" }}
-    //                 onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "batch", null, event)}
-    //                 onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "batch", null, event)}
-    //             />
-    //         </FormInline>
-    //         <FormInline>
-    //             <LabelH>{t("Lot")} : </LabelH>
-    //             <AmInput
-    //                 id={"lot"}
-    //                 type="input"
-    //                 style={{ width: "300px" }}
-    //                 onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "lot", null, event)}
-    //                 onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "lot", null, event)}
-    //             />
-    //         </FormInline>
-    //         <FormInline>
-    //             <LabelH>{t("Order No.")} : </LabelH>
-    //             <AmInput
-    //                 id={"orderNo"}
-    //                 type="input"
-    //                 style={{ width: "300px" }}
-    //                 onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "orderNo", null, event)}
-    //                 onKeyPress={(value, obj, element, event) => onHandleEnterInput(value, null, "orderNo", null, event)}
-    //             />
-    //         </FormInline>
-    //     </div>
-
-    //}
-    // const customBtnSelect = () => {
-    //     return <AmButton styleType="confirm" onClick={onGetDocument} style={{ marginRight: "5px" }}>{t('Select')}</AmButton>
-    // }
     const columns = [
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'Name', width: 150, sortable: false },
+        { Header: 'SKU Name', accessor: 'Name', width: 150, sortable: false, filterable: false, },
         { Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
         { Header: 'Order No.', accessor: 'OrderNo', width: 100, sortable: false },
@@ -257,18 +154,11 @@ const CurrentInventory = (props) => {
     return (
         <div className={classes.root}>
             <AmReport
-                //bodyHeadReport={GetBodyReports()}
                 columnTable={columns}
-                dataTable={datavalue}
-                pageSize={pageSize}
-                pages={(x) => setPage(x)}
-                totalSize={totalSize}
-                //renderCustomButton={customBtnSelect()}
                 page={true}
-                //exportApi={onGetALL()}
                 excelFooter={true}
                 fileNameTable={"CURINV"}
-                inc={"https://localhost:44371/v2/GetSPReportAPI?spname=CURRENTINV_STOSUM"}
+                tableKey={"Code"}
             ></AmReport>
         </div>
     )

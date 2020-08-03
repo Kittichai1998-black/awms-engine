@@ -30,7 +30,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public long WaveID;
             public List<RootStoProcess> confirmResult;
-            public List<amt_Document> docGRCrossDocks;
             public List<long> CurrentDistoIDs;
         }
 
@@ -81,11 +80,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
-            var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
+            //var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
 
             //this.WCSSendQueue(rstos);
 
-            return new TRes() { WaveID= wave.ID.Value, confirmResult = rstos, docGRCrossDocks = docGRCDs, CurrentDistoIDs = AlloDisto };
+            return new TRes() { WaveID= wave.ID.Value, confirmResult = rstos, CurrentDistoIDs = AlloDisto };
         }
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
@@ -105,7 +104,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 StorageObjectEventStatus? stoDoneSouEventStatus = null;
                 StorageObjectEventStatus? stoDoneDesEventStatus = null;
                 var doc = ADO.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
-                var statusSTO = Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
+                ProcessQueueDoneStatus statusSTO = null;// Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
                 if (statusSTO != null)
                 {
                     stoDoneSouEventStatus = statusSTO.stoDoneSouEventStatus;

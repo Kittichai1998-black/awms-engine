@@ -22,23 +22,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             this.BeginTransaction();
             DoneWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneWorkQueue.TReq>(this.RequestVO);
             var resDoneQ = new DoneWorkQueue().Execute(this.Logger, this.BuVO, req);
-            this.CommitTransaction();
-
-            if (!StaticValueManager.GetInstant().IsFeature("WAVE_MANAGEMENT"))
-            {
-                this.BeginTransaction();
-                var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
-                this.CommitTransaction();
-
-                this.BeginTransaction();
-                var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
-                this.CommitTransaction();
-
-                this.BeginTransaction();
-                var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
-                this.CommitTransaction();
-            }
-
+            new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
 
             return resDoneQ;
         }

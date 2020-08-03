@@ -18,7 +18,7 @@ namespace AWMSEngine.Engine.V2.General
         protected override NullCriteria ExecuteEngine(TReq reqVO)
         {
             
-            var filepath = StaticValue.GetConfigValue(ConfigCode.PATH_FOLDER_IMAGES);
+            var filepath = StaticValue.GetConfigValue(ConfigCommon.PATH_FOLDER_IMAGES);
 
             DeleteOldFile(filepath, reqVO.fileName);
 

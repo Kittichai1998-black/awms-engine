@@ -58,8 +58,8 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
             }
-            tokenInfo.BodyDecode.exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXPIRE_HR).Get<int>());
-            tokenInfo.BodyDecode.extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>());
+            tokenInfo.BodyDecode.exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXPIRE_HR).Get<int>());
+            tokenInfo.BodyDecode.extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXTEND_HR).Get<int>());
 
             tokenInfo.BodyEncode = EncryptUtil.Base64Encode(tokenInfo.BodyDecode.Json());
             tokenInfo.SignatureEncode = EncryptUtil.GenerateSHA256String(tokenInfo.HeadDecode + "." + tokenInfo.BodyEncode + "." + userInfo.SecretKey);

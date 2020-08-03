@@ -48,6 +48,7 @@
     <Compile Remove="Engine\EngineParamAttr.cs" />
     <Compile Remove="Engine\V2\Business\Issued\ProcessQueueIssue.cs" />
     <Compile Remove="Engine\V2\Business\Loading\CreateLDDocument.cs" />
+    <Compile Remove="Engine\V2\Business\ScanMapSTO.cs" />
     <Compile Remove="Engine\V2\Business\Shipment\CreateSODocument.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
     <Compile Remove="Engine\V2\ClosedDocument.cs" />
