@@ -58,6 +58,7 @@ namespace AWMSModel.Criteria
         public string ref4;
         public int IsHold;
         public int AuditStatus;
+        public int IsStock;
         public long? skuTypeID;
         public string skuTypeName;
         public long? forCustomerID;
