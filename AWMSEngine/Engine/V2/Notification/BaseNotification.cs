@@ -69,10 +69,10 @@ namespace AWMSEngine.Engine.V2.Notification
                     {
                         emailAccess = new AMWUtil.DataAccess.Http.EmailNotification.TReq.EmailAccess()
                         {
-                            Email = StaticValue.GetConfigValue(ConfigCode.Noti_Email_Sender),
-                            Password = StaticValue.GetConfigValue(ConfigCode.Noti_Email_Sender_Password),
-                            Port = StaticValue.GetConfigValue(ConfigCode.Noti_Email_SMTP_Port),
-                            Host = StaticValue.GetConfigValue(ConfigCode.Noti_Email_SMTP_Host)
+                            Email = StaticValue.GetConfigValue(ConfigCommon.Noti_Email_Sender),
+                            Password = StaticValue.GetConfigValue(ConfigCommon.Noti_Email_Sender_Password),
+                            Port = StaticValue.GetConfigValue(ConfigCommon.Noti_Email_SMTP_Port),
+                            Host = StaticValue.GetConfigValue(ConfigCommon.Noti_Email_SMTP_Host)
                         },
                         emailFormat = new AMWUtil.DataAccess.Http.EmailNotification.TReq.EmailFormat()
                         {

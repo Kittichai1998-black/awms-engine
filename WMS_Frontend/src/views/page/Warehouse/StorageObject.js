@@ -188,6 +188,8 @@ const StorageObject = props => {
       return <AmStorageObjectStatus key={Status} statusCode={153} />;
     } else if (Status === "PICKED") {
       return <AmStorageObjectStatus key={Status} statusCode={154} />;
+    } else if (Status === "NEW") {
+      return <AmStorageObjectStatus key={Status} statusCode={100} />;
     } else {
       return null;
     }

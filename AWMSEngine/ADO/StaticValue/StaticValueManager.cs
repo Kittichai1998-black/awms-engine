@@ -13,8 +13,8 @@ namespace AWMSEngine.ADO.StaticValue
 {
     public partial class StaticValueManager : IStaticValueManager
     {
-        private List<ams_Feature> _Features;
-        public List<ams_Feature> Features { get => this._Features ?? this.LoadFeature(); }
+        private List<amv_Feature> _Features;
+        public List<amv_Feature> Features { get => this._Features ?? this.LoadFeature(); }
 
         private List<ams_Config> _Configs;
         public List<ams_Config> Configs { get => this._Configs ?? this.LoadConfig(); }
@@ -154,50 +154,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
         //--------------GET Feature & Config
-        public bool IsFeature(FeatureCode code, DocumentProcessTypeID? processType = null)
-        {
-            string c = code.Attribute<EnumValueAttribute>().ValueString;
-            var feature = this.Features.FirstOrDefault(x => x.Code == c);
-            return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
-        }
-        public bool IsFeature(string code, DocumentProcessTypeID? processType = null)
-        {
-            string c = code;
-            var feature = this.Features.FirstOrDefault(x => x.Code == c);
-            return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
-        }
-        public string GetFeatureValue(FeatureCode code)
-        {
-            string c = code.Attribute<EnumValueAttribute>().ValueString;
-            return GetFeatureValue(c);
-        }
-        public string GetFeatureValue(string code)
-        {
-            var feature = this.Features.FirstOrDefault(x => x.Code == code);
-            return feature == null ? null : feature.DataValue;
-        }
-        public ams_Feature GetFeature(string code)
-        {
-            var feature = this.Features.FirstOrDefault(x => x.Code == code);
-            return feature;
-        }
 
-        public string GetConfigValue(ConfigCode code)
-        {
-            return GetConfigValue(code.ToString());
-        }
-        public string GetConfigValue(string code)
-        {
-            string c = code;
-            var config = this.Configs.FirstOrDefault(x => x.Code == c);
-            return config == null ? null : config.DataValue;
-        }
-
-        public bool IsMatchConfigArray(string code, object value)
-        {
-            string v = value.ToString();
-            return Regex.IsMatch(this.GetConfigValue(code), string.Format("^{0}$|^{0},|,{0},|,{0}$", v));
-        }
         public EntityStatus? GetStatusInConfigByEventStatus<T>(T? value)
             where T : struct, IComparable, IFormattable, IConvertible
         {
@@ -207,13 +164,13 @@ namespace AWMSEngine.ADO.StaticValue
                                 (value is WorkQueueEventStatus) ? "Q" :
                                 (value is WaveEventStatus) ? "WAVE" : string.Empty;
             int v = AMWUtil.Common.EnumUtil.GetValueInt(value.Value);
-            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_INACTIVE", v))
+            if (this.IsMatchConfigArray("STATUS.ESTS_" + fixCode + "_FOR_INACTIVE", v))
                 return EntityStatus.INACTIVE;
-            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_ACTIVE", v))
+            if (this.IsMatchConfigArray("STATUS.ESTS_" + fixCode + "_FOR_ACTIVE", v))
                 return EntityStatus.ACTIVE;
-            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_REMOVE", v))
+            if (this.IsMatchConfigArray("STATUS.ESTS_" + fixCode + "_FOR_REMOVE", v))
                 return EntityStatus.REMOVE;
-            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_DONE", v))
+            if (this.IsMatchConfigArray("STATUS.ESTS_" + fixCode + "_FOR_DONE", v))
                 return EntityStatus.DONE;
             throw new Exception("EventStatus '" + value ?? "" + "' Convert To EntityStatus Not Config");
         }

@@ -1,14 +1,9 @@
-﻿using AMWUtil.Exception;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Rectangle = iTextSharp.text.Rectangle;
 using AMWUtil.Common;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
 {
@@ -97,7 +92,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         }
         public void GenerateFont()
         {
-            BaseFont font_H = CreateFont("thsarabunnew_bold-webfont.ttf");
+            BaseFont font_H = CreateFont("thsarabunnew-bold.ttf");
             h1 = new Font(font_H, 22);
             h2 = new Font(font_H, 20);
             h3 = new Font(font_H, 18);
@@ -106,7 +101,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             h6 = new Font(font_H, 12);
             h7 = new Font(font_H, 10);
 
-            BaseFont font_p = CreateFont("thsarabunnew-webfont.ttf");
+            BaseFont font_p = CreateFont("thsarabunnew.ttf");
             p1 = new Font(font_p, 22);
             p2 = new Font(font_p, 20);
             p3 = new Font(font_p, 18);

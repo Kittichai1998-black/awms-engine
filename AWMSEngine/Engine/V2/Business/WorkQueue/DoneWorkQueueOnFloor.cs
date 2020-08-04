@@ -49,6 +49,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         var docitem = doc.DocumentItems.Find(y => y.ID == pickPack.docItemID);  //5
                         var disto = docitem.DocItemStos.Find(z => z.ID == pickPack.distoID);
+
+                        // ต้องมีเงื่อนไขเช็คว่า disto ระบุจำนวนเบิกมั้ย แล้วเเยกการทำงาน 
                         var sumDiSTO = docitem.DocItemStos.Sum(y => y.BaseQuantity);
 
                         //var stopack = ADO.StorageObjectADO.GetInstant().Get(pickPack.packID, StorageObjectType.PACK, false, false, this.BuVO);

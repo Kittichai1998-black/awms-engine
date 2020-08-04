@@ -261,22 +261,22 @@ function Test5(props) {
     }
     const onClickLoadPDF = async () => {
         try {
-            let reqjson = {
-                "layoutType": 0,
-                "listsCode": [
-                    {
-                        "code": "PAL0000001"
-                    },
-                    {
-                        "code": "PAL0000002"
-                    }
-                ]
-            }
             // let reqjson = {
-            //     "layoutType": 91,
-            //     "listsCode":
-            //         [{ "code": "N|1|20381|100", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/2" }, { "code": "N|2|20381|50", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=50&palletNo=2/2" }]
+            //     "layoutType": 0,
+            //     "listsCode": [
+            //         {
+            //             "code": "PAL0000001"
+            //         },
+            //         {
+            //             "code": "PAL0000002"
+            //         }
+            //     ]
             // }
+            let reqjson = {
+                "layoutType": 91,
+                "listsCode":
+                    [{ "code": "N|1|20381|100", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017กกก&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=100&palletNo=1/2" }, { "code": "N|2|20381|50", "title": "FINISHED GOODS", "options": "itemName=PJAAN04-0017&lotNo=&controlNo=2&supplier=&codeNo=&receivedDate=07/16/2020&qtyReceived=50&palletNo=2/2" }]
+            }
             await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf", "preview").then();
 
         } catch (err) {
@@ -618,7 +618,7 @@ function Test5(props) {
             {/* <img src={window.apipath + "/v2/download/download_image?fileName=" + "PAL0000020" + "&_token=" + localStorage.getItem("Token")} height={200} /> */}
 
             <a href={window.apipath +
-                "/v2/download/print_tag_code?fileName=MasterData_.pdf&token=" +
+                "/v2/download/print_pdf?fileName=MasterData_.pdf&token=" +
                 localStorage.getItem("Token")}
                 target="_blank">View PDF</a>
             <a href={window.apipath + "/v2/download/download_image?fileName=" + "AMW0000003" + "&token=" + localStorage.getItem("Token")} target="_blank">download me</a>

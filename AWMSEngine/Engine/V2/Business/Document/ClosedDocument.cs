@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
         }
         protected override List<long> ExecuteEngine(List<long> reqVO)
         {
-            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
+            List<long> res = null;
             if (res == null)
             {
                 var docLists = new List<long>();
@@ -51,6 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     {
                                         if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY || docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
                                         {
+                                            //อัพเดท sto สถานะพร้อมให้ของเบิกได้  ไม่ต้องจัดการevent status ของstoทั้งเบิก รับเข้า
                                             if (di.WorkQueueID == null)
                                             {
                                                 

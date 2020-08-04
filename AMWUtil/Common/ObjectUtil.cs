@@ -98,6 +98,7 @@ namespace AMWUtil.Common
         public static T Get<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
+            if (typeof(T) == typeof(bool)) return (T)(object)bool.Parse(s);
             if (typeof(T) == typeof(int)) return (T)(object)int.Parse(s);
             if (typeof(T) == typeof(decimal)) return (T)(object)decimal.Parse(s);
             if (typeof(T) == typeof(double)) return (T)(object)double.Parse(s);

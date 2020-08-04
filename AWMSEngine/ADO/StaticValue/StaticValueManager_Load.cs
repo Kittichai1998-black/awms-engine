@@ -10,9 +10,9 @@ namespace AWMSEngine.ADO.StaticValue
 {
     public partial class StaticValueManager
     {
-        public List<ams_Feature> LoadFeature(VOCriteria buVO = null)
+        public List<amv_Feature> LoadFeature(VOCriteria buVO = null)
         {
-            return this._Features = ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, buVO ?? new VOCriteria());
+            return this._Features = ADO.DataADO.GetInstant().SelectBy<amv_Feature>("status", 1, buVO ?? new VOCriteria());
         }
         public List<ams_Config> LoadConfig(VOCriteria buVO = null)
         {
