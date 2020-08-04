@@ -225,44 +225,6 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public long Create(StorageObjectCriteria sto, long areaID, string batch, string lot, VOCriteria buVO)
-        {
-            sto.id = null;
-            return this.Put(sto, areaID, batch, lot, buVO);
-        }
-        public long Create(StorageObjectCriteria sto, string batch, string lot, VOCriteria buVO)
-        {
-            sto.id = null;
-            return this.Put(sto, sto.areaID, batch, lot, buVO);
-        }
-        public long Update(StorageObjectCriteria sto, long areaID, VOCriteria buVO)
-        {
-            return this.Put(sto, areaID, null, null, buVO);
-        }
-        public long Update(StorageObjectCriteria sto, VOCriteria buVO)
-        {
-            return this.Put(sto, sto.areaID.Value, null, null, buVO);
-        }
-        private long Put(StorageObjectCriteria sto, long? areaID, string batch, string lot, VOCriteria buVO)
-        {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("id", sto.id);
-            param.Add("type", sto.type);
-            param.Add("mstID", sto.mstID);
-            param.Add("areaID", areaID);
-            //param.Add("code", sto.code);
-            param.Add("parentID", sto.parentID);
-            param.Add("parentType", sto.parentType);
-            param.Add("options", sto.options);
-            param.Add("batch", batch);
-            param.Add("lot", lot);
-            param.Add("actionBy", buVO.ActionBy);
-            param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
-            var r = this.Query<int>("SP_STO_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
-                    .ToList();
-            sto.id = param.Get<long>("resID");
-            return sto.id.Value;
-        }
         public long PutV2(StorageObjectCriteria sto,VOCriteria buVO)
         {
             if (sto.type == StorageObjectType.BASE)

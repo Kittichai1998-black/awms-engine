@@ -8,7 +8,7 @@ namespace AWMSModel.Criteria
 {
     public interface IStaticValueManager
     {
-        List<ams_Feature> Features { get; }
+        List<amv_Feature> Features { get; }
         List<ams_Config> Configs { get; }
         List<ams_ObjectSize> ObjectSizes { get; }
         List<ams_Branch> Branchs { get; }

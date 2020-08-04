@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (objType == StorageObjectType.LOCATION)
                 res = StorageObjectCriteria.NewLocation((ams_AreaLocationMaster)obj, this.StaticValue);
             else if (objType == StorageObjectType.BASE)
-                res = StorageObjectCriteria.NewBase(parentMapsto, (ams_BaseMaster)obj, reqVO.options, this.StaticValue);
+                res = StorageObjectCriteria.NewBase((ams_BaseMaster)obj, reqVO.areaID ?? 0, reqVO.options, this.StaticValue);
             else if (objType == StorageObjectType.PACK)
                 res = StorageObjectCriteria.NewPack(parentMapsto, (ams_PackMaster)obj, reqVO.amount, reqVO.unitCode, reqVO.batch, reqVO.lot, reqVO.orderNo, reqVO.options, reqVO.productDate, this.StaticValue);
 

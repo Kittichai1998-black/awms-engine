@@ -19,7 +19,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
-            if (ADO.StaticValue.StaticValueManager.GetInstant().IsFeature("AUTHENLDAP"))
+            if (ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
             {
                 var appProp = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("app");
 
@@ -83,8 +83,8 @@ namespace AWMSEngine.Engine.V2.General
                         uid = user.ID.Value,
                         ucode = user.Code,
                         uname = user.Name,
-                        exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXPIRE_HR).Get<int>()),
-                        extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCode.TOKEN_EXTEND_HR).Get<int>()),
+                        exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXPIRE_HR).Get<int>()),
+                        extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXTEND_HR).Get<int>()),
                         pms = permissions.Select(x=>x.ID.Value).ToArray()
                     }
                 };

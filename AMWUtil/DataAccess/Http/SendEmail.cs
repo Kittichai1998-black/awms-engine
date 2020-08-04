@@ -47,6 +47,7 @@ namespace AMWUtil.DataAccess.Http
                     });
                     mail.Subject = reqVO.emailFormat.Subject;
                     mail.Body = reqVO.emailFormat.Body;
+                    mail.IsBodyHtml = true;
 
                     using SmtpClient smtp = new SmtpClient()
                     {

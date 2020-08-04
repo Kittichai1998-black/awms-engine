@@ -258,6 +258,10 @@ const TestPanel = Loadable({
   loader: () => import("../../views/page/TestPanel"),
   loading: Loading
 });
+const NotifyPage = Loadable({
+  loader: () => import("../../views/page/ENGINE/AllNotify"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -305,7 +309,7 @@ let routes = [
   { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
-  { path: "/warehouse/location_summary", name: "Location Summary", compoment: LocationSummary, exact: true },
+  { path: "/warehouse/location_view", name: "Location Summary", compoment: LocationSummary, exact: true },
   { path: "/log/apiservicelog", name: "API Service Log", compoment: APIServiceLog, exact: true },
   { path: "/log/sendapilog", name: "Send API Log", compoment: SendAPILog, exact: true },
   { path: "/log/storageobjectlog", name: "Storage Object Log", compoment: StorageObjectLog, exact: true },
@@ -323,7 +327,7 @@ let routes = [
   { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
-
+  { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 ];
 
 export default routes;

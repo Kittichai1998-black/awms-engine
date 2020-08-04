@@ -42,11 +42,14 @@ namespace AWMSEngine.Engine.V2.Business
                         {
                             var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
 
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVING, BuVO);
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+                            //update Audit status, Hold status
 
                             set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
 
                             ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
+                            //ถ้าไม่มี des_waveseq สุดท้ายเเล้ว ให้อัพเดท disto เป็น Done
+
                         });
                     });
 
@@ -60,7 +63,7 @@ namespace AWMSEngine.Engine.V2.Business
                             if (sto != null)
                                 stoLists = sto.ToTreeList();
                             if (stoLists.Count() > 0 && stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type)
-                                .TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING))
+                                .TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED))
                             {
                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
                                 parentUpdate.eventStatus = StorageObjectEventStatus.ACTIVE;
