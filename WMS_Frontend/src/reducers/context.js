@@ -6,13 +6,15 @@ export const LayoutContext = React.createContext({})
 const NotifyAction = () => {
     const [state, dispatch] = useReducer(notifyList, headerInitialState);
     const setNotifyList = (payload) => dispatch({"type":"setNotifyList", payload})
+    const setNotifyAddList = (payload) => dispatch({"type":"setNotifyList", payload})
     const setNotifyState = (payload) => dispatch({"type":"setNotifyState", payload})
     const setNotifyCount = (payload) => dispatch({"type":"setNotifyCount", payload})
     const setNotifyReaded = (payload) => dispatch({"type":"setNotifyReaded", payload})
     return {notifyList:state.notifyList, 
         notifyState:state.notifyState,
         notifyCount:state.notifyCount,
-        setNotifyList, 
+        setNotifyList,
+        setNotifyAddList,
         setNotifyState, 
         setNotifyCount, 
         setNotifyReaded

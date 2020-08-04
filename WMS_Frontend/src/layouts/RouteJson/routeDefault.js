@@ -239,6 +239,10 @@ const TestPanel = Loadable({
   loader: () => import("../../views/page/TestPanel"),
   loading: Loading
 });
+const NotifyPage = Loadable({
+  loader: () => import("../../views/page/ENGINE/AllNotify"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -302,6 +306,7 @@ let routes = [
   { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
+  { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 ];
 
 export default routes;

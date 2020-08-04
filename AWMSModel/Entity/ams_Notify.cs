@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,8 +9,8 @@ namespace AWMSModel.Entity
     {
         public string Code;
         public string Name;
-        public int NotifyType;
-        public int Priority;
+        public NotifyType NotifyType;
+        public NotifyPriority Priority;
         public List<ams_Notify_User> notifyUsers;
     }
 }

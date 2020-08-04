@@ -90,7 +90,7 @@ namespace AWMSEngine.Engine.V2.Notification
             {
                 string sendLine = GetMessageLine(reqVO, data);
                 if (groupLine.userIDs.Count > 0)
-                    user.Select(x => x.EmailAddress).Distinct().ToList().ForEach(x => {AMWUtil.DataAccess.Http.LineAccess.Notify(this.Logger, x, sendLine);});
+                    user.Select(x => x.LineToken).Distinct().ToList().ForEach(x => {AMWUtil.DataAccess.Http.LineAccess.Notify(this.Logger, x, sendLine);});
             }
             if (groupFacebook != null)
             {
