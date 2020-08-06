@@ -208,9 +208,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             void updateSTO(StorageObjectCriteria sto)
             {
                 var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, docs.DocumentProcessType_ID);
+                AuditStatus _auditstatus = EnumUtil.GetValueEnum<AuditStatus>(auditstatus);
+                sto.AuditStatus = _auditstatus;
+
                 var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, docs.DocumentProcessType_ID);
-                sto.IsHold = Int16.Parse(holdstatus);
-                sto.AuditStatus = Int16.Parse(auditstatus);
+                sto.IsHold = bool.Parse(holdstatus);
 
                 var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)
