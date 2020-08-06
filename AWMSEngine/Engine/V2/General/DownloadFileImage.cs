@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.V2.General
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var filepath = StaticValue.GetConfigValue(ConfigCode.PATH_FOLDER_IMAGES);
+            var filepath = StaticValue.GetConfigValue<string>(ConfigCommon.PATH_FOLDER_IMAGES);
             string[] filePaths = Directory.GetFiles(@filepath.ToString());
 
             var resFile = Array.Find(filePaths, s => s.Contains(reqVO.fileName));

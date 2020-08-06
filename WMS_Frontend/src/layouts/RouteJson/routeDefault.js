@@ -13,6 +13,10 @@ const ButtonInputExcel = Loadable({
   loader: () => import("../../views/page/ButtonInputExcel"),
   loading: Loading
 });
+const DevInfo = Loadable({
+  loader: () => import("../../views/page/ENGINE/DevInfo"),
+  loading: Loading
+});
 const FindpopupDDL = Loadable({
   loader: () => import("../../views/page/FindpopupDDL"),
   loading: Loading
@@ -94,35 +98,59 @@ const ScanPalletInfo = Loadable({
   loading: Loading
 });
 const CurrentInventory = Loadable({
-  loader: () => import("../../views/page/Report/CurrentInventory"),
+  loader: () => import("../../views/page/NewReport/CurrentInventory"),
+  loading: Loading
+});
+
+const StockCardV2 = Loadable({
+  loader: () => import("../../views/page/NewReport/StockCard"),
   loading: Loading
 });
 const StockCard = Loadable({
-  loader: () => import("../../views/page/Report/StockCard"),
+  loader: () => import("../../views/page/NewReport/StockCard"),
   loading: Loading
 });
 const DailySTOReceive = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOReceive"),
+  loader: () => import("../../views/page/NewReport/DailySTOReceive"),
   loading: Loading
 });
+
 const DailySTOIssue = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOIssue"),
+  loader: () => import("../../views/page/NewReport/DailySTOIssue"),
   loading: Loading
 });
+
 const DailySTOCounting = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOCounting"),
+  loader: () => import("../../views/page/NewReport/DailySTOCounting"),
   loading: Loading
 });
+
+const DailySTOAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOAudit"),
+  loading: Loading
+});
+
+const DailyLoad = Loadable({
+  loader: () => import("../../views/page/NewReport/DailyLoad"),
+  loading: Loading
+});
+
 const DailySTOSumReceive = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumReceive"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
   loading: Loading
 });
 const DailySTOSumIssue = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumIssue"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumIssue"),
   loading: Loading
 });
+
 const DailySTOSumCounting = Loadable({
-  loader: () => import("../../views/page/Report/DailySTOSumCounting"),
+  loader: () => import("../../views/page/NewReport/DailySTOSumCounting"),
+  loading: Loading
+});
+
+const DailySTOSumAudit = Loadable({
+  loader: () => import("../../views/page/NewReport/DailySTOSumAudit"),
   loading: Loading
 });
 const ScanPalletMove = Loadable({
@@ -181,6 +209,14 @@ const WorkQueueLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/WorkQueueLog"),
   loading: Loading
 });
+const ShipmentLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/ShipmentPlanLog"),
+  loading: Loading
+});
+const TransportObjectLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/TransportObjectLog"),
+  loading: Loading
+});
 const DocumentLog = Loadable({
   loader: () => import("../../views/page/LogTransaction/DocumentLog"),
   loading: Loading
@@ -194,10 +230,19 @@ const DocumentItemStorageObjectLog = Loadable({
     import("../../views/page/LogTransaction/DocumentItemStorageObjectLog"),
   loading: Loading
 });
+const WaveLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveLog"),
+  loading: Loading
+});
+const WaveSeqLog = Loadable({
+  loader: () => import("../../views/page/LogTransaction/WaveSeqLog"),
+  loading: Loading
+});
 const WorkQueue = Loadable({
   loader: () => import("../../views/page/Warehouse/WorkQueue"),
   loading: Loading
 });
+
 const DownloadLog = Loadable({
   loader: () => import("../../views/page/ENGINE/DownloadLog"),
   loading: Loading
@@ -218,9 +263,14 @@ const TestPanel = Loadable({
   loader: () => import("../../views/page/TestPanel"),
   loading: Loading
 });
+const NotifyPage = Loadable({
+  loader: () => import("../../views/page/ENGINE/AllNotify"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
+  { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
   { path: "/testMasterV2", name: "base5", compoment: testMasterV2, exact: true },
   { path: "/TestPicking", name: "Inbound Progress", compoment: TestPicking, exact: true },
   { path: "/monitor/receiving", name: "Inbound Progress", compoment: MonitorIO, exact: true },
@@ -235,9 +285,12 @@ let routes = [
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
+  { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
+  { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/setting/skuconvertor", name: "base5", compoment: PackMaster, exact: true },
   { path: "/setting/sku", name: "base5", compoment: SKUMaster, exact: true },
   { path: "/setting/skutype", name: "base5", compoment: SKUMasterType, exact: true },
@@ -262,7 +315,7 @@ let routes = [
   { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
-  { path: "/warehouse/location_summary", name: "Location Summary", compoment: LocationSummary, exact: true },
+  { path: "/warehouse/location_view", name: "Location Summary", compoment: LocationSummary, exact: true },
   { path: "/log/apiservicelog", name: "API Service Log", compoment: APIServiceLog, exact: true },
   { path: "/log/sendapilog", name: "Send API Log", compoment: SendAPILog, exact: true },
   { path: "/log/storageobjectlog", name: "Storage Object Log", compoment: StorageObjectLog, exact: true },
@@ -270,12 +323,17 @@ let routes = [
   { path: "/log/docitemlog", name: "Document Item Log", compoment: DocumentItemLog, exact: true },
   { path: "/log/docitemstolog", name: "Document Item Storage Object Log", compoment: DocumentItemStorageObjectLog, exact: true },
   { path: "/log/workqueuelog", name: "Work Queue Log", compoment: WorkQueueLog, exact: true },
+  { path: "/log/shipmentlog", name: "Shipment Plan Log", compoment: ShipmentLog, exact: true },
+  { path: "/log/transportlog", name: "Transport Object Log", compoment: TransportObjectLog, exact: true },
+  { path: "/log/wavelog", name: "Wave Log", compoment: WaveLog, exact: true },
+  { path: "/log/waveseqlog", name: "Wave Seq Log", compoment: WaveSeqLog, exact: true },
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
   { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
+  { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 ];
 
 export default routes;

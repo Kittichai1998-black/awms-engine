@@ -39,7 +39,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string refID;
         public string ref1;
         public string ref2;
-        public int IsHold;
+        public bool IsHold;
+        public AuditStatus AuditStatus;
+        public bool IsStock;
         public int? skuTypeID;
     }
 }

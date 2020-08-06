@@ -188,7 +188,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     ref3 = reqVO.ref3,
                     ref4 = reqVO.ref4,
 
-                    docTypeId = DocumentTypeID.DELIVERY_RECEIVED,
+                    docTypeId = DocumentTypeID.GOODS_RECEIVE,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,

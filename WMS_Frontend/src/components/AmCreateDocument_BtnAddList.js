@@ -214,7 +214,7 @@ const BtnAddList = props => {
   }, [query, open]);
 
   useEffect(() => {
-    if (typeof page === "number" && (props.queryApi.l !== query.l)) {
+    if (typeof page === "number") {
       // const queryEdit = JSON.parse(JSON.stringify(query));
       query.sk = page === 0 ? 0 : page * parseInt(query.l, 10);
       setQuery({ ...query });
@@ -225,7 +225,7 @@ const BtnAddList = props => {
     if (sort) {
       // const queryEdit = JSON.parse(JSON.stringify(query));
       query.s = '[{"f":"' + sort.field + '", "od":"' + sort.order + '"}]';
-      // setQuery({ ...query });
+      setQuery({ ...query });
     }
   }, [sort]);
 
@@ -238,7 +238,7 @@ const BtnAddList = props => {
             o: "and",
             f: x,
             c: "like",
-            v: encodeURIComponent(keySearch[x])
+            v: keySearch[x]
           });
           // if (idx === 0) {
           //     newSel.push({
@@ -310,10 +310,10 @@ const BtnAddList = props => {
             dataSource={data}
             //   height={200}
             rowNumber={true}
-            style={{ maxHeight: "390px" }}
+            height="390px"
             pageSize={props.queryApi.l || 20}
-            // sortable
-            // sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
+            sortable
+            sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
             selectionDefault={defaultSelect}
             currentPage={page}
             selection={true}

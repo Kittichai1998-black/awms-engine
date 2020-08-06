@@ -1,10 +1,15 @@
-
-
-export const initialState={
-    headerToggle:false,
-    menuToggle:{"toggle":true},
-    linkLocation:""
+export const headerInitialState={
+    notifyList:[],
+    notifyState:false,
+    notifyCount:0,
+    notifyReaded:[]
 }
+
+export const sidebarInitialState={
+    menuToggle:{"toggle":false},
+    sidebarToggle:true,
+}
+
 
 export const headerToggle = (state, action) => {
     switch (action.type) {
@@ -30,23 +35,51 @@ export const LinkToggle = (state, action) => {
     return state
 }
 
-export const menuToggle = (state, action) => {
+export const sidebar = (state, action) => {
     switch (action.type) {
-        case "expand":
-            if(state.menuID){
-                if(state.menuID !== action.menuID){
-                    state = {"toggle":state.toggle ? state.toggle : !state.toggle, "menuID":action.menuID};
+        case "expand":{
+            if(state.menuToggle.menuID){
+                if(state.menuToggle.menuID !== action.payload.menuID){
+                    return {...state, menuToggle:{"toggle":true, "menuID":action.payload.menuID}};
                 }
                 else{
-                    state = {"toggle":state.menuID === action.menuID ? !state.toggle : state.toggle, "menuID":action.menuID};
+                    return {...state, menuToggle:{"toggle":state.menuToggle.toggle ? false : true, "menuID":action.payload.menuID}};
                 }
             }
             else{
-                state = {"toggle":state.toggle, "menuID":action.menuID};
+                return {...state, menuToggle:{"toggle":true, "menuID":action.payload.menuID}};
             }
-            break;
+        }
+        case "open":{
+            return {...state, sidebarToggle:action.payload};
+        }
         default:
             break;
     }
     return state
+}
+
+export const notifyList = (state, action) => {
+    switch (action.type){
+        case "setNotifyList":{
+            return {...state, notifyList:action.payload}
+        }
+        case "setNotifyAddList":{
+            let notiList = [...state.notifyList].slice(0, state.notifyList.length-1);
+            notiList = notiList.unshift(action.payload);
+            return {...state, notifyList:notiList}
+        }
+        case "setNotifyState":{
+            return {...state, notifyState:action.payload}
+        }
+        case "setNotifyCount":{
+            return {...state, notifyCount:action.payload}
+        }
+        case "setNotifyReaded":{
+            return {...state, notifyReaded:action.payload}
+        }
+        default:{
+            break;
+        }
+    }
 }

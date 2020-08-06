@@ -297,6 +297,7 @@ const AmCreateDocument = (props) => {
         else {
             editData[field] = data
         }
+        console.log(ref);
 
         if (row && row.related && row.related.length) {
             let indexField = row.related.reduce((obj, x) => {

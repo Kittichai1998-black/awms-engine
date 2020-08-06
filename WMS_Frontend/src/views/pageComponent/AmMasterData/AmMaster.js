@@ -96,11 +96,11 @@ const useColumns = (cols) => {
                                 fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
                                 fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                                 labelPattern=" : "
-                                width={filterConfig.width !== undefined ? filterConfig.width : 150}
+                                width={filterConfig.width !== undefined ? filterConfig.width : null}
                                 ddlMinWidth={200}
                                 zIndex={1000}
                                 data={filterConfig.dataDropDown}
-                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value, col.customFilter)}
                             />
                         }
                         else {
@@ -114,7 +114,7 @@ const useColumns = (cols) => {
                                 ddlMinWidth={200}
                                 zIndex={1000}
                                 queryApi={filterConfig.dataDropDown}
-                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value, col.customFilter)}
                                 ddlType={filterConfig.typeDropDown}
                             />
                         }
@@ -177,8 +177,6 @@ const AmMasterData = (props) => {
         else
             return;
     });
-
-    console.log(props.columnsFilter)
 
     const { columns, editData, removeData } = useColumns(props.columns);
     const [updateData, setUpdateData] = useState();
@@ -253,8 +251,11 @@ const AmMasterData = (props) => {
                 if(IsEmptyObject(fdata.customFilter)){
                     res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
                 }else{
-                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
                 }
+            }
+            else{
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
             }
         });
         console.log(res)
@@ -272,7 +273,9 @@ const AmMasterData = (props) => {
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
-                if (status) {
+                if(data.messageError !== undefined){
+                    setDialogState({ type: "error", content: data.messageError, state: true })
+                }else{
                     updateRow(props.table, data, props.updateURL);
                 }
             }} />

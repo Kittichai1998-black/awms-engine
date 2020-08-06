@@ -22,4 +22,10 @@
     <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="AWMSEngine">
+      <HintPath>..\AWMSEngine\bin\Debug\netcoreapp3.0\AWMSEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

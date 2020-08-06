@@ -155,6 +155,7 @@ const AmSearchDocumentV2 = props => {
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
+      console.log(fdata)
       if (fdata.customFilter !== undefined) {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
@@ -312,7 +313,7 @@ const AmSearchDocumentV2 = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={100}
+        pageSize={20}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}

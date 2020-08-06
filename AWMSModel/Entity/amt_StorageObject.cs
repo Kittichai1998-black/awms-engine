@@ -24,6 +24,8 @@ namespace AWMSModel.Entity
         public string Ref1;
         public string Ref2; 
         public int IsHold;
+        public int AuditStatus;
+        public int IsStock;
         public StorageObjectEventStatus EventStatus;
         public string Batch;
         public string Lot;

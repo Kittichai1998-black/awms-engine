@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
+using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -90,7 +91,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             WorkQueueCriteria workQueueRes = new WorkQueueCriteria();
             var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
-            //List<TDocItems> docItems = docItemss.Select(x => new TDocItems { ID = x.ID, Document_ID = x.Document_ID, Quantity = x.Quantity, BaseQuantity = x.BaseQuantity, DocItemStos = x.DocItemStos }).Distinct().ToList();
 
             var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
 
@@ -102,51 +102,32 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     ManageDocumentInput(reqVO, docs, queueTrx, docItems, stos);
                 }
-                else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                else if (queueTrx.IOType == IOType.OUTPUT)
                 {
+                    //Wave
+                    var distoByQueue = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(queueTrx.ID.Value, this.BuVO);
+                    var doneDistoWaveSeq = new DoneDistoWaveSeq();
+                    var doneDistoWave = new List<DoneDistoWaveSeq.TReq.DistoList>();
 
-                    if (docItems.Count > 0)
+                    if (distoByQueue.FirstOrDefault().Sou_WaveSeq_ID != null)
                     {
-
-                        docItems = ManageDocumentOutput(reqVO, docs, queueTrx, docItems, stos);
-
-                        //check sto ว่ายังมี pack อยุ่ในพาเลทมั้ย ถ้าไม่มี ให้ลบพาเลท REMOVED ถ้าเหลือให้เปลี่ยนเป็น RECEIVED
-                        if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
+                        distoByQueue.ForEach(di =>
                         {
-                            //check sto ว่ายังมี pack อยุ่ในพาเลทมั้ย ถ้าไม่มี ให้ลบพาเลท REMOVED ถ้าเหลือให้เปลี่ยนเป็น RECEIVED
-                            var stos2 = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
-                            var stoList2 = stos2.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                            if (stoList2.Count == 0 || stoList2.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                            doneDistoWave.Add(new DoneDistoWaveSeq.TReq.DistoList
                             {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(stos2.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
-                            }
-                            else
-                            {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(stos2.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                            }
-                        }
-                        else
+                                distoID = di.ID.Value,
+                            });
+                        });
+                        doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() { distos = doneDistoWave });
+                    }
+                    else
+                    {
+                        if (docItems.Count > 0)
                         {
-                            //var stos2 = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, _warehouse.ID.Value, null, false, true, this.BuVO);
-                            var stoList2 = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                            if (stoList2.Any(x => x.eventStatus == StorageObjectEventStatus.RECEIVED))
-                            {
-                                stoList2.ForEach(y => {
-                                    if (y.eventStatus == StorageObjectEventStatus.RECEIVED)
-                                    {
-                                        ADO.StorageObjectADO.GetInstant().UpdateStatus(y.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                                    }
-                                });
-
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(stos.id.Value, null, null, StorageObjectEventStatus.ACTIVE, this.BuVO);
-                            }
+                            ManageDocumentOutput(reqVO, docs, queueTrx, docItems, stos);
                         }
-
                     }
                 }
-
-                var resUpdateLoc = this.ExectProject<TReqandWorkQueue, WorkQueueCriteria>(FeatureCode.EXEWM_SEND_LOCATION_API, new TReqandWorkQueue() { reqVO = reqVO, workQ = workQueueRes, document = docs });
-
 
                 return workQueueRes;
             }
@@ -170,48 +151,28 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             return docsCode;
         }
-
-        private amt_DocumentItemStorageObject UpdateSTOFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
-        {
-            var updSto = new StorageObjectCriteria();
-            updSto = sto;
-            updSto.qty = 0;
-            updSto.baseQty = 0;
-            updSto.mapstos = null;
-            updSto.eventStatus = StorageObjectEventStatus.REMOVED;
-            ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-
-            var issuedSto = new StorageObjectCriteria();
-            issuedSto = sto.Clone();
-            issuedSto.id = null;
-            issuedSto.parentID = null;
-            issuedSto.parentType = null;
-            issuedSto.mapstos = null;
-            issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
-            var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-            disto.Des_StorageObject_ID = stoIDIssued;
-            disto.Status = EntityStatus.ACTIVE;
-            disto.Quantity = issuedSto.qty;
-            disto.BaseQuantity = issuedSto.baseQty;
-            return disto;
-        }
+         
         private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (docItems.Count > 0)
             {
-                if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                if (docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT)
                 {
                     var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                     docItems.ForEach(docItem =>
                     {
                         stoList.ForEach(sto =>
                         {
+                            updateSTO(sto);
                             var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
 
                             distos.ForEach(disto =>
                             {
-                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, sto.id.Value, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, sto.id.Value, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                if(disto.Des_WaveSeq_ID == null)
+                                {
+                                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                                }
                             });
 
                         });
@@ -222,15 +183,21 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 //Audit เคสที่ ไม่มีการผูกเอกสาร
                 var getDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                {
-                            new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
+                { 
+                    new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
                 }, this.BuVO);
 
                 if (getDisto.Count > 0)
                 {
-                    getDisto.ForEach(x =>
+                    getDisto.ForEach(disto =>
                     {
-                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(x.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+
+                        ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                        if (disto.Des_WaveSeq_ID == null)
+                        {
+                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                        }
                     });
                 }
                 else
@@ -238,266 +205,184 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Document Item Storage Object Not Found");
                 }
             }
+            void updateSTO(StorageObjectCriteria sto)
+            {
+                var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, docs.DocumentProcessType_ID);
+                AuditStatus _auditstatus = EnumUtil.GetValueEnum<AuditStatus>(auditstatus);
+                sto.AuditStatus = _auditstatus;
+
+                var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, docs.DocumentProcessType_ID);
+                sto.IsHold = bool.Parse(holdstatus);
+
+                var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
+                    sto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                }
+                else {
+                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
+                    sto.eventStatus = eventStatus;
+                    RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
+
+                }
+                ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            }
         }
-        private List<amt_DocumentItem> ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
+        private void ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
-            //Wave
-            var distoByQueue = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(queueTrx.ID.Value, this.BuVO);
-            var doneDistoWaveSeq = new DoneDistoWaveSeq();
-            var doneDistoWave = new List<DoneDistoWaveSeq.TReq.DistoList>();
+            var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            var listDisto = new List<amt_DocumentItemStorageObject>();
+            docItems.ForEach(x => { listDisto.AddRange(x.DocItemStos); });
+            var sumDisto = listDisto.GroupBy(x => x.Sou_StorageObject_ID).Select(x => new { stoID = x.Key, sumBaseQty = x.Sum(y => y.BaseQuantity), sumQty = x.Sum(y => y.Quantity) }).ToList();
 
-            if (distoByQueue.FirstOrDefault().Sou_WaveSeq_ID != null)
+            docItems.ForEach(docItem =>
             {
-                distoByQueue.ForEach(di =>
+                if (docItem.BaseQuantity == null)
                 {
-                    doneDistoWave.Add(new DoneDistoWaveSeq.TReq.DistoList
+                    stoList.ForEach(sto =>
                     {
-                        distoID = di.ID.Value,
+                        var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                        distos.ToList().ForEach(disto =>
+                        {
+                            ManageSTO(sto, disto);
+                        });
+                        updatePallet(sto.parentID.Value, sto.parentType.Value);
                     });
-                });
-                doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() { distos = doneDistoWave });
-            }
-            else
-            {
-
-
-
-                var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-
-                var listDisto = new List<amt_DocumentItemStorageObject>();
-                docItems.ForEach(x => { listDisto.AddRange(x.DocItemStos); });
-                var sumDisto = listDisto.GroupBy(x => x.Sou_StorageObject_ID).Select(x => new { stoID = x.Key, sumBaseQty = x.Sum(y => y.BaseQuantity), sumQty = x.Sum(y => y.Quantity) }).ToList();
-
-                docItems.ForEach(docItem =>
+                }
+                else
                 {
-                    if (docItem.BaseQuantity == null)
+                    var baseqtyPick = docItem.BaseQuantity;
+                    decimal? sumDiSTOBaseQty = sumDisto.Sum(x => x.sumBaseQty);
+                    stoList.ForEach(sto =>
                     {
-                        stoList.ForEach(sto =>
+                        var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id).ToList();
+                        if (distos.Count() > 0)
                         {
-                            var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                            distos.ForEach(disto =>
+                            {
+                                if (disto.BaseQuantity == null)
+                                {   //กรณีไม่ระบุจำนวนเบิกสินค้า
+                                    var remainBaseQty = baseqtyPick - sumDiSTOBaseQty;
+                                    //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
+                                    disto.BaseQuantity = remainBaseQty;
+                                    ManageSTO(sto, disto);
+                                }
+                                else
+                                {
+                                    ManageSTO(sto, disto);
+                                }
+                            });
+                        }
+                         
+                        updatePallet(sto.parentID.Value, StorageObjectType.BASE);
 
-                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                            {
-                                distos.ToList().ForEach(disto =>
-                                {
-                                    disto = UpdateSTOFull(sto, disto);
-                                });
-                            }
-                            else
-                            {
-                                distos.ToList().ForEach(disto =>
-                                {
-                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                });
-                            }
-                        });
-                    }
-                    else
+                    });
+                }
+            });
+
+            void ManageSTO(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
+            {
+                var updSto = new StorageObjectCriteria();
+                updSto = sto;
+                updSto.baseQty -= disto.BaseQuantity.Value;
+                var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.unitID);
+                updSto.qty = qtyConvert.newQty;
+
+
+                //update new sto pick
+                var issuedSto = new StorageObjectCriteria();
+                issuedSto = sto.Clone();
+                issuedSto.id = null;
+                issuedSto.baseQty = disto.BaseQuantity.Value;
+                var qtyConvert_issued = StaticValue.ConvertToBaseUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.unitID);
+                issuedSto.qty = qtyConvert_issued.newQty;
+                issuedSto.parentID = null;
+                issuedSto.mapstos = null;
+                var done_des_event_status = ObjectUtil.QryStrGetValue(issuedSto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
+                    issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
+                }
+                else
+                {
+                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
+                    issuedSto.eventStatus = eventStatus;
+                }
+
+                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                ADO.DistoADO.GetInstant().Update(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                //update status ให้เป็น Done เมื่อไม่มี Des_WaveSeq_ID
+                if (disto.Des_WaveSeq_ID == null)
+                {
+                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                }
+
+                if (updSto.baseQty == 0)
+                {
+                    updSto.eventStatus = StorageObjectEventStatus.REMOVED;
+                    ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                }
+                else
+                {
+                    var distoAll = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                                                   {
+                                                new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
+                                                        new SQLConditionCriteria("Sou_StorageObject_ID", sto.id.Value, SQLOperatorType.EQUALS),
+                                                        new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                                                   }, this.BuVO);
+                    if (distoAll.TrueForAll(x => x.Status == EntityStatus.DONE))
                     {
-
-                        //var qtyIssue = docItem.Quantity;//1500
-                        var baseqtyIssue = docItem.BaseQuantity;
-                        //decimal? sumDiSTOQty = sumDisto.Sum(x => x.sumQty);
-                        decimal? sumDiSTOBaseQty = sumDisto.Sum(x => x.sumBaseQty);
-                        stoList.ForEach(sto =>
+                        var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                        if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
                         {
-                            var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id).ToList();
-                            if (distos.Count() > 0)
-                            {
-                                distos.ForEach(disto =>
-                                {
-                                    if (disto.BaseQuantity == null)
-                                    {
-
-                                        //var remainQty = qtyIssue - sumDiSTOQty;
-                                        var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
-                                        //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
-
-                                        //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
-                                        if (remainBaseQty >= sto.baseQty) //1500 > 1000
-                                        { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
-                                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                                            {
-                                                    disto = UpdateSTOFull(sto, disto);
-                                                }
-                                                else
-                                                {
-                                                    sto.eventStatus = StorageObjectEventStatus.PICKED;
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-                                                }
-                                            }
-                                        //2) 1500 - 1000 = 500 sto2 ของเหลือ สถานะยังเป็น received ส่วนที่เบิกสร้างstoใหม่ สถานะเปนpicking
-                                        else
-                                        {  //500 < 1000
-                                           //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
-                                           //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
-                                            var updSto = new StorageObjectCriteria();
-                                            updSto = sto;
-
-                                            updSto.baseQty -= remainBaseQty.Value;  //1000 - 500 = เหลือของ 500
-
-                                            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.unitID);
-
-                                            updSto.qty = qtyConvert.newQty;
-
-                                            if (updSto.baseQty == 0)
-                                            {
-                                                if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                                            {
-                                                    disto = UpdateSTOFull(sto, disto);
-                                                }
-                                                else
-                                                {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
-                                                    updSto.eventStatus = StorageObjectEventStatus.PICKED;
-                                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-                                                }
-                                            }
-                                            else
-                                            {
-
-
-                                            //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
-                                                var issuedSto = new StorageObjectCriteria();
-                                                issuedSto = sto.Clone();
-                                                issuedSto.id = null;
-                                                issuedSto.baseQty = remainBaseQty.Value; //500 จำนวนที่ต้องเบิกเพิ่ม
-                                                var qtyConvert_issued = StaticValue.ConvertToBaseUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.unitID);
-                                                issuedSto.qty = qtyConvert_issued.newQty;
-                                                issuedSto.parentID = null;
-                                                issuedSto.mapstos = null;
-                                                issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
-
-                                                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-                                            //อัพเดท des_stoID ของ pack ที่สร้างใหม่
-                                                disto.Des_StorageObject_ID = stoIDIssued;
-                                                disto.Quantity = issuedSto.qty;
-                                                disto.BaseQuantity = issuedSto.baseQty;
-                                                disto.Status = EntityStatus.ACTIVE;
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-
-                                                var distoAll = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                                                {
-                                                new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
-                                                new SQLConditionCriteria("Sou_StorageObject_ID", sto.id.Value, SQLOperatorType.EQUALS),
-                                                }, this.BuVO);
-
-                                                if (distoAll.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
-                                                {
-                                                    var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                                    if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
-                                                    {
-                                                        updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-
-                                                    }
-                                                    else
-                                                    {
-                                                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
-                                                        updSto.eventStatus = eventStatus;
-                                                        RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
-                                                    }
-                                                }
-                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-
-                                            }
-                                        }
-
-                                    }
-                                    else
-                                    {
-                                        if (sto.baseQty == disto.BaseQuantity)
-                                        {
-                                            if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                                            {
-                                                disto = UpdateSTOFull(sto, disto);
-                                            }
-                                            else
-                                            {
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var updSto = new StorageObjectCriteria();
-                                            updSto = sto;
-                                            updSto.baseQty -= disto.BaseQuantity.Value;
-                                            var qtyConvert  = StaticValue.ConvertToBaseUnitBySKU(updSto.skuID.Value, updSto.baseQty, updSto.unitID);
-                                            updSto.qty = qtyConvert.newQty;
-
-                                            if (updSto.baseQty == 0)
-                                            {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
-                                                if (StaticValue.IsFeature(FeatureCode.EXEWM_AllowDoneQReuseBase)) //เบิกเเบบ remove pallet เดิมทันที เเล้วนำมาreuseใหม่ได้
-                                                {
-                                                    disto = UpdateSTOFull(sto, disto);
-                                                }
-                                                else
-                                                {
-                                                    updSto.eventStatus = StorageObjectEventStatus.PICKED;
-                                                    var stoIDUpdated2 = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated2, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                                }
-                                            }
-                                            else
-                                            {
-                                            //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
-                                                var issuedSto = new StorageObjectCriteria();
-                                                issuedSto = sto.Clone();
-                                                issuedSto.id = null;
-                                                issuedSto.baseQty = disto.BaseQuantity.Value;
-                                                issuedSto.qty = disto.Quantity.Value;
-                                                issuedSto.parentID = null;
-                                                issuedSto.mapstos = null;
-                                                issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
-
-                                                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-                                                ///อัพเดท des_stoID ของ pack ที่สร้างใหม่
-                                                disto.Des_StorageObject_ID = stoIDIssued;
-                                                disto.Status = EntityStatus.ACTIVE;
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
-
-                                                var distoAll = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                                                {
-                                                new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
-                                                new SQLConditionCriteria("Sou_StorageObject_ID", sto.id.Value, SQLOperatorType.EQUALS),
-                                                }, this.BuVO);
-
-                                                if (distoAll.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
-                                                {
-                                                //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
-                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                                    if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
-                                                    {
-                                                        updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-
-                                                    }
-                                                    else
-                                                    {
-                                                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
-                                                        updSto.eventStatus = eventStatus;
-                                                        RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
-                                                    }
-                                                }
-                                                var stoIDUpdated2 = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                            }
-
-                                        }
-                                    }
-
-                                });
-                            }
-                            else
-                            {
-                                //ถ้า sto pack ไม่มีผูก disto จะset eventstatus = received
-                                sto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                            }
-                        });
-
+                            updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                        }
+                        else
+                        {
+                            StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(upd_done_sou_event_status);
+                            updSto.eventStatus = eventStatus;
+                            RemoveOPTEventSTO(updSto.id.Value, updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS, this.BuVO);
+                        }
                     }
-
-                });
+                    ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                }
+                
             }
-            return docItems;
+            void updatePallet(long parent_id, StorageObjectType parent_type)
+            {
+                // ถ้าไม่มี status pack 1 => ถ้ามันมี 3 พาเลทจบงาน ไม่มีลบพาเลท
+
+                if (parent_type != StorageObjectType.LOCATION)
+                {
+                    var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
+                    var stoLists = new List<StorageObjectCriteria>();
+                    if (sto != null)
+                        stoLists = sto.ToTreeList();
+
+                    var all_pack = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
+                    if (stoLists.Count() > 0 && all_pack.TrueForAll(x => {
+                        var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(x.eventStatus);
+                        return status != EntityStatus.ACTIVE;
+                    })) //ต้องไม่ใช่1ทั้งหมด
+                    {
+                        var parentUpdate = stoLists.Find(x => x.id == parent_id);
+
+                        if (all_pack.TrueForAll(x => {
+                            var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(x.eventStatus);
+                            return status == EntityStatus.DONE;
+                        }))
+                        {
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
+                            if (parentUpdate.parentID.HasValue)
+                                updatePallet(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
+                        }
+                         
+                    }
+
+                }
+            }
         }
+        
         private WorkQueueCriteria ManageWQ(TReq reqVO, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)

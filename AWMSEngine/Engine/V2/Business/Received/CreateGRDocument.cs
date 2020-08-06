@@ -155,7 +155,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
                     options = reqVO.options,
-                    docTypeId = DocumentTypeID.GOODS_RECEIVED,
+                    docTypeId = DocumentTypeID.PUTAWAY,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,

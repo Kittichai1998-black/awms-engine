@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Business.Document;
+using AWMSEngine.Engine.V2.Business.Received;
 using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,8 +19,8 @@ namespace AWMSEngine.APIService.V2.Business
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<ConfirmMappingSTOandDiSTO.TReq>(this.RequestVO);
-            var res = new ConfirmMappingSTOandDiSTO().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<ConfirmSTOReceivebyDocID.TReq>(this.RequestVO);
+            var res = new ConfirmSTOReceivebyDocID().Execute(this.Logger, this.BuVO, req);
             this.CommitTransaction();
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(res.docID, this.BuVO);
             if (docs != null)

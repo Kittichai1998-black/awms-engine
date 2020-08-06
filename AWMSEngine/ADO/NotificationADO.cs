@@ -1,5 +1,6 @@
 ﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -55,13 +56,14 @@ namespace AWMSEngine.ADO
                 }, buVO);
             return notiPost;
         }
-        public List<amt_NotifyPost> GetNotifyPostByUserID(int userId, int? limit, long? skip, VOCriteria buVO)
+        public List<SPOutNotify> GetNotifyPostByUserID(int userId, int? limit, long? skip, string filter, VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
             param.Add("userId", userId);
             param.Add("l", limit);
             param.Add("sk", skip);
-            var notiPost = DataADO.GetInstant().QuerySP<amt_NotifyPost>("SP_GET_NOTIFY", param, buVO);
+            param.Add("filter", filter);
+            var notiPost = DataADO.GetInstant().QuerySP<SPOutNotify>("SP_GET_NOTIFY", param, buVO);
             return notiPost;
         }
     }

@@ -173,7 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
 
-                    docTypeId = DocumentTypeID.DELIVERY_ISSUED,
+                    docTypeId = DocumentTypeID.GOODS_ISSUE,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,

@@ -59,7 +59,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
-            var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
+            StorageObjectCriteria res = null;// this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
             if (res == null)
             {
                 ////DF Code
@@ -192,7 +192,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            List<amt_DocumentItem> res = null;// this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
                 var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
@@ -209,7 +209,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         //get Document
                         var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
-                            DocumentTypeID.GOODS_ISSUED, BuVO);
+                            DocumentTypeID.PICKING, BuVO);
                         if (docItemLists == null || docItemLists.Count == 0)
                         {
                             docItems = this.ProcessReceiving(sto, reqVO);
@@ -241,7 +241,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         throw new AMWException(Logger, AMWExceptionCode.V1001, "Document of " + reqVO.baseCode + " Not Found.");
 
                                     docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, docItem.ID.Value) };
-                                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(docItem.DocItemStos, BuVO);
+                                    AWMSEngine.ADO.DistoADO.GetInstant().Insert(docItem.DocItemStos, BuVO);
                                     //docItems.Add(docItem);
 
                                 }
@@ -255,7 +255,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                             //get Document
                             var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
-                                DocumentTypeID.GOODS_RECEIVED, BuVO);
+                                DocumentTypeID.PUTAWAY, BuVO);
 
                             docItemLists.ForEach(di =>
                             {
@@ -288,7 +288,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             Status = EntityStatus.ACTIVE
                         };
 
-                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, BuVO);
+                        AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
                     });
                 }
                 else
@@ -304,7 +304,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, TReq reqVO)
         {
-            SPOutAreaLineCriteria res = this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            SPOutAreaLineCriteria res = null;// this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
                 if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
@@ -381,9 +381,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             disto.WorkQueue_ID = queueTrx.ID.Value;
                             if (disto.Status == EntityStatus.INACTIVE)
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                                AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                             else
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                                AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         });
                     });
 
@@ -403,7 +403,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
                         }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
 
-                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                    ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                 }
 
                 return this.GenerateResponse(sto, queueTrx);
@@ -537,13 +537,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //auto create new Document 
             if (reqVO.ioType == IOType.INPUT)
             {
-                documentTypeID = DocumentTypeID.GOODS_RECEIVED;
+                documentTypeID = DocumentTypeID.PUTAWAY;
                 //souWarehouse = _warehouseASRS;
                 //souBranch = _branchASRS;
             }
             else
             {
-                documentTypeID = DocumentTypeID.GOODS_ISSUED;
+                documentTypeID = DocumentTypeID.PICKING;
 
                 desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
                 if (desWarehouse == null)

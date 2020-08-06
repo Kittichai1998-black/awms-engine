@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AWMSModel.Entity;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,18 @@ namespace TestConvert
         public TestConvert(ITestOutputHelper sysout)
         {
             this.sysout = sysout;
+        }
+
+        public class MTest
+        {
+            public string test;
+            public string test2;
+        }
+        [Fact]
+        public void Test4()
+        {
+            var resTest1 = AMWUtil.Common.ObjectUtil.ConvertTextFormatToModel<MTest>("N|AVC|CCCC", "N|{test}|{test2}");
+            var resTest2 = AMWUtil.Common.ObjectUtil.ConvertTextFormatToModel<MTest>("N00AVC000000CCCCx", "N{test:5}{test2:10}");
         }
 
         [Fact]

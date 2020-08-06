@@ -51,12 +51,6 @@ namespace AWMSEngine.Engine
         private string _subServiceNameTMP;
 
 
-        protected TExecRes ExectProject<TExecReq,TExecRes>(FeatureCode featureCode, TExecReq req)
-           where TExecRes : class
-        {
-            return Common.FeatureExecute.ExectProject<TExecReq, TExecRes>(featureCode, this.Logger, this.BuVO, req);
-        }
-
         private void ValidateRequestParameter(TReq reqVO)
         {
             if (reqVO == null)
@@ -88,7 +82,9 @@ namespace AWMSEngine.Engine
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 this.ValidateRequestParameter(reqVO);
-                resVO = this.ExecuteEngine(reqVO);
+                resVO = Common.FeatureExecute.ExectProject<TReq, TRes>("PLUGIN." + this.GetType().Name, this.Logger, this.BuVO, reqVO);
+                if(resVO == null)
+                    resVO = this.ExecuteEngine(reqVO);
                 //resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };
             }
             catch (AMWException)

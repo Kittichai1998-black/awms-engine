@@ -107,7 +107,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            exceFullClass(reqVO, FeatureCode.EXEWM_CreateDocument_Exec_Before);
 
             long? Sou_Customer_ID =
                     reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
@@ -298,13 +297,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
 
-            exceFullClass(reqVO, FeatureCode.EXEWM_CreateDocument_Exec_After);
-
             return doc;
-        }
-        private void exceFullClass(TReq reqVO, FeatureCode featureCode)
-        {
-            this.ExectProject<TReq, amt_Document>(featureCode, reqVO);
         }
 
         private List<StorageObjectCriteria> MappingSto(TReq.Item reqVO)

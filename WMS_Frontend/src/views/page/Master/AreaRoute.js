@@ -31,8 +31,7 @@ const AreaRoute = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -42,7 +41,18 @@ const AreaRoute = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "IOType", accessor: "IOTypeCode", fixed: "left", fixWidth: 100 },
+    {
+      Header: "IOType", 
+      accessor: "IOTypeCode", 
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:IOTypeStatus,
+        typeDropDown:"normal"
+      },
+      customFilter:{field:"IOType"},
+      fixWidth: 100 
+    },
     { Header: "Sou Area", accessor: "AreaSou", width: 170 },
     { Header: "Des Area", accessor: "AreaDes" },
     { Header: "Priority", accessor: "Priority", width: 100, type: "number" },
@@ -59,27 +69,27 @@ const AreaRoute = props => {
     {
       field: "IOType",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "IOType",
-      dataDropDow: IOTypeStatus,
+      dataDropDown: IOTypeStatus,
       placeholder: "IOType",
       required: true
     },
     {
       field: "Sou_AreaMaster_ID",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Sou Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Sou Area",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Des_AreaMaster_ID",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Des Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Des Area",
       fieldLabel: ["Code", "Name"]
     },
@@ -96,27 +106,27 @@ const AreaRoute = props => {
     {
       field: "IOType",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "IOType",
-      dataDropDow: IOTypeStatus,
+      dataDropDown: IOTypeStatus,
       placeholder: "IOType",
       required: true
     },
     {
       field: "Sou_AreaMaster_ID",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Sou Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Sou Area",
       fieldLabel: ["Code", "Name"]
     },
     {
       field: "Des_AreaMaster_ID",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Des Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Des Area",
       fieldLabel: ["Code", "Name"]
     },
@@ -130,10 +140,10 @@ const AreaRoute = props => {
     },
     {
       field: "Status",
-      type: "status",
-      typeDropdow: "normal",
+      type: "dropdown",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     }
   ];
@@ -141,9 +151,9 @@ const AreaRoute = props => {
     {
       field: "AreaSou",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Sou Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Sou Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -151,9 +161,9 @@ const AreaRoute = props => {
     {
       field: "AreaDes",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Des Area",
-      dataDropDow: AreaMasterQuery,
+      dataDropDown: AreaMasterQuery,
       placeholder: "Des Area",
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
@@ -163,9 +173,9 @@ const AreaRoute = props => {
     {
       field: "IOType",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "IOType",
-      dataDropDow: IOTypeStatus,
+      dataDropDown: IOTypeStatus,
       placeholder: "IOType"
     },
 
@@ -178,9 +188,9 @@ const AreaRoute = props => {
     {
       field: "Status",
       type: "dropdown",
-      typeDropdow: "normal",
+      typeDropDown: "normal",
       name: "Status",
-      dataDropDow: EntityEventStatus,
+      dataDropDown: EntityEventStatus,
       placeholder: "Status"
     },
     {

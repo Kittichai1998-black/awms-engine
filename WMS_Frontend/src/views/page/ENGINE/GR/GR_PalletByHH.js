@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AmMappingHH from '../../../pageComponent/AmMappingHH'
+import AmMappingHH from '../../../pageComponent/AmMappingHH/AmMappingHH'
 const GR_PalletByHH = (props) => {
     const obj = {}
 

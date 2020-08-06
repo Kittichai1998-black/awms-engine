@@ -49,7 +49,6 @@ const SortDirection = {
 const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selectionCustom, dataSource) => {
     const [columns, setColumns] = useState([]);
     const {selection, pagination} = useContext(AmTableContext);
-
     // useEffect(() => {
     //   console.log("Columns")
     // }, [Columns])
@@ -138,7 +137,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
             filterable: false,
             fixed: "left",
             fixWidth: 20,
-            colStyle:{textAlign:"center"},
+            colStyle:{textAlign:"center",},
             sortable: false,
             Cell: ele => {
                 if(ele.original[dataKey] !== undefined){                  
@@ -469,7 +468,10 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
   };
 
   const onChangeFilter = (field, value, customFilter) => {
-    filter.setFilter({field, value, customFilter})
+    if(customFilter === undefined || IsEmptyObject(customFilter))
+      filter.setFilter({field, value})
+    else
+      filter.setFilter({field, value, customFilter})
   };
 
   const calculateWidth = (cols) => {
@@ -520,8 +522,10 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
                 <Input style={{width:"100%", background:"white"}} 
-                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
-                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                  onKeyPress={(event) => {if(event.key === "Enter"){
+                    event.currentTarget.childNodes[0].blur()
+                  }}}
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderStickyColumnsCell>
@@ -548,9 +552,11 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}} 
-                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
-                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                <Input style={{width:"100%", background:"white"}}
+                  onKeyPress={(event) => {if(event.key === "Enter"){
+                    event.currentTarget.childNodes[0].blur()
+                  }}}
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderCell>

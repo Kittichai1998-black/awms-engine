@@ -84,7 +84,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                 foreach (var row in selectPack)
                 {
-                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMapV2(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
+                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMapV2(row.code, DocumentTypeID.PICKING, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
                         .Where(x => x.Sou_StorageObject_ID == row.id && x.Status == EntityStatus.INACTIVE).ToList();
                     var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.unitID).Name;
 

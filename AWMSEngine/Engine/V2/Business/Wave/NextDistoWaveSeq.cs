@@ -93,7 +93,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
                 gDisto.distos.ForEach(disto =>
                 {
-                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
                     gDisto.distos.First().Status = EntityStatus.DONE;
                 });
 
@@ -213,7 +213,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 DocumentType_ID = currentDisto.DocumentType_ID
             };
 
-            var res = ADO.DistoADO.GetInstant().Create(newNextDisto, this.BuVO);
+            var res = ADO.DistoADO.GetInstant().Insert(newNextDisto, this.BuVO);
 
             return res;
         }

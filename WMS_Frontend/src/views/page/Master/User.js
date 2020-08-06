@@ -50,8 +50,7 @@ const User = props => {
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -61,7 +60,7 @@ const User = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 200 },
     { Header: "Email Addres", accessor: "EmailAddress", width: 250 },
     { Header: "Mobile", accessor: "TelMobile", width: 150 },
@@ -341,6 +340,7 @@ const User = props => {
       else{
         UpdatePassword();
       }
+      setUserPassID()
       setOpenPassword(false);
     }}
     titleText={"Password"} 

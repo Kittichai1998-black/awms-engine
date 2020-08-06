@@ -1,8 +1,11 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO.StaticValue
@@ -88,6 +91,64 @@ namespace AWMSEngine.ADO.StaticValue
         public string GetWarehousesCode(long id)
         {
             return this.Warehouses.First(x => x.ID == id).Code;
+        }
+
+        //FEATURE
+        /*public T GetFeaturValue<T>(FeatureCode code, DocumentProcessTypeID? processType = null, DocumentTypeID? docType = null)
+        {
+            string c = code.Attribute<EnumValueAttribute>().ValueString;
+            return GetFeaturValue<T>(c, processType, docType);
+        }
+        public T GetFeaturValue<T>(string code, DocumentProcessTypeID? processType = null, DocumentTypeID? docType = null)
+        {
+            string c = code;
+            var feature = this.Features.Where(x => x.Code == c)
+                .OrderBy(x => x.DocumentProcessType_ID.HasValue ? 0 : 1)
+                .ThenBy(x => x.DocumentType_ID.HasValue ? 0 : 1)
+                .Where(x => x.DocumentProcessType_ID == processType || !x.DocumentProcessType_ID.HasValue)
+                .FirstOrDefault(x => x.DocumentType_ID == docType || !x.DocumentType_ID.HasValue);
+            if (feature == null)
+                throw new Exception("ไม่พบ Feature Code '" + c + "' ในระบบ!");
+
+            return feature.DataValue.Get<T>();
+        }*/
+
+        public string GetConfigValue(ConfigFlow code, DocumentProcessTypeID processType)
+        {
+            string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
+            var res = GetConfigValue<string>(c);
+            if (res == null)
+                return GetConfigValue<string>(string.Format(code.Attribute<EnumValueAttribute>().ValueString, "ALL"));
+            return res;
+        }
+        public string GetConfigValue(ConfigCommon code)
+        {
+            string c = code.Attribute<EnumValueAttribute>().ValueString;
+            return GetConfigValue<string>(c);
+        }
+        public string GetConfigValue(string code)
+        {
+            return GetConfigValue<string>(code);
+        }
+        public T GetConfigValue<T>(ConfigCommon code)
+        {
+            string c = code.Attribute<EnumValueAttribute>().ValueString;
+            return GetConfigValue<T>(c);
+        }
+        public T GetConfigValue<T>(string code)
+        {
+            string _namespace = code.LastIndexOf('.') > 0 ? code.Substring(0, code.LastIndexOf('.')) : string.Empty;
+            string _datakey = code.LastIndexOf('.') > 0 ? code.Substring(code.LastIndexOf('.')+1) : code;
+
+            var config = this.Configs.FirstOrDefault(x => x.DataKey == _datakey && (x.Namespace ?? string.Empty) == _namespace);
+            if (config == null)
+                throw new Exception("ไม่พบ Config '" + code + "' ในระบบ!");
+            return config.DataValue.Get<T>();
+        }
+        public bool IsMatchConfigArray(string code, object value)
+        {
+            string v = value.ToString();
+            return Regex.IsMatch(this.GetConfigValue(code), string.Format("^{0}$|^{0},|,{0},|,{0}$", v));
         }
     }
 }

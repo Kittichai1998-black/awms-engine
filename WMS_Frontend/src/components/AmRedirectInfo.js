@@ -12,6 +12,9 @@ const GlobalBtnBaseCss = withStyles({
       '.MuiButtonBase-root': {
           position: 'unset',
       },
+      '.MuiLink-button':{
+        position: 'unset',
+      }
   },
 })(() => null);
 const AmRedirectInfo = props => {

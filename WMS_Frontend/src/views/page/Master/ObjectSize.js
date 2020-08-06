@@ -32,7 +32,7 @@ const ObjectSize = props => {
       Header: "Status",
       accessor: "Status",
       fixed: "left",
-      fixWidth: 35,
+      fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
       filterConfig:{
@@ -42,7 +42,7 @@ const ObjectSize = props => {
       },
       Cell: e => getStatus(e.original)
     },
-    { Header: "Code", accessor: "Code", fixed: "left", fixWidth: 120 },
+    { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
     //{ Header: 'ObjectType',accessor: 'ObjectType', width:100,type:'number'},
     {
@@ -216,23 +216,26 @@ const ObjectSize = props => {
       Axios.get(
         window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSizeID
       ).then(res => {
+        console.log(res)
         setObjectSizeData(res.data.datas)})
     }
   }, [editObjectSizeID]);
 
   useEffect(() => {
-    const getObjectSizeColumns = (dataSou) => {
+    const getObjectSizeColumns = (objSizeData) => {
       const objSizeCols = [
         { Header: "Code", accessor: "Code", width: 250 },
         { Header: "Name", accessor: "Name", width: 250 }
       ];
 
-      if(dataSou !== undefined && dataSou.length > 0){
+      console.log(objSizeData)
+      if(objSizeData !== undefined && objSizeData.length > 0){
+        console.log("xx")
         setOpen(true)
       }
 
       const defaultValue = () => {
-        return dataSou.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
+        return objSizeData.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
         {
@@ -243,13 +246,13 @@ const ObjectSize = props => {
                 <AmTable
                   columns={objSizeCols}
                   dataKey={"ID"}
-                  dataSource={dataSou}
+                  dataSource={objSizeData}
                   selection={"checkbox"}
                   selectionData={sel => {
                     var select = [...sel];
                     var objUpdate = [];
                     var newObjSize = select.filter(x => x.ObjMapID === null);
-                    var oldObjSize = dataSou.filter(x => x.ObjMapID !== null);
+                    var oldObjSize = objSizeData.filter(x => x.ObjMapID !== null);
                     oldObjSize.forEach(e => {
                       var oldObj = select.find(x => x.ObjMapID === e.ObjMapID);
                       if(oldObj === undefined){
@@ -260,7 +263,7 @@ const ObjectSize = props => {
                       }
                     });
                     newObjSize.forEach(x=> {
-                      objUpdate.push({"ID":null, "Status":1, "OuterObjectSize_ID":editObjectSizeID, "InnerObjectSize_ID":x.ID, "Revision":1 })
+                      objUpdate.push({"ID":null, "Status":1, "ObjectSize_ID":editObjectSizeID, "InnerObjectSize_ID":x.ID, "Revision":1 })
                     });
 
                     updateObjSize.current = objUpdate;
@@ -274,7 +277,7 @@ const ObjectSize = props => {
         }
       ]
     }
-    
+    console.log(objectSizeData)
     setRelationComponent(getObjectSizeColumns(objectSizeData))
   }, [objectSizeData])
   
@@ -282,11 +285,14 @@ const ObjectSize = props => {
     return <AmEditorTable 
     open={open} 
     onAccept={(status, rowdata)=> {
-      if(!status)
+      if(!status){
         setOpen(false)
+        setEditObjectSizeID(null)
+      }
       else{
         UpdateObjectSizeMap();
         setOpen(false)
+        setEditObjectSizeID(null)
       }
     }}
     titleText={"Object Size"} 

@@ -115,7 +115,7 @@ const TableV3 = Loadable({
 });
 
 const GR_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/GR/GR_Create_FGcus"),
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create_FGcus"),
   loading: Loading
 });
 const GR_Detail = Loadable({
@@ -128,16 +128,16 @@ const GR_Search = Loadable({
 });
 
 const PA_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/PA/PA_Create"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PA/PA_Create"),
+  loading: Loading
 });
 const PA_Detail = Loadable({
-    loader: () => import("../../views/page/ENGINE/PA/PA_Detail"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PA/PA_Detail"),
+  loading: Loading
 });
 const PA_Search = Loadable({
-    loader: () => import("../../views/page/ENGINE/PA/PA_Search"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PA/PA_Search"),
+  loading: Loading
 });
 
 const PK_Create = Loadable({
@@ -206,16 +206,15 @@ const DoneWorkQueue = Loadable({
 });
 
 const MoveLocation = Loadable({
-    loader: () => import("../../views/page/ENGINE/MoveLocation"),
-    loading: Loading
-});
-
-const ReceivePalletByHH = Loadable({
-  loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
   loading: Loading
 });
 const GR_PalletByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loading: Loading
+});
+const ReceivePalletByBarcode = Loadable({
+  loader: () => import("../../views/page/STA/Receive/ReceivePalletByBarcode"),
   loading: Loading
 });
 
@@ -226,13 +225,15 @@ const routes = [
 
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
-    { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+  { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
-    { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
+  { path: "/receive/hhtest", name: "GR HH", compoment: ReceivePalletByBarcode, exact: true },
 
-    { path: "/putaway/create", name: "PA Create", compoment: PA_Create, exact: true },
-    { path: "/putaway/detail", name: "PA View", compoment: PA_Detail, exact: true },
-    { path: "/putaway/search", name: "PA View", compoment: PA_Search, exact: true },
+  { path: "/putaway/create", name: "PA Create", compoment: PA_Create, exact: true },
+  { path: "/putaway/detail", name: "PA View", compoment: PA_Detail, exact: true },
+  { path: "/putaway/search", name: "PA View", compoment: PA_Search, exact: true },
 
     { path: "/picking/create", name: "PK Create", compoment: PK_Create, exact: true },
     { path: "/picking/detail", name: "PK View", compoment: PK_Detail, exact: true },

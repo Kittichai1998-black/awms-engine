@@ -88,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     grDoc.ParentDocument_ID = grDoc.ID;
                     grDoc.ID = null;
                     grDoc.DocumentProcessType_ID = DocumentProcessTypeID.STO_REJECT;
-                    grDoc.DocumentType_ID = DocumentTypeID.GOODS_ISSUED;
+                    grDoc.DocumentType_ID = DocumentTypeID.PICKING;
                     grDoc.EventStatus = DocumentEventStatus.WORKING;
                     grDoc.Status = EntityStatus.ACTIVE;
 
@@ -138,10 +138,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             disto.ID = null;
                             disto.WorkQueue_ID = workQueue.ID;
                             disto.Des_StorageObject_ID = null;
-                            disto.DocumentType_ID = DocumentTypeID.GOODS_ISSUED;
+                            disto.DocumentType_ID = DocumentTypeID.PICKING;
                             disto.DocumentItem_ID = doci.ID;
 
-                            var resDisto = ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+                            var resDisto = ADO.DistoADO.GetInstant().Insert(disto, this.BuVO);
 
                             doci.DocItemStos.Add(resDisto);
                             docItems.Add(doci);
@@ -212,7 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                     if (this.StaticValue.GetAreaMasterGroupType(area.AreaMasterType_ID) == AreaMasterGroupType.MACHINE || area == null)
                                     {
                                         ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(baseSto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.CANCELED, this.BuVO);
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
+                                        ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
                                         disto.Status = EntityStatus.REMOVE;
                                     }
                                     else
