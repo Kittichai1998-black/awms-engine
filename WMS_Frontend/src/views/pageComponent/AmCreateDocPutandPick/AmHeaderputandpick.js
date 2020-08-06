@@ -79,7 +79,7 @@ const DialogTitle = withStyles(theme => ({
                 aria-label="Close"
                 size="small"
                 className={classes.closeButton}
-                //onClick={onClose}
+                onClick={onClose}
             >
                 <CloseIcon fontSize="inherit" />
             </IconButton>
@@ -614,7 +614,8 @@ const AmHeaderputandpick = (props) => {
     const onHandleClear = () => {
         doc.setdatadocItem([])
         //doc.setdocID(0)
-        doc.setdialogItem(false)
+        doc.setdialogItem(false);
+        doc.setdialogItem(false);
     }
 
 
@@ -628,7 +629,7 @@ const AmHeaderputandpick = (props) => {
 
             <DialogTitle
                 id="addpallet-dialog-title"
-                onClose={() => { onHandleClear(); }}>
+                onClose={() => { onHandleClear(); doc.setdialogItem(false); }}>
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>
@@ -665,7 +666,7 @@ const AmHeaderputandpick = (props) => {
 
             <DialogTitle
                 id="addpallet-dialog-title"
-                onClose={() => { onHandleClear();}}>
+                onClose={() => { onHandleClear(); doc.setdialogItemSet(false);}}>
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>
@@ -674,7 +675,7 @@ const AmHeaderputandpick = (props) => {
                         columns={columns}
                         dataKey={"ID"}
                         dataSource={doc.dataSet}
-                        //selectionDefault={doc.dataSourceItemTB}
+                        selectionDefault={doc.dataSourceItemTB}
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}

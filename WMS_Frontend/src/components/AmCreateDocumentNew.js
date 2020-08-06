@@ -251,11 +251,13 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            props.onChangeProcessType(dataObject.OwnerGroupType);
-            props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
-            setprocessType(dataObject.OwnerGroupType)
-            createDocumentData[key] = dataObject.ID
-            setcreateDocumentData(createDocumentData)
+            if (dataObject !== undefined || dataObject !== null) {
+                props.onChangeProcessType(dataObject.OwnerGroupType);
+                props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
+                setprocessType(dataObject.OwnerGroupType)
+                createDocumentData[key] = dataObject.ID
+                setcreateDocumentData(createDocumentData)
+            }
 
 
         }
