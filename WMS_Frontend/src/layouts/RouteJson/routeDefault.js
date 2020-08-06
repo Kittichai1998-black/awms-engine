@@ -130,6 +130,11 @@ const DailySTOAudit = Loadable({
   loading: Loading
 });
 
+const DailyLoad = Loadable({
+  loader: () => import("../../views/page/NewReport/DailyLoad"),
+  loading: Loading
+});
+
 const DailySTOSumReceive = Loadable({
   loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
   loading: Loading
@@ -281,6 +286,7 @@ let routes = [
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
+  { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },

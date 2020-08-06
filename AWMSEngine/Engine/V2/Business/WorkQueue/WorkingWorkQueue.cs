@@ -125,15 +125,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
                             distos.ToList().ForEach(disto =>
                             {
-                                disto = UpdateDistoFull(sto, disto);
+                                disto.BaseQuantity = sto.baseQty;
+                                UpdateDistoFull(sto, disto);
                             });
                         });
                     }
                     else
                     {
-                        //var qtyIssue = docItem.Quantity;//1500
                         var baseqtyIssue = docItem.BaseQuantity;
-                        //decimal? sumDiSTOQty = sumDisto.Sum(x => x.sumQty);
                         decimal? sumDiSTOBaseQty = sumDisto.Sum(x => x.sumBaseQty);
                         stoList.ForEach(sto =>
                         {
@@ -143,40 +142,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             {
                                 if (disto.BaseQuantity == null)
                                 {
-                                    //var remainQty = qtyIssue - sumDiSTOQty;
                                     var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
                                     //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
-
-                                    //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
-                                    if (remainBaseQty >= sto.qty) //1500 > 1000
-                                    { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
-                                        disto = UpdateDistoFull(sto, disto);
+                                    //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
+                                    if(remainBaseQty >= sto.baseQty) //1000 >= 500
+                                    {
+                                        disto.BaseQuantity = sto.baseQty; //500
+                                        UpdateDistoFull(sto, disto);
                                     }
                                     else
-                                    {
-                                        var issuedSto = new StorageObjectCriteria();
-                                        issuedSto = sto.Clone();
-                                        //500 < 1000
-                                        //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
-                                        //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
-                                        var updSto = new StorageObjectCriteria();
-                                        updSto = sto;
-                                        updSto.baseQty -= remainBaseQty.Value;  //1000 - 500 = เหลือของ 500
-                                        //updSto.qty -= remainQty.Value;
-
-                                        if (updSto.baseQty == 0)
-                                        {
-                                            disto = UpdateDistoFull(sto, disto);
-                                        }
-                                        else
-                                        {
-                                            disto.BaseQuantity = remainBaseQty.Value;
-                                            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, remainBaseQty.Value, updSto.baseUnitID);
-                                            disto.Quantity = qtyConvert.newQty;
-
-                                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
-                                        }
+                                    { //500 < 600
+                                        disto.BaseQuantity = remainBaseQty.Value;
+                                        UpdateDistoFull(sto, disto);
                                     }
+                                    
                                 }
 
                             });
@@ -185,19 +164,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
 
                 });
+                void UpdateDistoFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
+                {
+                    //disto.BaseQuantity = sto.baseQty;
+                    var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, disto.BaseQuantity.Value, sto.baseUnitID);
+                    disto.Quantity = qtyConvert.newQty;
 
+                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
+
+                }
             }
         }
 
-        private amt_DocumentItemStorageObject UpdateDistoFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
-        {
-            disto.BaseQuantity = sto.baseQty;
-            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, sto.baseQty, sto.baseUnitID);
-            disto.Quantity = qtyConvert.newQty;
-
-            ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
-
-            return disto;
-        }
+         
     }
 }
