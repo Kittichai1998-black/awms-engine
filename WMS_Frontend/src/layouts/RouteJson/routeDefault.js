@@ -130,6 +130,11 @@ const DailySTOAudit = Loadable({
   loading: Loading
 });
 
+const DailyLoad = Loadable({
+  loader: () => import("../../views/page/NewReport/DailyLoad"),
+  loading: Loading
+});
+
 const DailySTOSumReceive = Loadable({
   loader: () => import("../../views/page/NewReport/DailySTOSumReceive"),
   loading: Loading
@@ -258,6 +263,10 @@ const TestPanel = Loadable({
   loader: () => import("../../views/page/TestPanel"),
   loading: Loading
 });
+const NotifyPage = Loadable({
+  loader: () => import("../../views/page/ENGINE/AllNotify"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -277,6 +286,7 @@ let routes = [
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
+  { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailycountsum", name: "Counting Summary Report ", compoment: DailySTOSumCounting, exact: true },
@@ -323,7 +333,7 @@ let routes = [
   { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
-
+  { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 ];
 
 export default routes;

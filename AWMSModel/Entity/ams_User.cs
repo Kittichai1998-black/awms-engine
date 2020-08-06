@@ -12,8 +12,7 @@ namespace AWMSModel.Entity
         public string SaltPassword;
         public string SecretKey;
         public string EmailAddress;
-        public string LineID;
-        public string FacebookID;
+        public string LineToken;
         public string TelOffice;
         public string TelMobile;
         public int? Revision;

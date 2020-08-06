@@ -1,7 +1,7 @@
 export const headerInitialState={
     notifyList:[],
     notifyState:false,
-    notifyCount:1,
+    notifyCount:0,
     notifyReaded:[]
 }
 
@@ -63,6 +63,11 @@ export const notifyList = (state, action) => {
     switch (action.type){
         case "setNotifyList":{
             return {...state, notifyList:action.payload}
+        }
+        case "setNotifyAddList":{
+            let notiList = [...state.notifyList].slice(0, state.notifyList.length-1);
+            notiList = notiList.unshift(action.payload);
+            return {...state, notifyList:notiList}
         }
         case "setNotifyState":{
             return {...state, notifyState:action.payload}

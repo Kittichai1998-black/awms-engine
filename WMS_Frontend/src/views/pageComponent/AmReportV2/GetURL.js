@@ -80,6 +80,25 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&docType=" + typeDoc
       + "&spname=DAILY_STOSUM";
 
+  } else if (fileNameTable === "DAILY_LOAD") {
+
+    if (IsEmptyObject(valueText)) {
+
+      valueText.fromDate = moment().format("YYYY-MM-DD")
+      valueText.toDate = moment().format("YYYY-MM-DD")
+    }
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+      + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+      + "&driverName=" + (valueText.driverName === undefined || valueText.driverName === null ? '' : encodeURIComponent(valueText.driverName.trim()))
+      + "&transportCar=" + (valueText.transportCar === undefined || valueText.transportCar === null ? '' : encodeURIComponent(valueText.transportCar.trim()))
+      + "&transportObjectCode=" + (valueText.transportObjectCode === undefined || valueText.transportObjectCode === null ? '' : encodeURIComponent(valueText.transportObjectCode.trim()))
+      + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
+      + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
+      + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
+      + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
+      + "&spname=DAILY_LOAD";
+
   }
 
 }
