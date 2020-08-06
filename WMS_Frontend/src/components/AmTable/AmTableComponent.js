@@ -468,7 +468,7 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
   };
 
   const onChangeFilter = (field, value, customFilter) => {
-    if(customFilter === undefined)
+    if(customFilter === undefined || IsEmptyObject(customFilter))
       filter.setFilter({field, value})
     else
       filter.setFilter({field, value, customFilter})
@@ -522,8 +522,10 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
                 <Input style={{width:"100%", background:"white"}} 
-                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
-                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                  onKeyPress={(event) => {if(event.key === "Enter"){
+                    event.currentTarget.childNodes[0].blur()
+                  }}}
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderStickyColumnsCell>
@@ -550,9 +552,11 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}} 
-                  onKeyPress={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}}
-                  onBlur={(event) => {if(event.key === "Enter")onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
+                <Input style={{width:"100%", background:"white"}}
+                  onKeyPress={(event) => {if(event.key === "Enter"){
+                    event.currentTarget.childNodes[0].blur()
+                  }}}
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderCell>

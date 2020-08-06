@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ThoughtWorks.QRCode.Codec.Ecc;
 
-namespace AWMSEngine.ScheduleService.Jobs
+namespace AWMSEngine.ScheduleService.DailyStockTransaction
 {
     public class DailyNotify : BaseNotification
     {
