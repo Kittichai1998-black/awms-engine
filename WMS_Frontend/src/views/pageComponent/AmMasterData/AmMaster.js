@@ -246,6 +246,7 @@ const AmMasterData = (props) => {
     }, [page])
 
     const onChangeFilterData = (filterValue) => {
+        console.log(filterValue)
         var res = queryObj;
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined){
@@ -256,6 +257,7 @@ const AmMasterData = (props) => {
                 }
             }
         });
+        console.log(res)
         setQueryObj(res)
     }
 

@@ -1,5 +1,5 @@
 import DocView from "../../../pageComponent/DocumentView";
-import React from "react";
+import React, { useState, useEffect } from "react";
 // import AmIconStatus from "../../../../components/AmIconStatus";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
@@ -8,24 +8,78 @@ import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
 const GR_Detail = props => {
-    const TextHeader = [
-        [
-            { label: "Document No.", values: "Code" },
-            { label: "Document Date", values: "DocumentDate", type: "date" }
-        ],
-        [
-            { label: "Process Type", values: "DocumentProcessTypeName" },
-            { label: "Action Time", values: "ActionTime", type: "dateTime" }
-        ],
-        [
-            { label: "Source Warehouse", values: "SouWarehouseName" },
-            { label: "Destination Warehouse", values: "DesWarehouseName" }
-        ],
-        [
-            { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-            { label: "Remark", values: "Remark" }
-        ]
-    ];
+
+    const [OwnerGroupType, setOwnerGroupType] = useState(1);
+    const [docview, setdocview] = useState();
+    const [header, setheader] = useState();
+
+
+
+    useEffect(() => {
+        if (header !== undefined) {
+            setdocview(<DocView
+                openSOU={true}
+                openDES={true}
+                optionDocItems={optionDocItems}
+                columnsDetailSOU={columnsDetailSOU}
+                columnsDetailDES={columnsDetailDES}
+                OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
+                CreateputAway={true}
+                apiCreate={'/putaway/create?docID='}
+                columns={columns}
+                typeDoc={"received"}
+                typeDocNo={1011}
+                docID={getDocID()}
+                header={header}
+                buttonBack={true}
+                linkBack={"/receive/search"}
+                history={props.history}
+            >
+            </DocView>
+            )
+        }
+
+    }, [header])
+
+    useEffect(() => {
+        if (OwnerGroupType !== undefined) {
+            console.log(OwnerGroupType)
+            var DataprocessType;
+            if (OwnerGroupType === 1) {
+                DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
+            } else if (OwnerGroupType === 2) {
+                DataprocessType = { label: "Source Customer", values: "SouCustomerName" }
+            } else if (OwnerGroupType === 3) {
+                DataprocessType = { label: "Source Supplier", values: "SouSupplierName" }
+            } else {
+                DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
+            }
+
+        }
+        console.log(DataprocessType)
+        var TextHeader = [
+            [
+                { label: "Document No.", values: "Code" },
+                { label: "Document Date", values: "DocumentDate", type: "date" }
+            ],
+            [
+                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Action Time", values: "ActionTime", type: "dateTime" }
+            ],
+            [
+                DataprocessType,
+                { label: "Destination Warehouse", values: "DesWarehouseName" }
+            ],
+            [
+                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Remark", values: "Remark" }
+            ]
+        ];
+        setheader(TextHeader)
+
+
+    }, [OwnerGroupType])
+  
 
     const columns = [
         // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
@@ -141,24 +195,8 @@ const GR_Detail = props => {
     //received
     //issued
     return (
-        <DocView
-            openSOU={true}
-            openDES={true}
-            optionDocItems={optionDocItems}
-            columnsDetailSOU={columnsDetailSOU}
-            columnsDetailDES={columnsDetailDES}
-            CreateputAway={true}
-            apiCreate={'/putaway/create?docID='}
-            columns={columns}
-            typeDoc={"received"}
-            typeDocNo={1011}
-            docID={getDocID()}
-            header={TextHeader}
-            buttonBack={true}
-            linkBack={"/receive/search"}
-            history={props.history}
+        <div>{docview}</div>
       
-        />
     );
 };
 

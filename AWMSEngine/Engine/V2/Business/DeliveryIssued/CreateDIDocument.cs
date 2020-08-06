@@ -22,13 +22,17 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
             public string forCustomerCode;
             public string batch;
             public string lot;
-            public DocumentProcessTypeID movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
+            public long? souCustomerID;
+            public long? souSupplierID;
             public long? souAreaMasterID;
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
+            public string souCustomerCode;
+            public string souSupplierCode;
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
             public int? transportID;
 
@@ -99,6 +103,14 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
 
+
+            long? Sou_Customer_ID = reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
+                  string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
+
+            long? Sou_Supplier_ID =
+                    reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
+
             var souAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souAreaMasterCode);
@@ -144,6 +156,8 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
 
                     souBranchID = souBranchModel == null ? null : souBranchModel.ID,
                     souWarehouseID = souWarehouseModel == null ? null : souWarehouseModel.ID,
+                    souCustomerID = Sou_Customer_ID,
+                    souSupplierID = Sou_Supplier_ID,
                     souAreaMasterID = souAreaMasterModel == null ? null : souAreaMasterModel.ID,
 
                     desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
@@ -161,7 +175,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
 
                     docTypeId = DocumentTypeID.DELIVERY_ISSUED,
                     eventStatus = reqVO.eventStatus,
-                    documentProcessTypeID = reqVO.movementTypeID,
+                    documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.issuedOrderItem.Select(

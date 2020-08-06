@@ -18,6 +18,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string refID;
             public string ref1;
             public string ref2;
+            public string ref3;
+            public string ref4;
             public long? forCustomerID;
             public string forCustomerCode;
             public string batch;
@@ -26,9 +28,13 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
             public long? souBranchID;
             public long? souWarehouseID;
+            public long? souCustomerID;
+            public long? souSupplierID;
             public long? souAreaMasterID;
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
+            public string souCustomerCode;
+            public string souSupplierCode;
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
             public int? transportID;
 
@@ -67,6 +73,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string refID;
                 public string ref1;
                 public string ref2;
+                public string ref3;
+                public string ref4;
                 public string options;
                 public long? parentDocumentItem_ID;
 
@@ -100,14 +108,23 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
 
+            long? Sou_Customer_ID = reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
+                  string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
+            
+            long? Sou_Supplier_ID =
+                    reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
+
             var souAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souAreaMasterCode);
+
             var souWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.souWarehouseID,
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souWarehouseCode,
                                                     reqVO.souAreaMasterCode);
+
             var souBranchModel = this.StaticValue.GetBranch(
                                                     reqVO.souBranchID,
                                                     reqVO.souWarehouseID,
@@ -119,6 +136,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             var desAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desAreaMasterCode);
+            
             var desWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
@@ -151,6 +169,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     souBranchID = souBranchModel == null ? null : souBranchModel.ID,
                     souWarehouseID = souWarehouseModel == null ? null : souWarehouseModel.ID,
+                    souCustomerID = Sou_Customer_ID,
+                    souSupplierID = Sou_Supplier_ID,
                     souAreaMasterID = souAreaMasterModel == null ? null : souAreaMasterModel.ID,
 
                     desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
@@ -165,6 +185,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
+                    ref3 = reqVO.ref3,
+                    ref4 = reqVO.ref4,
 
                     docTypeId = DocumentTypeID.DELIVERY_RECEIVED,
                     eventStatus = reqVO.eventStatus,

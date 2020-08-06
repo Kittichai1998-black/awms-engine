@@ -178,14 +178,18 @@ const DocumentView = props => {
   const [typeDialog, setTypeDialog] = useState("");
   const [openReceive, setOpenReceive] = useState(false);
   const [selection, setSelection] = useState();
-  useEffect(() => {
+
+    useEffect(() => {
     getData();
-    // console.log(props.optionDocItems);
-  }, []);
+    }, []);
+
+    useEffect(() => {
+        setHeader(props.header)
+        //getHeader()
+    }, [props.header]);
 
   const getData = () => {
-    //========================================================================================================
-
+      //========================================================================================================
     Axios.get(
       window.apipath +
       "/v2/GetDocAPI/?docTypeID=" +
@@ -200,7 +204,10 @@ const DocumentView = props => {
       //   res.data
       // );
       setDataDoc(res.data)
-      if (res.data._result.status === 1) {
+        if (res.data._result.status === 1) {
+            if (props.OnchageOwnerGroupType !== undefined) {
+                props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
+                }
         setDataHeader(res.data.document);
         setEventStatus(res.data.document.EventStatus);
         //============================================================================
@@ -396,7 +403,8 @@ const DocumentView = props => {
       setColumnsDetailSOU(props.columnsDetailSOU)
     }
   }, [props.columnsDetailSOU, dataHeader])
-  const renderDocumentStatus = () => {
+
+    const renderDocumentStatus = () => {
     const res = DocumentEventStatus.filter(row => {
       return row.code === dataHeader.EventStatus;
     });

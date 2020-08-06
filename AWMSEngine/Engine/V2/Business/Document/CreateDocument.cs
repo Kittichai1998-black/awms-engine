@@ -87,6 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string ref1;
                 public string ref2;
                 public string ref3;
+                public string ref4;
                 public string refID;
                 public string options;
 
@@ -286,6 +287,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Ref1 = Item.ref1,
                     Ref2 = Item.ref2,
                     Ref3 = Item.ref3,
+                    Ref4 = Item.ref4,
                     RefID = Item.refID,
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,
