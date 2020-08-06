@@ -20,7 +20,7 @@ namespace AWMSEngine.ADO
             param.Add("@Token", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_TOKEN));
             param.Add("@APIKey ", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY));
             param.Add("@APIService_ID ", service != null ? service.ID : null);
-            param.Add("@APIService_Code ", service != null ? service.ID : null);
+            param.Add("@APIService_Code ", service != null ? service.Code : null);
             param.Add("@APIService_Name ", serviceName);
             param.Add("@IPRemote", ipRemote);
             param.Add("@IPLocal", ipLocal);

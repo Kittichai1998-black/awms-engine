@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business
+namespace AWMSEngine.Engine.V2.Business.Received
 {
-    public class ConfirmMappingSTOandDiSTO : BaseEngine<ConfirmMappingSTOandDiSTO.TReq, ConfirmMappingSTOandDiSTO.TRes>
+    public class ConfirmSTOReceivebyDocID : BaseEngine<ConfirmSTOReceivebyDocID.TReq, ConfirmSTOReceivebyDocID.TRes>
     {
         public class TReq
         {
@@ -45,11 +45,14 @@ namespace AWMSEngine.Engine.V2.Business
                             ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
                             //update Audit status, Hold status
 
-                            set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
+                            //set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
 
                             ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
                             //ถ้าไม่มี des_waveseq สุดท้ายเเล้ว ให้อัพเดท disto เป็น Done
-
+                            if (disto.Des_WaveSeq_ID == null)
+                            {
+                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                            }
                         });
                     });
 

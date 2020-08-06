@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business
+namespace AWMSEngine.Engine.V2.Business.Received
 {
-    public class ConfirmReceivedMapSTO : BaseEngine<ConfirmReceivedMapSTO.TReqModle, StorageObjectCriteria>
+    public class ConfirmSTOReceivedbyPallet : BaseEngine<ConfirmSTOReceivedbyPallet.TReqModle, StorageObjectCriteria>
     {
 
         public class TReqModle
@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business
             public StorageObjectType type;
         }
 
-        protected override StorageObjectCriteria ExecuteEngine(ConfirmReceivedMapSTO.TReqModle reqVO)
+        protected override StorageObjectCriteria ExecuteEngine(ConfirmSTOReceivedbyPallet.TReqModle reqVO)
         {
             List<dynamic> updates = new List<dynamic>();
             if (reqVO.type == StorageObjectType.LOCATION)
