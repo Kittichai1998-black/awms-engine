@@ -51,7 +51,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         distos.ForEach(disto =>
                                         {
                                             var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
-                                            stosPack.IsStock = 1;
+                                            stosPack.IsStock = true;
                                             ADO.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
                                             updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);
                                         });
@@ -67,10 +67,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                 stoLists = sto.ToTreeList();
 
                                             var all_pack = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
-                                            if (stoLists.Count() > 0 && all_pack.TrueForAll(x => x.IsStock == 1)) 
+                                            if (stoLists.Count() > 0 && all_pack.TrueForAll(x => x.IsStock == true)) 
                                             {
                                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
-                                                parentUpdate.IsStock = 1;
+                                                parentUpdate.IsStock = true;
                                                 ADO.StorageObjectADO.GetInstant().PutV2(parentUpdate, this.BuVO);
                                                 if (parentUpdate.parentID.HasValue)
                                                     updatePallet(parentUpdate.parentID.Value, parentUpdate.parentType.Value);

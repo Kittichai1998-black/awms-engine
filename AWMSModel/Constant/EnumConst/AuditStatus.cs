@@ -7,8 +7,8 @@ namespace AWMSModel.Constant.EnumConst
     public enum AuditStatus
     {
         NONE = 0,
-        WAIT_GR,
-        PASS,
-        HOLD
+        NOTPASS = 2,
+        PASS = 1,
+        HOLD = 9
     }
 }
