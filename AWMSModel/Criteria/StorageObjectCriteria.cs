@@ -28,6 +28,7 @@ namespace AWMSModel.Criteria
         public string lot;
         public string batch;
         public string cartonNo;
+        public string itemNo;
         public decimal qty;
         public long unitID;
         public string unitCode;
