@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -53,13 +54,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
 
         }
-        public class TRes
+        public class TRes 
         {
-            public StorageObjectCriteria sto;
-            public long? GR_ID;
-            public string GR_Code;
-            public long? PA_ID;
-            public string PA_Code;
+            public StorageObjectCriteria bsto;
+            public List<MappingDistoAndDocumentItem.TRes> pstos;
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
@@ -129,7 +127,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             mapsto.warehouseID = reqVO.warehouseID;
                             mapsto.mstID = checkBaseMaster.ID.Value;
 
-                            res.sto = mapsto;
+                            res.bsto = mapsto;
                         }
                         else
                         {
@@ -177,7 +175,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
                  
 
-                res.sto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
+                res.bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
             }
             void createSTO(TReq.PackSto psto, long idBase)
             {
