@@ -51,7 +51,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public DateTime? expireDate;
                 public DateTime? incubationDate;
                 public DateTime? productDate;
+                public DateTime? shelfLifeDate;
             }
+            
 
         }
         public class TRes 
@@ -182,6 +184,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             MappingDistoAndDocumentItem.TRes createSTO(TReq.PackSto psto, long idBase)
             {
                 var sku = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(psto.pstoCode, BuVO);
+                
                 var pack = new ams_PackMaster();
                 ConvertUnitCriteria unitTypeConvt = new ConvertUnitCriteria();
                 if (sku == null)
@@ -190,6 +193,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
                 else
                 {
+                    var skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
+                    if (skutype == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
+
+                    //var docprocessMaster = StaticValueManager.GetInstant()..FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
+
+
                     var unitType = ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
                     var packUnitType = new ams_UnitType();
                     if (String.IsNullOrEmpty(psto.packUnitTypeCode))
