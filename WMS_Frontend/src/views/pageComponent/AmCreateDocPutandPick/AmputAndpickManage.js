@@ -69,7 +69,6 @@ const AmputAndpickManage = (props) => {
         }
         
         const countDoc = Object.keys(docs).length
-
         for (let [key, value] of Object.entries(doc.dataCreate)) {
             if (key in docs)
                 docs[key] = value
@@ -78,18 +77,25 @@ const AmputAndpickManage = (props) => {
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
-                x.RefDocumentItem_ID = x.ID
+                x.parentDocumentItem_ID = x.ID
                 x.Options = null
                 x.skuCode = x.Code
                 return x
             })
 
-        } else {
-
+        } else if (props.doccreateDocType === "picking") {
+            docs.issueItems = doc.dataSourceItemTB.map(x => {
+                x.unitType = x.UnitType_Code
+                x.parentDocumentItem_ID = x.ID
+                x.Options = null
+                x.skuCode = x.Code
+                return x
+            })
         }
-        console.log(docs)
+
+
         if (Object.keys(docs).length > countDoc) {
-            //CreateDocuments(docs)
+           CreateDocuments(docs)
         }
 
     }
@@ -99,8 +105,8 @@ const AmputAndpickManage = (props) => {
             if (res.data._result.status) {
                 dia.setdailogMsg("Create Document success Document ID = " + res.data.ID);
                 dia.setdailogSuc(true)
-                if (props.apiRes !== undefined)
-                    props.history.push(props.apiRes + res.data.ID)
+                if (props.docapiRes !== undefined)
+                    props.dochistory.push(props.docapiRes + res.data.ID)
             } else {
                 dia.setdailogMsg(res.data._result.message);
                 dia.setdailogErr(true)

@@ -315,7 +315,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                     var regisMap = this.NewStorageObjectCriteria(pm, firstMapSto, reqVO);
 
-                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
+                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.GetCheckSum() == regisMap.GetCheckSum());
                     if (matchStomap == null)
                     {
                         this.ADOSto.PutV2(regisMap, this.BuVO);

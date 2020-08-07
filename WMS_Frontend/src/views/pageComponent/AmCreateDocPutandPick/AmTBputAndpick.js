@@ -211,12 +211,12 @@ const AmTBputAndpick = (props) => {
             </Grid>
             <Grid item>
                 <div style={{ marginTop: "20px" }}>
-        <AmButton
-            styleType="add"
-            onClick={() => {
-                onSubmitSetItem();
-            }}
-                    >ADD</AmButton>
+                    {doc.dataSourceItemTB.length > 0 ? <AmButton
+                        styleType="add"
+                        onClick={() => {
+                            onSubmitSetItem();
+                        }}
+                    >ADD</AmButton> : null}
                     
                 </div>
             </Grid>

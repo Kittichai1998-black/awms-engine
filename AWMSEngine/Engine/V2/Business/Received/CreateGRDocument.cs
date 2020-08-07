@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string ref2;
             public string ref3;
             public string options;
-            public DocumentProcessTypeID movementTypeID;
+            public DocumentProcessTypeID documentProcessTypeID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -102,6 +102,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                                     reqVO.souAreaMasterID,
                                                     reqVO.souWarehouseCode,
                                                     reqVO.souAreaMasterCode);
+
             var Sou_Branch_ID = this.StaticValue.GetBranch(
                                                     reqVO.souBranchID,
                                                     reqVO.souWarehouseID,
@@ -156,7 +157,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     options = reqVO.options,
                     docTypeId = DocumentTypeID.PUTAWAY,
                     eventStatus = reqVO.eventStatus,
-                    documentProcessTypeID = reqVO.movementTypeID,
+                    documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.receiveItems.Select(

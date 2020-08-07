@@ -25,7 +25,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Document ProcessType", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
+                    { label: "Movement Type", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Movement Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -49,25 +49,36 @@ const Create_GR_DR = props => {
             let DocumentProcessType_ID = dataDocument.DocumentProcessType_ID
             let SouCustomerName = dataDocument.SouCustomerName
             let Sou_Customer_ID = dataDocument.Sou_Customer_ID
+            let DesCustomerName = dataDocument.DesCustomerName
+            let Des_Customer_ID = dataDocument.Des_Customer_ID
             let SouWarehouseName = dataDocument.SouWarehouseName
             let Sou_Warehouse_ID = dataDocument.Sou_Warehouse_ID
-            let SouSupplierName = dataDocument.SouSupplierName
-            let Sou_Supplier_ID = dataDocument.Sou_Supplier_ID
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
+            let SouSupplierName = dataDocument.SouSupplierName
+            let Sou_Supplier_ID = dataDocument.Sou_Supplier_ID
+            let DesSupplierName = dataDocument.DesSupplierName
+            let Des_Supplier_ID = dataDocument.Des_Supplier_ID
             let ForCustomerName = dataDocument.ForCustomerName
             let For_Customer_ID = dataDocument.For_Customer_ID
-            console.log(SouWarehouseName)
             let Source;
             if (SouWarehouseName != null) {
-                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
+                Source = [{ label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },
+                    { label: "Destination Warehouse", type: "labeltext", key: "desWarehouseID", texts: SouWarehouseName, valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" },
+                ]
             } else if (SouCustomerName != null) {
-                Source = { label: "Source Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
+                Source = [{ label: "Source Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" },
+                    { label: "Destination Customer", type: "labeltext", key: "desCustomerID", texts: DesCustomerName, valueTexts: Des_Customer_ID, codeTranslate: "Des Customer" }
+                ]
             } else if (SouSupplierName != null) {
-                Source = { label: "Source Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
+                Source = [{ label: "Source Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" },
+                    { label: "Destination Supplier", type: "labeltext", key: "desSupplierID", texts: DesSupplierName, valueTexts: Des_Supplier_ID, codeTranslate: "Des Supplier" }
+                ]
 
             } else {
-                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: '', valueTexts: '', codeTranslate: "Source Warehouse" }
+                Source = [{ label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },
+                    { label: "Destination Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName, valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" },
+                ]
             }
 
             headerCreate = [
@@ -80,10 +91,9 @@ const Create_GR_DR = props => {
                     { label: "Process Type", type: "labeltext", key: "documentProcessTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
-                [
+                
                     Source,
-                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
-                ],
+                    
                 [
                     { label: "For Customer", type: "labeltext", key: "forCustomerID", texts: ForCustomerName, valueTexts: For_Customer_ID, codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
@@ -106,8 +116,8 @@ const Create_GR_DR = props => {
                         doccolumns={columns}
                         doccolumnEdit={columnEdit}
                         docapicreate={apicreate}
-                        doccreateDocType={"putAway"}
-                        doctypeDocNo={1011}
+                        doccreateDocType={"picking"}
+                        doctypeDocNo={1012}
                         dochistory={props.history}
                         onChangeDoument={(e) => { setdataDocument(e) }}
                         docItemQuery={DocumentItem}
@@ -204,10 +214,47 @@ const Create_GR_DR = props => {
     };
 
 
+    const WarehouseQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "Warehouse",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+
+    const CustomerQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "Customer",
+        q: '[{ "f": "Status", "c":"<", "v": 2},]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+    const MovementTypeQuery2 = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "DocumentProcessType",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
     const DocumentDR = {
         queryString: window.apipath + "/v2/SelectDataTrxAPI/",
         t: "Document",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -230,6 +277,16 @@ const Create_GR_DR = props => {
 
     }
 
+    const columsFindpopUp = [
+        {
+            Header: "Reorder",
+            accessor: "Code",
+            fixed: "left",
+            width: 130,
+            sortable: true
+        },
+        { Header: "Brand", accessor: "Name", width: 200, sortable: true }
+    ];
 
     const columnEdit = [
         { Header: "Item Code", accessor: "SKUItems", type: "text"},
@@ -274,7 +331,7 @@ const Create_GR_DR = props => {
         { Header: "Unit", accessor: "UnitType_Code", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
+    const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
     const apiRes = "/putaway/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>

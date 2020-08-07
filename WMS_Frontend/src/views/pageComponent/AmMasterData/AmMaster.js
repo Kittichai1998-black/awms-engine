@@ -244,6 +244,7 @@ const AmMasterData = (props) => {
     }, [page])
 
     const onChangeFilterData = (filterValue) => {
+        console.log(filterValue)
         var res = queryObj;
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined){
@@ -257,6 +258,7 @@ const AmMasterData = (props) => {
                 res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
             }
         });
+        console.log(res)
         setQueryObj(res)
     }
 

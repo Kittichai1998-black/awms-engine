@@ -16,7 +16,7 @@ import AmPopup from "../../../../components/AmPopup";
 const Axios = new apicall();
 
 //======================================================================
-const ID_Search = props => {
+const PASearch = props => {
     useEffect(() => {
         getData();
     }, []);
@@ -182,12 +182,27 @@ const ID_Search = props => {
     ];
 
     const iniCols = [
-        { Header: "", accessor: "EventStatus", width: 70, fixed: "left", Cell: dataRow => getStatusCode(dataRow.value, dataRow.original) },
+        {
+            Header: "Status",
+            accessor: "EventStatus",
+            fixed: "left",
+            width: 70,
+            fixWidth: 162,
+            filterType: "dropdown",
+            filterConfig: {
+                filterType: "dropdown",
+                dataDropDown: DocumentEventStatusSearch,
+                typeDropDown: "normal"
+            },
+            Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
+        },
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-        { Header: "Movement", accessor: "MovementName", width: 200 },
+        { Header: "Movement", accessor: "DocumentProcessTypeName", width: 200 },
         { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
+        { Header: "Sou.Customer", accessor: "SouCustomerName", width: 150 },
+        { Header: "Sou.Supplier", accessor: "SouSupplierName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
-        // {   Header: "Sou.Customer",   accessor: "SouCustomerName",   width: 150 },
+
         { Header: "Remark", accessor: "Remark", width: 150 },
         { Header: "Doc. Date", accessor: "DocumentDate", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY" },
         { Header: "Action Time", accessor: "ActionTime", width: 150, type: "datetime", dateFormat: "DD/MM/YYYY HH:mm" }, { Header: "Create", accessor: "Created", width: 200 },
@@ -196,18 +211,14 @@ const ID_Search = props => {
 
     const search = [
         { label: "Sou. Warehouse", field: "SouWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
+        { label: "Sou.Customer", field: "SouCustomerName", searchType: "dropdown", dropdownData: dataCustomer, fieldDataKey: "Name", fieldLabel: "Name" },
+        { label: "Sou.Supplier", field: "SouSupplierName", searchType: "dropdown", dropdownData: dataCustomer, fieldDataKey: "Name", fieldLabel: "Name" },
         { label: "Des. Warehouse", field: "DesWarehouseName", searchType: "dropdown", dropdownData: dataWarehouse, fieldDataKey: "Name", fieldLabel: "Name" },
-        // {   label: "Sou.Customer",   field: "SouCustomerName",   searchType: "dropdown",   dropdownData: dataCustomer,   fieldDataKey: "Name",   fieldLabel: "Name" },
         { label: "Remark", field: "Remark", searchType: "input" },
         { label: "Doc. Date From", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateFrom" },
         { label: "Doc. Date To", field: "DocumentDate", searchType: "datepicker", typedate: "date", dateSearchType: "dateTo" }
     ];
 
-    const primarySearch = [
-        { label: "Event Status", field: "EventStatus", searchType: "dropdown", dropdownData: DocumentEventStatusSearch, fieldDataKey: "Name", fieldLabel: "Name" },
-        { label: "Doc No.", field: "Code", searchType: "input" },
-        { label: "Movement", field: "MovementName", searchType: "dropdown", dropdownData: dataMovementType, fieldDataKey: "Name", fieldLabel: "Name" }
-    ];
     const dataReject = [// {//   field: "souAreaCode",//   type: "dropdow",//   typeDropdow: "search",//   name: "Sou. Area",//   dataDropDow: AreaMasterQuery,//   placeholder: "Sou. Area",//   fieldLabel: ["Code", "Name"]//   //required: true//   //disabled: true// },
         { field: "desAreaCode", type: "dropdow", typeDropdow: "search", name: "Dest. Area", dataDropDow: AreaMasterQuery, placeholder: "Dest. Area", fieldLabel: ["Code", "Name"] },
         { field: "desAreaLocationCode", type: "dropdow", typeDropdow: "search", name: "Dest. AreaLocation", dataDropDow: AreaLocationMasterQuery, placeholder: "Des AreaLocation", fieldLabel: ["Code", "Name"] }
@@ -217,7 +228,7 @@ const ID_Search = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/IssueOrder/detail?docID=" + data.ID}
+                    api={"/picking/detail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -249,18 +260,19 @@ const ID_Search = props => {
             />
             <AmDocumentSearch
                 columns={iniCols}
-                primarySearch={primarySearch}
-                expensionSearch={search}
-                docTypeCode="1012"
+                // primarySearch={primarySearch}
+                columnsFilterPrimary={search}
+                //expensionSearch={search}
+                docTypeCode="1002"
                 buttonClose={true}
                 buttonReject={true}
                 dataReject={dataReject}
-                //apiReject={"/v2/RejectGRDocAPI"}
+                apiReject={"/v2/RejectGIDocAPI"}
                 //apiWorking={""}
-                //apiClose={"/v2/CloseDocAPI"}
+                apiClose={"/v2/CloseDocAPI"}
             />
         </div>
     );
 };
 
-export default ID_Search;
+export default PASearch;
