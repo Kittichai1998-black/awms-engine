@@ -36,6 +36,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string batch;
                 public string lot;
                 public string orderNo;
+                public string itemNo;
                 public string refID;
                 public string ref1;
                 public string ref2;//SKU1,SKU1|B001,B002|100,500|PC,CAR
@@ -64,9 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             var res = new TRes();
             StorageObjectCriteria mapsto = null;
-            if(reqVO.processType == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่ได้ระบุค่า Document Process Type");
-
+             
             if (reqVO.bstoID == null)
             {
                 //ไม่ระบุ bstoID ต้องเอา bstoCode ไปเช็คว่ามีมั้ย ถ้ามี getSto ไม่มีสร้าง sto base ใหม่ 
