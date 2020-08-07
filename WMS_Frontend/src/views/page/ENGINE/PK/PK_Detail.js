@@ -7,7 +7,7 @@ import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
-const GR_Detail = props => {
+const PK_Detail = props => {
 
     const [OwnerGroupType, setOwnerGroupType] = useState(1);
     const [docview, setdocview] = useState();
@@ -24,15 +24,13 @@ const GR_Detail = props => {
                 columnsDetailSOU={columnsDetailSOU}
                 columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
-                CreateputAway={true}
-                apiCreate={'/picking/create?docID='}
                 columns={columns}
                 typeDoc={"issued"}
-                typeDocNo={1012}
+                typeDocNo={1002}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/issue/search"}
+                linkBack={"/picking/search"}
                 history={props.history}
             >
             </DocView>
@@ -49,10 +47,10 @@ const GR_Detail = props => {
                 { label: "Destination Warehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
                 DataprocessType = [{ label: "Source Customer", values: "SouCustomerName" },
-                    { label: "Destination Customer", values: "DesCustomerName" }]
+                { label: "Destination Customer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
                 DataprocessType = [{ label: "Source Supplier", values: "SouSupplierName" },
-                    { label: "Destination Supplier", values: "DesSupplierName" }]
+                { label: "Destination Supplier", values: "DesSupplierName" }]
             } else {
                 DataprocessType = [{ label: "Source Warehouse", values: "SouWarehouseName" },
                 { label: "Destination Warehouse", values: "DesWarehouseName" }]
@@ -69,10 +67,10 @@ const GR_Detail = props => {
                 { label: "Process Type", values: "DocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
-            
-                DataprocessType,
 
-            
+            DataprocessType,
+
+
             [
                 { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
                 { label: "Remark", values: "Remark" }
@@ -82,7 +80,7 @@ const GR_Detail = props => {
 
 
     }, [OwnerGroupType])
-  
+
 
     const columns = [
         // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
@@ -199,8 +197,8 @@ const GR_Detail = props => {
     //issued
     return (
         <div>{docview}</div>
-      
+
     );
 };
 
-export default GR_Detail;
+export default PK_Detail;

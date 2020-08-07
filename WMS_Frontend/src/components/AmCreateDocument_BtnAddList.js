@@ -146,7 +146,7 @@ const StyledSearch = styled.div`
 `;
 const BtnAddList = props => {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState({ ...props.queryApi });
+  const [query, setQuery] = useState(props.queryApi);
   const [data, setData] = useState([]);
   const [sort, setSort] = useState();
   const [dataSelect, setDataSelect] = useState([]);
@@ -156,9 +156,15 @@ const BtnAddList = props => {
   const [defaultSelect, setDefaultSelect] = useState();
   const [totalSize, setTotalSize] = useState(0);
 
-  useEffect(() => {
+
+    useEffect(() => {
+        console.log(query)
+    }, [props.queryApi])
+
+
+    useEffect(() => {
     setDataSelect([])
-    if (open) {
+      if (open) {
       const dataHeader = props.headerCreate
         .reduce((arr, el) => arr.concat(el), [])
         .filter(x => x.search);

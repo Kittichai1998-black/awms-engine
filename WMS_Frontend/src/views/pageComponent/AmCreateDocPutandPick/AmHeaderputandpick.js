@@ -79,7 +79,7 @@ const DialogTitle = withStyles(theme => ({
                 aria-label="Close"
                 size="small"
                 className={classes.closeButton}
-                //onClick={onClose}
+                onClick={onClose}
             >
                 <CloseIcon fontSize="inherit" />
             </IconButton>
@@ -122,13 +122,9 @@ const useDocumentItemQuery = (docID, docItemQuery) => {
 
 const AmHeaderputandpick = (props) => {
     const { doc, dia } = useContext(PutandPickContext)
-    const dataHeader = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-        arr[el.key] = el.valueTexts || el.defaultValue
-        return arr
-    }, {})
-
+ 
     //const Dataheades = usedataHeader(props.docheaderCreate)
-    const [createDocumentData, setcreateDocumentData] = useState(dataHeader);
+    const [createDocumentData, setcreateDocumentData] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
     const DocItemsquery = useDocumentItemQuery(doc.docID, props.docItemQuery)
@@ -166,17 +162,14 @@ const AmHeaderputandpick = (props) => {
         }
     }, [doc.dialogItemSet])
 
-    useEffect(() => {
-        if (createDocumentData !== undefined) {
-            setDataHeader(createDocumentData);
-        }
-    }, [createDocumentData])
 
     useEffect(() => {
-       let  dataHeader = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-            arr[el.key] = el.valueTexts || el.defaultValue
-            return arr
-       }, {})    
+        let dataHead = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+                arr[el.key] = el.valueTexts || el.defaultValue    
+               createDocumentData[el.key] = el.valueTexts || el.defaultValue                  
+                return arr
+            }, {})
+        //setcreateDocumentData(createDocumentData)
     }, [props.docheaderCreate])
 
     useEffect(() => {
@@ -193,16 +186,20 @@ const AmHeaderputandpick = (props) => {
         }
     }, [doc.dataSet]);
 
+    useEffect(() => {
+        doc.setdataCreate(createDocumentData)
+    }, [createDocumentData])
+
+    useEffect(() => {
+        createDocumentData["parentDocumentID"] = doc.docID
+    }, [doc.docID])
+
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
             + "&docID=" + doc.docID
             + "&spname=DOCITEM_LISTDRANDDI";
     }
 
-    const setDataHeader = (datas) => {
-        doc.setdataCreate(datas)
-
-    }
 
     const getData = () => {
         if (getDocItem != undefined) {
@@ -617,7 +614,8 @@ const AmHeaderputandpick = (props) => {
     const onHandleClear = () => {
         doc.setdatadocItem([])
         //doc.setdocID(0)
-        doc.setdialogItem(false)
+        doc.setdialogItem(false);
+        doc.setdialogItem(false);
     }
 
 
@@ -631,7 +629,7 @@ const AmHeaderputandpick = (props) => {
 
             <DialogTitle
                 id="addpallet-dialog-title"
-                onClose={() => { onHandleClear(); }}>
+                onClose={() => { onHandleClear(); doc.setdialogItem(false); }}>
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>
@@ -668,7 +666,7 @@ const AmHeaderputandpick = (props) => {
 
             <DialogTitle
                 id="addpallet-dialog-title"
-                onClose={() => { onHandleClear();}}>
+                onClose={() => { onHandleClear(); doc.setdialogItemSet(false);}}>
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>
@@ -677,7 +675,7 @@ const AmHeaderputandpick = (props) => {
                         columns={columns}
                         dataKey={"ID"}
                         dataSource={doc.dataSet}
-                        //selectionDefault={doc.dataSourceItemTB}
+                        selectionDefault={doc.dataSourceItemTB}
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
                         rowNumber={true}
