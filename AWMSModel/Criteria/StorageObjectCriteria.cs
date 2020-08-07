@@ -14,7 +14,6 @@ namespace AWMSModel.Criteria
     public partial class StorageObjectCriteria : ITreeObject
     {
         public long? id;
-        public string groupSum;
         public StorageObjectType type;
         public long? mstID;
         public long? skuID;
