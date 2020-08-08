@@ -35,6 +35,8 @@ namespace AMWUtil.Exception
 
         [AMWExceptionCodeAttribute("V0103", DefaultMessage = "develop menu not found.")]
         V0_DEVMENU_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0104", DefaultMessage = "ไม่พบข้อมูลในคลังสินค้า")]
+        V0_STO_NOT_FOUND,
 
 
 
