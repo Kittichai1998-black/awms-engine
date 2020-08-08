@@ -66,13 +66,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             var res = new TRes();
             StorageObjectCriteria mapsto = null;
-            var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("DocumentProcessType_ID", reqVO.processType, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
-                    }, BuVO).FirstOrDefault();
+            //var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(new SQLConditionCriteria[] {
+            //            new SQLConditionCriteria("DocumentProcessType_ID", reqVO.processType, SQLOperatorType.EQUALS),
+            //            new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+            //        }, BuVO).FirstOrDefault();
 
-            if (docprocessMaster == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถสร้างเอกสารรับเข้าด้วย Document Process Type : " + reqVO.processType + "นี้ได้");
+            //if (docprocessMaster == null)
+            //    throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถสร้างเอกสารรับเข้าด้วย Document Process Type : " + reqVO.processType + "นี้ได้");
 
 
             if (reqVO.bstoID == null)
@@ -205,12 +205,12 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     var skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
                     if (skutype == null)
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
-                    var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("ID", reqVO.processType, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("SKUGroupType", skutype.GroupType, SQLOperatorType.EQUALS)
-                    }, BuVO).FirstOrDefault();
-                    if (docprocessMaster == null)
-                        throw new AMWException(Logger, AMWExceptionCode.V1001, "SKU นี้ไม่สามารถรับเข้าผ่าน Document Process Type : "+ reqVO.processType+" นี้ได้");
+                    //var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
+                    //    new SQLConditionCriteria("ID", reqVO.processType, SQLOperatorType.EQUALS),
+                    //    new SQLConditionCriteria("SKUGroupType", skutype.GroupType, SQLOperatorType.EQUALS)
+                    //}, BuVO).FirstOrDefault();
+                    //if (docprocessMaster == null)
+                    //    throw new AMWException(Logger, AMWExceptionCode.V1001, "SKU นี้ไม่สามารถรับเข้าผ่าน Document Process Type : "+ reqVO.processType+" นี้ได้");
 
 
                     var unitType = ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
