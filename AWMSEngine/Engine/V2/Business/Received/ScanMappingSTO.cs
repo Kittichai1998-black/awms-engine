@@ -117,23 +117,23 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             }
 
                             var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == checkBaseMaster.UnitType_ID);
-
-                            mapsto.code = reqVO.bstoCode;
-                            mapsto.eventStatus = StorageObjectEventStatus.ACTIVE;
-                            mapsto.name = "Pallet";
-                            mapsto.parentID = reqVO.areaID;
-                            mapsto.parentType = StorageObjectType.LOCATION;
-                            mapsto.qty = 1;
-                            mapsto.baseQty = 1;
-                            mapsto.unitID = _unitType.ID.Value;
-                            mapsto.baseUnitID = _unitType.ID.Value;
-                            mapsto.unitCode = _unitType.Code;
-                            mapsto.baseUnitCode = _unitType.Code;
-                            mapsto.type = StorageObjectType.BASE;
-                            mapsto.areaID = reqVO.areaID;
-                            mapsto.warehouseID = reqVO.warehouseID;
-                            mapsto.mstID = checkBaseMaster.ID.Value;
-
+                            mapsto = new StorageObjectCriteria() {
+                                code = reqVO.bstoCode,
+                                eventStatus = StorageObjectEventStatus.ACTIVE,
+                                name = "Pallet",
+                                parentID = reqVO.areaID,
+                                parentType = StorageObjectType.LOCATION,
+                                qty = 1,
+                                baseQty = 1,
+                                unitID = _unitType.ID.Value,
+                                baseUnitID = _unitType.ID.Value,
+                                unitCode = _unitType.Code,
+                                baseUnitCode = _unitType.Code,
+                                type = StorageObjectType.BASE,
+                                areaID = reqVO.areaID,
+                                warehouseID = reqVO.warehouseID,
+                                mstID = checkBaseMaster.ID.Value,
+                        };
                             res.bsto = mapsto;
                         }
                         else
