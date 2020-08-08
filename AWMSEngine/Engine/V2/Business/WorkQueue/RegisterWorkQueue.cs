@@ -129,7 +129,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var req_NewBase = new MappingNewBaseAndSTO.TReq()
             {
                 baseCode = reqVO.baseCode,
-                isEmptyPallet = true,
+                isEmptyPallet = checkEmpPallet,
                 warehouseID = _warehouse.ID.Value,
                 areaID = _area.ID,
                 weight = reqVO.weight,
