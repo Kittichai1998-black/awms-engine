@@ -114,7 +114,7 @@ const AmMappingHH = (props) => {
     const [editData, setEditData] = useState(
         {
             processType: null,
-            bstoCode: "THIP000001",
+            bstoCode: "BSS0000001",
             warehouseID: 1,
             areaID: null,
             locationID: null,
