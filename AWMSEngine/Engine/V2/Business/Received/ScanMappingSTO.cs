@@ -68,7 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             StorageObjectCriteria mapsto = null;
             var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID", reqVO.processType, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_RECEIVE, SQLOperatorType.EQUALS)
                     }, BuVO).FirstOrDefault();
 
             if (docprocessMaster == null)
