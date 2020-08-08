@@ -18,6 +18,7 @@ namespace AWMSModel.Entity
         public long? BaseUnitType_ID;
         public string Options;
         public DateTime? ProductionDate;
+        public DateTime? IncubationDate;
         public DateTime? ExpireDate;
         public string OrderNo;
         public string Batch;
