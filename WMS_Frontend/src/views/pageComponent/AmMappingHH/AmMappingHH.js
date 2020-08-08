@@ -66,7 +66,17 @@ const WarehouseQuery = {
     l: 100,
     all: "",
 }
-
+const DocumentProcessTypeQuery = {
+    queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    t: "DocumentProcessType",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    f: "ID as processType,Name,Code",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+}
 const AreaMasterQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
@@ -79,7 +89,7 @@ const AreaMasterQuery = {
     all: "",
 }
 
-const steps = ['Warehouse', 'Pallet', 'Area', 'Barcode', 'Location']
+const steps = ['Warehouse', 'DocProcessType', 'Pallet', 'Area', 'Barcode', 'Location']
 
 const actionButtons = [
     (<AiFillDelete size="15" color="#ff704d" />)
@@ -94,21 +104,6 @@ const detailPack = [
     { label: "Quantity", accessor: ["Quantity", "unitType"], type: "inputNum" }
 ]
 
-// function useWindowSize(ref) {
-//     const [size, setSize] = useState([0, 0]);
-//     useLayoutEffect(() => {
-//         function updateSize() {
-//             console.log(ref);
-//             if (ref.current)
-//                 setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
-//         }
-//         window.addEventListener('resize', updateSize);
-//         updateSize();
-//         return () => window.removeEventListener('resize', updateSize);
-//     }, []);
-//     return size;
-// }
-
 const AmMappingHH = (props) => {
 
     // const classes = useStyles();
@@ -118,15 +113,15 @@ const AmMappingHH = (props) => {
     const [datasTreeView, setDatasTreeView] = useState([])
     const [editData, setEditData] = useState(
         {
+            processType: null,
+            bstoCode: "BSS0000001",
             warehouseID: 1,
-            action: 1,
-            amount: 1,
-            mode: 0,
-            rootOptions: "_done_des_estatus=12&_mvt=1011",
-            datas: [],
-            scanCode: "THIP000001",
-            areaID: 14,
-            qr: "N|1|20386,20291|160,100"
+            areaID: null,
+            locationID: null,
+            pstos: [],
+            //rootOptions: "_done_des_estatus=12&_mvt=1011",
+
+            //qr: "N|1|20386,20291|160,100"
         }
     )
     const [dataModal, setDataModal] = useState({})
@@ -135,6 +130,8 @@ const AmMappingHH = (props) => {
     // const steps = steps;
     // const tableSize = useWindowSize(containerRef)
     const [areaLocationMasterQuery, setAreaLocationMasterQuery] = useState()
+    const [areaID, setAreaID] = useState()
+    const [areaLocationID, setAreaLocationID] = useState()
     // const ref = useRef([0, 1, 2, 3, 4, 5, 6, 7].map(() => createRef()))
     const [requiredField, setRequiredField] = useState({ pallet: false, area: false, qr: false })
 
@@ -152,17 +149,6 @@ const AmMappingHH = (props) => {
         l: 100,
         all: "",
     }
-    // const containerRef = useRef()
-    // const treeview = useRef()
-    // const [width] = useWindowSize(containerRef)
-    // console.log(width);
-
-    // useEffect(() => {
-    //     if (datasTreeView.length) {
-    //         console.log(treeview);
-    //         // treeview.current && treeview.current.api.load()
-    //     }
-    // }, [datasTreeView])
 
     function getStepContent(index) {
         switch (steps[index]) {
@@ -187,6 +173,25 @@ const AmMappingHH = (props) => {
                             // data={dataUnit}
                             // returnDefaultValue={true}
                             defaultValue={editData.warehouseID ? editData.warehouseID : null}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(fieldDataKey, dataObject)}
+                            ddlType={"search"} //รูปแบบ Dropdown 
+                        />
+                    </FormGroup>
+                );
+            case "DocProcessType":
+                return (
+                    <FormGroup>
+                        <Label style={LabelStyle}>DocProcess.Type</Label>
+                        <AmDropdown
+                            placeholder="Select"
+                            fieldDataKey="processType" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด                        
+                            ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
+                            queryApi={DocumentProcessTypeQuery}
+                            // data={dataUnit}
+                            // returnDefaultValue={true}
+                            defaultValue={editData.processType ? editData.processType : null}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(fieldDataKey, dataObject)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
@@ -335,7 +340,7 @@ const AmMappingHH = (props) => {
     }
 
     const generateListLabel = (obj) => {
-        return editData.datas.map(x => {
+        return editData.pstos.map(x => {
             return (
                 <Box
 
@@ -375,10 +380,28 @@ const AmMappingHH = (props) => {
             _editData[field] = data
         }
 
-        console.log(_editData);
-        setEditData(_editData)
+        if (field === "scanCode" && data) {
+            console.log(data)
+            const Query = {
+                queryString: window.apipath + "/v2/SelectDataViwAPI/",
+                t: "r_StorageObject",
+                q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Pallet", "c":"=", "v":"' + data + '"}]',
+                f: "*",
+                g: "",
+                s: "[{'f':'Pallet','od':'asc'}]",
+                sk: 0,
+                l: 1,
+                all: ""
+            };
+            var queryStr = createQueryString(Query)
+            Axios.get(queryStr).then(res => {
+                // console.log(res.data.datas[0].AreaID)
+                if (IsEmptyObject(res.data.datas)) {
+                    editData["areaID"] = res.data.datas[0].AreaID
+                }
+            });
 
-        if (field === "areaID" && data) {
+        } else if (field === "areaID" && data) {
             // let _AreaLocationMasterQuery = { ...AreaLocationMasterQuery }
             let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
             query.push({ f: "AreaMaster_ID", c: "=", v: data[field] })
@@ -386,9 +409,13 @@ const AmMappingHH = (props) => {
             console.log(AreaLocationMasterQuery);
             setAreaLocationMasterQuery(AreaLocationMasterQuery)
         }
+
+        console.log(_editData);
+        setEditData(_editData)
     }
 
     const handleStep = (step) => {
+        console.log(steps[activeStep])
         switch (steps[activeStep]) {
             case "Warehouse":
                 handleNext()
@@ -408,16 +435,33 @@ const AmMappingHH = (props) => {
                     handleBack()
                 }
                 break;
+            case "DocProcessType":
+                if (step === "next") {
+                    //console.log(_editData)
+                    //let _editData = Clone(editData)
+                    let _requiredField = { ...requiredField }
+                    if (editData.processType) {
+                        handleNext()
+                        _requiredField.pallet = false
+                    } else {
+                        _requiredField.pallet = true
+                    }
+                    setRequiredField(_requiredField)
+                } else if (step === "back") {
+                    handleBack()
+                }
+                break;
             case "Area":
                 if (step === "next") {
-                    // let _editData = Clone(editData)
+                    //    let _editData = Clone(editData)
+                    console.log(editData)
                     let _requiredField = { ...requiredField }
                     if (editData.areaID) {
 
                         _requiredField.area = false
-                        Axios.post(window.apipath + "/v2/ScanMapStoAPI", editData).then(res => {
+                        Axios.post(window.apipath + "/v2/scan_mapping_sto", editData).then(res => {
                             // console.log(editData);
-                            // console.log(res);
+                            console.log(res);
                             // handleBack()
                             if (res.data._result.status) {
                                 const _datasTreeView = [{ id: res.data.id, text: res.data.code, children: [], expanded: true, layer: 1 }]
@@ -430,6 +474,7 @@ const AmMappingHH = (props) => {
                                 setDialog({ type: "error", text: res.data._result.message, open: true })
                             }
                         })
+
                     } else {
                         _requiredField.area = true
                     }
@@ -548,7 +593,7 @@ const AmMappingHH = (props) => {
                                         >
                                             Back
                                         </AmButton>}
-
+                                    {console.log(steps.length)}
                                     <AmButton
                                         variant="contained"
                                         styleType="confirm"
