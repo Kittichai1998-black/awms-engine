@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public long? GR_ID;
                 public string GR_Code;
                 public long? PA_ID;
-                public string PA_Code;
+                public string PA_Code; 
             }
         }
 
@@ -75,8 +75,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                     var parentDoc = DocumentADO.GetInstant().GetDocumentAndDocItems(doc.ParentDocument_ID.Value, this.BuVO);
                     var disto = distos.Find(x => x.DocumentItem_ID == docItem.ID && x.Sou_StorageObject_ID == psto.ID);
-                    var remainBaseRecv = docItem.BaseQuantity.Value - disto.BaseQuantity.Value;
-                    var remainRecv = docItem.Quantity.Value - disto.Quantity.Value;
+                    var remainBaseRecv = docItem.BaseQuantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.BaseQuantity).Value;
+                    var remainRecv = docItem.Quantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.Quantity).Value;
 
                     if (disto != null)
                     {
@@ -152,6 +152,25 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 newBaseQty = 0;
                             }
                         }
+                    }
+                    else
+                    {
+                        disto = new amt_DocumentItemStorageObject()
+                        {
+                            ID = null,
+                            BaseQuantity = remainBaseRecv - newBaseQty,
+                            BaseUnitType_ID = psto.BaseUnitType_ID,
+                            Quantity = remainRecv - newQty,
+                            UnitType_ID = psto.UnitType_ID,
+                            Sou_StorageObject_ID = psto.ID.Value,
+                            DocumentItem_ID = docItem.ID.Value,
+                            DocumentType_ID = doc.DocumentType_ID,
+                            Status = EntityStatus.INACTIVE
+                        };
+
+                        DistoADO.GetInstant().Insert(disto, this.BuVO);
+                        newBaseQty = remainBaseRecv - newBaseQty;
+                        newQty = remainRecv - newQty;
                     }
 
                 };
