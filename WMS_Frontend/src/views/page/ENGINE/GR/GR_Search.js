@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import Grid from '@material-ui/core/Grid';
 
 import {
   apicall,
@@ -13,6 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
 import AmPopup from "../../../../components/AmPopup";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
 const Axios = new apicall();
 
 //======================================================================
@@ -239,25 +241,14 @@ const DocumentSearchSTGT = props => {
   };
 
   return (
-    <div>
-      <AmPopup
-        content={textError}
-        typePopup={"error"}
-        open={previewError}
-        closeState={e => setPreviewError(e)}
-      />
-      <AmPopup
-        content={textError}
-        typePopup={"info"}
-        open={previewInfo}
-        closeState={e => setPreviewInfo(e)}
-      />
-      <AmPopup
-        content={textWarning}
-        typePopup={"warning"}
-        open={previewWarning}
-        closeState={e => setPreviewWarning(e)}
-      />
+      <div>
+          <Grid container>
+              <Grid item xs container direction="column">
+              </Grid>
+              <Grid item>
+                      <AmCreateDoc></AmCreateDoc>
+              </Grid>
+          </Grid>
       <AmDocumentSearch
         columns={iniCols}
        // primarySearch={primarySearch}
@@ -267,7 +258,7 @@ const DocumentSearchSTGT = props => {
         buttonClose={true}
         buttonReject={true}
         dataReject={dataReject}
-        apiReject={"/v2/RejectGRDocAPI"}
+              apiReject={"/v2/RejectedGRDocAPI"}
         //apiWorking={""}
         apiClose={"/v2/CloseDocAPI"}
       />

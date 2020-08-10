@@ -55,7 +55,7 @@ const RD_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process Type", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 4010, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 4010, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -63,13 +63,10 @@ const RD_Create_FGCustomer = props => {
                     { label: "Des Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ],
                 [
-                    { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-                [
-
                     { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
-                ]
+                ],
+               
 
             ];
 
@@ -96,6 +93,8 @@ const RD_Create_FGCustomer = props => {
                     apicreate={apicreate}
                     createDocType={"receive"}
                     history={props.history}
+                    itemNo={true}
+                    defualItemNo={101}
                     apiRes={apiRes}
                 />
             );
@@ -106,6 +105,7 @@ const RD_Create_FGCustomer = props => {
 
 
     useEffect(() => {
+        let itemNos  = 101
         if (SKUMaster) {
             let objQuery = SKUMaster;
             if (objQuery !== null && Type === true && skuType !== undefined) {
@@ -118,8 +118,8 @@ const RD_Create_FGCustomer = props => {
            
         }
  
-        var columnEdit = [
-            { Header: "Order No.", accessor: "orderNo", type: "input" },
+        var columnEdit = [  
+            { Header: "Item No", accessor: "itemNo", type: "itemNo", texts  : itemNos},
             {
                 // search: false,
                 Header: "SKU Item",
@@ -133,6 +133,7 @@ const RD_Create_FGCustomer = props => {
                 //defaultValue: "PJAAN04-0024",
                 required: true
             },
+            { Header: "Lot", accessor: "lot", type: "input" },
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
             { Header: "Unit", accessor: "unitType", type: "text" }
         ];
@@ -184,9 +185,9 @@ const RD_Create_FGCustomer = props => {
 
 
     const DocumentProcessTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "Name", "c":"like", "v": "%FG%"}]',
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -204,8 +205,9 @@ const RD_Create_FGCustomer = props => {
   
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Order No.", accessor: "orderNo", width: 100 },
+        { Header: "Item No", accessor: "itemNo" },
         { Header: "Item Code", accessor: "SKUItems" },
+        { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
         { Header: "Unit", accessor: "unitType", width: 90 }
     ];

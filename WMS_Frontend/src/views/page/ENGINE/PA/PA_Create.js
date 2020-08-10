@@ -25,7 +25,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Document ProcessType", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
+                    { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -77,7 +77,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process Type", type: "labeltext", key: "documentProcessTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: DocumentProcessTypeName, valueTexts: DocumentProcessType_ID, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -127,64 +127,6 @@ const Create_GR_DR = props => {
 
 
 
-
-    const columsFindpopUpPALC = [
-        {
-            Header: "Pallet Code",
-            accessor: "Palletcode",
-            width: 110,
-            style: { textAlign: "center" }
-        },
-
-        {
-            Header: "SI",
-            accessor: "OrderNo",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        { Header: "Reorder/Brand", accessor: "SKUItems" },
-        {
-            Header: "Size",
-            accessor: "Size",
-            width: 50
-        },
-        {
-            Header: "Carton No",
-            accessor: "Carton",
-            width: 100,
-            Cell: e => getCarton(e.original)
-        },
-        // { Header: "SKU Code", accessor: 'Code', width: 110 },
-        // { Header: "SKU Name", accessor: 'Name', width: 170 },
-        {
-            Header: "Location",
-            accessor: "LocationCode",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-
-
-        {
-            Header: "Quantity",
-            accessor: "Quantity",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-        {
-            Header: "Unit",
-            accessor: "BaseUnitCode",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
-        {
-            Header: "Remark",
-            accessor: "remark",
-            width: 110,
-            style: { textAlign: "center" }
-        }
-    ];
-
     const getCarton = value => {
         var qryStr = queryString.parse(value.Options);
         return qryStr["carton_no"];
@@ -205,9 +147,9 @@ const Create_GR_DR = props => {
 
 
     const DocumentDR = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "Document",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

@@ -125,10 +125,6 @@ const AmCreateDocument = (props) => {
                 setDialog(true);
                 setTitle("Edit")
                 setAddData(false);
-                // let unitArr = [{ label: e.original.UnitCode, value: e.original.UnitCode }]
-                // if (e.original.UnitCode !== e.original.BaseUnitCode)
-                //     unitArr.push({ label: e.original.BaseUnitCode, value: e.original.BaseUnitCode })
-                // setDataUnit(unitArr)
             }}>Edit</AmButton>,
         },
         {
@@ -158,7 +154,7 @@ const AmCreateDocument = (props) => {
 
             }
                 return arr
-            }, { })
+        }, {})
     }, [props.headerCreate])
 
 
@@ -221,18 +217,7 @@ const AmCreateDocument = (props) => {
         />
     });
 
-    const getDocItemQuery = (DocItemsquerys) => {
-        Axios.get(createQueryString(DocItemsquerys)).then(res => {
-            if (res.data.datas.length != 0) {
-                setdataDocItem(res.data.datas);
-                setEditData(res.data.datas);
-                //setDialogItem(true)
-            } else {
 
-
-            }
-        })
-    }
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
@@ -289,8 +274,23 @@ const AmCreateDocument = (props) => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
+
+
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
+        }
+
+        if (props.itemNo && addData) {
+
+            if (addDataID === -1) {
+                let itemNos = props.defualItemNo 
+                let itemn = itemNos.toString();
+                editData["itemNo"] = itemn
+            } else {
+                let itemNos = (props.defualItemNo + ((-addDataID) - 1))
+                let itemn = itemNos.toString();
+                editData["itemNo"] = itemn
+            }
         }
 
         if (typeof data === "object" && data) {
@@ -299,7 +299,7 @@ const AmCreateDocument = (props) => {
         else {
             editData[field] = data
         }
-        console.log(ref);
+
 
         if (row && row.related && row.related.length) {
             let indexField = row.related.reduce((obj, x) => {
@@ -348,21 +348,30 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
+
         if (status) {
             if (!inputError.length) {
+                let chkSkuEdit
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
-                let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
-                let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                if (chkPallet) {
+                //let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
+                //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
+                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot)
+
+                if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
-                    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+                    setMsgDialog("มีข้อมูล Item Code นี้แล้ว")
                     return
                 }
-                if (chkSkuNotPallet) {
-                    setStateDialogErr(true)
-                    setMsgDialog("มีข้อมูล SKU นี้แล้ว")
-                    return
-                }
+                //if (chkPallet) {
+                //    setStateDialogErr(true)
+                //    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+                //    return
+                //}
+                //if (chkSkuNotPallet) {
+                //    setStateDialogErr(true)
+                //    setMsgDialog("มีข้อมูล SKU นี้แล้ว")
+                //    return
+                //}
 
                 //Edit
                 if (chkEdit) {
@@ -600,6 +609,11 @@ const AmCreateDocument = (props) => {
                 <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
             </FormInline>
             )
+        } else if (type === "itemNo") {
+            return  (<FormInline>
+                <LabelT style={LabelTStyle}> Item No :</LabelT>
+                    <label>{editData[accessor] ? editData[accessor] : '-'}</label>
+                </FormInline> )
         }
     }
 
@@ -801,6 +815,7 @@ const AmCreateDocument = (props) => {
             ref2: null,
             options: null,
             expireDate: null,
+            ItemNo : null,
             productionDate: null,
             parentDocumentItemID: null,
             docItemStos: [],
@@ -818,11 +833,9 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    // if (key === "ID" && value > 0)
-                    //     _docItem.packID = value
+
                 }
-                //modify _docItem 
-                //_docItem.options = x.xxx
+
                 return _docItem
             })
         }
@@ -832,42 +845,27 @@ const AmCreateDocument = (props) => {
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
                         _docItem[key] = value
-                    // if (key === "ID" && value > 0)
-                    //     _docItem.packID = value
+
                 }
                 return _docItem
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
-                let _docItem = { ...docItem }
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItem)
-                        _docItem[key] = value
-                    // if (key === "ID" && value > 0)
-                    //     _docItem.packID = value
-                }
-                return _docItem
+             return x
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
-                let _docItem = { ...docItem }
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItem)
-                        _docItem[key] = value
-                    // if (key === "ID" && value > 0)
-                    //     _docItem.packID = value
-                }
-                return _docItem
+              return x
             })
         } 
 
         if (Object.keys(doc).length > countDoc) {
+            //console.log(doc)
              CreateDocuments(doc)
         }
     }
 
     const CreateDocuments = (CreateData) => {
-        console.log(CreateData)
         Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
             if (res.data._result.status) {
                 setMsgDialog("Create Document success Document ID = " + res.data.ID);
@@ -951,7 +949,7 @@ const AmCreateDocument = (props) => {
                 // pageSize={200}
                 dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
                 //   height={200}
-                rowNumber={true}
+                rowNumber={false}
             />
 
             {/* Btn CREATE */}

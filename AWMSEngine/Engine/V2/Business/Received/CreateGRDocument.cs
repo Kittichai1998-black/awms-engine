@@ -71,6 +71,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string ref2;
                 public string ref3;
                 public string refID;
+                public string itemNo;
                 public string options;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
@@ -179,7 +180,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ref2 = x.ref2,
                             ref3 = x.ref3,
                             refID = x.refID,
-
+                            itemNo = x.itemNo,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

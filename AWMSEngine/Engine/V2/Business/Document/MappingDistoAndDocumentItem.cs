@@ -61,8 +61,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.NOTEQUALS)
             }, this.BuVO).OrderByDescending(x => x.CreateTime).ToList();
 
-            var newBaseQty = psto.Quantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.Quantity).Value;
-            var newQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;
+            var newBaseQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;
+            var newQty = psto.Quantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.Quantity).Value;
 
             if (docItems.Count > 0)
             {

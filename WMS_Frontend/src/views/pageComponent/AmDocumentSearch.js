@@ -810,70 +810,70 @@ const AmDocumentSearch = props => {
         <div>
             <GlobalBtnBaseCss />
             {/*  add by ple */}
-            <AmEditorTable
-                open={dialogReject}
-                onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
-                titleText={"Select"}
-                //data={editData}
-                columns={FuncReject()}
-            />
-            <AmEditorTable
-                open={dialog}
-                onAccept={(status, rowdata) => onHandleEditConfirm(status)}
-                titleText={"Remark"}
-                data={text}
-                columns={FuncRanderRemark()}
-            />
-            <AmEditorTable
-                open={dialogRejectworking}
-                onAccept={(status, rowdata) => onHandleEditConfirm(status)}
-                titleText={"Remark"}
-                data={text}
-                columns={FuncRanderRemark()}
-            />
-            <AmDialogs
-                typePopup={"warning"}
-                onAccept={e => {
-                    setOpenWarning(e);
-                }}
-                open={openWarning}
-                content={"Please Select Data"}
-            />
-            <AmDialogs
-                typePopup={"success"}
-                onAccept={e => {
-                    setOpenSuccess(e);
-                }}
-                open={openSuccess}
-                content={"Success"}
-            />
-            <AmDialogs
-                typePopup={"error"}
-                onAccept={e => {
-                    setOpenError(e);
-                }}
-                open={openError}
-                content={textError}
-            />
-            {/* end add by ple */}
-            {props.primarySearch ? <AmFilterTable
-                defaultCondition={{
-                    f: "DocumentType_ID",
-                    c: "=",
-                    v: props.docTypeCode
-                }}
-                primarySearch={createComponent(props.primarySearch)}
-                extensionSearch={createComponent(props.expensionSearch)}
-                onAccept={(status, obj) => {
-                    onHandleFilterConfirm(true);
-                    getData(query);
-                }}
-            /> : null}
-            <br />
-            <br />
-
+            {   //<AmEditorTable
+            //    open={dialogReject}
+            //    onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+            //    titleText={"Select"}
+            //    //data={editData}
+            //    columns={FuncReject()}
+            ///>
+            //<AmEditorTable
+            //    open={dialog}
+            //    onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+            //    titleText={"Remark"}
+            //    data={text}
+            //    columns={FuncRanderRemark()}
+            ///>
+            //<AmEditorTable
+            //    open={dialogRejectworking}
+            //    onAccept={(status, rowdata) => onHandleEditConfirm(status)}
+            //    titleText={"Remark"}
+            //    data={text}
+            //    columns={FuncRanderRemark()}
+            ///>
+            //<AmDialogs
+            //    typePopup={"warning"}
+            //    onAccept={e => {
+            //        setOpenWarning(e);
+            //    }}
+            //    open={openWarning}
+            //    content={"Please Select Data"}
+            ///>
+            //<AmDialogs
+            //    typePopup={"success"}
+            //    onAccept={e => {
+            //        setOpenSuccess(e);
+            //    }}
+            //    open={openSuccess}
+            //    content={"Success"}
+            ///>
+            //<AmDialogs
+            //    typePopup={"error"}
+            //    onAccept={e => {
+            //        setOpenError(e);
+            //    }}
+            //    open={openError}
+            //    content={textError}
+            ///>
+            //{/* end add by ple */}
+            //{props.primarySearch ? <AmFilterTable
+            //    defaultCondition={{
+            //        f: "DocumentType_ID",
+            //        c: "=",
+            //        v: props.docTypeCode
+            //    }}
+            //    primarySearch={createComponent(props.primarySearch)}
+            //    extensionSearch={createComponent(props.expensionSearch)}
+            //    onAccept={(status, obj) => {
+            //        onHandleFilterConfirm(true);
+            //        getData(query);
+            //    }}
+            ///> : null}
+            //<br />
+            //<br />
+            }
             <AmTable
-                primaryKey="ID"
+                dataKey="ID"
                 dataSource={dataSource}
                 columns={props.columns}
                 sortable={true}
@@ -882,7 +882,7 @@ const AmDocumentSearch = props => {
                 //sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
                 selection={true}
                 selectionType="checkbox"
-                getSelection={data => setSelection(data)}
+                selectionData={data => setSelection(data)}
                 style={{ maxHeight: "500px" }}
                 currentPage={page}
                 renderCustomButtonB4={<div> {props.customButton} </div>}
