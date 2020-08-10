@@ -55,6 +55,30 @@ input {
 //   }
 `;
 
+const LabelH = styled.label`
+  font-weight: bold;
+  width: 200px;
+`;
+const LabelD = styled.label`
+font-size: 10px
+  width: 50px;
+`;
+const InputDiv = styled.div``;
+const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
 const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "Warehouse",
@@ -96,12 +120,12 @@ const actionButtons = [
 ];
 
 const detailPack = [
-    { label: "GR", accessor: "docCode", type: "text", type: "text" },
-    { label: "PA", accessor: "docCode", type: "text" },
-    { label: "SKUItem", accessor: "SKUItem" },
-    { label: "Batch", accessor: "Batch", type: "text" },
-    { label: "Lot", accessor: "Lot", type: "text" },
-    { label: "Quantity", accessor: ["Quantity", "unitType"], type: "inputNum" }
+    { label: "GR", accessor: "grCode", type: "text", type: "text" },
+    { label: "PA", accessor: "putawayCode", type: "text" },
+    { label: "SKUItem", accessor: "pstoCode" },
+    { label: "Batch", accessor: "batch", type: "text" },
+    { label: "Lot", accessor: "lot", type: "text" },
+    { label: "Quantity", accessor: ["addQty", "unitTypeCode"], type: "inputNum" }
 ]
 
 const AmMappingHH = (props) => {
@@ -109,7 +133,8 @@ const AmMappingHH = (props) => {
     // const classes = useStyles();
     // const [activeStep, setActiveStep] = useState(0);
     const [itemSelect, setItemSelect] = useState()
-    const [GenerateFieldAmEditorTable, dataAmEditorTable] = useGenerateFieldAmEditorTable(detailPack, itemSelect)
+    const [dataDocSelect, setDataDocSelect] = useState()
+    const [GenerateFieldAmEditorTable, dataAmEditorTable] = useGenerateFieldAmEditorTable(detailPack, itemSelect, dataDocSelect)
     const [datasTreeView, setDatasTreeView] = useState([])
     const [editData, setEditData] = useState(
         {
@@ -130,13 +155,13 @@ const AmMappingHH = (props) => {
     // const steps = steps;
     // const tableSize = useWindowSize(containerRef)
     const [areaLocationMasterQuery, setAreaLocationMasterQuery] = useState()
-    const [areaID, setAreaID] = useState()
+    const [dataBarCode, setDataBarCode] = useState()
     const [areaLocationID, setAreaLocationID] = useState()
     // const ref = useRef([0, 1, 2, 3, 4, 5, 6, 7].map(() => createRef()))
     const [requiredField, setRequiredField] = useState({ pallet: false, area: false, qr: false })
 
     const [dialog, setDialog] = useState({ type: null, text: null, open: false })
-
+    const [dialogpopup, setDialogpopup] = useState(false);
 
     const AreaLocationMasterQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -267,6 +292,7 @@ const AmMappingHH = (props) => {
 
                 )
             case "Barcode":
+                console.log(datasTreeView)
                 return (
                     <>
                         <div className="theme-customization">
@@ -277,8 +303,10 @@ const AmMappingHH = (props) => {
                                 // showCheckbox={true}
                                 // onExpanded={clicktest}
                                 onSelectItem={(item, actionButton) => {
+                                    console.log(item);
                                     if (item.layer !== 1) {
                                         open();
+                                        setDialog(true)
                                         setItemSelect(item);
                                         console.log(item);
                                     }
@@ -464,7 +492,8 @@ const AmMappingHH = (props) => {
                             console.log(res);
                             // handleBack()
                             if (res.data._result.status) {
-                                const _datasTreeView = [{ id: res.data.id, text: res.data.code, children: [], expanded: true, layer: 1 }]
+                                const _datasTreeView = [{ id: res.data.bsto.id, text: res.data.bsto.code, children: res.data.pstos, expanded: true, layer: 1 }]
+
                                 const _editData = { ...editData }
                                 _editData.datas = []
                                 setEditData(_editData)
@@ -490,14 +519,19 @@ const AmMappingHH = (props) => {
                     if (editData.qr) {
                         _requiredField.qr = false
                         Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${editData.qr}`).then(res => {
+                            console.log(res);
                             if (res.data._result.status) {
                                 // console.log(res);
                                 const _datasTreeView = [...datasTreeView]
+                                console.log(_datasTreeView)
+                                setDataBarCode(...datasTreeView)
+                                _datasTreeView[0].children = []
                                 const _editData = { ...editData }
                                 _editData.qr = null
                                 res.data.datas.forEach(x => {
+                                    console.log(x)
                                     if (!editData.datas.find(y => y.dociID === x.dociID)) {
-                                        _datasTreeView[0].children.push({ id: x.dociID, text: `${x.SKUItem} | ${x.Quantity} ${x.unitType}`, isLeaf: true, showRoot: true, ...x })
+                                        _datasTreeView[0].children.push({ id: res.data.grID, text: `${x.pstoCode} | ${x.addQty} ${x.unitTypeCode}`, isLeaf: true, showRoot: true, ...x, ...res.data })
                                         _editData.datas.push(x)
                                     }
                                 })
@@ -522,8 +556,38 @@ const AmMappingHH = (props) => {
                 }
                 break;
             case "Location":
-                if (step === "put")
-                    handleBack()
+                if (step === "put") {
+                    Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${editData.qr}`).then(res => {
+                        console.log(res);
+                        if (res.data._result.status) {
+                            // console.log(res);
+                            const _datasTreeView = [...datasTreeView]
+                            console.log(_datasTreeView)
+                            setDataBarCode(...datasTreeView)
+                            _datasTreeView[0].children = []
+                            const _editData = { ...editData }
+                            _editData.qr = null
+                            res.data.datas.forEach(x => {
+                                console.log(x)
+                                if (!editData.datas.find(y => y.dociID === x.dociID)) {
+                                    _datasTreeView[0].children.push({ id: res.data.grID, text: `${x.pstoCode} | ${x.addQty} ${x.unitTypeCode}`, isLeaf: true, showRoot: true, ...x, ...res.data })
+                                    _editData.datas.push(x)
+                                }
+                            })
+                            handleNext()
+
+                            // console.log(_editData);
+                            setEditData(_editData)
+                            setDatasTreeView(_datasTreeView)
+
+                        } else {
+                            setDialog({ type: "error", text: res.data._result.message, open: true })
+                        }
+
+                    })
+                }
+                // handleBack()
+
                 break;
             default: break;
 
@@ -537,28 +601,71 @@ const AmMappingHH = (props) => {
             // pack
         }
     }
+    const closePopup = (status, rowdata) => {
+        console.log(rowdata)
+        console.log(status)
+        if (status) {
+            //
+        }
+        close()
 
+    }
+    const DataGeneratepopup = () => {
+        console.log(dataBarCode)
+        return detailPack.map(y => {
+            console.log(y)
+            return {
+                field: y.field,
+                component: (data = null, cols, key) => {
+                    console.log(dataBarCode.children[0][y.accessor])
+                    return (
+                        <div key={key}>
+
+                            {y.label === "Quantity" ? <FormInline>
+                                {" "}
+                                <LabelH>{y.label} : </LabelH>
+                                <InputDiv>
+                                    <AmInput
+                                        style={{ width: "60px" }} type="number"
+                                        defaultValue={dataBarCode.children[0]["addQty"]}
+                                        id={y.accessor}
+                                        type="input"
+                                        onChange={val => {
+                                            onChangeEditor(val);
+                                        }}
+                                    />
+                                </InputDiv>
+                            </FormInline> : <FormInline>
+                                    {" "}
+                                    <LabelH>{y.label} : {dataBarCode.children[0][y.accessor]}</LabelH>
+                                </FormInline>}
+
+
+                        </div>
+                    );
+                }
+            };
+        });
+    };
     return (
         <>
-            <AmEditorTable
+            {/* <AmEditorTable
                 style={{ width: "600px", height: "500px" }}
                 titleText={"title"}
                 open={isOpen}
-                onAccept={(status, rowdata, inputError) => { close(); console.log(status, rowdata); }}
+                onAccept={(status, rowdata, inputError) => { closePopup(status, rowdata) }}
                 data={dataAmEditorTable}
                 objColumnsAndFieldCheck={{ objColumn: detailPack, fieldCheck: "accessor" }}
-                columns={GenerateFieldAmEditorTable()}
-            />
-            {/* <AmDialogConfirm
-                open={isOpen}
-                close={close}
-                // bodyDialog={"Do you want to remove?"}
-                titleDialog={"Do you want to remove?"}
-                // Texts="Do you want to remove?"
-                //styleDialog={{ width: "1500px", height: "500px" }}
-                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={removeItem}>OK</AmButton>}
-                customCancelBtn={<AmButton styleType="delete_clear" onClick={close}>Cancel</AmButton>}
+                columns={DataGeneratepopup()}
             /> */}
+            <AmEditorTable
+                style={{ width: "600px", height: "500px" }}
+                open={isOpen}
+                onAccept={(status, rowdata, inputError) => { closePopup(status, rowdata) }}
+                titleText={"Title"}
+                data={editData}
+                columns={DataGeneratepopup()}
+            />
             <AmDialogs typePopup={dialog.type} content={dialog.text} onAccept={(e) => { setDialog({ open: e }) }} open={dialog.open}></AmDialogs >
             <Box
                 boxShadow={2}
@@ -593,7 +700,6 @@ const AmMappingHH = (props) => {
                                         >
                                             Back
                                         </AmButton>}
-                                    {console.log(steps.length)}
                                     <AmButton
                                         variant="contained"
                                         styleType="confirm"

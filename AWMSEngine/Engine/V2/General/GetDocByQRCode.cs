@@ -76,6 +76,9 @@ namespace AWMSEngine.Engine.V2.General
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             //res.datas = new List<TRes.DocData>();
 
+            if (reqVO.qr == null || reqVO.qr == "undefined")
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
+
             if (reqVO.qr.StartsWith("N|"))
             {
                 var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}");
@@ -106,11 +109,11 @@ namespace AWMSEngine.Engine.V2.General
                     var docitemPutaway = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
                     var skuPutaway = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);
 
-                    if ((qty[i] + distoQty) > docitemPutaway.Quantity)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนที่กำลังรับเข้ามากว่าจำนวนตั้งรอรับ");
+                    //if ((qty[i] + distoQty) > docitemPutaway.Quantity)
+                    //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนที่กำลังรับเข้ามากว่าจำนวนตั้งรอรับ");
 
-                    if (qty[i] == 0)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนรับเข้าเท่ากับ 0");
+                    //if (qty[i] == 0)
+                    //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนรับเข้าเท่ากับ 0");
 
 
                     packList.Add(new PackSto()
@@ -131,7 +134,6 @@ namespace AWMSEngine.Engine.V2.General
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
                         expireDate = docitemPutaway.ExpireDate,
-                        incubationDate = docitemPutaway.IncubationDate,
                         productDate = docitemPutaway.ProductionDate
 
                     });

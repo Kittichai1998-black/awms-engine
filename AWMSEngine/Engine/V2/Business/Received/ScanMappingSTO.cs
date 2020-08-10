@@ -259,45 +259,56 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 };
                 //var oldPsto = this.ADOSto.Get(psto.pstoID.Value, StorageObjectType.PACK, false, false, this.BuVO);
                 var stos = this.ADOSto.Get(idBase, StorageObjectType.BASE, false, true, this.BuVO);
-                var stoLists = res.bsto.ToTreeList();
-                var oldPsto = stoLists.Find(x => x.id == psto.pstoID.Value);
-                long ? resStopack = null;
-                if (oldPsto != null)
-                {
-                    if (oldPsto.refID == newPackSto.GetCheckSum()) 
-                    {
-                        //add qty
-                        oldPsto.qty += unitTypeConvt.oldQty;
-                        oldPsto.baseQty += unitTypeConvt.newQty;
-                        
-                        if (oldPsto.qty == 0) {
-                            oldPsto.eventStatus = StorageObjectEventStatus.REMOVE;
-                        }
-                        resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
-
-                        if (oldPsto.parentID.HasValue)
-                            remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
-                    }
-                    else
-                    {
-                        //new pack
-                        newPackSto.qty = unitTypeConvt.oldQty;
-                        newPackSto.baseQty = unitTypeConvt.newQty;
-                        resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
-                    }
-                   
-                }
-                else
+                var stoLists = stos.ToTreeList();
+                long? resStopack = null;
+                if (psto.pstoID == null)
                 {
                     //new pack
                     decimal newQty = unitTypeConvt.oldQty;
                     decimal baseQty = unitTypeConvt.newQty;
                     resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                 }
-               
+                else
+                {
+                    var oldPsto = stoLists.Find(x => x.id == psto.pstoID.Value);
+                    
+                    if (oldPsto != null)
+                    {
+                        if (oldPsto.refID == newPackSto.GetCheckSum())
+                        {
+                            //add qty
+                            oldPsto.qty += unitTypeConvt.oldQty;
+                            oldPsto.baseQty += unitTypeConvt.newQty;
+
+                            if (oldPsto.qty == 0)
+                            {
+                                oldPsto.eventStatus = StorageObjectEventStatus.REMOVE;
+                            }
+                            resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
+
+                            if (oldPsto.parentID.HasValue)
+                                remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
+                        }
+                        else
+                        {
+                            //new pack
+                            newPackSto.qty = unitTypeConvt.oldQty;
+                            newPackSto.baseQty = unitTypeConvt.newQty;
+                            resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                        }
+
+                    }
+                    else
+                    {
+                        //new pack
+                        decimal newQty = unitTypeConvt.oldQty;
+                        decimal baseQty = unitTypeConvt.newQty;
+                        resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                    }
+                }
                 //call Mapping Disto And DocumentItem
-                var reqMappingDoc = new MappingDistoAndDocumentItem.TReq() { 
-                    baseID = resStopack.Value,
+                var reqMappingDoc = new MappingDistoAndDocumentItem.TReq() {
+                    packID = resStopack.Value,
                     docProcessType = reqVO.processType
                 };
                 void remove_parent_empty(long parent_id, StorageObjectType parent_type)
