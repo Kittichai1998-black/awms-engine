@@ -270,6 +270,7 @@ namespace AWMSEngine.ADO
             param.Add("ref2", sto.ref2);
             param.Add("ref3", sto.ref3);
             param.Add("ref4", sto.ref4);
+            param.Add("IsStock", sto.IsStock); 
             param.Add("IsHold", sto.IsHold);
             param.Add("auditStatus", sto.AuditStatus);
 

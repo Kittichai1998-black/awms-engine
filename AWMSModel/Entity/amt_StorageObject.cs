@@ -22,18 +22,25 @@ namespace AWMSModel.Entity
         public string Options;
         public string RefID;
         public string Ref1;
-        public string Ref2; 
+        public string Ref2;
+        public string Ref3;
+        public string Ref4;
         public int IsHold;
+        public int AuditStatus;
+        public int IsStock;
         public StorageObjectEventStatus EventStatus;
-        public string Batch;
-        public string Lot;
-        public string OrderNo;
         public long BaseUnitType_ID;
         public long UnitType_ID;
         public decimal Quantity;
         public decimal BaseQuantity;
+        public string Batch;
+        public string Lot;
+        public string OrderNo;
+        public string CartonNo;
+        public string ItemNo;
         public DateTime? ProductDate;
         public DateTime? ExpiryDate;
+        public DateTime? ShelfLiftDate;
 
     }
 }

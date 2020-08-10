@@ -79,6 +79,7 @@ namespace AWMSModel.Entity
         public string DocumentProcessTypeName;
         public long? DocumentProcessType_ID;
 
+        public long? OwnerGroupType;
         public string Created;
         public string Modified;
     }

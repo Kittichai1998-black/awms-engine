@@ -35,6 +35,7 @@
     <Compile Remove="APIService\Mst\PutSKUMaster_UnitTypeAPI.cs" />
     <Compile Remove="APIService\Mst\PutSupplierFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\V2\ASRS\WCSMappingPalletAPI.cs" />
+    <Compile Remove="APIService\V2\Business\RejectGRDocAPI.cs" />
     <Compile Remove="APIService\V2\Business\WorkingLDDocAPI.cs" />
     <Compile Remove="APIService\V2\Document\CreateSODocAPI.cs" />
     <Compile Remove="Common\RefVO.cs" />
@@ -48,6 +49,7 @@
     <Compile Remove="Engine\EngineParamAttr.cs" />
     <Compile Remove="Engine\V2\Business\Issued\ProcessQueueIssue.cs" />
     <Compile Remove="Engine\V2\Business\Loading\CreateLDDocument.cs" />
+    <Compile Remove="Engine\V2\Business\Received\RejectedGRDocument.cs" />
     <Compile Remove="Engine\V2\Business\ScanMapSTO.cs" />
     <Compile Remove="Engine\V2\Business\Shipment\CreateSODocument.cs" />
     <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />

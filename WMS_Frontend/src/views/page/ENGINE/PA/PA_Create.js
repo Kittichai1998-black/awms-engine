@@ -25,7 +25,7 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Movement Type" },
+                    { label: "Document ProcessType", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -204,43 +204,6 @@ const Create_GR_DR = props => {
     };
 
 
-    const WarehouseQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "Warehouse",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-
-    const CustomerQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "Customer",
-        q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-    const MovementTypeQuery2 = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
     const DocumentDR = {
         queryString: window.apipath + "/v2/SelectDataTrxAPI/",
         t: "Document",
@@ -267,16 +230,6 @@ const Create_GR_DR = props => {
 
     }
 
-    const columsFindpopUp = [
-        {
-            Header: "Reorder",
-            accessor: "Code",
-            fixed: "left",
-            width: 130,
-            sortable: true
-        },
-        { Header: "Brand", accessor: "Name", width: 200, sortable: true }
-    ];
 
     const columnEdit = [
         { Header: "Item Code", accessor: "SKUItems", type: "text"},
@@ -322,7 +275,7 @@ const Create_GR_DR = props => {
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
-    const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apiRes = "/putaway/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;

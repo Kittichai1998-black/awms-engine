@@ -215,6 +215,7 @@ function PalletContent(open, settingPallet, valueInput, onHandleChangeInput) {
 
 function ListPalletDialog(open, close, dataDocument, onSelectPallet, handleError) {
     if (open && dataDocument) {
+        console.log("load list pallet")
         return <AmCheckPalletForReceive
             open={open}
             close={(val) => close(val)}
@@ -314,12 +315,12 @@ const AmReceivePallet = (props) => {
         if (open && dataDocument && dataDocItems) {
             console.log("show")
             let newItems = _.filter(dataDocItems, function (o) { return o._balanceQty > 0; });
-            newItems = newItems.map(x => { return { ...x, SubID: x.ID + x.UnitType_Code } });
+            newItems = newItems.map(x => { return { ...x, SubID: x.ID + x.SKUMaster_Code } });
             let _dataTable = {
                 listDocItems: [...newItems],
                 defaultSelect: [...newItems]
             };
-            console.log(_dataTable)
+            // console.log(_dataTable)
             setDataTable(_dataTable)
             QueryArea();
             saveDefaultInputQTY(newItems)
@@ -328,7 +329,7 @@ const AmReceivePallet = (props) => {
     }, [open, dataDocument, dataDocItems]);
 
     useEffect(() => {
-        console.log(areaSel)
+        // console.log(areaSel)
         QueryAreaLocation(areaSel);
 
     }, [areaSel]);
@@ -429,7 +430,7 @@ const AmReceivePallet = (props) => {
         reader.onerror = error => reject(error);
     });
     const handleFileChange = async (event) => {
-        console.log(event)
+        // console.log(event)
         if (event.target.files[0]) {
             setImgFile(URL.createObjectURL(event.target.files[0]))
             let fileBase64 = await toBase64(event.target.files[0])
@@ -535,7 +536,7 @@ const AmReceivePallet = (props) => {
     }
     const showRes = (data) => {
         if (data) {
-            console.log(data)
+            // console.log(data)
             let ele = document.getElementById(setting.inputBase.field);
             if (ele) {
                 ele.value = data;
@@ -607,7 +608,7 @@ const AmReceivePallet = (props) => {
                     </FormInline>
                     {imgFile ? <div style={{ margin: "5px 0px" }}><img src={imgFile} height='150' /></div> : null}
                     <Divider style={{ marginTop: '5px', marginBottom: '5px' }} />
-                    {dataTable ? console.log(dataTable.defaultSelect) : null}
+                    {dataTable ? console.log(dataTable.listDocItems) : null}
                     {open && dataTable ?
                         <AmTable
                             columns={columns}

@@ -1,4 +1,6 @@
-﻿using OfficeOpenXml;
+﻿using AWMSModel.Criteria.SP.Response;
+using AWMSModel.Entity;
+using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using System;
@@ -15,40 +17,22 @@ namespace AWMSEngine.Engine.V2.Notification
         {
             public int userId;
             public long sk;
-            public int l;
+            public int l = 0;
+            public string filter;
         }
 
         public class TRes
         {
             public long userId;
-            public List<MessageDetail> messageDetails;
-            public class MessageDetail
-            {
-                public long postID;
-                public string message;
-                public string subject;
-                public DateTime datetime;
-            }
+            public List<SPOutNotify> messageDetails;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var noti = ADO.NotificationADO.GetInstant().GetNotifyPostByUserID(reqVO.userId, reqVO.l, reqVO.sk, this.BuVO);
+            var noti = ADO.NotificationADO.GetInstant().GetNotifyPostByUserID(reqVO.userId, reqVO.l, reqVO.sk, reqVO.filter, this.BuVO);
             var res = new TRes();
             res.userId = reqVO.userId;
-            var messageDetails = new List<TRes.MessageDetail>();
-            noti.ForEach(x =>
-            {
-                messageDetails.Add(new TRes.MessageDetail()
-                {
-                    postID = x.ID.Value,
-                    subject = x.Title,
-                    message = x.Message,
-                    datetime = x.CreateTime
-                });
-            });
-
-            res.messageDetails = messageDetails;
+            res.messageDetails = noti;
             return res;
         }
     }

@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.Business
         public class TDocReq
         {
             public long[] bstosID;
-            public int IsHold;
+            public bool IsHold;
             public string remark; 
             public bool RemarkMode;
         }
@@ -51,7 +51,7 @@ namespace AWMSEngine.Engine.Business
             allRes.data = res;
             return allRes;
         }
-        private void UpdateHoldStatus(AMWLogger logger, StorageObjectCriteria sto ,string remark, int IsHold, VOCriteria buVO)
+        private void UpdateHoldStatus(AMWLogger logger, StorageObjectCriteria sto ,string remark, bool IsHold, VOCriteria buVO)
         {
             
             sto.IsHold = IsHold;

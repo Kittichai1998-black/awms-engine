@@ -1,5 +1,5 @@
 import DocView from "../../../pageComponent/DocumentView";
-import React from "react";
+import React, { useState, useEffect } from "react";
 // import AmIconStatus from "../../../../components/AmIconStatus";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
@@ -7,25 +7,81 @@ import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 
-const GR_Detail = props => {
-    const TextHeader = [
-        [
-            { label: "Document No.", values: "Code" },
-            { label: "Document Date", values: "DocumentDate", type: "date" }
-        ],
-        [
-            { label: "Process Type", values: "DocumentProcessTypeName" },
-            { label: "Action Time", values: "ActionTime", type: "dateTime" }
-        ],
-        [
-            { label: "Source Warehouse", values: "SouWarehouseName" },
-            { label: "Destination Warehouse", values: "DesWarehouseName" }
-        ],
-        [
-            { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
-            { label: "Remark", values: "Remark" }
-        ]
-    ];
+const PA_Detail = props => {
+
+    const [OwnerGroupType, setOwnerGroupType] = useState(1);
+    const [docview, setdocview] = useState();
+    const [header, setheader] = useState();
+
+
+
+    useEffect(() => {
+        if (header !== undefined) {
+            setdocview(<DocView
+                openSOU={true}
+                openDES={true}
+                optionDocItems={optionDocItems}
+                columnsDetailSOU={columnsDetailSOU}
+                columnsDetailDES={columnsDetailDES}
+                OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
+                columns={columns}
+                typeDoc={"received"}
+                typeDocNo={1001}
+                docID={getDocID()}
+                header={header}
+                buttonBack={true}
+                linkBack={"/putaway/search"}
+                history={props.history}
+                useAddPalletMapSTO={true}
+                addPalletMapSTO={addPalletMapSTO}
+                buttonConfirmMappingSTO={true}
+                usePrintBarcodePallet={true}
+            >
+            </DocView>
+            )
+        }
+
+    }, [header])
+
+    useEffect(() => {
+        if (OwnerGroupType !== undefined) {
+            console.log(OwnerGroupType)
+            var DataprocessType;
+            if (OwnerGroupType === 1) {
+                DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
+            } else if (OwnerGroupType === 2) {
+                DataprocessType = { label: "Source Customer", values: "SouCustomerName" }
+            } else if (OwnerGroupType === 3) {
+                DataprocessType = { label: "Source Supplier", values: "SouSupplierName" }
+            } else {
+                DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
+            }
+
+        }
+        console.log(DataprocessType)
+        var TextHeader = [
+            [
+                { label: "Document No.", values: "Code" },
+                { label: "Document Date", values: "DocumentDate", type: "date" }
+            ],
+            [
+                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Action Time", values: "ActionTime", type: "dateTime" }
+            ],
+            [
+                DataprocessType,
+                { label: "Destination Warehouse", values: "DesWarehouseName" }
+            ],
+            [
+                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Remark", values: "Remark" }
+            ]
+        ];
+        setheader(TextHeader)
+
+
+    }, [OwnerGroupType])
+
 
     const columns = [
         // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
@@ -37,6 +93,7 @@ const GR_Detail = props => {
 
     const columnsDetailSOU = [
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
@@ -70,14 +127,10 @@ const GR_Detail = props => {
         var ID = values.docID.toString();
         return ID;
     };
-
-    const colListDocItems = [
-        { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 150, accessor: "Quantity", Header: "จำนวนที่รับเข้าได้" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
-    ];
+ 
     const addPalletMapSTO = {
+        // apiCreate: '/v2/ScanMapStoFromDocAPI',
+        // columnsDocItems: colListDocItems,
         ddlArea: {
             visible: true,
             field: "areaID",
@@ -102,16 +155,16 @@ const GR_Detail = props => {
             required: false,
             // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
         },
-        inputTitle: [
-            {
-                field: "projCode",
-                name: "Project",
-                type: "text",
-                customShow: (dataDocument) => {
-                    return dataDocument.document.Ref1;
-                },
-            }
-        ],
+        // inputTitle: [
+        //     {
+        //         field: "projCode",
+        //         name: "Project",
+        //         type: "text",
+        //         customShow: (dataDocument) => {
+        //             return dataDocument.document.Ref1;
+        //         },
+        //     }
+        // ],
         inputBase:
         {
             visible: true,
@@ -122,34 +175,26 @@ const GR_Detail = props => {
             maxLength: 10,
             required: true,
             validate: /^.+$/,
-        }, 
+        },
+        // [
+        //   {
+        //     field: "baseCode",
+        //     placeholder: "Pallet Code",
+        //     required: true,
+        //     type: "input",
+        //     name: "Pallet Code",
+        //     maxLength: 10,
+        //     validate: /^.+$/,
+        //   }
+        // ]
     }
 
     //received
     //issued
     return (
-        <DocView
-            openSOU={true}
-            openDES={true}
-            optionDocItems={optionDocItems}
-            columnsDetailSOU={columnsDetailSOU}
-            columnsDetailDES={columnsDetailDES}
-            apiCreate={'/grDr/createFGwm'}
-            columns={columns}
-            typeDoc={"received"}
-            typeDocNo={1001}
-            docID={getDocID()}
-            header={TextHeader}
-            buttonBack={true}
-            linkBack={"/receive/search"}
-            history={props.history}
-            useAddPalletMapSTO={true}
-            addPalletMapSTO={addPalletMapSTO}
-            buttonConfirmMappingSTO={true}
-            usePrintBarcodePallet={true}
-            useScanBarcode={true}
-        />
+        <div>{docview}</div>
+
     );
 };
 
-export default GR_Detail;
+export default PA_Detail;

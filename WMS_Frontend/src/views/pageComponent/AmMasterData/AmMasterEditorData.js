@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
-import {InputComponent, DropDownComponent, FindPopupComponent} from "./AmMasterComponentType";
+import {InputComponent, DropDownComponent, FindPopupComponent,PasswordComponent} from "./AmMasterComponentType";
 
 const EditorData = ({config, editorColumns, editData, response}) => {
     const [popupState, setPopState] = useState(false);
@@ -16,6 +16,16 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         const findEditorField = (config, field, data, key) => {
             if(config.type === "input"){
                 return <InputComponent key={key} 
+                    config={config} 
+                    defaultData={data !== undefined ? data[field] : ""}
+                    response={(e)=>{if(!IsEmptyObject(e)){
+                        data[e.field] =  e.value
+                    }
+                    }}
+                />
+            }
+            else if(config.type === "password"){
+                return <PasswordComponent key={key} 
                     config={config} 
                     defaultData={data !== undefined ? data[field] : ""}
                     response={(e)=>{if(!IsEmptyObject(e)){

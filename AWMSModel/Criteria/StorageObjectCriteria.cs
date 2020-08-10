@@ -14,7 +14,6 @@ namespace AWMSModel.Criteria
     public partial class StorageObjectCriteria : ITreeObject
     {
         public long? id;
-        public string groupSum;
         public StorageObjectType type;
         public long? mstID;
         public long? skuID;
@@ -28,6 +27,7 @@ namespace AWMSModel.Criteria
         public string lot;
         public string batch;
         public string cartonNo;
+        public string itemNo;
         public decimal qty;
         public long unitID;
         public string unitCode;
@@ -56,12 +56,14 @@ namespace AWMSModel.Criteria
         public string ref2;
         public string ref3;
         public string ref4;
-        public int IsHold;
-        public int AuditStatus;
+        public bool IsHold;
+        public bool IsStock;
+        public AuditStatus AuditStatus;
         public long? skuTypeID;
         public string skuTypeName;
         public long? forCustomerID;
         public long? transportObject_ID;
+        public DateTime? ShelfLifeDate;
 
         public ObjectSize objectSize;
         public class ObjectSize

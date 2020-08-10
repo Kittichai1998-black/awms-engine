@@ -53,31 +53,11 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                                     docItemID.ForEach(y =>
                                     {
-                                        if (false)//StaticValue.IsFeature("WORKED_FROM_QTYSUM")) //case1
+                                        decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
+                                        decimal totalQty = docItems.First(z => z.ID == y).BaseQuantity ?? 0;
+                                        if (sumQtyDisto == totalQty)
                                         {
-                                            if (reqVO.flag)
-                                            {
-                                                decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.ACTIVE).Sum(z => z.BaseQuantity ?? 0);
-                                                decimal totalQty = docItems.First(z => z.ID == y).BaseQuantity ?? 0;
-                                                if (sumQtyDisto == totalQty)
-                                                {
-                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (distos.FindAll(z => z.DocumentItem_ID == y).TrueForAll(z => z.Status == EntityStatus.ACTIVE))
-                                                {
-                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                                }
-                                            }
-                                        }
-                                        else //case
-                                        {
-                                            if (distos.FindAll(z => z.DocumentItem_ID == y).TrueForAll(z => z.Status == EntityStatus.ACTIVE))
-                                            {
-                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                            }
+                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
                                         }
                                     });
                                     var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, this.BuVO);

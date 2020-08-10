@@ -154,12 +154,12 @@ export default (props) => {
   const matches = useMediaQuery('(max-width:400px)');
 
   const changeLang = (l) => {
-        if (lang !== l) {
-            localStorage.setItem('Lang', l)
-            setLang(convertLang(l))
-            i18n.changeLanguage(l)
-        }
-    }
+      if (lang !== l) {
+          localStorage.setItem('Lang', l)
+          setLang(convertLang(l))
+          i18n.changeLanguage(l)
+      }
+  }
 
   const handleListKeyDown = (event) =>{
     if (event.key === 'Tab') {
@@ -230,7 +230,7 @@ export default (props) => {
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    {open ? item.map(x => <MenuItem onClick={() => {handleClose(); x.onClick()}}>{x.label}</MenuItem>) : null}
+                    {open ? item.map(x => <MenuItem onClick={() => {x.onClick()}}>{x.label}</MenuItem>) : null}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

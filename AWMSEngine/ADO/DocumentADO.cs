@@ -856,5 +856,12 @@ namespace AWMSEngine.ADO
                 buVO.SqlTransaction).ToList();
             return distos;
         }
+
+        public amt_Document GetDocumentAndDocItems(long docID, VOCriteria buVO)
+        {
+            var doc = this.Get(docID, buVO);
+            doc.DocumentItems = this.ListItem(docID, buVO);
+            return doc;
+        }
     }
 }

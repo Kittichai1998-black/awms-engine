@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (objType == StorageObjectType.LOCATION)
                 res = StorageObjectCriteria.NewLocation((ams_AreaLocationMaster)obj, this.StaticValue);
             else if (objType == StorageObjectType.BASE)
-                res = StorageObjectCriteria.NewBase(parentMapsto, (ams_BaseMaster)obj, reqVO.options, this.StaticValue);
+                res = StorageObjectCriteria.NewBase((ams_BaseMaster)obj, reqVO.areaID ?? 0, reqVO.options, this.StaticValue);
             else if (objType == StorageObjectType.PACK)
                 res = StorageObjectCriteria.NewPack(parentMapsto, (ams_PackMaster)obj, reqVO.amount, reqVO.unitCode, reqVO.batch, reqVO.lot, reqVO.orderNo, reqVO.options, reqVO.productDate, this.StaticValue);
 
@@ -315,7 +315,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                     var regisMap = this.NewStorageObjectCriteria(pm, firstMapSto, reqVO);
 
-                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
+                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.GetCheckSum() == regisMap.GetCheckSum());
                     if (matchStomap == null)
                     {
                         this.ADOSto.PutV2(regisMap, this.BuVO);
@@ -425,8 +425,8 @@ namespace AWMSEngine.Engine.V2.Business
                 if (qty > 0)
                 {
                     var baseUnit = this.StaticValue.ConvertToBaseUnitByPack(reqVo.scanCode, qty, rmItem.unitID);
-                    rmItem.qty = baseUnit.newQty;
-                    rmItem.baseQty = baseUnit.baseQty;
+                    rmItem.qty = qty;
+                    rmItem.baseQty = baseUnit.newQty;
                     rmItem.options = reqVo.options;
                     ADOSto.PutV2(rmItem, this.BuVO);
                 }

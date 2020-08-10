@@ -87,6 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string ref1;
                 public string ref2;
                 public string ref3;
+                public string ref4;
                 public string refID;
                 public string options;
 
@@ -235,7 +236,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 {
                     //baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, skuMst.UnitType_ID.Value);
                     baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value , StaticValue.UnitTypes.First(x => x.Code == Item.unitType).ID.Value);
-                    baseQuantity = baseUnitTypeConvt.baseQty;
+                    baseQuantity = baseUnitTypeConvt.newQty;
                                         
                         if(baseQuantity % 1 != 0)
                             throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ค่าที่ Convert ได้ไม่เป็นจำนวนเต็ม");
@@ -249,15 +250,19 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         if (Item.docItemStos == null)
                             Item.docItemStos = new List<amt_DocumentItemStorageObject>();
 
-                        List<amt_DocumentItemStorageObject> disto = Sto.mapstos.Select(x => new amt_DocumentItemStorageObject()
-                        {
-                            Sou_StorageObject_ID = x.id.Value,
-                            Des_StorageObject_ID = null,
-                            Quantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).newQty,
-                            BaseQuantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseQty,
-                            UnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).newUnitType_ID,
-                            BaseUnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseUnitType_ID,
-                            Status = EntityStatus.INACTIVE
+                        List<amt_DocumentItemStorageObject> disto = Sto.mapstos.Select(x => {
+                          var _convert = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID);
+                          var _disto = new amt_DocumentItemStorageObject()
+                            {
+                                Sou_StorageObject_ID = x.id.Value,
+                                Des_StorageObject_ID = null,
+                                Quantity = _convert.oldQty,
+                                BaseQuantity = _convert.newQty,
+                                UnitType_ID = _convert.oldUnitType_ID,
+                                BaseUnitType_ID = _convert.newUnitType_ID,
+                                Status = EntityStatus.INACTIVE
+                            };
+                            return _disto;
                         }).ToList();
                         Item.docItemStos.AddRange(disto);
                     };
@@ -273,7 +278,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
                     BaseQuantity = baseQuantity,//Item.baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.baseUnitType_ID : null,
+                    BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.newUnitType_ID : null,
 
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,
@@ -285,6 +290,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Ref1 = Item.ref1,
                     Ref2 = Item.ref2,
                     Ref3 = Item.ref3,
+                    Ref4 = Item.ref4,
                     RefID = Item.refID,
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,

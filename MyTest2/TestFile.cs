@@ -4,6 +4,8 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
+using System.Drawing.Text;
+using System.Drawing;
 
 namespace MyTest2
 {
@@ -59,5 +61,18 @@ namespace MyTest2
 
             return e2.GetString(convertedBytes);
         }
+        [Fact]
+        public void TestFont()
+        {
+            StringBuilder familyNames = new StringBuilder();
+            InstalledFontCollection ifc = new InstalledFontCollection();
+            FontFamily[] families = ifc.Families;
+            foreach (FontFamily family in families)
+            {
+                familyNames.AppendFormat("{0}\n", family.Name);
+            }
+            sysout.WriteLine(familyNames.ToString());
+
+        } 
     }
 }

@@ -96,13 +96,8 @@ const AmCreateDocument = (props) => {
     const [dataSource, setDataSource] = useState([]);
     // const [reload, setReload] = useState();
     const [inputError, setInputError] = useState([])
-
-    const dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-        arr[el.key] = el.valueTexts || el.defaultValue
-        return arr
-    }, {})
-    const [dataHeaders, setdataHeaders] = useState(dataHeader)
-    const [createDocumentData, setcreateDocumentData] = useState(dataHeaders);
+    const [dataHeaders, setdataHeaders] = useState({})
+    const [createDocumentData, setcreateDocumentData] = useState({});
     // const [valueText, setValueText] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
@@ -115,9 +110,13 @@ const AmCreateDocument = (props) => {
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const [dataDocItem, setdataDocItem] = useState();
     const [dialogItem, setDialogItem] = useState(false);
+    const [processType, setprocessType] = useState();
     // const [ItemBody, setItemBody] = useState();
     const [relationComponent, setRelationComponent] = useState([]);
     const [headerBody, setheaderBody] = useState();
+    const [addlistAPI, setaddlistAPI] = useState();
+    const [BtnAddLists, setBtnAddLists] = useState();
+
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
         {
@@ -144,26 +143,71 @@ const AmCreateDocument = (props) => {
     const columns = props.columns.concat(rem)
 
     useEffect(() => {
-        let dataHeader = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-            arr[el.key] = el.valueTexts || el.defaultValue
-            return arr
-        }, {})
-        setdataHeaders(dataHeader)
-        setheaderBody(getHeaderCreate(props.headerCreate))
-        //setcreateDocumentData();
+        getHeaderCreate()
     }, [props.headerCreate])
 
     useEffect(() => {
-        if (dataHeaders !== undefined)
-            console.log(createDocumentData)
-        setcreateDocumentData(createDocumentData) 
-        //setcreateDocumentData(dataHeaders)
+        let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+            //arr[el.key] = el.valueTexts || el.defaultValue    
+            if (el.key === "documentProcessTypeID" && processType === undefined) {
+                createDocumentData["documentProcessTypeID"] = el.defaultValue
+            } else {
+                if (el.key !== "documentProcessTypeID") {
+                    createDocumentData[el.key] = el.valueTexts || el.defaultValue
+                }
+
+            }
+                return arr
+            }, { })
     }, [props.headerCreate])
 
-    //useEffect(() => {
-    //    console.log(createDocumentData)
-    //    setcreateDocumentData(createDocumentData)  
-    //}, [createDocumentData])
+
+    useEffect(() => {
+        if (processType !== undefined) {
+            if (createDocumentData["desWarehouseID"] !== null) {
+                createDocumentData["desWarehouseID"] = null
+                createDocumentData["souWarehouseID"] = null
+            } else if (createDocumentData["souWarehouseID"] !== null) {
+                createDocumentData["desWarehouseID"] = null
+                createDocumentData["souWarehouseID"] = null          
+            } else if (createDocumentData["souCustomerID"] !== null) {
+                createDocumentData["souCustomerID"] = null
+            } else if (createDocumentData["souSupplierID"] !== null) {
+                createDocumentData["souSupplierID"] = null
+            } else if (createDocumentData["desSupplierID"] !== null) {
+                createDocumentData["desSupplierID"] = null
+            
+            } else if (createDocumentData["desCustomerID"] !== null) {
+                createDocumentData["desCustomerID"] = null
+            }
+        }
+        setcreateDocumentData(createDocumentData)
+    
+    }, [processType])
+
+
+
+    useEffect(() => {
+        if (props.addList) {
+            setaddlistAPI(props.addList.queryApi)
+        }
+    }, [processType])
+
+
+    useEffect(() => {
+        if (addlistAPI !== undefined) {
+            setBtnAddLists(< BtnAddList
+                primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
+                headerCreate={props.headerCreate}
+                queryApi={addlistAPI}
+                columns={props.addList.columns}
+                search={props.addList.search}
+                textBtn="Add Item List"
+                onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
+                dataCheck={dataSource} />)
+        }
+    }, [addlistAPI])
+
 
 
     const PopupObjSize = React.memo(({ relationComponent, open }) => {
@@ -207,11 +251,13 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            console.log(dataObject)
-            props.onChangeProcessType(dataObject.OwnerGroupType);
-            props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
-            createDocumentData[key] = dataObject.ID
-            setcreateDocumentData(createDocumentData)
+            if (dataObject !== undefined || dataObject !== null) {
+                props.onChangeProcessType(dataObject.OwnerGroupType);
+                props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
+                setprocessType(dataObject.OwnerGroupType)
+                createDocumentData[key] = dataObject.ID
+                setcreateDocumentData(createDocumentData)
+            }
 
 
         }
@@ -559,7 +605,6 @@ const AmCreateDocument = (props) => {
 
     const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
 
-
         if (type === "date") {
             return (
                 <AmDate
@@ -683,8 +728,8 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getHeaderCreate = (headerCreate) => {
-        return headerCreate.map((x, xindex) => {
+    const getHeaderCreate = () => {       
+        return props.headerCreate.map((x, xindex) => {      
             return (
                 <Grid key={xindex} container>
                     {x.map((y, yindex) => {
@@ -761,7 +806,6 @@ const AmCreateDocument = (props) => {
             docItemStos: [],
             baseStos: []
         }
-        console.log(createDocumentData)
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
@@ -794,7 +838,7 @@ const AmCreateDocument = (props) => {
                 return _docItem
             })
         } else if (props.createDocType === "issue") {
-            doc.issueItems = dataSource.map(x => {
+            doc.issuedOrderItem = dataSource.map(x => {
                 let _docItem = { ...docItem }
                 for (let [key, value] of Object.entries(x)) {
                     if (key in docItem)
@@ -815,41 +859,15 @@ const AmCreateDocument = (props) => {
                 }
                 return _docItem
             })
-        } else if (props.createDocType === "receiveOrder") {
-            doc.receivedOrderItem = dataSource.map(x => {
-                let _docItem = { ...docItem }
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItem)
-                        _docItem[key] = value
-                    // if (key === "ID" && value > 0)
-                    //     _docItem.packID = value
-                }
-                return _docItem
-            })
-        } else if (props.createDocType === "issueOrder") {
-            doc.issuedOrderItem = dataSource.map(x => {
-                //modify
-                //x.BaseUnitCode = x.unitType
-                x.RefDocumentItem_ID = null
-                //docItems.options = null
-                return x
-            })
-        } else if (props.createDocType === "reciveByDR") {
-            doc.receiveItems = dataSource.map(x => {
-                x.unitType = x.UnitTypeCode
-                x.RefDocumentItem_ID = x.ID
-                x.Options = null
-                x.skuCode = x.Code
-                return x
-            })
-        }
-        //console.log(doc)
+        } 
+
         if (Object.keys(doc).length > countDoc) {
-            // CreateDocuments(doc)
+             CreateDocuments(doc)
         }
     }
 
     const CreateDocuments = (CreateData) => {
+        console.log(CreateData)
         Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
             if (res.data._result.status) {
                 setMsgDialog("Create Document success Document ID = " + res.data.ID);
@@ -893,7 +911,7 @@ const AmCreateDocument = (props) => {
 
             <PopupObjSize relationComponent={relationComponent} open={dialogItem} />
             {/* Header */}
-            {headerBody}
+            {getHeaderCreate()}
 
             {/* Btn ADD */}
             <Grid container>
@@ -901,16 +919,8 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {props.addList ? <BtnAddList
-                            primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
-                            headerCreate={props.headerCreate}
-                            queryApi={props.addList.queryApi}
-                            columns={props.addList.columns}
-                            search={props.addList.search}
-                            textBtn="Add Item List"
-                            onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
-                            dataCheck={dataSource}
-                        /> : null}
+                        {props.addList ? 
+                            BtnAddLists : null}
 
                         {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
                             if (props.singleItem && dataSource.length > 0) {
