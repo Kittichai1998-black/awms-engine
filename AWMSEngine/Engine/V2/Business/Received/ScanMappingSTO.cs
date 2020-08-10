@@ -296,8 +296,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
                
                 //call Mapping Disto And DocumentItem
-                var reqMappingDoc = new MappingDistoAndDocumentItem.TReq() { 
-                    baseID = resStopack.Value,
+                var reqMappingDoc = new MappingDistoAndDocumentItem.TReq() {
+                    packID = resStopack.Value,
                     docProcessType = reqVO.processType
                 };
                 void remove_parent_empty(long parent_id, StorageObjectType parent_type)

@@ -131,7 +131,6 @@ namespace AWMSEngine.Engine.V2.General
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
                         expireDate = docitemPutaway.ExpireDate,
-                        incubationDate = docitemPutaway.IncubationDate,
                         productDate = docitemPutaway.ProductionDate
 
                     });
