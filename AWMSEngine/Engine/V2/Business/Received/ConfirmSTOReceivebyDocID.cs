@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var docs = ADO.DocumentADO.GetInstant().Get(reqVO.docID.Value, BuVO);
+            var docs = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(reqVO.docID.Value, BuVO);
             if (docs == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document");
 
@@ -46,20 +46,24 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             //update Audit status, Hold status
 
                             //set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
-
+                            disto.Status = EntityStatus.ACTIVE;
                             ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
                             //ถ้าไม่มี des_waveseq สุดท้ายเเล้ว ให้อัพเดท disto เป็น Done
                             if (disto.Des_WaveSeq_ID == null)
                             {
+                                disto.Status = EntityStatus.DONE;
                                 ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
                             }
                         });
-                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING,this.BuVO);
+
+                        if (item.DocItemStos.Any(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE))
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        }
 
                     });
 
-
-                    void set_status_base(long parent_id, StorageObjectType parent_type)
+                    /*void set_status_base(long parent_id, StorageObjectType parent_type)
                     {
                         if (parent_type != StorageObjectType.LOCATION)
                         {
@@ -77,7 +81,17 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                     set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
                             }
                         }
-                    }
+                    }*/
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(reqVO.docID.Value, DocumentEventStatus.WORKING, this.BuVO);
+
+                    var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                    
+                    docs.DocumentItems.ForEach(item => {
+                        var cc = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cc.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                    });
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+
                 }
             }
             else

@@ -28,16 +28,16 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 reqVO.docIDs.ForEach(x =>
                 {
 
-                    var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
+                    var docs = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(x, this.BuVO);
                     if (docs != null)
                     {
                         try
                         {
                             if (docs.EventStatus == DocumentEventStatus.WORKING)
                             {
-                                var docItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(x, this.BuVO);
-                                var distos = new List<amt_DocumentItemStorageObject>();
-                                docItems.ForEach(di => distos.AddRange(di.DocItemStos));
+                                var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(x, this.BuVO);
+                                //var distos = new List<amt_DocumentItemStorageObject>();
+                                //docs.DocumentItems.ForEach(di => distos.AddRange(di.DocItemStos));
                                 if (distos == null)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -45,7 +45,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         docID = x,
                                         msgError = "Document Items of Storage Object Not Found."
                                     });
-                                    //throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
                                 }
                                 else
                                 {
@@ -54,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     docItemID.ForEach(y =>
                                     {
                                         decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
-                                        decimal totalQty = docItems.First(z => z.ID == y).BaseQuantity ?? 0;
+                                        decimal totalQty = docs.DocumentItems.First(z => z.ID == y).BaseQuantity ?? 0;
                                         if (sumQtyDisto == totalQty)
                                         {
                                             ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
@@ -63,7 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, this.BuVO);
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                     {
-                                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                                        ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
                                         RemoveOPTDocument(x, docs.Options, this.BuVO);
                                         docLists.Add(x);
                                     }
@@ -79,12 +78,23 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         
                                         if (listItem.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
                                         {
-                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                                            ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
                                             RemoveOPTDocument(x, docs.Options, this.BuVO);
                                             docLists.Add(x);
                                         }
                                     }
                                 }
+                                var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                if(getGR == null)
+                                {
+                                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Good Receive Not Found");
+                                }
+                                docs.DocumentItems.ForEach(item => {
+                                    var cc = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
+                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cc.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                });
+                                ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+
                             }
                             else
                             {
@@ -107,7 +117,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
+                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document PUTAWAY Not Found");
                     }
                 });
                 res = docLists;
