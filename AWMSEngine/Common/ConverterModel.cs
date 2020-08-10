@@ -38,8 +38,8 @@ namespace AWMSEngine.Common
 
                         amt_WorkQueueDocumentItem r = new amt_WorkQueueDocumentItem()
                         {
-                            BaseQuantity = unitConvert.baseQty,
-                            BaseUnitType_ID = unitConvert.baseUnitType_ID,
+                            BaseQuantity = unitConvert.oldQty,
+                            BaseUnitType_ID = unitConvert.oldUnitType_ID,
                             Quantity = unitConvert.newQty,
                             UnitType_ID = unitConvert.newUnitType_ID,
                             DocumentItem_ID = di.ID.Value,

@@ -12,15 +12,18 @@ namespace AWMSModel.Entity
         public string Code;
         public long? SKUMaster_ID;
         public long? PackMaster_ID;
+        public string ItemNo;
+        public string BaseCode;
+        public string LocationCode;
         public decimal? Quantity;
         public long? UnitType_ID;
         public decimal? BaseQuantity;
         public long? BaseUnitType_ID;
         public string Options;
         public DateTime? ProductionDate;
-        public DateTime? IncubationDate;
         public DateTime? ExpireDate;
         public string OrderNo;
+        public string CartonNo;
         public string Batch;
         public string Lot;
         public string RefID;
@@ -28,7 +31,7 @@ namespace AWMSModel.Entity
         public string Ref2;
         public string Ref3;
         public string Ref4;
-        public string ItemNo;
+        public int AuditStatus;
         public DocumentEventStatus EventStatus;
         public decimal? ActualBaseQuantity;
 

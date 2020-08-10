@@ -582,7 +582,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(skuMaster.ID.Value, psto.qty, skuMaster.UnitType_ID.Value);
                 decimal? baseQuantity = null;
                 if (psto.qty >= 0)
-                    baseQuantity = baseUnitTypeConvt.baseQty;
+                    baseQuantity = baseUnitTypeConvt.newQty;
 
                 tempDocItems.Add(new TempMVTDocItems()
                 {
@@ -598,7 +598,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         Quantity = psto.qty,
                         UnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                         BaseQuantity = baseQuantity,
-                        BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                        BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
 
                         OrderNo = psto.orderNo,
                         Batch = psto.batch,

@@ -8,7 +8,7 @@ namespace AWMSModel.Entity
 {
     public class ams_DocumentProcessMap : BaseEntityCreateModify
     {
-        DocumentProcessTypeID DocumentProcessType_ID;
-        DocumentTypeID DocumentType_ID;
+        public DocumentProcessTypeID DocumentProcessType_ID;
+        public DocumentTypeID DocumentType_ID;
     }
 }

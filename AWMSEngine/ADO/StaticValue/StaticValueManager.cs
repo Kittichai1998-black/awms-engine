@@ -180,7 +180,9 @@ namespace AWMSEngine.ADO.StaticValue
         {
             
 
-            var baseUnitID = this.PackUnitConverts.First(x => x.SKUMaster_ID == skuID).UnitType_ID;
+            var baseUnitID = this.PackUnitConverts
+                .First(x => x.SKUMaster_ID == skuID && (x.C1_UnitType_ID == oldUnitTypeID || x.C2_UnitType_ID == oldUnitTypeID))
+                .SKUMaster_UnitType_ID;
             var convertUnit = this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, baseUnitID);
             return convertUnit;
         }
@@ -191,13 +193,15 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(string packCode, decimal oldQty, long oldUnitTypeID)
         {
-            int skuID = this.PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_Code == packCode || x.C2_PackMaster_Code == packCode)
+                .SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, oldQty, oldUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(long packID, decimal oldQty, long oldUnitTypeID)
         {
 
-            int skuID = this.PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_ID == packID || x.C2_PackMaster_ID == packID)
+                .SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, oldQty, oldUnitTypeID);
         }
 
@@ -256,31 +260,30 @@ namespace AWMSEngine.ADO.StaticValue
 
 
             var dataConvert_C2 = CovertUnit(oldQty, oldUnitTypeID, newUnitTypeID,arr.covertLists);
-            var dataConvert_BaseQty = CovertUnit(oldQty, oldUnitTypeID, unitPackH.UnitType_ID, arr.covertLists);
+            var dataConvert_BaseQty = CovertUnit(oldQty, oldUnitTypeID, unitPackH.SKUMaster_UnitType_ID, arr.covertLists);
 
             if (checkUnit == null)
                 throw new Exception("Covert Unit Fail : UnitType ไม่สามารถ Convert ได้");
 
 
-            return new ConvertUnitCriteria()
+            var res = new ConvertUnitCriteria()
             {
                 skuMaster_ID = unitPackH.SKUMaster_ID,
                 skuMaster_Code = unitPackH.SKUMaster_Code,
-                packMaster_ID = unitPackH.PackMaster_ID,
-                packMaster_Code = unitPackH.PackMaster_Code,
-                newQty = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
-                newUnitType_ID = newUnitTypeID,
                 oldQty = oldQty,
                 oldUnitType_ID = oldUnitTypeID,
-                baseQty = dataConvert_BaseQty.Value,
-                baseUnitType_ID = unitPackH.UnitType_ID,
-                C2_Quantity = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
-                C2_UnitType_ID = newUnitTypeID,
-                C1_Quantity = oldQty,
-                C1_UnitType_ID = oldUnitTypeID,
+
+                newPackMaster_ID = unitPackH.C1_UnitType_ID == newUnitTypeID ?
+                                        unitPackH.C1_PackMaster_ID : unitPackH.C2_UnitType_ID == newUnitTypeID ?
+                                                                               unitPackH.C2_PackMaster_ID : null,
+                newPackMaster_Code = unitPackH.C1_UnitType_ID == newUnitTypeID ?
+                                        unitPackH.C1_PackMaster_Code : unitPackH.C2_UnitType_ID == newUnitTypeID ?
+                                                                               unitPackH.C2_PackMaster_Code : null,
+                newQty = dataConvert_C2 == null ? 0 : dataConvert_C2.Value,
+                newUnitType_ID = newUnitTypeID,
              
             };
-
+            return res;
         }
 
         private static decimal? CovertUnit(decimal c1qty, long c1unit, long c2unit,List< dataConvert.convertList> arr)
@@ -314,19 +317,24 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal oldQty, long oldUnitTypeID, long newUnitTypeID)
         {
-            int skuID = this.PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_Code == packCode).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, newUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal oldQty, long oldUnitTypeID, long newUnitTypeID)
         {
-            int skuID = this.PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.C1_PackMaster_ID == packID || x.C2_PackMaster_ID  == packID).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, newUnitTypeID);
         }
 
         public List<ConvertUnitCriteria> ConvertToALlUnitBySKU(long skuID, decimal oldQty, long oldUnitTypeID)
         {
             var packConverts = this.PackUnitConverts.FindAll(x => x.SKUMaster_ID == skuID);
-            var res = packConverts.Select(x => ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, x.UnitType_ID)).ToList();
+            List<long> listUnitID = new List<long>();
+            packConverts.ForEach(x => {
+                if (!listUnitID.Any(y => y == x.C1_UnitType_ID)) listUnitID.Add(x.C1_UnitType_ID);
+                if (!listUnitID.Any(y => y == x.C2_UnitType_ID)) listUnitID.Add(x.C2_UnitType_ID);
+            });
+            var res = listUnitID.Select(x => ConvertToNewUnitBySKU(skuID, oldQty, oldUnitTypeID, x)).ToList();
             return res;
         }
 
