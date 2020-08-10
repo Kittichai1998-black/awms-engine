@@ -37,6 +37,10 @@ namespace AMWUtil.Exception
         V0_DEVMENU_NOT_FOUND,
         [AMWExceptionCodeAttribute("V0104", DefaultMessage = "ไม่พบข้อมูลในคลังสินค้า")]
         V0_STO_NOT_FOUND,
+        [AMWExceptionCodeAttribute("V0105", DefaultMessage = "สินค้าเกินจำนวนเอกสารรับเข้า")]
+        V0_STO_OVER_DOC,
+        [AMWExceptionCodeAttribute("V0106", DefaultMessage = "ไม่พบเอกสารรับเข้าสินค้า")]
+        V0_DOC_NOT_FOUND,
 
 
 
