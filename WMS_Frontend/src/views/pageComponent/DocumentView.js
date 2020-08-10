@@ -184,6 +184,11 @@ const DocumentView = props => {
     // console.log(props.optionDocItems);
   }, []);
 
+    useEffect(() => {
+        setHeader(props.header)
+        //getHeader()
+    }, [props.header]);
+
   const getData = () => {
     //========================================================================================================
 
@@ -201,7 +206,10 @@ const DocumentView = props => {
       //   res.data
       // );
       setDataDoc(res.data)
-      if (res.data._result.status === 1) {
+        if (res.data._result.status === 1) {
+            if (props.OnchageOwnerGroupType !== undefined) {
+                props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
+            }
         setDataHeader(res.data.document);
         setEventStatus(res.data.document.EventStatus);
         //============================================================================
