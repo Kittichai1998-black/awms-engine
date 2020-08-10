@@ -84,14 +84,12 @@ const Create_GR_DR = props => {
                     Source,
                     { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
                 ],
-                [
-                    { label: "For Customer", type: "labeltext", key: "forCustomerID", texts: ForCustomerName, valueTexts: For_Customer_ID, codeTranslate: "For Customer" },
+                [ 
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
+                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ],
 
-                [
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
-                ]
+               
 
             ];
 
