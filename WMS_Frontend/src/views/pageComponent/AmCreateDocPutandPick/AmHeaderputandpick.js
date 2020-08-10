@@ -315,7 +315,7 @@ const AmHeaderputandpick = (props) => {
             if (value !== undefined) {
                 Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.doctypeDocNo + "&docID=" +
                     value + "&getMapSto=true").then((res => props.onChangeDoument(res.data.document)))
-                doc.setdialogItemSet(true)
+                doc.setdialogItem(true)
             }
 
         }

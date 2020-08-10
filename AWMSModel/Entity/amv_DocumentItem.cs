@@ -44,6 +44,7 @@ namespace AWMSModel.Entity
 
         public string Batch;
         public string Lot;
+        public string ItemNo;
         public string OrderNo;
         public string DesCustomer;
         public string DesCustomerName;
