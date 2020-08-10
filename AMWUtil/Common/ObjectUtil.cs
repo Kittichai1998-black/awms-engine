@@ -445,22 +445,17 @@ namespace AMWUtil.Common
             }
             return res;
         }
-        public static bool Equals(this object obj, params object[] comps)
-        {
-            foreach (var comp in comps)
-            {
-                if (obj.Equals(comp))
-                    return true;
-            }
-            return false;
-        }
         public static T Clone<T>(this T obj)
         {
             return (T)Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Newtonsoft.Json.JsonConvert.SerializeObject(obj));
         }
-        public static bool In(this string vals, string val)
+        public static bool In(this object val, params object[] comps)
         {
-            return vals.Split(',').Any(x => x == val);
+            return comps.ToList().Any(x => x == val);
+        }
+        public static bool In(this string val, params string[] comps)
+        {
+            return comps.ToList().Any(x => x == val);
         }
         public static string JoinString<T>(this IEnumerable<T> d, char separator = ',')
         {
