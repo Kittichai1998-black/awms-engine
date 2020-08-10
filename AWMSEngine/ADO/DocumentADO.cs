@@ -744,11 +744,12 @@ namespace AWMSEngine.ADO
             param.Add("@unitTypeID", docItem.UnitType_ID);
             param.Add("@baseUnitTypeID", docItem.BaseUnitType_ID);
             param.Add("@expireDate", docItem.ExpireDate);
-            param.Add("@options", docItem.Options);
             param.Add("@productionDate", docItem.ProductionDate);
+            param.Add("@options", docItem.Options);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
             param.Add("@ref3", docItem.Ref3);
+            param.Add("@ref4", docItem.Ref4);
             param.Add("@refID", docItem.RefID);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
