@@ -52,7 +52,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             var docItems = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS)
+                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNULL)
             }, this.BuVO);
 
             var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
@@ -61,8 +62,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.NOTEQUALS)
             }, this.BuVO).OrderByDescending(x => x.CreateTime).ToList();
 
-            var newBaseQty = psto.Quantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.Quantity).Value;
-            var newQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;
+            var newBaseQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;
+            var newQty = psto.Quantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.Quantity).Value;
 
             if (docItems.Count > 0)
             {
@@ -77,6 +78,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var disto = distos.Find(x => x.DocumentItem_ID == docItem.ID && x.Sou_StorageObject_ID == psto.ID);
                     var remainBaseRecv = docItem.BaseQuantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.BaseQuantity).Value;
                     var remainRecv = docItem.Quantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.Quantity).Value;
+
+                    if (remainRecv == 0)
+                        continue;
 
                     if (disto != null)
                     {
