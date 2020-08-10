@@ -259,7 +259,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 };
                 //var oldPsto = this.ADOSto.Get(psto.pstoID.Value, StorageObjectType.PACK, false, false, this.BuVO);
                 var stos = this.ADOSto.Get(idBase, StorageObjectType.BASE, false, true, this.BuVO);
-                var stoLists = res.bsto.ToTreeList();
+                var stoLists = stos.ToTreeList();
                 var oldPsto = stoLists.Find(x => x.id == psto.pstoID.Value);
                 long ? resStopack = null;
                 if (oldPsto != null)

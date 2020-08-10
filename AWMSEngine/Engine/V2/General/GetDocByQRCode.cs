@@ -76,6 +76,9 @@ namespace AWMSEngine.Engine.V2.General
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             //res.datas = new List<TRes.DocData>();
 
+            if (reqVO.qr == null || reqVO.qr == "undefined")
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
+
             if (reqVO.qr.StartsWith("N|"))
             {
                 var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}");

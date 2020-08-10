@@ -285,7 +285,7 @@ const AmMappingPallet = props => {
     console.log(value)
     console.log(obj)
     console.log(event)
-
+    console.log(keydata)
     valueInput[keydata] = value;
     if (keydata === "PalletCode") {
       setPalletCode(value);
@@ -458,7 +458,7 @@ const AmMappingPallet = props => {
               onBlur={(e) => {
                 if (e !== undefined && e !== null)
                   console.log(e)
-                onHandleChangeInputPalletCode("PalletCode", e, null, null, null)
+                onHandleChangeInputPalletCode("barcode", e, null, null, null)
               }}
               onKeyPress={(value, obj, element, event) => {
                 if (event.key === "Enter") {
@@ -561,14 +561,14 @@ const AmMappingPallet = props => {
       locationID: null,
       pstos: []
     };
-    // if (dataDoc !== undefined) {
+    if (dataDoc !== undefined) {
 
-    //   dataDoc.datas.forEach(element => {
-    //     console.log(element)
-    //     postdata.pstos.push(element)
-    //   });
+      dataDoc.datas.forEach(element => {
+        console.log(element)
+        postdata.pstos.push(element)
+      });
 
-    // }
+    }
     console.log(dataDoc)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data.bsto !== undefined) {
@@ -580,6 +580,7 @@ const AmMappingPallet = props => {
     })
   }
   function getDataDocByPallet() {
+    console.log(valueInput.barcode)
     Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${valueInput.barcode}`).then(res => {
       console.log(res);
       if (res.data._result.status) {
@@ -600,7 +601,13 @@ const AmMappingPallet = props => {
     } else if (index === 1) {
       //setIsLoad(true); 
       console.log(valueInput.processType)
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
+      if (valueInput.processType) {
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+      }
+      else {
+        alertDialogRenderer("ProcessType must be value", "error", true);
+      }
+
     } else if (index === 2) {
       //setIsLoad(true); 
 
@@ -612,7 +619,9 @@ const AmMappingPallet = props => {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     } else if (index === 4) {
       //setIsLoad(true); 
+      console.log(valueInput.barcode)
       getDataDocByPallet()
+
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
   };
