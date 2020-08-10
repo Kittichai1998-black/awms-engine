@@ -70,6 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string batch;
                 public string lot;
                 public string orderNo;
+                public string itemNo;
                 public string refID;
                 public string ref1;
                 public string ref2;
@@ -175,6 +176,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
                     desCustomerID = desCustomerModel == null ? null : desCustomerModel.ID,
+                   
 
                     desBranchID = desBranchModel == null ? null : desBranchModel.ID,
                     desWarehouseID = desWarehouseModel == null ? null : desWarehouseModel.ID,
@@ -212,6 +214,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
+                            itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
                             baseUnitType = x.baseunitType,
                             eventStatus = x.eventStatus,

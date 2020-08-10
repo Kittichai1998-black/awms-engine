@@ -267,7 +267,7 @@ const DocumentSearchSTGT = props => {
                 buttonClose={true}
                 buttonReject={true}
                 dataReject={dataReject}
-                apiReject={"/v2/RejectGRDocAPI"}
+                apiReject={"/v2/RejectedGIDocAPI"}
                 //apiWorking={""}
                 apiClose={"/v2/CloseDocAPI"}
             />

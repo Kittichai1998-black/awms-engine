@@ -639,7 +639,7 @@ const DocumentView = props => {
                     onClick={() => {
                       onCreatePut();
                     }}
-                  >Create</AmButton>
+                  >Create PutAway</AmButton>
                 </div>
               </Grid>
             </Grid>
@@ -649,6 +649,7 @@ const DocumentView = props => {
       </div>
       {props.usePrintBarcodePallet ?
         <>
+          {console.log(selection)}
           <AmPrintBarCode data={selection}
             SouSupplierCode={dataHeader.SouSupplier}
             SouSupplierName={dataHeader.SouSupplierName}

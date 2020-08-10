@@ -85,9 +85,9 @@ export default props => {
     };
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
-        { Header: "Unit", accessor: "unitType", width: 50 }
+        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+        { Header: "Unit", accessor: "UnitType", width: 50 }
     ];
 
     const columnEdit = [

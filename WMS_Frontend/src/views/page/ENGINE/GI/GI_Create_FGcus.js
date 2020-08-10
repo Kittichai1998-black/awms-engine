@@ -77,7 +77,7 @@ const GI_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process Type", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 1010, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 1010, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 
@@ -99,8 +99,7 @@ const GI_Create_FGCustomer = props => {
             setskuquery();
             setaddlistquery();
             setType(true)
-          
-
+         
         } else {
 
         }
@@ -239,11 +238,10 @@ const GI_Create_FGCustomer = props => {
     };
 
 
-
     const DocumentProcessTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "Name", "c":"like", "v": "%FG%"}]',
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

@@ -372,7 +372,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.Equals("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
+                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
                     continue;
 
                 if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
@@ -442,7 +442,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.Equals("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
+                if (x.Key.In("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
                     continue;
 
                 commFields +=
