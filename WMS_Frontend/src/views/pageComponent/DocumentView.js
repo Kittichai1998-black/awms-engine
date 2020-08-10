@@ -647,7 +647,7 @@ const DocumentView = props => {
                     onClick={() => {
                       onCreatePut();
                     }}
-                  >Create</AmButton>
+                  >Create PutAway</AmButton>
                 </div>
               </Grid>
             </Grid>

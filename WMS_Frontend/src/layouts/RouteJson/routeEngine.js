@@ -248,9 +248,9 @@ const routes = [
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
   { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
 
-  { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
-  { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
-  { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
+    { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
+    { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
+    { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
 
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },

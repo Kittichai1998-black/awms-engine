@@ -70,6 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                 public string refID;
                 public string ref1;
                 public string ref2;
+                public string itemNo;
                 public string options;
 
                 public DateTime? expireDate;
@@ -196,6 +197,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
+                            itemNo = x.itemNo,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
