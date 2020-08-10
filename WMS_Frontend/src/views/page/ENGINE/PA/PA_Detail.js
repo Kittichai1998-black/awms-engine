@@ -31,10 +31,11 @@ const PA_Detail = props => {
                 header={header}
                 buttonBack={true}
                 linkBack={"/putaway/search"}
-                history={props.history}              
+                history={props.history}
                 useAddPalletMapSTO={true}
                 addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
+                usePrintBarcodePallet={true}
             >
             </DocView>
             )
@@ -92,6 +93,7 @@ const PA_Detail = props => {
 
     const columnsDetailSOU = [
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
@@ -125,15 +127,9 @@ const PA_Detail = props => {
         var ID = values.docID.toString();
         return ID;
     };
-
-    const colListDocItems = [
-        { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 150, accessor: "Quantity", Header: "จำนวนที่รับเข้าได้" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
-    ];
+ 
     const addPalletMapSTO = {
-        apiCreate: '/v2/ScanMapStoFromDocAPI',
+        // apiCreate: '/v2/ScanMapStoFromDocAPI',
         // columnsDocItems: colListDocItems,
         ddlArea: {
             visible: true,
@@ -159,16 +155,16 @@ const PA_Detail = props => {
             required: false,
             // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
         },
-        inputTitle: [
-            {
-                field: "projCode",
-                name: "Project",
-                type: "text",
-                customShow: (dataDocument) => {
-                    return dataDocument.document.Ref1;
-                },
-            }
-        ],
+        // inputTitle: [
+        //     {
+        //         field: "projCode",
+        //         name: "Project",
+        //         type: "text",
+        //         customShow: (dataDocument) => {
+        //             return dataDocument.document.Ref1;
+        //         },
+        //     }
+        // ],
         inputBase:
         {
             visible: true,

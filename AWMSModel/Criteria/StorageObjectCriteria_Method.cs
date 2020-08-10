@@ -144,10 +144,10 @@ namespace AWMSModel.Criteria
                 unitID = stoUnitType.ID.Value,
                 unitCode = stoUnitType.Code,
 
-                baseQty = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.baseQty : 1,
-                baseUnitID = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.baseUnitType_ID : stoUnitType.ID.Value,
+                baseQty = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.newQty : 1,
+                baseUnitID = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.newUnitType_ID : stoUnitType.ID.Value,
                 baseUnitCode = stoBaseUnitTypeConvert != null ?
-                                    staticValue.UnitTypes.First(x => x.ID == stoBaseUnitTypeConvert.baseUnitType_ID).Code : stoUnitType.Code,
+                                    staticValue.UnitTypes.First(x => x.ID == stoBaseUnitTypeConvert.newUnitType_ID).Code : stoUnitType.Code,
 
                 widthM = null,
                 heightM = null,
@@ -313,11 +313,10 @@ namespace AWMSModel.Criteria
         {
             var s = this;
             return EncryptUtil.GenerateMD5(
-                        string.Format("{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}",
-                            s.mstID, s.type, s.unitID, s.baseUnitID, s.parentID,
-                            s.eventStatus, s.orderNo, s.lot, s.batch, s.code, s.itemNo,
-                            s.refID,s.ref1, s.ref2, s.ref3, s.ref4, 
-                            s.cartonNo, s.expiryDate, s.incubationDate, s.productDate));
+                        string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11:dd-mm-yy}|{12:dd-mm-yy}",
+                            s.mstID, s.type, s.forCustomerID, s.orderNo, s.batch, s.lot,
+                            s.refID, s.ref1, s.ref2, s.ref3, s.ref4, 
+                            s.productDate, s.expiryDate));
         }
 
     }

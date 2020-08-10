@@ -246,7 +246,7 @@ const AmCheckPalletForReceive = (props) => {
         for (let i = 0; i < countPack; i++) {
             dataPack.push(
                 {
-                    ID: i,
+                    PackID: i,
                     SKU_Code: arraySKUCode != null && arraySKUCode[i] ? arraySKUCode[i] : "",
                     SKU_Name: arraySKUName != null && arraySKUName[i] ? arraySKUName[i] : "",
                     Project: arrayProject != null && arrayProject[i] ? arrayProject[i] : "",
@@ -261,7 +261,7 @@ const AmCheckPalletForReceive = (props) => {
         if (dataPack != null && dataPack.length > 0) {
             datashow = <AmTable
                 columns={columnsPack}
-                dataKey={"ID"}
+                dataKey={"PackID"}
                 dataSource={dataPack}
                 rowNumber={true}
                 pageSize={dataPack.length}
@@ -337,17 +337,22 @@ const AmCheckPalletForReceive = (props) => {
     }, [open])
     async function loadData() {
 
-        let ForCustomer = dataDocument.ForCustomer;
-        let Project = dataDocument.Ref2;
+        let ForCustomer = dataDocument.ForCustomer ? dataDocument.ForCustomer : "";
+        let Project = dataDocument.Ref2 ? dataDocument.Ref2 : "";
         let newSTOQuery = Clone(STOQuery);
-        newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'},{'f':'Project', 'c':'like','v': '%" + Project + "%'}]";
+        newSTOQuery.q = "[{'f':'For_Customer', 'c':'like','v': '%" + ForCustomer + "%'}]";
+            // + "{'f':'Project', 'c':'like','v': '%" + Project + "%'}]";
         await Axios.get(createQueryString(newSTOQuery)).then(res => {
             if (res.data._result.status === 1) {
                 if (res.data.counts === 0) {
                     onHandleClear();
                     onError(false, "warning", "ไม่พบข้อมูลพาเลท")
                 } else {
-                    setDataSrc(res.data.datas);
+
+                    var newItems = res.data.datas.map(x => { return { ...x, PalletID: x.ID + x.Pallet } });
+                    // console.log(newItems)
+
+                    setDataSrc(newItems);
                 }
             } else {
                 onHandleClear();
@@ -377,11 +382,11 @@ const AmCheckPalletForReceive = (props) => {
         setDataSrc([])
         setDataSelect([])
     }
-    
-     
+
+
     return (
         <div>
-             
+
             <Dialog
                 fullScreen={fullScreen}
                 aria-labelledby="addpallet-dialog-title"
@@ -403,7 +408,7 @@ const AmCheckPalletForReceive = (props) => {
                         /> */}
                     <AmTable
                         columns={columnsStorageObject}
-                        dataKey={"ID"}
+                        dataKey={"PalletID"}
                         dataSource={dataSrc}
                         selection="radio"
                         selectionData={data => setDataSelect(data)}
