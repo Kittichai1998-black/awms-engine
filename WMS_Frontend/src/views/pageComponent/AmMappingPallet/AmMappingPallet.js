@@ -142,7 +142,7 @@ const FormInline = styled.div`
 
 const LabelH = styled.label`
   font-weight: bold;
-  width: 100px;
+  width: 70px;
   paddingleft: 20px;
 `;
 const LabelH1 = styled.label`
@@ -198,17 +198,17 @@ const DocumentProcessTypeQuery = {
   l: 100,
   all: "",
 }
-const AreaLocationMasterQuery = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "AreaLocationMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1}]',
-  f: "Code,ID as locaionID,Name",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  l: 100,
-  all: "",
-}
+// const AreaLocationMasterQuery = {
+//   queryString: window.apipath + "/v2/SelectDataMstAPI/",
+//   t: "AreaLocationMaster",
+//   q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1}]',
+//   f: "Code,ID as locaionID,Name",
+//   g: "",
+//   s: "[{'f':'ID','od':'asc'}]",
+//   sk: 0,
+//   l: 100,
+//   all: "",
+// }
 const AmMappingPallet = props => {
   const { t } = useTranslation();
   const { classes } = props;
@@ -270,9 +270,20 @@ const AmMappingPallet = props => {
     console.log(dataObject)
     console.log(inputID)
     if (fieldDataKey === "areaID") {
-      let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
-      query.push({ f: "AreaMaster_ID", c: "=", v: value })
-      AreaLocationMasterQuery.q = JSON.stringify(query)
+      // let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
+      // query.push({ f: "AreaMaster_ID", c: "=", v: value })
+      // AreaLocationMasterQuery.q = JSON.stringify(query)
+      const AreaLocationMasterQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaLocationMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1},{ "f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
+        f: "Code,ID as locaionID,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      }
       console.log(AreaLocationMasterQuery);
       setAreaLocationMasterQuery(AreaLocationMasterQuery)
     }
@@ -400,9 +411,17 @@ const AmMappingPallet = props => {
         // console.log(valueInput.locaionID)
         var dataLoc = null;
         if (valueInput.areaID != undefined) {
-          let query = AreaLocationMasterQuery.q ? JSON.parse(AreaLocationMasterQuery.q) : ""
-          query.push({ f: "AreaMaster_ID", c: "=", v: valueInput.areaID })
-          AreaLocationMasterQuery.q = JSON.stringify(query)
+          const AreaLocationMasterQuery = {
+            queryString: window.apipath + "/v2/SelectDataMstAPI/",
+            t: "AreaLocationMaster",
+            q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1},{ "f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
+            f: "Code,ID as locaionID,Name",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+          }
           console.log(AreaLocationMasterQuery);
           dataLoc = AreaLocationMasterQuery
           console.log(dataLoc)
@@ -442,8 +461,30 @@ const AmMappingPallet = props => {
                 <div>
                   <FormInline>
                     <LabelH>Pallet:</LabelH>
-                    {dataPallet.code}
+                    {dataPallet.bsto.code}
                   </FormInline>
+                  {/* {dataPallet.datas === null ? null : dataDoc.datas.map((x, index) => {
+                    return (
+                      <div key={index}>
+                        <FormInline>
+                          <LabelH>Item :</LabelH>
+                          {x.pstoCode}
+                        </FormInline>
+                        <FormInline>
+                          <LabelH>Lot :</LabelH>
+                          {x.lot}
+                        </FormInline>
+                        <FormInline>
+                          <LabelH>Batch :</LabelH>
+                          {x.batch}
+                        </FormInline>
+                        <FormInline>
+                          <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
+
+                        </FormInline>
+                      </div>
+                    );
+                  })} */}
                 </div>
               </CardContent>
             </Card>
@@ -478,6 +519,7 @@ const AmMappingPallet = props => {
                     <LabelH>Pallet:</LabelH>
                     {valueInput.palletCode}
                   </FormInline>
+
                 </div>
               </CardContent>
             </Card>
@@ -497,8 +539,6 @@ const AmMappingPallet = props => {
               onKeyPress={(value, obj, element, event) => {
                 if (event.key === "Enter") {
                   onHandleChangeInputPalletCode("barcode", value, obj, element, event)
-                  // if (value === "")
-                  //   setDialogState({ type: "warning", content: "กรุณากรอกข้อมูล MaxVolume", state: true })
                 }
 
               }}
@@ -536,7 +576,7 @@ const AmMappingPallet = props => {
                           {x.batch}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Qty : {x.addQty} {x.unitTypeCode} </LabelH>
+                          <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
 
                         </FormInline>
                       </div>
@@ -573,7 +613,7 @@ const AmMappingPallet = props => {
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data.bsto !== undefined) {
         console.log(res.data.bsto);
-        setDataPallet(res.data.bsto)
+        setDataPallet(res.data)
         if (type === "confirm")
           setActiveStep(4);
       }
@@ -610,24 +650,40 @@ const AmMappingPallet = props => {
 
     } else if (index === 2) {
       //setIsLoad(true); 
+      if (valueInput.PalletCode) {
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+      }
+      else {
+        alertDialogRenderer("PalletCode must be value", "error", true);
+      }
 
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
     } else if (index === 3) {
       //setIsLoad(true); 
+      if (valueInput.areaID) {
+        getData()
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+      }
+      else {
+        alertDialogRenderer("Area must be value", "error", true);
+      }
 
-      getData()
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
     } else if (index === 4) {
       //setIsLoad(true); 
       console.log(valueInput.barcode)
-      getDataDocByPallet()
+      if (valueInput.barcode) {
+        getDataDocByPallet()
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+      }
+      else {
+        alertDialogRenderer("Barcode must be value", "error", true);
+      }
 
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
   };
 
   function handleReset() {
-    setActiveStep(0);
+    //setActiveStep(0);
+    setActiveStep(activeStep - 1);
     setValueInput({});
     setDataShow(null);
     // setTmp();
@@ -669,8 +725,8 @@ const AmMappingPallet = props => {
               <StepContent>
                 {getStepContent(index)}
                 <div className={classes.actionsContainer}>
-                  <div>
-                    {activeStep !== 1 ? null : (
+                  <div>{console.log("sss =" + activeStep)}
+                    {activeStep == 0 ? null : (
                       <AmButton
                         styleType="delete_clear"
                         onClick={handleReset}
