@@ -198,17 +198,7 @@ const DocumentProcessTypeQuery = {
   l: 100,
   all: "",
 }
-// const AreaLocationMasterQuery = {
-//   queryString: window.apipath + "/v2/SelectDataMstAPI/",
-//   t: "AreaLocationMaster",
-//   q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1}]',
-//   f: "Code,ID as locaionID,Name",
-//   g: "",
-//   s: "[{'f':'ID','od':'asc'}]",
-//   sk: 0,
-//   l: 100,
-//   all: "",
-// }
+
 const AmMappingPallet = props => {
   const { t } = useTranslation();
   const { classes } = props;
