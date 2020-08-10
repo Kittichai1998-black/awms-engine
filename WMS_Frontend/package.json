@@ -38,6 +38,7 @@
     "react-chartjs-2": "^2.9.0",
     "react-dom": "^16.11.0",
     "react-draggable": "^3.2.1",
+    "react-dropzone": "^11.0.2",
     "react-excel-workbook": "0.0.4",
     "react-full-screen": "^0.2.4",
     "react-i18next": "^10.11.4",

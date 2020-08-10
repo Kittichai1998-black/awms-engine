@@ -122,7 +122,7 @@ const useDocumentItemQuery = (docID, docItemQuery) => {
 
 const AmHeaderputandpick = (props) => {
     const { doc, dia } = useContext(PutandPickContext)
- 
+
     //const Dataheades = usedataHeader(props.docheaderCreate)
     const [createDocumentData, setcreateDocumentData] = useState({});
     const [dataDDLHead, setdataDDLHead] = useState({});
@@ -165,15 +165,15 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         let dataHead = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-                arr[el.key] = el.valueTexts || el.defaultValue    
-               createDocumentData[el.key] = el.valueTexts || el.defaultValue                  
-                return arr
-            }, {})
+            arr[el.key] = el.valueTexts || el.defaultValue
+            createDocumentData[el.key] = el.valueTexts || el.defaultValue
+            return arr
+        }, {})
         //setcreateDocumentData(createDocumentData)
     }, [props.docheaderCreate])
 
     useEffect(() => {
-        if (doc.datadocItem ) {
+        if (doc.datadocItem) {
             let newItems = _.filter(doc.datadocItem, function (o) { return o._balanceQty > 0; });
             saveDefaultInputQTY(newItems)
         }
@@ -194,6 +194,10 @@ const AmHeaderputandpick = (props) => {
         createDocumentData["parentDocumentID"] = doc.docID
     }, [doc.docID])
 
+    useEffect(() => {
+        console.log(doc.datadocItem)
+    }, [doc.datadocItem])
+
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
             + "&docID=" + doc.docID
@@ -205,7 +209,8 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    doc.setdatadocItem(res.data.datas);                   
+                    console.log(res.data)
+                    doc.setdatadocItem(res.data.datas);
                     doc.setdialogItem(true)
                 } else {
                     getDocItemQuery(DocItemsquery)
@@ -217,13 +222,16 @@ const AmHeaderputandpick = (props) => {
     }
 
     const getDocItemQuery = (DocItemsquerys) => {
+        //ข้อมูลจาก amv_Docview
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
+                console.log(res.data.datas)
                 doc.setdatadocItem(res.data.datas);
                 doc.setdialogItem(true)
             } else {
 
             }
+          
         })
     }
 
@@ -231,6 +239,7 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
+                    console.log(res.data.datas)
                     doc.setdataSet(res.data.datas);
                     setDataSelect([]);
                 } else {
@@ -243,6 +252,7 @@ const AmHeaderputandpick = (props) => {
     }
 
     const getDocItemQuerySet = (DocItemsquerys) => {
+        console.log(DocItemsquerys)
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
                 doc.setdataSet(res.data.datas);
@@ -305,6 +315,7 @@ const AmHeaderputandpick = (props) => {
             if (value !== undefined) {
                 Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.doctypeDocNo + "&docID=" +
                     value + "&getMapSto=true").then((res => props.onChangeDoument(res.data.document)))
+                doc.setdialogItemSet(true)
             }
 
         }
@@ -316,7 +327,7 @@ const AmHeaderputandpick = (props) => {
             if (value > qtys) {
                 dia.setdailogMsg('Quantity Max')
                 dia.setdailogErr(true)
-               
+
             } else if (value <= qtys) {
                 setValueQtyDocItems({
                     ...valueQtyDocItems, [element.id]: {
@@ -329,7 +340,7 @@ const AmHeaderputandpick = (props) => {
             if (value > datarow.Quantity) {
                 dia.setdailogMsg('Quantity Max')
                 dia.setdailogErr(true)
-             
+
 
             } else if (value <= datarow.Quantity) {
                 setValueQtyDocItems({
@@ -344,15 +355,15 @@ const AmHeaderputandpick = (props) => {
     }
 
     const onSubmitAddItem = () => {
-        let dataSelect2 =[];
+        let dataSelect2 = [];
         let Checkdataselect = 0;
-  
+
         if (dataSelect.length != 0) {
             if (valueQtyDocItems.length != 0) {
                 dataSelect2 = [...dataSelect].map((x, idx) => {
                     let CheckID;
-                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);                 
-                    if (found < 0) { 
+                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);
+                    if (found < 0) {
                         CheckID = true
                     }
                     if (!CheckID) {
@@ -360,7 +371,7 @@ const AmHeaderputandpick = (props) => {
                     } else {
                         if (valueQtyDocItems[x.ID] !== undefined) {
                             x.Quantity = valueQtyDocItems[x.ID].recQty
-              
+
                         } else {
 
                             if (x.Qty) {
@@ -368,7 +379,7 @@ const AmHeaderputandpick = (props) => {
                                 if (Quantitys > 0) {
                                     x.Quantity = Quantitys
                                 } else {
-                                   
+
                                 }
 
                             }
@@ -388,7 +399,7 @@ const AmHeaderputandpick = (props) => {
                     dia.setdailogMsg("SKUItem dupicate")
                     dia.setdailogErr(true)
                     Checkdataselect = 0
-                    
+
                 } else {
                     if (doc.dataSourceItemTB.length === 0) {
                         doc.setdataSourceItemTB(dataSelect2);
@@ -401,29 +412,29 @@ const AmHeaderputandpick = (props) => {
                     }
                 }
 
-                } else {
-                    dia.setdailogMsg("Quantity Max");
-                    dia.setdailogErr(true)
-                    //doc.setdataSourceItemTB(dataSelect);
-                }
-
             } else {
-                if (doc.editdata.length != 0) {
-                    let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
-                    doc.dataSourceItemTB.splice(idx, 1);
-                    doc.setdataSourceItemTB([...doc.dataSourceItemTB])
-                    doc.setdialogItem(false)
-                } else {
-                    dia.setdailogMsg("Seelct SKU Pls");
-                    dia.setdailogErr(true)
-                }
+                dia.setdailogMsg("Quantity Max");
+                dia.setdailogErr(true)
+                //doc.setdataSourceItemTB(dataSelect);
+            }
+
+        } else {
+            if (doc.editdata.length != 0) {
+                let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
+                doc.dataSourceItemTB.splice(idx, 1);
+                doc.setdataSourceItemTB([...doc.dataSourceItemTB])
+                doc.setdialogItem(false)
+            } else {
+                dia.setdailogMsg("Seelct SKU Pls");
+                dia.setdailogErr(true)
+            }
         }
 
-            doc.seteditdata([]);
-            setDataSelect([]);
+        doc.seteditdata([]);
+        setDataSelect([]);
         doc.setdialogItem(false)
-      
-         
+
+
     }
 
     const genInputQty = (datarow) => {
@@ -439,30 +450,22 @@ const AmHeaderputandpick = (props) => {
             //doc.setdailogErr(true)
             //doc.dialogItem(false)
             //doc.setdatadocItem();
-           
-            
+
+
         } else {
             defaultQty = datarow.Quantity
         }
 
-            return <AmInput id={datarow.ID}
-                style={{ width: "100px" }}
-                type="input"
-                defaultValue={defaultQty}
-                onChange={(value, obj, element, event) => onChangeEditor(value, obj, element, event, datarow)}
-            />
-
-        }  
-
-
-    const genInputQtySet = (datarow) => {
         return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
             type="input"
-            defaultValue={datarow.Quantity}
+            defaultValue={defaultQty}
             onChange={(value, obj, element, event) => onChangeEditor(value, obj, element, event, datarow)}
         />
+
     }
+
+
 
     const getHeaderCreate = () => {
         return props.docheaderCreate.map((x, xindex) => {
@@ -538,10 +541,10 @@ const AmHeaderputandpick = (props) => {
             //getTextsValue(key, valueTexts)
             return <label>{texts}</label>
         } else if (type === "labeltext" && valueTexts !== undefined) {
-             let docData = createDocumentData
+            let docData = createDocumentData
             docData[key] = valueTexts
-           return setcreateDocumentData(docData)
-        }  else if (type === "dropdown") {
+            return setcreateDocumentData(docData)
+        } else if (type === "dropdown") {
             return (
                 <AmDropdown
                     id={idddls}
@@ -596,7 +599,7 @@ const AmHeaderputandpick = (props) => {
                     fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                     labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                     fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
-                    valueData={ valueFindPopup[idddls]} //ค่า value ที่เลือก
+                    valueData={valueFindPopup[idddls]} //ค่า value ที่เลือก
                     labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
                     queryApi={queryApi} //object query string
                     columns={cols} //array column สำหรับแสดง table
@@ -637,7 +640,7 @@ const AmHeaderputandpick = (props) => {
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
-                        dataSource={doc.datadocItem.length != 0 ? doc.datadocItem: []}
+                        dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
                         //selectionDefault={doc.dataSourceItemTB}         
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
@@ -666,7 +669,7 @@ const AmHeaderputandpick = (props) => {
 
             <DialogTitle
                 id="addpallet-dialog-title"
-                onClose={() => { onHandleClear(); doc.setdialogItemSet(false);}}>
+                onClose={() => { onHandleClear(); doc.setdialogItemSet(false); }}>
                 {"SKU ITEM"}
             </DialogTitle>
             <DialogContent>

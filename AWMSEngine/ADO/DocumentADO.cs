@@ -157,6 +157,7 @@ namespace AWMSEngine.ADO
             param.Add("@ref3", docItem.Ref3);
             param.Add("@ref4", docItem.Ref4);
             param.Add("@refID", docItem.RefID);
+            param.Add("@itemNo", docItem.ItemNo);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
