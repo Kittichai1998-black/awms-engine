@@ -106,8 +106,9 @@ export default (arrObj, itemSelect) => {
     }
 
     const GenerateFieldAmEditorTable = () => {
-        //     console.log(editt);
+        console.log(itemSelect);
         if (Array.isArray(arrObj)) {
+            console.log(arrObj)
             return arrObj.map((row, index) => {
                 return {
                     "field": row.accessor,
@@ -149,7 +150,7 @@ export default (arrObj, itemSelect) => {
             )
         }
         else if (row.type === "inputNum") {
-            console.log(editData);
+            console.log(row);
             return (
                 <FormInline>
                     <LabelT style={LabelTStyle}>{row.label} :</LabelT>
@@ -160,11 +161,11 @@ export default (arrObj, itemSelect) => {
                                 error={rowError}
                                 // helperText={inputError.length ? "required field" : false}
                                 inputRef={ref.current[index]}
-                                defaultValue={editData && editData[row.accessor[0]] ? editData[row.accessor[0]] : ""}
+                                defaultValue={itemSelect && itemSelect[row.accessor[0]] ? itemSelect[row.accessor[0]] : ""}
                                 style={Array.isArray(row.accessor) && row.accessor.length >= 2 ? { width: "100px" } : { width: "300px" }}
                                 type="number"
                                 onChange={(ele) => { onChangeEditor(row.accessor, ele, row.required) }} />
-                            {Array.isArray(row.accessor) && row.accessor.length >= 2 && <label style={{ paddingLeft: "5px", paddingTop: "5px" }}>{editData && editData[row.accessor[1]]}</label>}
+                            {Array.isArray(row.accessor) && row.accessor.length >= 2 && <label style={{ paddingLeft: "5px", paddingTop: "5px" }}>{itemSelect && itemSelect[row.accessor[1]]}</label>}
                         </FormInline>
                     </InputDiv>
                 </FormInline>
@@ -198,56 +199,13 @@ export default (arrObj, itemSelect) => {
                     </InputDiv>
                 </FormInline>
             )
-        } else if (row.type === "findPopUp") {
-            return (
-                <FormInline>
-                    <LabelT style={LabelTStyle}>{row.label} :</LabelT>
-                    <InputDiv>
-                        <AmFindPopup
-                            search={row.search}
-                            required={row.required}
-                            error={rowError}
-                            // helperText={inputError.length ? "required field" : false}
-                            popupref={ref.current[index]}
-                            id={row.idddl}
-                            placeholder={row.placeholder ? row.placeholder : "Select"}
-                            fieldDataKey={row.fieldDataKey ? row.fieldDataKey : "ID"}  //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                            fieldLabel={row.fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
-                            // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
-                            labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
-                            queryApi={row.queryApi} //object query string
-                            defaultValue={editData[row.accessor] ? editData[row.accessor] : row.defaultValue ? row.defaultValue : ""}
-                            columns={row.columsddl} //array column สำหรับแสดง table
-                            width={row.width ? row.width : 300}
-                            ddlMinWidth={row.width ? row.width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, row.required, row)}
-                        />
-                    </InputDiv>
-                </FormInline>
-            )
+
         } else if (row.type === "unitType") {
             return (
                 <FormInline>
                     <LabelT style={LabelTStyle}>{row.label} :</LabelT>
                     <InputDiv>
                         {<label>{editData !== {} && editData !== null ? editData[row.accessor] : ""}</label>}
-                    </InputDiv>
-                </FormInline>
-            )
-        } else if (row.type === "dateTime") {
-            return (
-                <FormInline>
-                    <LabelT style={LabelTStyle}>{row.label} :</LabelT>
-                    <InputDiv>
-                        <AmDate
-                            required={row.required}
-                            error={rowError}
-                            // helperText={inputError.length ? "required field" : false}
-                            TypeDate={"datetime-local"}
-                            defaultValue={true}
-                            onChange={(ele) => { onChangeEditor(row.accessor, ele.fieldDataObject, row.required) }}
-                        />
                     </InputDiv>
                 </FormInline>
             )
