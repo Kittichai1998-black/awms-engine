@@ -453,7 +453,7 @@ const AmMappingPallet = props => {
                     <LabelH>Pallet:</LabelH>
                     {dataPallet.bsto.code}
                   </FormInline>
-                  {/* {dataPallet.datas === null ? null : dataDoc.datas.map((x, index) => {
+                  {dataPallet.pstos === null ? null : dataPallet.pstos.map((x, index) => {
                     return (
                       <div key={index}>
                         <FormInline>
@@ -470,11 +470,10 @@ const AmMappingPallet = props => {
                         </FormInline>
                         <FormInline>
                           <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
-
                         </FormInline>
                       </div>
                     );
-                  })} */}
+                  })}
                 </div>
               </CardContent>
             </Card>
