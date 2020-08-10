@@ -207,7 +207,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             if (newBaseQty > 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
 
-            return null;
+            return res;
         }
     }
 }
