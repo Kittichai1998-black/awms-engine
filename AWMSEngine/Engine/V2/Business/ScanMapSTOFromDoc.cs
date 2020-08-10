@@ -95,13 +95,14 @@ namespace AWMSEngine.Engine.V2.Business
                                 if (getBase.parentType == StorageObjectType.LOCATION && getBase.parentID != reqVO.locationID)
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
                             }
-                            
-                            var getPACK = stolist.Find(y =>
-                                y.id == x.Sou_StorageObject_ID
-                                && y.lot == getDocItem.Lot
-                                && y.refID == getDoc.RefID
-                                && y.ref1 == getDoc.Ref1
-                                && y.ref2 == getDoc.Ref2);
+                           
+                            var getPACK = stolist.Find(y => y.id == x.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
+                            //var getPACK = stolist.Find(y =>
+                            //    y.id == x.Sou_StorageObject_ID
+                            //    && y.lot == getDocItem.Lot
+                            //    && y.refID == getDoc.RefID
+                            //    && y.ref1 == getDoc.Ref1
+                            //    && y.ref2 == getDoc.Ref2);
                             if (getPACK != null)
                             {
                                 return x.Sou_StorageObject_ID == getPACK.id;
@@ -121,7 +122,7 @@ namespace AWMSEngine.Engine.V2.Business
                         var getSTO_PACK = ADO.StorageObjectADO.GetInstant().Get(getdisto[0].Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
 
                         var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getDocItem.SKUMaster_ID.Value, x.Quantity, getDocItem.UnitType_ID.Value);
-                        decimal? baseQuantity = baseUnitTypeConvt.baseQty;
+                        decimal? baseQuantity = baseUnitTypeConvt.newQty;
 
                         getSTO_PACK.qty += x.Quantity;
                         getSTO_PACK.baseQty += baseQuantity.Value;
@@ -148,7 +149,7 @@ namespace AWMSEngine.Engine.V2.Business
                     var objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == pack.ObjectSize_ID);
 
                     var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getDocItem.SKUMaster_ID.Value, x.Quantity, getDocItem.UnitType_ID.Value);
-                    decimal? baseQuantity = baseUnitTypeConvt.baseQty;
+                    decimal? baseQuantity = baseUnitTypeConvt.newQty;
                     var option = "";
                     option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
                     StorageObjectCriteria packSto = new StorageObjectCriteria()
@@ -167,9 +168,9 @@ namespace AWMSEngine.Engine.V2.Business
                         refID = getDocItem.RefID,
                         ref1 = getDoc.Ref1,
                         ref2 = getDoc.Ref2,
-                        baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseUnitTypeConvt.baseUnitType_ID).Code,
-                        baseUnitID = baseUnitTypeConvt.baseUnitType_ID,
-                        baseQty = baseUnitTypeConvt.baseQty,
+                        baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseUnitTypeConvt.newUnitType_ID).Code,
+                        baseUnitID = baseUnitTypeConvt.newUnitType_ID,
+                        baseQty = baseUnitTypeConvt.newQty,
                         type = StorageObjectType.PACK,
                         mstID = getDocItem.PackMaster_ID,
                         options = option,
@@ -183,9 +184,9 @@ namespace AWMSEngine.Engine.V2.Business
                         ID = null,
                         DocumentItem_ID = x.ID,
                         Quantity = x.Quantity,
-                        BaseQuantity = baseUnitTypeConvt.baseQty,
+                        BaseQuantity = baseUnitTypeConvt.newQty,
                         UnitType_ID = unit.ID.Value,
-                        BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                        BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                         Sou_StorageObject_ID = resStopack,
                         Des_StorageObject_ID = resStopack,
                         Status = EntityStatus.ACTIVE
