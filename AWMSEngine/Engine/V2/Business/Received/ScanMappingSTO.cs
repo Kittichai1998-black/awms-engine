@@ -264,8 +264,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 if (psto.pstoID == null)
                 {
                     //new pack
-                    decimal newQty = unitTypeConvt.oldQty;
-                    decimal baseQty = unitTypeConvt.newQty;
+                    newPackSto.qty = unitTypeConvt.oldQty;
+                    newPackSto.baseQty = unitTypeConvt.newQty;
                     resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                 }
                 else
@@ -301,8 +301,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     else
                     {
                         //new pack
-                        decimal newQty = unitTypeConvt.oldQty;
-                        decimal baseQty = unitTypeConvt.newQty;
+                        newPackSto.qty = unitTypeConvt.oldQty;
+                        newPackSto.baseQty = unitTypeConvt.newQty;
                         resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                     }
                 }
