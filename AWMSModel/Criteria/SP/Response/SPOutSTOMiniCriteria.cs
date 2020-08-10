@@ -39,9 +39,14 @@ namespace AWMSModel.Criteria.SP.Response
         public string refID;
         public string ref1;
         public string ref2;
+        public string ref3;
+        public string ref4;
         public bool IsHold;
         public AuditStatus AuditStatus;
         public bool IsStock;
+        public string itemNo;
+        public string cartonNo;
         public int? skuTypeID;
+        public DateTime shelfLifeDate;
     }
 }

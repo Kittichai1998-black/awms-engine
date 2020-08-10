@@ -31,8 +31,8 @@ namespace AWMSEngine.Engine.V2.Business
 
             var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getStoPack.skuID.Value, reqVO.Quantity.Value, getStoPack.unitID);
 
-            getStoPack.qty = reqVO.Quantity.Value;
-            getStoPack.baseQty = baseUnitTypeConvt.baseQty;
+            getStoPack.qty = baseUnitTypeConvt.oldQty;
+            getStoPack.baseQty = baseUnitTypeConvt.newQty;
 
 
             var getDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(getDiSTO.DocumentItem_ID.Value, BuVO);
@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(getStoPack, this.BuVO);
 
-            ADO.DistoADO.GetInstant().Update(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.baseQty, EntityStatus.INACTIVE, BuVO);
+            ADO.DistoADO.GetInstant().Update(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.newQty, EntityStatus.INACTIVE, BuVO);
 
             return null;
         }

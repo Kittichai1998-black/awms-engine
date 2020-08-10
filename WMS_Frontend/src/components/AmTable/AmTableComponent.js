@@ -521,11 +521,11 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}} 
+                <Input id={`filter_${idx}`} style={{width:"100%", background:"white"}} 
                   onKeyPress={(event) => {if(event.key === "Enter"){
                     event.currentTarget.childNodes[0].blur()
                   }}}
-                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
+                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)}} />
               </div>)
           ) : null}
         </TableHeaderStickyColumnsCell>
@@ -552,11 +552,17 @@ const GenerateHeader = React.memo(({columns,props, tableSize}) => {
             col.filterable === false ? null : typeof col.Filter === "function" ? 
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
               <div>
-                <Input style={{width:"100%", background:"white"}}
-                  onKeyPress={(event) => {if(event.key === "Enter"){
-                    event.currentTarget.childNodes[0].blur()
-                  }}}
-                  onBlur={(event) => {onChangeFilter(col.accessor, event.target.value, col.customFilter)}} />
+                <Input id={`filter_${idx}`} style={{width:"100%", background:"white"}} 
+                  onKeyPress={(event) => {
+                    if(event.key === "Enter"){
+                      event.currentTarget.childNodes[0].blur()
+                    }
+                  }}
+                  onBlur={(event) => {
+                      onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter)
+                    }
+                  }
+                />
               </div>)
           ) : null}
         </TableHeaderCell>

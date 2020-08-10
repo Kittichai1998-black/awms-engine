@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_DocumentItemStorageObject : BaseEntityID
+    public class amt_DocumentItemStorageObject : BaseEntityCreateModify
     {
         public bool IsLastSeq;
         public long? DocumentItem_ID;

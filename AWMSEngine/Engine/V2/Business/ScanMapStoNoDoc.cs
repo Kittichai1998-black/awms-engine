@@ -315,7 +315,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                     var regisMap = this.NewStorageObjectCriteria(pm, firstMapSto, reqVO);
 
-                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
+                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.GetCheckSum() == regisMap.GetCheckSum());
                     if (matchStomap == null)
                     {
                         this.ADOSto.PutV2(regisMap, this.BuVO);
@@ -425,8 +425,8 @@ namespace AWMSEngine.Engine.V2.Business
                 if (qty > 0)
                 {
                     var baseUnit = this.StaticValue.ConvertToBaseUnitByPack(reqVo.scanCode, qty, rmItem.unitID);
-                    rmItem.qty = baseUnit.newQty;
-                    rmItem.baseQty = baseUnit.baseQty;
+                    rmItem.qty = qty;
+                    rmItem.baseQty = baseUnit.newQty;
                     rmItem.options = reqVo.options;
                     ADOSto.PutV2(rmItem, this.BuVO);
                 }

@@ -8,6 +8,7 @@ namespace AWMSModel.Entity
     public class amv_DocumentItem : IEntityModel
     {
         public long? ID;
+        public long? ParentDocumentItem_ID;
         public long? Document_ID;
         public long? SKUMaster_ID;
         public long? PackMaster_ID;

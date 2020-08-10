@@ -189,8 +189,8 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                     SKUMaster_ID = skuMst != null ? skuMst.ID : null,
                     PackMaster_ID = packMst != null ? packMst.ID : null,
 
-                    UnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.newUnitType_ID,
-                    BaseUnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.baseUnitType_ID,
+                    UnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.oldUnitType_ID,
+                    BaseUnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.newUnitType_ID,
 
                     OrderNo = docItem.orderNo,
                     Batch = docItem.batch,

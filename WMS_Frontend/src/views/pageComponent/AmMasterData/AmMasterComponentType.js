@@ -45,6 +45,24 @@ const InputComponent = ({config, defaultData, response}) => {
       )
 };
 
+const PasswordComponent = ({config, defaultData, response}) => {
+  const [value, setValue] = useState({});
+
+  return  (
+      <FormInline>
+        <label style={{width:"150px",paddingLeft:"20px"}}>{config.name} : </label>
+        <AmInput 
+          id={config.field}
+          placeholder={config.placeholder}
+          style={{width:"200px"}}
+          type= "password"
+          required={config.required}
+          value={!IsEmptyObject(value) ? value.value : defaultData !== undefined ? defaultData : ""}
+          onChangeV2={(value)=>{setValue({field:config.field, value:value}); response({field:config.field, value:value})}}/>
+      </FormInline>
+    )
+};
+
 const DropDownComponent = ({config, response, defaultData, queryData}) => {
     const [selection, setSelection] = useState({});
     var checkType  = Array.isArray(queryData);
@@ -119,4 +137,4 @@ const DateTimeComponent = ({config, response}) => {
     </FormInline>
 }
 
-export {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent}
+export {InputComponent, DropDownComponent, FindPopupComponent, DateTimeComponent, PasswordComponent}
