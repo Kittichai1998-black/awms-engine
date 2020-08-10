@@ -54,6 +54,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                 ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
                             }
                         });
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING,this.BuVO);
+
                     });
 
 
@@ -76,8 +78,6 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             }
                         }
                     }
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, null, DocumentEventStatus.WORKING, BuVO);
-
                 }
             }
             else
