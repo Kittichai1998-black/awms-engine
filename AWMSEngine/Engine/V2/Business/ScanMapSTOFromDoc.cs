@@ -96,21 +96,22 @@ namespace AWMSEngine.Engine.V2.Business
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
                             }
                            
-                            var getPACK = stolist.Find(y => y.id == x.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
+                            return stolist.Any(y => y.id == x.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
                             //var getPACK = stolist.Find(y =>
                             //    y.id == x.Sou_StorageObject_ID
                             //    && y.lot == getDocItem.Lot
                             //    && y.refID == getDoc.RefID
                             //    && y.ref1 == getDoc.Ref1
                             //    && y.ref2 == getDoc.Ref2);
-                            if (getPACK != null)
-                            {
-                                return x.Sou_StorageObject_ID == getPACK.id;
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            //if (getPACK != null)
+                            //{
+                            //    return true;
+                            //    //return x.Sou_StorageObject_ID == getPACK.id;
+                            //}
+                            //else
+                            //{
+                            //    return false;
+                            //}
                         }
                         else
                         {

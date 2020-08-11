@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
         public class TRes
         {
-            public StorageObjectCriteria sto;
+            public amt_StorageObject sto;
             public List<Documents> documents;
 
             public class Documents
@@ -41,6 +41,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             var chkCreatePA = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_GR").DataValue;
             var chkCreateGR = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_PA").DataValue;
 
+            var res = new TRes();
+
             var psto = DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("ID", reqVO.packID, SQLOperatorType.EQUALS)
@@ -53,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             {
                 new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNULL)
+                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL)
             }, this.BuVO);
 
             var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
@@ -64,6 +66,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
             var newBaseQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;
             var newQty = psto.Quantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.Quantity).Value;
+
+            res.sto = psto;
+            res.documents = new List<TRes.Documents>();
 
             if (docItems.Count > 0)
             {
@@ -162,9 +167,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         disto = new amt_DocumentItemStorageObject()
                         {
                             ID = null,
-                            BaseQuantity = remainBaseRecv - newBaseQty,
+                            BaseQuantity = remainBaseRecv > newBaseQty ? newBaseQty : remainBaseRecv,
                             BaseUnitType_ID = psto.BaseUnitType_ID,
-                            Quantity = remainRecv - newQty,
+                            Quantity = remainRecv > newQty ? newQty : remainRecv,
                             UnitType_ID = psto.UnitType_ID,
                             Sou_StorageObject_ID = psto.ID.Value,
                             DocumentItem_ID = docItem.ID.Value,
@@ -173,10 +178,17 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         };
 
                         DistoADO.GetInstant().Insert(disto, this.BuVO);
-                        newBaseQty = remainBaseRecv - newBaseQty;
-                        newQty = remainRecv - newQty;
+                        newBaseQty = remainBaseRecv > newBaseQty ? 0 : newBaseQty - remainBaseRecv;
+                        newQty = remainRecv > newQty ? 0: newQty - remainRecv;
                     }
 
+                    res.documents.Add(new TRes.Documents()
+                    {
+                       GR_ID = parentDoc.ID,
+                       GR_Code = parentDoc.Code,
+                       PA_ID = doc.ID,
+                       PA_Code = doc.Code
+                    });
                 };
             }
             else
@@ -192,10 +204,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
             }
 
 
-            if (newBaseQty != 0)
+            if (newBaseQty > 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
 
-            return null;
+            return res;
         }
     }
 }
