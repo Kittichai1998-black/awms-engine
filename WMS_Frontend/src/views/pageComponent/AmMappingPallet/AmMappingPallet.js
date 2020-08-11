@@ -284,7 +284,7 @@ const AmMappingPallet = props => {
     return [
       { label: "Warehouse", value: null },
       { label: "DocProcessType", value: null },
-      { label: "Pallet", value: valueInput.PalletCode },
+      { label: "Pallet", value: valueInput.PalletCode === undefined ? null : valueInput.PalletCode },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
@@ -412,7 +412,7 @@ const AmMappingPallet = props => {
             />
           </FormInline></div>
       case 4:
-        if (dataPallet !== undefined) {
+        if (dataPallet !== undefined && dataPallet !== null) {
           return (<div>
             <Card>
               <CardContent>
@@ -454,37 +454,39 @@ const AmMappingPallet = props => {
               }}
             /></div>)
         } else {
-          return (<div>
-            <Card>
-              <CardContent>
-                <div>
-                  <FormInline>
-                    <LabelH>Pallet:</LabelH>
-                    {valueInput.palletCode}
-                  </FormInline>
+          if (valueInput.palletCode !== undefined) {
+            return (<div>
+              <Card>
+                <CardContent>
+                  <div>
+                    <FormInline>
+                      <LabelH>Pallet:</LabelH>
+                      {valueInput.palletCode}
+                    </FormInline>
 
-                </div>
-              </CardContent>
-            </Card>
-            <AmInput
-              id={"barcode"}
-              placeholder="barcode"
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "barcode", null, event)
-              }
-              onBlur={(e) => {
-                if (e !== undefined && e !== null)
-                  onHandleChangeInputPalletCode("barcode", e, null, null, null)
-              }}
-              onKeyPress={(value, obj, element, event) => {
-                if (event.key === "Enter") {
-                  onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  </div>
+                </CardContent>
+              </Card>
+              <AmInput
+                id={"barcode"}
+                placeholder="barcode"
+                type="input"
+                style={{ width: "100%" }}
+                onChange={(value, obj, element, event) =>
+                  onHandleChangeInput(value, null, "barcode", null, event)
                 }
+                onBlur={(e) => {
+                  if (e !== undefined && e !== null)
+                    onHandleChangeInputPalletCode("barcode", e, null, null, null)
+                }}
+                onKeyPress={(value, obj, element, event) => {
+                  if (event.key === "Enter") {
+                    onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  }
 
-              }}
-            /></div>)
+                }}
+              /></div>)
+          }
         }
 
       case 5:
@@ -561,8 +563,11 @@ const AmMappingPallet = props => {
           }
         }
       } else {
-        var dataDocTmp = dataDoc.datas = null;
-        setDataDoc(dataDocTmp)
+        if (dataDoc !== undefined && dataDoc !== null) {
+          var dataDocTmp = (dataDoc.datas = null);
+          setDataDoc(dataDocTmp)
+        }
+
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     })
@@ -629,6 +634,7 @@ const AmMappingPallet = props => {
     setValueInput()
   }
   function handleBack() {
+    setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
   return (
