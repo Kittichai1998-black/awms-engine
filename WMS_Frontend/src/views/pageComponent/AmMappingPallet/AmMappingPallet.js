@@ -179,7 +179,7 @@ const WarehouseQuery = {
 const AreaMasterQuery = {
   queryString: window.apipath + "/v2/SelectDataMstAPI/",
   t: "AreaMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
+  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 30}]',
   f: "Name,Code,ID as areaID",
   g: "",
   s: "[{'f':'ID','od':'asc'}]",
@@ -484,7 +484,8 @@ const AmMappingPallet = props => {
 
       case 5:
         //return dataShow;
-        if (dataDoc !== undefined) {
+        console.log(dataDoc)
+        if (dataDoc !== undefined && dataDoc !== null) {
           return (<div>
             <Card>
               <CardContent>
@@ -507,10 +508,6 @@ const AmMappingPallet = props => {
                         <FormInline>
                           <LabelH>Lot :</LabelH>
                           {x.lot}
-                        </FormInline>
-                        <FormInline>
-                          <LabelH>Batch :</LabelH>
-                          {x.batch}
                         </FormInline>
                         <FormInline>
                           <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
@@ -538,16 +535,19 @@ const AmMappingPallet = props => {
       locationID: null,
       pstos: []
     };
-    if (dataDoc !== undefined) {
+    console.log(dataDoc)
+    if (dataDoc !== undefined && dataDoc !== null) {
 
       dataDoc.datas.forEach(element => {
         postdata.pstos.push(element)
       });
 
     }
+    console.log(postdata)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
+
           setDataPallet(res.data)
           if (type === "confirm") {
             alertDialogRenderer("Success", "success", true);
@@ -556,6 +556,8 @@ const AmMappingPallet = props => {
           }
         }
       } else {
+        var dataDocTmp = dataDoc.datas = null;
+        setDataDoc(dataDocTmp)
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     })
