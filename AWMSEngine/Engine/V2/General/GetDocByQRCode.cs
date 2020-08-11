@@ -34,6 +34,7 @@ namespace AWMSEngine.Engine.V2.General
         //}
         public class TRes
         {
+            public DocumentProcessTypeID processType;
             public long putawayID;
             public string putawayCode;
             public long grID;
@@ -55,6 +56,7 @@ namespace AWMSEngine.Engine.V2.General
             public string ref3;
             public string ref4;
             public string cartonNo;
+            public long? forCustomerID;
             public string options;
             public decimal addQty;
             public string unitTypeCode; // old unit 
@@ -96,7 +98,7 @@ namespace AWMSEngine.Engine.V2.General
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
-
+                res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;
                 res.grCode = parentDoc.Code;
                 res.putawayID = doc.ID.Value;
@@ -104,8 +106,8 @@ namespace AWMSEngine.Engine.V2.General
 
                 dociID.ForEach(ID =>
                 {
-                    var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
-                    var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
+                    //var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
+                    //var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
                     var docitemPutaway = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
                     var skuPutaway = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);
 
@@ -122,13 +124,14 @@ namespace AWMSEngine.Engine.V2.General
                         batch = docitemPutaway.Batch,
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,
-                        itemNo = null,
+                        itemNo = docitemPutaway.ItemNo,
                         refID = docitemPutaway.Ref1,
                         ref1 = docitemPutaway.Ref1,
                         ref2 = docitemPutaway.Ref2,
                         ref3 = docitemPutaway.Ref3,
                         ref4 = docitemPutaway.Ref4,
                         cartonNo = null,
+                        forCustomerID = doc.For_Customer_ID,
                         options = docitemPutaway.Options,
                         addQty = qty[i],
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,

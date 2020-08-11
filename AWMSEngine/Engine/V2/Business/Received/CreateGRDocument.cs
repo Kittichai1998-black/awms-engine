@@ -75,7 +75,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string refID;
                 public string itemNo;
                 public string options;
-                public int auditStatus;
+                public AuditStatus auditStatus;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;

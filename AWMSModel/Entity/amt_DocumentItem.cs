@@ -31,7 +31,7 @@ namespace AWMSModel.Entity
         public string Ref2;
         public string Ref3;
         public string Ref4;
-        public int AuditStatus;
+        public AuditStatus AuditStatus;
         public DocumentEventStatus EventStatus;
         public decimal? ActualBaseQuantity;
 

@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public int auditStatus;
+                public AuditStatus auditStatus;
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;

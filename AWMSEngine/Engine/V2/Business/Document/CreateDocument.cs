@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string itemNo;
                 public string refID;
                 public string options;
-                public int auditStatus;
+                public AuditStatus auditStatus;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 

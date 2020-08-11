@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string ref3;
                 public string ref4;
                 public string cartonNo;
-                public int? forCustomerID;
+                public long? forCustomerID;
                 public string options;
                 public decimal addQty;
                 public string unitTypeCode; // old unit 
