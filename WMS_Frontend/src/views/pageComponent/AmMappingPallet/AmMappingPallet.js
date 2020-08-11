@@ -29,7 +29,8 @@ import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
-import AmRadioGroup from "../../../components/AmRadioGroup";
+import BoxIcon from "@material-ui/icons/Widgets";
+import ItemIcon from "@material-ui/icons/AddShoppingCart";
 import AmDropdown from '../../../components/AmDropdown'
 import { DataGenerateElePalletListDisplay } from "../AmMappingPallet/RanderEleListPalletDisplay ";
 const Axios = new apicall();
@@ -142,6 +143,11 @@ const FormInline = styled.div`
 
 const LabelH = styled.label`
   font-weight: bold;
+  width: 40px;
+  paddingleft: 20px;
+`;
+const LabelH2 = styled.label`
+  font-weight: bold;
   width: 70px;
   paddingleft: 20px;
 `;
@@ -149,6 +155,9 @@ const LabelH1 = styled.label`
   font-weight: bold;
   width: 100px;
   paddingleft: 20px;
+`;
+const LabelHText = styled.label`
+  width: 60px;
 `;
 const DivHidden = styled.div`
   overflow: hidden;
@@ -284,7 +293,7 @@ const AmMappingPallet = props => {
     return [
       { label: "Warehouse", value: null },
       { label: "DocProcessType", value: null },
-      { label: "Pallet", value: valueInput.PalletCode },
+      { label: "Pallet", value: valueInput.PalletCode === undefined ? null : valueInput.PalletCode },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
@@ -412,21 +421,23 @@ const AmMappingPallet = props => {
             />
           </FormInline></div>
       case 4:
-        if (dataPallet !== undefined) {
+        if (dataPallet !== undefined && dataPallet !== null) {
           return (<div>
             <Card>
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>Pallet:</LabelH>
+                    {/* <LabelH>Pallet:</LabelH> */}
+                    <BoxIcon style={{ color: "#795548" }} />{" "}
                     {dataPallet.bsto.code}
                   </FormInline>
                   {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
                     return (
-                      <div key={index}>
-                        <FormInline>
-                          <LabelH style={{ marginLeft: "30px" }}>Item :</LabelH> {x.code}
-                          <LabelH style={{ marginLeft: "10px" }}>Qty : </LabelH>{x.baseQty} {x.unitCode}
+                      <div key={index} syle={{ marginLeft: "30px" }} >
+                        <FormInline >
+                          <LabelH style={{ marginLeft: "10px" }}><ItemIcon /></LabelH><LabelHText>{x.code}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Qty : </LabelH><LabelHText>{x.baseQty} {x.unitCode}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Lot  : </LabelH><LabelHText>{x.lot}</LabelHText>
                         </FormInline>
                       </div>
                     );
@@ -454,37 +465,40 @@ const AmMappingPallet = props => {
               }}
             /></div>)
         } else {
-          return (<div>
-            <Card>
-              <CardContent>
-                <div>
-                  <FormInline>
-                    <LabelH>Pallet:</LabelH>
-                    {valueInput.palletCode}
-                  </FormInline>
+          if (valueInput.palletCode !== undefined) {
+            return (<div>
+              <Card>
+                <CardContent>
+                  <div>
+                    <FormInline>
+                      {/* <LabelH>Pallet:</LabelH> */}
+                      <BoxIcon style={{ color: "#795548" }} />{" "}
+                      {valueInput.palletCode}
+                    </FormInline>
 
-                </div>
-              </CardContent>
-            </Card>
-            <AmInput
-              id={"barcode"}
-              placeholder="barcode"
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "barcode", null, event)
-              }
-              onBlur={(e) => {
-                if (e !== undefined && e !== null)
-                  onHandleChangeInputPalletCode("barcode", e, null, null, null)
-              }}
-              onKeyPress={(value, obj, element, event) => {
-                if (event.key === "Enter") {
-                  onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  </div>
+                </CardContent>
+              </Card>
+              <AmInput
+                id={"barcode"}
+                placeholder="barcode"
+                type="input"
+                style={{ width: "100%" }}
+                onChange={(value, obj, element, event) =>
+                  onHandleChangeInput(value, null, "barcode", null, event)
                 }
+                onBlur={(e) => {
+                  if (e !== undefined && e !== null)
+                    onHandleChangeInputPalletCode("barcode", e, null, null, null)
+                }}
+                onKeyPress={(value, obj, element, event) => {
+                  if (event.key === "Enter") {
+                    onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  }
 
-              }}
-            /></div>)
+                }}
+              /></div>)
+          }
         }
 
       case 5:
@@ -496,26 +510,26 @@ const AmMappingPallet = props => {
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>GR Doc :</LabelH>
+                    <LabelH2>GR Doc :</LabelH2>
                     {dataDoc.grCode}
                   </FormInline>
                   <FormInline>
-                    <LabelH>PA Doc :</LabelH>
+                    <LabelH2>PA Doc :</LabelH2>
                     {dataDoc.putawayCode}
                   </FormInline>
                   {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
                     return (
                       <div key={index}>
                         <FormInline>
-                          <LabelH>Item :</LabelH>
+                          <LabelH2>Item :</LabelH2>
                           {x.pstoCode}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Lot :</LabelH>
+                          <LabelH2>Lot :</LabelH2>
                           {x.lot}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
+                          <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
 
                         </FormInline>
                       </div>
@@ -561,8 +575,11 @@ const AmMappingPallet = props => {
           }
         }
       } else {
-        var dataDocTmp = dataDoc.datas = null;
-        setDataDoc(dataDocTmp)
+        if (dataDoc !== undefined && dataDoc !== null) {
+          var dataDocTmp = (dataDoc.datas = null);
+          setDataDoc(dataDocTmp)
+        }
+
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     })
@@ -629,6 +646,7 @@ const AmMappingPallet = props => {
     setValueInput()
   }
   function handleBack() {
+    setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
   return (
