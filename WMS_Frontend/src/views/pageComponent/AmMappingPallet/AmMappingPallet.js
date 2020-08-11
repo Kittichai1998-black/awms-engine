@@ -29,7 +29,8 @@ import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
-import AmRadioGroup from "../../../components/AmRadioGroup";
+import BoxIcon from "@material-ui/icons/Widgets";
+import ItemIcon from "@material-ui/icons/AddShoppingCart";
 import AmDropdown from '../../../components/AmDropdown'
 import { DataGenerateElePalletListDisplay } from "../AmMappingPallet/RanderEleListPalletDisplay ";
 const Axios = new apicall();
@@ -142,6 +143,11 @@ const FormInline = styled.div`
 
 const LabelH = styled.label`
   font-weight: bold;
+  width: 40px;
+  paddingleft: 20px;
+`;
+const LabelH2 = styled.label`
+  font-weight: bold;
   width: 70px;
   paddingleft: 20px;
 `;
@@ -149,6 +155,9 @@ const LabelH1 = styled.label`
   font-weight: bold;
   width: 100px;
   paddingleft: 20px;
+`;
+const LabelHText = styled.label`
+  width: 60px;
 `;
 const DivHidden = styled.div`
   overflow: hidden;
@@ -418,15 +427,17 @@ const AmMappingPallet = props => {
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>Pallet:</LabelH>
+                    {/* <LabelH>Pallet:</LabelH> */}
+                    <BoxIcon style={{ color: "#795548" }} />{" "}
                     {dataPallet.bsto.code}
                   </FormInline>
                   {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
                     return (
-                      <div key={index}>
-                        <FormInline>
-                          <LabelH style={{ marginLeft: "30px" }}>Item :</LabelH> {x.code}
-                          <LabelH style={{ marginLeft: "10px" }}>Qty : </LabelH>{x.baseQty} {x.unitCode}
+                      <div key={index} syle={{ marginLeft: "30px" }} >
+                        <FormInline >
+                          <LabelH style={{ marginLeft: "10px" }}><ItemIcon /></LabelH><LabelHText>{x.code}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Qty : </LabelH><LabelHText>{x.baseQty} {x.unitCode}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Lot  : </LabelH><LabelHText>{x.lot}</LabelHText>
                         </FormInline>
                       </div>
                     );
@@ -460,7 +471,8 @@ const AmMappingPallet = props => {
                 <CardContent>
                   <div>
                     <FormInline>
-                      <LabelH>Pallet:</LabelH>
+                      {/* <LabelH>Pallet:</LabelH> */}
+                      <BoxIcon style={{ color: "#795548" }} />{" "}
                       {valueInput.palletCode}
                     </FormInline>
 
@@ -498,26 +510,26 @@ const AmMappingPallet = props => {
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>GR Doc :</LabelH>
+                    <LabelH2>GR Doc :</LabelH2>
                     {dataDoc.grCode}
                   </FormInline>
                   <FormInline>
-                    <LabelH>PA Doc :</LabelH>
+                    <LabelH2>PA Doc :</LabelH2>
                     {dataDoc.putawayCode}
                   </FormInline>
                   {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
                     return (
                       <div key={index}>
                         <FormInline>
-                          <LabelH>Item :</LabelH>
+                          <LabelH2>Item :</LabelH2>
                           {x.pstoCode}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Lot :</LabelH>
+                          <LabelH2>Lot :</LabelH2>
                           {x.lot}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
+                          <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
 
                         </FormInline>
                       </div>
