@@ -50,17 +50,24 @@ const AmImportDocumentExcel = () => {
         //var selectedFile = event.target.files[0];
 
     }
+
+    const onClickFile = (e) => {
+        console.log(e)
+
+    }
     return (
         <div>
             <input
-                accept="image/*"
+                accept="/*"
                 className={classes.input}
                 id="contained-button-file"
                 multiple
                 type="file"
             />
             <label htmlFor="contained-button-file">
-                <AmButton variant="contained" styleType="add" component="span">
+                <AmButton variant="contained" styleType="add" component="span"
+                    onClick={(e)=> onClickFile(e)}
+                >
                     Create Docment
         </AmButton>
             </label>
