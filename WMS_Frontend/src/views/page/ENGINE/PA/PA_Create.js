@@ -174,18 +174,16 @@ const Create_GR_DR = props => {
     const columnEdit = [
         { Header: "Item Code", accessor: "SKUItems", type: "text"},
         //{ Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
-        { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "Order No." },
+        { Header: "ItemNo", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
         { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Quantity" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" }
     ];
 
     const columnEditItem = [
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot",  accessor: "Lot",codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
+        { Header: "ItemNo", accessor: "ItemNo", codeTranslate: "Order No." },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
@@ -193,9 +191,8 @@ const Create_GR_DR = props => {
 
     const columnEditItemSet = [
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
+        { Header: "ItemNo", accessor: "ItemNo", codeTranslate: "ItemNo" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
