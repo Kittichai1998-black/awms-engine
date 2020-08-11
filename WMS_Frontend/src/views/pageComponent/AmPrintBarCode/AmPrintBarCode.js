@@ -191,6 +191,10 @@ const AmPrintBarCode = props => {
               onHandleChangeGeneratePallet({ min: value }, valueDataRadio)
             }
           }}
+          onBlur={(e) => {
+            if (e !== undefined && e !== null)
+              onHandleChangeGeneratePallet({ min: e }, valueDataRadio)
+          }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
       </FormInline>
@@ -207,6 +211,10 @@ const AmPrintBarCode = props => {
               onHandleChangeGeneratePallet({ max: value }, valueDataRadio)
             }
 
+          }}
+          onBlur={(e) => {
+            if (e !== undefined && e !== null)
+              onHandleChangeGeneratePallet({ max: e }, valueDataRadio)
           }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
