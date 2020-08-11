@@ -145,6 +145,12 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         if (doc.docID != 0 && doc.docID !== undefined) {
+      
+            doc.setdataSourceItemTB([])
+            doc.setdatadocItem([])
+            doc.setdialogItemSet([])  
+            doc.setdialogItemSet(false)
+            doc.setdialogItem(false)
             getData();
         }
     }, [doc.docID])
@@ -376,12 +382,22 @@ const AmHeaderputandpick = (props) => {
 
                             if (x.Qty) {
                                 let Quantitys = x.Quantity - x.Qty
-                                if (Quantitys > 0) {
-                                    x.Quantity = Quantitys
+                                if (Quantitys = '0') {
+                                    x.Quantity = 0
+                                    dia.setdailogMsg("Item is empty")
+                                    dia.setdailogErr(true)
+
                                 } else {
 
-                                }
+                                    if (Quantitys > 0) {
+                                        x.Quantity = Quantitys
+                                    } else {
 
+                                    }
+
+                               }
+
+                             
                             }
                             else if (x.Qty === undefined) {
 
@@ -445,7 +461,7 @@ const AmHeaderputandpick = (props) => {
         } else if (datarow.Quantity - datarow.Qty > 0) {
             defaultQty = datarow.Quantity - datarow.Qty
         } else if (datarow.Quantity - datarow.Qty === 0) {
-            defaultQty = '-'
+            defaultQty = 0
             //doc.setdailogMsg('Item not found')
             //doc.setdailogErr(true)
             //doc.dialogItem(false)
@@ -456,7 +472,7 @@ const AmHeaderputandpick = (props) => {
             defaultQty = datarow.Quantity
         }
 
-        return <AmInput id={datarow.ID}
+        return  <AmInput id={datarow.ID}
             style={{ width: "100px" }}
             type="input"
             defaultValue={defaultQty}
