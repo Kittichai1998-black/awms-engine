@@ -91,6 +91,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string itemNo;
                 public string refID;
                 public string options;
+                public int auditStatus;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -187,6 +188,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
                 Ref3 = reqVO.ref3,
+                Ref4 = reqVO.ref4,
                 DocumentItems = new List<amt_DocumentItem>(),
             };
 
@@ -296,7 +298,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     ItemNo = Item.itemNo,
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,
-
+                    AuditStatus = Item.auditStatus,
                     EventStatus = Item.eventStatus,
                     DocItemStos = Item.docItemStos
                 });

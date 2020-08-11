@@ -79,14 +79,16 @@ namespace AWMSEngine.Engine.V2.Business
                 if (getDocItem.DocItemStos.Count() > 0)
                 {
                     var getdistoMatch = new amt_DocumentItemStorageObject();
-                    var getdisto = getDocItem.DocItemStos.FindAll(x =>
+                    var getdisto = getDocItem.DocItemStos.FindAll(disto =>
                     {
-                        var getSou_STO_PACK = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, true, true, BuVO);
-                        var stolist = getSou_STO_PACK.ToTreeList();
-                        var getBase = stolist.Find(y => y.type == StorageObjectType.BASE && y.code == reqVO.baseCode);
+
+                        //var getSou_STO_PACK = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, true, BuVO);
+                        var getBase = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
                         if (getBase != null)
                         {
+                            var stolist = getBase.ToTreeList();
+
                             if (getBase.areaID != reqVO.areaID)
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Area ไม่ตรงกัน");
                             
@@ -96,7 +98,7 @@ namespace AWMSEngine.Engine.V2.Business
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
                             }
                            
-                            return stolist.Any(y => y.id == x.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
+                            return stolist.Any(y => y.id == disto.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
                             //var getPACK = stolist.Find(y =>
                             //    y.id == x.Sou_StorageObject_ID
                             //    && y.lot == getDocItem.Lot
@@ -190,7 +192,7 @@ namespace AWMSEngine.Engine.V2.Business
                         BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                         Sou_StorageObject_ID = resStopack,
                         Des_StorageObject_ID = resStopack,
-                        Status = EntityStatus.ACTIVE
+                        Status = EntityStatus.INACTIVE
                     };
                     var disto = ADO.DistoADO.GetInstant().Insert(new_disto, BuVO);
                 }

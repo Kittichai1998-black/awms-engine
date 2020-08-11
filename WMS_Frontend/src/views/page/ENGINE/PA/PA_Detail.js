@@ -93,7 +93,13 @@ const PA_Detail = props => {
 
     const columnsDetailSOU = [
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
+        {
+            width: 130, Header: "Location",
+            Cell: e => {
+                let location = e.original.areaLocationCode ? ":" + e.original.areaLocationCode : "";
+                return e.original.areaCode + location;
+            }
+        },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
@@ -116,7 +122,7 @@ const PA_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <HighlightOff style={{ color: "red" }} />;
         else return null;
@@ -127,7 +133,7 @@ const PA_Detail = props => {
         var ID = values.docID.toString();
         return ID;
     };
- 
+
     const addPalletMapSTO = {
         // apiCreate: '/v2/ScanMapStoFromDocAPI',
         // columnsDocItems: colListDocItems,
