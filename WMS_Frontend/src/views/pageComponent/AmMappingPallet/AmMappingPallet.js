@@ -147,7 +147,7 @@ const LabelH = styled.label`
 `;
 const LabelH1 = styled.label`
   font-weight: bold;
-  width: 90px;
+  width: 100px;
   paddingleft: 20px;
 `;
 const DivHidden = styled.div`
@@ -384,28 +384,33 @@ const AmMappingPallet = props => {
           dataLoc = AreaLocationMasterQuery
         }
 
-        return <div><AmDropdown
-          placeholder="Select"
-          fieldDataKey="areaID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-          fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-          labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-          ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-          queryApi={AreaMasterQuery}
-          defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
-          ddlType={"search"} //รูปแบบ Dropdown 
-        />
-          <AmDropdown
+        return <div><FormInline>
+          <LabelH1>Area :</LabelH1><AmDropdown
             placeholder="Select"
-            fieldDataKey="locaionID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+            fieldDataKey="areaID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
             fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
             ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-            queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
-            defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+            queryApi={AreaMasterQuery}
+            defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
             onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
             ddlType={"search"} //รูปแบบ Dropdown 
-          /></div>
+          />
+        </FormInline>
+          <FormInline>
+            <LabelH1>AreaLocation :</LabelH1>
+            <AmDropdown
+              placeholder="Select"
+              fieldDataKey="locaionID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+              fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+              labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+              ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
+              queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
+              defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+              onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
+              ddlType={"search"} //รูปแบบ Dropdown 
+            />
+          </FormInline></div>
       case 4:
         if (dataPallet !== undefined) {
           return (<div>
