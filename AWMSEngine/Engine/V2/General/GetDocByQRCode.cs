@@ -85,7 +85,7 @@ namespace AWMSEngine.Engine.V2.General
             {
                 var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}");
 
-                if(qrModel ==null)
+                if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
 
                 List<long> dociID = qrModel.dociID.Split(',').Select(long.Parse).ToList();
@@ -93,7 +93,7 @@ namespace AWMSEngine.Engine.V2.General
                 int i = 0;
 
                 var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
-                if(docitem == null)
+                if (docitem == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
@@ -130,7 +130,7 @@ namespace AWMSEngine.Engine.V2.General
                         ref2 = docitemPutaway.Ref2,
                         ref3 = docitemPutaway.Ref3,
                         ref4 = docitemPutaway.Ref4,
-                        cartonNo = null,
+                        cartonNo = docitemPutaway.CartonNo,
                         forCustomerID = doc.For_Customer_ID,
                         options = docitemPutaway.Options,
                         addQty = qty[i],
@@ -142,9 +142,14 @@ namespace AWMSEngine.Engine.V2.General
                     });
                     i++;
                 });
-                res.datas=packList;
+                res.datas = packList;
             }
-            else
+            else if (reqVO.qr.StartsWith("E|"))
+            {
+                //empty pallet 
+                //res.processType = DocumentProcessTypeID;
+            }
+            else 
             {
                 //config
             }

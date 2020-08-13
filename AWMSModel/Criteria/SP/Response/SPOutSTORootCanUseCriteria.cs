@@ -30,6 +30,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string sou_batch;
         public string sou_lot;
         public string sou_orderNo;
+        public string sou_itemNo;
 
         public EntityStatus sou_status;
 
@@ -56,6 +57,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string des_batch;
         public string des_lot;
         public string des_orderNo;
+        public string des_itemNo;
 
         public EntityStatus des_status;
 

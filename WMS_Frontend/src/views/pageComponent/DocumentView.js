@@ -184,10 +184,10 @@ const DocumentView = props => {
     // console.log(props.optionDocItems);
   }, []);
 
-    useEffect(() => {
-        setHeader(props.header)
-        //getHeader()
-    }, [props.header]);
+  useEffect(() => {
+    setHeader(props.header)
+    //getHeader()
+  }, [props.header]);
 
   const getData = () => {
     //========================================================================================================
@@ -206,10 +206,10 @@ const DocumentView = props => {
       //   res.data
       // );
       setDataDoc(res.data)
-        if (res.data._result.status === 1) {
-            if (props.OnchageOwnerGroupType !== undefined) {
-                props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
-            }
+      if (res.data._result.status === 1) {
+        if (props.OnchageOwnerGroupType !== undefined) {
+          props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
+        }
         setDataHeader(res.data.document);
         setEventStatus(res.data.document.EventStatus);
         //============================================================================
@@ -676,16 +676,7 @@ const DocumentView = props => {
       ) : null}
 
       <br />
-      <br />
-      {props.useAddPalletMapSTO && eventStatus === 10 ?
-        <>
-          <AmButton className="float-right" styleType="confirm"
-            startIcon={<ReceiveIcon />}
-            onClick={handleClickOpen}>
-            {'Receive'}
-          </AmButton>
-          {renderDialogReceivePallet}
-        </> : null}
+
 
       {props.useScanBarcode && eventStatus === 10 ?
         <AmButton className="float-right" styleType="info"
@@ -727,8 +718,24 @@ const DocumentView = props => {
             <TabPane tabId="1">
               <Row>
                 <Col sm="12">
+                  
+                  {props.buttonConfirmMappingSTO === true ?
+                    eventStatus === 10 || eventStatus === 11 ?
+                      //|| eventStatus === 12 || eventStatus === 31 ?
+                      <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()} style={{ margin: '5px 0px 5px 0px' }}>
+                        {t("Received All")}
+                      </AmButton> : null
+                    : null}
+                    {props.useAddPalletMapSTO && eventStatus === 10 ?
+                    <>
+                      <AmButton className="float-right" styleType="confirm" style={{ margin: '5px 5px 5px 0px' }}
+                        startIcon={<ReceiveIcon />}
+                        onClick={handleClickOpen}>
+                        {'Mapping Pallet'}
+                      </AmButton>
+                      {renderDialogReceivePallet}
+                    </> : null}
                   <br />
-
                   {typeDoc ? (
                     // <Table
                     //   columns={columnsDetailSOU}
@@ -794,12 +801,7 @@ const DocumentView = props => {
           </AmButton>
         ) : null}
 
-        {props.buttonConfirmMappingSTO === true ?
-          eventStatus === 10 || eventStatus === 11 || eventStatus === 12 || eventStatus === 31 ?
-            <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
-              {t("Close")}
-            </AmButton> : null
-          : null}
+
       </div>
     </div>
   );
