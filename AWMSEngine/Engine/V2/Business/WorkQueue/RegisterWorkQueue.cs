@@ -180,20 +180,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItem> res = null; 
             if (res == null)
             {
-                var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 ////DF Code
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, สร้างเอกสารเบิกpallet เปล่า, 
-                if (pack.TrueForAll(sto => sto.eventStatus == StorageObjectEventStatus.NEW))
+                if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
                 {
-                    var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                    if (pstoLists == null || pstoLists.Count() == 0)
+                    //var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                    if (packs == null || packs.Count() == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
                     if (reqVO.ioType == IOType.OUTPUT)
                     {
                         //get Document
-                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
+                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
                             DocumentTypeID.PICKING, BuVO);
                         if (docItemLists == null || docItemLists.Count == 0)
                         {
@@ -210,7 +210,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     else
                     {
                         //get Document
-                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
+                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
                             DocumentTypeID.PUTAWAY, BuVO);
                         if (docItemLists == null || docItemLists.Count == 0)
                         {
@@ -228,12 +228,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docItems == null || docItems.Count == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Put Away Document Not Found");
                 }
-                else if (pack.TrueForAll(sto => sto.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && sto.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS ))
+                else if (packs.TrueForAll(pack => pack.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && pack.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS ))
                 {
                     //ถ้าพาเลท สินค้า มีสถานะ RECEIVED,AUDITED,COUNTED,CONSOLIDATED,CANCELED จะput away by pass 
-                    var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
-                     
-                    packList.ForEach(pack =>
+                    //var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+
+                    packs.ForEach(pack =>
                     {
                         var disto = new amt_DocumentItemStorageObject
                         {
@@ -241,11 +241,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             DocumentItem_ID = null,
                             Sou_StorageObject_ID = pack.id.Value,
                             Des_StorageObject_ID = pack.id.Value,
-                            Quantity = 0,
-                            BaseQuantity = 0,
+                            Quantity = pack.qty,
+                            BaseQuantity = pack.baseQty,
                             UnitType_ID = pack.unitID,
                             BaseUnitType_ID = pack.baseUnitID,
-                            Status = EntityStatus.ACTIVE
+                            Status = EntityStatus.INACTIVE
                         };
 
                         AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
@@ -325,10 +325,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    if (sto.eventStatus == StorageObjectEventStatus.NEW)
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
-                        StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
-                        StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    packs.ForEach(pack => {
+                        if (pack.eventStatus == StorageObjectEventStatus.NEW)
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    });
+                    
                 }
 
                 if (docItem.Count > 0)
@@ -373,14 +375,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    var stoPack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-                    var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                        {
-                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
+                    var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    packs.ForEach(pack => {
+                        var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            {
+                            new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
-                        }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
+                            //new SQLConditionCriteria("DocumentItem_ID", null, SQLOperatorType.EQUALS),
+                            }, this.BuVO).Find(c=>c.DocumentItem_ID == null);
 
-                    ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                        ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                    });
+                    
                 }
 
                 return this.GenerateResponse(sto, queueTrx);
