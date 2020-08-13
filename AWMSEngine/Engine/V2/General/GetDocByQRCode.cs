@@ -147,7 +147,8 @@ namespace AWMSEngine.Engine.V2.General
             else if (reqVO.qr.StartsWith("E|"))
             {
                 //empty pallet 
-                //res.processType = DocumentProcessTypeID;
+                res.processType = DocumentProcessTypeID.ESP_TRANSFER_WM;
+
             }
             else 
             {
