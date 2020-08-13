@@ -148,7 +148,15 @@ namespace AWMSEngine.Engine.V2.General
             {
                 //empty pallet 
                 res.processType = DocumentProcessTypeID.ESP_TRANSFER_WM;
-
+                var espSKU = StaticValue.LoadSKUMasterEmptyPallets().First();
+                packList.Add(new PackSto()
+                {
+                    pstoCode = espSKU.Code,
+                    addQty = 1,
+                    unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == espSKU.UnitType_ID).Code,
+                    packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == espSKU.UnitType_ID).Code,
+                });
+                res.datas = packList;
             }
             else 
             {

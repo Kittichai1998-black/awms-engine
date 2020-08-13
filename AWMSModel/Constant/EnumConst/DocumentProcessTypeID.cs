@@ -139,13 +139,15 @@ namespace AWMSModel.Constant.EnumConst
         ESP_DELIVERY_ORDER_CUS = 8082,
         ESP_DELIVERY_ORDER_SUP = 8083,
 
-        ESP_PICK_RETURN_WM = 8091,
-        ESP_PICK_RETURN_CUS = 8092,
-        ESP_PICK_RETURN_SUP = 8093,
+        ESP_RETURN_WM = 8091,
+        ESP_RETURN_CUS = 8092,
+        ESP_RETURN_SUP = 8093,
 
         ESP_CORRECTIONS_WM = 8101,
         ESP_CORRECTIONS_CUS = 8102,
         ESP_CORRECTIONS_SUP = 8103,
+
+        OTH_OTHER_WM = 9181
 
     }
 }
