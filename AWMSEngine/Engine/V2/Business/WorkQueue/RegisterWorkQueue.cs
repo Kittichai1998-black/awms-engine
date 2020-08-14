@@ -347,7 +347,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             else
                                 AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         });
-                         
+                        x.EventStatus = DocumentEventStatus.WORKING;
                         ADO.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                          
                     });
@@ -359,14 +359,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         var docPA = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(x, BuVO);
                         if(docPA.DocumentItems.Any(item => item.EventStatus == DocumentEventStatus.WORKING))
                         {
-                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
 
                             var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPA.ParentDocument_ID.Value, this.BuVO);
 
                             docPA.DocumentItems.ForEach(item => {
-                                var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
-                                grItem.EventStatus = DocumentEventStatus.WORKING;
-                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                if(item.EventStatus == DocumentEventStatus.WORKING)
+                                {
+                                    var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
+                                    grItem.EventStatus = DocumentEventStatus.WORKING;
+                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                }
                             });
 
                             ADO.DocumentADO.GetInstant().UpdateEventStatus(getGR.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
