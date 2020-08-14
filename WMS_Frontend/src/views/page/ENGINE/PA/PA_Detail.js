@@ -32,8 +32,8 @@ const PA_Detail = props => {
                 buttonBack={true}
                 linkBack={"/putaway/search"}
                 history={props.history}
-                useAddPalletMapSTO={true}
-                addPalletMapSTO={addPalletMapSTO}
+                // useAddPalletMapSTO={true}
+                // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
             >
