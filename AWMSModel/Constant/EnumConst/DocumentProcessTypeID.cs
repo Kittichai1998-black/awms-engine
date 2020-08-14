@@ -102,6 +102,10 @@ namespace AWMSModel.Constant.EnumConst
         FG_RETURN_CUS = 4292,
         FG_RETURN_SUP = 4293,
 
+        FG_OTHER_WM = 4181,
+        FG_OTHER_CUS = 4182,
+        FG_OTHER_SUP = 4183,
+
         PM_TRANSFER_WM = 5011,
         PM_TRANSFER_CUS = 5012,
         PM_TRANSFER_SUP = 5013,
