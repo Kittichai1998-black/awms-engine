@@ -212,7 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 sto.AuditStatus = _auditstatus;
 
                 var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, docs.DocumentProcessType_ID);
-                sto.IsHold = bool.Parse(holdstatus);
+                sto.IsHold = Convert.ToBoolean(Convert.ToInt16(holdstatus));
 
                 var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)

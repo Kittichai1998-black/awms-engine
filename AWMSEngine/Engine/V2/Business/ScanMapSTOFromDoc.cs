@@ -79,14 +79,16 @@ namespace AWMSEngine.Engine.V2.Business
                 if (getDocItem.DocItemStos.Count() > 0)
                 {
                     var getdistoMatch = new amt_DocumentItemStorageObject();
-                    var getdisto = getDocItem.DocItemStos.FindAll(x =>
+                    var getdisto = getDocItem.DocItemStos.FindAll(disto =>
                     {
-                        var getSou_STO_PACK = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, true, true, BuVO);
-                        var stolist = getSou_STO_PACK.ToTreeList();
-                        var getBase = stolist.Find(y => y.type == StorageObjectType.BASE && y.code == reqVO.baseCode);
+
+                        //var getSou_STO_PACK = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, true, BuVO);
+                        var getBase = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
                         if (getBase != null)
                         {
+                            var stolist = getBase.ToTreeList();
+
                             if (getBase.areaID != reqVO.areaID)
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Area ไม่ตรงกัน");
                             
@@ -96,7 +98,7 @@ namespace AWMSEngine.Engine.V2.Business
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ระบุ Location ไม่ตรงกัน");
                             }
                            
-                            return stolist.Any(y => y.id == x.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
+                            return stolist.Any(y => y.id == disto.Sou_StorageObject_ID && y.refID == getDocItem.RefID);
                             //var getPACK = stolist.Find(y =>
                             //    y.id == x.Sou_StorageObject_ID
                             //    && y.lot == getDocItem.Lot
@@ -151,8 +153,8 @@ namespace AWMSEngine.Engine.V2.Business
 
                     var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getDocItem.SKUMaster_ID.Value, x.Quantity, getDocItem.UnitType_ID.Value);
                     decimal? baseQuantity = baseUnitTypeConvt.newQty;
-                    var option = "";
-                    option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
+                    //var option = "";
+                    //option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
                     StorageObjectCriteria packSto = new StorageObjectCriteria()
                     {
                         parentID = idBaseSto,
@@ -166,18 +168,24 @@ namespace AWMSEngine.Engine.V2.Business
                         unitCode = unit.Code,
                         unitID = unit.ID.Value,
                         lot = getDocItem.Lot,
-                        refID = getDocItem.RefID,
-                        ref1 = getDoc.Ref1,
-                        ref2 = getDoc.Ref2,
+                        itemNo = getDocItem.ItemNo,
+                        //refID = getDocItem.RefID,
+                        ref1 = getDocItem.Ref1,
+                        ref2 = getDocItem.Ref2,
+                        ref3 = getDocItem.Ref3,
+                        ref4 = getDocItem.Ref4,
                         baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseUnitTypeConvt.newUnitType_ID).Code,
                         baseUnitID = baseUnitTypeConvt.newUnitType_ID,
                         baseQty = baseUnitTypeConvt.newQty,
                         type = StorageObjectType.PACK,
                         mstID = getDocItem.PackMaster_ID,
-                        options = option,
+                        //options = option,
                         areaID = reqVO.areaID,
 
                     };
+                    var newPackCheckSum = packSto.GetCheckSum();
+                    packSto.refID = newPackCheckSum;
+
                     var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 
                     var new_disto = new amt_DocumentItemStorageObject()
@@ -190,7 +198,7 @@ namespace AWMSEngine.Engine.V2.Business
                         BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                         Sou_StorageObject_ID = resStopack,
                         Des_StorageObject_ID = resStopack,
-                        Status = EntityStatus.ACTIVE
+                        Status = EntityStatus.INACTIVE
                     };
                     var disto = ADO.DistoADO.GetInstant().Insert(new_disto, BuVO);
                 }

@@ -76,20 +76,23 @@ const GR_Detail = props => {
 
 
     const columns = [
-        { accessor: "SKUMaster_Name", Header: "Item Code" },
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
+        {
+            Header: "Item",
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
+        },
         { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" }
     ];
 
     const columnsDetailSOU = [
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
         { width: 125, accessor: "Lot", Header: "Lot" },
-        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
         { width: 110, accessor: "_packQty", Header: "Qty" },
         { width: 60, accessor: "packUnitCode", Header: "Unit" }
     ];
@@ -125,7 +128,7 @@ const GR_Detail = props => {
         { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
         { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 125, accessor: "ItemNo", Header: "ItemNo" },
-        { width: 150, accessor: "Quantity", Header: "¨Ó¹Ç¹·ÕèÃÑºà¢éÒä´é" },
+        { width: 150, accessor: "Quantity", Header: "ï¿½Ó¹Ç¹ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ï¿½ï¿½" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" }
     ];
     const addPalletMapSTO = {

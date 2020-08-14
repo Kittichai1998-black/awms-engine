@@ -302,7 +302,10 @@ const AmReceivePallet = (props) => {
     const [btnUpload, setBtnUpload] = useState(true)
 
     let columns = [
-        { accessor: "SKUMaster_Name", Header: "Item Code" },
+        {
+            Header: "Item",
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
+        },
         { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 150, accessor: "_balanceQty", Header: "จำนวนที่รับเข้าได้" },
         {
@@ -405,7 +408,7 @@ const AmReceivePallet = (props) => {
                         }
                     });
                 }
-            }else{
+            } else {
                 alertDialogRenderer("error", "กรุณากรอกหมายเลขพาเลทให้ครบ 10 หลัก")
             }
         }
@@ -572,7 +575,7 @@ const AmReceivePallet = (props) => {
                 <DialogTitle
                     id="addpallet-dialog-title"
                     onClose={handleClose}>
-                    {"Receive Pallet"}
+                    {"Mapping Pallet"}
                 </DialogTitle>
                 <DialogContent>
                     {title}

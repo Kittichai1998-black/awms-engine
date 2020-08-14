@@ -32,8 +32,8 @@ const PA_Detail = props => {
                 buttonBack={true}
                 linkBack={"/putaway/search"}
                 history={props.history}
-                useAddPalletMapSTO={true}
-                addPalletMapSTO={addPalletMapSTO}
+                // useAddPalletMapSTO={true}
+                // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
             >
@@ -84,20 +84,28 @@ const PA_Detail = props => {
 
 
     const columns = [
-        // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
-        { accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
+        {
+            Header: "Item",
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
+        },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" }
     ];
 
     const columnsDetailSOU = [
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
+        {
+            width: 130, Header: "Location",
+            Cell: e => {
+                let location = e.original.areaLocationCode ? ":" + e.original.areaLocationCode : "";
+                return e.original.areaCode + location;
+            }
+        },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
-        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
         { width: 110, accessor: "_packQty", Header: "Qty" },
         { width: 60, accessor: "packUnitCode", Header: "Unit" }
     ];
@@ -116,7 +124,7 @@ const PA_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <HighlightOff style={{ color: "red" }} />;
         else return null;
@@ -127,7 +135,7 @@ const PA_Detail = props => {
         var ID = values.docID.toString();
         return ID;
     };
- 
+
     const addPalletMapSTO = {
         // apiCreate: '/v2/ScanMapStoFromDocAPI',
         // columnsDocItems: colListDocItems,

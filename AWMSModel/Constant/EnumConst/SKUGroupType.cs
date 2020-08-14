@@ -11,7 +11,7 @@ namespace AWMSModel.Constant.EnumConst
         SG = 3,
         FG = 4,
         PM = 5,
-        EMP = 8,
+        ESP = 8,
         OTH = 9,
         STO = 99
     }

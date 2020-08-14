@@ -45,6 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string ref1;
             public string ref2;
             public string ref3;
+            public string ref4;
             public string options;
             public DocumentProcessTypeID documentProcessTypeID;
 
@@ -70,9 +71,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string ref1;
                 public string ref2;
                 public string ref3;
+                public string ref4;
                 public string refID;
                 public string itemNo;
                 public string options;
+                public AuditStatus auditStatus;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -155,6 +158,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
+                    ref4 = reqVO.ref4,
                     options = reqVO.options,
                     docTypeId = DocumentTypeID.PUTAWAY,
                     eventStatus = reqVO.eventStatus,
@@ -181,6 +185,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ref3 = x.ref3,
                             refID = x.refID,
                             itemNo = x.itemNo,
+                            auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

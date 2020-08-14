@@ -29,7 +29,8 @@ import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
-import AmRadioGroup from "../../../components/AmRadioGroup";
+import BoxIcon from "@material-ui/icons/Widgets";
+import ItemIcon from "@material-ui/icons/AddShoppingCart";
 import AmDropdown from '../../../components/AmDropdown'
 import { DataGenerateElePalletListDisplay } from "../AmMappingPallet/RanderEleListPalletDisplay ";
 const Axios = new apicall();
@@ -142,13 +143,21 @@ const FormInline = styled.div`
 
 const LabelH = styled.label`
   font-weight: bold;
+  width: 40px;
+  paddingleft: 20px;
+`;
+const LabelH2 = styled.label`
+  font-weight: bold;
   width: 70px;
   paddingleft: 20px;
 `;
 const LabelH1 = styled.label`
   font-weight: bold;
-  width: 90px;
+  width: 100px;
   paddingleft: 20px;
+`;
+const LabelHText = styled.label`
+  width: 60px;
 `;
 const DivHidden = styled.div`
   overflow: hidden;
@@ -179,7 +188,7 @@ const WarehouseQuery = {
 const AreaMasterQuery = {
   queryString: window.apipath + "/v2/SelectDataMstAPI/",
   t: "AreaMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
+  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 30}]',
   f: "Name,Code,ID as areaID",
   g: "",
   s: "[{'f':'ID','od':'asc'}]",
@@ -284,7 +293,7 @@ const AmMappingPallet = props => {
     return [
       { label: "Warehouse", value: null },
       { label: "DocProcessType", value: null },
-      { label: "Pallet", value: valueInput.PalletCode },
+      { label: "Pallet", value:valueInput === undefined ? null : (valueInput.PalletCode === undefined ? null : valueInput.PalletCode) },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
@@ -384,44 +393,51 @@ const AmMappingPallet = props => {
           dataLoc = AreaLocationMasterQuery
         }
 
-        return <div><AmDropdown
-          placeholder="Select"
-          fieldDataKey="areaID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-          fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-          labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-          ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-          queryApi={AreaMasterQuery}
-          defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
-          onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
-          ddlType={"search"} //รูปแบบ Dropdown 
-        />
-          <AmDropdown
+        return <div><FormInline>
+          <LabelH1>Area :</LabelH1><AmDropdown
             placeholder="Select"
-            fieldDataKey="locaionID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+            fieldDataKey="areaID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
             fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
             ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-            queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
-            defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+            queryApi={AreaMasterQuery}
+            defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
             onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
             ddlType={"search"} //รูปแบบ Dropdown 
-          /></div>
+          />
+        </FormInline>
+          <FormInline>
+            <LabelH1>AreaLocation :</LabelH1>
+            <AmDropdown
+              placeholder="Select"
+              fieldDataKey="locaionID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+              fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+              labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+              ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
+              queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
+              defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+              onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
+              ddlType={"search"} //รูปแบบ Dropdown 
+            />
+          </FormInline></div>
       case 4:
-        if (dataPallet !== undefined) {
+        if (dataPallet !== undefined && dataPallet !== null) {
           return (<div>
             <Card>
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>Pallet:</LabelH>
+                    {/* <LabelH>Pallet:</LabelH> */}
+                    <BoxIcon style={{ color: "#795548" }} />{" "}
                     {dataPallet.bsto.code}
                   </FormInline>
                   {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
                     return (
-                      <div key={index}>
-                        <FormInline>
-                          <LabelH style={{ marginLeft: "30px" }}>Item :</LabelH> {x.code}
-                          <LabelH style={{ marginLeft: "10px" }}>Qty : </LabelH>{x.baseQty} {x.unitCode}
+                      <div key={index} syle={{ marginLeft: "30px" }} >
+                        <FormInline >
+                          <LabelH style={{ marginLeft: "10px" }}><ItemIcon /></LabelH><LabelHText>{x.code}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Qty : </LabelH><LabelHText>{x.baseQty} {x.unitCode}</LabelHText>
+                          <LabelH style={{ marginLeft: "5px" }}>Lot  : </LabelH><LabelHText>{x.lot}</LabelHText>
                         </FormInline>
                       </div>
                     );
@@ -449,71 +465,71 @@ const AmMappingPallet = props => {
               }}
             /></div>)
         } else {
-          return (<div>
-            <Card>
-              <CardContent>
-                <div>
-                  <FormInline>
-                    <LabelH>Pallet:</LabelH>
-                    {valueInput.palletCode}
-                  </FormInline>
+          if (valueInput.palletCode !== undefined) {
+            return (<div>
+              <Card>
+                <CardContent>
+                  <div>
+                    <FormInline>
+                      {/* <LabelH>Pallet:</LabelH> */}
+                      <BoxIcon style={{ color: "#795548" }} />{" "}
+                      {valueInput.palletCode}
+                    </FormInline>
 
-                </div>
-              </CardContent>
-            </Card>
-            <AmInput
-              id={"barcode"}
-              placeholder="barcode"
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "barcode", null, event)
-              }
-              onBlur={(e) => {
-                if (e !== undefined && e !== null)
-                  onHandleChangeInputPalletCode("barcode", e, null, null, null)
-              }}
-              onKeyPress={(value, obj, element, event) => {
-                if (event.key === "Enter") {
-                  onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  </div>
+                </CardContent>
+              </Card>
+              <AmInput
+                id={"barcode"}
+                placeholder="barcode"
+                type="input"
+                style={{ width: "100%" }}
+                onChange={(value, obj, element, event) =>
+                  onHandleChangeInput(value, null, "barcode", null, event)
                 }
+                onBlur={(e) => {
+                  if (e !== undefined && e !== null)
+                    onHandleChangeInputPalletCode("barcode", e, null, null, null)
+                }}
+                onKeyPress={(value, obj, element, event) => {
+                  if (event.key === "Enter") {
+                    onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                  }
 
-              }}
-            /></div>)
+                }}
+              /></div>)
+          }
         }
 
       case 5:
         //return dataShow;
-        if (dataDoc !== undefined) {
+        console.log(dataDoc)
+        if (dataDoc !== undefined && dataDoc !== null) {
           return (<div>
             <Card>
               <CardContent>
                 <div>
                   <FormInline>
-                    <LabelH>GR Doc :</LabelH>
+                    <LabelH2>GR Doc :</LabelH2>
                     {dataDoc.grCode}
                   </FormInline>
                   <FormInline>
-                    <LabelH>PA Doc :</LabelH>
+                    <LabelH2>PA Doc :</LabelH2>
                     {dataDoc.putawayCode}
                   </FormInline>
                   {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
                     return (
                       <div key={index}>
                         <FormInline>
-                          <LabelH>Item :</LabelH>
+                          <LabelH2>Item :</LabelH2>
                           {x.pstoCode}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Lot :</LabelH>
+                          <LabelH2>Lot :</LabelH2>
                           {x.lot}
                         </FormInline>
                         <FormInline>
-                          <LabelH>Batch :</LabelH>
-                          {x.batch}
-                        </FormInline>
-                        <FormInline>
-                          <LabelH>Qty : </LabelH>{x.addQty} {x.unitTypeCode}
+                          <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
 
                         </FormInline>
                       </div>
@@ -538,16 +554,19 @@ const AmMappingPallet = props => {
       locationID: null,
       pstos: []
     };
-    if (dataDoc !== undefined) {
+    console.log(dataDoc)
+    if (dataDoc !== undefined && dataDoc !== null) {
 
       dataDoc.datas.forEach(element => {
         postdata.pstos.push(element)
       });
 
     }
+    console.log(postdata)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
+
           setDataPallet(res.data)
           if (type === "confirm") {
             alertDialogRenderer("Success", "success", true);
@@ -556,6 +575,11 @@ const AmMappingPallet = props => {
           }
         }
       } else {
+        if (dataDoc !== undefined && dataDoc !== null) {
+          var dataDocTmp = (dataDoc.datas = null);
+          setDataDoc(dataDocTmp)
+        }
+
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     })
@@ -622,6 +646,7 @@ const AmMappingPallet = props => {
     setValueInput()
   }
   function handleBack() {
+    setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
   return (

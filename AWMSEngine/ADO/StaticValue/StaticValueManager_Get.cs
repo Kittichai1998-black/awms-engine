@@ -115,11 +115,16 @@ namespace AWMSEngine.ADO.StaticValue
 
         public string GetConfigValue(ConfigFlow code, DocumentProcessTypeID processType)
         {
-            string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
-            var res = GetConfigValue<string>(c);
-            if (res == null)
+            try
+            {
+                string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
+                var res = GetConfigValue<string>(c);
+                return res;
+            }
+            catch
+            {
                 return GetConfigValue<string>(string.Format(code.Attribute<EnumValueAttribute>().ValueString, "ALL"));
-            return res;
+            }
         }
         public string GetConfigValue(ConfigCommon code)
         {

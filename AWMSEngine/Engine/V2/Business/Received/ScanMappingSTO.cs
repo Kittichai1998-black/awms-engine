@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string ref3;
                 public string ref4;
                 public string cartonNo;
-                public int? forCustomerID;
+                public long? forCustomerID;
                 public string options;
                 public decimal addQty;
                 public string unitTypeCode; // old unit 
@@ -250,13 +250,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     expiryDate = psto.expireDate,
                     incubationDate = psto.incubationDate,
                     ShelfLifeDate = psto.shelfLifeDate,
-                    refID = psto.refID,
+                    //refID = psto.refID,
                     ref1 = psto.ref1,
                     ref2 = psto.ref2,
                     ref3 = psto.ref3,
                     ref4 = psto.ref4,
                     itemNo = psto.itemNo,
                 };
+                var newPackCheckSum = newPackSto.GetCheckSum();
+                newPackSto.refID = newPackCheckSum;
                 //var oldPsto = this.ADOSto.Get(psto.pstoID.Value, StorageObjectType.PACK, false, false, this.BuVO);
                 var stos = this.ADOSto.Get(idBase, StorageObjectType.BASE, false, true, this.BuVO);
                 var stoLists = stos.ToTreeList();
@@ -274,7 +276,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     
                     if (oldPsto != null)
                     {
-                        if (oldPsto.refID == newPackSto.GetCheckSum())
+                        if (oldPsto.refID == newPackCheckSum)
                         {
                             //add qty
                             oldPsto.qty += unitTypeConvt.oldQty;
