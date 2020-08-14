@@ -150,7 +150,7 @@ const Create_GR_DR = props => {
         q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{'f':'ID','od':'dsc'}]",
         sk: 0,
         l: 100,
         all: ""

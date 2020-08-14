@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string batch;
             public string lot;
             public DocumentProcessTypeID documentProcessTypeID;
-
+            public String documentProcessTypeName;
             public long? souBranchID;
             public long? souWarehouseID;
             public long? souCustomerID;
@@ -70,7 +70,9 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string batch;
                 public string lot;
                 public string orderNo;
+                public string cartonNo;
                 public string itemNo;
+                public string auditStatus;
                 public string refID;
                 public string ref1;
                 public string ref2;
@@ -78,9 +80,12 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string ref4;
                 public string options;
                 public long? parentDocumentItem_ID;
+                public DateTime? incubationDay;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
+                public DateTime? shelfLifeDate;
+
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -151,13 +156,6 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
-
-
-
-
-
-
-
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
@@ -189,10 +187,11 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
                     ref4 = reqVO.ref4,
-
-                    docTypeId = DocumentTypeID.GOODS_RECEIVE,
-                    eventStatus = reqVO.eventStatus,
+                   
                     documentProcessTypeID = reqVO.documentProcessTypeID,
+                    documentProcessTypeName = reqVO.documentProcessTypeName,
+                    eventStatus = reqVO.eventStatus,
+   
                     remark = reqVO.remark,
 
                     Items = reqVO.receivedOrderItem.Select(
@@ -210,13 +209,15 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
+                            shelfLifeDate = x.shelfLifeDate,
+                            incubationDay = x.incubationDay,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
-                            baseUnitType = x.baseunitType,
+                            baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

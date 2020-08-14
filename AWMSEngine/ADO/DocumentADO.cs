@@ -160,10 +160,12 @@ namespace AWMSEngine.ADO
             param.Add("@itemNo", docItem.ItemNo);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
+            param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
-
+            param.Add("@incubationDay", docItem.IncubationDay);
+            param.Add("@shelfLifeDate", docItem.ShelfLifeDate);
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));

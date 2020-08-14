@@ -246,7 +246,10 @@ const DocumentSearchSTGT = props => {
               <Grid item xs container direction="column">
               </Grid>
               <Grid item>
-                      <AmCreateDoc></AmCreateDoc>
+                  <AmCreateDoc
+                      apicreate={"/v2/CreateDRDocAPI/"}
+                      apiRes={"/receive/detail?docID="}
+                  ></AmCreateDoc>
               </Grid>
           </Grid>
       <AmDocumentSearch
