@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string forCustomerCode;
             public int? transportID;
             public DocumentProcessTypeID documentProcessTypeID;
-            public string documentProcessTypeName;
+
             public string batch;
             public string lot;
             public string options;
@@ -66,32 +66,31 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public List<Item> Items;
             public class Item
             {
+                public string skuCode;
                 public string packCode;
                 public long? packID;
-                public string skuCode;
+                public int? packItemQty; //not receive
+                public bool isUnitTypeForPack = false;
                 public decimal? quantity;
                 public string unitType;
-                public decimal? baseQuantity;
-                public string baseunitType;               
+                public decimal? baseQuantity; //not receive
+                public string baseUnitType; //not receive
+
+                public DateTime? expireDate;
+                public DateTime? productionDate;
+
+                public long? parentDocumentItem_ID;
+                public string orderNo;
                 public string batch;
                 public string lot;
-                public string orderNo;
-                public string cartonNo;
-                public bool isUnitTypeForPack = false;
-                public string itemNo;
-                public string auditStatus;
-                public string refID;
+
                 public string ref1;
                 public string ref2;
                 public string ref3;
                 public string ref4;
+                public string itemNo;
+                public string refID;
                 public string options;
-                public long? parentDocumentItem_ID;
-                public DateTime? incubationDay;
-
-                public DateTime? expireDate;
-                public DateTime? productionDate;
-                public DateTime? shelfLifeDate;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -153,13 +152,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                     reqVO.desBranchCode,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
-
-            
-            var DocumentProcessTypeName = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
-                   new SQLConditionCriteria[] {
-                new SQLConditionCriteria("Name",reqVO.documentProcessTypeName, SQLOperatorType.EQUALS),
-               }, this.BuVO).FirstOrDefault();
-
             amt_Document doc = new amt_Document()
             {
                 ID = null,
@@ -183,10 +175,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
-
                 DocumentProcessType_ID = reqVO.documentProcessTypeID,
-                //DocumentProcessTypeName == null ? reqVO.documentProcessTypeID : DocumentProcessTypeName.ID,
-
                 Options = reqVO.options,
                 Remark = reqVO.remark,
 
@@ -235,9 +224,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID).Code , this.BuVO);
+                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID).Code, this.BuVO);
                     }
-                    
+
                 }
                 else if (!Item.options.Contains("basecode"))
                 {
@@ -247,11 +236,11 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 if (Item.quantity.HasValue && packMst != null)
                 {
                     //baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, skuMst.UnitType_ID.Value);
-                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value , StaticValue.UnitTypes.First(x => x.Code == Item.unitType).ID.Value);
+                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, Item.quantity.Value, StaticValue.UnitTypes.First(x => x.Code == Item.unitType).ID.Value);
                     baseQuantity = baseUnitTypeConvt.newQty;
-                                        
-                        if(baseQuantity % 1 != 0)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ค่าที่ Convert ได้ไม่เป็นจำนวนเต็ม");
+
+                    if (baseQuantity % 1 != 0)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ค่าที่ Convert ได้ไม่เป็นจำนวนเต็ม");
 
                 }
 
@@ -263,8 +252,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             Item.docItemStos = new List<amt_DocumentItemStorageObject>();
 
                         List<amt_DocumentItemStorageObject> disto = Sto.mapstos.Select(x => {
-                          var _convert = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID);
-                          var _disto = new amt_DocumentItemStorageObject()
+                            var _convert = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID);
+                            var _disto = new amt_DocumentItemStorageObject()
                             {
                                 Sou_StorageObject_ID = x.id.Value,
                                 Des_StorageObject_ID = null,
@@ -295,7 +284,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,
                     Lot = Item.lot,
-                       
+
                     Options = Item.options,
                     ExpireDate = Item.expireDate,
                     ProductionDate = Item.productionDate,
@@ -307,9 +296,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     ItemNo = Item.itemNo,
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,
-                    IncubationDay = Item.incubationDay,
-                    ShelfLifeDate = Item.shelfLifeDate,
-
 
                     EventStatus = Item.eventStatus,
                     DocItemStos = Item.docItemStos

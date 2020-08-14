@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string batch;
             public string lot;
             public DocumentProcessTypeID documentProcessTypeID;
-            public String documentProcessTypeName;
+
             public long? souBranchID;
             public long? souWarehouseID;
             public long? souCustomerID;
@@ -70,9 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string batch;
                 public string lot;
                 public string orderNo;
-                public string cartonNo;
                 public string itemNo;
-                public string auditStatus;
                 public string refID;
                 public string ref1;
                 public string ref2;
@@ -80,12 +78,9 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string ref4;
                 public string options;
                 public long? parentDocumentItem_ID;
-                public DateTime? incubationDay;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public DateTime? shelfLifeDate;
-
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -116,7 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
             long? Sou_Customer_ID = reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
                   string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
-            
+
             long? Sou_Supplier_ID =
                     reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
                     string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
@@ -142,7 +137,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             var desAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desAreaMasterCode);
-            
+
             var desWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
@@ -155,6 +150,13 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desBranchCode,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
+
+
+
+
+
+
+
 
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
@@ -174,7 +176,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
                     desCustomerID = desCustomerModel == null ? null : desCustomerModel.ID,
-                   
+
 
                     desBranchID = desBranchModel == null ? null : desBranchModel.ID,
                     desWarehouseID = desWarehouseModel == null ? null : desWarehouseModel.ID,
@@ -187,11 +189,10 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
                     ref4 = reqVO.ref4,
-                   
-                    documentProcessTypeID = reqVO.documentProcessTypeID,
-                    documentProcessTypeName = reqVO.documentProcessTypeName,
+
+                    docTypeId = DocumentTypeID.GOODS_RECEIVE,
                     eventStatus = reqVO.eventStatus,
-   
+                    documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.receivedOrderItem.Select(
@@ -209,15 +210,13 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
-                            shelfLifeDate = x.shelfLifeDate,
-                            incubationDay = x.incubationDay,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
-                            baseunitType = x.baseunitType,
+                            baseUnitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
