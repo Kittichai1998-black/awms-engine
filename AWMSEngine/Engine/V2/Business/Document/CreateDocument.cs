@@ -184,7 +184,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
 
-                DocumentProcessType_ID = reqVO.documentProcessTypeID,
+                DocumentProcessType_ID = reqVO.documentProcessTypeID
+                //DocumentProcessTypeName == null ? reqVO.documentProcessTypeID : DocumentProcessTypeName.ID,
 
                 Options = reqVO.options,
                 Remark = reqVO.remark,
