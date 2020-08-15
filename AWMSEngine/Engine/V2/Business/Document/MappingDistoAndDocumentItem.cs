@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -39,10 +40,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var chkCreatePA = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_GR").DataValue;
-            var chkCreateGR = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_PA").DataValue;
-            //var chkCreatePA = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_GR, reqVO.docProcessType);
-            //var chkCreateGR = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_PA, reqVO.docProcessType);
+            var chkCreatePA = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_GR, reqVO.docProcessType);
+            var chkCreateGR = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_PA, reqVO.docProcessType);
             var res = new TRes();
 
             var psto = DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]
@@ -91,6 +90,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var disto = distos.Find(x => x.DocumentItem_ID == docItem.ID && x.Sou_StorageObject_ID == psto.ID);
                     var remainBaseRecv = docItem.BaseQuantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.BaseQuantity).Value;
                     var remainRecv = docItem.Quantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.Quantity).Value;
+                    
+                    
 
                     if (remainRecv == 0)
                         continue;
@@ -172,6 +173,32 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
+                        // update incubatedate, shelflifedate
+                        StorageObjectCriteria packSto = new StorageObjectCriteria()
+                        {
+                            id = psto.ID,
+                        };
+                        DateTime? incubatedate = null;
+                        DateTime? shelflifedate = null;
+                        
+                        if (psto.IncubationDate == null)
+                        {
+                            incubatedate = docItem.ProductionDate == null ? (DateTime?)null : docItem.IncubationDay != null ?
+                                docItem.ProductionDate.Value.AddDays(Convert.ToDouble(docItem.IncubationDay) - 1) : (DateTime?)null;
+                           
+                            packSto.incubationDate = incubatedate;
+                        }
+                        if (psto.ShelfLiftDate == null)
+                        {
+                            shelflifedate = docItem.ExpireDate == null ? (DateTime?)null : docItem.ShelfLifeDay != null ?
+                                docItem.ExpireDate.Value.AddDays(Convert.ToDouble(-docItem.ShelfLifeDay) + 1) : (DateTime?)null;
+                           
+                            packSto.ShelfLifeDate = shelflifedate;
+                        }
+                        if (packSto.incubationDate != null || packSto.ShelfLifeDate != null)
+                        {
+                            var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                        }
                         disto = new amt_DocumentItemStorageObject()
                         {
                             ID = null,
@@ -203,8 +230,133 @@ namespace AWMSEngine.Engine.V2.Business.Document
             {
                 if (chkCreatePA == "true")
                 {
-                    //if(reqVO.docProcessType == DocumentProcessTypeID.ESP_TRANSFER_WM)
-                        //List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+                    newBaseQty = 0;
+                    var docItemsPA = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
+            {
+                new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
+
+            }, this.BuVO);
+                    var packSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.packID, StorageObjectType.PACK, false, false, this.BuVO);
+                        var area = StaticValue.AreaMasters.Find(x => x.ID == psto.AreaMaster_ID);
+                        var warehouse = StaticValue.Warehouses.Find(x => x.ID == area.Warehouse_ID);
+                    amt_Document _docGR = new amt_Document();
+                    if (chkCreateGR == "true")
+                    {
+                        amt_DocumentItem docItemGR = new amt_DocumentItem()
+                        {
+                            Code = psto.Code,
+                            SKUMaster_ID = psto.SKUMaster_ID,
+                            PackMaster_ID = psto.PackMaster_ID,
+                            Quantity = psto.Quantity,
+                            UnitType_ID = psto.UnitType_ID,
+                            BaseQuantity = psto.BaseQuantity,
+                            BaseUnitType_ID = psto.BaseUnitType_ID,
+                            Options = psto.Options,
+                            EventStatus = DocumentEventStatus.NEW,
+                            Ref1 = psto.Ref1,
+                            Ref2 = psto.Ref2,
+                            Ref3 = psto.Ref3,
+                            Ref4 = psto.Ref4,
+                            CartonNo = psto.CartonNo,
+                            OrderNo = psto.OrderNo,
+                            ItemNo = psto.ItemNo,
+                            Batch = psto.Batch,
+                            Lot = psto.Lot,
+                            ProductionDate = psto.ProductDate,
+                            ExpireDate = psto.ExpiryDate,
+                        };
+                        amt_Document docGR = new amt_Document()
+                        {
+                            DocumentType_ID = DocumentTypeID.GOODS_RECEIVE,
+                            DocumentProcessType_ID = reqVO.docProcessType,
+                            ParentDocument_ID = null,
+                            Sou_Branch_ID = warehouse.Branch_ID,
+                            Des_Branch_ID = warehouse.Branch_ID,
+                            Sou_Warehouse_ID = area.Warehouse_ID,
+                            Des_Warehouse_ID = area.Warehouse_ID,
+                            For_Customer_ID = psto.For_Customer_ID,
+                            DocumentDate = DateTime.Now,
+                            ActionTime = DateTime.Now,
+                            DocumentItems = new List<amt_DocumentItem> { docItemGR },
+                            EventStatus = DocumentEventStatus.NEW,
+                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_MAPPING_AUTO_DOC, "true")
+                    };
+                        var docGRID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+                        _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
+
+                    }
+                    else
+                    {
+                        var docItemsGR = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
+                           {
+                                new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("EventStatus", "10", SQLOperatorType.IN),
+                                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNULL)
+                           }, this.BuVO).FirstOrDefault();
+                       
+                        if(docItemsGR == null) 
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND);
+                        }
+                        _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docItemsGR.Document_ID, BuVO);
+
+                    }
+
+
+                    amt_DocumentItem docItemPA = new amt_DocumentItem() {
+                            ParentDocumentItem_ID = _docGR.DocumentItems[0].ID,
+                            Code = psto.Code,
+                            SKUMaster_ID = psto.SKUMaster_ID,
+                            PackMaster_ID = psto.PackMaster_ID,
+                            Quantity = psto.Quantity,
+                            UnitType_ID = psto.UnitType_ID,
+                            BaseQuantity = psto.BaseQuantity,
+                            BaseUnitType_ID = psto.BaseUnitType_ID,
+                            Options = psto.Options,
+                            EventStatus = DocumentEventStatus.NEW,
+                            Ref1 = psto.Ref1,
+                            Ref2 = psto.Ref2,
+                            Ref3 = psto.Ref3,
+                            Ref4 = psto.Ref4,
+                            CartonNo = psto.CartonNo,
+                            OrderNo = psto.OrderNo,
+                            ItemNo = psto.ItemNo,
+                            Batch = psto.Batch,
+                            Lot = psto.Lot,
+                            ProductionDate = psto.ProductDate,
+                            ExpireDate = psto.ExpiryDate, 
+                            DocItemStos = new List<amt_DocumentItemStorageObject>() 
+                            { ConverterModel.ToDocumentItemStorageObject(packSto, null, null, null) }
+                        };
+                        amt_Document docPA = new amt_Document()
+                        {
+                            DocumentType_ID = DocumentTypeID.PUTAWAY,
+                            DocumentProcessType_ID = reqVO.docProcessType,
+                            ParentDocument_ID = _docGR.ID,
+                            Sou_Branch_ID = warehouse.Branch_ID,
+                            Des_Branch_ID = warehouse.Branch_ID,
+                            Sou_Warehouse_ID = area.Warehouse_ID,
+                            Des_Warehouse_ID = area.Warehouse_ID,
+                            For_Customer_ID = psto.For_Customer_ID,
+                            DocumentDate = DateTime.Now,
+                            ActionTime = DateTime.Now,
+                            DocumentItems = new List<amt_DocumentItem> { docItemPA },
+                            EventStatus = DocumentEventStatus.NEW,
+                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_MAPPING_AUTO_DOC, "true")
+                        };
+                        var docPAID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+                        var docPAItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
+
+                        res.documents.Add(new TRes.Documents()
+                        {
+                            GR_ID = _docGR.ID,
+                            GR_Code = _docGR.Code,
+                            PA_ID = docPAItem.ID,
+                            PA_Code = docPAItem.Code
+                        });
+                    
 
                 }
                 else
