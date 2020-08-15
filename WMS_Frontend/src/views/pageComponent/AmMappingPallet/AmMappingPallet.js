@@ -338,8 +338,8 @@ const AmMappingPallet = props => {
     }
     return [
       { label: "Warehouse", value: null },
-      { label: "Process No.", value: null },
-      { label: "Pallet", value: valueInput === undefined ? null : (valueInput.PalletCode === undefined ? null : valueInput.PalletCode) },
+      { label: "DocProcessType", value: null },
+      { label: "Pallet", value: valueInput.PalletCode === undefined ? null : valueInput.PalletCode },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
