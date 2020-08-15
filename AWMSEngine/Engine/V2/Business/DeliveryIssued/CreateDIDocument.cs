@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                 public DateTime? expireDate;
                 public DateTime? productionDate;
                 public long? parentDocumentItem_ID;
-                public int auditStatus;
+                public AuditStatus auditStatus;
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -207,7 +207,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                             refID = x.refID,
                             itemNo = x.itemNo,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
-                            auditStatus = x.auditStatus,
+                            //auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

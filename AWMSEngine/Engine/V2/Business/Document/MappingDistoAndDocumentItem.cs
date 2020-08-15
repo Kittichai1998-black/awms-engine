@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -40,7 +41,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
         {
             var chkCreatePA = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_GR").DataValue;
             var chkCreateGR = StaticValue.Configs.Find(x => x.DataKey == "USE_AUTO_CREATE_PA").DataValue;
-
+            //var chkCreatePA = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_GR, reqVO.docProcessType);
+            //var chkCreateGR = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.USE_AUTO_CREATE_PA, reqVO.docProcessType);
             var res = new TRes();
 
             var psto = DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]
@@ -201,6 +203,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             {
                 if (chkCreatePA == "true")
                 {
+                    //if(reqVO.docProcessType == DocumentProcessTypeID.ESP_TRANSFER_WM)
+                        //List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
 
                 }
                 else

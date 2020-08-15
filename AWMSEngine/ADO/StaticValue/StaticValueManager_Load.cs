@@ -105,12 +105,12 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public List<ams_SKUMaster> LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
         {
-            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault();
+            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.ESP, buVO ?? new VOCriteria()).FirstOrDefault();
             if (skutype != null)
             {
                 this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("SKUMasterType_ID",
-                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
+                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.ESP, buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
                             SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, buVO ?? new VOCriteria()));
             }

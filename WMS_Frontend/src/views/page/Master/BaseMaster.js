@@ -3,6 +3,11 @@ import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import { EntityEventStatus } from "../../../components/Models/EntityStatus";
+import PrintIcon from '@material-ui/icons/Print';
+import AmToolTip from "../../../components/AmToolTip";
+import IconButton from "@material-ui/core/IconButton";
+import { apicall } from '../../../components/function/CoreFunction'
+const Axios = new apicall();
 
 //======================================================================
 const BaseMaster = props => {
@@ -69,6 +74,27 @@ const BaseMaster = props => {
       width: 120,
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
+    },
+    {
+      Header: "Print Barcode",
+      colStyle: { textAlign: 'center' },
+      filterable: false,
+      Cell: e =>
+        <div style={{ display: "inline-flex" }}>
+          <AmToolTip title={"Print Barcode"} placement={"top"}>
+            <IconButton
+              size="small"
+              aria-label="info"
+              style={{ marginLeft: "3px" }}
+              onClick={() => { handleClickPrintbarcode(e.original) }}
+            >
+              <PrintIcon
+                fontSize="small"
+              // style={{ color: "#f39c12" }}
+              />
+            </IconButton>
+          </AmToolTip>
+        </div >
     }
   ];
   const columns = [
@@ -297,6 +323,23 @@ const BaseMaster = props => {
   };
 
 
+  const handleClickPrintbarcode = async (value) => {
+    try {
+      let reqjson = {
+        "layoutType": 0,
+        "listsCode": [
+          {
+            "code": value.Code
+          }
+        ]
+      }
+
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf", "preview").then();
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <div>
       {/* <MasterData

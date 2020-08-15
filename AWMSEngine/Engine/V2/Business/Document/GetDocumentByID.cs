@@ -68,6 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string batch;
             public string lot;
             public string orderNo;
+            public string itemNo;
 
             public EntityStatus status;
 
@@ -199,6 +200,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         batch = bs.sou_batch,
                         lot = bs.sou_lot,
                         orderNo = bs.sou_orderNo,
+                        itemNo = bs.sou_itemNo,
 
                         status = bs.sou_status,
 
@@ -264,6 +266,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         batch = bs.des_batch,
                         lot = bs.des_lot,
                         orderNo = bs.des_orderNo,
+                        itemNo = bs.des_itemNo,
 
                         status = bs.des_status,
 

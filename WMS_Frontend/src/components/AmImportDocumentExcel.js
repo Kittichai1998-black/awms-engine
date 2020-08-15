@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import AmButton from '../components/AmButton'
-import Button from '@material-ui/core/Button';
+import XLSX from 'xlsx';
+import { apicall, createQueryString } from "../components/function/CoreFunction2";
+import AmDialogs from '../components/AmDialogs'
 import { makeStyles } from "@material-ui/core/styles";
 
-
+const Axios = new apicall()
 const useStyles = makeStyles((theme) => ({
     root: {
         "& > *": {
@@ -15,46 +17,127 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AmImportDocumentExcel = () => {
+const AmImportDocumentExcel = (props) => {
 
     const classes = useStyles();
+    const [filesname, setfilesname] = useState("Chose File")
+    const [filesRead, setfilesRead] = useState();
+    const [stateDialog, setStateDialog] = useState(false);
+    const [msgDialog, setMsgDialog] = useState("");
+    const [stateDialogErr, setStateDialogErr] = useState(false);
 
-
-    //let selectedFile;
-    //console.log(window.XLSX);
-    //document.getElementById('input').addEventListener("change", (event) => {
-    //    selectedFile = event.target.files[0];
-    //})
-
-
-
-
-    //document.getElementById('button').addEventListener("click", () => {
-    //    XLSX.utils.json_to_sheet(data, 'out.xlsx');
-    //    if (selectedFile) {
-    //        let fileReader = new FileReader();
-    //        fileReader.readAsBinaryString(selectedFile);
-    //        fileReader.onload = (event) => {
-    //            let data = event.target.result;
-    //            let workbook = XLSX.read(data, { type: "binary" });
-    //            console.log(workbook);
-    //            workbook.SheetNames.forEach(sheet => {
-    //                let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
-    //                console.log(rowObject);
-    //                document.getElementById("jsondata").innerHTML = JSON.stringify(rowObject, undefined, 4)
-    //            });
-    //        }
-    //    }
-
-    const Opens = () => {
-        //var selectedFile = event.target.files[0];
+    const readFile = (e) => {
+        const files = e.target.files;
+        setfilesRead(files[0])
+        setfilesname(files[0].name)
 
     }
 
-    const onClickFile = (e) => {
-        console.log(e)
+    const ConvertJsoon = () => {
+        const reader = new FileReader();
+        const rABS = !!reader.readAsBinaryString;
+
+        reader.onload = (e) => {
+            /* Parse data */
+            const bstr = e.target.result;
+            const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
+            /* Get first worksheet */
+
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+            const data = XLSX.utils.sheet_to_json(ws);
+            const headerDatas = XLSX.utils.sheet_to_json(ws, { header: 1 })
+            let dataJson = JSON.stringify(data, null, 2)
+
+            getHeaderdata(headerDatas, dataJson)
+
+        };
+        if (rABS) {
+            reader.readAsBinaryString(filesRead);
+        } else {
+            reader.readAsArrayBuffer(filesRead);
+        };
+    }
+    const getHeaderdata = (datas, dataJsonItem) => {
+        let datsobj = datas.slice(0, 5)
+        let datsobjItem = datas.slice(5)
+        let dataItems = [];
+        let dataHdr = [];
+        let dataCreate = [];
+        if (datsobj !== undefined) {
+            let datH = datsobj.forEach((x, i) => {
+                    let datas = {
+                        "documentProcessTypeName": datsobj[0][1],
+                        "documentDate": datsobj[0][3],
+                        "souCustomerCode": datsobj[1][1],
+                        "actionTime": datsobj[1][3],
+                        "souSupplierCode": datsobj[2][1],
+                        "souWarehouseCode": datsobj[3][1],
+                        "desWarehouseCode": datsobj[3][3],
+                        "forCustomerCode": datsobj[4][1],
+                        "remark": datsobj[4][3],
+
+                    }
+
+                    dataHdr.push(datas)
+
+             
+            })
+          
+        }
+        if (datsobjItem !== undefined) {
+            datsobjItem.forEach((x, i) => {
+                if (i > 0) {
+                    let datsItem = {
+                        "itemNo": x[0],
+                        "skuCode": x[1],
+                        "orderNo": x[2],
+                        "batch": x[3],
+                        "lot": x[4],
+                        "quantity": x[5],
+                        "unitType": x[6],
+                        "auditStatus": x[7] === "PASS" ? 1: 0,
+                        "ref1": x[8],
+                        "ref2": x[9],
+                        "ref3": x[10],
+                        "ref4": x[11],
+                        "cartonNo": x[12],
+                        "incubationDay": x[13],
+                        "productionDate": x[14],
+                        "expireDate": x[15],
+                        "shelfLifeDate": x[16],
+
+
+                    }
+                    dataItems.push(datsItem)
+                } else {
+
+                }
+
+            })
+            dataHdr[0]['receivedOrderItem'] = dataItems
+            //console.log(dataHdr[0])
+            CreateDocuments(dataHdr[0])
+
+        }
 
     }
+
+
+    const CreateDocuments = (CreateData) => {
+        Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
+            if (res.data._result.status) {
+                setMsgDialog("Create Document success Document ID = " + res.data.ID);
+                setStateDialog(true);
+                if (props.apiRes !== undefined)
+                    props.history.push(props.apiRes + res.data.ID)
+            } else {
+                setMsgDialog(res.data._result.message);
+                setStateDialogErr(true);
+            }
+        })
+    }
+
     return (
         <div>
             <input
@@ -63,14 +146,20 @@ const AmImportDocumentExcel = () => {
                 id="contained-button-file"
                 multiple
                 type="file"
+                onChange={(e)=>readFile(e)}
             />
             <label htmlFor="contained-button-file">
-                <AmButton variant="contained" styleType="add" component="span"
-                    onClick={(e)=> onClickFile(e)}
-                >
-                    Create Docment
+                <AmButton variant="contained" styleType="info" component="span"
+                >  Chose Files
         </AmButton>
+                <label>{filesname}</label>
             </label>
+            <AmButton styleType="add"
+                onClick={()=>ConvertJsoon()}
+            >  CreateDocument
+        </AmButton>
+            <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+            <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
         </div>
     );
 };

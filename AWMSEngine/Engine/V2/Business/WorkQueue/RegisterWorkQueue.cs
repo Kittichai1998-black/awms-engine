@@ -14,6 +14,7 @@ using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.V2.General;
+using AWMSEngine.Engine.V2.Business.Received;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -35,7 +36,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string desLocationCode;
             public string forCustomerCode;
             public DateTime actualTime;
-            public List<PalletDataCriteriaV2> mappingPallets;
+            public List<string> barcode_pstos;
             public bool autoDoc = false;
         }
 
@@ -67,11 +68,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                     null, null, false, true, BuVO);
 
-                // add by ple
+                 
                 if (sto == null)
 
                 {
-                    if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
+                    if (reqVO.barcode_pstos != null && reqVO.barcode_pstos.Count > 0)
                     {
                         sto = this.CreateSto(reqVO);
                     }
@@ -82,7 +83,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
+                    if (reqVO.barcode_pstos != null && reqVO.barcode_pstos.Count > 0)
                     {
                         var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                         if (stopacks == null || stopacks.Count == 0)
@@ -94,8 +95,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 }
                 // end
-                //if (sto == null)
-                //    throw new AMWException(Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
                 if (sto.code != reqVO.baseCode)
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
 
@@ -119,96 +118,82 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected StorageObjectCriteria CreateSto(TReq reqVO)
         {
             StorageObjectCriteria newSto = new StorageObjectCriteria();
-            bool checkEmpPallet = false;
-            long? idBaseSto = null;
 
-            checkEmpPallet = StaticValueManager.GetInstant().SKUMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
-            var _warehouse = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
-            var _area = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
-
-            var req_NewBase = new MappingNewBaseAndSTO.TReq()
+            var req_ScanMappingSTO = new ScanMappingSTO.TReq()
             {
-                baseCode = reqVO.baseCode,
-                isEmptyPallet = checkEmpPallet,
-                warehouseID = _warehouse.ID.Value,
-                areaID = _area.ID,
-                weight = reqVO.weight,
-                length = reqVO.length,
-                height = reqVO.height,
-                width = reqVO.width
+                bstoCode = reqVO.baseCode,
+                areaID = _areaASRS.ID.Value,
+                locationID = _locationASRS.ID.Value,
+                warehouseID = _warehouseASRS.ID.Value
             };
-            var newbase = new MappingNewBaseAndSTO().Execute(this.Logger, this.BuVO, req_NewBase); ;
-            idBaseSto = newbase.id;
+            long? bstoID = null;
 
-            reqVO.mappingPallets.ForEach((mappingPallets) =>
+            reqVO.barcode_pstos.ForEach((pstos) =>
             {
-
-                var Sku = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(mappingPallets.code, BuVO);
-                var unitID = StaticValueManager.GetInstant().UnitTypes.Find(x => x.Code == mappingPallets.unit).ID;
-                var PackMasterEmptyPallets = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
-                    new SQLConditionCriteria[] {
-                new SQLConditionCriteria("SKUMaster_ID",Sku.ID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("UnitType_ID",unitID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
-                }, this.BuVO).FirstOrDefault();
-                if (PackMasterEmptyPallets == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Pack : " + mappingPallets.code + " Not Found.");
-
-                // var PackMasterEmptyPallets = StaticValueManager.GetInstant().SKUMasterEmptyPallets.FirstOrDefault();
-                var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
-                var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == PackMasterEmptyPallets.ObjectSize_ID);
-
-
-                StorageObjectCriteria packSto = new StorageObjectCriteria()
+                var getpackSto = new GetDocByQRCode().Execute(this.Logger, this.BuVO, new GetDocByQRCode.TReq() { qr = pstos });
+                req_ScanMappingSTO.processType = getpackSto.processType;
+                if(bstoID != null)
                 {
-                    parentID = idBaseSto,
-                    parentType = StorageObjectType.BASE,
-                    code = Sku.Code,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = PackMasterEmptyPallets.Name,
-                    qty = Convert.ToDecimal(mappingPallets.qty),
-                    skuID = PackMasterEmptyPallets.SKUMaster_ID,
-                    unitCode = unit.Code,
-                    unitID = unit.ID.Value,
-                    baseUnitCode = unit.Code,
-                    baseUnitID = unit.ID.Value,
-                    baseQty = Convert.ToDecimal(mappingPallets.qty),
-                    type = StorageObjectType.PACK,
-                    mstID = PackMasterEmptyPallets.ID.Value,
-                    options = mappingPallets.options,
-                    areaID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID.Value,
-                };
-
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                    req_ScanMappingSTO.bstoID = bstoID;
+                }
+                if(getpackSto.datas != null || getpackSto.datas.Count > 0)
+                {
+                    List<ScanMappingSTO.TReq.PackSto> packStos = new List<ScanMappingSTO.TReq.PackSto>();
+                    getpackSto.datas.ForEach(data => {
+                        packStos.Add(new ScanMappingSTO.TReq.PackSto() {
+                            pstoCode = data.pstoCode,
+                            batch = data.batch,
+                            lot = data.lot,
+                            orderNo = data.orderNo,
+                            itemNo = data.itemNo,
+                            refID = data.refID,
+                            ref1 = data.ref1,
+                            ref2 = data.ref2,
+                            ref3 = data.ref3,
+                            ref4 = data.ref4,
+                            forCustomerID = data.forCustomerID,
+                            cartonNo = data.cartonNo,
+                            options = data.options,
+                            addQty = data.addQty,
+                            unitTypeCode = data.unitTypeCode,
+                            packUnitTypeCode = data.packUnitTypeCode,
+                            expireDate = data.expireDate,
+                            productDate = data.productDate
+                        });
+                    });
+                    req_ScanMappingSTO.pstos = packStos;
+                    var newMapSto = new ScanMappingSTO().Execute(this.Logger, this.BuVO, req_ScanMappingSTO); ;
+                    newSto = newMapSto.bsto;
+                    bstoID = newMapSto.bsto.id.Value;
+                }
 
 
             });
             
-            newSto = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
-
+            //newSto = ADO.StorageObjectADO.GetInstant().Get(newMapSto.bsto.id.Value, StorageObjectType.BASE, false, true, BuVO);
 
             return newSto;
         }
         protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            List<amt_DocumentItem> res = null;// this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            List<amt_DocumentItem> res = null; 
             if (res == null)
             {
-                var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 ////DF Code
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, สร้างเอกสารเบิกpallet เปล่า, 
-                if (pack.TrueForAll(sto => sto.eventStatus == StorageObjectEventStatus.NEW))
+                if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
                 {
-                    var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                    if (pstoLists == null || pstoLists.Count() == 0)
+                    //var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                    if (packs == null || packs.Count() == 0)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
                     if (reqVO.ioType == IOType.OUTPUT)
                     {
                         //get Document
-                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
+                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
                             DocumentTypeID.PICKING, BuVO);
                         if (docItemLists == null || docItemLists.Count == 0)
                         {
@@ -224,56 +209,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else
                     {
-                        var _autodoc = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_AUTO_DOC);
-                        if (_autodoc == "true")
+                        //get Document
+                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
+                            DocumentTypeID.PUTAWAY, BuVO);
+                        if (docItemLists == null || docItemLists.Count == 0)
                         {
-                            docItems = this.ProcessReceiving(sto, reqVO);
+                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Document Item Not Found");
                         }
                         else
                         {
-                            pstoLists.ForEach(psto =>
-                            {
-                                var _docitem_id = ObjectUtil.QryStrGetValue(psto.options, OptionVOConst.OPT_DOCITEM_ID);
-                                if (!string.IsNullOrWhiteSpace(_docitem_id) || _docitem_id.Length > 0)
-                                {
-                                    var docItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(Convert.ToInt32(_docitem_id), BuVO);
-                                    if (docItem == null)
-                                        throw new AMWException(Logger, AMWExceptionCode.V1001, "Document of " + reqVO.baseCode + " Not Found.");
-
-                                    docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, docItem.ID.Value) };
-                                    AWMSEngine.ADO.DistoADO.GetInstant().Insert(docItem.DocItemStos, BuVO);
-                                    //docItems.Add(docItem);
-
-                                }
-                                else
-                                {
-                                  
-                                   throw new AMWException(Logger, AMWExceptionCode.V2001, "Option of DOCITEM_ID Not Found");
-                                }
-                            });
-
-
-                            //get Document
-                            var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(),
-                                DocumentTypeID.PUTAWAY, BuVO);
-
                             docItemLists.ForEach(di =>
                             {
                                 docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
                             });
-
                         }
                     }
 
                     if (docItems == null || docItems.Count == 0)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Put Away Document Not Found");
                 }
-                else if (pack.TrueForAll(sto => sto.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && sto.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS ))
+                else if (packs.TrueForAll(pack => pack.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && pack.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS ))
                 {
                     //ถ้าพาเลท สินค้า มีสถานะ RECEIVED,AUDITED,COUNTED,CONSOLIDATED,CANCELED จะput away by pass 
-                    var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
-                     
-                    packList.ForEach(pack =>
+                    //var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+
+                    packs.ForEach(pack =>
                     {
                         var disto = new amt_DocumentItemStorageObject
                         {
@@ -281,11 +241,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             DocumentItem_ID = null,
                             Sou_StorageObject_ID = pack.id.Value,
                             Des_StorageObject_ID = pack.id.Value,
-                            Quantity = 0,
-                            BaseQuantity = 0,
+                            Quantity = pack.qty,
+                            BaseQuantity = pack.baseQty,
                             UnitType_ID = pack.unitID,
                             BaseUnitType_ID = pack.baseUnitID,
-                            Status = EntityStatus.ACTIVE
+                            Status = EntityStatus.INACTIVE
                         };
 
                         AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
@@ -365,10 +325,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    if (sto.eventStatus == StorageObjectEventStatus.NEW)
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
-                        StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
-                        StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    packs.ForEach(pack => {
+                        if (pack.eventStatus == StorageObjectEventStatus.NEW)
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    });
+                    
                 }
 
                 if (docItem.Count > 0)
@@ -385,25 +347,49 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             else
                                 AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         });
+                        x.EventStatus = DocumentEventStatus.WORKING;
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                         
                     });
 
 
                     var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
                     docIDs.ForEach(x =>
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                        var docPA = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(x, BuVO);
+                        if(docPA.DocumentItems.Any(item => item.EventStatus == DocumentEventStatus.WORKING))
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
+
+                            var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPA.ParentDocument_ID.Value, this.BuVO);
+
+                            docPA.DocumentItems.ForEach(item => {
+                                if(item.EventStatus == DocumentEventStatus.WORKING)
+                                {
+                                    var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
+                                    grItem.EventStatus = DocumentEventStatus.WORKING;
+                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                }
+                            });
+
+                            ADO.DocumentADO.GetInstant().UpdateEventStatus(getGR.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        }
                     });
                 }
                 else
                 {
-                    var stoPack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-                    var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                        {
-                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
+                    var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    packs.ForEach(pack => {
+                        var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            {
+                            new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
-                        }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
+                            //new SQLConditionCriteria("DocumentItem_ID", null, SQLOperatorType.EQUALS),
+                            }, this.BuVO).Find(c=>c.DocumentItem_ID == null);
 
-                    ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                        ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                    });
+                    
                 }
 
                 return this.GenerateResponse(sto, queueTrx);
@@ -596,7 +582,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         PackMaster_ID = packMaster.ID.Value,
 
                         Quantity = psto.qty,
-                        UnitType_ID = baseUnitTypeConvt.newUnitType_ID,
+                        UnitType_ID = baseUnitTypeConvt.oldUnitType_ID,
                         BaseQuantity = baseQuantity,
                         BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
 

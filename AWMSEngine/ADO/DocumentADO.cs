@@ -160,11 +160,12 @@ namespace AWMSEngine.ADO
             param.Add("@itemNo", docItem.ItemNo);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
+            param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
-            param.Add("@auditStatus", docItem.AuditStatus);
-
+            param.Add("@incubationDay", docItem.IncubationDay);
+            //param.Add("@shelfLifeDate", docItem.ShelfLifeDate);
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
@@ -757,7 +758,6 @@ namespace AWMSEngine.ADO
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
             param.Add("@eventStatus", docItem.EventStatus);
-            param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));           
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@actualQty", docItem.ActualBaseQuantity);

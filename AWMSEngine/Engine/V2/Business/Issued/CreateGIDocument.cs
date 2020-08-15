@@ -19,6 +19,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string ref1;
             public string ref2;
             public string ref3;
+            public string ref4;
             public long? forCustomerID;
             public string forCustomerCode;
             public string batch;
@@ -72,13 +73,14 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 public string ref1;
                 public string ref2;
                 public string ref3;
+                public string ref4;
                 public string itemNo;
                 public string options;
                 public long? parentDocumentItem_ID;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-
+                public AuditStatus auditStatus;
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -176,6 +178,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
+                    ref4 = reqVO.ref4, 
                     options = reqVO.options,
                     docTypeId = DocumentTypeID.PICKING,
                     eventStatus = reqVO.eventStatus,
@@ -201,8 +204,10 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             ref3 = x.ref3,
+                            ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
+                            //auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

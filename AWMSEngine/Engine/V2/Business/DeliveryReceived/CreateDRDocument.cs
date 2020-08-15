@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public int auditStatus;
+
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -111,7 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
             long? Sou_Customer_ID = reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
                   string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
-            
+
             long? Sou_Supplier_ID =
                     reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
                     string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
@@ -137,7 +137,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             var desAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desAreaMasterCode);
-            
+
             var desWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
@@ -176,7 +176,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     desSupplierID = desSupplierModel == null ? null : desSupplierModel.ID,
                     desCustomerID = desCustomerModel == null ? null : desCustomerModel.ID,
-                   
+
 
                     desBranchID = desBranchModel == null ? null : desBranchModel.ID,
                     desWarehouseID = desWarehouseModel == null ? null : desWarehouseModel.ID,
@@ -213,13 +213,10 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
-                            ref3 = x.ref3,
-                            ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
                             baseUnitType = x.baseunitType,
-                            auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
