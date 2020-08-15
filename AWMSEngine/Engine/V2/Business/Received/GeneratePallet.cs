@@ -65,11 +65,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
             if (itemVol < reqVO.minVolume)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า minVolume");
 
-            //foreach(var it in reqVO.item)
-            //{
-            //    if(it.vol < reqVO.minVolume)
-            //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า ");
-            //}
+            foreach (var it in reqVO.item)
+            {
+                if (it.vol == 0 )
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item เท่ากับ 0 ");
+            }
 
 
             if (reqVO.mode == 1)
