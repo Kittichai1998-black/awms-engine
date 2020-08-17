@@ -155,6 +155,14 @@ namespace AWMSEngine.Engine.V2.Business
                     decimal? baseQuantity = baseUnitTypeConvt.newQty;
                     //var option = "";
                     //option = ObjectUtil.QryStrSetValue(getDocItem.Options, OptionVOConst.OPT_DOCITEM_ID, x.ID.ToString());
+                    DateTime? incubatedate = getDocItem.ProductionDate == null ? (DateTime?)null : getDocItem.IncubationDay != null ? 
+                        getDocItem.ProductionDate.Value.AddDays(Convert.ToDouble(getDocItem.IncubationDay) - 1) : (DateTime?)null;
+                    DateTime? shelflifedate = getDocItem.ExpireDate == null ? (DateTime?)null : getDocItem.ShelfLifeDay != null ?
+                        getDocItem.ExpireDate.Value.AddDays(Convert.ToDouble(-getDocItem.ShelfLifeDay) + 1) : (DateTime?)null;
+                    var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, getDoc.DocumentProcessType_ID);
+
+                    var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, getDoc.DocumentProcessType_ID);
+
                     StorageObjectCriteria packSto = new StorageObjectCriteria()
                     {
                         parentID = idBaseSto,
@@ -181,7 +189,12 @@ namespace AWMSEngine.Engine.V2.Business
                         mstID = getDocItem.PackMaster_ID,
                         //options = option,
                         areaID = reqVO.areaID,
-
+                        productDate = getDocItem.ProductionDate,
+                        expiryDate = getDocItem.ExpireDate,
+                        incubationDate = incubatedate,
+                        ShelfLifeDate = shelflifedate,
+                        AuditStatus = EnumUtil.GetValueEnum<AuditStatus>(auditstatus),
+                        IsHold = Convert.ToBoolean(Convert.ToInt16(holdstatus))
                     };
                     var newPackCheckSum = packSto.GetCheckSum();
                     packSto.refID = newPackCheckSum;

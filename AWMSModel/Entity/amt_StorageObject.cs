@@ -10,8 +10,11 @@ namespace AWMSModel.Entity
         public int? AreaMaster_ID;
         public int? AreaLocationMaster_ID;
         public long? ParentStorageObject_ID;
+        public long? TransportObject_ID;
         public int BaseMaster_ID;
         public int PackMaster_ID;
+        public int? SKUMaster_ID;
+        public int? For_Customer_ID;
         public string Code;
         public string Name;
         public StorageObjectType ObjectType;
@@ -26,7 +29,7 @@ namespace AWMSModel.Entity
         public string Ref3;
         public string Ref4;
         public int IsHold;
-        public int AuditStatus;
+        public AuditStatus AuditStatus;
         public int IsStock;
         public StorageObjectEventStatus EventStatus;
         public long BaseUnitType_ID;
@@ -41,6 +44,7 @@ namespace AWMSModel.Entity
         public DateTime? ProductDate;
         public DateTime? ExpiryDate;
         public DateTime? ShelfLiftDate;
+        public DateTime? IncubationDate;
 
     }
 }

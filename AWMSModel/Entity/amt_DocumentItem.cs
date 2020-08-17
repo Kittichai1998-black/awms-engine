@@ -22,8 +22,8 @@ namespace AWMSModel.Entity
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;
-        public long? ShelfLifeDate;
-        public long? IncubationDay;
+        public int? ShelfLifeDay;
+        public int? IncubationDay;
         public string OrderNo;
         public string CartonNo;
         public string Batch;

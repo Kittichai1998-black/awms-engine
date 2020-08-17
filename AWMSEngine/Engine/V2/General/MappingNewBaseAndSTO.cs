@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.General
                 StorageObjectCriteria baseSto = new StorageObjectCriteria()
                 {
                     code = reqVO.baseCode,
-                    eventStatus = StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.isEmptyPallet ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.NEW,
                     name = reqVO.isEmptyPallet ? "Empty Pallet" : "Pallet",
                     qty = 1,
                     unitCode = _unitType.Code,
@@ -95,7 +95,9 @@ namespace AWMSEngine.Engine.V2.General
                     weiKG = reqVO.weight,
                     lengthM = reqVO.length,
                     heightM = reqVO.height,
-                    widthM = reqVO.width
+                    widthM = reqVO.width,
+                    AuditStatus = AuditStatus.PASS,
+                    IsHold = false
                 };
 
                 if (reqVO.locationID != null)
@@ -105,9 +107,6 @@ namespace AWMSEngine.Engine.V2.General
                 }
                 var optionsSto = "";
                 if (reqVO.autoDoc)
-                    optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
-
-                if (reqVO.isEmptyPallet)
                     optionsSto = AMWUtil.Common.ObjectUtil.QryStrSetValue(baseSto.options, OptionVOConst.OPT_AUTO_DOC, "true");
 
                 baseSto.options = optionsSto;

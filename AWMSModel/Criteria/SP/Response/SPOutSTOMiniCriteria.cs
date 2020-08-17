@@ -47,6 +47,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string itemNo;
         public string cartonNo;
         public int? skuTypeID;
-        public DateTime shelfLifeDate;
+        public DateTime? shelfLifeDate;
+        public DateTime? incubationDate;
     }
 }

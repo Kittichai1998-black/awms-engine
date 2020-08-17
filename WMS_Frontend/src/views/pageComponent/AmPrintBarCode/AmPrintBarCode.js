@@ -125,7 +125,12 @@ const AmPrintBarCode = props => {
     setDataItemsSend(dataSend)
     Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
       // console.log(res.data)
-      setDataItemsSend(res.data)
+      if (res.data._result.status === 1) {
+        setDataItemsSend(res.data)
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+      }
+
     });
     return null;
   };

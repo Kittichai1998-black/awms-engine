@@ -748,6 +748,8 @@ namespace AWMSEngine.ADO
             param.Add("@baseUnitTypeID", docItem.BaseUnitType_ID);
             param.Add("@expireDate", docItem.ExpireDate);
             param.Add("@productionDate", docItem.ProductionDate);
+            param.Add("@incubationDay", docItem.IncubationDay);
+            param.Add("@shelfLifeDay", docItem.ShelfLifeDay);
             param.Add("@options", docItem.Options);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
