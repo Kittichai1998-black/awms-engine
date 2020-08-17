@@ -132,7 +132,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                                 newBaseQty = 0;
 
-                                if (ObjectUtil.QryStrGetValue(doc.Options, OptionVOConst.OPT_MAPPING_AUTO_DOC) == "true")
+                                if (ObjectUtil.QryStrGetValue(doc.Options, OptionVOConst.OPT_AUTO_DOC) == "true")
                                 {
                                     var _docItem = doc.DocumentItems.Find(x => x.ID == docItem.ID);
                                     _docItem.EventStatus = DocumentEventStatus.REMOVED;
@@ -147,7 +147,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.REMOVED, BuVO);
                                     }
 
-                                    if (ObjectUtil.QryStrGetValue(parentDoc.Options, OptionVOConst.OPT_MAPPING_AUTO_DOC) == "true")
+                                    if (ObjectUtil.QryStrGetValue(parentDoc.Options, OptionVOConst.OPT_AUTO_DOC) == "true")
                                     {
                                         var parentDocItem = parentDoc.DocumentItems.Find(x => x.ID == docItem.ParentDocumentItem_ID);
                                         parentDocItem.EventStatus = DocumentEventStatus.REMOVED;
@@ -230,17 +230,22 @@ namespace AWMSEngine.Engine.V2.Business.Document
             {
                 if (chkCreatePA == "true")
                 {
-                    newBaseQty = 0;
-                    var docItemsPA = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
-            {
-                new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
-
-            }, this.BuVO);
+                    /*newBaseQty = 0;
                     var packSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.packID, StorageObjectType.PACK, false, false, this.BuVO);
-                        var area = StaticValue.AreaMasters.Find(x => x.ID == psto.AreaMaster_ID);
-                        var warehouse = StaticValue.Warehouses.Find(x => x.ID == area.Warehouse_ID);
+                    var area = StaticValue.AreaMasters.Find(x => x.ID == psto.AreaMaster_ID);
+                    var warehouse = StaticValue.Warehouses.Find(x => x.ID == area.Warehouse_ID);
+                    var checkdocPA = DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]
+                    {
+                        new SQLConditionCriteria("Sou_Branch_ID", warehouse.Branch_ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Sou_Warehouse_ID", warehouse.ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("For_Customer_ID", psto.For_Customer_ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Options", OptionVOConst.OPT_AUTO_DOC+"=true", SQLOperatorType.LIKE),
+                        new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
+                        new SQLConditionCriteria("DocumentProcessType_ID", reqVO.docProcessType, SQLOperatorType.ISNOTNULL),
+
+                    }, this.BuVO);
+                   
                     amt_Document _docGR = new amt_Document();
                     if (chkCreateGR == "true")
                     {
@@ -281,7 +286,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             ActionTime = DateTime.Now,
                             DocumentItems = new List<amt_DocumentItem> { docItemGR },
                             EventStatus = DocumentEventStatus.NEW,
-                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_MAPPING_AUTO_DOC, "true")
+                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                     };
                         var docGRID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
                         _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
@@ -344,7 +349,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             ActionTime = DateTime.Now,
                             DocumentItems = new List<amt_DocumentItem> { docItemPA },
                             EventStatus = DocumentEventStatus.NEW,
-                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_MAPPING_AUTO_DOC, "true")
+                            Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                         };
                         var docPAID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
                         var docPAItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
@@ -357,7 +362,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             PA_Code = docPAItem.Code
                         });
                     
-
+    */
                 }
                 else
                 {
