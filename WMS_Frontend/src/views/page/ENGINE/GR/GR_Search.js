@@ -249,6 +249,7 @@ const DocumentSearchSTGT = props => {
                   <AmCreateDoc
                       apicreate={"/v2/CreateDRDocAPI/"}
                       apiRes={"/receive/detail?docID="}
+                      history={props.history}
                   ></AmCreateDoc>
               </Grid>
           </Grid>
