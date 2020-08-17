@@ -17,7 +17,7 @@ const GR_Detail = props => {
         if (header !== undefined) {
             setdocview(<DocView
                 openSOU={true}
-                openDES={true}
+                openDES={false}
                 optionDocItems={optionDocItems}
                 columnsDetailSOU={columnsDetailSOU}
                 columnsDetailDES={columnsDetailDES}

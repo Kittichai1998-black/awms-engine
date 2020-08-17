@@ -199,7 +199,7 @@ const DocumentSearchSTGT = props => {
           Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
       },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-      { Header: "Movement", accessor: "DocumentProcessTypeName", width: 200 },
+      { Header: "Process No.", accessor: "DocumentProcessTypeName", width: 200 },
       { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
       { Header: "Sou.Customer", accessor: "SouCustomerName", width: 150 },
       { Header: "Sou.Supplier", accessor: "SouSupplierName", width: 150 },
