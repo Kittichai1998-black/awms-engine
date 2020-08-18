@@ -702,6 +702,7 @@ const AmMappingPallet = props => {
             setFlagConfirm(true)
           }
         }
+        setDialog(false)
       } else {
         if (dataDoc !== undefined && dataDoc !== null) {
           var dataDocTmp = (dataDoc.datas = null);

@@ -15,6 +15,7 @@ function GenMapstosSelected(postdata, mapstosSelected) {
   mapstosSelected.forEach(element => {
     console.log(element)
     element.pstoCode = element.code
+    element.pstoID = element.id
     element.addQty = element.addQty
     element.unitTypeCode = element.unitCode
     element.packUnitTypeCode = element.baseUnitCode
