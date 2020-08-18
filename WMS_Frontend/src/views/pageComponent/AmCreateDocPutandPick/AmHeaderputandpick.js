@@ -21,6 +21,8 @@ import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import AmButton from '../../../components/AmButton'
 import { apicall, createQueryString } from "../../../components/function/CoreFunction";
+import moment from "moment";
+import "moment/locale/pt-br";
 import _ from "lodash";
 const Axios = new apicall()
 
@@ -130,6 +132,7 @@ const AmHeaderputandpick = (props) => {
     const DocItemsquery = useDocumentItemQuery(doc.docID, props.docItemQuery)
     const [dataSelect, setDataSelect] = useState([]);
     const [valueQtyDocItems, setValueQtyDocItems] = useState([]);
+    const [datadocItems, setdatadocItems] = useState([]);
 
 
     const columns = [
@@ -215,8 +218,13 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    console.log(res.data)
-                    doc.setdatadocItem(res.data.datas);
+                    datadocItems.push({
+                        ...res.data.datas[0],
+                        ExpireDate: res.data.datas[0].ExpireDate ? moment(res.data.datas[0].ExpireDate).format("DD/MM/YYYY") : null,
+                        ProductionDate: res.data.datas[0].ProductionDate ? moment(res.data.datas[0].ProductionDate).format("DD/MM/YYYY") : null,
+                    }
+                    )
+                    doc.setdatadocItem(datadocItems);
                     doc.setdialogItem(true)
                 } else {
                     getDocItemQuery(DocItemsquery)
@@ -231,8 +239,15 @@ const AmHeaderputandpick = (props) => {
         //ข้อมูลจาก amv_Docview
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
-                console.log(res.data.datas)
-                doc.setdatadocItem(res.data.datas);
+                datadocItems.push({
+                    ...res.data.datas[0],
+                    ExpireDates: res.data.datas[0].ExpireDate ? res.data.datas[0].ExpireDate : null,
+                    ProductionDates: res.data.datas[0].ProductionDate ? res.data.datas[0].ProductionDate : null,
+                    ExpireDate: res.data.datas[0].ExpireDate ? moment(res.data.datas[0].ExpireDate).format("DD/MM/YYYY") : null,
+                    ProductionDate: res.data.datas[0].ProductionDate ? moment(res.data.datas[0].ProductionDate).format("DD/MM/YYYY") : null,
+                }
+                )
+                doc.setdatadocItem(datadocItems);
                 doc.setdialogItem(true)
             } else {
 
