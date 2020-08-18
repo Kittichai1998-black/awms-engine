@@ -79,7 +79,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string cartonNo;
                 public bool isUnitTypeForPack = false;
                 public string itemNo;
-                public string auditStatus;
+                public AuditStatus auditStatus;
                 public string refID;
                 public string ref1;
                 public string ref2;

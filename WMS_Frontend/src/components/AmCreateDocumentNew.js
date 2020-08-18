@@ -12,6 +12,9 @@ import AmDropdown from '../components/AmDropdown'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmFindPopup from '../components/AmFindPopup'
 import AmInput from '../components/AmInput'
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
 import AmCheckBox from '../components/AmCheckBox'
 // import AmTable from '../components/table/AmTable'
 import { Clone } from '../components/function/CoreFunction'
@@ -120,19 +123,37 @@ const AmCreateDocument = (props) => {
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
         {
-            Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => {
-                setEditData(Clone(e.original));
-                setDialog(true);
-                setTitle("Edit")
-                setAddData(false);
-            }}>Edit</AmButton>,
+            Header: "", width: 30, Cell: (e) => <IconButton
+                size="small"
+                aria-label="info"
+                style={{ marginLeft: "3px" }}
+                onClick={() => {
+                    setEditData(Clone(e.original));
+                    setDialog(true);
+                    setTitle("Edit")
+                    setAddData(false);
+                }}
+            >
+                <EditIcon
+                    fontSize="small"
+                    style={{ color: "#f39c12" }}
+                />
+            </IconButton>
         },
         {
-            Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
-                () => {
-                    onHandleDelete(e.original.ID, e.original, e);
-                    //setReload({});
-                }}>Remove</AmButton>,
+            Header: "", width: 30, Cell: (e) =>
+                <IconButton
+                    size="small"
+                    aria-label="info"
+                    onClick={() => {
+                        onHandleDelete(e.original.ID, e.original, e);
+                    }}
+                    style={{ marginLeft: "3px" }}>
+                    <DeleteIcon
+                        fontSize="small"
+                        style={{ color: "#e74c3c" }} />
+                </IconButton>
+
         }
     ];
 
@@ -153,7 +174,7 @@ const AmCreateDocument = (props) => {
                 }
 
             }
-                return arr
+            return arr
         }, {})
     }, [props.headerCreate])
 
@@ -165,20 +186,20 @@ const AmCreateDocument = (props) => {
                 createDocumentData["souWarehouseID"] = null
             } else if (createDocumentData["souWarehouseID"] !== null) {
                 createDocumentData["desWarehouseID"] = null
-                createDocumentData["souWarehouseID"] = null          
+                createDocumentData["souWarehouseID"] = null
             } else if (createDocumentData["souCustomerID"] !== null) {
                 createDocumentData["souCustomerID"] = null
             } else if (createDocumentData["souSupplierID"] !== null) {
                 createDocumentData["souSupplierID"] = null
             } else if (createDocumentData["desSupplierID"] !== null) {
                 createDocumentData["desSupplierID"] = null
-            
+
             } else if (createDocumentData["desCustomerID"] !== null) {
                 createDocumentData["desCustomerID"] = null
             }
         }
         setcreateDocumentData(createDocumentData)
-    
+
     }, [processType])
 
 
@@ -280,21 +301,37 @@ const AmCreateDocument = (props) => {
             editData["ID"] = addDataID
         }
 
-        if (props.itemNo && addData) {
 
+        if (props.itemNo && addData) {
             if (addDataID === -1) {
-                let itemNos = props.defualItemNo 
+                let itemNos = props.defualItemNo
                 let itemn = itemNos.toString();
                 editData["itemNo"] = itemn
             } else {
-                let itemNos = (props.defualItemNo + ((-addDataID) - 1))
-                let itemn = itemNos.toString();
+                let ItemNoInt = parseInt(props.defualItemNo)
+                let itemNos = (ItemNoInt + (dataSource.length))
+                let itemn;
+                if (itemNos < 10) {
+                    itemn = ("000" + itemNos);
+                } else if (itemNos >= 10 || itemNos < 100) {
+                    itemn = ("00" + itemNos);
+                } else if (itemNos >= 100) {
+                    itemn = ("0" + itemNos);
+                }
                 editData["itemNo"] = itemn
             }
         }
 
         if (typeof data === "object" && data) {
-            editData[field] = data[field] ? data[field] : data.value
+            if (field === "auditstatus") {
+                editData[field] = data[field] ? data[field] : data.label
+            }
+
+            if (field === "unitType") {
+                editData[field] = data[field] ? data[field] : data.Code
+            } else {
+                editData[field] = data[field] ? data[field] : data.value
+            }
         }
         else {
             editData[field] = data
@@ -311,6 +348,7 @@ const AmCreateDocument = (props) => {
                     if (key === "packID") {
                         editData.packID_map_skuID = data.packID + "-" + data.skuID
                     }
+
                     editData[key] = data[key]
                 } else {
                     delete editData[key]
@@ -435,8 +473,6 @@ const AmCreateDocument = (props) => {
                     setEditData({})
                     setDialogItem(false)
                 }
-
-
             })
 
         }
@@ -455,7 +491,7 @@ const AmCreateDocument = (props) => {
                         return <div key={key}>
 
                             {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
-                                row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, i, rowError, row.required)}
+                                row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, i, rowError, row.required)}
 
                         </div>
                     }
@@ -465,7 +501,7 @@ const AmCreateDocument = (props) => {
     }
 
 
-    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, index, rowError, required) => {
+    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, key, datas, defaultValue, index, rowError, required) => {
         if (type === "input") {
             return (
                 <FormInline>
@@ -513,7 +549,7 @@ const AmCreateDocument = (props) => {
                                     error={rowError}
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
-                                    defaultValue={editData[accessor] ? editData[accessor] : ""}
+                                    defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                                     style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
@@ -534,7 +570,7 @@ const AmCreateDocument = (props) => {
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
-                            fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldDataKey={key}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
                             fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             width={width ? width : 300} //กำหนดความกว้างของช่อง input
@@ -542,10 +578,34 @@ const AmCreateDocument = (props) => {
                             // valueData={valueText[idddl]} //ค่า value ที่เลือก
                             queryApi={queryApi}
                             // data={dataUnit}
-                            // returnDefaultValue={true}
-                            defaultValue={editData[accessor] ? editData[accessor] : ""}
+                            returnDefaultValue={true}
+                            defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
+        }
+
+        else if (type === "dropdownvalue") {
+            return (
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <AmDropdown id="ddlTest" styleType="default"
+                            placeholder="Select Test"
+                            width={200}
+                            zIndex={2000}
+                            data={datas}
+                            fieldDataKey={key}
+                            autoDefaultValue={true}
+                            returnDefaultValue={true}
+                            //value={valueText.ddlTest.value}
+                            returnDefaultValue={true}
+                            defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
+                            ddlType={"normal"}
                         />
                     </InputDiv>
                 </FormInline>
@@ -603,6 +663,22 @@ const AmCreateDocument = (props) => {
                     </InputDiv>
                 </FormInline>
             )
+        } else if (type === "date") {
+            return (
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <AmDate
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
+                            TypeDate={"date"}
+                            defaultValue={true}
+                            onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
         } else if (type === "text") {
             return (<FormInline>
                 <LabelT style={LabelTStyle}>{Header} :</LabelT>
@@ -610,10 +686,10 @@ const AmCreateDocument = (props) => {
             </FormInline>
             )
         } else if (type === "itemNo") {
-            return  (<FormInline>
+            return (<FormInline>
                 <LabelT style={LabelTStyle}> Item No :</LabelT>
-                    <label>{editData[accessor] ? editData[accessor] : '-'}</label>
-                </FormInline> )
+                <label>{editData[accessor] ? editData[accessor] : '-'}</label>
+            </FormInline>)
         }
     }
 
@@ -742,8 +818,8 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getHeaderCreate = () => {       
-        return props.headerCreate.map((x, xindex) => {      
+    const getHeaderCreate = () => {
+        return props.headerCreate.map((x, xindex) => {
             return (
                 <Grid key={xindex} container>
                     {x.map((y, yindex) => {
@@ -807,17 +883,25 @@ const AmCreateDocument = (props) => {
             skuCode: null,
             quantity: null,
             unitType: null,
+            baseQuantity: null,
+            baseunitType: null,
             batch: null,
             lot: null,
             orderNo: null,
+            cartonNo: null,
+            itemNo: null,
+            auditStatus: null,
             refID: null,
             ref1: null,
             ref2: null,
+            ref3: null,
+            ref4: null,
             options: null,
+            parentDocumentItem_ID: null,
+            incubationDay: null,
             expireDate: null,
-            ItemNo : null,
             productionDate: null,
-            parentDocumentItemID: null,
+            shelfLifeDay: null,
             docItemStos: [],
             baseStos: []
         }
@@ -851,17 +935,19 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
-             return x
+                return x
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
-              return x
+                x.incubationDay = parseInt(x.incubationDay)
+                x.shelfLifeDay = parseInt(x.shelfLifeDay)
+                return x
             })
-        } 
+        }
 
         if (Object.keys(doc).length > countDoc) {
             //console.log(doc)
-             CreateDocuments(doc)
+            CreateDocuments(doc)
         }
     }
 
@@ -917,7 +1003,7 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {props.addList ? 
+                        {props.addList ?
                             BtnAddLists : null}
 
                         {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
