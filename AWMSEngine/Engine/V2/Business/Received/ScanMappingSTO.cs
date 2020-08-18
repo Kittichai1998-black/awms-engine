@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public decimal addQty;
                 public string unitTypeCode; // old unit 
                 public string packUnitTypeCode; 
-                public DateTime? expireDate;
+                public DateTime? expiryDate;
                 public DateTime? incubationDate;
                 public DateTime? productDate;
                 public DateTime? shelfLifeDate;
@@ -251,7 +251,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     //baseQty = baseQty,
                     baseUnitID = unitTypeConvt.newUnitType_ID,
                     productDate = psto.productDate,
-                    expiryDate = psto.expireDate,
+                    expiryDate = psto.expiryDate,
                     incubationDate = psto.incubationDate,
                     ShelfLifeDate = psto.shelfLifeDate,
                     //refID = psto.refID,
@@ -282,8 +282,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     
                     if (oldPsto != null)
                     {
-                        //if (oldPsto.refID == newPackCheckSum)
-                        //{
+                        if (oldPsto.refID == newPackCheckSum)
+                        {
                             //add qty
                             oldPsto.qty += unitTypeConvt.oldQty;
                             oldPsto.baseQty += unitTypeConvt.newQty;
@@ -296,14 +296,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                             if (oldPsto.parentID.HasValue)
                                 remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
-                        //}
-                        //else
-                        //{
-                            //new pack
+                        }
+                        else
+                        {
+                            ////new pack
                             //newPackSto.qty = unitTypeConvt.oldQty;
                             //newPackSto.baseQty = unitTypeConvt.newQty;
                             //resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
-                        //}
+                            throw new AMWException(Logger, AMWExceptionCode.V1001, "ข้อมูล RefID ไม่ตรงกัน");
+                        }
 
                     }
                     else
