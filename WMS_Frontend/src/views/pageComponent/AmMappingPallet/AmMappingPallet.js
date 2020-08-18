@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { withStyles } from "@material-ui/core/styles";
 import {
   apicall,
   createQueryString,
@@ -30,11 +29,23 @@ import styled from "styled-components";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import BoxIcon from "@material-ui/icons/Widgets";
-import ItemIcon from "@material-ui/icons/AddShoppingCart";
 import AmDropdown from '../../../components/AmDropdown'
-import { DataGenerateElePalletListDisplay } from "../AmMappingPallet/RanderEleListPalletDisplay ";
+import Switch from '@material-ui/core/Switch';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
+import TreeView from '@material-ui/lab/TreeView';
+import TreeItem from '@material-ui/lab/TreeItem';
+import Collapse from '@material-ui/core/Collapse';
+import { useSpring, animated } from 'react-spring/web.cjs';
+import EditIcon from '@material-ui/icons/Edit';
+import PropTypes from 'prop-types';
+import AmEditorTable from "../../../components/table/AmEditorTable";
+import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPallet/RanderEleDocDisplay";
+import { PlusSquare, MinusSquare } from "./IconTreeview";
+import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
+import { GenMapstosSelected, genDataManual } from "./genDataManual";
+import AmDatePicker from '../../../components/AmDate';
 const Axios = new apicall();
-
 const styles = theme => ({
   root: {
     // maxWidth: '100%',
@@ -125,6 +136,10 @@ const styles = theme => ({
     marginTop: 45
   }
 });
+const InputDiv = styled.div`
+
+`;
+
 const FormInline = styled.div`
   display: flex;
   flex-flow: row wrap;
@@ -163,56 +178,19 @@ const DivHidden = styled.div`
   overflow: hidden;
   height: 0;
 `;
-const StorageObjectViw = {
-  queryString: window.apipath + "/v2/SelectDataViwAPI/",
-  t: "r_StorageObject",
-  q: "",
-  f: "*",
-  g: "",
-  s: "[{'f':'ID','od':'desc'}]",
-  sk: 0,
-  l: 1,
-  all: ""
-};
-const WarehouseQuery = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "Warehouse",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
-  f: "ID as warehouseID,Name,Code",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  l: 100,
-  all: "",
-}
-const AreaMasterQuery = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "AreaMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 30}]',
-  f: "Name,Code,ID as areaID",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  l: 100,
-  all: "",
-}
-const DocumentProcessTypeQuery = {
-  queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "DocumentProcessType",
-  q: '[{ "f": "Status", "c":"=", "v": 1}]',
-  f: "ID as processType,Name,Code",
-  g: "",
-  s: "[{'f':'ID','od':'asc'}]",
-  sk: 0,
-  l: 100,
-  all: "",
-}
+const LabelHDD = styled.label`
+  font-weight: bold;
+  width: 120px;
+  paddingleft: 20px;
+`;
+
 
 const AmMappingPallet = props => {
   const { t } = useTranslation();
   const { classes } = props;
 
   const [valueInput, setValueInput] = useState({});
+  const [valueManual, setValueManual] = useState({});
 
   const [showDialog, setShowDialog] = useState(null);
   const [stateDialog, setStateDialog] = useState(false);
@@ -221,14 +199,14 @@ const AmMappingPallet = props => {
 
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
-  const [labelBarcode, setLabelBarcode] = useState(null);
-  const [isLoad, setIsLoad] = useState(false);
 
   const [flagConfirm, setFlagConfirm] = useState(false);
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
   const [warehouseID, setWarehouseID] = useState(1);
 
+  const [dialog, setDialog] = useState(false);
+  const [datasTreeView, setDatasTreeView] = useState([])
   const [dataPallet, setDataPallet] = useState();
   const [dataDoc, setDataDoc] = useState();
   const [areaLocationMasterQuery, setAreaLocationMasterQuery] = useState()
@@ -237,6 +215,65 @@ const AmMappingPallet = props => {
     setTypeDialog(type);
     setStateDialog(state);
   };
+  const [checkedAuto, setCheckedAuto] = useState(true);
+
+
+  function TransitionComponent(props) {
+    const style = useSpring({
+      from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
+      to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
+    });
+
+    return (
+      <animated.div style={style}>
+        <Collapse {...props} />
+      </animated.div>
+    );
+  }
+
+  function TransitionComponent(props) {
+    const style = useSpring({
+      from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
+      to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
+    });
+
+    return (
+      <animated.div style={style}>
+        <Collapse {...props} />
+      </animated.div>
+    );
+  }
+
+  TransitionComponent.propTypes = {
+    /**
+     * Show the component; triggers the enter or exit states
+     */
+    in: PropTypes.bool,
+  };
+  const StyledTreeItem = withStyles((theme) => ({
+
+    iconContainer: {
+      '& .close': {
+        opacity: 0.3,
+      },
+    },
+    group: {
+      marginLeft: 7,
+      paddingLeft: 18,
+      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+    },
+  }))((props) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
+
+  const useStyles = makeStyles({
+    root: {
+      height: 264,
+      flexGrow: 1,
+      maxWidth: 400,
+    },
+  });
+
+
+
   useEffect(() => {
     if (msgDialog && stateDialog && typeDialog) {
       setShowDialog(
@@ -270,17 +307,22 @@ const AmMappingPallet = props => {
         all: "",
       }
       setAreaLocationMasterQuery(AreaLocationMasterQuery)
+    } else if (fieldDataKey === "processType") {
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
     valueInput[fieldDataKey] = value;
 
 
   };
-
+  const onHandleChangeInputManual = (value, dataObject, inputID, fieldDataKey) => {
+    valueManual[fieldDataKey] = value;
+  };
   const onHandleChangeInputPalletCode = (keydata, value, obj, element, event) => {
     valueInput[keydata] = value;
     if (keydata === "PalletCode") {
-      setPalletCode(value);
       GetPalletSto(value);
+      setPalletCode(value);
+
     }
   };
   function getSteps() {
@@ -293,7 +335,7 @@ const AmMappingPallet = props => {
     return [
       { label: "Warehouse", value: null },
       { label: "DocProcessType", value: null },
-      { label: "Pallet", value:valueInput === undefined ? null : (valueInput.PalletCode === undefined ? null : valueInput.PalletCode) },
+      { label: "Pallet", value: valueInput !== undefined ? (valueInput.PalletCode === undefined ? null : valueInput.PalletCode) : null },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
@@ -319,10 +361,88 @@ const AmMappingPallet = props => {
             valueInput["areaID"] = res.data.datas[0].AreaMaster_ID
             valueInput["locaionID"] = res.data.datas[0].AreaLocationMaster_ID
           }
+          setActiveStep(prevActiveStep => prevActiveStep + 1);
         }
       });
     } else {
       alertDialogRenderer("Barcode Pallet must be value", "error", true);
+    }
+  };
+  const [expanded, setExpanded] = React.useState([]);
+  const [selected, setSelected] = React.useState([]);
+
+
+  const handleSelect = (event, nodeIds) => {
+    //setSelected(nodeIds);
+
+    if (nodeIds !== "1") {
+      setSelected(nodeIds)
+      setDialog(true)
+
+    }
+  };
+  const handleChange = (event) => {
+    setCheckedAuto(event.target.checked)
+  }
+  const FuncSetEleManual = (x) => {
+    if (x.type === "input") {
+      return (
+        <FormInline>
+          {" "}
+          <LabelH1>{x.name} : </LabelH1>
+          <InputDiv>
+            <AmInput
+              required={x.required}
+              id={x.field}
+              required={x.required}
+              validate={true}
+              style={{ width: "200px", margin: "0px" }}
+              placeholder={x.placeholder}
+              type={"input"}
+              defaultValue={valueManual[x.field] ? valueManual[x.field] : ""}
+              onChange={(value, dataObject, inputID, fieldDataKey) =>
+                onHandleChangeInputManual(value, dataObject, inputID, x.field)}
+            />
+          </InputDiv>
+        </FormInline>
+      );
+    } else if (x.type === "dropdown") {
+      return (
+        <FormInline>
+          {" "}
+          <LabelH1>{x.name} : </LabelH1>
+          <AmDropdown
+            required={x.required}
+            id={x.field}
+            disabled={x.disable}
+            placeholder={x.placeholder}
+            fieldDataKey={"Code"}
+            fieldLabel={x.fieldLabel}
+            labelPattern=" : "
+            width={200}
+            ddlMinWidth={200}
+            valueData={valueInput[x.field]}
+            queryApi={x.dataDropDown}
+            onChange={(value, dataObject, inputID, fieldDataKey) =>
+              onHandleChangeInputManual(value, dataObject, inputID, x.field)}
+            ddlType={x.typeDropdow}
+          />
+        </FormInline>
+      );
+    } else if (x.type === "datetime") {
+      return <FormInline>
+        {" "}
+        <LabelH1>{x.name} : </LabelH1>
+        <AmDatePicker
+          style={{ display: "inline-block" }}
+          onBlur={(e) => {
+            if (e !== undefined && e !== null)
+              onHandleChangeInputManual(e.fieldDataObject, null, null, x.field)
+          }}
+          TypeDate={"date"} fieldID="dateFrom"
+        />
+
+      </FormInline>
     }
   };
   function getStepContent(step) {
@@ -336,7 +456,7 @@ const AmMappingPallet = props => {
               fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
               labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
               ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-              queryApi={WarehouseQuery}
+              queryApi={WarehouseQuery()}
               defaultValue={1}
               onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
               ddlType={"search"} //รูปแบบ Dropdown 
@@ -351,7 +471,7 @@ const AmMappingPallet = props => {
           fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
           labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด                        
           ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-          queryApi={DocumentProcessTypeQuery}
+          queryApi={DocumentProcessTypeQuery()}
           onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
           ddlType={"search"} //รูปแบบ Dropdown 
         />
@@ -378,21 +498,22 @@ const AmMappingPallet = props => {
         />
       case 3:
         var dataLoc = null;
-        if (valueInput.areaID != undefined) {
-          const AreaLocationMasterQuery = {
-            queryString: window.apipath + "/v2/SelectDataMstAPI/",
-            t: "AreaLocationMaster",
-            q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ObjectSize_ID", "c":"=", "v": 1},{ "f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
-            f: "Code,ID as locaionID,Name",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
+        if (valueInput !== undefined) {
+          if (valueInput.areaID !== undefined) {
+            const AreaLocationMasterQuery = {
+              queryString: window.apipath + "/v2/SelectDataMstAPI/",
+              t: "AreaLocationMaster",
+              q: '[{"f": "Status", "c":"=", "v": 1},{"f": "ObjectSize_ID", "c":"=", "v": 1},{"f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
+              f: "Code,ID as locaionID,Name",
+              g: "",
+              s: "[{'f':'ID','od':'asc'}]",
+              sk: 0,
+              l: 100,
+              all: "",
+            }
+            dataLoc = AreaLocationMasterQuery
           }
-          dataLoc = AreaLocationMasterQuery
         }
-
         return <div><FormInline>
           <LabelH1>Area :</LabelH1><AmDropdown
             placeholder="Select"
@@ -400,8 +521,8 @@ const AmMappingPallet = props => {
             fieldLabel={["Name"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
             ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-            queryApi={AreaMasterQuery}
-            defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
+            queryApi={AreaMasterQuery()}
+            defaultValue={valueInput !== undefined ? valueInput.areaID === undefined ? null : valueInput.areaID : null}
             onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
             ddlType={"search"} //รูปแบบ Dropdown 
           />
@@ -415,137 +536,125 @@ const AmMappingPallet = props => {
               labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
               ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
               queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
-              defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+              defaultValue={valueInput !== undefined ? valueInput.locaionID === undefined ? null : valueInput.locaionID : null}
               onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
               ddlType={"search"} //รูปแบบ Dropdown 
             />
           </FormInline></div>
       case 4:
-        if (dataPallet !== undefined && dataPallet !== null) {
-          return (<div>
-            <Card>
+        return (<div>
+          {dataPallet !== undefined && dataPallet !== null ? (<TreeView
+            className={classes.root}
+            defaultExpanded={['1']}
+            defaultCollapseIcon={<MinusSquare />}
+            defaultExpandIcon={<PlusSquare />}
+            defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
+            // selected={selected}
+            onNodeSelect={handleSelect}
+          >
+
+            <StyledTreeItem nodeId="1" label={dataPallet.bsto.code}>
+              {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
+                return (
+                  <div key={index} syle={{ marginLeft: "30px" }} >
+                    <StyledTreeItem
+                      nodeId={x.id}
+                      label={
+                        x.code + " | " +
+                        x.baseQty + " " +
+                        x.unitCode + " | " +
+                        (x.lot === null ? "" : x.lot)}
+                    />
+                  </div>
+                );
+              })}
+
+            </StyledTreeItem>
+          </TreeView>) :
+            (valueInput.palletCode !== undefined ? <TreeView
+              className={classes.root}
+              defaultExpanded={['1']}
+              defaultCollapseIcon={<MinusSquare />}
+              defaultExpandIcon={<PlusSquare />}
+              defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
+              // selected={selected}
+              onNodeSelect={handleSelect}
+            >
+              <StyledTreeItem nodeId="1" label={valueInput.palletCode}>
+              </StyledTreeItem>
+            </TreeView> : null)}
+
+          <FormInline>
+            <Switch
+              checked={checkedAuto}
+              onChange={handleChange}
+              color="primary"
+              name="checkedAuto"
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
+            <LabelH1>{"Scan barcode"}</LabelH1>
+          </FormInline>
+
+          {checkedAuto === true ? <Card>
+            <CardContent>
+              <div>
+                <AmInput
+                  id={"barcode"}
+                  placeholder="barcode"
+                  type="input"
+                  style={{ width: "100%" }}
+                  onChange={(value, obj, element, event) =>
+                    onHandleChangeInput(value, null, "barcode", null, event)
+                  }
+                  onBlur={(e) => {
+                    if (e !== undefined && e !== null)
+                      onHandleChangeInputPalletCode("barcode", e, null, null, null)
+                  }}
+                  onKeyPress={(value, obj, element, event) => {
+                    if (event.key === "Enter") {
+                      onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                    }
+
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card> : <Card>
               <CardContent>
                 <div>
-                  <FormInline>
-                    {/* <LabelH>Pallet:</LabelH> */}
-                    <BoxIcon style={{ color: "#795548" }} />{" "}
-                    {dataPallet.bsto.code}
-                  </FormInline>
-                  {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
+                  {props.columnsManual === null ? null : props.columnsManual.map((x, index) => {
                     return (
                       <div key={index} syle={{ marginLeft: "30px" }} >
-                        <FormInline >
-                          <LabelH style={{ marginLeft: "10px" }}><ItemIcon /></LabelH><LabelHText>{x.code}</LabelHText>
-                          <LabelH style={{ marginLeft: "5px" }}>Qty : </LabelH><LabelHText>{x.baseQty} {x.unitCode}</LabelHText>
-                          <LabelH style={{ marginLeft: "5px" }}>Lot  : </LabelH><LabelHText>{x.lot}</LabelHText>
-                        </FormInline>
+                        {FuncSetEleManual(x)}
                       </div>
                     );
                   })}
                 </div>
               </CardContent>
-            </Card>
-            <AmInput
-              id={"barcode"}
-              placeholder="barcode"
-              type="input"
-              style={{ width: "100%" }}
-              onChange={(value, obj, element, event) =>
-                onHandleChangeInput(value, null, "barcode", null, event)
-              }
-              onBlur={(e) => {
-                if (e !== undefined && e !== null)
-                  onHandleChangeInputPalletCode("barcode", e, null, null, null)
-              }}
-              onKeyPress={(value, obj, element, event) => {
-                if (event.key === "Enter") {
-                  onHandleChangeInputPalletCode("barcode", value, obj, element, event)
-                }
+            </Card>}
 
-              }}
-            /></div>)
-        } else {
-          if (valueInput.palletCode !== undefined) {
-            return (<div>
-              <Card>
-                <CardContent>
-                  <div>
-                    <FormInline>
-                      {/* <LabelH>Pallet:</LabelH> */}
-                      <BoxIcon style={{ color: "#795548" }} />{" "}
-                      {valueInput.palletCode}
-                    </FormInline>
+        </div>)
 
-                  </div>
-                </CardContent>
-              </Card>
-              <AmInput
-                id={"barcode"}
-                placeholder="barcode"
-                type="input"
-                style={{ width: "100%" }}
-                onChange={(value, obj, element, event) =>
-                  onHandleChangeInput(value, null, "barcode", null, event)
-                }
-                onBlur={(e) => {
-                  if (e !== undefined && e !== null)
-                    onHandleChangeInputPalletCode("barcode", e, null, null, null)
-                }}
-                onKeyPress={(value, obj, element, event) => {
-                  if (event.key === "Enter") {
-                    onHandleChangeInputPalletCode("barcode", value, obj, element, event)
-                  }
-
-                }}
-              /></div>)
-          }
-        }
 
       case 5:
-        //return dataShow;
-        console.log(dataDoc)
-        if (dataDoc !== undefined && dataDoc !== null) {
+        if (checkedAuto) {
+          if (dataDoc !== undefined && dataDoc !== null) {
+            return (<div>
+              {DataGenerateEleDocDisplay(dataDoc)}
+            </div>)
+          }
+        } else {
           return (<div>
-            <Card>
-              <CardContent>
-                <div>
-                  <FormInline>
-                    <LabelH2>GR Doc :</LabelH2>
-                    {dataDoc.grCode}
-                  </FormInline>
-                  <FormInline>
-                    <LabelH2>PA Doc :</LabelH2>
-                    {dataDoc.putawayCode}
-                  </FormInline>
-                  {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
-                    return (
-                      <div key={index}>
-                        <FormInline>
-                          <LabelH2>Item :</LabelH2>
-                          {x.pstoCode}
-                        </FormInline>
-                        <FormInline>
-                          <LabelH2>Lot :</LabelH2>
-                          {x.lot}
-                        </FormInline>
-                        <FormInline>
-                          <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
-
-                        </FormInline>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            {DataGenerateEleManaulDisplay(valueManual, props.columnsManual)}
           </div>)
         }
+
 
       default:
         return "Unknown step";
     }
   }
-  function getData(type) {
+  function getData(type, edit) {
     let postdata = {
       processType: valueInput.processType,
       bstoCode: valueInput.PalletCode,
@@ -554,19 +663,31 @@ const AmMappingPallet = props => {
       locationID: null,
       pstos: []
     };
-    console.log(dataDoc)
-    if (dataDoc !== undefined && dataDoc !== null) {
-
-      dataDoc.datas.forEach(element => {
-        postdata.pstos.push(element)
-      });
+    if (edit === "edit") {
+      var mapstosSelected = dataPallet.bsto.mapstos.filter(x => x.id === selected)
+      if (mapstosSelected !== undefined && mapstosSelected !== null) {
+        postdata = GenMapstosSelected(postdata, mapstosSelected)
+      }
+    } else {
+      if (checkedAuto) {
+        if (dataDoc !== undefined && dataDoc !== null) {
+          dataDoc.datas.forEach(element => {
+            postdata.pstos.push(element)
+          });
+        }
+      } else {
+        if (activeStep !== 3) {
+          postdata = genDataManual(postdata, valueManual, props.columnsManual)
+          props.columnsManual.forEach(x => {
+            valueManual[x.field] = null
+          })
+        }
+      }
 
     }
-    console.log(postdata)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
-
           setDataPallet(res.data)
           if (type === "confirm") {
             alertDialogRenderer("Success", "success", true);
@@ -579,11 +700,11 @@ const AmMappingPallet = props => {
           var dataDocTmp = (dataDoc.datas = null);
           setDataDoc(dataDocTmp)
         }
-
         alertDialogRenderer(res.data._result.message, "error", true);
       }
     })
   }
+
   function getDataDocByPallet() {
     Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${valueInput.barcode}`).then(res => {
       if (res.data._result.status === 1) {
@@ -597,8 +718,10 @@ const AmMappingPallet = props => {
   const handleNext = index => {
     if (index === 0) {
       setFlagConfirm(false)
-      if (valueInput.warehouseID === undefined)
-        valueInput.warehouseID = warehouseID
+
+      if (valueInput["warehouseID"] === undefined)
+        valueInput["warehouseID"] = warehouseID
+
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     } else if (index === 1) {
       setFlagConfirm(false)
@@ -619,6 +742,7 @@ const AmMappingPallet = props => {
 
     } else if (index === 3) {
       setFlagConfirm(false)
+      setCheckedAuto(true)
       if (valueInput.areaID) {
         getData()
         setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -633,24 +757,96 @@ const AmMappingPallet = props => {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
       }
       else {
-        alertDialogRenderer("Barcode must be value", "error", true);
+        if (checkedAuto) {
+          alertDialogRenderer("Barcode must be value", "error", true);
+        } else {
+          //getData()
+
+          setActiveStep(prevActiveStep => prevActiveStep + 1);
+        }
+
       }
 
     }
   };
 
   function handleReset() {
+
+    valueInput.warehouseID = null
+    valueInput.processType = null
+    valueInput.areaID = null
+    valueInput.PalletCode = null
+    valueInput.AreaLocationMaster_ID = null
     setActiveStep(0);
-    setValueInput({});
+    // setValueInput({});
+    // setValueManual({});
     setFlagConfirm(false)
-    setValueInput()
+    setCheckedAuto(true)
+    //setValueInput()
   }
   function handleBack() {
     setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
+  const RanderEle = () => {
+    if (dataPallet) {
+      const columns = props.columnsEdit
+      return columns.map(y => {
+        return {
+          component: (data, cols, key) => {
+            {
+              var mapstosSelected = dataPallet.bsto.mapstos.filter(x => x.id === selected)
+              return mapstosSelected === null ? null : mapstosSelected.map((x, index) => {
+                return (
+                  <div key={index} syle={{ marginLeft: "30px" }} >
+                    <FormInline>
+                      <LabelH2>{y.name} :</LabelH2>
+                      <AmInput
+                        id={y.field}
+                        style={{ width: "150px", margin: "0px" }}
+                        type="input"
+                        disabled={y.disabled}
+                        defaultValue={x ? x[y.field] : 0}
+                        onKeyPress={(value, obj, element, event) => {
+                          if (event.key === "Enter") {
+                            onHandleChangeInputPalletCode("editQty", value, obj, element, event)
+                          }
+
+                        }}
+                        onChange={(value, obj, element, event) =>
+                          onHandleChangeInput(value, null, "editQty", null, event)
+                        }
+                      />
+                    </FormInline>
+
+                  </div >
+                );
+              })
+            }
+
+          }
+        };
+      });
+
+    }
+  };
+  const onHandledataConfirm = (status, rowdata) => {
+    if (status) {
+      getData(null, "edit")
+    } else {
+      setDialog(false)
+    }
+
+  }
   return (
     <div className={classes.root}>
+      <AmEditorTable
+        open={dialog}
+        onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
+        titleText={"Edit"}
+        data={dataPallet !== undefined ? dataPallet.bsto : []}
+        columns={RanderEle()}
+      />
       {stateDialog ? (showDialog ? showDialog : null) : null}
       <Paper className={classes.paperContainer}>
         <Stepper
@@ -725,7 +921,6 @@ const AmMappingPallet = props => {
         </Stepper>
       </Paper>
       <br />
-      <DivHidden>{labelBarcode ? labelBarcode : null}</DivHidden>
     </div>
   );
 };

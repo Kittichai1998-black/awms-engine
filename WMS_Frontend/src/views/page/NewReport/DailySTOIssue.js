@@ -68,7 +68,7 @@ const DailySTOIssue = (props) => {
 
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "MovementType",
+        t: "DocumentProcessType",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
@@ -91,7 +91,7 @@ const DailySTOIssue = (props) => {
         { Header: 'Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
         {
-            Header: 'Doc.Process', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
                 fieldLabel: ["Name"],

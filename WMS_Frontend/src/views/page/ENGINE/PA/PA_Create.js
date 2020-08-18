@@ -133,7 +133,7 @@ const Create_GR_DR = props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PalletSto",
         q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝ '[{ "f": "Status", "c":"<", "v": 2}]'
         f:
             "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
         g: "",
@@ -150,7 +150,7 @@ const Create_GR_DR = props => {
         q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{'f':'ID','od':'dsc'}]",
         sk: 0,
         l: 100,
         all: ""
@@ -172,7 +172,7 @@ const Create_GR_DR = props => {
 
 
     const columnEdit = [
-        { Header: "ItemNo", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
+        { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
         { Header: "Item Code", accessor: "SKUItems", type: "text"},
         //{ Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
         { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
@@ -181,7 +181,7 @@ const Create_GR_DR = props => {
     ];
 
     const columnEditItem = [
-        { Header: "ItemNo", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
         { Header: "Lot",  accessor: "Lot",codeTranslate: "Lot" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
@@ -192,7 +192,7 @@ const Create_GR_DR = props => {
     const columnEditItemSet = [
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "ItemNo", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
@@ -211,8 +211,8 @@ const Create_GR_DR = props => {
         { Header: "Unit", accessor: "UnitType_Code", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateGRDocAPI/"; //API สร้าง Doc
-    const apiRes = "/putaway/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apicreate = "/v2/CreateGRDocAPI/"; //API ๏ฟฝ๏ฟฝ๏ฟฝาง Doc
+    const apiRes = "/putaway/detail?docID="; //path หน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยด ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝิด
 
     return <div>
         {table}</div>;

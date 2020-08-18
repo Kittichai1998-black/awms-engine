@@ -79,72 +79,47 @@ const CurrentInventory = (props) => {
         },
         { Header: 'Unit', accessor: 'baseUnitType', filterable: false, width: 70, sortable: false },
         {
-            Header: 'New', accessor: 'baseQty_evt10', width: 85, sortable: false,
+            Header: 'New', accessor: 'baseQty_evt100', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'Receiving', accessor: 'baseQty_evt11', width: 85, sortable: false,
+            Header: 'Receiving', accessor: 'baseQty_evt101', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'Received', accessor: 'baseQty_evt12', width: 85, sortable: false,
+            Header: 'Received', accessor: 'baseQty_evt102', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'QC', accessor: 'baseQty_evt98', width: 85, sortable: false,
+            Header: 'Counting', accessor: 'baseQty_evt105', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'Return', accessor: 'baseQty_evt96', width: 85, sortable: false,
+            Header: 'Counted', accessor: 'baseQty_evt106', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'Patial', accessor: 'baseQty_evt97', width: 85, sortable: false,
+            Header: 'Picking', accessor: 'baseQty_evt153', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
         {
-            Header: 'Counting', accessor: 'baseQty_evt13', width: 85, sortable: false,
+            Header: 'Picked', accessor: 'baseQty_evt154', width: 85, sortable: false,
             Footer: true,
             filterable: false,
             "Cell": (e) => comma(e.value.toString()),
         },
-        {
-            Header: 'Counted', accessor: 'baseQty_evt14', width: 85, sortable: false,
-            Footer: true,
-            filterable: false,
-            "Cell": (e) => comma(e.value.toString()),
-        },
-        {
-            Header: 'Picking', accessor: 'baseQty_evt17', width: 85, sortable: false,
-            Footer: true,
-            filterable: false,
-            "Cell": (e) => comma(e.value.toString()),
-        },
-        {
-            Header: 'Picked', accessor: 'baseQty_evt18', width: 85, sortable: false,
-            Footer: true,
-            filterable: false,
-            "Cell": (e) => comma(e.value.toString()),
-        },
-        {
-            Header: 'Hold', accessor: 'baseQty_evt99', width: 85, sortable: false,
-            Footer: true,
-            filterable: false,
-            "Cell": (e) => comma(e.value.toString()),
-        }
-
     ];
 
     const comma = (value) => {

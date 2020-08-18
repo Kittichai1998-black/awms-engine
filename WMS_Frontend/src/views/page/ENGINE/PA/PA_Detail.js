@@ -32,8 +32,8 @@ const PA_Detail = props => {
                 buttonBack={true}
                 linkBack={"/putaway/search"}
                 history={props.history}
-                useAddPalletMapSTO={true}
-                addPalletMapSTO={addPalletMapSTO}
+                // useAddPalletMapSTO={true}
+                // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
             >
@@ -65,7 +65,7 @@ const PA_Detail = props => {
                 { label: "Document Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "DocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [

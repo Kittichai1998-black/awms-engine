@@ -84,7 +84,7 @@ const DailySTOReceive = (props) => {
         { Header: 'Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
         {
-            Header: 'Doc.Process', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
                 fieldLabel: ["Name"],

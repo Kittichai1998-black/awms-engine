@@ -147,7 +147,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                     souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-
+                     docTypeId = DocumentTypeID.PUTAWAY,
                     desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                     desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                     desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
@@ -160,7 +160,6 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref3 = reqVO.ref3,
                     ref4 = reqVO.ref4,
                     options = reqVO.options,
-                    docTypeId = DocumentTypeID.PUTAWAY,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
@@ -185,7 +184,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ref3 = x.ref3,
                             refID = x.refID,
                             itemNo = x.itemNo,
-                            auditStatus = x.auditStatus,
+                            //auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

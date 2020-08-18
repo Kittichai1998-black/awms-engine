@@ -7,6 +7,7 @@ import {
 import AmRedirectLog from "../../../components/AmRedirectLog";
 import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { Hold } from "../../../components/Models/Hold";
+import { AuditStatus } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
@@ -52,6 +53,20 @@ const StorageObject = props => {
       Cell: e => getIsHold(e.original.IsHold)
     },
     {
+      Header: "AuditStatus",
+      accessor: "AuditStatus",
+      width: 50,
+      sortable: false,
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: AuditStatus,
+        typeDropDown: "normal",
+        widthDD: 120,
+      },
+      Cell: e => getIsAuditStatus(e.original.AuditStatus)
+    },
+    {
       Header: "Pallet",
       accessor: "Pallet",
       width: 130,
@@ -68,7 +83,7 @@ const StorageObject = props => {
       fixWidth: 200,
 
     },
-    { Header: "Project", accessor: "Project", width: 100 },
+    // { Header: "Project", accessor: "Project", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
@@ -102,7 +117,19 @@ const StorageObject = props => {
       Cell: e => getRedirectLog(e.original)
     }
   ];
+  const getIsAuditStatus = value => {
+    console.log(value)
+    if (value === 0) {
+      return "QUARANTINE"
+    } else if (value === 1) {
+      return "PASS"
+    } else if (value === 2) {
+      return "NOTPASS"
+    } else if (value === 9) {
+      return "HOLD"
+    }
 
+  }
   const getOptions = value => {
     var qryStr = queryString.parse(value);
     return qryStr["remark"]

@@ -207,7 +207,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                             ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
-                            auditStatus = x.auditStatus,
+                            //auditStatus = x.auditStatus,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

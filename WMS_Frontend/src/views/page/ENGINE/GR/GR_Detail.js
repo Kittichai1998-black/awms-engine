@@ -17,7 +17,7 @@ const GR_Detail = props => {
         if (header !== undefined) {
             setdocview(<DocView
                 openSOU={true}
-                openDES={true}
+                openDES={false}
                 optionDocItems={optionDocItems}
                 columnsDetailSOU={columnsDetailSOU}
                 columnsDetailDES={columnsDetailDES}
@@ -59,7 +59,7 @@ const GR_Detail = props => {
                 { label: "Document Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "DocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [

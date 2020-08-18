@@ -669,14 +669,13 @@ const DocumentView = props => {
 
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable selection={"checkbox"}
-          selectionData={(data) => {
-            setSelection(data);
+              <AmTable
+                  selection={"checkbox"}
+                 selectionData={(data) => {
+                  setSelection(data);
           }} dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
-
-      <br />
-
+          <br />
 
       {props.useScanBarcode && eventStatus === 10 ?
         <AmButton className="float-right" styleType="info"

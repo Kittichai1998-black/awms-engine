@@ -35,7 +35,7 @@ const DocumentSearchSTGT = props => {
 
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "MovementType",
+    t: "DocumentProcessType",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "Name AS value,Name AS label",
     g: "",
@@ -199,7 +199,7 @@ const DocumentSearchSTGT = props => {
           Cell: dataRow => getStatusCode(dataRow.value, dataRow.original)
       },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-      { Header: "Movement", accessor: "DocumentProcessTypeName", width: 200 },
+      { Header: "Process No.", accessor: "DocumentProcessTypeName", width: 200 },
       { Header: "Sou. Warehouse", accessor: "SouWarehouseName", width: 150 },
       { Header: "Sou.Customer", accessor: "SouCustomerName", width: 150 },
       { Header: "Sou.Supplier", accessor: "SouSupplierName", width: 150 },
@@ -246,7 +246,11 @@ const DocumentSearchSTGT = props => {
               <Grid item xs container direction="column">
               </Grid>
               <Grid item>
-                      <AmCreateDoc></AmCreateDoc>
+                  <AmCreateDoc
+                      apicreate={"/v2/CreateDRDocAPI/"}
+                      apiRes={"/receive/detail?docID="}
+                      history={props.history}
+                  ></AmCreateDoc>
               </Grid>
           </Grid>
       <AmDocumentSearch

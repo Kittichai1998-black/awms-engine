@@ -69,8 +69,5 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_WAREHOUSE_T = "warehouse_t";
         public const string OPT_ITEM_GROUP = "item_group";
         public const string OPT_INVENTORY_UNIT = "inventory_unit";
-        public const string OPT_MAPPING_AUTO_DOC = "auto_doc";
-
-
     }
 }
