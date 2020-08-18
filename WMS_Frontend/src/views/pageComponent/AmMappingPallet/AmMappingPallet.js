@@ -319,6 +319,8 @@ const AmMappingPallet = props => {
   };
   const onHandleChangeInputPalletCode = (keydata, value, obj, element, event) => {
     valueInput[keydata] = value;
+    console.log(keydata)
+    console.log(value)
     if (keydata === "PalletCode") {
       GetPalletSto(value);
       setPalletCode(value);
@@ -665,7 +667,12 @@ const AmMappingPallet = props => {
     };
     if (edit === "edit") {
       var mapstosSelected = dataPallet.bsto.mapstos.filter(x => x.id === selected)
+
+
       if (mapstosSelected !== undefined && mapstosSelected !== null) {
+        console.log(valueInput.editQty)
+        console.log(mapstosSelected)
+        mapstosSelected[0].addQty = valueInput.editQty
         postdata = GenMapstosSelected(postdata, mapstosSelected)
       }
     } else {
@@ -695,6 +702,7 @@ const AmMappingPallet = props => {
             setFlagConfirm(true)
           }
         }
+        setDialog(false)
       } else {
         if (dataDoc !== undefined && dataDoc !== null) {
           var dataDocTmp = (dataDoc.datas = null);
@@ -807,7 +815,13 @@ const AmMappingPallet = props => {
                         type="input"
                         disabled={y.disabled}
                         defaultValue={x ? x[y.field] : 0}
+                        onBlur={(e) => {
+                          console.log("dsfusygfe")
+                          if (e !== undefined && e !== null)
+                            onHandleChangeInputPalletCode("editQty", e, null, null, null)
+                        }}
                         onKeyPress={(value, obj, element, event) => {
+                          console.log("dsfusygfe")
                           if (event.key === "Enter") {
                             onHandleChangeInputPalletCode("editQty", value, obj, element, event)
                           }

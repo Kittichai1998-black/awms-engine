@@ -118,7 +118,6 @@ const StorageObject = props => {
     }
   ];
   const getIsAuditStatus = value => {
-    console.log(value)
     if (value === 0) {
       return "QUARANTINE"
     } else if (value === 1) {
@@ -135,7 +134,6 @@ const StorageObject = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-    console.log(value)
     if (value !== undefined) {
       return value === false ? <div style={{ textAlign: "center" }}>
         <Tooltip title="NONE" >
