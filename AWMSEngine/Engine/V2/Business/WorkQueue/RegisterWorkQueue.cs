@@ -157,7 +157,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             addQty = data.addQty,
                             unitTypeCode = data.unitTypeCode,
                             packUnitTypeCode = data.packUnitTypeCode,
-                            expireDate = data.expireDate,
+                            expiryDate = data.expiryDate,
                             productDate = data.productDate
                         });
                     });
