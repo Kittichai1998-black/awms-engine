@@ -7,28 +7,35 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     var searchData = queryFilter.find(x => x.f === field);
     var searchSign = "=";
     searchValue = searchValue === null ? "" : searchValue.toString();
+    console.log(searchValue)
     if (searchValue !== "") {
         if (searchValue.startsWith(">=")) {
             searchSign = ">=";
             searchValue = searchValue.substr(2, searchValue.length - 1)
+
         }
         else if (searchValue.startsWith("<=")) {
             searchSign = "<=";
             searchValue = searchValue.substr(2, searchValue.length - 1)
+
         }
         else if (searchValue.startsWith(">")) {
             searchSign = ">";
             searchValue = searchValue.substr(1, searchValue.length - 1)
+
         }
         else if (searchValue.startsWith("<")) {
             searchSign = "<";
             searchValue = searchValue.substr(1, searchValue.length - 1)
+
         }
         else if (searchValue.startsWith("%") || searchValue.endsWith("%") || searchValue.startsWith("*") || searchValue.endsWith("*")) {
             searchSign = "LIKE";
+
         }
         else if (searchValue.includes(",")) {
             searchSign = "IN";
+
         }
 
         if (searchData !== undefined) {
@@ -37,7 +44,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
 
                 if (dateField === "dateFrom") {
                     let findFrom = findDateType.find(x => x.c === ">=");
-                    if(findFrom === undefined){
+                    if (findFrom === undefined) {
                         let resDateTime = customDateTime(dateField, field, searchValue);
                         queryFilter.push(resDateTime);
                     }
@@ -46,7 +53,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                 }
                 else if (dateField === "dateTo") {
                     let findFrom = findDateType.find(x => x.c === "<=");
-                    if(findFrom === undefined){
+                    if (findFrom === undefined) {
                         let resDateTime = customDateTime(dateField, field, searchValue);
                         queryFilter.push(resDateTime);
                     }
@@ -54,6 +61,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                         findFrom.v = searchValue;
                 }
             } else {
+                console.log(searchSign)
                 searchData.c = searchSign;
                 searchData.v = searchValue;
             }
@@ -62,10 +70,17 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                 let resDateTime = customDateTime(dateField, field, searchValue);
                 queryFilter.push(resDateTime);
             } else {
+                // console.log(field)
+                // console.log(searchSign)
+                // console.log(searchValue)
+                //searchData = {};
+                // searchData.f = field;
+                // searchData.c = searchSign;
+                // searchData.v = searchValue;
                 searchData = {};
                 searchData.f = field;
-                searchData.c = searchSign;
-                searchData.v = searchValue;
+                searchData.c = "LIKE";
+                searchData.v = "%*" + searchValue + "*%";
                 queryFilter.push(searchData)
             }
         }
@@ -73,7 +88,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     else {
         queryFilter = [...queryFilter.filter(x => x.f !== field)];
     }
-    
+
     queryStr.q = JSON.stringify(queryFilter);
     return queryStr;
 }

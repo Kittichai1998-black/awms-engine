@@ -189,30 +189,38 @@ const APIServiceLog = (props) => {
                         col.width = 250;
                         col.Filter = (field, onChangeFilter) => {
                             return <FormInline>
-                                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => {
-                                    if (e !== undefined && e !== null)
-                                        onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "date" })
-                                }} TypeDate={"date"} fieldID="dateFrom" />
+                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                    onChange={(ele) => { }}
+                                    onBlur={(e) => {
+                                        if (e !== undefined && e !== null)
+                                            onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "date" })
+                                    }} TypeDate={"date"} fieldID="dateFrom" />
                                 <label>-</label>
-                                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => {
-                                    if (e !== undefined && e !== null)
-                                        onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo", dateType: "date" })
-                                }} TypeDate={"date"} fieldID="dateTo" />
+                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                    onChange={(ele) => { }}
+                                    onBlur={(e) => {
+                                        if (e !== undefined && e !== null)
+                                            onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo", dateType: "date" })
+                                    }} TypeDate={"date"} fieldID="dateTo" />
                             </FormInline>
                         }
                     } else if (filterConfig.filterType === "datetime") {
                         col.width = 250;
                         col.Filter = (field, onChangeFilter) => {
                             return <FormInline>
-                                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => {
-                                    if (e !== undefined && e !== null)
-                                        onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "datetime-local" })
-                                }} TypeDate={"datetime-local"} fieldID="dateFrom" />
+                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                    onChange={(ele) => { }}
+                                    onBlur={(e) => {
+                                        if (e !== undefined && e !== null)
+                                            onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "datetime-zero" })
+                                    }} TypeDate={"datetime-zero"} fieldID="dateFrom" />
                                 <label>-</label>
-                                <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => {
-                                    if (e !== undefined && e !== null)
-                                        onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo", dateType: "datetime-local" })
-                                }} TypeDate={"datetime-local"} fieldID="dateTo" />
+                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                    onChange={(ele) => { }}
+                                    onBlur={(e) => {
+                                        if (e !== undefined && e !== null)
+                                            onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo", dateType: "datetime-zero" })
+                                    }} TypeDate={"datetime-zero"} fieldID="dateTo" />
                             </FormInline>
                         }
                     }

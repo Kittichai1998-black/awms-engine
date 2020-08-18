@@ -1,0 +1,40 @@
+﻿database.connection_string = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE_V2;Max Pool Size=400;Connect Timeout=600;
+
+#######################################
+
+post2wms.api_names = StoreinUpdate,StoreoutUpdate,SelectpickUpdate,SelectreturnUpdate,ConsoloadUpdate,StoreauditUpdate,Storemovement
+post2wms.thread_sleep = 300
+
+post2wms.StoreinUpdate.api_url = 
+post2wms.StoreinUpdate.sp_get_req = 
+post2wms.StoreinUpdate.sp_update_res =
+
+post2wms.StoreoutUpdate.api_url = 
+post2wms.StoreoutUpdate.sp_get_req = 
+post2wms.StoreoutUpdate.sp_update_res =
+
+post2wms.SelectpickUpdate.api_url = 
+post2wms.SelectpickUpdate.sp_get_req = 
+post2wms.SelectpickUpdate.sp_update_res =
+
+post2wms.StoreinUpdate.api_url = 
+post2wms.StoreinUpdate.sp_get_req = 
+post2wms.StoreinUpdate.sp_update_res =
+
+post2wms.SelectreturnUpdate.api_url = 
+post2wms.SelectreturnUpdate.sp_get_req = 
+post2wms.SelectreturnUpdate.sp_update_res =
+
+post2wms.ConsoloadUpdate.api_url = 
+post2wms.ConsoloadUpdate.sp_get_req = 
+post2wms.ConsoloadUpdate.sp_update_res =
+
+post2wms.StoreauditUpdate.api_url = 
+post2wms.StoreauditUpdate.sp_get_req = 
+post2wms.StoreauditUpdate.sp_update_res =
+
+post2wms.Storemovement.api_url = 
+post2wms.Storemovement.sp_get_req = 
+post2wms.Storemovement.sp_update_res =
+
+#################################

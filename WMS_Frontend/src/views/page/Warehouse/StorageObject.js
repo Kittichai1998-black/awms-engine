@@ -83,7 +83,7 @@ const StorageObject = props => {
       fixWidth: 200,
 
     },
-    { Header: "Project", accessor: "Project", width: 100 },
+    // { Header: "Project", accessor: "Project", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
@@ -118,7 +118,6 @@ const StorageObject = props => {
     }
   ];
   const getIsAuditStatus = value => {
-    console.log(value)
     if (value === 0) {
       return "QUARANTINE"
     } else if (value === 1) {
@@ -135,7 +134,6 @@ const StorageObject = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-    console.log(value)
     if (value !== undefined) {
       return value === false ? <div style={{ textAlign: "center" }}>
         <Tooltip title="NONE" >
