@@ -2,10 +2,12 @@
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 {
@@ -25,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string batch;
             public string lot;
             public DocumentProcessTypeID documentProcessTypeID;
-
+            public String documentProcessTypeName;
             public long? souBranchID;
             public long? souWarehouseID;
             public long? souCustomerID;
@@ -70,7 +72,9 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string batch;
                 public string lot;
                 public string orderNo;
+                public string cartonNo;
                 public string itemNo;
+                public string auditStatus;
                 public string refID;
                 public string ref1;
                 public string ref2;
@@ -78,9 +82,12 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string ref4;
                 public string options;
                 public long? parentDocumentItem_ID;
+                public long? incubationDay;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
+                public long? shelfLifeDay;
+
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -151,13 +158,62 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
+            var DocumentProcessTypeNames = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
+           new SQLConditionCriteria[] {
+                new SQLConditionCriteria("Name",reqVO.documentProcessTypeName, SQLOperatorType.EQUALS),
+       }, this.BuVO).FirstOrDefault();
 
 
+            var DocprocessID = DocumentProcessTypeNames.ID;
+            DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeNames.Code);
+
+            var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType;
 
 
+            if (Sou_Customer_ID == null && souWarehouseModel.ID == null && Sou_Supplier_ID == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DataSource Not Found");
 
+            if (OwnerProcess == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
 
+            if (OwnerProcess == OwnerGroupType.WM)
+            {
+                if (souWarehouseModel.ID == null)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse Not Found");
+                }
+                else if (Sou_Supplier_ID != null || Sou_Customer_ID != null)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                }
 
+            }
+            else if (OwnerProcess == OwnerGroupType.CUS)
+            {
+                if (Sou_Customer_ID == null)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souCustomer Not Found");
+                }
+                //else  if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
+                //    {
+                //        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                //    }
+
+                
+            }  else if (OwnerProcess == OwnerGroupType.WM)
+            {
+                if (Sou_Supplier_ID == null)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souSupplier Not Found");
+                }
+                else  if (Sou_Customer_ID != null || souWarehouseModel.ID != null)
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                    }
+
+            }
+
+                
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
@@ -189,14 +245,21 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
                     ref4 = reqVO.ref4,
-
                     docTypeId = DocumentTypeID.GOODS_RECEIVE,
+
+                    documentProcessTypeID = reqVO.documentProcessTypeID == 0 ? documentProcessTypeID : reqVO.documentProcessTypeID,
+
                     eventStatus = reqVO.eventStatus,
-                    documentProcessTypeID = reqVO.documentProcessTypeID,
+
                     remark = reqVO.remark,
 
+
+
+
                     Items = reqVO.receivedOrderItem.Select(
+                       
                         x => new CreateDocument.TReq.Item
+
                         {
                             skuCode = x.skuCode,
                             packCode = x.packCode,
@@ -210,13 +273,15 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
+                            shelfLifeDay = x.shelfLifeDay,
+                            incubationDay = x.incubationDay,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
-                            baseUnitType = x.baseunitType,
+                            baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

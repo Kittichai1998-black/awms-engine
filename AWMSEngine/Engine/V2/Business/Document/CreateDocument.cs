@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string forCustomerCode;
             public int? transportID;
             public DocumentProcessTypeID documentProcessTypeID;
-
+            public string documentProcessTypeName;
             public string batch;
             public string lot;
             public string options;
@@ -66,31 +66,32 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public List<Item> Items;
             public class Item
             {
-                public string skuCode;
                 public string packCode;
                 public long? packID;
-                public int? packItemQty; //not receive
-                public bool isUnitTypeForPack = false;
+                public string skuCode;
                 public decimal? quantity;
                 public string unitType;
-                public decimal? baseQuantity; //not receive
-                public string baseUnitType; //not receive
-
-                public DateTime? expireDate;
-                public DateTime? productionDate;
-
-                public long? parentDocumentItem_ID;
-                public string orderNo;
+                public decimal? baseQuantity;
+                public string baseunitType;
                 public string batch;
                 public string lot;
-
+                public string orderNo;
+                public string cartonNo;
+                public bool isUnitTypeForPack = false;
+                public string itemNo;
+                public string auditStatus;
+                public string refID;
                 public string ref1;
                 public string ref2;
                 public string ref3;
                 public string ref4;
-                public string itemNo;
-                public string refID;
                 public string options;
+                public long? parentDocumentItem_ID;
+                public long? incubationDay;
+
+                public DateTime? expireDate;
+                public DateTime? productionDate;
+                public long? shelfLifeDay;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -152,6 +153,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                     reqVO.desBranchCode,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
+
+
+    
+
             amt_Document doc = new amt_Document()
             {
                 ID = null,
@@ -175,7 +180,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
+
                 DocumentProcessType_ID = reqVO.documentProcessTypeID,
+
                 Options = reqVO.options,
                 Remark = reqVO.remark,
 
@@ -296,6 +303,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     ItemNo = Item.itemNo,
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,
+                    IncubationDay = Item.incubationDay,
+                    ShelfLifeDay = Item.shelfLifeDay,
+
 
                     EventStatus = Item.eventStatus,
                     DocItemStos = Item.docItemStos

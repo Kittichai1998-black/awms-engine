@@ -177,37 +177,39 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            List<amt_DocumentItem> res = null; 
+            List<amt_DocumentItem> res = null;
             if (res == null)
             {
                 var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                if (packs == null || packs.Count() == 0)
+                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
+
                 ////DF Code
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
-                //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, สร้างเอกสารเบิกpallet เปล่า, 
-                if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
+                if (reqVO.ioType == IOType.OUTPUT)
                 {
-                    //var pstoLists = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                    if (packs == null || packs.Count() == 0)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
-
-                    if (reqVO.ioType == IOType.OUTPUT)
+                    //สร้างเอกสารเบิกpallet เปล่า
+                    //get Document
+                    var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
+                        DocumentTypeID.PICKING, BuVO);
+                    if (docItemLists == null || docItemLists.Count == 0)
                     {
-                        //get Document
-                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
-                            DocumentTypeID.PICKING, BuVO);
-                        if (docItemLists == null || docItemLists.Count == 0)
-                        {
-                            docItems = this.ProcessReceiving(sto, reqVO);
-                        }
-                        else
-                        {
-                            docItemLists.ForEach(di =>
-                            {
-                                docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
-                            });
-                        }
+                        docItems = this.ProcessPickingESP(sto, reqVO);
                     }
                     else
+                    {
+                        docItemLists.ForEach(di =>
+                        {
+                            docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
+                        });
+                    }
+
+                }
+                else
+                { 
+
+                    //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, 
+                    if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
                     {
                         //get Document
                         var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
@@ -223,39 +225,38 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
                             });
                         }
+
+                        if (docItems == null || docItems.Count == 0)
+                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Put Away Document Not Found");
                     }
-
-                    if (docItems == null || docItems.Count == 0)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Put Away Document Not Found");
-                }
-                else if (packs.TrueForAll(pack => pack.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && pack.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS ))
-                {
-                    //ถ้าพาเลท สินค้า มีสถานะ RECEIVED,AUDITED,COUNTED,CONSOLIDATED,CANCELED จะput away by pass 
-                    //var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
-
-                    packs.ForEach(pack =>
+                    else if (packs.TrueForAll(pack => pack.eventStatus.Attribute<StorageObjectEventStatusAttr>() != null && pack.eventStatus.Attribute<StorageObjectEventStatusAttr>().IsPutawayBypassASRS))
                     {
-                        var disto = new amt_DocumentItemStorageObject
+                        //ถ้าพาเลท สินค้า มีสถานะ RECEIVED,AUDITED,COUNTED,CONSOLIDATED,CANCELED จะput away by pass 
+                        //var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+
+                        packs.ForEach(pack =>
                         {
-                            ID = null,
-                            DocumentItem_ID = null,
-                            Sou_StorageObject_ID = pack.id.Value,
-                            Des_StorageObject_ID = pack.id.Value,
-                            Quantity = pack.qty,
-                            BaseQuantity = pack.baseQty,
-                            UnitType_ID = pack.unitID,
-                            BaseUnitType_ID = pack.baseUnitID,
-                            Status = EntityStatus.INACTIVE
-                        };
+                            var disto = new amt_DocumentItemStorageObject
+                            {
+                                ID = null,
+                                DocumentItem_ID = null,
+                                Sou_StorageObject_ID = pack.id.Value,
+                                Des_StorageObject_ID = pack.id.Value,
+                                Quantity = pack.qty,
+                                BaseQuantity = pack.baseQty,
+                                UnitType_ID = pack.unitID,
+                                BaseUnitType_ID = pack.baseUnitID,
+                                Status = EntityStatus.INACTIVE
+                            };
 
-                        AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
-                    });
+                            AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
+                        });
+                    }
+                    else
+                    {
+                        throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
+                    }
                 }
-                else
-                {
-                    throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
-                }
-
                 res = docItems;
             }
 
@@ -499,7 +500,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         //BEGIN*******************ProcessReceiving***********************
 
-        private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, RegisterWorkQueue.TReq reqVO)
+        private List<amt_DocumentItem> ProcessPickingESP(StorageObjectCriteria mapsto, RegisterWorkQueue.TReq reqVO)
         {
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             var souWarehouse = new ams_Warehouse();
@@ -508,148 +509,119 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desBranch = new ams_Branch();
             var desArea = new ams_AreaMaster();
 
-            DocumentTypeID documentTypeID = new DocumentTypeID();
-            var pstoLists = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-            if (pstoLists == null || pstoLists.Count() == 0)
-                throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
+            var psto = mapsto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
+            ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
+            if (skuMaster == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
 
-            var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
-            DocumentProcessTypeID mvtDoc = new DocumentProcessTypeID();
-            if (mvt != null && mvt.Length > 0)
-            {
-                mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), mvt);
-            }
+            var skutype = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
+            if (skutype == null)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
+            if(skutype.GroupType != SKUGroupType.ESP)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "สินค้าประเภท " + skutype.GroupType + "ไม่สามารถเบิกได้");
 
-            //auto create new Document 
-            if (reqVO.ioType == IOType.INPUT)
-            {
-                documentTypeID = DocumentTypeID.PUTAWAY;
-                //souWarehouse = _warehouseASRS;
-                //souBranch = _branchASRS;
-            }
-            else
-            {
-                documentTypeID = DocumentTypeID.PICKING;
+            ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
+            if (packMaster == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
 
-                desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
+
+            desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
                 if (desWarehouse == null)
                     throw new AMWException(Logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
-                desBranch = StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
-                if (desBranch == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
-                desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-                if (desArea == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
-            }
-            List<TempMVTDocItems> tempDocItems = new List<TempMVTDocItems>();
+            desBranch = StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
+            if (desBranch == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
+            desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
+            if (desArea == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
 
-            foreach (var psto in pstoLists)
+            var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(skuMaster.ID.Value, psto.qty, skuMaster.UnitType_ID.Value);
+            decimal? baseQuantity = null;
+            if (psto.qty >= 0)
+                baseQuantity = baseUnitTypeConvt.newQty;
+
+            long? forCus = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ?
+                psto.forCustomerID != null ? psto.forCustomerID : null
+                : StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID;
+            //auto create new Document 
+
+            amt_DocumentItem docItemGR = new amt_DocumentItem()
             {
-                ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
-                if (skuMaster == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
-                ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
-                if (packMaster == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
+                Code = psto.code,
+                SKUMaster_ID = psto.skuID.Value,
+                PackMaster_ID = packMaster.ID.Value,
 
-                var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-                var skutypeg = sto_skuType.GroupType.GetValueInt();
-                if (mvt == null || mvt.Length == 0)
-                {
-                    var movementtype = sto_skuType.GroupType.GetValueInt().ToString() + "011";
-                    mvtDoc = (DocumentProcessTypeID)Enum.Parse(typeof(DocumentProcessTypeID), movementtype);
-                    if (mvtDoc.Equals(null))
-                    {
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Movement Type isn't match.");
-                    }
-                }
-                var parentDocID_opt = ObjectUtil.QryStrGetValue(psto.options, OptionVOConst.OPT_PARENT_DOCUMENT_ID);
+                Quantity = psto.qty,
+                UnitType_ID = baseUnitTypeConvt.oldUnitType_ID,
+                BaseQuantity = baseQuantity,
+                BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
+                EventStatus = DocumentEventStatus.NEW,
+            };
 
-                var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(skuMaster.ID.Value, psto.qty, skuMaster.UnitType_ID.Value);
-                decimal? baseQuantity = null;
-                if (psto.qty >= 0)
-                    baseQuantity = baseUnitTypeConvt.newQty;
-
-                tempDocItems.Add(new TempMVTDocItems()
-                {
-                    processID = mvtDoc,
-                    parentDocID = string.IsNullOrWhiteSpace(parentDocID_opt) ? 0 : long.Parse(parentDocID_opt),
-                    docItem = new amt_DocumentItem()
-                    {
-                        ID = null,
-                        Code = psto.code,
-                        SKUMaster_ID = psto.skuID.Value,
-                        PackMaster_ID = packMaster.ID.Value,
-
-                        Quantity = psto.qty,
-                        UnitType_ID = baseUnitTypeConvt.oldUnitType_ID,
-                        BaseQuantity = baseQuantity,
-                        BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
-
-                        OrderNo = psto.orderNo,
-                        Batch = psto.batch,
-                        Lot = psto.lot,
-
-                        Options = null,
-                        ExpireDate = psto.expiryDate,
-                        ProductionDate = psto.productDate,
-                        Ref1 = null,
-                        Ref2 = null,
-                        RefID = null,
-
-                        EventStatus = DocumentEventStatus.NEW,
-                        DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, null) }
-                    }
-                });
-
-            }
-
-            var res_DI = tempDocItems.GroupBy(
-                p => new { p.processID, p.parentDocID }, (key, g) => new { MVTCode = key.processID, ParentDocID = key.parentDocID, DocItems = g.Select(y => y.docItem).ToList() });
-            foreach (var di in res_DI)
+            amt_Document docGR = new amt_Document()
             {
-                amt_Document doc = new amt_Document()
-                {
-                    ID = null,
-                    Code = null,
-                    ParentDocument_ID = di.ParentDocID == 0 ? null : di.ParentDocID,
-                    For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
-                    Sou_Customer_ID = null,
-                    Sou_Supplier_ID = null,
-                    Sou_Branch_ID = _branchASRS.ID,
-                    Sou_Warehouse_ID = _warehouseASRS.ID,
-                    Sou_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : _areaASRS.ID,
+                For_Customer_ID = forCus,
+                Sou_Branch_ID = _branchASRS.ID,
+                Sou_Warehouse_ID = _warehouseASRS.ID,
+                Sou_AreaMaster_ID = _areaASRS.ID,
 
-                    Des_Customer_ID = null,
-                    Des_Supplier_ID = null,
-                    Des_Branch_ID = reqVO.ioType == IOType.INPUT ? _branchASRS.ID : desBranch.ID,
-                    Des_Warehouse_ID = reqVO.ioType == IOType.INPUT ? _warehouseASRS.ID : desWarehouse.ID,
-                    Des_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : desArea.ID,
+                Des_Branch_ID = desBranch.ID,
+                Des_Warehouse_ID = desWarehouse.ID,
+                Des_AreaMaster_ID = desArea.ID,
 
-                    DocumentDate = DateTime.Now,
-                    ActionTime = DateTime.Now,
-                    DocumentProcessType_ID = di.MVTCode,
-                    RefID = null,
-                    Ref1 = null,
-                    Ref2 = null,
+                DocumentDate = DateTime.Now,
+                ActionTime = DateTime.Now,
+                DocumentProcessType_ID = DocumentProcessTypeID.ESP_TRANSFER_WM,
 
-                    DocumentType_ID = documentTypeID,
-                    EventStatus = DocumentEventStatus.NEW,
+                DocumentType_ID = DocumentTypeID.GOODS_ISSUE,
+                EventStatus = DocumentEventStatus.NEW,
 
-                    Remark = null,
-                    Options = null,
-                    Transport_ID = null,
+                DocumentItems = new List<amt_DocumentItem> { docItemGR },
 
-                    DocumentItems = di.DocItems,
+            };
 
-                };
+            var docGRID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+            var _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
 
-                var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, BuVO).ID;
-                docItems.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docID.Value, BuVO));
+            amt_DocumentItem docItemPA = new amt_DocumentItem()
+            { 
+                Code = psto.code,
+                ParentDocumentItem_ID = _docGR.DocumentItems[0].ID,
+                SKUMaster_ID = psto.skuID.Value,
+                PackMaster_ID = packMaster.ID.Value,
+                Quantity = psto.qty,
+                UnitType_ID = baseUnitTypeConvt.oldUnitType_ID,
+                BaseQuantity = baseQuantity,
+                BaseUnitType_ID = baseUnitTypeConvt.newUnitType_ID,
+                EventStatus = DocumentEventStatus.NEW,
+                DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(psto, null, null, null) }
+            };
 
-            }
+            amt_Document docPA = new amt_Document()
+            {
+                ParentDocument_ID = docGRID,
+                For_Customer_ID = forCus,
+                Sou_Branch_ID = _branchASRS.ID,
+                Sou_Warehouse_ID = _warehouseASRS.ID,
+                Sou_AreaMaster_ID = _areaASRS.ID,
 
+                Des_Branch_ID = desBranch.ID,
+                Des_Warehouse_ID = desWarehouse.ID,
+                Des_AreaMaster_ID = desArea.ID,
 
+                DocumentDate = DateTime.Now,
+                ActionTime = DateTime.Now,
+                DocumentProcessType_ID = DocumentProcessTypeID.ESP_TRANSFER_WM,
+
+                DocumentType_ID = DocumentTypeID.PICKING,
+                EventStatus = DocumentEventStatus.NEW,
+
+                DocumentItems = new List<amt_DocumentItem> { docItemPA },
+
+            };
+
+            var docPAID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+            docItems.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docPAID.Value, BuVO));
             return docItems;
         }
     }

@@ -154,11 +154,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
          
         private void ManageDocumentInput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)
         {
+            var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+
             if (docItems.Count > 0)
             {
                 if (docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT)
                 {
-                    var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                     docItems.ForEach(docItem =>
                     {
                         stoList.ForEach(sto =>
@@ -191,7 +192,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     getDisto.ForEach(disto =>
                     {
-                        ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+                        var sou_sto = stoList.Find(sel => sel.id == disto.Sou_StorageObject_ID);
+                        updateSTO(sou_sto);
 
                         ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         if (disto.Des_WaveSeq_ID == null)
@@ -206,14 +208,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
             void updateSTO(StorageObjectCriteria sto)
-            {
-                var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, docs.DocumentProcessType_ID);
-                AuditStatus _auditstatus = EnumUtil.GetValueEnum<AuditStatus>(auditstatus);
-                sto.AuditStatus = _auditstatus;
-
-                var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, docs.DocumentProcessType_ID);
-                sto.IsHold = Convert.ToBoolean(Convert.ToInt16(holdstatus));
-
+            {            
                 var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)
                 {

@@ -193,6 +193,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var sku = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(psto.pstoCode, BuVO);
                
                 var pack = new ams_PackMaster();
+                var skutype = new ams_SKUMasterType();
                 ConvertUnitCriteria unitTypeConvt = new ConvertUnitCriteria();
                 if (sku == null)
                 {
@@ -200,7 +201,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
                 else
                 {
-                    var skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
+                    skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
                     if (skutype == null)
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
                     var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
@@ -227,13 +228,16 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(unitTypeConvt.newPackMaster_ID, BuVO);
 
                 }
-
+                var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, reqVO.processType);
+                  
+                var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, reqVO.processType);
+                 
                 StorageObjectCriteria newPackSto = new StorageObjectCriteria()
                 {
                     type = StorageObjectType.PACK,
                     mstID = pack.ID.Value,
                     areaID = reqVO.areaID,
-                    eventStatus = StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.NEW,
                     parentID = idBase,
                     parentType = StorageObjectType.BASE,
                     forCustomerID = psto.forCustomerID,
@@ -256,6 +260,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref3 = psto.ref3,
                     ref4 = psto.ref4,
                     itemNo = psto.itemNo,
+                    AuditStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? AuditStatus.PASS : EnumUtil.GetValueEnum<AuditStatus>(auditstatus),
+                    IsHold = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ?  false : Convert.ToBoolean(Convert.ToInt16(holdstatus))
                 };
                 var newPackCheckSum = newPackSto.GetCheckSum();
                 newPackSto.refID = newPackCheckSum;
@@ -309,10 +315,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     }
                 }
                 //call Mapping Disto And DocumentItem
-                var reqMappingDoc = new MappingDistoAndDocumentItem.TReq() {
-                    packID = resStopack.Value,
-                    docProcessType = reqVO.processType
-                };
+                
                 void remove_parent_empty(long parent_id, StorageObjectType parent_type)
                 {
                     if (parent_type != StorageObjectType.LOCATION)
@@ -329,7 +332,19 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         }
                     }
                 }
-                return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc); ;
+                if(reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM)
+                {
+                    return null;
+                }
+                else
+                {
+                    var reqMappingDoc = new MappingDistoAndDocumentItem.TReq()
+                    {
+                        packID = resStopack.Value,
+                        docProcessType = reqVO.processType
+                    };
+                    return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc); ;
+                }
 
             } //end void createSTO
 
@@ -355,7 +370,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     baseCode = reqVO.bstoCode,
                     warehouseID = reqVO.warehouseID,
                     areaID = reqVO.areaID,
-                    locationID = reqVO.locationID
+                    locationID = reqVO.locationID,
+                    isEmptyPallet = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? true : false
                 };
                 var newbase = new MappingNewBaseAndSTO().Execute(this.Logger, this.BuVO, newBaseStoTReq); ;
                 idBaseSto = newbase.id.Value;
