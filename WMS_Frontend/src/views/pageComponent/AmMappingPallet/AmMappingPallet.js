@@ -219,7 +219,6 @@ const AmMappingPallet = props => {
 
 
   function TransitionComponent(props) {
-    console.log(props)
     const style = useSpring({
       from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
       to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
@@ -233,7 +232,6 @@ const AmMappingPallet = props => {
   }
 
   function TransitionComponent(props) {
-    console.log(props.nodeId)
     const style = useSpring({
       from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
       to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
@@ -312,8 +310,6 @@ const AmMappingPallet = props => {
     } else if (fieldDataKey === "processType") {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
-    console.log(value)
-    console.log(fieldDataKey)
     valueInput[fieldDataKey] = value;
 
 
@@ -324,9 +320,9 @@ const AmMappingPallet = props => {
   const onHandleChangeInputPalletCode = (keydata, value, obj, element, event) => {
     valueInput[keydata] = value;
     if (keydata === "PalletCode") {
-      setPalletCode(value);
       GetPalletSto(value);
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
+      setPalletCode(value);
+
     }
   };
   function getSteps() {
@@ -339,7 +335,7 @@ const AmMappingPallet = props => {
     return [
       { label: "Warehouse", value: null },
       { label: "DocProcessType", value: null },
-      { label: "Pallet", value: valueInput.PalletCode === undefined ? null : valueInput.PalletCode },
+      { label: "Pallet", value: valueInput !== undefined ? (valueInput.PalletCode === undefined ? null : valueInput.PalletCode) : null },
       { label: "Area&Location", value: null },
       { label: "Barcode", value: null },
       { label: "Detail", value: null }
@@ -365,6 +361,7 @@ const AmMappingPallet = props => {
             valueInput["areaID"] = res.data.datas[0].AreaMaster_ID
             valueInput["locaionID"] = res.data.datas[0].AreaLocationMaster_ID
           }
+          setActiveStep(prevActiveStep => prevActiveStep + 1);
         }
       });
     } else {
@@ -383,10 +380,8 @@ const AmMappingPallet = props => {
       setDialog(true)
 
     }
-    console.log(nodeIds, event)
   };
   const handleChange = (event) => {
-    console.log(event.target.checked)
     setCheckedAuto(event.target.checked)
   }
   const FuncSetEleManual = (x) => {
@@ -442,8 +437,7 @@ const AmMappingPallet = props => {
           style={{ display: "inline-block" }}
           onBlur={(e) => {
             if (e !== undefined && e !== null)
-              console.log(e)
-            onHandleChangeInputManual(e.fieldDataObject, null, null, x.field)
+              onHandleChangeInputManual(e.fieldDataObject, null, null, x.field)
           }}
           TypeDate={"date"} fieldID="dateFrom"
         />
@@ -504,21 +498,22 @@ const AmMappingPallet = props => {
         />
       case 3:
         var dataLoc = null;
-        if (valueInput.areaID != undefined) {
-          const AreaLocationMasterQuery = {
-            queryString: window.apipath + "/v2/SelectDataMstAPI/",
-            t: "AreaLocationMaster",
-            q: '[{"f": "Status", "c":"=", "v": 1},{"f": "ObjectSize_ID", "c":"=", "v": 1},{"f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
-            f: "Code,ID as locaionID,Name",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
+        if (valueInput !== undefined) {
+          if (valueInput.areaID !== undefined) {
+            const AreaLocationMasterQuery = {
+              queryString: window.apipath + "/v2/SelectDataMstAPI/",
+              t: "AreaLocationMaster",
+              q: '[{"f": "Status", "c":"=", "v": 1},{"f": "ObjectSize_ID", "c":"=", "v": 1},{"f": "AreaMaster_ID", "c":"=", "v":' + valueInput.areaID + '}]',
+              f: "Code,ID as locaionID,Name",
+              g: "",
+              s: "[{'f':'ID','od':'asc'}]",
+              sk: 0,
+              l: 100,
+              all: "",
+            }
+            dataLoc = AreaLocationMasterQuery
           }
-          dataLoc = AreaLocationMasterQuery
         }
-
         return <div><FormInline>
           <LabelH1>Area :</LabelH1><AmDropdown
             placeholder="Select"
@@ -527,7 +522,7 @@ const AmMappingPallet = props => {
             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
             ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
             queryApi={AreaMasterQuery()}
-            defaultValue={valueInput.areaID === undefined ? null : valueInput.areaID}
+            defaultValue={valueInput !== undefined ? valueInput.areaID === undefined ? null : valueInput.areaID : null}
             onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
             ddlType={"search"} //รูปแบบ Dropdown 
           />
@@ -541,7 +536,7 @@ const AmMappingPallet = props => {
               labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
               ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
               queryApi={dataLoc !== null && dataLoc !== undefined ? dataLoc : areaLocationMasterQuery}
-              defaultValue={valueInput.locaionID === undefined ? null : valueInput.locaionID}
+              defaultValue={valueInput !== undefined ? valueInput.locaionID === undefined ? null : valueInput.locaionID : null}
               onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, inputID, fieldDataKey)}
               ddlType={"search"} //รูปแบบ Dropdown 
             />
@@ -563,7 +558,12 @@ const AmMappingPallet = props => {
                 return (
                   <div key={index} syle={{ marginLeft: "30px" }} >
                     <StyledTreeItem
-                      nodeId={x.id} label={x.code + " | " + x.baseQty + " " + x.unitCode + " | " + x.lot}
+                      nodeId={x.id}
+                      label={
+                        x.code + " | " +
+                        x.baseQty + " " +
+                        x.unitCode + " | " +
+                        (x.lot === null ? "" : x.lot)}
                     />
                   </div>
                 );
@@ -637,8 +637,6 @@ const AmMappingPallet = props => {
 
 
       case 5:
-        //return dataShow;
-        console.log(dataDoc)
         if (checkedAuto) {
           if (dataDoc !== undefined && dataDoc !== null) {
             return (<div>
@@ -665,15 +663,12 @@ const AmMappingPallet = props => {
       locationID: null,
       pstos: []
     };
-    console.log(dataDoc)
-    console.log(dataPallet)
     if (edit === "edit") {
       var mapstosSelected = dataPallet.bsto.mapstos.filter(x => x.id === selected)
       if (mapstosSelected !== undefined && mapstosSelected !== null) {
         postdata = GenMapstosSelected(postdata, mapstosSelected)
       }
     } else {
-      console.log(checkedAuto)
       if (checkedAuto) {
         if (dataDoc !== undefined && dataDoc !== null) {
           dataDoc.datas.forEach(element => {
@@ -681,13 +676,15 @@ const AmMappingPallet = props => {
           });
         }
       } else {
-
-        if (activeStep !== 3)
+        if (activeStep !== 3) {
           postdata = genDataManual(postdata, valueManual, props.columnsManual)
+          props.columnsManual.forEach(x => {
+            valueManual[x.field] = null
+          })
+        }
       }
 
     }
-    console.log(postdata)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
@@ -721,8 +718,10 @@ const AmMappingPallet = props => {
   const handleNext = index => {
     if (index === 0) {
       setFlagConfirm(false)
-      if (valueInput.warehouseID === undefined)
-        valueInput.warehouseID = warehouseID
+
+      if (valueInput["warehouseID"] === undefined)
+        valueInput["warehouseID"] = warehouseID
+
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     } else if (index === 1) {
       setFlagConfirm(false)
@@ -743,6 +742,7 @@ const AmMappingPallet = props => {
 
     } else if (index === 3) {
       setFlagConfirm(false)
+      setCheckedAuto(true)
       if (valueInput.areaID) {
         getData()
         setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -761,6 +761,7 @@ const AmMappingPallet = props => {
           alertDialogRenderer("Barcode must be value", "error", true);
         } else {
           //getData()
+
           setActiveStep(prevActiveStep => prevActiveStep + 1);
         }
 
@@ -770,11 +771,18 @@ const AmMappingPallet = props => {
   };
 
   function handleReset() {
+
+    valueInput.warehouseID = null
+    valueInput.processType = null
+    valueInput.areaID = null
+    valueInput.PalletCode = null
+    valueInput.AreaLocationMaster_ID = null
     setActiveStep(0);
-    setValueInput({});
-    setValueManual({});
+    // setValueInput({});
+    // setValueManual({});
     setFlagConfirm(false)
-    setValueInput()
+    setCheckedAuto(true)
+    //setValueInput()
   }
   function handleBack() {
     setDataDoc(null)
@@ -782,20 +790,13 @@ const AmMappingPallet = props => {
   }
   const RanderEle = () => {
     if (dataPallet) {
-      console.log(dataPallet)
-      console.log(props.columnsEdit)
-      console.log(selected)
       const columns = props.columnsEdit
       return columns.map(y => {
-        console.log(y)
         return {
           component: (data, cols, key) => {
             {
-              console.log(data)
               var mapstosSelected = dataPallet.bsto.mapstos.filter(x => x.id === selected)
-              console.log(mapstosSelected)
-              console.log(mapstosSelected[0][y.field])
-              return dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
+              return mapstosSelected === null ? null : mapstosSelected.map((x, index) => {
                 return (
                   <div key={index} syle={{ marginLeft: "30px" }} >
                     <FormInline>
@@ -805,7 +806,7 @@ const AmMappingPallet = props => {
                         style={{ width: "150px", margin: "0px" }}
                         type="input"
                         disabled={y.disabled}
-                        value={mapstosSelected ? mapstosSelected[0][y.field] : 0}
+                        defaultValue={x ? x[y.field] : 0}
                         onKeyPress={(value, obj, element, event) => {
                           if (event.key === "Enter") {
                             onHandleChangeInputPalletCode("editQty", value, obj, element, event)

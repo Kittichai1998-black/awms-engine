@@ -38,7 +38,6 @@ const FormInline = styled.div`
   }
 `;
 const DataGenerateEleDocDisplay = (dataDoc) => {
-  console.log(dataDoc)
   return <Card>
     <CardContent>
       <div>
@@ -72,13 +71,11 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
   </Card>
 }
 const DataGenerateEleManaulDisplay = (valueManual, columnsManual) => {
-  console.log(valueManual)
   return <Card>
     <CardContent>
       <div>
 
         {columnsManual === null ? null : columnsManual.map((x, index) => {
-          console.log(x)
           return (
             <div key={index}>
               <FormInline>
