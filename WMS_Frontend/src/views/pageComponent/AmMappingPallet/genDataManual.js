@@ -11,8 +11,9 @@ function genDataManual(postdata, valueInput, columnsManual) {
 }
 
 function GenMapstosSelected(postdata, mapstosSelected) {
+  console.log(mapstosSelected)
   mapstosSelected.forEach(element => {
-
+    console.log(element)
     element.pstoCode = element.code
     element.addQty = element.addQty
     element.unitTypeCode = element.unitCode
