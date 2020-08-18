@@ -86,7 +86,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public long? shelfLifeDate;
+                public long? shelfLifeDay;
 
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
@@ -273,7 +273,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
-                            shelfLifeDate = x.shelfLifeDate,
+                            shelfLifeDay = x.shelfLifeDay,
                             incubationDay = x.incubationDay,
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,

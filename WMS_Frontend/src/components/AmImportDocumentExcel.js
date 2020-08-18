@@ -133,7 +133,7 @@ const AmImportDocumentExcel = (props) => {
                                     "incubationDay": Incubatedays,
                                     "productionDate": Producdate,
                                     "expireDate": x[15],
-                                    "shelfLifeDate": x[16],
+                                    "shelfLifeDay": x[16],
 
 
                                 }

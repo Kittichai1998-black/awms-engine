@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
-                public long? shelfLifeDate;
+                public long? shelfLifeDay;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -304,7 +304,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                     ParentDocumentItem_ID = Item.parentDocumentItem_ID,
                     IncubationDay = Item.incubationDay,
-                    ShelfLifeDate = Item.shelfLifeDate,
+                    ShelfLifeDay = Item.shelfLifeDay,
 
 
                     EventStatus = Item.eventStatus,
