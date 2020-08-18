@@ -282,8 +282,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     
                     if (oldPsto != null)
                     {
-                        if (oldPsto.refID == newPackCheckSum)
-                        {
+                        //if (oldPsto.refID == newPackCheckSum)
+                        //{
                             //add qty
                             oldPsto.qty += unitTypeConvt.oldQty;
                             oldPsto.baseQty += unitTypeConvt.newQty;
@@ -296,14 +296,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                             if (oldPsto.parentID.HasValue)
                                 remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
-                        }
-                        else
-                        {
+                        //}
+                        //else
+                        //{
                             //new pack
-                            newPackSto.qty = unitTypeConvt.oldQty;
-                            newPackSto.baseQty = unitTypeConvt.newQty;
-                            resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
-                        }
+                            //newPackSto.qty = unitTypeConvt.oldQty;
+                            //newPackSto.baseQty = unitTypeConvt.newQty;
+                            //resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                        //}
 
                     }
                     else
