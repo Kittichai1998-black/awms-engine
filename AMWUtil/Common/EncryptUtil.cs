@@ -30,7 +30,7 @@ namespace AMWUtil.Common
             {
                 hash.Append(bytes[i].ToString("x2"));
             }
-            return hash.ToString();
+            return hash.ToString().ToUpper();
         }
         public static string GenerateSHA256String(string inputString)
         {
