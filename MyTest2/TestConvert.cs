@@ -20,6 +20,16 @@ namespace TestConvert
             this.sysout = sysout;
         }
 
+        [Fact]
+        public void TestMD5()
+        {
+            var str1 = AMWUtil.Common.EncryptUtil.GenerateMD5("test");
+            var str2 = AMWUtil.Common.EncryptUtil.GenerateMD5("เทส");
+
+            sysout.WriteLine(str1);
+            sysout.WriteLine(str2);
+        }
+
         public class MTest
         {
             public string test;
