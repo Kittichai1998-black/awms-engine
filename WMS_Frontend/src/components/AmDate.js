@@ -17,7 +17,7 @@ const AmDate = props => {
   const [DateNow, setDateNow] = useState(
     type === "date"
       ? moment().format("YYYY-MM-DD")
-      : type === "datetime-local" ? moment().format("YYYY-MM-DDTHH:mm") : moment().format("YYYY-MM-DDT00:00")
+      : props.setTimeZero ? moment().format("YYYY-MM-DDT00:00") : moment().format("YYYY-MM-DDTHH:mm") 
   );
   const [TimeNow, setTimeNow] = useState(moment().format("HH:mm"));
   const [fieldID, setFieldID] = useState(props.FieldID);
@@ -43,6 +43,7 @@ const AmDate = props => {
           props.onChange(dataReturndefault);
         }
       }
+      //props.onChange(type === "time"?TimeNow:DateNow);
     }
   }, []);
 
@@ -57,7 +58,7 @@ const AmDate = props => {
         dataReturn.fieldDataObject = text.format("YYYY-MM-DD");
         props.onChange(dataReturn);
       }
-    } else if (tDate === "datetime-local" || tDate === "datetime-zero") {
+    } else if (tDate === "datetime-local") {
       if (text === null) {
         props.onChange(null);
       } else {
@@ -90,7 +91,7 @@ const AmDate = props => {
         dataReturn.fieldDataObject = text.format("YYYY-MM-DD");
         props.onBlur(dataReturn);
       }
-    } else if (tDate === "datetime-local" || tDate === "datetime-zero") {
+    } else if (tDate === "datetime-local") {
       if (text === null) {
         props.onBlur(null);
       } else {
