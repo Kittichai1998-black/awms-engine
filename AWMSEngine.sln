@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectAERP", "ProjectAERP\
 		{3A240D68-826A-4271-8CA5-C9058B6B6B8A} = {3A240D68-826A-4271-8CA5-C9058B6B6B8A}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncApi_WCS_LN", "SyncApi_WCS_LN\SyncApi_WCS_LN.csproj", "{5E354EC3-6DBC-4611-AEC2-A358382A1E1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +118,10 @@ Global
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E354EC3-6DBC-4611-AEC2-A358382A1E1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E354EC3-6DBC-4611-AEC2-A358382A1E1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E354EC3-6DBC-4611-AEC2-A358382A1E1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E354EC3-6DBC-4611-AEC2-A358382A1E1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

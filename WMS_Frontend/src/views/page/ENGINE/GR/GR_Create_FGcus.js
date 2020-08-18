@@ -119,7 +119,7 @@ const RD_Create_FGCustomer = props => {
         }
  
         var columnEdit = [  
-            { Header: "Item No", accessor: "itemNo", type: "itemNo", texts  : itemNos},
+            { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts  : itemNos},
             {
                 // search: false,
                 Header: "SKU Item",
@@ -205,7 +205,7 @@ const RD_Create_FGCustomer = props => {
   
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Item No", accessor: "itemNo" },
+        { Header: "Item No.", accessor: "itemNo" },
         { Header: "Item Code", accessor: "SKUItems" },
         { Header: "Lot", accessor: "lot", width: 100 },
         { Header: "Qty", accessor: "quantity", width: 110 },
