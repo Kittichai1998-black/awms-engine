@@ -42,7 +42,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
 import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
-import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPallet/RanderEleDocDisplay";
+import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPalletV2/RanderEleDocDisplay";
 import { PlusSquare, MinusSquare } from "./IconTreeview";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
@@ -469,7 +469,7 @@ const AmMappingPalletV2 = props => {
               <AmDropdown
                 placeholder="Select"
                 fieldDataKey="processType"
-                fieldLabel={["Name"]}
+                fieldLabel={["Code", "Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
                 queryApi={DocumentProcessTypeQuery()}
@@ -518,7 +518,7 @@ const AmMappingPalletV2 = props => {
                         nodeId={x.id}
                         label={
                           x.code + " | " +
-                          x.baseQty + " " +
+                          x.qty + " " +
                           x.unitCode + " | " +
                           (x.lot === null ? "" : x.lot)}
                       />

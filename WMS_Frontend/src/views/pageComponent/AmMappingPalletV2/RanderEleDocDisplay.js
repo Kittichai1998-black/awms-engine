@@ -9,7 +9,6 @@ import {
 } from "../../../components/function/CoreFunction";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { backgroundImage } from "html2canvas/dist/types/css/property-descriptors/background-image";
 const LabelH2 = styled.label`
   font-weight: bold;
   width: 70px;
@@ -52,19 +51,30 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
         </FormInline>
         {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
           return (
-            <div key={index}>
-              <FormInline>
-                <LabelH2>Item :</LabelH2>
-                {x.pstoCode}
-              </FormInline>
-              <FormInline>
-                <LabelH2>Lot :</LabelH2>
-                {x.lot}
-              </FormInline>
-              <FormInline>
-                <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
-              </FormInline>
-            </div>
+            <Card>
+              <CardContent style={{
+                paddingBottom: "0px",
+                paddingTop: "0px",
+                border: "solid",
+                borderColor: "#E0E0E0"
+              }}>
+                <div key={index}>
+                  <FormInline>
+                    <LabelH2>Item :</LabelH2>
+                    {x.pstoCode}
+                  </FormInline>
+                  <FormInline>
+                    <LabelH2>Lot :</LabelH2>
+                    {x.lot}
+                  </FormInline>
+                  <FormInline>
+                    <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
+                  </FormInline>
+                </div>
+
+              </CardContent>
+            </Card>
+
           );
         })}
       </div>
@@ -72,8 +82,8 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
   </Card>
 }
 const DataGenerateEleManaulDisplay = (valueManual, columnsManual) => {
-  return <Card >
-    <CardContent >
+  return <Card>
+    <CardContent>
       <div>
 
         {columnsManual === null ? null : columnsManual.map((x, index) => {
