@@ -9,6 +9,7 @@ import {
 } from "../../../components/function/CoreFunction";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import { backgroundImage } from "html2canvas/dist/types/css/property-descriptors/background-image";
 const LabelH2 = styled.label`
   font-weight: bold;
   width: 70px;
@@ -54,7 +55,7 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
             <div key={index}>
               <FormInline>
                 <LabelH2>Item :</LabelH2>
-                {x.pstoCode + " : " + x.pstoName}
+                {x.pstoCode}
               </FormInline>
               <FormInline>
                 <LabelH2>Lot :</LabelH2>
@@ -71,8 +72,8 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
   </Card>
 }
 const DataGenerateEleManaulDisplay = (valueManual, columnsManual) => {
-  return <Card>
-    <CardContent>
+  return <Card >
+    <CardContent >
       <div>
 
         {columnsManual === null ? null : columnsManual.map((x, index) => {

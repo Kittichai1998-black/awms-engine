@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.General
         public class PackSto
         {
             public string pstoCode;
-
+            public string pstoName;
             public string batch;
             public string lot;
             public string orderNo;
@@ -121,6 +121,7 @@ namespace AWMSEngine.Engine.V2.General
                     packList.Add(new PackSto()
                     {
                         pstoCode = skuPutaway.Code,
+                        pstoName = skuPutaway.Name,
                         batch = docitemPutaway.Batch,
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,
