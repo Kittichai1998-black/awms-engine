@@ -54,28 +54,32 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public List<ReceiveItem> receiveItems;
             public class ReceiveItem
             {
-                public string skuCode;
                 public string packCode;
+                public long? packID;
+                public string skuCode;
                 public decimal? quantity;
                 public string unitType;
-                public decimal? basequantity;
-                public DateTime? expireDate;
-                public DateTime? productionDate;
-
-                public string orderNo;
+                public decimal? baseQuantity;
+                public string baseunitType;
                 public string batch;
                 public string lot;
-
-                public long? parentDocumentItem_ID;
-
+                public string orderNo;
+                public string cartonNo;
+                public string itemNo;
+                public AuditStatus auditStatus;
+                public string refID;
                 public string ref1;
                 public string ref2;
                 public string ref3;
                 public string ref4;
-                public string refID;
-                public string itemNo;
                 public string options;
-                public AuditStatus auditStatus;
+                public long? parentDocumentItem_ID;
+                public long? incubationDay;
+
+                public DateTime? expireDate;
+                public DateTime? productionDate;
+                public long? shelfLifeDay;
+
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -168,23 +172,28 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         x => new CreateDocument.TReq.Item
                         {
                             skuCode = x.skuCode,
-                            packCode = null,
-                            baseQuantity = x.basequantity,
+                            packCode = x.packCode,
+                            auditStatus = x.auditStatus,
                             quantity = x.quantity,
                             unitType = x.unitType,
-                            parentDocumentItem_ID = x.parentDocumentItem_ID,
+                            cartonNo = x.cartonNo,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
+                            shelfLifeDay = x.shelfLifeDay,
+                            incubationDay = x.incubationDay,
+                            parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             ref3 = x.ref3,
+                            ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
-                            //auditStatus = x.auditStatus,
+                            baseQuantity = x.baseQuantity,
+                            baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

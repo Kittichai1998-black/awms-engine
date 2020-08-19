@@ -291,7 +291,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,
                     Lot = Item.lot,
-
+                    CartonNo = Item.cartonNo,
+                    AuditStatus = Item.auditStatus,
                     Options = Item.options,
                     ExpireDate = Item.expireDate,
                     ProductionDate = Item.productionDate,

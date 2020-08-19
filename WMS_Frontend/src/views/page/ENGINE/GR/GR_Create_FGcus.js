@@ -33,9 +33,7 @@ const RD_Create_FGCustomer = props => {
     const [Type, setType] = useState(true);
 
 
-    useEffect(() => {
-        
-        
+    useEffect(() => { 
         if (CodeprocessType !== "" && CodeprocessType !== null) {    
             var DataprocessTypeID;
             var defaulProcessType = 1010
@@ -48,7 +46,6 @@ const RD_Create_FGCustomer = props => {
             } else {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
-
 
             var headerCreate = [
                 [

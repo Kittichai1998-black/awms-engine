@@ -270,10 +270,10 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                         {
                             skuCode = x.skuCode,
                             packCode = x.packCode,
-
+                            auditStatus = x.auditStatus,
                             quantity = x.quantity,
                             unitType = x.unitType,
-
+                            cartonNo = x.cartonNo,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,
@@ -285,6 +285,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                             parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
+                            ref3 = x.ref3,
+                            ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,

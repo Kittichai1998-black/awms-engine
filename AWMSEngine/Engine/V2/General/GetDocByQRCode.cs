@@ -61,7 +61,7 @@ namespace AWMSEngine.Engine.V2.General
             public decimal addQty;
             public string unitTypeCode; // old unit 
             public string packUnitTypeCode;
-            public DateTime? expireDate;
+            public DateTime? expiryDate;
             public DateTime? incubationDate;
             public DateTime? productDate;
         }
@@ -137,7 +137,7 @@ namespace AWMSEngine.Engine.V2.General
                         addQty = qty[i],
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
-                        expireDate = docitemPutaway.ExpireDate,
+                        expiryDate = docitemPutaway.ExpireDate,
                         productDate = docitemPutaway.ProductionDate
 
                     });
