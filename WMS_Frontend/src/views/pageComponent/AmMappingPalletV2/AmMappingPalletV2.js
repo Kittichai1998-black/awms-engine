@@ -8,6 +8,7 @@ import {
 import AmDialogs from "../../../components/AmDialogs";
 import AmButton from "../../../components/AmButton";
 import AmInput from "../../../components/AmInput";
+
 import {
   indigo,
   deepPurple,
@@ -295,18 +296,13 @@ const AmMappingPalletV2 = props => {
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
-    console.log(value)
-    console.log(fieldDataKey)
-    // setCheckedAuto(value)
     valueInput[fieldDataKey] = value;
   };
   const handleNext = index => {
     if (index === 0) {
-      console.log(valueInput.areaID)
       if (valueInput.areaID && valueInput.processType) {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
       } else {
-        console.log("ddfsefw")
         setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
       }
     } else if (index === 1) {
@@ -321,58 +317,25 @@ const AmMappingPalletV2 = props => {
     }
   };
   const onHandleChangeInputPalletCode = (keydata, value) => {
-    console.log(value)
-    console.log(keydata)
-
     setPalletCode(value);
     scanMappingSto(value, null)
   };
   const onHandleChangeInputBarcode = (keydata, value) => {
-    console.log(value)
-    console.log(keydata)
+
+    valueManual[keydata] = value;
     getDocByQRCode(value)
   };
   const onHandleChangeInputManual = (value, fieldDataKey) => {
     valueManual[fieldDataKey] = value;
   };
-
-  function getDocByQRCode(value) {
-    Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${value}`).then(res => {
-      if (res.data._result.status === 1) {
-        setDataDoc(res.data)
-        setFlaggetDataDoc(true)
-      } else {
-        alertDialogRenderer(res.data._result.message, "error", true);
-      }
-
-    })
-  }
-
-  function scanMappingSto(pallet, type) {
-    console.log(palletCode)
-    console.log(valueInput.areaID)
-    console.log(valueInput.processType)
-    let postdata = {
-      processType: valueInput.processType,
-      bstoCode: pallet,
-      warehouseID: 1,
-      areaID: valueInput.areaID,
-      pstos: []
-    };
-    console.log(postdata)
-    Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-      if (res.data._result.status === 1) {
-        if (res.data.bsto !== undefined) {
-          console.log(res.data.bsto)
-          setDataPallet(res.data.bsto)
-        }
-        setDialog(false)
-      } else {
-        alertDialogRenderer(res.data._result.message, "error", true);
-      }
-    })
-  }
   function handleBack() {
+    valueInput.warehouseID = null
+    valueInput.processType = null
+    valueInput.areaID = null
+    valueInput.palletCode = null
+    setCheckedAutoClear(true)
+    setCheckedAuto(true)
+    setDataPallet(null)
     setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
@@ -384,13 +347,42 @@ const AmMappingPalletV2 = props => {
     }
 
   }
+  function getDocByQRCode(value) {
+    Axios.get(window.apipath + `/v2/GetDocByQRCodeAPI?qr=${value}`).then(res => {
+      if (res.data._result.status === 1) {
+        setDataDoc(res.data)
+        setFlaggetDataDoc(true)
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+      }
+
+    })
+  }
+
   function scanMappingSto(pallet, type) {
-    console.log(palletCode)
-    console.log(valueInput.areaID)
-    console.log(valueInput.processType)
     let postdata = {
       processType: valueInput.processType,
       bstoCode: pallet,
+      warehouseID: 1,
+      areaID: valueInput.areaID,
+      pstos: []
+    };
+    Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+      if (res.data._result.status === 1) {
+        if (res.data.bsto !== undefined) {
+          setDataPallet(res.data.bsto)
+        }
+        setDialog(false)
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+      }
+    })
+  }
+
+  function scanMappingSto(pallet, type) {
+    let postdata = {
+      processType: valueInput.processType,
+      bstoCode: pallet === undefined || pallet === null ? palletCode : pallet,
       warehouseID: 1,
       areaID: valueInput.areaID,
       pstos: []
@@ -403,44 +395,51 @@ const AmMappingPalletV2 = props => {
             postdata.pstos.push(element)
           });
         }
+      } else {
+        postdata = genDataManual(postdata, valueManual, props.columnsManual)
+        // props.columnsManual.forEach(x => {
+        //   valueManual[x.field] = null
+        // })
       }
     } else if (type === "edit") {
       var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
 
 
       if (mapstosSelected !== undefined && mapstosSelected !== null) {
-        console.log(valueInput.editQty)
-        console.log(mapstosSelected)
         mapstosSelected[0].addQty = valueInput.editQty
         postdata = GenMapstosSelected(postdata, mapstosSelected)
       }
     }
-
-    console.log(dataDoc)
-    console.log(checkedAuto)
-    console.log(postdata)
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
-          console.log(res.data.bsto)
+
           setDataPallet(res.data.bsto)
           setDataDoc(null)
-          console.log(checkedAutoClear)
+          if (checkedAuto === false && type === "confirm") {
+            props.columnsManual.forEach(x => {
+              valueManual[x.field] = null
+            })
+            setCheckedAuto(true)
+          }
           if (checkedAutoClear && type === "confirm") {
             var el = document.getElementById('palletcode');
             var elbarcode = document.getElementById('barcode');
-            elbarcode.value = null
-            el.value = null
+            if (elbarcode !== null)
+              elbarcode.value = null
+            if (el !== null)
+              el.value = null
             el.focus()
           } else if (checkedAutoClear === false && type === "confirm") {
             var el = document.getElementById('barcode');
-            el.value = null
+            if (el !== null)
+              el.value = null
             el.focus()
           }
         }
         setDialog(false)
       } else {
-        alertDialogRenderer(res.data._result.message, "error", true);
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
     })
   }
@@ -449,20 +448,7 @@ const AmMappingPalletV2 = props => {
     switch (step) {
       case 0:
         return (
-          <div><FormInline>
-            <LabelH1>Process No.:</LabelH1>
-            <AmDropdown
-              placeholder="Select"
-              fieldDataKey="processType"
-              fieldLabel={["Name"]}
-              labelPattern=" : "
-              ddlMinWidth={300}
-              queryApi={DocumentProcessTypeQuery()}
-              onChange={(value, dataObject, inputID, fieldDataKey) =>
-                onHandleChangeInput(value, fieldDataKey)}
-              ddlType={"search"}
-            />
-          </FormInline>
+          <div>
             <FormInline>
               <LabelH1>Warehouse :</LabelH1>
               <AmDropdown
@@ -478,6 +464,21 @@ const AmMappingPalletV2 = props => {
                 ddlType={"search"}
               />
             </FormInline>
+            <FormInline>
+              <LabelH1>Process No.:</LabelH1>
+              <AmDropdown
+                placeholder="Select"
+                fieldDataKey="processType"
+                fieldLabel={["Name"]}
+                labelPattern=" : "
+                ddlMinWidth={300}
+                queryApi={DocumentProcessTypeQuery()}
+                onChange={(value, dataObject, inputID, fieldDataKey) =>
+                  onHandleChangeInput(value, fieldDataKey)}
+                ddlType={"search"}
+              />
+            </FormInline>
+
             <FormInline>
               <LabelH1>Area :</LabelH1>
               <AmDropdown
@@ -508,8 +509,8 @@ const AmMappingPalletV2 = props => {
 
             onNodeSelect={handleSelect}
           >
-            <StyledTreeItem nodeId="1" label={dataPallet != undefined ? dataPallet.code : null}>
-              {dataPallet === undefined ? null :
+            <StyledTreeItem nodeId="1" label={dataPallet !== undefined && dataPallet !== null ? dataPallet.code : null}>
+              {dataPallet === undefined || dataPallet === null ? null :
                 dataPallet.mapstos === null ? null : dataPallet.mapstos.map((x, index) => {
                   return (
                     <div key={index} syle={{ marginLeft: "30px" }} >
@@ -527,19 +528,16 @@ const AmMappingPalletV2 = props => {
             </StyledTreeItem>
           </TreeView>
           {/* =================================== Claer ===================================== */}
-          {console.log(dataPallet)}
           <Card>
             <CardContent>
               <FormInline>
                 <CheckboxCustom onClick={event => {
-                  console.log(event.target.checked)
                   setCheckedAutoClear(event.target.checked)
                 }}
                   defaultChecked={checkedAutoClear} />
                 <LabelH1 style={{ width: "120px" }}>{"Clear pallet auto"}</LabelH1>
               </FormInline>
               {/* =================================== Pallet ===================================== */}
-              {console.log(autoFocus)}
               <AmInput
                 id={"palletcode"}
                 placeholder="Pallet Code"
@@ -547,12 +545,14 @@ const AmMappingPalletV2 = props => {
                 autoFocus={autoFocus}
                 style={{ width: "100%" }}
                 onChange={(value, obj, element, event) =>
-                  onHandleChangeInput(value, "palletCode")
+                  onHandleChangeInputPalletCode(value, "palletCode")
                 }
-                // onBlur={(e) => {
-                //   if (e !== undefined && e !== null)
-                //     onHandleChangeInputPalletCode("palletCode", e)
-                // }}
+
+                onBlur={(e) => {
+                  console.log(e)
+                  if (e !== undefined && e !== null)
+                    onHandleChangeInputPalletCode("palletCode", e)
+                }}
                 onKeyPress={(value, obj, element, event) => {
                   if (event.key === "Enter") {
                     onHandleChangeInputPalletCode("palletCode", value)
@@ -579,13 +579,15 @@ const AmMappingPalletV2 = props => {
                       type="input"
                       style={{ width: "100%" }}
                       onChange={(value, obj, element, event) =>
-                        onHandleChangeInput(value, "barcode")
+                        onHandleChangeInputBarcode("barcode", value)
                       }
                       autoFocus={autoFocusBarcode}
-                      // onBlur={(e) => {
-                      //   if (e !== undefined && e !== null)
-                      //     onHandleChangeInputPalletCode("barcode", e)
-                      // }}
+
+                      onBlur={(e) => {
+                        console.log(e)
+                        if (e !== undefined && e !== null)
+                          onHandleChangeInputBarcode("palletCode", e)
+                      }}
                       onKeyPress={(value, obj, element, event) => {
                         if (event.key === "Enter") {
                           onHandleChangeInputBarcode("barcode", value)
@@ -595,17 +597,19 @@ const AmMappingPalletV2 = props => {
                     />
                   </div> :
                   <div>
-                    {props.columnsManual === null ? null : props.columnsManual.map((x, index) => {
-                      return (
-                        <div key={index} syle={{ marginLeft: "30px" }} >
-                          <Card >
-                            <CardContent>
+                    <Card >
+                      <CardContent>
+                        {props.columnsManual === null ? null : props.columnsManual.map((x, index) => {
+                          return (
+                            <div key={index} syle={{ marginLeft: "30px" }} >
+
                               {FuncSetEleManual(x)}
-                            </CardContent>
-                          </Card>
-                        </div>
-                      );
-                    })}
+
+                            </div>
+                          );
+                        })}
+                      </CardContent>
+                    </Card>
                   </div>
               }
               {/* =================================== End ===================================== */}
@@ -672,7 +676,7 @@ const AmMappingPalletV2 = props => {
             queryApi={x.dataDropDown}
             onChange={(value, dataObject, inputID, fieldDataKey) =>
               onHandleChangeInputManual(value, x.field)}
-            ddlType={x.typeDropdow}
+            ddlType={"search"}
           />
         </FormInline>
       );
@@ -712,11 +716,6 @@ const AmMappingPalletV2 = props => {
                         type="input"
                         disabled={y.disabled}
                         defaultValue={x ? x[y.field] : 0}
-                        // onBlur={(e) => {
-                        //   console.log("dsfusygfe")
-                        //   if (e !== undefined && e !== null)
-                        //     onHandleChangeInput(value, "editQty")
-                        // }}
                         onKeyPress={(value, obj, element, event) => {
                           if (event.key === "Enter") {
                             onHandleChangeInput(value, "editQty")
@@ -740,14 +739,6 @@ const AmMappingPalletV2 = props => {
 
     }
   };
-
-
-
-
-
-
-
-
 
   return (
     <div className={classes.root}>
@@ -813,7 +804,6 @@ const AmMappingPalletV2 = props => {
                       <AmButton
                         styleType="confirm"
                         onClick={() => {
-                          console.log(valueInput.palletCode)
                           scanMappingSto(valueInput.palletCode, "confirm")
                           //getData("confirm")
                         }}

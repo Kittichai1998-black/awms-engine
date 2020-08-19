@@ -98,6 +98,9 @@ namespace AWMSEngine.Engine.V2.General
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
+                if (parentDoc == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
+
                 res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;
                 res.grCode = parentDoc.Code;
