@@ -620,6 +620,204 @@ const DocumentView = props => {
       dataDoc, data, ReturnMapping),
     [openReceive, eventStatus, props.addPalletMapSTO,
       dataDoc, data])
+
+  const ExportPDF = async () => {
+    try {
+      let data_document = dataDoc.document;
+      if (data_document !== null || data_document !== undefined) {
+        var dataDocumentItem = dataDoc.sou_bstos;
+        let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
+        let ActionDate = moment(data_document.Actiontime).format("DD/MM/YYYY HH:mm:ss");
+
+
+        let head = [
+          {
+            cells: [ //list<cells>
+              {
+                text: "Document :",
+                font_style: "bold",
+              },
+              {
+                text: data_document.Code,
+                font_style: "normal",
+              },
+              {
+                text: "Docment Date :",
+                font_style: "bold",
+              },
+              {
+                text: ActionDate,
+                font_style: "normal",
+              },
+            ]
+          },
+          {
+            cells: [ //list<cells>
+              {
+                text: "Process No. :",
+                font_style: "bold",
+              },
+              {
+                text: data_document.DocumentProcessTypeName,
+                font_style: "normal",
+              },
+              {
+                text: "Action Time :",
+                font_style: "bold",
+              },
+              {
+                text: DocDate,
+                font_style: "normal",
+              },
+            ]
+          },
+          {
+            cells: [ //list<cells>
+              {
+                text: "Source Warehouse :",
+                font_style: "bold",
+              },
+              {
+                text: "STGT-HY4/ASRS",
+                font_style: "normal",
+              },
+              {
+                text: "Destinaton Warehouse :",
+                font_style: "bold",
+              },
+              {
+                text: "",
+                font_style: "normal",
+              },
+            ]
+          },
+          {
+            cells: [ //list<cells>
+              {
+                text: "Destinaton Customer :",
+                font_style: "bold",
+              },
+              {
+                text: "สินค้าลูกค้า",
+                font_style: "normal",
+              },
+              {
+                text: "Remark :",
+                font_style: "bold",
+              },
+              {
+                text: "xxxxxx",
+                font_style: "normal",
+              },
+            ]
+          }
+        ]
+
+        let reqjson = {
+          "title": "Putaway Document Report",
+          "companyName": "BOSS",
+          "tables": [
+            {
+              "hor_align": "ALIGN_CENTER",
+              "ver_align": null,
+              "total_width": null,
+              "def_cell_border": "BOX",
+              "headers": [
+                {
+                  cells: [ //list<cells>
+                    {
+                      text: "Document :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: data_document.Code,
+                      font_style: "normal",
+                    },
+                    {
+                      text: "Docment Date :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: ActionDate,
+                      font_style: "normal",
+                    },
+                  ]
+                },
+                {
+                  cells: [ //list<cells>
+                    {
+                      text: "Process No. :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: data_document.DocumentProcessTypeName,
+                      font_style: "normal",
+                    },
+                    {
+                      text: "Action Time :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: DocDate,
+                      font_style: "normal",
+                    },
+                  ]
+                },
+                {
+                  cells: [ //list<cells>
+                    {
+                      text: "Source Warehouse :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: "STGT-HY4/ASRS",
+                      font_style: "normal",
+                    },
+                    {
+                      text: "Destinaton Warehouse :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: "",
+                      font_style: "normal",
+                    },
+                  ]
+                },
+                {
+                  cells: [ //list<cells>
+                    {
+                      text: "Destinaton Customer :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: "สินค้าลูกค้า",
+                      font_style: "normal",
+                    },
+                    {
+                      text: "Remark :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: "xxxxxx",
+                      font_style: "normal",
+                    },
+                  ]
+                }
+              ]
+            }
+          ],
+        };
+
+        console.log(reqjson)
+
+
+        await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + data_document.Code + ".pdf").then();
+
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
@@ -669,13 +867,13 @@ const DocumentView = props => {
 
       {typeDoc ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-              <AmTable
-                  selection={"checkbox"}
-                 selectionData={(data) => {
-                  setSelection(data);
+        <AmTable
+          selection={"checkbox"}
+          selectionData={(data) => {
+            setSelection(data);
           }} dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
       ) : null}
-          <br />
+      <br />
 
       {props.useScanBarcode && eventStatus === 10 ?
         <AmButton className="float-right" styleType="info"
@@ -717,7 +915,7 @@ const DocumentView = props => {
             <TabPane tabId="1">
               <Row>
                 <Col sm="12">
-                  
+
                   {props.buttonConfirmMappingSTO === true ?
                     eventStatus === 10 || eventStatus === 11 ?
                       //|| eventStatus === 12 || eventStatus === 31 ?
@@ -725,7 +923,7 @@ const DocumentView = props => {
                         {t("Received All")}
                       </AmButton> : null
                     : null}
-                    {props.useAddPalletMapSTO && eventStatus === 10 ?
+                  {props.useAddPalletMapSTO && eventStatus === 10 ?
                     <>
                       <AmButton className="float-right" styleType="confirm" style={{ margin: '5px 5px 5px 0px' }}
                         startIcon={<ReceiveIcon />}
@@ -799,7 +997,13 @@ const DocumentView = props => {
             {t("Back")}
           </AmButton>
         ) : null}
-
+        {props.usePrintPDF === true ? (
+          <AmButton styleType="info" className="float-right"
+            onClick={ExportPDF}
+          >
+            {t("Export PDF")}
+          </AmButton>
+        ) : null}
 
       </div>
     </div>
