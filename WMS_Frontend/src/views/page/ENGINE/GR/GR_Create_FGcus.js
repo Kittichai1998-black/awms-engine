@@ -33,8 +33,8 @@ const RD_Create_FGCustomer = props => {
     const [Type, setType] = useState(true);
 
 
-    useEffect(() => { 
-        if (CodeprocessType !== "" && CodeprocessType !== null) {    
+    useEffect(() => {
+        if (CodeprocessType !== "" && CodeprocessType !== null) {
             var DataprocessTypeID;
             var defaulProcessType = 1010
             if (CodeprocessType === 1) {
@@ -42,7 +42,7 @@ const RD_Create_FGCustomer = props => {
             } else if (CodeprocessType === 2) {
                 DataprocessTypeID = { label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" }
             } else if (CodeprocessType === 3) {
-                DataprocessTypeID = { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1 , codeTranslate: "Source Supplier" }
+                DataprocessTypeID = { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Supplier" }
             } else {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
@@ -64,14 +64,14 @@ const RD_Create_FGCustomer = props => {
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                     { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
                 ],
-               
+
 
             ];
 
             setHeaderDoc(headerCreate)
             setskuquery();
             setType(true)
-          
+
 
         } else {
 
@@ -97,9 +97,9 @@ const RD_Create_FGCustomer = props => {
                 />
             );
         }
-     
 
-    }, [HeaderDoc, CodeprocessType])
+
+    }, [HeaderDoc, CodeprocessType, columSKU])
 
 
     useEffect(() => {
@@ -107,27 +107,32 @@ const RD_Create_FGCustomer = props => {
         if (SKUMaster) {
             let objQuery = SKUMaster;
             if (objQuery !== null && Type === true && skuType !== undefined) {
-                let skuqrys = JSON.parse(objQuery.q);                
-                skuqrys = [{ "f": "Status", "c": "<", "v": 2 },{ 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
+                let skuqrys = JSON.parse(objQuery.q);
+                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
 
             setskuquery(objQuery)
-           
+
         }
-        console.log(skuType)
+
         let Headers;
-            
-        if (skuType === 5 && CodeprocessType ===3) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true  }
+        let AuditStatusDDL;
 
-
+        if (skuType === 5 && CodeprocessType === 3) {
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true }
         } else {
-            Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts : "-" }
-
+            Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts: "-" }
         }
-        var columnEdit = [  
-            { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts  : itemNos},
+
+
+        if (skuType === 5 && CodeprocessType === 1) {
+            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: 0, disabled : true }
+        } else {
+            AuditStatusDDL = { Header: "Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: 1 }
+        }
+        var columnEdit = [
+            { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
             {
                 // search: false,
                 Header: "SKU Item",
@@ -146,8 +151,8 @@ const RD_Create_FGCustomer = props => {
             { Header: "Lot", accessor: "lot", type: "input" },
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
             { Header: "Unit", accessor: "unitType", type: "dropdown", key: "Code", queryApi: UnitTypeQuery, fieldLabel: ["Code"], defaultValue: "ขวด" },
-            { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: "PASS" },
-             Headers,
+            AuditStatusDDL,
+            Headers,
             { Header: "Ref2", accessor: "ref2", type: "input" },
             { Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "Ref4", accessor: "ref4", type: "input" },
@@ -166,8 +171,8 @@ const RD_Create_FGCustomer = props => {
 
     const AuditStatus = [
         { label: 'QUARANTINE', value: '0' },
-        { label: 'PASS', value: '1' },
-        { label: 'NOTPASS', value: '2' },
+        { label: 'PASSED', value: '1' },
+        { label: 'REJECTED ', value: '2' },
         { label: 'HOLD', value: '9' },
     ];
 
@@ -240,26 +245,26 @@ const RD_Create_FGCustomer = props => {
         { Header: "Name", accessor: "skuName", width: 250, sortable: true },
     ];
 
-  
+
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item No.", accessor: "itemNo" },
         { Header: "Item Code", accessor: "SKUItems" },
         { Header: "OrderNo", accessor: "orderNo" },
-        { Header: "Batch", accessor: "batch"},
+        { Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
-        { Header: "Quantity", accessor: "quantity"},
+        { Header: "Quantity", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
         { Header: "Audit Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1"},
-        { Header: "Ref2", accessor: "ref2"},
-        { Header: "Ref3", accessor: "ref3"},
-        { Header: "Ref4", accessor: "ref4"},
-        { Header: "CartonNo", accessor: "cartonNo"},
+        { Header: "Vendor Lot", accessor: "ref1" },
+        { Header: "Ref2", accessor: "ref2" },
+        { Header: "Ref3", accessor: "ref3" },
+        { Header: "Ref4", accessor: "ref4" },
+        { Header: "CartonNo", accessor: "cartonNo" },
         { Header: "IncubationDay", accessor: "incubationDay" },
-        { Header: "ProductDate", accessor: "productionDate"},
-        { Header: "ExpireDate", accessor: "expireDate"},
-        { Header: "ShelfLifeDay", accessor: "shelfLifeDay"}
+        { Header: "ProductDate", accessor: "productionDate" },
+        { Header: "ExpireDate", accessor: "expireDate" },
+        { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc

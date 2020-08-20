@@ -751,7 +751,8 @@ const DocumentView = props => {
                                     <br />
                                     {typeDoc ? (
 
-                                        <AmTable dataKey="id"
+                                        <AmTable
+                                            dataKey="id"
                                             columns={columnsDetailSOU}
                                             pageSize={dataDetailSOU.length}
                                             dataSource={dataDetailSOU}

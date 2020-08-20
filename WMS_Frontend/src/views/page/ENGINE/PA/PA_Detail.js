@@ -93,7 +93,7 @@ const PA_Detail = props => {
         { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Audit Status", accessor: "AuditStatus", Cell: e => GetAuditStatus(e.original) },
         { Header: "Vendor Lot", accessor: "Ref1" },
         { Header: "Ref2", accessor: "Ref2" },
         { Header: "Ref3", accessor: "Ref3" },
@@ -165,6 +165,19 @@ const PA_Detail = props => {
             return <HighlightOff style={{ color: "red" }} />;
         else return null;
     };
+
+    const GetAuditStatus = (value) => {
+        if (value.AuditStatus === 0) {
+            return "QUARANTINE"
+        } else if (value.AuditStatus === 1) {
+            return "PASS"
+        } else if (value.AuditStatus === 2) {
+            return "NOTPASS"
+        } else if (value.AuditStatus === 9) {
+            return "HOLD"
+        }
+    };
+
 
     const getDocID = () => {
         const values = queryString.parse(props.location.search);

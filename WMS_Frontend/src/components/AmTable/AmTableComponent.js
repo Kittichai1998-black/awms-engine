@@ -140,7 +140,7 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
             colStyle:{textAlign:"center",},
             sortable: false,
             Cell: ele => {
-                if(ele.original[dataKey] !== undefined){                  
+                if (ele.original[dataKey] !== undefined) {
                   return (
                     <input
                         id={"selection_" + ele.original[dataKey]}

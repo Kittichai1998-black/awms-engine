@@ -131,6 +131,7 @@ const AmHeaderputandpick = (props) => {
     const [valueFindPopup, setvalueFindPopup] = useState({});
     const DocItemsquery = useDocumentItemQuery(doc.docID, props.docItemQuery)
     const [dataSelect, setDataSelect] = useState([]);
+    const [dataSelectSet, setDataSelectSet] = useState([]);
     const [valueQtyDocItems, setValueQtyDocItems] = useState([]);
     const [datadocItems, setdatadocItems] = useState([]);
 
@@ -148,10 +149,10 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         if (doc.docID != 0 && doc.docID !== undefined) {
-      
+
             doc.setdataSourceItemTB([])
             doc.setdatadocItem([])
-            doc.setdialogItemSet([])  
+            doc.setdialogItemSet([])
             doc.setdialogItemSet(false)
             doc.setdialogItem(false)
             getData();
@@ -205,6 +206,7 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         console.log(doc.datadocItem)
+        //doc.setdatadocItem(doc.datadocItem)
     }, [doc.datadocItem])
 
     const getDocItem = () => {
@@ -218,14 +220,7 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    datadocItems.push({
-                        ...res.data.datas[0],
-                        ExpireDate: res.data.datas[0].ExpireDate ? moment(res.data.datas[0].ExpireDate).format("DD/MM/YYYY") : null,
-                        ProductionDate: res.data.datas[0].ProductionDate ? moment(res.data.datas[0].ProductionDate).format("DD/MM/YYYY") : null,
-                    }
-                    )
-                    doc.setdatadocItem(datadocItems);
-                    doc.setdialogItem(true)
+                    FormatDataTB(res.data.datas)
                 } else {
                     getDocItemQuery(DocItemsquery)
                 }
@@ -239,30 +234,72 @@ const AmHeaderputandpick = (props) => {
         //ข้อมูลจาก amv_Docview
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
-                datadocItems.push({
-                    ...res.data.datas[0],
-                    ExpireDates: res.data.datas[0].ExpireDate ? res.data.datas[0].ExpireDate : null,
-                    ProductionDates: res.data.datas[0].ProductionDate ? res.data.datas[0].ProductionDate : null,
-                    ExpireDate: res.data.datas[0].ExpireDate ? moment(res.data.datas[0].ExpireDate).format("DD/MM/YYYY") : null,
-                    ProductionDate: res.data.datas[0].ProductionDate ? moment(res.data.datas[0].ProductionDate).format("DD/MM/YYYY") : null,
-                }
-                )
-                doc.setdatadocItem(datadocItems);
-                doc.setdialogItem(true)
+                FormatDataTB(res.data.datas)
             } else {
 
             }
-          
+
         })
     }
+
+
+    const FormatDataTB = (res) => {
+        let datasCheck = [];
+        res.forEach((x, i) => {
+            var datas = {
+                ...x,
+                ExpireDates: x.ExpireDate ? x.ExpireDate : null,
+                ProductionDates: x.ProductionDate ? x.ProductionDate : null,
+                ExpireDate: x.ExpireDate ? moment(x.ExpireDate).format("DD/MM/YYYY") : null,
+                ProductionDate: x.ProductionDate ? moment(x.ProductionDate).format("DD/MM/YYYY") : null,
+                AuditStatus: getAuditStatus(x.AuditStatus),
+                AuditStatuss: x.AuditStatus
+            }
+            if (datas.Qty) {
+                if ((datas.Qty - datas.Quantity) > 0) {
+                    datasCheck.push(datas)
+                } else {
+                }
+
+            } else {
+                datasCheck.push(datas)
+            }
+
+
+
+        })
+
+        if (datasCheck.length === 0) {
+            dia.setdailogMsg('Quantity document is Empty')
+            dia.setdailogErr(true)
+
+        } else if (datasCheck.length > 0) {
+            doc.setdatadocItem(datasCheck);
+            doc.setdialogItem(true)
+        }
+    }
+
+    const getAuditStatus = (status) => {
+        if (status === 0) {
+            return 'QUARANTINE'
+        } else if (status === 1) {
+            return 'PASSED'
+        } else if (status === 2) {
+            return 'REJECTED'
+        } else if (status === 9) {
+            return 'HOLD'
+        }
+    }
+
+
 
     const getDataSet = () => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    console.log(res.data.datas)
                     doc.setdataSet(res.data.datas);
                     setDataSelect([]);
+                    setDataSelectSet([]);
                 } else {
                     getDocItemQuerySet(DocItemsquery)
                 }
@@ -278,6 +315,7 @@ const AmHeaderputandpick = (props) => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
                 doc.setdataSet(res.data.datas);
                 setDataSelect([]);
+                setDataSelectSet([]);
             } else {
 
             }
@@ -336,7 +374,7 @@ const AmHeaderputandpick = (props) => {
             if (value !== undefined) {
                 Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.doctypeDocNo + "&docID=" +
                     value + "&getMapSto=true").then((res => props.onChangeDoument(res.data.document)))
-                doc.setdialogItem(true)
+
             }
 
         }
@@ -376,95 +414,127 @@ const AmHeaderputandpick = (props) => {
     }
 
     const onSubmitAddItem = () => {
-        let dataSelect2 = [];
-        let Checkdataselect = 0;
 
-        if (dataSelect.length != 0) {
-            if (valueQtyDocItems.length != 0) {
-                dataSelect2 = [...dataSelect].map((x, idx) => {
-                    let CheckID;
-                    const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);
-                    if (found < 0) {
-                        CheckID = true
-                    }
-                    if (!CheckID) {
-                        return Checkdataselect = 1
-                    } else {
-                        if (valueQtyDocItems[x.ID] !== undefined) {
-                            x.Quantity = valueQtyDocItems[x.ID].recQty
+        if (dataSelectSet.length > 0) {
+            console.log(dataSelectSet.length)
+            let checks;
+            let dataselect = []
+            dataSelectSet.forEach((xs, i) => {
+                checks = doc.dataSourceItemTB.find(x => x.ID === dataSelectSet[i].ID);
+                console.log(checks)
+                if (checks === undefined) {
+                    doc.dataSourceItemTB.push(
+                        {
+                            ...xs,
+                            AuditStatus: getAuditStatus(xs.AuditStatus)
+                        })
+                }
+                else {
+                    //dia.setdailogMsg("SKUItem dupicate")
+                    //dia.setdailogErr(true)
 
+                }
+
+            })
+            doc.seteditdata([]);
+            setDataSelect([]);
+            doc.setdialogItem(false)
+            doc.setdialogItemSet(false)
+
+        } else {
+            let dataSelect2 = [];
+            let Checkdataselect = 0;
+            if (dataSelect.length != 0) {
+                if (valueQtyDocItems.length != 0) {
+                    dataSelect2 = [...dataSelect].map((x, idx) => {
+                        let CheckID;
+                        const found = doc.dataSourceItemTB.findIndex(element => element.ID === x.ID);
+                        if (found < 0) {
+                            CheckID = true
+                        }
+                        if (!CheckID) {
+                            return Checkdataselect = 1
                         } else {
+                            if (valueQtyDocItems[x.ID] !== undefined) {
+                                x.Quantity = valueQtyDocItems[x.ID].recQty
 
-                            if (x.Qty) {
-                                let Quantitys = x.Quantity - x.Qty
-                                if (Quantitys = '0') {
-                                    x.Quantity = 0
-                                    dia.setdailogMsg("Item is empty")
-                                    dia.setdailogErr(true)
+                            } else {
 
-                                } else {
+                                if (x.Qty) {
+                                    let Quantitys = x.Quantity - x.Qty
+                                    if (Quantitys = '0') {
+                                        x.Quantity = 0
+                                        dia.setdailogMsg("Item is empty")
+                                        dia.setdailogErr(true)
 
-                                    if (Quantitys > 0) {
-                                        x.Quantity = Quantitys
                                     } else {
+
+                                        if (Quantitys > 0) {
+                                            x.Quantity = Quantitys
+                                        } else {
+
+                                        }
 
                                     }
 
-                               }
 
-                             
-                            }
-                            else if (x.Qty === undefined) {
+                                }
+                                else if (x.Qty === undefined) {
 
-                            } else if (x.Quantity === 0) {
-                                dia.setdailogMsg("Document dupicate")
-                                dia.setdailogErr(true)
+                                } else if (x.Quantity === 0) {
+                                    dia.setdailogMsg("Document dupicate")
+                                    dia.setdailogErr(true)
+                                }
                             }
+                            return x;
+
                         }
-                        return x;
+                    })
+                    if (Checkdataselect === 1) {
+                        dia.setdailogMsg("SKUItem dupicate")
+                        dia.setdailogErr(true)
+                        Checkdataselect = 0
 
+                    } else {
+                        if (doc.dataSourceItemTB.length === 0) {
+                            doc.setdataSourceItemTB(dataSelect2);
+                            doc.setdialogItem(false)
+                        } else {
+                            dataSelect2.forEach((x, i) => {
+                                doc.dataSourceItemTB.push(dataSelect2[i])
+                            })
+                            doc.setdialogItem(false)
+                        }
                     }
-                })
-
-                if (Checkdataselect === 1) {
-                    dia.setdailogMsg("SKUItem dupicate")
-                    dia.setdailogErr(true)
-                    Checkdataselect = 0
 
                 } else {
-                    if (doc.dataSourceItemTB.length === 0) {
-                        doc.setdataSourceItemTB(dataSelect2);
-                        doc.setdialogItem(false)
-                    } else {
-                        dataSelect2.forEach((x, i) => {
-                            doc.dataSourceItemTB.push(dataSelect2[i])
-                        })
-                        doc.setdialogItem(false)
-                    }
+                    dia.setdailogMsg("Quantity Max");
+                    dia.setdailogErr(true)
+                    //doc.setdataSourceItemTB(dataSelect);
                 }
 
             } else {
-                dia.setdailogMsg("Quantity Max");
-                dia.setdailogErr(true)
-                //doc.setdataSourceItemTB(dataSelect);
+                if (doc.editdata.length != 0) {
+                    let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
+                    doc.dataSourceItemTB.splice(idx, 1);
+                    doc.setdataSourceItemTB([...doc.dataSourceItemTB])
+                    doc.setdialogItem(false)
+                } else {
+                    dia.setdailogMsg("Seelct SKU Pls");
+                    dia.setdailogErr(true)
+                }
             }
 
-        } else {
-            if (doc.editdata.length != 0) {
-                let idx = doc.dataSourceItemTB.findIndex(x => x.ID === doc.editdata.ID);
-                doc.dataSourceItemTB.splice(idx, 1);
-                doc.setdataSourceItemTB([...doc.dataSourceItemTB])
-                doc.setdialogItem(false)
-            } else {
-                dia.setdailogMsg("Seelct SKU Pls");
-                dia.setdailogErr(true)
-            }
+            doc.seteditdata([]);
+            setDataSelect([]);
+            doc.setdialogItem(false)
+            doc.setdialogItemSet(false)
+
+
         }
 
-        doc.seteditdata([]);
-        setDataSelect([]);
-        doc.setdialogItem(false)
 
+       
 
     }
 
@@ -487,7 +557,7 @@ const AmHeaderputandpick = (props) => {
             defaultQty = datarow.Quantity
         }
 
-        return  <AmInput id={datarow.ID}
+        return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
             type="input"
             defaultValue={defaultQty}
@@ -652,6 +722,15 @@ const AmHeaderputandpick = (props) => {
         doc.setdialogItem(false);
     }
 
+    const selectionDisabledCustoms = (data) => {
+        let check = doc.dataSourceItemTB.find(x => x.ID === data.ID);
+        if (check === undefined)
+            return false
+        else
+            return true
+    }
+
+
 
     return <div>
         {getHeaderCreate()}
@@ -672,10 +751,10 @@ const AmHeaderputandpick = (props) => {
                         columns={columns}
                         dataKey={"ID"}
                         dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
-                        //selectionDefault={doc.dataSourceItemTB}         
+                        selectionDefault={doc.datadocItem}
                         selection="checkbox"
                         selectionData={data => setDataSelect(data)}
-                        rowNumber={true}
+                        rowNumber={false}
                         //  totalize={count}
                         pageSize={100}
                     //height={500}
@@ -711,8 +790,10 @@ const AmHeaderputandpick = (props) => {
                         dataSource={doc.dataSet}
                         selectionDefault={doc.dataSourceItemTB}
                         selection="checkbox"
-                        selectionData={data => setDataSelect(data)}
-                        rowNumber={true}
+                        selectionData={(data) => { setDataSelectSet(data) }}
+                        selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}
+                        //selectionDisabledCustom={doc.dataSourceItemTB ? doc.dataSourceItemTB : false}
+                        rowNumber={false}
                         //  totalize={count}
                         pageSize={100}
                     //height={500}
