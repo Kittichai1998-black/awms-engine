@@ -17,6 +17,7 @@ namespace AWMSModel.Entity
         public decimal? BaseQuantity;
         public string Options;
         public DateTime? ProductionDate;
+        public AuditStatus AuditStatus;
         public DateTime? ExpireDate;
         public string RefID;
         public string Ref1;

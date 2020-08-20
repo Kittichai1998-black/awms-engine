@@ -164,6 +164,11 @@ const AmCreateDocument = (props) => {
     }, [props.headerCreate])
 
     useEffect(() => {
+        getTypeEditor()
+        console.log(props.columnEdit)
+    }, [props.columnEdit])
+
+    useEffect(() => {
         let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
             //arr[el.key] = el.valueTexts || el.defaultValue    
             if (el.key === "documentProcessTypeID" && processType === undefined) {
@@ -500,7 +505,7 @@ const editorListcolunm = () => {
                     return <div key={key}>
 
                         {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
-                            row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, i, rowError, row.required)}
+                            row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, row.disabled, i, rowError, row.required)}
 
                     </div>
                 }
@@ -510,7 +515,8 @@ const editorListcolunm = () => {
 }
 
 
-const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts, key, datas, defaultValue, index, rowError, required) => {
+    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate,
+        placeholder, TextInputnum, texts, key, datas, defaultValue, disabled, index, rowError, required) => {
     if (type === "input") {
         return (
             <FormInline>
@@ -611,6 +617,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                         autoDefaultValue={true}
                         returnDefaultValue={true}
                         //value={valueText.ddlTest.value}
+                        disabled={disabled ? disabled : false}
                         returnDefaultValue={true}
                         defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                         onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
@@ -955,7 +962,7 @@ const CreateDoc = () => {
     }
 
     if (Object.keys(doc).length > countDoc) {
-        //console.log(doc)
+        console.log(doc)
         CreateDocuments(doc)
     }
 }

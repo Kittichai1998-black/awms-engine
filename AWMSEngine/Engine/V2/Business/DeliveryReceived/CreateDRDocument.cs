@@ -174,8 +174,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType;
 
 
-                if (Sou_Customer_ID == null && souWarehouseModel.ID == null && Sou_Supplier_ID == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DataSource Not Found");
+                //if (Sou_Customer_ID == null && souWarehouseModel.ID == null && Sou_Supplier_ID == null)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DataSource Not Found");
 
                 if (OwnerProcess == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");

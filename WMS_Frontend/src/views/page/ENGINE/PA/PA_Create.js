@@ -33,12 +33,8 @@ const Create_GR_DR = props => {
                     { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "",  codeTranslate: "Des Warehouse" }
                 ],
                 [
-                    { label: "For Customer", type: "labeltext", key: "forCustomerID", valueTexts: "", codeTranslate: "For Customer" },
+                  
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-
-                [
-
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
@@ -150,7 +146,7 @@ const Create_GR_DR = props => {
         q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
+        s: "[{'f':'ID','od':'DESC'}]",
         sk: 0,
         l: 100,
         all: ""
@@ -177,7 +173,7 @@ const Create_GR_DR = props => {
         { Header: "OrderNo", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
         { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot",accessor: "Lot", type: "text", codeTranslate: "Lot" },
-        { Header: "Qty", accessor: "Quantity",  type: "text", codeTranslate: "Qty" },
+        { Header: "Qty", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
         { Header: "Audit Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1"},
