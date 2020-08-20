@@ -51,19 +51,30 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
         </FormInline>
         {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
           return (
-            <div key={index}>
-              <FormInline>
-                <LabelH2>Item :</LabelH2>
-                {x.pstoCode + " : " + x.pstoName}
-              </FormInline>
-              <FormInline>
-                <LabelH2>Lot :</LabelH2>
-                {x.lot}
-              </FormInline>
-              <FormInline>
-                <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
-              </FormInline>
-            </div>
+            <Card>
+              <CardContent style={{
+                paddingBottom: "0px",
+                paddingTop: "0px",
+                border: "solid",
+                borderColor: "#E0E0E0"
+              }}>
+                <div key={index}>
+                  <FormInline>
+                    <LabelH2>Item :</LabelH2>
+                    {x.pstoCode}
+                  </FormInline>
+                  <FormInline>
+                    <LabelH2>Lot :</LabelH2>
+                    {x.lot}
+                  </FormInline>
+                  <FormInline>
+                    <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
+                  </FormInline>
+                </div>
+
+              </CardContent>
+            </Card>
+
           );
         })}
       </div>

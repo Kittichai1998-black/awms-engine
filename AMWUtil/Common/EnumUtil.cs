@@ -124,6 +124,11 @@ namespace AMWUtil.Common
         {
             return (char)enumVal.GetValueInt();
         }
+        public static int GetValueInt<T>(string name)
+             where T : struct, IComparable, IFormattable, IConvertible
+        {
+            return (int)Enum.Parse(typeof(T), name);
+        }
         public static int GetValueInt<T>(this T enumVal)
              where T : struct, IComparable, IFormattable, IConvertible
         {

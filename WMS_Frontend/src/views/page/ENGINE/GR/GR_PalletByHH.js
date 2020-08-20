@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AmMappingHH from '../../../pageComponent/AmMappingPallet/AmMappingPallet'
+import AmMappingHH from '../../../pageComponent/AmMappingPalletV2/AmMappingPalletV2'
 const GR_PalletByHH = (props) => {
     const UnitTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -157,7 +157,8 @@ const GR_PalletByHH = (props) => {
             name: "Product Date",
             disabled: false,
             placeholder: "Product Date"
-        }]
+        }
+    ]
     return (
         <AmMappingHH columnsEdit={columnsEdit} columnsManual={columnsManual} />
     );

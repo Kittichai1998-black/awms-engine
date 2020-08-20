@@ -36,6 +36,7 @@ const PA_Detail = props => {
                 // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
+                usePrintPDF={true}
             >
             </DocView>
             )

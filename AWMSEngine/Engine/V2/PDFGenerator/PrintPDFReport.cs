@@ -15,30 +15,46 @@ using AWMSModel.Constant.EnumConst;
 
 namespace AWMSEngine.Engine.V2.PDFGenerator
 {
-    public class PrintPDFReport : BaseEngine<PrintPDFReport.TReq, CreatePDFTemplate.TRes>
+    public class PrintPDFReport : BaseEngine<PDFContentCriteria, CreatePDFTemplate.TRes>
     {
         
-        public class TReq
+        //public class TReq
+        //{
+        //    public int docID;
+        //    public DocumentTypeID docTypeID;
+        //}
+
+        protected override CreatePDFTemplate.TRes ExecuteEngine(PDFContentCriteria reqVO)
         {
-            public int docID;
-            public DocumentTypeID docTypeID;
-        }
+            //var reqGetDoc = new GetDocumentByID.TReq() {
+            //    docID = reqVO.docID,
+            //    docTypeID = reqVO.docTypeID,
+            //    getMapSto = true
+            //};
+            //var resDocument = new GetDocumentByID().Execute(this.Logger, this.BuVO, reqGetDoc);
 
-        protected override CreatePDFTemplate.TRes ExecuteEngine(TReq reqVO)
-        {
-            var reqGetDoc = new GetDocumentByID.TReq() {
-                docID = reqVO.docID,
-                docTypeID = reqVO.docTypeID,
-                getMapSto = true
-            };
-            var resDocument = new GetDocumentByID().Execute(this.Logger, this.BuVO, reqGetDoc);
-             
+            //var cellHeader = new List<PDFContentCriteria.Table>();
+            //var cellHader = new PDFContentCriteria.Table.Row.Cell() {
+            //    text = "Putaway Document Report",
+            //    style = "center"
+            //};
+            ////var rowsHeader = new List<>
+            //cellHeader.Add(new PDFContentCriteria.Table()
+            //{
+            //    headers = new List<PDFContentCriteria.Table.Row>() { new PDFContentCriteria.Table.Row() { 
+            //        cells = new List<PDFContentCriteria.Table.Row.Cell>() { cellHader } } 
+            //    }
+            //});
+            //var header = new PDFContentCriteria.Head() {
+            //    tables = cellHeader
+            //};
+            //var reqContent = new PDFContentCriteria() { 
+            //    head = header
+            //};
 
-            var reqContent = new PDFContentCriteria();
 
 
-
-            var res = new CreatePDFTemplate().Execute(this.Logger, this.BuVO, reqContent);
+            var res = new CreatePDFTemplate().Execute(this.Logger, this.BuVO, reqVO);
             return res;
         }
 

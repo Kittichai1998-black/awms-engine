@@ -1,4 +1,5 @@
-﻿using AWMSModel.Criteria;
+﻿using AMWUtil.Common;
+using AWMSModel.Criteria;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
@@ -67,7 +68,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         }
         public Font StyleFont(string type)
         {
-            return StyleFont(type, 12);
+            return StyleFont(type, 12f);
         }
         protected override TRes ExecuteEngine(PDFContentCriteria reqVO)
         {
@@ -82,16 +83,60 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             document.Open();
 
             ///
-            Paragraph para = new Paragraph(new Phrase("Hello 1234567890 กยบาสวหร่เสหหผแ", StyleFont("bold",16)));
-            document.Add(para);
-            Paragraph para2 = new Paragraph(new Phrase("Hello 1234567890 กยบาสวหร่เสหหผแ", StyleFont("bolditalic")));
-            document.Add(para2);
+            var size =document.PageSize;
+            foreach (var table in reqVO.tables)
+            {
+                document.Add(GenerateTable(table));
+            }
+
+            PdfPTable GenerateTable(PDFContentCriteria.Table itemTable)
+            {
+                PdfPTable table = new PdfPTable(itemTable.headers.First().cells.Count);
+                table.TotalWidth = itemTable.total_width;
+                table.HorizontalAlignment = itemTable.hor_align != null ? (int)typeof(Element).GetField(itemTable.hor_align).GetValue(null) : Element.ALIGN_LEFT;
+                table.DefaultCell.Border = itemTable.def_cell_border != null ? (int)typeof(Rectangle).GetField(itemTable.def_cell_border).GetValue(null) : Rectangle.NO_BORDER;
+                table.LockedWidth = itemTable.locked_width;
+                foreach (var row in itemTable.headers)
+                {
+                    add_row(table, row);
+                }
+                //foreach (var row in itemTable.bodys)
+                //{
+                //    add_row(table, row);
+                //}
+                //foreach (var row in itemTable.footers)
+                //{
+                //    add_row(table, row);
+                //}
+
+                void add_row( PdfPTable table, PDFContentCriteria.Table.Row row)
+                {
+                    foreach(var cell in row.cells)
+                    {
+
+                        Font font = StyleFont(cell.font_style != null ? cell.font_style : "normal", cell.font_size != null ? cell.font_size.Get<float>() : 12f);
+                        PdfPCell addcell = new PdfPCell(new Phrase(cell.text, font));
+                        addcell.HorizontalAlignment = cell.hor_align != null ?(int)typeof(Element).GetField(cell.hor_align).GetValue(null) : Element.ALIGN_LEFT;
+                        addcell.VerticalAlignment = cell.ver_align != null ? (int)typeof(Element).GetField(cell.ver_align).GetValue(null) : Element.ALIGN_MIDDLE;
+                        addcell.Border = cell.border != null ? (int)typeof(Rectangle).GetField(cell.border).GetValue(null) : Rectangle.NO_BORDER;
+                        addcell.Padding = cell.padding;
+                        addcell.PaddingBottom = cell.padding_bottom;
+                        addcell.PaddingLeft = cell.padding_left;
+                        addcell.PaddingRight = cell.padding_right;
+                        addcell.PaddingTop = cell.padding_top;
+                        table.AddCell(addcell);
+                    }
+                }
+
+                return table;
+            }
+
             document.Close();
 
             res.stream = workStream.ToArray();
             res.contentType = "application/pdf";
             return res;
         }
-
+ 
     }
 }

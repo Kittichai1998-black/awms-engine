@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -45,7 +46,7 @@ namespace AWMSEngine.Engine.V2.General
         public class PackSto
         {
             public string pstoCode;
-
+            public string pstoName;
             public string batch;
             public string lot;
             public string orderNo;
@@ -87,7 +88,7 @@ namespace AWMSEngine.Engine.V2.General
 
                 if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
-
+                
                 List<long> dociID = qrModel.dociID.Split(',').Select(long.Parse).ToList();
                 List<long> qty = qrModel.qty.Split(',').Select(long.Parse).ToList();
                 int i = 0;
@@ -98,6 +99,9 @@ namespace AWMSEngine.Engine.V2.General
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
+                if (parentDoc == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
+
                 res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;
                 res.grCode = parentDoc.Code;
@@ -117,10 +121,11 @@ namespace AWMSEngine.Engine.V2.General
                     //if (qty[i] == 0)
                     //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนรับเข้าเท่ากับ 0");
 
-
+                    //qrModel.numPalelt
                     packList.Add(new PackSto()
                     {
                         pstoCode = skuPutaway.Code,
+                        pstoName = skuPutaway.Name,
                         batch = docitemPutaway.Batch,
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,
@@ -132,7 +137,7 @@ namespace AWMSEngine.Engine.V2.General
                         ref4 = docitemPutaway.Ref4,
                         cartonNo = docitemPutaway.CartonNo,
                         forCustomerID = doc.For_Customer_ID,
-                        options = docitemPutaway.Options,
+                        options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
                         addQty = qty[i],
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,

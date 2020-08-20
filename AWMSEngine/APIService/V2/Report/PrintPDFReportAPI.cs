@@ -1,5 +1,6 @@
 ﻿using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.PDFGenerator;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace AWMSEngine.APIService.V2.Report
         }
         protected override dynamic ExecuteEngineManual()
         {
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<PrintPDFReport.TReq>(this.RequestVO);
-            var res = new PrintPDFReport().Execute(this.Logger, this.BuVO, req);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<PDFContentCriteria>(this.RequestVO);
+            var res = new CreatePDFTemplate().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

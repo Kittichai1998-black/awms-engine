@@ -227,7 +227,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         {
             PdfPTable headerTable = new PdfPTable(2);
             headerTable.TotalWidth = 422f;
-            headerTable.HorizontalAlignment = 0;
+            headerTable.HorizontalAlignment = Element.ALIGN_LEFT;
             headerTable.DefaultCell.Border = Rectangle.BOX;
 
             float[] headerTableColWidth = new float[2];
