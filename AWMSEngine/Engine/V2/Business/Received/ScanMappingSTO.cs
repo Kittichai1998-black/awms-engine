@@ -187,7 +187,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             MappingDistoAndDocumentItem.TRes createSTO(TReq.PackSto psto, long idBase)
             {
-                if(psto.addQty <= 0)
+                if(psto.addQty == 0)
                     throw new AMWException(Logger, AMWExceptionCode.V1002, "กรุณาระบุจำนวนสินค้า");
 
                 var sku = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(psto.pstoCode, BuVO);
