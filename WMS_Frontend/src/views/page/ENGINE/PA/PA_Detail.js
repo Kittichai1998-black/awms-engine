@@ -59,7 +59,6 @@ const PA_Detail = props => {
             }
 
         }
-        console.log(DataprocessType)
         var TextHeader = [
             [
                 { label: "Document No.", values: "Code" },
@@ -90,8 +89,21 @@ const PA_Detail = props => {
             Header: "Item",
             Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
         },
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 120, accessor: "_qty", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const columnsDetailSOU = [
@@ -107,19 +119,43 @@ const PA_Detail = props => {
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
-        { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
+        { width: 120, accessor: "_packQty", Header: "Qty" },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const columnsDetailDES = [
-        //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
-        { width: 100, accessor: "code ", Header: "Pallet" },
-        // { width: 150, accessor: "packCode", Header: "Pack Code" },
-        // { accessor: "packName", Header: "Pack Name" },
-        { Header: "Item Code", accessor: "SKUItems" },
         { width: 125, accessor: "ItemNo", Header: "ItemNo" },
+        { width: 100, accessor: "code ", Header: "Pallet" },
+        { Header: "Item Code", accessor: "SKUItems" },
         { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
+        { width: 120, accessor: "_packQty", Header: "Qty" },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay"},
+        { Header: "ProductDate", accessor: "ProductionDate"},
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

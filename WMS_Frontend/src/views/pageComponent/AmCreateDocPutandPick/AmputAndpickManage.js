@@ -4,6 +4,8 @@ import { PutandPickContext } from './PutandPickContext';
 import Grid from '@material-ui/core/Grid';
 import { apicall } from "../../../components/function/CoreFunction";
 import AmDialogs from '../../../components/AmDialogs'
+import moment from "moment";
+import "moment/locale/pt-br";
 const Axios = new apicall()
 
 const AmputAndpickManage = (props) => {
@@ -29,7 +31,7 @@ const AmputAndpickManage = (props) => {
             documentProcessTypeID: null,
             forCustomerCode: null,
             forCustomerID: null,
-            lot: null,    
+            lot: null,
             options: null,
             orderNo: null,
             parentDocumentID: null,
@@ -49,37 +51,49 @@ const AmputAndpickManage = (props) => {
             souWarehouseID: null,
             transportID: null
         }
-        const docItem = {
-            packCode: null,
-            packID: null,
-            skuCode: null,
-            quantity: null,
-            unitType: null,
-            batch: null,
-            lot: null,
-            orderNo: null,
-            refID: null,
-            ref1: null,
-            ref2: null,
-            options: null,
-            expireDate: null,
-            productionDate: null,
-            docItemStos: [],
-            baseStos: []
-        }
-        
+
+
         const countDoc = Object.keys(docs).length
         for (let [key, value] of Object.entries(doc.dataCreate)) {
             if (key in docs)
                 docs[key] = value
         }
-      
+
+
+        doc.dataSourceItemTB.forEach((x, i) => {
+            console.log(x)
+
+        })
+
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
+               
+                
                 x.unitType = x.UnitType_Code
-                x.parentDocumentItem_ID = x.ID
-                x.Options = null
                 x.skuCode = x.Code
+                x.quantity = x.Quantity
+                x.baseQuantity = x.BaseQuantity
+                x.baseunitType = x.BaseUnitType_Code
+                x.batch = x.Batch
+                x.lot = x.Lot
+                x.orderNo = x.OrderNo
+                x.cartonNo = x.CartonNo
+                x.itemNo = x.ItemNo
+                x.auditStatus = x.AuditStatus
+                x.refID = x.RefID
+                x.ref1 = x.Ref1
+                x.ref2 = x.Ref2
+                x.ref3 = x.Ref3
+                x.ref4 = x.Ref4
+                x.options = x.Options
+                x.parentDocumentItem_ID = x.ID
+                x.incubationDay = x.IncubationDay
+                x.ExpireDate = x.ExpireDates
+                x.ProductionDate = x.ProductionDates
+                x.expireDate = x.ExpireDates
+                x.productionDate = x.ProductionDates
+                x.shelfLifeDay = x.ShelfLifeDay
+
                 return x
             })
 
@@ -95,13 +109,14 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-           CreateDocuments(docs)
+            //console.log(docs)
+            CreateDocuments(docs)
         }
 
     }
 
     const CreateDocuments = (CreateData) => {
-        Axios.post(window.apipath + props.docapicreate, CreateData).then((res) => { 
+        Axios.post(window.apipath + props.docapicreate, CreateData).then((res) => {
             if (res.data._result.status) {
                 dia.setdailogMsg("Create Document success Document ID = " + res.data.ID);
                 dia.setdailogSuc(true)
@@ -113,7 +128,7 @@ const AmputAndpickManage = (props) => {
             }
         })
     }
-    
+
     return <div>
         <Grid container>
             <Grid item xs container direction="column">
@@ -130,26 +145,26 @@ const AmputAndpickManage = (props) => {
                 </div>
             </Grid>
         </Grid>
-     
-            <div>
-                <AmDialogs
-                    typePopup={"success"}
-                    content={dia.dailogMsg  ? dia.dailogMsg : ""}
-                    onAccept={e => {
-                        dia.setdailogSuc(e);
-                    }}
-                    open={dia.dailogSuc}
-                ></AmDialogs>
-                <AmDialogs
-                    typePopup={"error"}
-                    content={dia.dailogMsg ? dia.dailogMsg : ""}
-                    onAccept={e => {
-                        dia.setdailogErr(e);
-                    }}
-                    open={dia.dailogErr}
-                ></AmDialogs>
 
-            </div>
+        <div>
+            <AmDialogs
+                typePopup={"success"}
+                content={dia.dailogMsg ? dia.dailogMsg : ""}
+                onAccept={e => {
+                    dia.setdailogSuc(e);
+                }}
+                open={dia.dailogSuc}
+            ></AmDialogs>
+            <AmDialogs
+                typePopup={"error"}
+                content={dia.dailogMsg ? dia.dailogMsg : ""}
+                onAccept={e => {
+                    dia.setdailogErr(e);
+                }}
+                open={dia.dailogErr}
+            ></AmDialogs>
+
+        </div>
 
     </div>
 

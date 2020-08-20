@@ -68,6 +68,8 @@ const AmImportDocumentExcel = (props) => {
         let dataCreate = [];
         if (datsobj !== undefined) {
             let datH = datsobj.forEach((x, i) => {
+                console.log(datsobj[0][3])
+                console.log((moment(datsobj[0][3]).format('YYYY-MM-DD')))
                 let datas = {
                     "documentProcessTypeName": datsobj[0][1],
                     "documentDate": datsobj[0][3],
@@ -102,7 +104,6 @@ const AmImportDocumentExcel = (props) => {
                         let Incubate = x[13]
                         let Producdate = x[14]
                         var DateProduct = moment(Producdate).format('DD-MM-YYYYTHH: mm: ss');     
-                        console.log(DateProduct)
                         let DayIn = Incubate.split("-");
                         let DayPro = Producdate.split("-");
                         if (DayIn !== undefined || DayPro !== undefined)
@@ -114,7 +115,7 @@ const AmImportDocumentExcel = (props) => {
                             setStateDialogErr(true);
 
                         } else {
-                            console.log(Incubatedays)
+
                             if (i > 0) {
                                 let datsItem = {
                                     "itemNo": x[0],
@@ -211,10 +212,11 @@ return (
             onChange={(e) => readFile(e)}
         />
         <label htmlFor="contained-button-file">
+            <div style={{ marginRight:"20px" }}><label>{filesname}</label></div>
             <AmButton variant="contained" styleType="info" component="span"
             >  Chose Files
         </AmButton>
-            <label>{filesname}</label>
+     
         </label>
         <AmButton styleType="add"
             onClick={() => ConvertJsoon()}

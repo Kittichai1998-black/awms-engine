@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.V2.General
         public class PackSto
         {
             public string pstoCode;
-
+            public string pstoName;
             public string batch;
             public string lot;
             public string orderNo;
@@ -99,6 +99,9 @@ namespace AWMSEngine.Engine.V2.General
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
+                if (parentDoc == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
+
                 res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;
                 res.grCode = parentDoc.Code;
@@ -122,6 +125,7 @@ namespace AWMSEngine.Engine.V2.General
                     packList.Add(new PackSto()
                     {
                         pstoCode = skuPutaway.Code,
+                        pstoName = skuPutaway.Name,
                         batch = docitemPutaway.Batch,
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,

@@ -5,6 +5,9 @@ import AmTable from '../../../components/AmTable/AmTable';
 import AmButton from '../../../components/AmButton';
 import AmInput from '../../../components/AmInput'
 import AmEditorTable from '../../../components/table/AmEditorTable'
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
 import Grid from '@material-ui/core/Grid';
 import LabelT from '../../../components/AmLabelMultiLanguage'
 import styled from 'styled-components'
@@ -46,25 +49,44 @@ const AmTBputAndpick = (props) => {
     const [dialog, setdialog] = useState(false)
 
     const rem = [
-        { Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
+        { Header: "Quantity", accessor: "Quantity", codeTranslate: "Quantity" },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
         {
-            Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => {
-                // setEditData(Clone(e.original));
-                setEditdata(e);
-
-            }}>Edit</AmButton>,
+            Header: "", width: 30, Cell: (e) => <IconButton
+                size="small"
+                aria-label="info"
+                style={{ marginLeft: "3px" }}
+                OnClick={() => {
+                    // setEditData(Clone(e.original));
+                    setEditdata(e);
+                }}
+            >
+                <EditIcon
+                    fontSize="small"
+                    style={{ color: "#f39c12" }}
+                />
+            </IconButton>
         },
+
         {
-            Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
-                () => {
-                    setRemoveData(e.original.ID, e.original, e);
-                }}>Remove</AmButton>,
+            Header: "", width: 30, Cell: (e) =>
+                <IconButton
+                    size="small"
+                    aria-label="info"
+                    onClick={
+                        () => {
+                            setRemoveData(e.original.ID, e.original, e);
+                        }}
+                    style={{ marginLeft: "3px" }}>
+                    <DeleteIcon
+                        fontSize="small"
+                        style={{ color: "#e74c3c" }} />
+                </IconButton>
+
         }
     ];
 
     const columns = props.doccolumnEditItem.concat(rem)
-
 
     const setEditdata = (e) => {
         doc.seteditdata([e.original])
@@ -81,17 +103,17 @@ const AmTBputAndpick = (props) => {
 
             }
             setdialog(false)
-          
+
         }
         setdialog(false)
-        
+
     }
 
 
     const onChangeEditor = (value, key) => {
 
         if (value !== 0 && value > 0) {
-            if ( doc.editdata[0]['Quantity'] !== undefined) { 
+            if (doc.editdata[0]['Quantity'] !== undefined) {
                 if (value > doc.editdata[0]['Quantity']) {
                     dia.setdailogErr(true)
                     dia.setdailogMsg("Qty is max")
@@ -122,7 +144,7 @@ const AmTBputAndpick = (props) => {
 
 
     const editorListcolunm = () => {
-     
+
         if (props.doccolumnEdit !== undefined) {
             return props.doccolumnEdit.map((row, i) => {
                 return {
@@ -135,7 +157,7 @@ const AmTBputAndpick = (props) => {
                         </div>
                     }
                 }
-                
+
             })
         }
     }
@@ -160,7 +182,7 @@ const AmTBputAndpick = (props) => {
                                     defaultValue={doc.editdata[0][accessor] ? doc.editdata[0][accessor] : ""}
                                     style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
-                                    onChange={(ele) => { onChangeEditor(ele,accessor) }} />
+                                    onChange={(ele) => { onChangeEditor(ele, accessor) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
                                     <LabelT>{TextInputnum}</LabelT>
                                 </div>
@@ -202,7 +224,7 @@ const AmTBputAndpick = (props) => {
             //titleText={title}
             open={dialog}
             onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError)}
-            data={doc.editdata ? doc.editdata :[]}   
+            data={doc.editdata ? doc.editdata : []}
             columns={editorListcolunm()}
         />
 
@@ -217,17 +239,17 @@ const AmTBputAndpick = (props) => {
                             onSubmitSetItem();
                         }}
                     >ADD</AmButton> : null}
-                    
+
                 </div>
             </Grid>
         </Grid>
         <AmTable
             columns={columns}
-            dataSource={doc.dataSourceItemTB.length !=0 ? [...doc.dataSourceItemTB] : []}
+            dataSource={doc.dataSourceItemTB.length != 0 ? [...doc.dataSourceItemTB] : []}
         ></AmTable>
 
-        </div>
-   
+    </div>
+
 }
 
 AmTBputAndpick.propTypes = {
