@@ -611,237 +611,215 @@ const DocumentView = props => {
     }
 
     const handleClickOpen = () => {
-        setOpenReceive(true);
+      setOpenReceive(true);
     };
     const handleOnClose = (val) => {
-        setOpenReceive(val);
+      setOpenReceive(val);
     }
     const renderDialogReceivePallet = useMemo(() =>
-        PalletMapSTOMeomo(openReceive, handleOnClose,
-            eventStatus, props.addPalletMapSTO,
-            dataDoc, data, ReturnMapping),
-        [openReceive, eventStatus, props.addPalletMapSTO,
-            dataDoc, data])
-    return (
-        <div>
-            {stateDialog ? showDialog ? showDialog : null : null}
-            <AmDialogConfirm
-                titleDialog={t("Edit Quantity")}
-                open={openDialogEditQty}
-                close={a => setOpenDialogEditQty(a)}
-                bodyDialog={createDialogEditQty()}
-                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => onConfirmEdit()}>{t("OK")}</AmButton>}
-                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setOpenDialogEditQty(false); setQtyEdit({}); }}>{t("Cancel")}</AmButton>}
-  const handleClickOpen = () => {
-    setOpenReceive(true);
-  };
-  const handleOnClose = (val) => {
-    setOpenReceive(val);
-  }
-  const renderDialogReceivePallet = useMemo(() =>
-    PalletMapSTOMeomo(openReceive, handleOnClose,
-      eventStatus, props.addPalletMapSTO,
-      dataDoc, data, ReturnMapping),
-    [openReceive, eventStatus, props.addPalletMapSTO,
-      dataDoc, data])
-
-  const ExportPDF = async () => {
-    try {
-      let data_document = dataDoc.document;
-      if (data_document !== null || data_document !== undefined) {
-        var dataDocumentItem = dataDoc.sou_bstos;
-        let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
-        let ActionDate = moment(data_document.Actiontime).format("DD/MM/YYYY HH:mm:ss");
-
-
-        let head = [
-          {
-            cells: [ //list<cells>
-              {
-                text: "Document :",
-                font_style: "bold",
-              },
-              {
-                text: data_document.Code,
-                font_style: "normal",
-              },
-              {
-                text: "Docment Date :",
-                font_style: "bold",
-              },
-              {
-                text: ActionDate,
-                font_style: "normal",
-              },
-            ]
-          },
-          {
-            cells: [ //list<cells>
-              {
-                text: "Process No. :",
-                font_style: "bold",
-              },
-              {
-                text: data_document.DocumentProcessTypeName,
-                font_style: "normal",
-              },
-              {
-                text: "Action Time :",
-                font_style: "bold",
-              },
-              {
-                text: DocDate,
-                font_style: "normal",
-              },
-            ]
-          },
-          {
-            cells: [ //list<cells>
-              {
-                text: "Source Warehouse :",
-                font_style: "bold",
-              },
-              {
-                text: "STGT-HY4/ASRS",
-                font_style: "normal",
-              },
-              {
-                text: "Destinaton Warehouse :",
-                font_style: "bold",
-              },
-              {
-                text: "",
-                font_style: "normal",
-              },
-            ]
-          },
-          {
-            cells: [ //list<cells>
-              {
-                text: "Destinaton Customer :",
-                font_style: "bold",
-              },
-              {
-                text: "สินค้าลูกค้า",
-                font_style: "normal",
-              },
-              {
-                text: "Remark :",
-                font_style: "bold",
-              },
-              {
-                text: "xxxxxx",
-                font_style: "normal",
-              },
-            ]
-          }
-        ]
-
-        let reqjson = {
-          "title": "Putaway Document Report",
-          "companyName": "BOSS",
-          "tables": [
+      PalletMapSTOMeomo(openReceive, handleOnClose,
+        eventStatus, props.addPalletMapSTO,
+        dataDoc, data, ReturnMapping),
+      [openReceive, eventStatus, props.addPalletMapSTO,
+        dataDoc, data])
+  
+    const ExportPDF = async () => {
+      try {
+        let data_document = dataDoc.document;
+        if (data_document !== null || data_document !== undefined) {
+          var dataDocumentItem = dataDoc.sou_bstos;
+          let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
+          let ActionDate = moment(data_document.Actiontime).format("DD/MM/YYYY HH:mm:ss");
+  
+  
+          let head = [
             {
-              "hor_align": "ALIGN_CENTER",
-              "ver_align": null,
-              "total_width": null,
-              "def_cell_border": "BOX",
-              "headers": [
+              cells: [ //list<cells>
                 {
-                  cells: [ //list<cells>
-                    {
-                      text: "Document :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: data_document.Code,
-                      font_style: "normal",
-                    },
-                    {
-                      text: "Docment Date :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: ActionDate,
-                      font_style: "normal",
-                    },
-                  ]
+                  text: "Document :",
+                  font_style: "bold",
                 },
                 {
-                  cells: [ //list<cells>
-                    {
-                      text: "Process No. :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: data_document.DocumentProcessTypeName,
-                      font_style: "normal",
-                    },
-                    {
-                      text: "Action Time :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: DocDate,
-                      font_style: "normal",
-                    },
-                  ]
+                  text: data_document.Code,
+                  font_style: "normal",
                 },
                 {
-                  cells: [ //list<cells>
-                    {
-                      text: "Source Warehouse :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: "STGT-HY4/ASRS",
-                      font_style: "normal",
-                    },
-                    {
-                      text: "Destinaton Warehouse :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: "",
-                      font_style: "normal",
-                    },
-                  ]
+                  text: "Docment Date :",
+                  font_style: "bold",
                 },
                 {
-                  cells: [ //list<cells>
-                    {
-                      text: "Destinaton Customer :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: "สินค้าลูกค้า",
-                      font_style: "normal",
-                    },
-                    {
-                      text: "Remark :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: "xxxxxx",
-                      font_style: "normal",
-                    },
-                  ]
-                }
+                  text: ActionDate,
+                  font_style: "normal",
+                },
+              ]
+            },
+            {
+              cells: [ //list<cells>
+                {
+                  text: "Process No. :",
+                  font_style: "bold",
+                },
+                {
+                  text: data_document.DocumentProcessTypeName,
+                  font_style: "normal",
+                },
+                {
+                  text: "Action Time :",
+                  font_style: "bold",
+                },
+                {
+                  text: DocDate,
+                  font_style: "normal",
+                },
+              ]
+            },
+            {
+              cells: [ //list<cells>
+                {
+                  text: "Source Warehouse :",
+                  font_style: "bold",
+                },
+                {
+                  text: "STGT-HY4/ASRS",
+                  font_style: "normal",
+                },
+                {
+                  text: "Destinaton Warehouse :",
+                  font_style: "bold",
+                },
+                {
+                  text: "",
+                  font_style: "normal",
+                },
+              ]
+            },
+            {
+              cells: [ //list<cells>
+                {
+                  text: "Destinaton Customer :",
+                  font_style: "bold",
+                },
+                {
+                  text: "สินค้าลูกค้า",
+                  font_style: "normal",
+                },
+                {
+                  text: "Remark :",
+                  font_style: "bold",
+                },
+                {
+                  text: "xxxxxx",
+                  font_style: "normal",
+                },
               ]
             }
-          ],
-        };
-
-        console.log(reqjson)
-
-
-        await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + data_document.Code + ".pdf").then();
-
+          ]
+  
+          let reqjson = {
+            "title": "Putaway Document Report",
+            "companyName": "BOSS",
+            "tables": [
+              {
+                "hor_align": "ALIGN_CENTER",
+                "ver_align": null,
+                "total_width": null,
+                "def_cell_border": "BOX",
+                "headers": [
+                  {
+                    cells: [ //list<cells>
+                      {
+                        text: "Document :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: data_document.Code,
+                        font_style: "normal",
+                      },
+                      {
+                        text: "Docment Date :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: ActionDate,
+                        font_style: "normal",
+                      },
+                    ]
+                  },
+                  {
+                    cells: [ //list<cells>
+                      {
+                        text: "Process No. :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: data_document.DocumentProcessTypeName,
+                        font_style: "normal",
+                      },
+                      {
+                        text: "Action Time :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: DocDate,
+                        font_style: "normal",
+                      },
+                    ]
+                  },
+                  {
+                    cells: [ //list<cells>
+                      {
+                        text: "Source Warehouse :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: "STGT-HY4/ASRS",
+                        font_style: "normal",
+                      },
+                      {
+                        text: "Destinaton Warehouse :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: "",
+                        font_style: "normal",
+                      },
+                    ]
+                  },
+                  {
+                    cells: [ //list<cells>
+                      {
+                        text: "Destinaton Customer :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: "สินค้าลูกค้า",
+                        font_style: "normal",
+                      },
+                      {
+                        text: "Remark :",
+                        font_style: "bold",
+                      },
+                      {
+                        text: "xxxxxx",
+                        font_style: "normal",
+                      },
+                    ]
+                  }
+                ]
+              }
+            ],
+          };
+  
+          console.log(reqjson)
+  
+  
+          await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + data_document.Code + ".pdf").then();
+  
+        }
+      } catch (err) {
+        console.log(err)
       }
-    } catch (err) {
-      console.log(err)
     }
-  }
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
