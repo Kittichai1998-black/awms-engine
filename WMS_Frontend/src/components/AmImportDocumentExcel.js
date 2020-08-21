@@ -49,32 +49,48 @@ const AmImportDocumentExcel = (props) => {
             const data = XLSX.utils.sheet_to_json(ws);
             const headerDatas = XLSX.utils.sheet_to_json(ws, { header: 1 })
             let dataJson = JSON.stringify(data, null, 2)
-
-            getHeaderdata(headerDatas, dataJson)
-
+            if (headerDatas !== undefined) {
+                getHeaderdata(headerDatas)
+            }
         };
-        if (rABS) {
-            reader.readAsBinaryString(filesRead);
+
+        console.log(filesRead)
+        if (filesRead !== undefined) {
+            if (rABS) {
+                reader.readAsBinaryString(filesRead);
+            } else {
+
+                reader.readAsArrayBuffer(filesRead);
+            };
         } else {
-            reader.readAsArrayBuffer(filesRead);
-        };
+            setMsgDialog("File not Found");
+            setStateDialogErr(true);
+
+        }
     }
-    const getHeaderdata = (datas, dataJsonItem) => {
+    const getHeaderdata = (datas) => {
         let datsobj = datas.slice(0, 5)
         let datsobjItem = datas.slice(10)
         let datsobjItemCheck = datas.slice(5, 9)
         let dataItems = [];
         let dataHdr = [];
-        let dataCreate = [];
+        var DocumentProcessType;
         if (datsobj !== undefined) {
             let datH = datsobj.forEach((x, i) => {
-                console.log(datsobj[0][3])
-                console.log((moment(datsobj[0][3]).format('YYYY-MM-DD')))
+
+                var datedoc = datsobj[0][3];
+                var actionT = datsobj[1][3]
+                var docdate = datedoc.split('-')
+                var DocumentDate = docdate[2].concat('-').concat(docdate[1]).concat('-').concat(docdate[0]);
+                var actime = actionT.split('-')
+                var ActionTime = actime[2].concat('-').concat(actime[1]).concat('-').concat(actime[0]);
+                DocumentProcessType = datsobj[0][1];
+
                 let datas = {
                     "documentProcessTypeName": datsobj[0][1],
-                    "documentDate": datsobj[0][3],
+                    "documentDate": DocumentDate,
                     "souCustomerCode": datsobj[1][1],
-                    "actionTime": datsobj[1][3],
+                    "actionTime": ActionTime,
                     "souSupplierCode": datsobj[2][1],
                     "souWarehouseCode": datsobj[3][1],
                     "desWarehouseCode": datsobj[3][3],
@@ -100,53 +116,26 @@ const AmImportDocumentExcel = (props) => {
         } else {
             if (datsobjItem !== undefined) {
                 datsobjItem.forEach((x, i) => {
-                    if (x[13] !== undefined && x[14] !== undefined) {
+                    if (x[13] !== undefined && x[14] !== undefined || x[15] !== undefined && x[16] !== undefined) {
                         let Incubate = x[13]
                         let Producdate = x[14]
-                        var DateProduct = moment(Producdate).format('DD-MM-YYYYTHH: mm: ss');     
+                        let Expire = x[15]
+                        let Shelf = x[16]
                         let DayIn = Incubate.split("-");
                         let DayPro = Producdate.split("-");
-                        if (DayIn !== undefined || DayPro !== undefined)
+                        let DayExp = Expire.split("-");
+                        let DayShelf = Shelf.split("-");
                         var IntDayIn = parseInt(DayIn[0])
                         var IntDayPro = parseInt(DayPro[0])
+                        var IntDayExp = parseInt(DayExp[0])
+                        var IntDayShelf = parseInt(DayShelf[0])
                         let Incubatedays = (IntDayIn - IntDayPro)
-                        if (Incubatedays < 1) {
-                            setMsgDialog("Incubateday Not Correct");
-                            setStateDialogErr(true);
-
-                        } else {
-
-                            if (i > 0) {
-                                let datsItem = {
-                                    "itemNo": x[0],
-                                    "skuCode": x[1],
-                                    "orderNo": x[2],
-                                    "batch": x[3],
-                                    "lot": x[4],
-                                    "quantity": x[5],
-                                    "unitType": x[6],
-                                    "auditStatus": x[7] === "PASS" ? 1 : 0,
-                                    "ref1": x[8],
-                                    "ref2": x[9],
-                                    "ref3": x[10],
-                                    "ref4": x[11],
-                                    "cartonNo": x[12],
-                                    "incubationDay": Incubatedays,
-                                    "productionDate": Producdate,
-                                    "expireDate": x[15],
-                                    "shelfLifeDay": x[16],
-
-
-                                }
-                                dataItems.push(datsItem)
-                            } else {
-
-                            }
-
-                        }
-                    } else {
-
+                        let Shelfdays = (IntDayShelf - IntDayExp)
+                        var AuditStatus = x[7];
+                        var VandorLot = x[8];
                         if (i > 0) {
+                            var ProducDatess = DayPro[2].concat('-').concat(DayPro[1]).concat('-').concat(DayPro[0]);
+                            var Expiredatess = DayShelf[2].concat('-').concat(DayShelf[1]).concat('-').concat(DayShelf[0]);
                             let datsItem = {
                                 "itemNo": x[0],
                                 "skuCode": x[1],
@@ -155,77 +144,146 @@ const AmImportDocumentExcel = (props) => {
                                 "lot": x[4],
                                 "quantity": x[5],
                                 "unitType": x[6],
-                                "auditStatus": x[7] === "PASS" ? 1 : 0,
+                                "auditStatus": x[7],
                                 "ref1": x[8],
                                 "ref2": x[9],
                                 "ref3": x[10],
                                 "ref4": x[11],
                                 "cartonNo": x[12],
-                                "incubationDay": x[13],
-                                "productionDate": x[14],
-                                "expireDate": x[15],
-                                "shelfLifeDate": x[16],
+                                "incubationDay": Incubatedays,
+                                "productionDate": ProducDatess,
+                                "expireDate": Expiredatess,
+                                "shelfLifeDay": Shelfdays,
 
 
                             }
                             dataItems.push(datsItem)
-                        } else {
 
                         }
+
+                        var DocumentProcessTypeS = DocumentProcessType.split(" ")
+                        if (DocumentProcessTypeS[0] = "PM:การรับเข้า/รับคืน") {
+                            if (DocumentProcessTypeS[1] = "จากไลน์ผลิต") {
+                                if (AuditStatus = "QUARANTINE") {
+                                    dataItems = dataItems
+                                } else {
+                                    dataItems = [{
+                                        "Check": false
+                                    }]
+                                    setMsgDialog("Audit Status Not Correct");
+                                    setStateDialogErr(true);
+                                }
+
+                            }
+                        } else if (DocumentProcessTypeS[0] = "PM:การรับเข้าจาก") {
+
+                            if (DocumentProcessTypeS[1] = "Supplier") {
+                                console.log(VandorLot)
+                                if (VandorLot = null) {
+                                    dataItems = [{
+                                        "Check": false
+                                    }]
+                                    setMsgDialog("Vandor Lot Not Correct");
+                                    setStateDialogErr(true);
+                                }
+                            }
+                        } else {
+                            if (VandorLot != null) {
+                                dataItems = [{
+                                    "Check": false
+                                }]
+                                setMsgDialog("Vandor Lot Not Correct");
+                                setStateDialogErr(true);
+                            }
+
+                        }
+
+
+                        if (Incubatedays !== undefined || Shelfdays !== undefined) {
+                            if (Incubatedays < 1) {
+                                dataItems = [{
+                                    "Check": false
+                                }]
+                                setMsgDialog("Incubateday Not Correct");
+                                setStateDialogErr(true);
+                            } else if (Shelfdays < 1) {
+                                dataItems = [{
+                                    "Check": false
+                                }]
+                                setMsgDialog("ShelfLifeDate Not Correct");
+                                setStateDialogErr(true);
+                            } else {
+
+                            }
+
+                        } else {
+                        
+                        }
                     }
+
+
                 })
+            
+
                 dataHdr[0]['receivedOrderItem'] = dataItems
-                //console.log(dataHdr[0])
                 CreateDocuments(dataHdr[0])
 
-            
+            }
+
         }
+
 
     }
 
 
-}
+    const CreateDocuments = (CreateData) => {
+        CreateData.receivedOrderItem.forEach((x, i) => {
+            if (x.Check === false) {
+                CreateData.receivedOrderItem = []
+            }
 
+        })
 
-const CreateDocuments = (CreateData) => {
-    Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
-        if (res.data._result.status) {
-            setMsgDialog("Create Document success Document ID = " + res.data.ID);
-            setStateDialog(true);
-            if (props.apiRes !== undefined)
-                props.history.push(props.apiRes + res.data.ID)
-        } else {
-            setMsgDialog(res.data._result.message);
-            setStateDialogErr(true);
+        if (CreateData.receivedOrderItem !== [] || CreateData.receivedOrderItem !== undefined) {
+            Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
+                if (res.data._result.status) {
+                    setMsgDialog("Create Document success Document ID = " + res.data.ID);
+                    setStateDialog(true);
+                    if (props.apiRes !== undefined)
+                        props.history.push(props.apiRes + res.data.ID)
+                } else {
+                    setMsgDialog(res.data._result.message);
+                    setStateDialogErr(true);
+                }
+            })
         }
-    })
-}
+    }
 
-return (
-    <div>
-        <input
-            accept="/*"
-            className={classes.input}
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={(e) => readFile(e)}
-        />
-        <label htmlFor="contained-button-file">
-            <div style={{ marginRight:"20px" }}><label>{filesname}</label></div>
-            <AmButton variant="contained" styleType="info" component="span"
-            >  Chose Files
+    return (
+        <div>
+            <input
+                accept="/*"
+                className={classes.input}
+                id="contained-button-file"
+                multiple
+                type="file"
+                onChange={(e) => readFile(e)}
+            />
+            <label htmlFor="contained-button-file">
+                <div style={{ marginRight: "20px" }}><label>{filesname}</label></div>
+                <AmButton variant="contained" styleType="info" component="span"
+                >  Chose Files
         </AmButton>
-     
-        </label>
-        <AmButton styleType="add"
-            onClick={() => ConvertJsoon()}
-        >  CreateDocument
+
+            </label>
+            <AmButton styleType="add"
+                onClick={() => ConvertJsoon()}
+            >  CreateDocument
         </AmButton>
-        <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
-        <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
-    </div>
-);
+            <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+            <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
+        </div>
+    );
 };
 
 

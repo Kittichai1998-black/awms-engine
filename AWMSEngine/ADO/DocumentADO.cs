@@ -160,6 +160,7 @@ namespace AWMSEngine.ADO
             param.Add("@itemNo", docItem.ItemNo);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
+            param.Add("@cartonNo", docItem.CartonNo);
             param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
@@ -750,6 +751,7 @@ namespace AWMSEngine.ADO
             param.Add("@productionDate", docItem.ProductionDate);
             param.Add("@incubationDay", docItem.IncubationDay);
             param.Add("@shelfLifeDay", docItem.ShelfLifeDay);
+            param.Add("@auditStatus",docItem.AuditStatus);
             param.Add("@options", docItem.Options);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);

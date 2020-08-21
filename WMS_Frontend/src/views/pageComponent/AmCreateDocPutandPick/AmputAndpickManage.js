@@ -67,8 +67,6 @@ const AmputAndpickManage = (props) => {
 
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
-               
-                
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
                 x.quantity = x.Quantity

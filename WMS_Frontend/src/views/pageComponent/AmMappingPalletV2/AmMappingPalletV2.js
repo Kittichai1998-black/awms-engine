@@ -86,6 +86,10 @@ const styles = theme => ({
     marginBottom: theme.spacing(2),
     textAlign: "end"
   },
+  actionsContainerStart: {
+    marginBottom: theme.spacing(2),
+    textAlign: "start"
+  },
   resetContainer: {
     textAlign: "center"
   },
@@ -378,7 +382,27 @@ const AmMappingPalletV2 = props => {
       }
     })
   }
+  const onConfirmMappingSTO = () => {
+    console.log(dataPallet)
+    if (dataPallet !== undefined && dataPallet !== null) {
+      const tempDataReq = { bstoID: parseInt(dataPallet.id) }
+      Axios.post(window.apipath + "/v2/confirm_mappingSTOandDiSTOBybstoID", tempDataReq).then((res) => {
+        if (res.data != null) {
+          if (res.data._result.status === 1) {
+            setDialogState({ type: "success", content: "Success", state: true })
 
+            handleBack()
+          } else {
+            setDialogState({ type: "error", content: res.data._result.message, state: true })
+          }
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
+      });
+    } else {
+      setDialogState({ type: "warning", content: "กรุณาระบุเลขพาเลท", state: true })
+    }
+  }
   function scanMappingSto(pallet, type) {
     let postdata = {
       processType: valueInput.processType,
@@ -549,7 +573,6 @@ const AmMappingPalletV2 = props => {
                 }
 
                 onBlur={(e) => {
-                  console.log(e)
                   if (e !== undefined && e !== null)
                     onHandleChangeInputPalletCode("palletCode", e)
                 }}
@@ -584,7 +607,6 @@ const AmMappingPalletV2 = props => {
                       autoFocus={autoFocusBarcode}
 
                       onBlur={(e) => {
-                        console.log(e)
                         if (e !== undefined && e !== null)
                           onHandleChangeInputBarcode("palletCode", e)
                       }}
@@ -780,48 +802,50 @@ const AmMappingPalletV2 = props => {
               </StepLabel>
               <StepContent>
                 {getStepContent(index)}
-                <div className={classes.actionsContainer}>
-                  <div>
-                    {activeStep == 0 ? null : (
-                      <AmButton
-                        styleType="delete_clear"
-                        // onClick={handleReset}
-                        onClick={handleBack}
-
-                        className={classes.button}
-                      >
-                        {/* {t("Clear")} */}
-                        {t("Back")}
-                      </AmButton>
-                    )}{flagConfirm === true ? <AmButton
-                      styleType="delete_clear"
-                      //onClick={handleReset}
-                      className={classes.button}
+                <div>
+                  {activeStep == 0 ? null : (
+                    <AmButton
+                      styleType="add"
+                      className="float-left"
+                      onClick={() => onConfirmMappingSTO()}
+                      style={{ margin: '5px 0px 5px 0px' }}>
+                      {t("Received")}
+                    </AmButton>
+                  )}
+                  {activeStep === steps.length - 1 ? (
+                    <AmButton
+                      styleType="confirm"
+                      onClick={() => {
+                        scanMappingSto(valueInput.palletCode, "confirm")
+                      }}
+                      className="float-right"
+                      style={{ margin: '5px 0px 5px 0px' }}
                     >
-                      {t("Clear")}
-                    </AmButton> : null}
-                    {activeStep === steps.length - 1 ? (
+                      {t("Confirm")}
+                    </AmButton>
+                  ) : (
                       <AmButton
+                        className="float-right"
+                        style={{ margin: '5px 0px 5px 0px' }}
                         styleType="confirm"
-                        onClick={() => {
-                          scanMappingSto(valueInput.palletCode, "confirm")
-                          //getData("confirm")
-                        }}
-                        className={classes.button}
+                        onClick={() => handleNext(index)}
+
                       >
-                        {t("Confirm")}
+                        {t("Next")}
                       </AmButton>
-                    ) : (
-                        <AmButton
-                          styleType="confirm"
-                          onClick={() => handleNext(index)}
-                          className={classes.button}
-                        >
-                          {t("Next")}
-                        </AmButton>
-                      )}
-                  </div>
+                    )}
+                  {activeStep == 0 ? null : (
+                    <AmButton
+                      styleType="delete_clear"
+                      onClick={handleBack}
+                      className="float-right"
+                      style={{ margin: '5px 0px 5px 0px' }}
+                    >
+                      {t("Back")}
+                    </AmButton>
+                  )}
                 </div>
+
               </StepContent>
             </Step>
           ))}

@@ -56,9 +56,8 @@ const AmTBputAndpick = (props) => {
                 size="small"
                 aria-label="info"
                 style={{ marginLeft: "3px" }}
-                OnClick={() => {
-                    // setEditData(Clone(e.original));
-                    setEditdata(e);
+                onClick={() => {
+                    setEditdatass(e);
                 }}
             >
                 <EditIcon
@@ -88,9 +87,11 @@ const AmTBputAndpick = (props) => {
 
     const columns = props.doccolumnEditItem.concat(rem)
 
-    const setEditdata = (e) => {
+    const setEditdatass = (e) => {
+        console.log(e)
         doc.seteditdata([e.original])
         setdialog(true)
+        console.log(dialog)
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
@@ -144,7 +145,6 @@ const AmTBputAndpick = (props) => {
 
 
     const editorListcolunm = () => {
-
         if (props.doccolumnEdit !== undefined) {
             return props.doccolumnEdit.map((row, i) => {
                 return {
@@ -233,7 +233,7 @@ const AmTBputAndpick = (props) => {
             </Grid>
             <Grid item>
                 <div style={{ marginTop: "20px" }}>
-                    {doc.dataSourceItemTB.length > 0 ? <AmButton
+                    {doc.docID > 0 ? <AmButton
                         styleType="add"
                         onClick={() => {
                             onSubmitSetItem();
