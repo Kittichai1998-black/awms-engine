@@ -218,12 +218,13 @@ const DocumentView = props => {
 
                     var sumQty = 0;
                     var sumBaseQty = 0;
-                    res.data.sou_bstos
-                        .filter(y => y.docItemID == row.ID)
-                        .forEach(y => {
+                    console.log(res.data.sou_bstos)
+                    if (res.data.sou_bstos !== null) {
+                        res.data.sou_bstos.filter(y => y.docItemID == row.ID).forEach(y => {
                             sumQty += y.distoQty;
                             sumBaseQty += y.distoBaseQty;
                         });
+                    }
                     row._sumQtyDisto = sumQty;
                     row._sumQtyBaseDisto = sumBaseQty;
 
