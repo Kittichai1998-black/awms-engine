@@ -87,11 +87,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
                     
                     docs.DocumentItems.ForEach(item => {
-                        var cc = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
-                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cc.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
+                        grItem.EventStatus = DocumentEventStatus.WORKING;
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                     });
+                    
                     ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
-
+                     
                 }
             }
             else

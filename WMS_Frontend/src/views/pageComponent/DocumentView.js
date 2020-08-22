@@ -37,8 +37,9 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
-import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
+import AmPrintBarCode from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
 import CropFreeIcon from '@material-ui/icons/CropFree';
+import _ from 'lodash';
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -184,10 +185,10 @@ const DocumentView = props => {
     // console.log(props.optionDocItems);
   }, []);
 
-    useEffect(() => {
-        setHeader(props.header)
-        //getHeader()
-    }, [props.header]);
+  useEffect(() => {
+    setHeader(props.header)
+    //getHeader()
+  }, [props.header]);
 
   const getData = () => {
     //========================================================================================================
@@ -206,26 +207,27 @@ const DocumentView = props => {
       //   res.data
       // );
       setDataDoc(res.data)
-        if (res.data._result.status === 1) {
-            if (props.OnchageOwnerGroupType !== undefined) {
-                props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
-            }
+      if (res.data._result.status === 1) {
+        if (props.OnchageOwnerGroupType !== undefined) {
+          props.OnchageOwnerGroupType(res.data.document.OwnerGroupType)
+        }
         setDataHeader(res.data.document);
         setEventStatus(res.data.document.EventStatus);
         //============================================================================
 
         res.data.document.documentItems.forEach(row => {
 
-          var sumQty = 0;
-          var sumBaseQty = 0;
-          res.data.sou_bstos
-            .filter(y => y.docItemID == row.ID)
-            .forEach(y => {
-              sumQty += y.distoQty;
-              sumBaseQty += y.distoBaseQty;
-            });
-          row._sumQtyDisto = sumQty;
-          row._sumQtyBaseDisto = sumBaseQty;
+                    var sumQty = 0;
+                    var sumBaseQty = 0;
+                    console.log(res.data.sou_bstos)
+                    if (res.data.sou_bstos !== null) {
+                        res.data.sou_bstos.filter(y => y.docItemID == row.ID).forEach(y => {
+                            sumQty += y.distoQty;
+                            sumBaseQty += y.distoBaseQty;
+                        });
+                    }
+                    row._sumQtyDisto = sumQty;
+                    row._sumQtyBaseDisto = sumBaseQty;
 
           row._balanceQty = row.Quantity - sumQty;
 
@@ -276,9 +278,11 @@ const DocumentView = props => {
                       ? row._sumQtyDisto +
                       " / " +
                       (row.Quantity === null ? " - " : row.Quantity)
-                      : null
-
+                      : null,
+            ExpireDate: row.ExpireDate ? moment(row.ExpireDate).format("DD/MM/YYYY") : null,
+            ProductionDate: row.ProductionDate ? moment(row.ProductionDate).format("DD/MM/YYYY") : null,
           });
+
 
         });
 
@@ -620,6 +624,291 @@ const DocumentView = props => {
       dataDoc, data, ReturnMapping),
     [openReceive, eventStatus, props.addPalletMapSTO,
       dataDoc, data])
+
+  const ExportPDF = async () => {
+    try {
+      let data_document = dataDoc.document;
+      if (data_document !== null || data_document !== undefined) {
+        var dataDocumentItem = dataDoc.document.documentItems;
+        let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
+        let ActionDate = moment(data_document.ActionTime).format("DD/MM/YYYY HH:mm");
+        let dataitems = [];
+        if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
+
+          dataDocumentItem.map((item, idx) => {
+            let dataitem = {
+              ItemNo: item.ItemNo,
+              SKUMaster_Code: item.SKUMaster_Code,
+              SKUMaster_Name: item.SKUMaster_Name,
+              Lot: item.Lot,
+              Quantity: item.Quantity,
+              UnitType_Name: item.UnitType_Name,
+              Vendor_Lot: item.Ref1,
+              IncubationDay: item.IncubationDay,
+              ProductionDate: item.ProductionDate,
+              ExpireDate: item.ExpireDate,
+              ShelfLifeDay: item.ShelfLifeDay
+            }
+            dataitems.push(dataitem);
+          });
+
+        }
+
+        let tabledata = [];
+        dataitems.map((item, idx) => {
+          let dataitem = {
+            cells: [
+              { text: item.ItemNo, border: "BOX" },
+              { text: item.SKUMaster_Code + " : " + item.SKUMaster_Name, border: "BOX" },
+              { text: item.Lot ? item.Lot : item.Vendor_Lot, border: "BOX" },
+              { text: item.Quantity.toString(), border: "BOX" },
+              { text: item.UnitType_Name, border: "BOX" },
+              { text: moment(item.ProductionDate).format("DD/MM/YYYY"), border: "BOX" },
+              { text: item.IncubationDay ? item.IncubationDay.toString() : "", border: "BOX" },
+              { text: moment(item.ExpireDate).format("DD/MM/YYYY"), border: "BOX" },
+              { text: item.ShelfLifeDay ? item.ShelfLifeDay.toString() : "", border: "BOX" },
+            ]
+          }
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+          tabledata.push(dataitem);
+
+        });
+        let sumQtys = _.sumBy(dataitems, 'Quantity')
+        tabledata.push({
+          cells: [
+            { text: "" },
+            { text: "" },
+            { text: "Total", border: "BOX" },
+            { text: sumQtys.toString(), border: "BOX" },
+            { text: "ขวด", border: "BOX" },
+            { text: "" }, { text: "" }, { text: "" }, { text: "" },
+          ]
+        });
+        // console.log(tabledata)
+        let reqjson = {
+          // "margins_left": 30,
+          // "margins_right": 40,
+          "header":{
+            "headers": [
+              {
+                cells: [
+                  {
+                    text: "BOSS",
+                    font_style: "normal",
+                  },
+                  {
+                    text: "{page}",
+                    font_style: "normal",
+                    "hor_align": "ALIGN_RIGHT",
+                  }
+                ]
+              }
+            ]
+          },
+          "contents": [
+            {
+              "hor_align": "ALIGN_CENTER",
+              "headers": [//title
+                {
+                  cells: [
+                    {
+                      text: "Putaway Document Report",
+                      font_style: "bold",
+                      font_size: 12,
+                      padding_bottom: 10,
+                      hor_align: "ALIGN_CENTER"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              // "hor_align": "ALIGN_CENTER",
+              // "ver_align": null,
+              // "total_width": null,
+              "widths": [150, 251, 150, 251],
+              "def_cell_border": "BOX",
+              "locked_width": true,
+              "headers": [
+                {
+                  cells: [
+                    {
+                      text: "Document :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: data_document.Code,
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: "Docment Date :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: DocDate,
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                  ]
+                },
+                {
+                  cells: [
+                    {
+                      text: "Process No. :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: data_document.DocumentProcessTypeName,
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: "Action Time :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: ActionDate,
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                  ]
+                },
+                {
+                  cells: [
+                    {
+                      text: "Source Warehouse :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: data_document.SouWarehouseName ? data_document.SouWarehouseName : "",
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: "Destinaton Warehouse :",
+                      font_style: "bold",
+                      padding_bottom: 5
+                    },
+                    {
+                      text: data_document.DesWarehouseName ? data_document.DesWarehouseName : "",
+                      font_style: "normal",
+                      padding_bottom: 5
+                    },
+                  ]
+                },
+                {
+                  cells: [
+                    {
+                      text: "Destinaton Customer :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: "สินค้าลูกค้า",
+                      font_style: "normal",
+                    },
+                    {
+                      text: "Remark :",
+                      font_style: "bold",
+                    },
+                    {
+                      text: data_document.Remark,
+                      font_style: "normal",
+                    },
+                  ]
+                }
+              ],
+            },
+            {
+              "hor_align": "ALIGN_CENTER",
+              // "ver_align": null,
+              // "total_width": null,
+              "widths": [60, 272, 70, 60, 60, 70, 70, 70, 70],
+              "def_cell_border": "BOX",
+              "locked_width": true,
+              "headers": [
+                {
+                  cells: [
+                    { text: "Item No.", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Item", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Lot", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Qty", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Unit", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Incubation Day", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Production Date", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Expire Date", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
+                    { text: "Shelf Life Day", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 }
+                  ]
+                }
+              ],
+              "bodys": tabledata
+            }
+          ]
+          // "footer":
+          // {
+          //   "widths": [442, 30, 180, 150],
+          //   "locked_width": true,
+          //   "headers": [
+          //     {
+          //       cells: [
+          //         {
+          //           text: "",
+          //           font_style: "bold",
+          //           padding_bottom: 5
+          //         },
+          //         {
+          //           text: "By",
+          //           font_style: "bold",
+          //           padding_bottom: 5
+          //         },
+          //         {
+          //           text: "",
+          //           font_style: "bold",
+          //           padding_bottom: 5,
+          //           padding_left: 10,
+          //           padding_right: 10,
+          //           border: "BOTTOM_BORDER"
+          //         },
+          //         {
+          //           text: "Section Warehouse",
+          //           font_style: "bold",
+          //           padding_bottom: 5,
+          //         },
+          //       ]
+          //     }
+          //   ]
+          // }
+        };
+
+        console.log(reqjson)
+
+
+        await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + data_document.Code + ".pdf").then();
+
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
   return (
     <div>
       {stateDialog ? showDialog ? showDialog : null : null}
@@ -657,7 +946,6 @@ const DocumentView = props => {
       </div>
       {props.usePrintBarcodePallet ?
         <>
-          {console.log(selection)}
           <AmPrintBarCode data={selection}
             SouSupplierCode={dataHeader.SouSupplier}
             SouSupplierName={dataHeader.SouSupplierName}
@@ -667,25 +955,28 @@ const DocumentView = props => {
 
         : null}
 
-      {typeDoc ? (
+      {typeDoc && !props.CreateputAway ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
-        <AmTable selection={"checkbox"}
+        <AmTable
+          selection={"checkbox"}
           selectionData={(data) => {
             setSelection(data);
-          }} dataKey="ID" columns={columns} pageSize={data.length} dataSource={data} height={200} rowNumber={true} />
-      ) : null}
-
+          }} dataKey="ID"
+          columns={columns}
+          pageSize={data.length}
+          dataSource={data}
+          height={200}
+          rowNumber={false} />
+      ) :
+        typeDoc && props.CreateputAway ?
+          <AmTable
+            columns={columns}
+            pageSize={data.length}
+            dataSource={data}
+            height={200}
+          ></AmTable> :
+          null}
       <br />
-      <br />
-      {props.useAddPalletMapSTO && eventStatus === 10 ?
-        <>
-          <AmButton className="float-right" styleType="confirm"
-            startIcon={<ReceiveIcon />}
-            onClick={handleClickOpen}>
-            {'Receive'}
-          </AmButton>
-          {renderDialogReceivePallet}
-        </> : null}
 
       {props.useScanBarcode && eventStatus === 10 ?
         <AmButton className="float-right" styleType="info"
@@ -727,26 +1018,67 @@ const DocumentView = props => {
             <TabPane tabId="1">
               <Row>
                 <Col sm="12">
-                  <br />
 
-                  {typeDoc ? (
-                    // <Table
-                    //   columns={columnsDetailSOU}
-                    //   pageSize={100}
-                    //   data={dataDetailSOU}
-                    //   sortable={false}
-                    //   currentPage={0}
-                    // />
-                    <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true} />
-                  ) : null}
-                </Col>
-              </Row>
-            </TabPane>
-            <TabPane tabId="2">
-              <Row>
-                <Col sm="12">
+                  {props.buttonConfirmMappingSTO === true ?
+                    eventStatus === 10 || eventStatus === 11 ?
+                      //|| eventStatus === 12 || eventStatus === 31 ?
+                      <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()} style={{ margin: '5px 0px 5px 0px' }}>
+                        {t("Received All")}
+                      </AmButton> : null
+                    : null}
+                  {props.useAddPalletMapSTO && eventStatus === 10 ?
+                    <>
+                      <AmButton className="float-right" styleType="confirm" style={{ margin: '5px 5px 5px 0px' }}
+                        startIcon={<ReceiveIcon />}
+                        onClick={handleClickOpen}>
+                        {'Mapping Pallet'}
+                      </AmButton>
+                      {renderDialogReceivePallet}
+                    </> : null}
                   <br />
                   {typeDoc ? (
+
+                                        <AmTable
+                                            dataKey="id"
+                                            columns={columnsDetailSOU}
+                                            pageSize={dataDetailSOU.length}
+                                            dataSource={dataDetailSOU}
+                                            height={200}
+                                            rowNumber={false} />
+                                    ) : null}
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="2">
+                            <Row>
+                                <Col sm="12">
+                                    <br />
+                                    {typeDoc ? (
+                                        // <Table
+                                        //   columns={columnsDetailDES}
+                                        //   pageSize={100}
+                                        //   data={dataDetailDES}
+                                        //   sortable={false}
+                                        //   currentPage={0}
+                                        // />
+                                        <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={false} />
+                                    ) : null}
+                                </Col>
+                            </Row>
+                        </TabPane>
+                    </TabContent>
+                </div>
+            ) : props.openSOU === true ? (
+                typeDoc ? (
+                    <AmTable dataKey="id"
+                        columns={columnsDetailSOU}
+                        pageSize={dataDetailSOU.length}
+                        dataSource={dataDetailSOU}
+                        height={200}
+                        rowNumber={false} />
+                ) : null
+            ) : props.openDES === true ? (
+                typeDoc ? (
                     // <Table
                     //   columns={columnsDetailDES}
                     //   pageSize={100}
@@ -754,52 +1086,29 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true} />
-                  ) : null}
-                </Col>
-              </Row>
-            </TabPane>
-          </TabContent>
-        </div>
-      ) : props.openSOU === true ? (
-        typeDoc ? (
-          // <Table
-          //   columns={columnsDetailSOU}
-          //   pageSize={100}
-          //   data={dataDetailSOU}
-          //   sortable={false}
-          //   currentPage={0}
-          // />
-          <AmTable dataKey="id" columns={columnsDetailSOU} pageSize={dataDetailSOU.length} dataSource={dataDetailSOU} height={200} rowNumber={true} />
-        ) : null
-      ) : props.openDES === true ? (
-        typeDoc ? (
-          // <Table
-          //   columns={columnsDetailDES}
-          //   pageSize={100}
-          //   data={dataDetailDES}
-          //   sortable={false}
-          //   currentPage={0}
-          // />
-          <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={true} />
-        ) : null
-      ) : (
-              ""
-            )}
-      <br />
-      <div>
-        {props.buttonBack === true ? (
-          <AmButton styleType="default" className="float-left" onClick={buttonBack}>
-            {t("Back")}
-          </AmButton>
-        ) : null}
+                    <AmTable dataKey="id"
+                        columns={columnsDetailDES}
+                        pageSize={dataDetailDES.length}
+                        dataSource={dataDetailDES}
+                        height={200}
+                        rowNumber={false} />
+                ) : null
+            ) : (
+                            ""
+                        )}
+            <br />
+            <div>
+                {props.buttonBack === true ? (
+                    <AmButton styleType="default" className="float-left" onClick={buttonBack}>
+                        {t("Back")}
+                    </AmButton>
+                ) : null}
 
-        {props.buttonConfirmMappingSTO === true ?
-          eventStatus === 10 || eventStatus === 11 || eventStatus === 12 || eventStatus === 31 ?
-            <AmButton styleType="add" className="float-right" onClick={() => onConfirmMappingSTO()}>
-              {t("Close")}
-            </AmButton> : null
-          : null}
+        {props.usePrintPDF === true ?
+          <AmButton styleType="info" className="float-right" onClick={ExportPDF}>
+            {t("Export PDF")}
+          </AmButton> : null}
+
       </div>
     </div>
   );

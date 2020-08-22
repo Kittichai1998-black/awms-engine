@@ -22,6 +22,8 @@ namespace AWMSModel.Entity
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;
+        public long? ShelfLifeDay;
+        public long? IncubationDay;
         public string OrderNo;
         public string CartonNo;
         public string Batch;
@@ -31,7 +33,7 @@ namespace AWMSModel.Entity
         public string Ref2;
         public string Ref3;
         public string Ref4;
-        public int AuditStatus;
+        public AuditStatus AuditStatus;
         public DocumentEventStatus EventStatus;
         public decimal? ActualBaseQuantity;
 

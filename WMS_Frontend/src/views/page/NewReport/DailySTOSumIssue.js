@@ -89,7 +89,7 @@ const DailySTOSumIssue = (props) => {
         },
         { Header: 'Doc No.', accessor: 'docCode', width: 170, sortable: false, Cell: (dataRow) => getRedirect(dataRow.original.docCode) },
         {
-            Header: 'Doc.Process', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
+            Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
                 fieldLabel: ["Name"],

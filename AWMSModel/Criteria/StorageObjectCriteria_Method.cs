@@ -313,8 +313,8 @@ namespace AWMSModel.Criteria
         {
             var s = this;
             return EncryptUtil.GenerateMD5(
-                        string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10:dd-mm-yy}|{11:dd-mm-yy}",
-                            s.mstID, s.type, s.forCustomerID, s.orderNo, s.batch,
+                        string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10:dd-MM-yy}|{11:dd-MM-yy}",
+                            s.mstID, s.type.GetValueInt(), s.forCustomerID, s.orderNo, s.batch,
                             s.lot, s.ref1, s.ref2, s.ref3, s.ref4, 
                             s.productDate, s.expiryDate));
         }

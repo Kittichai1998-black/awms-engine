@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -34,6 +35,7 @@ namespace AWMSEngine.Engine.V2.General
         //}
         public class TRes
         {
+            public DocumentProcessTypeID processType;
             public long putawayID;
             public string putawayCode;
             public long grID;
@@ -44,7 +46,7 @@ namespace AWMSEngine.Engine.V2.General
         public class PackSto
         {
             public string pstoCode;
-
+            public string pstoName;
             public string batch;
             public string lot;
             public string orderNo;
@@ -55,11 +57,12 @@ namespace AWMSEngine.Engine.V2.General
             public string ref3;
             public string ref4;
             public string cartonNo;
+            public long? forCustomerID;
             public string options;
             public decimal addQty;
             public string unitTypeCode; // old unit 
             public string packUnitTypeCode;
-            public DateTime? expireDate;
+            public DateTime? expiryDate;
             public DateTime? incubationDate;
             public DateTime? productDate;
         }
@@ -83,20 +86,23 @@ namespace AWMSEngine.Engine.V2.General
             {
                 var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}");
 
-                if(qrModel ==null)
+                if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
-
+                
                 List<long> dociID = qrModel.dociID.Split(',').Select(long.Parse).ToList();
                 List<long> qty = qrModel.qty.Split(',').Select(long.Parse).ToList();
                 int i = 0;
 
                 var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
-                if(docitem == null)
+                if (docitem == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
+                if (parentDoc == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
 
+                res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;
                 res.grCode = parentDoc.Code;
                 res.putawayID = doc.ID.Value;
@@ -104,8 +110,8 @@ namespace AWMSEngine.Engine.V2.General
 
                 dociID.ForEach(ID =>
                 {
-                    var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
-                    var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
+                    //var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
+                    //var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
                     var docitemPutaway = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
                     var skuPutaway = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);
 
@@ -115,33 +121,49 @@ namespace AWMSEngine.Engine.V2.General
                     //if (qty[i] == 0)
                     //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนรับเข้าเท่ากับ 0");
 
-
+                    //qrModel.numPalelt
                     packList.Add(new PackSto()
                     {
                         pstoCode = skuPutaway.Code,
+                        pstoName = skuPutaway.Name,
                         batch = docitemPutaway.Batch,
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,
-                        itemNo = null,
+                        itemNo = docitemPutaway.ItemNo,
                         refID = docitemPutaway.Ref1,
                         ref1 = docitemPutaway.Ref1,
                         ref2 = docitemPutaway.Ref2,
                         ref3 = docitemPutaway.Ref3,
                         ref4 = docitemPutaway.Ref4,
-                        cartonNo = null,
-                        options = docitemPutaway.Options,
+                        cartonNo = docitemPutaway.CartonNo,
+                        forCustomerID = doc.For_Customer_ID,
+                        options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
                         addQty = qty[i],
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
-                        expireDate = docitemPutaway.ExpireDate,
+                        expiryDate = docitemPutaway.ExpireDate,
                         productDate = docitemPutaway.ProductionDate
 
                     });
                     i++;
                 });
-                res.datas=packList;
+                res.datas = packList;
             }
-            else
+            else if (reqVO.qr.StartsWith("E|"))
+            {
+                //empty pallet 
+                res.processType = DocumentProcessTypeID.ESP_TRANSFER_WM;
+                var espSKU = StaticValue.LoadSKUMasterEmptyPallets().First();
+                packList.Add(new PackSto()
+                {
+                    pstoCode = espSKU.Code,
+                    addQty = 1,
+                    unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == espSKU.UnitType_ID).Code,
+                    packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == espSKU.UnitType_ID).Code,
+                });
+                res.datas = packList;
+            }
+            else 
             {
                 //config
             }

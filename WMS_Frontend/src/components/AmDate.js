@@ -17,7 +17,7 @@ const AmDate = props => {
   const [DateNow, setDateNow] = useState(
     type === "date"
       ? moment().format("YYYY-MM-DD")
-      : moment().format("YYYY-MM-DDTHH:mm")
+      : props.setTimeZero ? moment().format("YYYY-MM-DDT00:00") : moment().format("YYYY-MM-DDTHH:mm") 
   );
   const [TimeNow, setTimeNow] = useState(moment().format("HH:mm"));
   const [fieldID, setFieldID] = useState(props.FieldID);
@@ -37,7 +37,6 @@ const AmDate = props => {
           dataReturndefault.fieldDataObject = TimeNow;
           props.onChange(dataReturndefault);
         } else {
-          console.log(props.defaultValue)
           dataReturndefault.fieldID = fieldID;
           dataReturndefault.fieldDataKey = DateNow;
           dataReturndefault.fieldDataObject = DateNow;

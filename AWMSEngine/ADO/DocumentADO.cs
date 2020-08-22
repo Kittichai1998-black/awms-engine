@@ -160,10 +160,13 @@ namespace AWMSEngine.ADO
             param.Add("@itemNo", docItem.ItemNo);
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
+            param.Add("@cartonNo", docItem.CartonNo);
+            param.Add("@auditStatus", docItem.AuditStatus);
             param.Add("@lot", docItem.Lot);
             param.Add("@parentDocumentItem_ID", docItem.ParentDocumentItem_ID);
             param.Add("@actualQty", docItem.ActualBaseQuantity);
-
+            param.Add("@incubationDay", docItem.IncubationDay);
+            param.Add("@shelfLifeDay", docItem.ShelfLifeDay);
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
@@ -746,6 +749,9 @@ namespace AWMSEngine.ADO
             param.Add("@baseUnitTypeID", docItem.BaseUnitType_ID);
             param.Add("@expireDate", docItem.ExpireDate);
             param.Add("@productionDate", docItem.ProductionDate);
+            param.Add("@incubationDay", docItem.IncubationDay);
+            param.Add("@shelfLifeDay", docItem.ShelfLifeDay);
+            param.Add("@auditStatus",docItem.AuditStatus);
             param.Add("@options", docItem.Options);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);

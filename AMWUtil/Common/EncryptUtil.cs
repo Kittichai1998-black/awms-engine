@@ -23,13 +23,14 @@ namespace AMWUtil.Common
         {
             StringBuilder hash = new StringBuilder();
             MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
-            byte[] bytes = md5provider.ComputeHash(new UTF8Encoding().GetBytes(input));
-
+            //byte[] bytes = md5provider.ComputeHash(new UTF8Encoding().GetBytes(input));
+            byte[] bytes = md5provider.ComputeHash(System.Text.Encoding.Unicode.GetBytes(input));
+            
             for (int i = 0; i < bytes.Length; i++)
             {
                 hash.Append(bytes[i].ToString("x2"));
             }
-            return hash.ToString();
+            return hash.ToString().ToUpper();
         }
         public static string GenerateSHA256String(string inputString)
         {

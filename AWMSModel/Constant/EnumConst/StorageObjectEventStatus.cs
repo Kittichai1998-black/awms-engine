@@ -10,42 +10,43 @@ namespace AWMSModel.Constant.EnumConst
     }
     public enum StorageObjectEventStatus
     {
-        //Pallet
+        //-------------------Pallet
         INACTIVE = 0,
         ACTIVE = 1,
         REMOVE = 2,
         DONE = 3,
 
-        //Pack
-        NEW = 100,
-        RECEIVING = 101,
+        //-------------------Pack Inbound
+        NEW = 10,
+        RECEIVING = 11,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        RECEIVED = 102,
-        AUDITING = 103,
+        RECEIVED = 12,
+        AUDITING = 13,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        AUDITED = 104,
-        COUNTING = 105,
+        AUDITED = 14,
+        COUNTING = 15,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        COUNTED = 106,
+        COUNTED = 16,
 
-        ALLOCATING = 151,
-        ALLOCATED = 152,
-        PICKING = 153,
-        PICKED = 154,
-        CONSOLIDATING = 155,
-        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        CONSOLIDATED = 156,
-        LOADING = 157,
-        LOADED = 158,
 
-        REMOVING = 201,
-        REMOVED = 202,
-        CANCELING = 203,
+        //-------------------Pack Remove
+        REMOVING = 21,
+        REMOVED = 22,
+        CANCELING = 23,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        CANCELED = 204,
+        CANCELED = 24,
 
-        SHIPPING = 301,
-        SHIPPED = 302,
+
+        //-------------------Pack Outbound
+        ALLOCATING = 31,
+        ALLOCATED = 32,
+        PICKING = 33,
+        PICKED = 34,
+        CONSOLIDATING = 35,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
+        CONSOLIDATED = 36,
+        COMPLETING = 37,
+        COMPLETED = 38,
 
 
     }

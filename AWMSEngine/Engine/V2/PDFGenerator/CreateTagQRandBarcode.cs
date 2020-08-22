@@ -139,8 +139,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                     document.SetMargins(5f, 5f, 5f, 5f);
                     break;
                 case LayoutType.CUSTOM1:
-                    document.SetPageSize(new Rectangle(432, 288));
-                    document.SetMargins(5f, 5f, 5f, 5f);
+                    document.SetPageSize(new Rectangle(420, 300.4f));
+                    document.SetMargins(7f, 7f, 7f, 7f);
                     break;                
             }
             
@@ -226,12 +226,12 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         private PdfPTable GetHeaderQRCustom1(string title, string qrcode)
         {
             PdfPTable headerTable = new PdfPTable(2);
-            headerTable.TotalWidth = 422f;
-            headerTable.HorizontalAlignment = 0;
+            headerTable.TotalWidth = 406f;
+            headerTable.HorizontalAlignment = Element.ALIGN_LEFT;
             headerTable.DefaultCell.Border = Rectangle.BOX;
 
             float[] headerTableColWidth = new float[2];
-            headerTableColWidth[0] = 367f;
+            headerTableColWidth[0] = 351f;
             headerTableColWidth[1] = 55f;
             headerTable.SetWidths(headerTableColWidth);
             headerTable.LockedWidth = true;
@@ -265,7 +265,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             var palletNo = ObjectUtil.QryStrGetValue(details, OptionConst.OPT_PALLET_NO);
             
             PdfPTable table = new PdfPTable(4);
-            table.TotalWidth = 422f;
+            table.TotalWidth = 406f;
             table.HorizontalAlignment = 0;
             table.DefaultCell.Border = Rectangle.BOX;
             //table.SpacingBefore = 5;
@@ -273,8 +273,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 
             float[] tableColWidth = new float[4];
             tableColWidth[0] = 80f;
-            tableColWidth[1] = 187f;
-            tableColWidth[2] = 65f;
+            tableColWidth[1] = 173f;
+            tableColWidth[2] = 63f;
             tableColWidth[3] = 90f;
             table.SetWidths(tableColWidth);
             table.LockedWidth = true;
@@ -339,7 +339,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.NO_BORDER;
-                pCell.PaddingTop = 15f;
+                pCell.PaddingTop = 17f;
                 return pCell;
             }
             PdfPCell SetInfoCol(PdfPCell pCell)
@@ -347,7 +347,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.BOTTOM_BORDER;
-                pCell.PaddingTop = 15f;
+                pCell.PaddingTop = 17f;
                 pCell.PaddingBottom = 5f;
                 return pCell;
             }

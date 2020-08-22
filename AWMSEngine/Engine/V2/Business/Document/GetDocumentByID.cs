@@ -68,6 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string batch;
             public string lot;
             public string orderNo;
+            public string itemNo;
 
             public EntityStatus status;
 
@@ -95,8 +96,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public long distoBaseUnitID;
             public string distoBaseUnitCode;
             public string distoUnitCodeConvert;
-
-
+            public string docSouCode;
+            public long docSouID;
             public int areaID;
             public int areaTypeID;
             public string areaCode;
@@ -152,13 +153,45 @@ namespace AWMSEngine.Engine.V2.Business.Document
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
-            if (reqVO.getMapSto && doc.documentItems.Count != 0)
+            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001, 1002, 2003, 2004) && doc.documentItems.Count != 0)
             {
-                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+                set_sou_des(doc.ID.Value);
+            }
+            else
+            {
+
+                var docRefIDs = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                {
+                new SQLConditionCriteria("ParentDocument_ID",doc.ID.Value, SQLOperatorType.EQUALS),
+                }, this.BuVO);
+
+                docRefIDs.ForEach(df =>
+                {
+                    set_sou_des(df.ID.Value);
+
+                });
+
+
+
+                //set_sou_des(doc.ID.Value);
+            }
+
+            void set_sou_des(long docID)
+            {
+
+                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(docID, null, null, this.BuVO);
+
+
                 bstos.ForEach(bs =>
                 {
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
+
+                    var docSouID = docID;
+                    var docSouCode = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                        {
+                new SQLConditionCriteria("ParentDocument_ID",docSouID, SQLOperatorType.EQUALS),
+                        }, this.BuVO).FirstOrDefault();
 
                     //var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                     //new SQLConditionCriteria[]
@@ -187,7 +220,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         packQty = bs.sou_packQty,
                         packUnitID = bs.sou_packUnitID,
                         packUnitCode = bs.sou_packUnitCode,
-
+                        docSouCode = docSouCode.Code == null ? null  : docSouCode.Code,
+                        docSouID = docSouID,
                         packBaseQty = bs.des_packBaseQty,
                         packBaseUnitID = bs.des_packBaseUnitID,
                         packBaseUnitCode = bs.des_packBaseUnitCode,
@@ -199,6 +233,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         batch = bs.sou_batch,
                         lot = bs.sou_lot,
                         orderNo = bs.sou_orderNo,
+                        itemNo = bs.sou_itemNo,
 
                         status = bs.sou_status,
 
@@ -214,7 +249,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
                         distoUnitCode = bs.distoUnitCode,
-                     
+
                         distoBaseQty = bs.distoBaseQty,
                         distoBaseQtyMax = bs.distoBaseQtyMax,
                         distoBaseUnitID = bs.distoBaseUnitID,
@@ -223,7 +258,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
-                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x => x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,
@@ -264,6 +299,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         batch = bs.des_batch,
                         lot = bs.des_lot,
                         orderNo = bs.des_orderNo,
+                        itemNo = bs.des_itemNo,
 
                         status = bs.des_status,
 
@@ -290,7 +326,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
-                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x => x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,

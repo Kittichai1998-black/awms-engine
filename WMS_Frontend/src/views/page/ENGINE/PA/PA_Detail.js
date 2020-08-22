@@ -32,10 +32,11 @@ const PA_Detail = props => {
                 buttonBack={true}
                 linkBack={"/putaway/search"}
                 history={props.history}
-                useAddPalletMapSTO={true}
-                addPalletMapSTO={addPalletMapSTO}
+                // useAddPalletMapSTO={true}
+                // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
+                usePrintPDF={true}
             >
             </DocView>
             )
@@ -58,14 +59,13 @@ const PA_Detail = props => {
             }
 
         }
-        console.log(DataprocessType)
         var TextHeader = [
             [
                 { label: "Document No.", values: "Code" },
                 { label: "Document Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "DocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
@@ -84,50 +84,108 @@ const PA_Detail = props => {
 
 
     const columns = [
-        // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
-        { accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 130, accessor: "OrderNo", Header: "Order No." },
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
+        {
+            Header: "Item",
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
+        },
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 120, accessor: "_qty", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus", Cell: e => GetAuditStatus(e.original) },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const columnsDetailSOU = [
+        { width: 100, accessor: "ItemNo", Header: "Item No." },
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
+        {
+            width: 130, Header: "Location",
+            Cell: e => {
+                let location = e.original.areaLocationCode ? ":" + e.original.areaLocationCode : "";
+                return e.original.areaCode + location;
+            }
+        },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
-        { width: 125, accessor: "orderNo", Header: "Order No." },
-        { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
+        { width: 120, accessor: "_packQty", Header: "Qty" },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const columnsDetailDES = [
-        //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
+        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
         { width: 100, accessor: "code ", Header: "Pallet" },
-        // { width: 150, accessor: "packCode", Header: "Pack Code" },
-        // { accessor: "packName", Header: "Pack Name" },
         { Header: "Item Code", accessor: "SKUItems" },
-        { width: 125, accessor: "orderNo", Header: "Order No." },
         { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
+        { width: 120, accessor: "_packQty", Header: "Qty" },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay"},
+        { Header: "ProductDate", accessor: "ProductionDate"},
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <HighlightOff style={{ color: "red" }} />;
         else return null;
     };
+
+    const GetAuditStatus = (value) => {
+        if (value.AuditStatus === 0) {
+            return "QUARANTINE"
+        } else if (value.AuditStatus === 1) {
+            return "PASS"
+        } else if (value.AuditStatus === 2) {
+            return "NOTPASS"
+        } else if (value.AuditStatus === 9) {
+            return "HOLD"
+        }
+    };
+
 
     const getDocID = () => {
         const values = queryString.parse(props.location.search);
         var ID = values.docID.toString();
         return ID;
     };
- 
+
     const addPalletMapSTO = {
         // apiCreate: '/v2/ScanMapStoFromDocAPI',
         // columnsDocItems: colListDocItems,

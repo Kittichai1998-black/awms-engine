@@ -154,6 +154,7 @@ const AmSearchDocumentV2 = props => {
 
   const onChangeFilterData = (filterValue) => {
     var res = {};
+    console.log(filterValue)
     filterValue.forEach(fdata => {
       console.log(fdata)
       if (fdata.customFilter !== undefined) {

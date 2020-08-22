@@ -19,6 +19,5 @@ namespace AWMSModel.Entity
         public decimal? BaseQuantity;
         public long UnitType_ID;
         public long BaseUnitType_ID;
-        public EntityStatus Status;
     }
 }

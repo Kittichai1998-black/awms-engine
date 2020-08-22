@@ -45,6 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string ref1;
             public string ref2;
             public string ref3;
+            public string ref4;
             public string options;
             public DocumentProcessTypeID documentProcessTypeID;
 
@@ -53,26 +54,32 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public List<ReceiveItem> receiveItems;
             public class ReceiveItem
             {
-                public string skuCode;
                 public string packCode;
+                public long? packID;
+                public string skuCode;
                 public decimal? quantity;
                 public string unitType;
-                public decimal? basequantity;
-                public DateTime? expireDate;
-                public DateTime? productionDate;
-
-                public string orderNo;
+                public decimal? baseQuantity;
+                public string baseunitType;
                 public string batch;
                 public string lot;
-
-                public long? parentDocumentItem_ID;
-
+                public string orderNo;
+                public string cartonNo;
+                public string itemNo;
+                public AuditStatus auditStatus;
+                public string refID;
                 public string ref1;
                 public string ref2;
                 public string ref3;
-                public string refID;
-                public string itemNo;
+                public string ref4;
                 public string options;
+                public long? parentDocumentItem_ID;
+                public long? incubationDay;
+
+                public DateTime? expireDate;
+                public DateTime? productionDate;
+                public long? shelfLifeDay;
+
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;
@@ -144,7 +151,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                     souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-
+                     docTypeId = DocumentTypeID.PUTAWAY,
                     desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                     desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                     desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
@@ -155,8 +162,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
+                    ref4 = reqVO.ref4,
                     options = reqVO.options,
-                    docTypeId = DocumentTypeID.PUTAWAY,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
@@ -165,22 +172,28 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         x => new CreateDocument.TReq.Item
                         {
                             skuCode = x.skuCode,
-                            packCode = null,
-                            baseQuantity = x.basequantity,
+                            packCode = x.packCode,
+                            auditStatus = x.auditStatus,
                             quantity = x.quantity,
                             unitType = x.unitType,
-                            parentDocumentItem_ID = x.parentDocumentItem_ID,
+                            cartonNo = x.cartonNo,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,
                             options = x.options,
                             expireDate = x.expireDate,
                             productionDate = x.productionDate,
+                            shelfLifeDay = x.shelfLifeDay,
+                            incubationDay = x.incubationDay,
+                            parentDocumentItem_ID = x.parentDocumentItem_ID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
                             ref3 = x.ref3,
+                            ref4 = x.ref4,
                             refID = x.refID,
                             itemNo = x.itemNo,
+                            baseQuantity = x.baseQuantity,
+                            baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
