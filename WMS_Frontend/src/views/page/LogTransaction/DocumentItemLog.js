@@ -175,7 +175,7 @@ const DocumentItemLog = (props) => {
       dateFormat: "DD/MM/YYYY HH:mm",
       filterType: "datetime",
       filterConfig: {
-        filterType: "datetime",
+        filterType: "date",
       },
       customFilter: { field: "ExpireDate" },
     },
@@ -220,6 +220,14 @@ const DocumentItemLog = (props) => {
         widthDD: 105,
       },
       Cell: (dataRow) => getStatus(dataRow.original.EventStatus, "EventStatus")
+    },
+    {
+      Header: "Incubation Day",
+      accessor: "IncubationDay",
+    },
+    {
+      Header: "Shelf Life Day",
+      accessor: "ShelfLifeDay",
     },
     {
       Header: "Status",

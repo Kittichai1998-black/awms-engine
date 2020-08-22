@@ -227,7 +227,7 @@ const StorageObjectLog = (props) => {
       customFilter: { field: "IncubationDate" },
     },
     {
-      Header: "ShelfLife Date",
+      Header: "Shelf Life Date",
       accessor: "ShelfLifeDate",
       width: 150,
       dateFormat: "DD/MM/YYYY",
