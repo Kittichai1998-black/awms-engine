@@ -707,7 +707,7 @@ const DocumentView = props => {
               {
                 cells: [
                   {
-                    text: "BOSS",
+                    text: "BOSS PHARMACARE",
                     font_style: "normal",
                   },
                   {
