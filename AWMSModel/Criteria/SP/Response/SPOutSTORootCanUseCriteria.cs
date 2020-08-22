@@ -91,6 +91,23 @@ namespace AWMSModel.Criteria.SP.Response
         public DateTime? ModifyTime;
         public DateTime? CreateTime;
 
+        public string diItemNo;
+        public AuditStatus diAuditStatus;
+        public string diLot;
+        public string diCartonNo;
+        public string diBatch;
+        public int? diIncubationDay;
+        public int? diShelfLifeDay;
+        public string diOrderNo;
+        public string diRef1;
+        public string diRef2;
+        public string diRef3;
+        public string diRef4;
+        public DateTime? diExpireDate;
+        public DateTime? diProductionDate;
+        public string dcCode;
+        public long dcID;
+
         //public DateTime createTime;
     }
 }

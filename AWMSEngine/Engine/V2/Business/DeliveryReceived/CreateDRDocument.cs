@@ -171,11 +171,14 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             {
                 var DocprocessID = DocumentProcessTypeNames.ID;
                 DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeNames.Code);
+                
                 var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType;
-
+                var SkuType = DocumentProcessTypeNames.SKUGroupType;
 
                 //if (Sou_Customer_ID == null && souWarehouseModel.ID == null && Sou_Supplier_ID == null)
                 //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DataSource Not Found");
+
+                //if (SkuType != )
 
                 if (OwnerProcess == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
