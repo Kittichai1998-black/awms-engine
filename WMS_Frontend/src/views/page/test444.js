@@ -1,8 +1,6 @@
 import React, { useState, useEffect,useContext  } from "react";
 import PropTypes from 'prop-types';
-import Table from 'react-bootstrap-table-next';
 import Date from '../../components/AmDate'
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
 import Axios from 'axios';

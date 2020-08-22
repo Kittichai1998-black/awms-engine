@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from "react";
 import PropTypes from 'prop-types';
-import Table from 'react-bootstrap-table-next';
 
 // import LocationLink from '../ComponentCore/LocationLink'
 
@@ -28,7 +27,7 @@ const Test3 = (props) => {
                 xx.push({id:1})
                 setData(xx);
             }}>add</button>
-            <Table keyField='id' columns={columns} data={data}/>
+            {/* <Table keyField='id' columns={columns} data={data}/> */}
         </div>
     )
 }
