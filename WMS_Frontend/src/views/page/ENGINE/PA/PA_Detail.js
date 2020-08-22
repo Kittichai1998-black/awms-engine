@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
+import moment from "moment";
 
 const PA_Detail = props => {
 
@@ -92,7 +94,8 @@ const PA_Detail = props => {
         { Header: "OrderNo", accessor: "OrderNo" },
         { Header: "Batch", accessor: "Batch" },
         { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 120, accessor: "_qty", Header: "Qty" },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Acual Qty" },
+        { width: 120, accessor: "Quantity", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
         { Header: "Audit Status", accessor: "AuditStatus", Cell: e => GetAuditStatus(e.original) },
         { Header: "Vendor Lot", accessor: "Ref1" },
@@ -107,33 +110,26 @@ const PA_Detail = props => {
     ];
 
     const columnsDetailSOU = [
-        { width: 100, accessor: "ItemNo", Header: "Item No." },
+        { width: 100, accessor: "diItemNo", Header: "Item No." },
         { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        {
-            width: 130, Header: "Location",
-            Cell: e => {
-                let location = e.original.areaLocationCode ? ":" + e.original.areaLocationCode : "";
-                return e.original.areaCode + location;
-            }
-        },
         { width: 100, accessor: "rootCode", Header: "Pallet" },
         { width: 150, accessor: "packCode", Header: "Pack Code" },
         { accessor: "packName", Header: "Pack Name" },
-        { Header: "OrderNo", accessor: "OrderNo" },
-        { Header: "Batch", accessor: "Batch" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
+        { Header: "OrderNo", accessor: "diOrderNo" },
+        { Header: "Batch", accessor: "diBatch" },
+        { width: 130, accessor: "diLot", Header: "Lot" },
         { width: 120, accessor: "_packQty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
         { Header: "Audit Status", accessor: "AuditStatus" },
-        { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay" },
-        { Header: "ProductDate", accessor: "ProductionDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate" },
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
+        { Header: "Vendor Lot", accessor: "diRef1" },
+        { Header: "Ref2", accessor: "diRef2" },
+        { Header: "Ref3", accessor: "diRef3" },
+        { Header: "Ref4", accessor: "diRef4" },
+        { Header: "CartonNo", accessor: "diCartonNo" },
+        { Header: "IncubationDay", accessor: "diIncubationDay" },
+        { Header: "ProductDate", accessor: "diProductionDate", Cell: e => getFormatDatePro(e.original) },
+        { Header: "ExpireDate", accessor: "diExpireDate", Cell: e => getFormatDateExp(e.original) },
+        { Header: "ShelfLifeDay", accessor: "diShelfLifeDay" }
     ];
 
     const columnsDetailDES = [
@@ -163,9 +159,17 @@ const PA_Detail = props => {
     const getStatusGR = value => {
         if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
-            return <HighlightOff style={{ color: "red" }} />;
+            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else return null;
     };
+
+    const getFormatDatePro = (e) => {
+        return moment(e.diProductionDate).format("DD/MM/YYYY");
+    }
+
+    const getFormatDateExp = (e) => {
+        return moment(e.diExpireDate).format("DD/MM/YYYY");
+    }
 
     const GetAuditStatus = (value) => {
         if (value.AuditStatus === 0) {
