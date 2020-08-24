@@ -12,16 +12,17 @@ import {
   Clone
 } from "../../../components/function/CoreFunction";
 import AmDialogs from "../../../components/AmDialogs";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import moment from "moment";
 const axios = new apicall();
 const LabelH = {
   "font-weight": "bold",
-  width: "200px"
+  "width": "200px"
 };
 
 const InputDiv = styled.div``;
 const FormInline = styled.div`
-  display: flex;
+  display: inline-flex;
   flex-flow: row wrap;
   align-items: center;
   label {
@@ -30,7 +31,7 @@ const FormInline = styled.div`
   input {
     vertical-align: middle;
   }
-  @media (max-width: 800px) {
+  @media (max-width: 300px) {
     flex-direction: column;
     align-items: stretch;
   }
@@ -113,14 +114,17 @@ export default props => {
 
   const DownloadFile = e => {
     if (e.isLeaf) {
+      console.log(e);
+
       const file_path =
         window.apipath +
         "/download/get_log?apikey=" +
         localStorage.getItem("Token") +
-        "&path=/" +
+        "&date=" +
         e.file +
-        "/" +
+        "&logfile=" +
         e.textOriginal;
+        console.log(file_path);
       const a = document.createElement("A");
       a.href = file_path;
       a.download = file_path.substr(file_path.lastIndexOf("/") + 1);
@@ -141,8 +145,8 @@ export default props => {
       {
         field: "Option",
         type: "input",
-        name: "Log Ref",
-        placeholder: "Log Ref",
+        name: "Log Ref ID",
+        placeholder: "Log Ref ID",
         required: true
       }
     ];
@@ -235,22 +239,28 @@ export default props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandleEditConfirm(status)}
-        titleText={"Search By LogRefID"}
+        titleText={"Search By Log Ref ID"}
         data={text}
         columns={FuncRanderInput()}
+        textConfirm={"Download"}
       />
-      <AmInput
-        style={{ width: "300px", paddingBottom: "10px" }}
-        type="search"
-        placeholder={"Search"}
-        onKeyUp={onKeyUp}
-      />
-      <div style={{ float: "right" }}>
-        <AmButton styleType="confirm" onClick={() => setDialog(true)}>
-          {"Search By LogRefID"}
+      <div style={{ marginBottom: '10px' }}>
+        <FormInline>
+          <label style={{ fontWeight: 'bold', marginRight: '15px' }}>Search : </label>
+          <AmInput
+            style={{ width: "300px" }}
+            type="search"
+            placeholder={"Search by Date (Ex. 200200821)"}
+            onKeyUp={onKeyUp}
+          />
+        </FormInline>
+        <AmButton styleType="confirm" className="float-right"
+          startIcon={<GetAppIcon />}
+          onClick={() => setDialog(true)}>
+          {"Download Log"}
         </AmButton>
-      </div>
 
+      </div>
       <TreeView
         // selectRow={true}
         ref={treeview}

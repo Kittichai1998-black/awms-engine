@@ -174,7 +174,7 @@ const DocumentLog = (props) => {
     },
     {
       Header: "Document Process Type",
-      accessor: "DocumentProcessType_Code",
+      accessor: "DocumentProcessType_Name",
       width: 150,
       filterType: "dropdown",
       filterConfig: {
@@ -185,6 +185,10 @@ const DocumentLog = (props) => {
         fieldLabel: ["Code", "Name"]
       },
       customFilter: { field: "DocumentProcessType_ID" },
+    },
+    {
+      Header: "Wave ID",
+      accessor: "Wave_ID",
     },
     {
       Header: "Batch",
@@ -205,6 +209,18 @@ const DocumentLog = (props) => {
       accessor: "Remark"
     },
     {
+      Header: "DocumentDate",
+      accessor: "DocumentDate",
+      width: 150,
+      type: "datetime",
+      dateFormat: "DD/MM/YYYY",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "date",
+      },
+      customFilter: { field: "DocumentDate" },
+    },
+    {
       Header: "Action Time",
       accessor: "ActionTime",
       width: 150,
@@ -212,15 +228,9 @@ const DocumentLog = (props) => {
       dateFormat: "DD/MM/YYYY HH:mm",
       filterType: "datetime",
       filterConfig: {
-        filterType: "date",
+        filterType: "datetime",
       },
       customFilter: { field: "ActionTime" },
-    },
-    {
-      Header: "DocumentDate",
-      accessor: "DocumentDate",
-      width: 150,
-      type: "datetime"
     },
     {
       Header: "RefID",
@@ -233,6 +243,14 @@ const DocumentLog = (props) => {
     {
       Header: "Ref2",
       accessor: "Ref2",
+    },
+    {
+      Header: "Ref3",
+      accessor: "Ref3",
+    },
+    {
+      Header: "Ref4",
+      accessor: "Ref4",
     },
     {
       Header: "EventStatus",

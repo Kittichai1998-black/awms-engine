@@ -244,11 +244,11 @@ const WorkQueue = Loadable({
 });
 
 const DownloadLog = Loadable({
-  loader: () => import("../../views/page/ENGINE/DownloadLog"),
+  loader: () => import("../../views/page/LogTransaction/DownloadLog"),
   loading: Loading
 });
 const SearchLog = Loadable({
-  loader: () => import("../../views/page/ENGINE/SearchLog"),
+  loader: () => import("../../views/page/LogTransaction/SearchLogRef"),
   loading: Loading
 });
 const Dash = Loadable({
@@ -317,7 +317,7 @@ let routes = [
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
   { path: "/warehouse/location_view", name: "Location Summary", compoment: LocationSummary, exact: true },
   { path: "/log/apiservicelog", name: "API Service Log", compoment: APIServiceLog, exact: true },
-  { path: "/log/sendapilog", name: "Send API Log", compoment: SendAPILog, exact: true },
+  { path: "/log/apipostlog", name: "Send API Log", compoment: SendAPILog, exact: true },
   { path: "/log/storageobjectlog", name: "Storage Object Log", compoment: StorageObjectLog, exact: true },
   { path: "/log/documentlog", name: "Document Log", compoment: DocumentLog, exact: true },
   { path: "/log/docitemlog", name: "Document Item Log", compoment: DocumentItemLog, exact: true },

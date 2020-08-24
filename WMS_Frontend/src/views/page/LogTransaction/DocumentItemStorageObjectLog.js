@@ -80,6 +80,10 @@ const DocumentItemStorageObjectLog = (props) => {
       }
     },
     {
+      Header: "IsLastSeq",
+      accessor: "IsLastSeq",
+    },
+    {
       Header: "Doc.Type",
       accessor: "DocumentType_Code",
       width: 150,
