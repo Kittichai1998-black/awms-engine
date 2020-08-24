@@ -52,6 +52,7 @@ namespace AWMSModel.Entity
         public string ItemNo;
         public string OrderNo;
         public string SKUMaster_Info1;
+        public string Quantity_Genarate;
         public string DesCustomer;
         public string DesCustomerName;
 

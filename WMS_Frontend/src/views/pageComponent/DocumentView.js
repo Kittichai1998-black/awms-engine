@@ -37,7 +37,8 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
-import AmPrintBarCode from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
+import AmPrintBarCodeV2 from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
+import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import PrintIcon from '@material-ui/icons/Print';
 import _ from 'lodash';
@@ -144,13 +145,21 @@ function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocIt
 }
 
 const PrintBarcode = React.memo(({ selection, dataHeader }) => {
-    return <AmPrintBarCode data={selection}
-        SouSupplierCode={dataHeader.SouSupplier}
-        SouSupplierName={dataHeader.SouSupplierName}
-    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
-    />
+  return <AmPrintBarCode data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
 })
-
+const PrintBarcodeV2 = React.memo(({ selection, dataHeader }) => {
+  return <AmPrintBarCodeV2 data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
+})
 const DocumentView = props => {
   const { t } = useTranslation();
   const [statusdoc, setStatusdoc] = useState(0);
@@ -958,11 +967,17 @@ const DocumentView = props => {
             : null
         }
 
-            </div>
-            {props.usePrintBarcodePallet ?
-                <>
-                    <PrintBarcode selection={selection} dataHeader={dataHeader} />
-                </>
+      </div>
+      {props.usePrintBarcodePallet ?
+        <>
+          <PrintBarcode selection={selection} dataHeader={dataHeader} />
+        </>
+
+        : null}
+      {props.usePrintBarcodePallet ?
+        <>
+          <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
+        </>
 
         : null}
 
