@@ -49,8 +49,6 @@ const AmTBputAndpick = (props) => {
     const [dialog, setdialog] = useState(false)
 
     const rem = [
-        { Header: "Quantity", accessor: "Quantity", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
         {
             Header: "", width: 30, Cell: (e) => <IconButton
                 size="small"
@@ -233,7 +231,7 @@ const AmTBputAndpick = (props) => {
             </Grid>
             <Grid item>
                 <div style={{ marginTop: "20px" }}>
-                    {doc.docID > 0 ? <AmButton
+                    {doc.dataSet > 0 ? <AmButton
                         styleType="add"
                         onClick={() => {
                             onSubmitSetItem();

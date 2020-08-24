@@ -135,27 +135,19 @@ const AmHeaderputandpick = (props) => {
     const [valueQtyDocItems, setValueQtyDocItems] = useState([]);
     const [dataFromView, setdataFromView] = useState();
     const [dataFromSto, setdataFromSto] = useState();
-
-
-    const columns = [
-        ...props.doccolumnEditItem,
-        {
-            width: 160, Header: "Quantity", accessor: "Quantity", Cell: e =>
-                genInputQty(e.original)
-        },
-        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
-
-    ];
+    const [columnSet, setcolumnSet] = useState([]);
+    const [columns, setcolumns] = useState();
+    const [ChkCol, setChkCol] = useState(false)
 
 
     useEffect(() => {
         if (doc.docID != 0 && doc.docID !== undefined) {
-
+            
             doc.setdataSourceItemTB([])
             doc.setdatadocItem([])
             doc.setdialogItemSet([])
             doc.setdialogItemSet(false)
-            doc.setdialogItem(false)
+            doc.setdialogItem(false)           
             getData();
             getDocItemQuery(DocItemsquery);
         }
@@ -164,7 +156,6 @@ const AmHeaderputandpick = (props) => {
     useEffect(() => {
         if (props.docIDCreate !== undefined) {
             doc.setdocID(props.docIDCreate)
-
         }
     }, [props.docIDCreate])
 
@@ -209,14 +200,32 @@ const AmHeaderputandpick = (props) => {
 
 
     useEffect(() => {
-        console.log(dataFromSto)
-        console.log(dataFromView)
         setdataFromSto(dataFromSto)
         setdataFromView(dataFromView)
-        if (dataFromView && dataFromSto) {
+        if (dataFromView || dataFromSto) {
             FormatDataTB()
         }
     }, [dataFromView, dataFromSto])
+
+
+
+    const setColums = () => {
+        let datas
+        setChkCol(true)
+        props.doccolumnEditItem.forEach((x, i) => {
+            if (x.Header === "Qty") {
+               datas = {
+                    width: 160, Header: "Qty", accessor: "Quantity", Cell: e =>
+                   genInputQty(e.original)
+                }
+
+            }else {
+               datas = x
+            } 
+         columnSet.push(datas)
+        })
+       setcolumns(columnSet)
+    }
 
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
@@ -230,13 +239,12 @@ const AmHeaderputandpick = (props) => {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
                     setdataFromSto(res.data.datas);
-                    //FormatDataTB();
                 } else {
                     //getDocItemQuery(DocItemsquery)
                 }
             })
         } else {
-            //getDocItemQuery(DocItemsquery)
+            getDocItemQuery(DocItemsquery)
         }
     }
 
@@ -245,7 +253,7 @@ const AmHeaderputandpick = (props) => {
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
                 setdataFromView(res.data.datas);
-                //FormatDataTB();
+
             } else {
 
             }
@@ -256,31 +264,36 @@ const AmHeaderputandpick = (props) => {
 
     const FormatDataTB = () => {
         let datRes = [];
+        if (dataFromSto && dataFromView) {
+            dataFromSto.forEach((dat, i) => {
+                let findID = dataFromView.find(x => x.ID === dat.ID)
+                if (findID !== undefined)
+                    datRes.push(dat)
 
+            })
 
-        dataFromSto.forEach((dat, i) => {
-            let findID = dataFromView.find(x => x.ID === dat.ID)
-            if (findID !== undefined)
-                datRes.push(dat)
+            dataFromView.forEach((das, is) => {
+                let findIDs = datRes.find(x => x.ID === das.ID)
+                if (findIDs === undefined) {
+                    datRes.push(das)
+                }
 
-        })
+            })
 
-        console.log(dataFromView)
-        dataFromView.forEach((das, is) => {
-            let findIDs = datRes.find(x => x.ID === das.ID)
-            if (findIDs === undefined) {
-                datRes.push(das)
+               setDataformStonandView(datRes)
+        } else {
+            if (dataFromView) {
+                setDataformStonandView(dataFromView)
+            } else if (dataFromSto) {
+                setDataformStonandView(dataFromSto)
             }
-
-        })
-
-        console.log(datRes)
-        setDataformStonandView(datRes)
+        }
 
     }
 
 
     const setDataformStonandView = (res) => {
+        console.log("ttttt")
         let datasCheck = [];
         res.forEach((x, i) => {
 
@@ -294,7 +307,7 @@ const AmHeaderputandpick = (props) => {
                 AuditStatuss: x.AuditStatus
             }
             if (datas.Qty) {
-                if ((datas.Qty - datas.Quantity) > 0) {
+                if ((datas.Quantity - datas.Qty ) > 0) {
                     datasCheck.push(datas)
                 } else {
                 }
@@ -309,6 +322,9 @@ const AmHeaderputandpick = (props) => {
             dia.setdailogErr(true)
 
         } else if (datasCheck.length > 0) {
+            if (!ChkCol) {
+                setColums();
+            }
             doc.setdatadocItem(datasCheck);
             doc.setdataSet(datasCheck)
             doc.setdialogItem(true)
@@ -329,34 +345,6 @@ const AmHeaderputandpick = (props) => {
     }
 
 
-
-    //const getDataSet = () => {
-    //    if (getDocItem != undefined) {
-    //        Axios.get(getDocItem()).then(res => {
-    //            if (res.data.datas != undefined && res.data.datas.length != 0) {
-    //                doc.setdataSet(res.data.datas);
-    //                setDataSelect([]);
-    //                setDataSelectSet([]);
-    //            } else {
-    //                //getDocItemQuerySet(DocItemsquery)
-    //            }
-    //        })
-    //    } else {
-    //        //getDocItemQuerySet(DocItemsquery)
-    //    }
-    //}
-
-    //const getDocItemQuerySet = (DocItemsquerys) => {
-    //    Axios.get(createQueryString(DocItemsquerys)).then(res => {
-    //        if (res.data.datas.length != 0 && res.data.datas != []) {
-    //            doc.setdataSetQuery(res.data.datas);
-    //            setDataSelect([]);
-    //            setDataSelectSet([]);
-    //        } else {
-
-    //        }
-    //    })
-    //}
 
     const saveDefaultInputQTY = (docitems) => {
         let valueQTY = {};
@@ -452,12 +440,10 @@ const AmHeaderputandpick = (props) => {
     const onSubmitAddItem = () => {
 
         if (dataSelectSet.length > 0) {
-            console.log(dataSelectSet.length)
             let checks;
             let dataselect = []
             dataSelectSet.forEach((xs, i) => {
                 checks = doc.dataSourceItemTB.find(x => x.ID === dataSelectSet[i].ID);
-                console.log(checks)
                 if (checks === undefined) {
                     doc.dataSourceItemTB.push(
                         {
@@ -498,20 +484,20 @@ const AmHeaderputandpick = (props) => {
 
                                 if (x.Qty) {
                                     let Quantitys = x.Quantity - x.Qty
-                                    if (Quantitys = '0') {
-                                        x.Quantity = 0
-                                        dia.setdailogMsg("Item is empty")
-                                        dia.setdailogErr(true)
+                                    //if (Quantitys = '0') {
+                                    //    x.Quantity = 0
+                                    //    dia.setdailogMsg("Item is empty")
+                                    //    dia.setdailogErr(true)
 
-                                    } else {
+                                    //} else {
 
-                                        if (Quantitys > 0) {
-                                            x.Quantity = Quantitys
-                                        } else {
+                                    //    if (Quantitys > 0) {
+                                    x.Quantity = Quantitys
+                                    //    } else {
 
-                                        }
+                                    //    }
 
-                                    }
+                                    //}
 
 
                                 }
@@ -583,12 +569,6 @@ const AmHeaderputandpick = (props) => {
             defaultQty = datarow.Quantity - datarow.Qty
         } else if (datarow.Quantity - datarow.Qty === 0) {
             defaultQty = 0
-            //doc.setdailogMsg('Item not found')
-            //doc.setdailogErr(true)
-            //doc.dialogItem(false)
-            //doc.setdatadocItem();
-
-
         } else {
             defaultQty = datarow.Quantity
         }
@@ -693,7 +673,7 @@ const AmHeaderputandpick = (props) => {
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของกล่อง dropdown
                     valueData={dataDDLHead[idddls]} //ค่า value ที่เลือก
                     queryApi={queryApi}
-                    //returnDefaultValue={true}
+                    returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
                     ddlType={"search"} //รูปแบบ Dropdown 
@@ -724,6 +704,7 @@ const AmHeaderputandpick = (props) => {
                     queryApi={queryApi} //object query string
                     columns={cols} //array column สำหรับแสดง table
                     width={width ? width : 300}
+                    returnDefaultValue={true}
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopup(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
@@ -779,7 +760,7 @@ const AmHeaderputandpick = (props) => {
             <DialogTitle
                 id="addpallet-dialog-title"
                 onClose={() => { onHandleClear(); doc.setdialogItem(false); }}>
-                {"SKU ITEM"}
+                {"ITEM"}
             </DialogTitle>
             <DialogContent>
                 <div>
@@ -816,7 +797,7 @@ const AmHeaderputandpick = (props) => {
             <DialogTitle
                 id="addpallet-dialog-title"
                 onClose={() => { onHandleClear(); doc.setdialogItemSet(false); }}>
-                {"SKU ITEM"}
+                {"ITEM"}
             </DialogTitle>
             <DialogContent>
                 <div>
