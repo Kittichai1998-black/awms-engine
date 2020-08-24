@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string batch;
             public string lot;
             public DocumentProcessTypeID documentProcessTypeID;
-            public String documentProcessTypeName;
+            public String documentProcessTypeCode;
             public long? souBranchID;
             public long? souWarehouseID;
             public long? souCustomerID;
@@ -158,24 +158,24 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
-            var DocumentProcessTypeNames = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
+            var DocumentProcessTypeCodes = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
            new SQLConditionCriteria[] {
-                new SQLConditionCriteria("Name",reqVO.documentProcessTypeName, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
        }, this.BuVO).FirstOrDefault();
 
 
 
 
 
-            if (DocumentProcessTypeNames != null)
+            if (DocumentProcessTypeCodes != null)
             {
-                var DocprocessID = DocumentProcessTypeNames.ID;
-                var SkuType = DocumentProcessTypeNames.SKUGroupType.GetValueInt();
+                var DocprocessID = DocumentProcessTypeCodes.ID;
+                var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
 
 
-                DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeNames.Code);
+                DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeCodes.Code);
 
-                var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType.GetValueInt();
+                var OwnerProcess = DocumentProcessTypeCodes.OwnerGroupType.GetValueInt();
 
 
                 var skuCode = reqVO.receivedOrderItem.Select(x => x.skuCode).ToArray();

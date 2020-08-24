@@ -133,12 +133,12 @@ const AmputAndpickManage = (props) => {
             </Grid>
             <Grid item>
                 <div style={{ marginTop: "20px" }}>
-                    <AmButton
+                    {doc.dataSourceItemTB.length > 0 ? < AmButton
                         styleType="info"
                         onClick={() => {
                             OnCreateDocument();
                         }}
-                    >CREATE</AmButton>
+                    >CREATE</AmButton>: null}
 
                 </div>
             </Grid>

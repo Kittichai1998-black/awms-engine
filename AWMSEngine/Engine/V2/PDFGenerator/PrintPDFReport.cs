@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             if (!FontFactory.IsRegistered(fontName))
             {
                 //var fontPath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\THSarabunNew.ttf";
-                string fontPath = Path.Combine(Environment.CurrentDirectory + "\\assets\\", fontName + ".ttf");
+                string fontPath = Path.Combine(Environment.CurrentDirectory + "\\assets\\fonts\\", fontName + ".ttf");
                 FontFactory.Register(fontPath);
             }
 
@@ -38,6 +38,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         public static Font StyleFont(string type, float size)
         {
             Font _font;
+            
             switch (type) {
                 case "normal":
                     _font = new Font(font_normal, size);
@@ -67,8 +68,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             MemoryStream workStream = new MemoryStream();
             Document document = new Document();
             document.SetPageSize(PageSize.A4.Rotate());
-            float marginsLeft = reqVO.margins_left > 0 ? reqVO.margins_left : 20f;
-            float marginsRight = reqVO.margins_right > 0 ? reqVO.margins_right : 20f;
+            float marginsLeft = reqVO.margins_left > 0 ? reqVO.margins_left : 15f;
+            float marginsRight = reqVO.margins_right > 0 ? reqVO.margins_right : 15f;
             float marginsTop = reqVO.margins_top > 0 ? reqVO.margins_top : 35f;
             float marginsBottom = reqVO.margins_bottom > 0 ? reqVO.margins_bottom : 30f;
             document.SetMargins(marginsLeft, marginsRight, marginsTop, marginsBottom);
@@ -118,7 +119,6 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                     table.SetWidths(itemTable.widths);
                     table.LockedWidth = itemTable.locked_width;
                 }
-
             }
             table.HorizontalAlignment = itemTable.hor_align != null ? (int)typeof(Element).GetField(itemTable.hor_align).GetValue(null) : Element.ALIGN_LEFT;
             table.DefaultCell.Border = itemTable.def_cell_border != null ? (int)typeof(Rectangle).GetField(itemTable.def_cell_border).GetValue(null) : Rectangle.NO_BORDER;

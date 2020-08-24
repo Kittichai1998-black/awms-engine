@@ -169,7 +169,7 @@ const Create_GR_DR = props => {
 
     const columnEdit = [
         { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
-        { Header: "Item Code", accessor: "SKUItems", type: "text"},
+        { Header: "Item", accessor: "SKUItems", type: "text"},
         { Header: "OrderNo", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
         { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot",accessor: "Lot", type: "text", codeTranslate: "Lot" },
@@ -189,12 +189,12 @@ const Create_GR_DR = props => {
 
     const columnEditItem = [
         { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
-        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Item", accessor: "SKUItems", codeTranslate: "Item Code" },
         { Header: "OrderNo", accessor: "OrderNo", codeTranslate: "OrderNo" },
         { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot",  accessor: "Lot",  codeTranslate: "Lot" },
-        { Header: "Qty",  accessor: "Quantity",  codeTranslate: "Qty"},
-        { Header: "Unit", accessor: "UnitType_Code",  codeTranslate: "Unit"},
+        { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
+        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
         { Header: "Audit Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
@@ -223,7 +223,7 @@ const Create_GR_DR = props => {
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "", accessor: "row", width: 35 },
-        { Header: "Item Code", accessor: "SKUItems" },
+        { Header: "Item", accessor: "SKUItems" },
         { Header: "OrderNo", accessor: "OrderNo" },
         { Header: "Batch", accessor: "Batch" },
         { width: 130, accessor: "Lot", Header: "Lot" },
