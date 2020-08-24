@@ -170,20 +170,30 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             if (DocumentProcessTypeNames != null)
             {
                 var DocprocessID = DocumentProcessTypeNames.ID;
+                var SkuType = DocumentProcessTypeNames.SKUGroupType.GetValueInt();
+
+
                 DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeNames.Code);
-                
-                var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType;
-                var SkuType = DocumentProcessTypeNames.SKUGroupType;
 
-                //if (Sou_Customer_ID == null && souWarehouseModel.ID == null && Sou_Supplier_ID == null)
-                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DataSource Not Found");
+                var OwnerProcess = DocumentProcessTypeNames.OwnerGroupType.GetValueInt();
 
-                //if (SkuType != )
 
-                if (OwnerProcess == null)
+                var skuCode = reqVO.receivedOrderItem.Select(x => x.skuCode).ToArray();
+
+                var skuLists = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                   new SQLConditionCriteria("Code",string.Join(',', skuCode), SQLOperatorType.IN),
+                      }, this.BuVO);
+
+                if (skuLists.Any(x => x.SKUMasterType_ID != SkuType))
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.U0000, "Item not match DocumantProcessType");
+                }
+
+                if (OwnerProcess == '0')
+                {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
-
-                if (OwnerProcess == OwnerGroupType.WM)
+                }
+                else if (OwnerProcess == '1')
                 {
                     if (souWarehouseModel.ID == null)
                     {
@@ -195,20 +205,19 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     }
 
                 }
-                else if (OwnerProcess == OwnerGroupType.CUS)
+                else if (OwnerProcess == '2')
                 {
                     if (Sou_Customer_ID == null)
                     {
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souCustomer Not Found");
                     }
-                    //else  if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
-                    //    {
-                    //        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
-                    //    }
-
+                    else if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                    }
 
                 }
-                else if (OwnerProcess == OwnerGroupType.WM)
+                else if (OwnerProcess == '3')
                 {
                     if (Sou_Supplier_ID == null)
                     {
@@ -223,7 +232,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                 reqVO.documentProcessTypeID = documentProcessTypeID;
             }
-                
+
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
@@ -267,7 +276,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
 
                     Items = reqVO.receivedOrderItem.Select(
-                       
+
                         x => new CreateDocument.TReq.Item
 
                         {

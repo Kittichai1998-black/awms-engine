@@ -98,10 +98,7 @@ const AmImportDocumentExcel = (props) => {
                     "remark": datsobj[4][3],
 
                 }
-
                 dataHdr.push(datas)
-
-
             })
 
         }
