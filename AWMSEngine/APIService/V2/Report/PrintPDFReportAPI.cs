@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.V2.Report
         protected override dynamic ExecuteEngineManual()
         {
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<PDFContentCriteria>(this.RequestVO);
-            var res = new CreatePDFTemplate().Execute(this.Logger, this.BuVO, req);
+            var res = new PrintPDFReport().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

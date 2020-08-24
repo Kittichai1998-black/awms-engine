@@ -29,9 +29,9 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
     return window.apipath + "/v2/GetSPReportAPI?"
       + "&packCode=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
       + "&packName=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
-      + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-      + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-      + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
+      + "&orderNo=" + (valueText.OrderNo === undefined || valueText.OrderNo === null ? '' : encodeURIComponent(valueText.OrderNo.trim()))
+      + "&batch=" + (valueText.Batch === undefined || valueText.Batch === null ? '' : encodeURIComponent(valueText.Batch.trim()))
+      + "&lot=" + (valueText.Lot === undefined || valueText.Lot === null ? '' : encodeURIComponent(valueText.Lot.trim()))
 
       + "&spname=CURRENTINV_STOSUM";
 
@@ -98,7 +98,10 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
       + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
       + "&spname=DAILY_LOAD";
-
+  } else if (fileNameTable === "LOG_SEARCH") {
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+      + "&spname=LOG_SEARCH";
   }
 
 }

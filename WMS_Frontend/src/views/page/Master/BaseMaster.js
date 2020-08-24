@@ -340,6 +340,27 @@ const BaseMaster = props => {
       console.log(err)
     }
   }
+  const customActions = [
+    { label: "Print Barcode", action: (data) => onPrintBarcode(data) },
+  ];
+  const onPrintBarcode = async(dataSel) => {
+    try {
+      let listCode = [];
+      if (dataSel && dataSel.length > 0) {
+        dataSel.map(x => {
+          listCode.push({ "code": x.Code });
+        });
+        let reqjson = {
+          "layoutType": 0,
+          "listsCode": listCode
+        }
+        await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printbarcode.pdf", "preview").then();
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div>
       {/* <MasterData
@@ -369,6 +390,7 @@ const BaseMaster = props => {
         pageSize={25}
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        customAction={customActions}
       />
     </div>
   );

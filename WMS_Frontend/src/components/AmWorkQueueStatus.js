@@ -10,14 +10,14 @@ const styles = theme => ({
     }
 });
 const EventsStatus = [
-    { status: 'NEW', code: 10, label: 'NW' },
-    { status: 'WORKING', code: 11, label: 'WK' },
-    { status: 'WORKED', code: 12, label: 'WK' },
-    { status: 'REMOVING', code: 21, label: 'RM' },
-    { status: 'REMOVED', code: 22, label: 'RM' },
-    { status: 'CLOSING', code: 31, label: 'CS' },
-    { status: 'CLOSED', code: 32, label: 'CS' },
-    { status: 'WARNING', code: 90, label: 'WN' },
+    { status: 'NEW', code: 10, label: 'NEW', labelShort: 'NW' },
+    { status: 'WORKING', code: 11, label: 'WORKING', labelShort: 'WK' },
+    { status: 'WORKED', code: 12, label: 'WORKED', labelShort: 'WK' },
+    { status: 'REMOVING', code: 21, label: 'REMOVING', labelShort: 'RM' },
+    { status: 'REMOVED', code: 22, label: 'REMOVED', labelShort: 'RM' },
+    { status: 'CLOSING', code: 31, label: 'CLOSING', labelShort: 'CS' },
+    { status: 'CLOSED', code: 32, label: 'CLOSED', labelShort: 'CS' },
+    { status: 'WARNING', code: 90, label: 'WARNING', labelShort: 'WN' },
 ]
 
 

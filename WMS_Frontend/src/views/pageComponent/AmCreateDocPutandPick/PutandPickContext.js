@@ -14,6 +14,7 @@ const initialState = {
     "docID": 0,
     "datadocItem": [],
     "dataSet": [],
+    "dataSetqeury": [],
     "dialogItem": false,
     "dialogItemSet": false,
     "dataSourceItemTB": [],
@@ -68,6 +69,12 @@ const DocReducer = (state, action) => {
             return {
                 ...state,
                 "dataSet": action.value,
+
+            }
+        } case "DATASETQUERY": {
+            return {
+                ...state,
+                "datasetQuery": action.value,
 
             }
         } case "CREATE": {
@@ -140,11 +147,16 @@ const DocAction = () => {
     const editdata = state.editdata;
     const setdataSet = (value) => dispatch({ type: "DATASET", value })
     const dataSet = state.dataSet;
+    const setdataSetQuery = (value) => dispatch({ type: "DATASETQUERY", value })
+    const dataSetQuery = state.dataSetqeury;
     const setdataCreate = (value) => dispatch({ type: "CREATE", value })
     const dataCreate = state.dataCreate;
     const setdatasetTB = (value) => dispatch({ type: "DATASETTB", value })
     const datasetTB = state.datasetTB;
-    return { docID, setdocID, datadocItem, setdatadocItem, dialogItem, setdialogItem, dialogItemSet, setdialogItemSet, setdataSourceItemTB, dataSourceItemTB, seteditdata, editdata, setdataSet, dataSet, setdataCreate, dataCreate, setdatasetTB,datasetTB}
+    return {
+        docID, setdocID, datadocItem, setdatadocItem, dialogItem, setdialogItem, dialogItemSet, setdialogItemSet, setdataSourceItemTB, dataSourceItemTB, seteditdata,
+        editdata, setdataSet, dataSet, setdataCreate, dataCreate, setdatasetTB, datasetTB, setdataSetQuery, dataSetQuery
+    }
 }
 
 const DialogsAction = () => {

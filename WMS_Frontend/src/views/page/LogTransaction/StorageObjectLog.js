@@ -16,7 +16,8 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import AmInput from "../../../components/AmInput";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmStorageObjectEventStatus from "../../../components/AmStorageObjectStatus";
-import { StorageObjectEvenStatusAll } from "../../../components/Models/StorageObjectEvenstatus";
+import AmAuditStatus from "../../../components/AmAuditStatus";
+import { StorageObjectEvenStatusAll,AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
 import { EntityEventStatusAll } from "../../../components/Models/EntityStatus";
 import AmLog from "../../pageComponent/AmLog";
 
@@ -122,10 +123,6 @@ const StorageObjectLog = (props) => {
       accessor: "AreaLocationMaster_Code",
     },
     {
-      Header: "Transport",
-      accessor: "TransportObject_Code",
-    },
-    {
       Header: "Parent Sto",
       accessor: "ParentStorageObject_Code",
       width: 150,
@@ -193,22 +190,11 @@ const StorageObjectLog = (props) => {
       Header: "Carton No",
       accessor: "CartonNo",
     },
-
-    {
-      Header: "Expiry Date",
-      accessor: "ExpiryDate",
-      width: 150,
-      type: "datetime",
-      filterType: "datetime",
-      filterConfig: {
-        filterType: "date",
-      },
-      customFilter: { field: "ExpiryDate" },
-    },
     {
       Header: "Product Date",
       accessor: "ProductDate",
       width: 150,
+      dateFormat: "DD/MM/YYYY",
       type: "datetime",
       filterType: "datetime",
       filterConfig: {
@@ -217,15 +203,40 @@ const StorageObjectLog = (props) => {
       customFilter: { field: "ProductDate" },
     },
     {
+      Header: "Expiry Date",
+      accessor: "ExpiryDate",
+      width: 150,
+      dateFormat: "DD/MM/YYYY",
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "date",
+      },
+      customFilter: { field: "ExpiryDate" },
+    },
+    {
       Header: "Incubation Date",
       accessor: "IncubationDate",
       width: 150,
+      dateFormat: "DD/MM/YYYY",
       type: "datetime",
       filterType: "datetime",
       filterConfig: {
         filterType: "date",
       },
       customFilter: { field: "IncubationDate" },
+    },
+    {
+      Header: "Shelf Life Date",
+      accessor: "ShelfLifeDate",
+      width: 150,
+      dateFormat: "DD/MM/YYYY",
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "date",
+      },
+      customFilter: { field: "ShelfLifeDate" },
     },
     {
       Header: "RefID",
@@ -278,12 +289,23 @@ const StorageObjectLog = (props) => {
       Cell: (dataRow) => getStatus(dataRow.original.Status, "Status")
     },
     {
+      Header: "Is Stock",
+      accessor: "IsStock",
+    },
+    {
       Header: "Is Hold",
       accessor: "IsHold",
     },
     {
       Header: "Audit Status",
       accessor: "AuditStatus",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: AuditStatus,
+        typeDropDown: "normal",
+        widthDD: 105,
+      },
+      Cell: (dataRow) => getStatus(dataRow.original.AuditStatus, "AuditStatus")
     },
     {
       Header: "Create By",
@@ -343,6 +365,8 @@ const StorageObjectLog = (props) => {
         return <AmEntityStatus statusCode={value} />;
       } else if (type === "EventStatus") {
         return <AmStorageObjectEventStatus statusCode={value} />;
+      } else if (type === "AuditStatus") {
+        return <AmAuditStatus statusCode={value}/>
       }
     } else {
       return null;

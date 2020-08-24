@@ -133,7 +133,8 @@ const AmHeaderputandpick = (props) => {
     const [dataSelect, setDataSelect] = useState([]);
     const [dataSelectSet, setDataSelectSet] = useState([]);
     const [valueQtyDocItems, setValueQtyDocItems] = useState([]);
-    const [datadocItems, setdatadocItems] = useState([]);
+    const [dataFromView, setdataFromView] = useState();
+    const [dataFromSto, setdataFromSto] = useState();
 
 
     const columns = [
@@ -156,6 +157,7 @@ const AmHeaderputandpick = (props) => {
             doc.setdialogItemSet(false)
             doc.setdialogItem(false)
             getData();
+            getDocItemQuery(DocItemsquery);
         }
     }, [doc.docID])
 
@@ -166,11 +168,12 @@ const AmHeaderputandpick = (props) => {
         }
     }, [props.docIDCreate])
 
-    useEffect(() => {
-        if (doc.dialogItemSet === true) {
-            getDataSet();
-        }
-    }, [doc.dialogItemSet])
+    //useEffect(() => {
+    //    if (doc.dialogItemSet === true) {
+    //        getDataSet();
+    //        getDocItemQuerySet(DocItemsquery)
+    //    }
+    //}, [doc.dialogItemSet])
 
 
     useEffect(() => {
@@ -204,10 +207,16 @@ const AmHeaderputandpick = (props) => {
         createDocumentData["parentDocumentID"] = doc.docID
     }, [doc.docID])
 
+
     useEffect(() => {
-        console.log(doc.datadocItem)
-        //doc.setdatadocItem(doc.datadocItem)
-    }, [doc.datadocItem])
+        console.log(dataFromSto)
+        console.log(dataFromView)
+        setdataFromSto(dataFromSto)
+        setdataFromView(dataFromView)
+        if (dataFromView && dataFromSto) {
+            FormatDataTB()
+        }
+    }, [dataFromView, dataFromSto])
 
     const getDocItem = () => {
         return window.apipath + "/v2/GetSPSearchAPI?"
@@ -220,13 +229,14 @@ const AmHeaderputandpick = (props) => {
         if (getDocItem != undefined) {
             Axios.get(getDocItem()).then(res => {
                 if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    FormatDataTB(res.data.datas)
+                    setdataFromSto(res.data.datas);
+                    //FormatDataTB();
                 } else {
-                    getDocItemQuery(DocItemsquery)
+                    //getDocItemQuery(DocItemsquery)
                 }
             })
         } else {
-            getDocItemQuery(DocItemsquery)
+            //getDocItemQuery(DocItemsquery)
         }
     }
 
@@ -234,7 +244,8 @@ const AmHeaderputandpick = (props) => {
         //ข้อมูลจาก amv_Docview
         Axios.get(createQueryString(DocItemsquerys)).then(res => {
             if (res.data.datas.length != 0 && res.data.datas != []) {
-                FormatDataTB(res.data.datas)
+                setdataFromView(res.data.datas);
+                //FormatDataTB();
             } else {
 
             }
@@ -243,9 +254,36 @@ const AmHeaderputandpick = (props) => {
     }
 
 
-    const FormatDataTB = (res) => {
+    const FormatDataTB = () => {
+        let datRes = [];
+
+
+        dataFromSto.forEach((dat, i) => {
+            let findID = dataFromView.find(x => x.ID === dat.ID)
+            if (findID !== undefined)
+                datRes.push(dat)
+
+        })
+
+        console.log(dataFromView)
+        dataFromView.forEach((das, is) => {
+            let findIDs = datRes.find(x => x.ID === das.ID)
+            if (findIDs === undefined) {
+                datRes.push(das)
+            }
+
+        })
+
+        console.log(datRes)
+        setDataformStonandView(datRes)
+
+    }
+
+
+    const setDataformStonandView = (res) => {
         let datasCheck = [];
         res.forEach((x, i) => {
+
             var datas = {
                 ...x,
                 ExpireDates: x.ExpireDate ? x.ExpireDate : null,
@@ -261,12 +299,9 @@ const AmHeaderputandpick = (props) => {
                 } else {
                 }
 
-            } else {
+            } else if (!datas.Qty) {
                 datasCheck.push(datas)
             }
-
-
-
         })
 
         if (datasCheck.length === 0) {
@@ -275,8 +310,10 @@ const AmHeaderputandpick = (props) => {
 
         } else if (datasCheck.length > 0) {
             doc.setdatadocItem(datasCheck);
+            doc.setdataSet(datasCheck)
             doc.setdialogItem(true)
         }
+
     }
 
     const getAuditStatus = (status) => {
@@ -293,34 +330,33 @@ const AmHeaderputandpick = (props) => {
 
 
 
-    const getDataSet = () => {
-        if (getDocItem != undefined) {
-            Axios.get(getDocItem()).then(res => {
-                if (res.data.datas != undefined && res.data.datas.length != 0) {
-                    doc.setdataSet(res.data.datas);
-                    setDataSelect([]);
-                    setDataSelectSet([]);
-                } else {
-                    getDocItemQuerySet(DocItemsquery)
-                }
-            })
-        } else {
-            getDocItemQuerySet(DocItemsquery)
-        }
-    }
+    //const getDataSet = () => {
+    //    if (getDocItem != undefined) {
+    //        Axios.get(getDocItem()).then(res => {
+    //            if (res.data.datas != undefined && res.data.datas.length != 0) {
+    //                doc.setdataSet(res.data.datas);
+    //                setDataSelect([]);
+    //                setDataSelectSet([]);
+    //            } else {
+    //                //getDocItemQuerySet(DocItemsquery)
+    //            }
+    //        })
+    //    } else {
+    //        //getDocItemQuerySet(DocItemsquery)
+    //    }
+    //}
 
-    const getDocItemQuerySet = (DocItemsquerys) => {
-        console.log(DocItemsquerys)
-        Axios.get(createQueryString(DocItemsquerys)).then(res => {
-            if (res.data.datas.length != 0 && res.data.datas != []) {
-                doc.setdataSet(res.data.datas);
-                setDataSelect([]);
-                setDataSelectSet([]);
-            } else {
+    //const getDocItemQuerySet = (DocItemsquerys) => {
+    //    Axios.get(createQueryString(DocItemsquerys)).then(res => {
+    //        if (res.data.datas.length != 0 && res.data.datas != []) {
+    //            doc.setdataSetQuery(res.data.datas);
+    //            setDataSelect([]);
+    //            setDataSelectSet([]);
+    //        } else {
 
-            }
-        })
-    }
+    //        }
+    //    })
+    //}
 
     const saveDefaultInputQTY = (docitems) => {
         let valueQTY = {};
@@ -534,7 +570,7 @@ const AmHeaderputandpick = (props) => {
         }
 
 
-       
+
 
     }
 

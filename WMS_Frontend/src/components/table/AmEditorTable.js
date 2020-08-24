@@ -23,12 +23,13 @@ const AmEditiorTable = (props) => {
 
         if (props.titleText === "Edit") {
             return 'Save';
-
         } else {
-
-            return 'Add';
+            if(props.textConfirm){
+                return props.textConfirm;
+            }else{
+                return 'Add';
+            }
         }
-
     }
     const generateComponent = (cols) => {
         let comp = cols.map((row, idx) => {

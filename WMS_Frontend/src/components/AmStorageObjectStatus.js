@@ -15,32 +15,26 @@ const StorageObjectEventStatus = [
     { status: 'ACTIVE', code: 1, label: 'ACTIVE', labelShort: 'A' }, //เขียว
     { status: 'REMOVE', code: 2, label: 'REMOVE', labelShort: 'R' }, //เทา
     { status: 'DONE', code: 3, label: 'DONE', labelShort: 'D' }, //
-    { status: "NEW", code: 100, label: 'NEW' },
-    { status: "RECEIVING", code: 101, label: 'RECEIVING', labelShort: 'RC' },
-    { status: "RECEIVED", code: 102, label: 'RECEIVED', labelShort: 'RC' },
-    { status: "AUDITING", code: 103, label: 'AUDITING', labelShort: 'AD' },
-    { status: "AUDITED", code: 104, label: 'AUDITEDAD', labelShort: 'AD' },
-    { status: "COUNTING", code: 105, label: 'COUNTING', labelShort: 'CT' },
-    { status: "COUNTED", code: 106, label: 'COUNTED', labelShort: 'CT' },
-    { status: "ALLOCATING", code: 151, label: 'ALLOCATING', labelShort: 'AL' },
-    { status: "ALLOCATED", code: 152, label: 'ALLOCATED', labelShort: 'AL' },
-    { status: "PICKING", code: 153, label: 'PICKING', labelShort: 'PK' },
-    { status: "PICKED", code: 154, label: 'PICKED', labelShort: 'PK' },
-    { status: "CONSOLIDATING", code: 155, label: 'CONSOLIDATING', labelShort: 'CS' },
-    { status: "CONSOLIDATED", code: 156, label: 'CONSOLIDATED', labelShort: 'CS' },
-    { status: "LOADING", code: 157, label: 'LOADING', labelShort: 'LD' },
-    { status: "LOADED", code: 158, label: 'LOADED', labelShort: 'LD' },
-    { status: "REMOVING", code: 201, label: 'REMOVING', labelShort: 'RM' },
-    { status: "REMOVED", code: 202, label: 'REMOVED', labelShort: 'RM' },
-    { status: "CANCELING", code: 203, label: 'CANCELING', labelShort: 'CC' },
-    { status: "CANCELED", code: 204, label: 'CANCELED', labelShort: 'CC' },
-    { status: "SHIPPING", code: 301, label: 'SHIPPING', labelShort: 'SP' },
-    { status: "SHIPPED", code: 302, label: 'SHIPPED', labelShort: 'SP' },
+    { status: "NEW", code: 10, label: 'NEW' },
+    { status: "RECEIVING", code: 11, label: 'RECEIVING', labelShort: 'RC' },
+    { status: "RECEIVED", code: 12, label: 'RECEIVED', labelShort: 'RC' },
+    { status: "AUDITING", code: 13, label: 'AUDITING', labelShort: 'AD' },
+    { status: "AUDITED", code: 14, label: 'AUDITEDAD', labelShort: 'AD' },
+    { status: "COUNTING", code: 15, label: 'COUNTING', labelShort: 'CT' },
+    { status: "COUNTED", code: 16, label: 'COUNTED', labelShort: 'CT' },
+   
+    { status: "REMOVING", code: 21, label: 'REMOVING', labelShort: 'RM' },
+    { status: "REMOVED", code: 22, label: 'REMOVED', labelShort: 'RM' },
+    { status: "CANCELING", code: 23, label: 'CANCELING', labelShort: 'CC' },
+    { status: "CANCELED", code: 24, label: 'CANCELED', labelShort: 'CC' },
 
-    { status: "HOLD", code: 99, label: 'HOLD', labelShort: 'HD' },
-    { status: "QUALITY_CONTROL", code: 98, label: 'QUALITY_CONTROL', labelShort: 'QC' },
-    { status: "PARTIAL", code: 97, label: 'PARTIAL', labelShort: 'PT' },
-    { status: "RETURN", code: 96, label: 'RETURN', labelShort: 'RT' }
+    { status: "ALLOCATING", code: 31, label: 'ALLOCATING', labelShort: 'AL' },
+    { status: "ALLOCATED", code: 32, label: 'ALLOCATED', labelShort: 'AL' },
+    { status: "PICKING", code: 33, label: 'PICKING', labelShort: 'PK' },
+    { status: "PICKED", code: 34, label: 'PICKED', labelShort: 'PK' },
+    { status: "CONSOLIDATING", code: 35, label: 'CONSOLIDATING', labelShort: 'CS' },
+    { status: "CONSOLIDATED", code: 36, label: 'CONSOLIDATED', labelShort: 'CS' },
+
 ]
 
 const StorageObjectStatus = props => {

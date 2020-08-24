@@ -96,8 +96,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public long distoBaseUnitID;
             public string distoBaseUnitCode;
             public string distoUnitCodeConvert;
-
-
+            public string docSouCode;
+            public long docSouID;
             public int areaID;
             public int areaTypeID;
             public string areaCode;
@@ -117,6 +117,22 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string options;
             public DateTime? modifyTimeSTO;
             public DateTime? createTimeSTO;
+            public string diItemNo;
+            public AuditStatus diAuditStatus;
+            public string diLot;
+            public string diCartonNo;
+            public string diBatch;
+            public int? diIncubationDay;
+            public int? diShelfLifeDay;
+            public string diOrderNo;
+            public string diRef1;
+            public string diRef2;
+            public string diRef3;
+            public string diRef4;
+            public DateTime? diExpireDate;
+            public DateTime? diProductionDate;
+            public string dcCode;
+            public long dcID;
 
             public string sou_options;
             public string des_options;
@@ -153,13 +169,45 @@ namespace AWMSEngine.Engine.V2.Business.Document
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
-            if (reqVO.getMapSto && doc.documentItems.Count != 0)
+            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001, 1002, 2003, 2004) && doc.documentItems.Count != 0)
             {
-                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+                set_sou_des(doc.ID.Value);
+            }
+            else
+            {
+
+                var docRefIDs = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                {
+                new SQLConditionCriteria("ParentDocument_ID",doc.ID.Value, SQLOperatorType.EQUALS),
+                }, this.BuVO);
+
+                docRefIDs.ForEach(df =>
+                {
+                    set_sou_des(df.ID.Value);
+
+                });
+
+
+
+                //set_sou_des(doc.ID.Value);
+            }
+
+            void set_sou_des(long docID)
+            {
+
+                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(docID, null, null, this.BuVO);
+
+
                 bstos.ForEach(bs =>
                 {
                     var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
                     var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
+
+                    //    var docSouID = docID;
+                    //    var docSouCode = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                    //        {
+                    //new SQLConditionCriteria("ParentDocument_ID",docSouID, SQLOperatorType.EQUALS),
+                    //        }, this.BuVO).FirstOrDefault();
 
                     //var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                     //new SQLConditionCriteria[]
@@ -176,7 +224,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     sou_sto.Add(new bsto
                     {
 
-                        id = bs.sou_id,
+
                         objectType = bs.sou_objectType,
 
                         mstID = bs.sou_mstID,
@@ -188,7 +236,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         packQty = bs.sou_packQty,
                         packUnitID = bs.sou_packUnitID,
                         packUnitCode = bs.sou_packUnitCode,
-
+                        //docSouCode = docSouCode.Code == null ? null  : docSouCode.Code,
+                        ////docSouID = docSouID,
                         packBaseQty = bs.des_packBaseQty,
                         packBaseUnitID = bs.des_packBaseUnitID,
                         packBaseUnitCode = bs.des_packBaseUnitCode,
@@ -216,7 +265,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         distoQtyMax = bs.distoQtyMax,
                         distoUnitID = bs.distoUnitID,
                         distoUnitCode = bs.distoUnitCode,
-                     
+
                         distoBaseQty = bs.distoBaseQty,
                         distoBaseQtyMax = bs.distoBaseQtyMax,
                         distoBaseUnitID = bs.distoBaseUnitID,
@@ -225,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
-                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x => x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,
@@ -233,8 +282,24 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
-                        options = bs.options
+                        options = bs.options,
 
+                        diItemNo = bs.diItemNo,
+                        diAuditStatus = bs.diAuditStatus,
+                        diLot = bs.diLot,
+                        diCartonNo = bs.diCartonNo,
+                        diBatch = bs.diBatch,
+                        diIncubationDay = bs.diIncubationDay,
+                        diShelfLifeDay = bs.diShelfLifeDay,
+                        diOrderNo = bs.diOrderNo,
+                        diRef1 = bs.diRef1,
+                        diRef2 = bs.diRef2,
+                        diRef3 = bs.diRef3,
+                        diRef4 = bs.diRef4,
+                        diExpireDate = bs.diExpireDate,
+                        diProductionDate = bs.diProductionDate,
+                        dcCode = bs.dcCode,
+                        dcID = bs.dcID
 
 
 
@@ -293,7 +358,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
 
                         areaID = bs.areaID,
-                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x=>x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
+                        areaTypeID = StaticValue.AreaMasters.FirstOrDefault(x => x.ID == bs.areaID).AreaMasterType_ID.GetValueInt(),
                         areaCode = bs.areaCode,
                         areaLocationID = bs.areaLocationID,
                         areaLocationCode = bs.areaLocationCode,
@@ -302,6 +367,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
                         options = bs.options
+
                     });
 
                 });

@@ -18,7 +18,9 @@ import AmLog from "../../pageComponent/AmLog";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmDocumentStatus from "../../../components/AmDocumentStatus";
 import { EntityEventStatusAll } from "../../../components/Models/EntityStatus";
+import { AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
 import { DocumentEventStatus } from "../../../components/Models/DocumentEventStatus";
+import AmAuditStatus from "../../../components/AmAuditStatus";
 
 const Axios = new apicall();
 const styles = theme => ({
@@ -144,6 +146,10 @@ const DocumentItemLog = (props) => {
       accessor: "Lot",
     },
     {
+      Header: "CartonNo",
+      accessor: "CartonNo",
+    },
+    {
       Header: "Options",
       accessor: "Options",
       Cell: (dataRow) => getMessage(dataRow.original, "Options"),
@@ -169,7 +175,7 @@ const DocumentItemLog = (props) => {
       dateFormat: "DD/MM/YYYY HH:mm",
       filterType: "datetime",
       filterConfig: {
-        filterType: "datetime",
+        filterType: "date",
       },
       customFilter: { field: "ExpireDate" },
     },
@@ -194,8 +200,15 @@ const DocumentItemLog = (props) => {
       accessor: "Ref4",
     },
     {
-      Header: "Item No.",
-      accessor: "ItemNo",
+      Header: "Audit Status",
+      accessor: "AuditStatus",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: AuditStatus,
+        typeDropDown: "normal",
+        widthDD: 105,
+      },
+      Cell: (dataRow) => getStatus(dataRow.original.AuditStatus, "AuditStatus")
     },
     {
       Header: "EventStatus",
@@ -207,6 +220,14 @@ const DocumentItemLog = (props) => {
         widthDD: 105,
       },
       Cell: (dataRow) => getStatus(dataRow.original.EventStatus, "EventStatus")
+    },
+    {
+      Header: "Incubation Day",
+      accessor: "IncubationDay",
+    },
+    {
+      Header: "Shelf Life Day",
+      accessor: "ShelfLifeDay",
     },
     {
       Header: "Status",
@@ -259,6 +280,8 @@ const DocumentItemLog = (props) => {
         return <AmEntityStatus statusCode={value} />;
       } else if (type === "EventStatus") {
         return <AmDocumentStatus statusCode={value} />;
+      } else if (type === "AuditStatus") {
+        return <AmAuditStatus statusCode={value}/>
       }
     } else {
       return null;
