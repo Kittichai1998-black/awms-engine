@@ -188,13 +188,13 @@ const GR_Detail = props => {
     };
 
     const GetAuditStatus = (value) => {
-        if (value.AuditStatus === 0) {
+        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
             return "QUARANTINE"
-        } else if (value.AuditStatus === 1) {
+        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
             return "PASS"
-        } else if (value.AuditStatus === 2) {
+        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
             return "NOTPASS"
-        } else if (value.AuditStatus === 9) {
+        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
             return "HOLD"
         }
     };

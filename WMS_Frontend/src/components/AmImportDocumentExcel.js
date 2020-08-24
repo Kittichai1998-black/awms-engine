@@ -87,7 +87,7 @@ const AmImportDocumentExcel = (props) => {
                 DocumentProcessType = datsobj[0][1];
 
                 let datas = {
-                    "documentProcessTypeName": datsobj[0][1],
+                    "documentProcessTypeCode": datsobj[0][1],
                     "documentDate": DocumentDate,
                     "souCustomerCode": datsobj[1][1],
                     "actionTime": ActionTime,
@@ -98,10 +98,7 @@ const AmImportDocumentExcel = (props) => {
                     "remark": datsobj[4][3],
 
                 }
-
                 dataHdr.push(datas)
-
-
             })
 
         }

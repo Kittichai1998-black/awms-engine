@@ -46,7 +46,7 @@ const RD_Create_FGCustomer = props => {
             } else {
                 DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
-
+            console.log(DataprocessTypeID)
             var headerCreate = [
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
@@ -127,15 +127,15 @@ const RD_Create_FGCustomer = props => {
 
 
         if (skuType === 5 && CodeprocessType === 1) {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: 0, disabled : true }
+            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 0, disabled : true }
         } else {
-            AuditStatusDDL = { Header: "Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: 1 }
+            AuditStatusDDL = { Header: "Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 1 }
         }
         var columnEdit = [
             { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
             {
                 // search: false,
-                Header: "SKU Item",
+                Header: "Item",
                 accessor: "skuCode",
                 type: "findPopUp",
                 queryApi: skuquery,
@@ -249,7 +249,7 @@ const RD_Create_FGCustomer = props => {
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item No.", accessor: "itemNo" },
-        { Header: "Item Code", accessor: "SKUItems" },
+        { Header: "Item", accessor: "SKUItems" },
         { Header: "OrderNo", accessor: "orderNo" },
         { Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
