@@ -113,7 +113,7 @@ const SearchText = withStyles(theme => ({
         margin: 4,
     },
 }))(props => {
-    const { id, classes, styleType, required, value, onClickOpen, onClickClear, inputWidth, ...other } = props;
+    const { id, classes, styleType, required, value, onClickOpen, onClickClear, inputWidth, disabled, ...other } = props;
     const onHandleClick = (e) => {
         var idicon = "closeicon" + id;
         if (e.target.id !== idicon) {
@@ -125,11 +125,9 @@ const SearchText = withStyles(theme => ({
 
     return (
         <div className={classes.root} >
-            <AmInput id={id} inputRef={props.popupref} required={required} readOnly={true} styleType={styleType} autoComplete="off" value={value}
-                onFocus={value ? null : (val, obj, element, event) => element.blur()}
-                // onFocus={onClickOpen}
-                onClick={(val, obj, element, event) => onHandleClick(event)}
-                // (val, obj, element, event)=> event.cancelBubble = true
+            <AmInput id={id} inputRef={props.popupref} disabled={disabled} required={required} readOnly={true} styleType={styleType} autoComplete="off" value={value}
+                onFocus={value ? null : disabled ? null : (val, obj, element, event) => element.blur()}
+                onClick={disabled ? null : (val, obj, element, event) => onHandleClick(event)}
                 style={{ width: inputWidth }}
                 InputProps={{
                     inputProps: {
@@ -139,10 +137,9 @@ const SearchText = withStyles(theme => ({
                         <InputAdornment position="end">
                             {value ?
                                 <CloseIcon id={"closeicon" + id} className={classes.iconCloseButton}
-
-                                    size="small" aria-label="Close" onClick={onHandleClick} />
+                                    size="small" aria-label="Close" onClick={disabled ? null : onHandleClick} />
                                 : null}
-                            <IconButton className={classes.iconButton} size="small" aria-label="Search" onClick={onClickOpen}>
+                            <IconButton className={classes.iconButton} size="small" aria-label="Search" onClick={disabled ? null : onClickOpen}>
                                 <SearchIcon fontSize="small" />
                             </IconButton>
                         </InputAdornment>
@@ -243,7 +240,7 @@ const FindPopup = (props) => {
         if (defaultValue) {
             setDefaultVal(defaultValue);
         }
-        setValueKey(defaultValue)
+        // setValueKey(defaultValue)
     }, [defaultValue]);
     useEffect(() => {
         if (value) {

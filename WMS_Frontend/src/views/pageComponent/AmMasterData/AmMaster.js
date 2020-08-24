@@ -214,9 +214,9 @@ const AmMasterData = (props) => {
     }
 
     useEffect(() => {
-        if(!IsEmptyObject(sort)){
+        if (!IsEmptyObject(sort)) {
             queryObj.s = '[{"f":"' + sort.id + '","od":"' + sort.sortDirection + '"}]';
-            setQueryObj({...queryObj})
+            setQueryObj({ ...queryObj })
         }
     }, [sort])
 
@@ -247,14 +247,14 @@ const AmMasterData = (props) => {
         console.log(filterValue)
         var res = queryObj;
         filterValue.forEach(fdata => {
-            if (fdata.customFilter !== undefined){
-                if(IsEmptyObject(fdata.customFilter)){
+            if (fdata.customFilter !== undefined) {
+                if (IsEmptyObject(fdata.customFilter)) {
                     res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
-                }else{
+                } else {
                     res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
                 }
             }
-            else{
+            else {
                 res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
             }
         });
@@ -273,9 +273,9 @@ const AmMasterData = (props) => {
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
-                if(data.messageError !== undefined){
+                if (data.messageError !== undefined) {
                     setDialogState({ type: "error", content: data.messageError, state: true })
-                }else{
+                } else {
                     updateRow(props.table, data, props.updateURL);
                 }
             }} />
@@ -295,7 +295,7 @@ const AmMasterData = (props) => {
         <AmTable
             sortable={props.sortable ? props.sortable : false}
             sortData={(dt) => {
-                if(props.sortable)
+                if (props.sortable)
                     setSort(dt)
             }}
             columns={columns}
@@ -314,6 +314,8 @@ const AmMasterData = (props) => {
                 else
                     setIniQuery(false)
             }}
+            selection={"checkbox"}
+            customAction={props.customActions}
         />
     </>
 }
