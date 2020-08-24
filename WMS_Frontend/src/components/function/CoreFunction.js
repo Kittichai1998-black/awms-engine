@@ -73,6 +73,7 @@ class apicall {
     });
   }
   postload(url, dataR, filename, typeLoad) {
+    console.log("fgudyfdr")
     window.loading.onLoading();
     let data = trimObj(dataR);
     if (data !== undefined) {
@@ -84,7 +85,7 @@ class apicall {
         var file = new Blob([res.data], { type: 'application/pdf' });
         if (file) {
           var fileURL = URL.createObjectURL(file);
-          window.open(fileURL,'_blank');
+          window.open(fileURL, '_blank');
           window.URL.revokeObjectURL(fileURL);
         }
       } else {

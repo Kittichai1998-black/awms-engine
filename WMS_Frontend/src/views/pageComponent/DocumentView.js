@@ -140,6 +140,15 @@ function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocIt
         return null;
     }
 }
+
+const PrintBarcode = React.memo(({ selection, dataHeader }) => {
+    return <AmPrintBarCode data={selection}
+        SouSupplierCode={dataHeader.SouSupplier}
+        SouSupplierName={dataHeader.SouSupplierName}
+    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+    />
+})
+
 const DocumentView = props => {
     const { t } = useTranslation();
     const [statusdoc, setStatusdoc] = useState(0);
@@ -857,11 +866,7 @@ const DocumentView = props => {
             </div>
             {props.usePrintBarcodePallet ?
                 <>
-                    <AmPrintBarCode data={selection}
-                        SouSupplierCode={dataHeader.SouSupplier}
-                        SouSupplierName={dataHeader.SouSupplierName}
-                    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
-                    />
+                    <PrintBarcode selection={selection} dataHeader={dataHeader} />
                 </>
 
                 : null}
