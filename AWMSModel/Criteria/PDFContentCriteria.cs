@@ -17,7 +17,7 @@ namespace AWMSModel.Criteria
 
         public class Table
         {
-            public float[] widths;
+            public float[] widths; 
             public float total_width;
             public string hor_align;
             public string ver_align;

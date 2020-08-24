@@ -229,7 +229,6 @@ const DocumentView = props => {
 
           var sumQty = 0;
           var sumBaseQty = 0;
-          console.log(res.data.sou_bstos)
           if (res.data.sou_bstos !== null) {
             res.data.sou_bstos.filter(y => y.docItemID == row.ID).forEach(y => {
               sumQty += y.distoQty;
@@ -635,80 +634,126 @@ const DocumentView = props => {
     [openReceive, eventStatus, props.addPalletMapSTO,
       dataDoc, data])
 
+  const GetHeaderData_PDF = (datas, cols) => {
+    let header = [];
+    let tabledatas = [];
+    let widths = [];
+    let hor_align_center = "ALIGN_CENTER";
+
+    for (let [key, value] of Object.entries(cols)) {
+      if (value.ShowPDF === true || value.ShowPDF === undefined) {
+        let cell = { text: value.Header, hor_align: hor_align_center, font_style: "bold", font_size: 8, border: "BOX", padding: 5 };
+        widths.push(value.widthPDF);
+        header.push(cell);
+      }
+    }
+
+    datas.map((item, idx) => {
+      let all_cells = [];
+      for (let [key, value] of Object.entries(cols)) {
+        let valueShow = "";
+        if (value.ShowPDF === true || value.ShowPDF === undefined) {
+          if (value.CellPDF) {
+            valueShow = value.CellPDF(item);
+          } else {
+            if (value.accessor) {
+              valueShow = item[value.accessor] != null || item[value.accessor] != undefined ? item[value.accessor].toString() : "";
+            }
+          }
+          all_cells.push({ text: valueShow, font_size: 8, border: "BOX" });
+        }
+      }
+      tabledatas.push({ cells: all_cells })
+    });
+    let res = {
+      header: [{ cells: header }],
+      tabledatas: tabledatas,
+      widths: widths
+    }
+    return res;
+  }
   const ExportPDF = async () => {
     try {
+      let hor_align_center = "ALIGN_CENTER";
+
       let data_document = dataDoc.document;
       if (data_document !== null || data_document !== undefined) {
-        var dataDocumentItem = dataDoc.document.documentItems;
+        let textTitle = "";
+        if (props.typeDocNo === 1001) {
+          textTitle = "Putaway Document Report";
+        } else if (props.typeDocNo === 1011) {
+          textTitle = "Good Receive Document Report";
+        } else if (props.typeDocNo === 1012) {
+          textTitle = "Good Issue Document Report";
+        } else if (props.typeDocNo === 1002) {
+          textTitle = "Picking Document Report";
+        } else if (props.typeDocNo === 2003) {
+          textTitle = "Audit Document Report";
+        }
+        let documentStatus = "";
+        const resDocEvent = DocumentEventStatus.find(row => {
+          return row.code === data_document.EventStatus;
+        });
+        documentStatus = resDocEvent.status;
         let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
         let ActionDate = moment(data_document.ActionTime).format("DD/MM/YYYY HH:mm");
-        let dataitems = [];
-        if (dataDocumentItem !== undefined || dataDocumentItem !== undefined) {
 
-          dataDocumentItem.map((item, idx) => {
-            let dataitem = {
-              ItemNo: item.ItemNo,
-              SKUMaster_Code: item.SKUMaster_Code,
-              SKUMaster_Name: item.SKUMaster_Name,
-              Lot: item.Lot,
-              Quantity: item.Quantity,
-              UnitType_Name: item.UnitType_Name,
-              Vendor_Lot: item.Ref1,
-              IncubationDay: item.IncubationDay,
-              ProductionDate: item.ProductionDate,
-              ExpireDate: item.ExpireDate,
-              ShelfLifeDay: item.ShelfLifeDay
-            }
-            dataitems.push(dataitem);
-          });
+        let sou_head = "";
+        let sou_text = "";
+        if (data_document.DocumentProcessType_ID === 4011) //การรับเข้า FGs จากไลน์ผลิต
+        {
+          sou_head = "Source Warehouse :";
+          sou_text = data_document.SouWarehouseName ? data_document.SouWarehouseName : "";
+        } else if (data_document.DocumentProcessType_ID === 4012 ||
+          data_document.DocumentProcessType_ID === 4132 ||
+          data_document.DocumentProcessType_ID === 4292) {
+          //FG_TRANSFER_CUS, การรับเข้า/รับคืน FGs Recall, การรับเข้า/รับคืน FGs Return จากลูกค้า
+          sou_head = "Source Customer :";
+          sou_text = data_document.SouCustomerName ? data_document.SouCustomerName : "";
+        } else if (data_document.DocumentProcessType_ID === 5013) { // PM:การรับเข้าจาก Supplier
+          sou_head = "Source Supplier :";
+          sou_text = data_document.SouSupplierName ? data_document.SouSupplierName : "";
+        } else {
+          sou_head = "Source Warehouse :";
+          sou_text = data_document.SouWarehouseName ? data_document.SouWarehouseName : "";
+        }
+
+        //=== data of docitems : table 1
+        let table1_content = null;
+        let dataDocumentItem = data;
+
+        if (dataDocumentItem && columns) {
+          let resDataTable = GetHeaderData_PDF(dataDocumentItem, columns);
+          table1_content = {
+            "hor_align": hor_align_center,
+            // "ver_align": null,
+            // "total_width": null,
+            "widths": resDataTable.widths,
+            "def_cell_border": "BOX",
+            "locked_width": true,
+            "headers": resDataTable.header,
+            "bodys": resDataTable.tabledatas
+          }
+        }
+
+        //=== data Detail SOU
+        let table2_content = null;
+
+        if (dataDetailSOU && columnsDetailSOU) {
+          let resDataTable = GetHeaderData_PDF(dataDetailSOU, columnsDetailSOU);
+          table2_content = {
+            "hor_align": hor_align_center,
+            // "ver_align": null,
+            // "total_width": null,
+            "widths": resDataTable.widths,
+            "def_cell_border": "BOX",
+            "locked_width": true,
+            "headers": resDataTable.header,
+            "bodys": resDataTable.tabledatas
+          }
 
         }
 
-        let tabledata = [];
-        dataitems.map((item, idx) => {
-          let dataitem = {
-            cells: [
-              { text: item.ItemNo, border: "BOX" },
-              { text: item.SKUMaster_Code + " : " + item.SKUMaster_Name, border: "BOX" },
-              { text: item.Lot ? item.Lot : item.Vendor_Lot, border: "BOX" },
-              { text: item.Quantity.toString(), border: "BOX" },
-              { text: item.UnitType_Name, border: "BOX" },
-              { text: moment(item.ProductionDate).format("DD/MM/YYYY"), border: "BOX" },
-              { text: item.IncubationDay ? item.IncubationDay.toString() : "", border: "BOX" },
-              { text: moment(item.ExpireDate).format("DD/MM/YYYY"), border: "BOX" },
-              { text: item.ShelfLifeDay ? item.ShelfLifeDay.toString() : "", border: "BOX" },
-            ]
-          }
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-          tabledata.push(dataitem);
-
-        });
-        let sumQtys = _.sumBy(dataitems, 'Quantity')
-        tabledata.push({
-          cells: [
-            { text: "" },
-            { text: "" },
-            { text: "Total", border: "BOX" },
-            { text: sumQtys.toString(), border: "BOX" },
-            { text: "ขวด", border: "BOX" },
-            { text: "" }, { text: "" }, { text: "" }, { text: "" },
-          ]
-        });
-        // console.log(tabledata)
         let reqjson = {
           // "margins_left": 30,
           // "margins_right": 40,
@@ -731,23 +776,23 @@ const DocumentView = props => {
           },
           "contents": [
             {
-              "hor_align": "ALIGN_CENTER",
+              "hor_align": hor_align_center,
               "headers": [//title
                 {
                   cells: [
                     {
-                      text: "Putaway Document Report",
+                      text: textTitle,
                       font_style: "bold",
                       font_size: 12,
                       padding_bottom: 10,
-                      hor_align: "ALIGN_CENTER"
+                      hor_align: hor_align_center
                     }
                   ]
                 }
               ]
             },
             {
-              // "hor_align": "ALIGN_CENTER",
+              // "hor_align": hor_align_center,
               // "ver_align": null,
               // "total_width": null,
               "widths": [150, 251, 150, 251],
@@ -805,12 +850,12 @@ const DocumentView = props => {
                 {
                   cells: [
                     {
-                      text: "Source Warehouse :",
+                      text: sou_head,
                       font_style: "bold",
                       padding_bottom: 5
                     },
                     {
-                      text: data_document.SouWarehouseName ? data_document.SouWarehouseName : "",
+                      text: sou_text,
                       font_style: "normal",
                       padding_bottom: 5
                     },
@@ -829,11 +874,11 @@ const DocumentView = props => {
                 {
                   cells: [
                     {
-                      text: "Destinaton Customer :",
+                      text: "Document Status :",
                       font_style: "bold",
                     },
                     {
-                      text: "สินค้าลูกค้า",
+                      text: documentStatus,
                       font_style: "normal",
                     },
                     {
@@ -847,31 +892,9 @@ const DocumentView = props => {
                   ]
                 }
               ],
-            },
-            {
-              "hor_align": "ALIGN_CENTER",
-              // "ver_align": null,
-              // "total_width": null,
-              "widths": [60, 272, 70, 60, 60, 70, 70, 70, 70],
-              "def_cell_border": "BOX",
-              "locked_width": true,
-              "headers": [
-                {
-                  cells: [
-                    { text: "Item No.", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Item", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Lot", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Qty", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Unit", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Incubation Day", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Production Date", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Expire Date", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 },
-                    { text: "Shelf Life Day", hor_align: "ALIGN_CENTER", font_style: "bold", border: "BOX", padding: 5 }
-                  ]
-                }
-              ],
-              "bodys": tabledata
-            }
+            }, table1_content
+            , table2_content,
+            
           ]
           // "footer":
           // {
@@ -1125,4 +1148,3 @@ DocumentView.propTypes = {
   useAddPalletMapSTO: PropType.bool
 };
 export default withStyles(styles)(DocumentView);
-// export default DocumentView;

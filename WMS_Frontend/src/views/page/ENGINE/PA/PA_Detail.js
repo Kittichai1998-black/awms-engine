@@ -86,50 +86,67 @@ const PA_Detail = props => {
 
 
     const columns = [
-        { width: 100, accessor: "ItemNo", Header: "Item No." },
+        { width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
             Header: "Item",
-            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name }
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name },
+            CellPDF: e => { return e.SKUMaster_Code + " : " + e.SKUMaster_Name },
+            widthPDF: 40
         },
-        { Header: "OrderNo", accessor: "OrderNo" },
-        { Header: "Batch", accessor: "Batch" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Acualt Qty" },
-        { width: 120, accessor: "Quantity", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus", Cell: e => GetAuditStatus(e.original) },
-        { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay" },
-        { Header: "ProductDate", accessor: "ProductionDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate" },
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
+        { Header: "OrderNo", accessor: "OrderNo", widthPDF: 20 },
+        { Header: "Batch", accessor: "Batch", widthPDF: 20 },
+        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Acual Qty", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
+        {
+            Header: "Audit Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatus(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 30
+        },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
+        { Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
+        { Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
+        { Header: "CartonNo", accessor: "CartonNo", widthPDF: 20 },
+        { Header: "IncubationDay", accessor: "IncubationDay", widthPDF: 20 },
+        { Header: "ProductDate", accessor: "ProductionDate", widthPDF: 35 },
+        { Header: "ExpireDate", accessor: "ExpireDate", widthPDF: 35 },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
     const columnsDetailSOU = [
-        { width: 100, accessor: "diItemNo", Header: "Item No." },
-        { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 100, accessor: "rootCode", Header: "Pallet" },
-        { width: 150, accessor: "packCode", Header: "Pack Code" },
-        { accessor: "packName", Header: "Pack Name" },
-        { Header: "OrderNo", accessor: "diOrderNo" },
-        { Header: "Batch", accessor: "diBatch" },
-        { width: 130, accessor: "diLot", Header: "Lot" },
-        { width: 120, accessor: "_packQty", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "diAuditStatus", Cell: e => GetAuditStatus(e.original) },
-        { Header: "Vendor Lot", accessor: "diRef1" },
-        { Header: "Ref2", accessor: "diRef2" },
-        { Header: "Ref3", accessor: "diRef3" },
-        { Header: "Ref4", accessor: "diRef4" },
-        { Header: "CartonNo", accessor: "diCartonNo" },
-        { Header: "IncubationDay", accessor: "diIncubationDay" },
-        { Header: "ProductDate", accessor: "diProductionDate", Cell: e => getFormatDatePro(e.original) },
-        { Header: "ExpireDate", accessor: "diExpireDate", Cell: e => getFormatDateExp(e.original) },
-        { Header: "ShelfLifeDay", accessor: "diShelfLifeDay" }
+        { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
+        {
+            width: 40, accessor: "status", Header: "Task",
+            Cell: e => getStatusGR(e.original),
+            ShowPDF: false
+        },
+        { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
+        { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
+        { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
+        { Header: "OrderNo", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
+        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
+        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        { Header: "Audit Status", accessor: "AuditStatus", widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
+        { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
+        { Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
+        { Header: "CartonNo", accessor: "diCartonNo", widthPDF: 10 },
+        { Header: "IncubationDay", accessor: "diIncubationDay", widthPDF: 10 },
+        {
+            Header: "ProductDate", accessor: "diProductionDate",
+            Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
+        },
+        {
+            Header: "ExpireDate", accessor: "diExpireDate",
+            Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
+        },
+        { Header: "ShelfLifeDay", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const columnsDetailDES = [
@@ -148,8 +165,8 @@ const PA_Detail = props => {
         { Header: "Ref3", accessor: "Ref3" },
         { Header: "Ref4", accessor: "Ref4" },
         { Header: "CartonNo", accessor: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay"},
-        { Header: "ProductDate", accessor: "ProductionDate"},
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
         { Header: "ExpireDate", accessor: "ExpireDate" },
         { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
