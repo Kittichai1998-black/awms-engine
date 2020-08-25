@@ -45,7 +45,6 @@ const GR_Detail = props => {
 
     useEffect(() => {
         if (OwnerGroupType !== undefined) {
-            console.log(OwnerGroupType)
             var DataprocessType;
             if (OwnerGroupType === 1) {
                 DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
@@ -119,12 +118,11 @@ const GR_Detail = props => {
             width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original),
             widthPDF: 5,
             CellPDF: value => {
-                if (value.status === 1) return "/";
+                if (value.status === 1 || value.status === 3) return "Y";
                 else if (value.status === 0)
-                    return "X";
+                    return "";
                 else return null;
-            },
-            ShowPDF: false
+            } 
         },
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
@@ -134,7 +132,12 @@ const GR_Detail = props => {
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
         { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
-        { Header: "Audit Status", accessor: "AuditStatus", widthPDF: 10 },
+        {
+            Header: "Audit Status", accessor: "diAuditStatus",
+            Cell: e => GetAuditStatus(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
         { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
@@ -181,7 +184,7 @@ const GR_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else return null;

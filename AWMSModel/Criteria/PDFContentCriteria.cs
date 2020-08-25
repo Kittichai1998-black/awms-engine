@@ -23,6 +23,7 @@ namespace AWMSModel.Criteria
             public string ver_align;
             public string def_cell_border;
             public bool locked_width;
+            public float spacing_after;
             public List<Row> headers;
             public List<Row> bodys;
             public List<Row> footers; 

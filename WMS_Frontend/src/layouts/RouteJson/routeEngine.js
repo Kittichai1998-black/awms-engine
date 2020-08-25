@@ -231,13 +231,13 @@ const routes = [
   { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
   { path: "/receive/hhtest", name: "GR HH", compoment: ReceivePalletByBarcode, exact: true },
 
-  { path: "/putaway/create", name: "PA Create", compoment: PA_Create, exact: true },
-  { path: "/putaway/detail", name: "PA View", compoment: PA_Detail, exact: true },
-  { path: "/putaway/search", name: "PA View", compoment: PA_Search, exact: true },
+  { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
+  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
+  { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
 
-    { path: "/picking/create", name: "PK Create", compoment: PK_Create, exact: true },
-    { path: "/picking/detail", name: "PK View", compoment: PK_Detail, exact: true },
-    { path: "/picking/search", name: "PK View", compoment: PK_Search, exact: true },
+    { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+    { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
+    { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
