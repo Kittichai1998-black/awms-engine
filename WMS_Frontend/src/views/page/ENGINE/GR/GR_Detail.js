@@ -134,7 +134,12 @@ const GR_Detail = props => {
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
         { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
-        { Header: "Audit Status", accessor: "AuditStatus", widthPDF: 10 },
+        {
+            Header: "Audit Status", accessor: "diAuditStatus",
+            Cell: e => GetAuditStatus(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
         { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },

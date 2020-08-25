@@ -10,7 +10,6 @@ namespace AWMSModel.Entity
         public int? AreaMaster_ID;
         public int? AreaLocationMaster_ID;
         public long? ParentStorageObject_ID;
-        public long? TransportObject_ID;
         public int BaseMaster_ID;
         public int PackMaster_ID;
         public int? SKUMaster_ID;
