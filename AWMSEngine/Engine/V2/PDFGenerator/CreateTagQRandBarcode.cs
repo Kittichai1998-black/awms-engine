@@ -108,8 +108,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             switch (reqVO.layoutType)
             {
                 case LayoutType.LANDSCAPE_BARCODE:
-                    document.SetPageSize(new Rectangle(230, 103));
-                    document.SetMargins(2f, 2f, 2f, 0f);
+                    document.SetPageSize(new Rectangle(283.5f, 170.1f));
+                    document.SetMargins(2f, 2f, 10f, 10f);
                     break;
                 case LayoutType.PORTRAIT_BARCODE:
                     document.SetPageSize(new Rectangle(100, 80));
@@ -178,13 +178,14 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 var qrcode = new GenerateTagCode().CreateBarCode(info.code);
                 iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
                 img.Alignment = Element.ALIGN_MIDDLE;
-                img.ScaleAbsolute(218.3f, 79.4f);
+                img.ScaleAbsolute(260f, 120f);
                 document.Add(img);
                 PdfPTable table = new PdfPTable(1);
-                table.TotalWidth = 218.3f;
+                table.TotalWidth = 279.5f;
                 table.HorizontalAlignment = Element.ALIGN_CENTER;
                 table.DefaultCell.Border = Rectangle.NO_BORDER;
-                PdfPCell tableCell_1 = new PdfPCell(new Phrase(info.code, h4));
+                Font _font = FontFactory.GetFont(BaseFont.HELVETICA_BOLD, 24, Font.NORMAL);
+                PdfPCell tableCell_1 = new PdfPCell(new Phrase(info.code, _font));
                 tableCell_1.Border = Rectangle.NO_BORDER;
                 tableCell_1.HorizontalAlignment = Element.ALIGN_CENTER;
                 tableCell_1.VerticalAlignment = Element.ALIGN_CENTER;

@@ -120,8 +120,13 @@ const PA_Detail = props => {
         { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
         {
             width: 40, accessor: "status", Header: "Task",
-            Cell: e => getStatusGR(e.original),
-            ShowPDF: false
+            Cell: e => getStatusGR(e.original), widthPDF: 5,
+            CellPDF: value => {
+                if (value.status === 1 || value.status === 3) return "Y";
+                else if (value.status === 0)
+                    return "";
+                else return null;
+            } 
         },
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },

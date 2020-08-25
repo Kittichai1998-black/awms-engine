@@ -122,7 +122,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             }
             table.HorizontalAlignment = itemTable.hor_align != null ? (int)typeof(Element).GetField(itemTable.hor_align).GetValue(null) : Element.ALIGN_LEFT;
             table.DefaultCell.Border = itemTable.def_cell_border != null ? (int)typeof(Rectangle).GetField(itemTable.def_cell_border).GetValue(null) : Rectangle.NO_BORDER;
-            table.SpacingAfter = 10;
+            table.SpacingAfter = itemTable.spacing_after > 0 ? itemTable.spacing_after : 10;
             if (itemTable.headers != null)
             {
                 foreach (var row in itemTable.headers)

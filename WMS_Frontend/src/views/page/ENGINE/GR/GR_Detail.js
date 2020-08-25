@@ -45,7 +45,6 @@ const GR_Detail = props => {
 
     useEffect(() => {
         if (OwnerGroupType !== undefined) {
-            console.log(OwnerGroupType)
             var DataprocessType;
             if (OwnerGroupType === 1) {
                 DataprocessType = { label: "Source Warehouse", values: "SouWarehouseName" }
@@ -119,12 +118,11 @@ const GR_Detail = props => {
             width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original),
             widthPDF: 5,
             CellPDF: value => {
-                if (value.status === 1) return "/";
+                if (value.status === 1 || value.status === 3) return "Y";
                 else if (value.status === 0)
-                    return "X";
+                    return "";
                 else return null;
-            },
-            ShowPDF: false
+            } 
         },
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
@@ -186,7 +184,7 @@ const GR_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else return null;
