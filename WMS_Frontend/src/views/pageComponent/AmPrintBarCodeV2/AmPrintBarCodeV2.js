@@ -20,11 +20,13 @@ import AmDialogs from "../../../components/AmDialogs";
 import Card from "@material-ui/core/Card";
 import AmTable from "../../../components/AmTable/AmTable";
 import CardContent from "@material-ui/core/CardContent";
-import { PlaylistPlay, PlaylistArrowPlay } from "./IconTreeview";
+import { SkipNext, PlaylistArrowPlay, DeleteSweep } from "./IconTreeview";
 import { LoadDataPDF } from "./GendataPDF";
+import { DeletePallet } from "./DeletePallet";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Clone from "../../../components/function/Clone";
 import Checkbox from "@material-ui/core/Checkbox";
-
+import IconButton from "@material-ui/core/IconButton";
 const Axios = new apicall();
 const LabelHText = styled.label`
   width: 60px;
@@ -45,7 +47,7 @@ const FormInline = styled.div`
   align-items: center;
   label {
     margin: 5px 0 5px 0;
-    margin-left: 5px;
+    margin-left: 2px;
   }
   input {
     vertical-align: middle;
@@ -84,12 +86,15 @@ const AmPrintBarCodeV2 = props => {
   const [elePallet, setElePallet] = useState();
   const [numCount, setNumCount] = useState(1);
   const [itemList, setItemList] = useState({});
+  const [itemIni, setItemIni] = useState();
 
 
   useEffect(() => {
     // console.log(props.data)
-    setIniData(props.data)
+    //setItemIni(Clone(props.data))
+    setIniData(Clone(props.data))
   }, [props.data])
+
   const columns = [
     {
       Header: "Item",
@@ -111,18 +116,14 @@ const AmPrintBarCodeV2 = props => {
       width: 30
     }]
 
-  const onHandleChangeInputManual = (value, fieldDataKey) => {
-    valueManual[fieldDataKey] = value;
-  };
   const onHandledataConfirm = (status, rowdata) => {
     if (status) {
-      console.log(itemList)
-      // if (!genData) {
-      console.log(numCount)
-      onClickLoadPDF(itemList)
-      // } else {
-      //   onClickLoadPDF()
-      // }
+      if (!IsEmptyObject(itemList)) {
+        onClickLoadPDF(itemList)
+      } else {
+        setDialogState({ type: "warning", content: "ยังไม่ได้ Generate ข้อมูล Pallet", state: true })
+      }
+
     } else {
       setDialog(false)
       Clear()
@@ -132,9 +133,6 @@ const AmPrintBarCodeV2 = props => {
 
   const onClickLoadPDF = async (itemList) => {
     var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, numCount, props.Remark)
-    console.log("DIWDJ")
-    console.log(data)
-
     try {
 
       await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf", "preview").then();
@@ -146,29 +144,44 @@ const AmPrintBarCodeV2 = props => {
       Clear()
     }
   }
+  const onClickDeletePallet = (item, listDatas, indexName) => {
+    //DeletePallet(item, listDatas, indexName)
 
+    delete listDatas[indexName]
+    let newObj = {}
+    let i = 1
+    for (var item in listDatas) {
+      newObj[i] = listDatas[item]
+      i++;
+    }
+    console.log(newObj)
+    setElePallet(RanderEleListPallet(newObj, "del", i))
+    return null
+  }
 
 
 
   const onGenBarcode = () => {
+    if (selection.length !== 0) {
+      var ck = selection.find(x => x.Quantity - x.Quantity_Genarate < 0)
+      if (ck === undefined) {
+        setElePallet(RanderEleListPallet(selection))
+        selection.forEach(selec => {
+          var selectionData = iniData.find(x => x.ID === selec.ID)
+          if (selectionData !== undefined) {
+            let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
+            selectionData.Quantity = selectionData.Quantity - genQty
+          }
+        });
+        setIniData([...iniData])
+      } else {
+        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
+        setIniData([...iniData])
+      }
 
-    var ck = selection.find(x => x.Quantity - x.Quantity_Genarate < 0)
-    if (ck === undefined) {
-      setElePallet(RanderEleListPallet(selection))
-      selection.forEach(selec => {
-        var selectionData = iniData.find(x => x.ID === selec.ID)
-        if (selectionData !== undefined) {
-          let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
-          selectionData.Quantity = selectionData.Quantity - genQty
-        }
-      });
-      setIniData([...iniData])
     } else {
-      setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
-      setIniData([...iniData])
+      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
     }
-
-
   }
 
   const getQtyItem = (e) => {
@@ -180,7 +193,6 @@ const AmPrintBarCodeV2 = props => {
       type={"input"}
       defaultValue={e["SKUMaster_Info1"] ? e["SKUMaster_Info1"] : ""}
       onChange={(value, dataObject, inputID, fieldDataKey) =>
-        // onHandleChangeInputManual(value, e.SKUMaster_Code)
         e["Quantity_Genarate"] = parseInt(value)
       }
     /></div >)
@@ -188,14 +200,25 @@ const AmPrintBarCodeV2 = props => {
 
   //==================================================================================
   console.log(itemList)
-  const RanderEleListPallet = (item) => {
+  const RanderEleListPallet = (item, type, i) => {
     console.log(item)
     var xx = Clone(item)
+    let listDatas = {}
+    //let n = numCount
     //itemList[numCount] = item
     //setNumCount(numCount + 1)
     //console.log(itemList)
-    let listDatas = { ...itemList, [numCount]: xx };
+    console.log(numCount)
+    if (type !== "del") {
+      console.log(typeof item);
+      listDatas = { ...itemList, [numCount]: xx };
+      //setNumCount(numCount + 1)
+    } else {
+      console.log(typeof item);
+      listDatas = item
+    }
     setItemList(listDatas)
+    console.log(numCount)
     console.log(listDatas)
     setNumCount(numCount + 1)
     let e = []
@@ -214,27 +237,40 @@ const AmPrintBarCodeV2 = props => {
             <Grid container spacing={5}>
 
               <Grid item xs={4}>
-                <LabelH style={{ paddingRight: "5px", width: "100px" }}>
+                <LabelH style={{ paddingRight: "2px", width: "100px" }}>
                   {"Pallet No. :"}{indexName + "/" + numCount}
                 </LabelH>
               </Grid>
-              <Grid item xs={7}>
+              <Grid item xs={6}>
                 {listDatas[indexName].map((ele, index) => {
-                  return <FormInline >
+                  return <FormInline style={{ width: "180px" }} >
                     {ele.SKUMaster_Code}
                     <FormInline >
-                      <LabelH style={{ paddingRight: "3px" }}>
+                      <LabelH style={{ paddingRight: "2px" }}>
                         {"Q : "}</LabelH>
                       {ele["Quantity_Genarate"]}
                     </FormInline>
-                    {" "} {<div style={{ paddingLeft: "2px" }}>{ele.UnitType_Code}</div>}
+                    {" "} {<div style={{ paddingLeft: "2px" }}>{ele.UnitType_Code}{" "}</div>}
+
                   </FormInline>
                 })}
+              </Grid>
+              <Grid item xs={1} style={{ paddingLeft: "0px", paddingTop: "25px" }}>
+                <IconButton
+                  size="small"
+                  aria-label="info"
+                  style={{ padding: "0px" }}
+                >
+                  <DeleteIcon
+                    fontSize="small"
+                    style={{ color: "#e74c3c" }}
+                    onClick={() => { onClickDeletePallet(listDatas[indexName], listDatas, indexName) }} />
+                </IconButton>
               </Grid>
             </Grid>
           </FormInline>
         </Paper>
-      </div>)
+      </div >)
 
     }
 
@@ -245,7 +281,7 @@ const AmPrintBarCodeV2 = props => {
   }
 
   const RanderEleListItem = (item) => {
-    console.log(item)
+    // console.log(item)
 
     return item === null ? null : item.map((ele, index) => {
       return (<div style={{ paddingBottom: "5px" }} >
@@ -266,13 +302,9 @@ const AmPrintBarCodeV2 = props => {
 
                 let selec = selection.filter(y => y.ID != ele.ID && y.Quantity != 0)
                 if (e.target.checked) {
-                  console.log(ele)
-                  console.log(selec)
                   setSelection([...selec, ele])
                 } else {
-                  console.log(selec)
                   setSelection([...selec])
-                  console.log("dfghjk")
                 }
               }}
             />
@@ -282,6 +314,7 @@ const AmPrintBarCodeV2 = props => {
               {getQtyItem(ele)}
               {" / " + ele.Quantity}{" "}{ele.UnitType_Code}
             </FormInline>
+
           </FormInline>
         </Paper>
       </div>);
@@ -305,19 +338,44 @@ const AmPrintBarCodeV2 = props => {
                     {console.log(iniData)}
                     {RanderEleListItem(iniData)}
 
-                    {/* <PlaylistPlay /> */}
-
                   </Grid>
                   <Grid item xs={1}>
                     <div style={{
                       textAlign: "center",
                       paddingTop: "100%"
                     }}>
-                      <PlaylistArrowPlay
-                        onClick={() => { onGenBarcode() }}
-                      />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                      >
+                        <PlaylistArrowPlay
+                          fontSize="medium"
+                          style={{ color: "#4FC3F7" }}
+                          onClick={() => { onGenBarcode() }}
+                        />
+                      </IconButton>
+
                       <br />
-                      <PlaylistPlay />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                      >
+                        <SkipNext
+                          fontSize="medium"
+                          style={{ color: "#039BE5" }} />
+                      </IconButton>
+
+                      <br />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                        onClick={() => { Clear() }}
+                      >
+                        <DeleteSweep
+                          fontSize="medium"
+                          style={{ color: "#e74c3c" }} />
+                      </IconButton>
+
                     </div>
                   </Grid>
                   <Grid item xs={5} style={{ backgroundColor: "#F5F5F5", height: "300px" }}>
@@ -336,6 +394,9 @@ const AmPrintBarCodeV2 = props => {
   };
 
   const Clear = () => {
+    console.log(itemIni)
+
+    setIniData(Clone(props.data))
     setSelection([])
     setNumCount(1)
     setItemList({})

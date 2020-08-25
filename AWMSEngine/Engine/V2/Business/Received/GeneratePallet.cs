@@ -14,6 +14,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public int maxVolume;
             public string supplierName;
             public string supplierCode;
+            public string remark;
             public List<Item> item;
         }
         public class TRes
@@ -30,6 +31,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             public string code;
             public string title;
+            public long skuType;
             public string options;
 
         }
@@ -37,20 +39,28 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             public int bcode;
             public string pcode;
+            public string pname;
             public int vol;
+            public string unit;
             public string lot;
             public string orderNo;
             public string docItemID;
             public string skuType;
+            public string expdate;
+            public string prodDate;
         }
         public class Item
         {
             public string docItemID;
             public string code;
+            public string name;
             public int vol;
+            public string unit;
             public string lot;
             public string orderNo;
             public string skuType;
+            public string expdate;
+            public string prodDate;
 
         }
 
@@ -60,6 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<Item> Items = reqVO.item;
             List<Pallet> pallets = new List<Pallet>();           
             List<Pallet> findPalletX = new List<Pallet>();
+            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
             var itemVol = reqVO.item.Sum(x=>x.vol);
             if (itemVol < reqVO.minVolume)
@@ -86,21 +97,28 @@ namespace AWMSEngine.Engine.V2.Business.Received
             {
 
                 var pcode = string.Join(',', pts.palletsDetail.Select(x => x.pcode));
+                var pname = string.Join(',', pts.palletsDetail.Select(x => x.pname));
                 var pID = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
                 var vol = string.Join(',', pts.palletsDetail.Select(x => x.vol));
+                var unit = string.Join(',', pts.palletsDetail.Select(x => x.unit));               
                 var lot = string.Join(',', pts.palletsDetail.FindAll(x=> !string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
                 var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
                 var skutype = string.Join(',', pts.palletsDetail.Select(x => x.skuType));
+                var expdate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.expdate)).Select(x => x.expdate));
+                var prodDate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.prodDate)).Select(x => x.prodDate));
 
                 listItem.Add(new pallet_list_item()
                 {
                     code = "N|" + pts.palletsNO + "|" + pID + "|" + vol,
+                    skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Name == skutype).ID.Value,
                     title = skutype,
-                    options = "itemName="+ pcode +
+                    options = "codeNo=" + pcode + "&itemName=" + pname +
                               "&lotNo="+ lot + "&controlNo="+ orderNo + 
-                              "&supplier="+reqVO.supplierName+"&codeNo="+ reqVO.supplierCode +
-                              "&receivedDate="+ DateTime.Now.ToString("MM/dd/yyyy")+ "&qtyReceived="+ vol +
-                              "&palletNo=" + pts.palletsNO+"/"+ pallet_list.Count
+                              "&supplier="+reqVO.supplierName+
+                              "&mfgdate=" + prodDate + "&expdate="+ expdate +
+                              "&qty=" + vol + "&unit=" + unit +
+                              "&palletNo=" + pts.palletsNO+"/"+ pallet_list.Count +
+                              "&remark="+ reqVO.remark
                 });
             }
 
@@ -135,10 +153,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                 pallet.bcode = bcode;
                 pallet.pcode = itemData.code;
+                pallet.pname = itemData.name;
                 pallet.lot = itemData.lot;
+                pallet.unit = itemData.unit;
                 pallet.orderNo = itemData.orderNo;
                 pallet.docItemID = itemData.docItemID;
                 pallet.skuType = itemData.skuType;
+                pallet.prodDate = itemData.prodDate;
+                pallet.expdate = itemData.expdate;
 
                 if (mode == 0)
                 {

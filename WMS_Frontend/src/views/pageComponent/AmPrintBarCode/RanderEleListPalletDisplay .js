@@ -53,8 +53,9 @@ const DataGenerateElePalletListDisplay = (data) => {
   if (data != undefined && data.listsCode !== undefined) {
     return data.listsCode.map((pt, index) => {
       var qryStr = queryString.parse(pt.options);
-      var itemName_list = qryStr.itemName.split(',');
-      var qtyReceived_list = qryStr.qtyReceived.split(',');
+      var itemName_list = qryStr.codeNo.split(',');
+      var qtyReceived_list = qryStr.qty.split(',');
+      var unit = qryStr.unit.split(',');
       return <div>
         <Grid container spacing={3} >
           <Grid item xs style={{ padding: 2 }} >
@@ -69,6 +70,7 @@ const DataGenerateElePalletListDisplay = (data) => {
           <Grid item xs style={{ padding: 2 }}>
             <FormInline style={{ width: "150px" }}>
               <label style={LabelDQty}> {qtyReceived_list.map(ele => <>{ele}<br /></>)}</label>
+              <label style={LabelDQty}> {unit.map(ele => <>{ele}<br /></>)}</label>
             </FormInline>
           </Grid>
         </Grid></div >
