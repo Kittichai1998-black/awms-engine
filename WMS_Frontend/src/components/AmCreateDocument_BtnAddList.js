@@ -21,6 +21,7 @@ import AmInput from "./AmInput";
 import AmTable from "./AmTable/AmTable";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
+import moment from "moment";
 
 // import MaterialTable from './AmCreateDocument_TableNew'
 
@@ -203,8 +204,12 @@ const BtnAddList = props => {
     if (open) {
       Axios.get(createQueryString(query)).then(res => {
         // console.log(res.data.datas);
-        if (res.data.datas) {
-          setData([...res.data.datas]);
+          if (res.data.datas) {
+              SetFormaatdata(res.data.datas)
+              //ExpireDate = moment(x.expireDate).format('MM-DD-YYYY'),
+              //    ProductionDate = moment(x.productionDate).format('MM-DD-YYYY')
+            
+
           setTotalSize(res.data.counts);
           // let data = props.dataCheck || [];
           setDefaultSelect([...props.dataCheck]);
@@ -212,6 +217,36 @@ const BtnAddList = props => {
       });
     }
   }, [query, open]);
+
+
+    const SetFormaatdata = (datas) => {
+        let dataSet = datas.map(x => {
+            let obj = {
+                ...x,
+                quantity: x.Quantity,
+                expireDate: x.expireDate ? moment(x.expireDate).format('MM-DD-YYYY') : null,
+                productionDate: x.productionDate ? moment(x.productionDate).format('MM-DD-YYYY') : null,
+                auditStatus: x.auditStatus ? GetAuditStatus(x.auditStatus) : null
+
+            }
+            return obj
+        })
+
+        setData(dataSet)
+       
+    }
+
+    const GetAuditStatus = (value) => {
+        if (value) {
+            return "QUARANTINE"
+        } else if (value === 1) {
+            return "PASS"
+        } else if (value === 2 ) {
+            return "NOTPASS"
+        } else if (value  === 9) {
+            return "HOLD"
+        }
+    };
 
   useEffect(() => {
     if (typeof page === "number") {

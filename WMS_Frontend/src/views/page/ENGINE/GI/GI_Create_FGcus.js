@@ -250,7 +250,7 @@ const GI_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

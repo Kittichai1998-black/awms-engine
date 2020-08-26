@@ -32,7 +32,7 @@ const PA_Detail = props => {
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/putaway/search"}
+                linkBack={"/receive/putawaysearch"}
                 history={props.history}
                 // useAddPalletMapSTO={true}
                 // addPalletMapSTO={addPalletMapSTO}

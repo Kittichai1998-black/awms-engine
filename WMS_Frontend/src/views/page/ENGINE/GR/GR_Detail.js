@@ -170,7 +170,7 @@ const GR_Detail = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {e.dcCode}
                 <AmRediRectInfo
-                    api={"/putaway/detail?docID=" + e.dcID}
+                    api={"/receive/putawaydetai?docID=" + e.dcID}
                     history={props.history}
                     docID={""}
                 >

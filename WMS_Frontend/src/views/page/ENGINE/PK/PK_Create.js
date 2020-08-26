@@ -229,7 +229,7 @@ const Create_GR_DR = props => {
     ];
 
     const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-    const apiRes = "/picking/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apiRes = "/issue/pickingdetail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;

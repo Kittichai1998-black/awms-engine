@@ -405,7 +405,7 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 //let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot)
+                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
@@ -988,9 +988,9 @@ const AmCreateDocument = (props) => {
             let obj = {
                 ...x,
                 ID: _addDataID,
-                packID_map_skuID: x.packID + "-" + x.skuID,
-                expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
-                productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+                packID_map_skuID: x.packID + "-" + x.skuID
+                //expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
+                //productionDate: moment(x.productionDate).format('MM-DD-YYYY')
 
             }
             _addDataID--
