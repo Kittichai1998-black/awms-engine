@@ -34,15 +34,15 @@ const LabelDQty = {
 const DataGenerateElePopDisplay = (data) => {
 
   return data.map((pack, index) => {
-    // console.log(pack)
+    console.log(pack)
     return (<div key={index}>
       <FormInline>
         <label style={LabelH}>{"Item Code : "}</label>
         <label style={LabelD}>{pack.Code}</label>
         <label style={LabelDQty}>{pack.BaseQuantity}</label>
-        <label style={LabelDQty}>{"Qty"}</label>
+        <label style={LabelDQty}>{pack.UnitType_Code}</label>
       </FormInline>
-      <FormInline>
+      {/* <FormInline>
         <label style={{ width: "250px" }}></label>
         <label style={LabelDQty}>{(pack.Volume * pack.BaseQuantity)}</label>
         <label style={LabelDQty}>{"Volume"}</label>
@@ -51,7 +51,7 @@ const DataGenerateElePopDisplay = (data) => {
         <label style={{ width: "250px" }}></label>
         <label style={LabelDQty}>{pack.Volume}</label>
         <label style={LabelDQty}>{"Qty/Volume"}</label>
-      </FormInline>
+      </FormInline> */}
 
 
     </div>

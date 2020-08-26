@@ -21,10 +21,10 @@ const PA_Detail = props => {
         if (header !== undefined) {
             setdocview(<DocView
                 openSOU={true}
-                openDES={true}
+                openDES={false}
                 optionDocItems={optionDocItems}
                 columnsDetailSOU={columnsDetailSOU}
-                columnsDetailDES={columnsDetailDES}
+                //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
                 columns={columns}
                 typeDoc={"received"}
@@ -158,28 +158,6 @@ const PA_Detail = props => {
             Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
         },
         { Header: "ShelfLifeDay", accessor: "diShelfLifeDay", widthPDF: 10 }
-    ];
-
-    const columnsDetailDES = [
-        { width: 125, accessor: "ItemNo", Header: "ItemNo" },
-        { width: 100, accessor: "code ", Header: "Pallet" },
-        { Header: "Item Code", accessor: "SKUItems" },
-        { width: 110, accessor: "_packQty", Header: "Qty" },
-        { Header: "OrderNo", accessor: "OrderNo" },
-        { Header: "Batch", accessor: "Batch" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 120, accessor: "_packQty", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "diAuditStatus", Cell: e => GetAuditStatus(e.original) },
-        { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay" },
-        { Header: "ProductDate", accessor: "ProductionDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate" },
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

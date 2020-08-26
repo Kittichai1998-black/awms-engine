@@ -98,9 +98,29 @@ const AmputAndpickManage = (props) => {
         } else if (props.doccreateDocType === "picking") {
             docs.issueItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
-                x.parentDocumentItem_ID = x.ID
-                x.Options = null
                 x.skuCode = x.Code
+                x.quantity = x.Quantity
+                x.baseQuantity = x.BaseQuantity
+                x.baseunitType = x.BaseUnitType_Code
+                x.batch = x.Batch
+                x.lot = x.Lot
+                x.orderNo = x.OrderNo
+                x.cartonNo = x.CartonNo
+                x.itemNo = x.ItemNo
+                x.auditStatus = x.AuditStatus
+                x.refID = x.RefID
+                x.ref1 = x.Ref1
+                x.ref2 = x.Ref2
+                x.ref3 = x.Ref3
+                x.ref4 = x.Ref4
+                x.options = x.Options
+                x.parentDocumentItem_ID = x.ID
+                x.incubationDay = x.IncubationDay
+                x.ExpireDate = x.ExpireDates
+                x.ProductionDate = x.ProductionDates
+                x.expireDate = x.ExpireDates
+                x.productionDate = x.ProductionDates
+                x.shelfLifeDay = x.ShelfLifeDay
                 return x
             })
         }
