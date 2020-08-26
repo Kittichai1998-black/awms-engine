@@ -25,7 +25,7 @@ const view_sto = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "PackStorageObject",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "packID,palletcode,skuCode,skuName,Batch as batch,Lot as lot,OrderNo as orderNo,locationCode,SIZE,SKUItems,Quantity as quantity,unitType,skuID",
+    f: "*",
     g: "",
     s: "[{'f':'packID','od':'ASC'}]",
     sk: 0,
@@ -77,7 +77,7 @@ const GI_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 1010, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 4011, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 
@@ -119,6 +119,8 @@ const GI_Create_FGCustomer = props => {
                     apicreate={apicreate}
                     createDocType={"issue"}
                     history={props.history}
+                    //itemNo={true}
+                    //defualItemNo={'0001'}
                     apiRes={apiRes}
                 />
             );
@@ -156,7 +158,7 @@ const GI_Create_FGCustomer = props => {
         }
 
         var columnEdit = [
-            { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
+            { Header: "Item No.", accessor: "itemNo", type: "input"},
             {
                 // search: false,
                 Header: "Item",
@@ -245,6 +247,18 @@ const GI_Create_FGCustomer = props => {
         all: ""
     };
 
+    const DocumentProcessTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
@@ -283,17 +297,6 @@ const GI_Create_FGCustomer = props => {
     };
 
 
-    const DocumentProcessTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
 
     const columsFindPopupSKU = [
         { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
@@ -306,7 +309,18 @@ const GI_Create_FGCustomer = props => {
         { Header: "Item Code", accessor: "SKUItems", width: 350 },
         { Header: "Location", accessor: "locationCode", width: 90, style: { textAlign: "center" } },
         { Header: "Qty", accessor: "quantity", width: 90 },
-        { Header: "Unit", accessor: "unitType", width: 70 }
+        { Header: "Unit", accessor: "unitType", width: 70 },
+        { Header: "Audit Status", accessor: "auditStatus" },
+        { Header: "Vendor Lot", accessor: "ref1" },
+        { Header: "Ref2", accessor: "ref2" },
+        { Header: "Ref3", accessor: "ref3" },
+        { Header: "Ref4", accessor: "ref4" },
+        { Header: "CartonNo", accessor: "cartonNo" },
+        { Header: "IncubationDay", accessor: "incubationDay" },
+        { Header: "ProductDate", accessor: "productionDate" },
+        { Header: "ExpireDate", accessor: "expireDate" },
+        { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
+    
     ];
 
   

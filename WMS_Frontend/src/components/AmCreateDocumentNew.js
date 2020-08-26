@@ -185,23 +185,25 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (processType !== undefined) {
-            if (createDocumentData["desWarehouseID"] !== null && props.createDocType !== "receive") {
-                createDocumentData["desWarehouseID"] = null
-                createDocumentData["souWarehouseID"] = null
-            } else if (createDocumentData["souWarehouseID"] !== null && props.createDocType !== "receive") {
-                createDocumentData["desWarehouseID"] = null
-                createDocumentData["souWarehouseID"] = null
-            } else if (createDocumentData["souCustomerID"] !== null) {
-                createDocumentData["souCustomerID"] = null
-            } else if (createDocumentData["souSupplierID"] !== null) {
+            console.log(processType)
+            if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
-            } else if (createDocumentData["desSupplierID"] !== null) {
-                createDocumentData["desSupplierID"] = null
-
-            } else if (createDocumentData["desCustomerID"] !== null) {
+                createDocumentData["souCustomerID"] = null
+                createDocumentData["desSupplierID"] = null   
                 createDocumentData["desCustomerID"] = null
-            }
+            } else if (processType === 2) {
+                createDocumentData["souSupplierID"] = null
+                createDocumentData["souWarehouseID"] = null
+                createDocumentData["desSupplierID"] = null
+                createDocumentData["desWarehouseID"] = null
+            } else if (processType === 3) {
+                createDocumentData["souCustomerID"] = null
+                createDocumentData["souWarehouseID"] = null
+                createDocumentData["desSupplierID"] = null
+                createDocumentData["desCustomerID"] = null
+            } 
         }
+        setDataSource([])
         setcreateDocumentData(createDocumentData)
 
     }, [processType])
@@ -400,7 +402,6 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
-
         if (status) {
             if (!inputError.length) {
                 let chkSkuEdit
@@ -951,6 +952,8 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
+                x.incubationDay = parseInt(x.incubationDay)
+                x.shelfLifeDay = parseInt(x.shelfLifeDay)
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -962,7 +965,6 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
-            //console.log(doc)
             CreateDocuments(doc)
         }
     }
@@ -984,7 +986,14 @@ const AmCreateDocument = (props) => {
     const FormatDataSource = (data) => {
         let _addDataID = addDataID
         let arr = data.map(x => {
-            let obj = { ...x, ID: _addDataID, packID_map_skuID: x.packID + "-" + x.skuID }
+            let obj = {
+                ...x,
+                ID: _addDataID,
+                packID_map_skuID: x.packID + "-" + x.skuID,
+                expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
+                productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+
+            }
             _addDataID--
             return obj
         })

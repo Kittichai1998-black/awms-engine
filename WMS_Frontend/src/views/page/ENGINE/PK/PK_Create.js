@@ -25,20 +25,16 @@ const Create_GR_DR = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Movement Type", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Movement Type" },
+                    { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
                     { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
-                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "",  codeTranslate: "Des Warehouse" }
+                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "", codeTranslate: "Des Warehouse" }
                 ],
                 [
-                    { label: "For Customer", type: "labeltext", key: "forCustomerID", valueTexts: "", codeTranslate: "For Customer" },
+
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-
-                [
-
                     { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
