@@ -129,7 +129,7 @@ const RD_Create_FGCustomer = props => {
         if (skuType === 5 && CodeprocessType === 1) {
             AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 0, disabled : true }
         } else {
-            AuditStatusDDL = { Header: "Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 1 }
+            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 0 }
         }
         var columnEdit = [
             { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
