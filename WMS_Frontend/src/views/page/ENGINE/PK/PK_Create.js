@@ -130,123 +130,6 @@ const Create_GR_DR = props => {
         { Header: "Code", accessor: "Code" }
     ]
 
-
-
-
-
-    const columsFindpopUpPALC = [
-        {
-            Header: "Pallet Code",
-            accessor: "Palletcode",
-            width: 110,
-            style: { textAlign: "center" }
-        },
-
-        {
-            Header: "SI",
-            accessor: "OrderNo",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        { Header: "Reorder/Brand", accessor: "SKUItems" },
-        {
-            Header: "Size",
-            accessor: "Size",
-            width: 50
-        },
-        {
-            Header: "Carton No",
-            accessor: "Carton",
-            width: 100,
-            Cell: e => getCarton(e.original)
-        },
-        // { Header: "SKU Code", accessor: 'Code', width: 110 },
-        // { Header: "SKU Name", accessor: 'Name', width: 170 },
-        {
-            Header: "Location",
-            accessor: "LocationCode",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-
-
-        {
-            Header: "Quantity",
-            accessor: "Quantity",
-            width: 90,
-            style: { textAlign: "center" }
-        },
-        {
-            Header: "Unit",
-            accessor: "BaseUnitCode",
-            width: 70,
-            style: { textAlign: "center" }
-        },
-        // { Header: 'Shelf Day', accessor: 'ShelfDay', width: 95 },
-        {
-            Header: "Remark",
-            accessor: "remark",
-            width: 110,
-            style: { textAlign: "center" }
-        }
-    ];
-
-    const getCarton = value => {
-        var qryStr = queryString.parse(value.Options);
-        return qryStr["carton_no"];
-    };
-    const PalletCode = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f:
-            "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 20,
-        all: ""
-    };
-
-
-    const WarehouseQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "Warehouse",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-
-    const CustomerQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "Customer",
-        q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-    const MovementTypeQuery2 = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v":1012}]',
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
     const DocumentDR = {
         queryString: window.apipath + "/v2/SelectDataTrxAPI/",
         t: "Document",
@@ -273,62 +156,80 @@ const Create_GR_DR = props => {
 
     }
 
-    const columsFindpopUp = [
-        {
-            Header: "Reorder",
-            accessor: "Code",
-            fixed: "left",
-            width: 130,
-            sortable: true
-        },
-        { Header: "Brand", accessor: "Name", width: 200, sortable: true }
-    ];
-
     const columnEdit = [
-        { Header: "Item Code", accessor: "SKUItems", type: "text"},
-        //{ Header: "Pallet", accessor: "Palletcode", type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUp, codeTranslate: "Pallet" },
+        { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
+        { Header: "Item", accessor: "SKUItems", type: "text" },
+        { Header: "OrderNo", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
         { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "Order No." },
-        { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Quantity" },
-        { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" }
+        { Header: "Qty", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
+        { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2", type: "text", codeTranslate: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay" }
     ];
+
 
     const columnEditItem = [
-        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        { Header: "Item", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "OrderNo", accessor: "OrderNo", codeTranslate: "OrderNo" },
         { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
-        { Header: "Lot",  accessor: "Lot",codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
-        //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
-        //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
-    ];
+        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
+        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo", codeTranslate: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay", codeTranslate: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate", codeTranslate: "ProductDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
 
+    ];
 
     const columnEditItemSet = [
         { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "Order No." },
+        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
-
-
 
 
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "", accessor: "row", width: 35 },
-        { Header: "Item Code", accessor: "SKUItems" },
-        { Header: "Batch", accessor: "Batch", width: 100 },
-        { Header: "Lot", accessor: "Lot", width: 100 },
-        { Header: "Order No.", accessor: "OrderNo", width: 100 },
-        { Header: "Qty", accessor: "Quantity", width: 110 },
-        { Header: "Unit", accessor: "UnitType_Code", width: 90 }
+        { Header: "Item", accessor: "SKUItems" },
+        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Batch", accessor: "Batch" },
+        { width: 130, accessor: "Lot", Header: "Lot" },
+        { width: 120, accessor: "_qty", Header: "Qty" },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit" },
+        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
+        { Header: "Ref2", accessor: "Ref2" },
+        { Header: "Ref3", accessor: "Ref3" },
+        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "CartonNo", accessor: "CartonNo" },
+        { Header: "IncubationDay", accessor: "IncubationDay" },
+        { Header: "ProductDate", accessor: "ProductionDate" },
+        { Header: "ExpireDate", accessor: "ExpireDate" },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-    const apiRes = "/putaway/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apiRes = "/picking/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;

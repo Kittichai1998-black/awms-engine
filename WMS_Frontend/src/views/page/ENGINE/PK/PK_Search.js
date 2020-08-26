@@ -228,7 +228,7 @@ const PASearch = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/picking/detail?docID=" + data.ID}
+                    api={"/issue/pickingdetail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
