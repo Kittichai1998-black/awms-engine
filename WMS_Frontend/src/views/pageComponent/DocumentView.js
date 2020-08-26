@@ -779,7 +779,7 @@ const DocumentView = props => {
           });
 
         }
-        
+
         let reqjson = {
           // "margins_left": 30,
           // "margins_right": 40,
@@ -912,6 +912,7 @@ const DocumentView = props => {
         </>
 
         : null}
+
       {props.usePrintBarcodePallet ?
         <>
           <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
