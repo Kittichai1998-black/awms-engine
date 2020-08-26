@@ -141,20 +141,20 @@ const PA_Search = Loadable({
 });
 
 const PK_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/PK/PK_Create"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PK/PK_Create"),
+  loading: Loading
 });
 const PK_Detail = Loadable({
-    loader: () => import("../../views/page/ENGINE/PK/PK_Detail"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PK/PK_Detail"),
+  loading: Loading
 });
 const PK_Search = Loadable({
-    loader: () => import("../../views/page/ENGINE/PK/PK_Search"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PK/PK_Search"),
+  loading: Loading
 });
 
 const GI_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
+  loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
   loading: Loading
 });
 const GI_Detail = Loadable({
@@ -235,9 +235,9 @@ const routes = [
   { path: "/putaway/detail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/putaway/search", name: "PA View", compoment: PA_Search, exact: true },
 
-    { path: "/picking/create", name: "PK Create", compoment: PK_Create, exact: true },
-    { path: "/picking/detail", name: "PK View", compoment: PK_Detail, exact: true },
-    { path: "/picking/search", name: "PK View", compoment: PK_Search, exact: true },
+  { path: "/picking/create", name: "PK Create", compoment: PK_Create, exact: true },
+  { path: "/picking/detail", name: "PK View", compoment: PK_Detail, exact: true },
+  { path: "/picking/search", name: "PK View", compoment: PK_Search, exact: true },
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
@@ -248,9 +248,9 @@ const routes = [
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
   { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
 
-    { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
-    { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
-    { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
+  { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
+  { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
+  { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
 
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },

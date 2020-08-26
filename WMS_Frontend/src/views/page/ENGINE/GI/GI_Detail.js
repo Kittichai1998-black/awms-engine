@@ -34,6 +34,7 @@ const GR_Detail = props => {
                 buttonBack={true}
                 linkBack={"/issue/search"}
                 history={props.history}
+                usePrintPDF={true}
             >
             </DocView>
             )
