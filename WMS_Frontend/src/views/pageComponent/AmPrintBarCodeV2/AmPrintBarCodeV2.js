@@ -27,6 +27,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Clone from "../../../components/function/Clone";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+
+
 const Axios = new apicall();
 const LabelHText = styled.label`
   width: 60px;
@@ -493,6 +495,7 @@ const AmPrintBarCodeV2 = props => {
       >
         QRCODE MANUAL
         </AmButton>
+
 
     </div>
   );

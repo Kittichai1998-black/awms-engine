@@ -906,20 +906,21 @@ const DocumentView = props => {
         }
 
       </div>
-      {props.usePrintBarcodePallet ?
-        <>
-          <PrintBarcode selection={selection} dataHeader={dataHeader} />
-        </>
+      <FormInline >
+        {props.usePrintBarcodePallet ?
+          <>
+            <PrintBarcode selection={selection} dataHeader={dataHeader} />
+          </>
 
-        : null}
+          : null}
 
-      {props.usePrintBarcodePallet ?
-        <>
-          <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
-        </>
+        {props.usePrintBarcodePallet ?
+          <>
+            <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
+          </>
 
-        : null}
-
+          : null}
+      </FormInline>
       {typeDoc && !props.CreateputAway ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
         <AmTable
