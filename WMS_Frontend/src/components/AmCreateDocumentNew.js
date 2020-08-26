@@ -185,23 +185,25 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (processType !== undefined) {
-            if (createDocumentData["desWarehouseID"] !== null && props.createDocType !== "receive") {
-                createDocumentData["desWarehouseID"] = null
-                createDocumentData["souWarehouseID"] = null
-            } else if (createDocumentData["souWarehouseID"] !== null && props.createDocType !== "receive") {
-                createDocumentData["desWarehouseID"] = null
-                createDocumentData["souWarehouseID"] = null
-            } else if (createDocumentData["souCustomerID"] !== null) {
-                createDocumentData["souCustomerID"] = null
-            } else if (createDocumentData["souSupplierID"] !== null) {
+            console.log(processType)
+            if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
-            } else if (createDocumentData["desSupplierID"] !== null) {
-                createDocumentData["desSupplierID"] = null
-
-            } else if (createDocumentData["desCustomerID"] !== null) {
+                createDocumentData["souCustomerID"] = null
+                createDocumentData["desSupplierID"] = null   
                 createDocumentData["desCustomerID"] = null
-            }
+            } else if (processType === 2) {
+                createDocumentData["souSupplierID"] = null
+                createDocumentData["souWarehouseID"] = null
+                createDocumentData["desSupplierID"] = null
+                createDocumentData["desWarehouseID"] = null
+            } else if (processType === 3) {
+                createDocumentData["souCustomerID"] = null
+                createDocumentData["souWarehouseID"] = null
+                createDocumentData["desSupplierID"] = null
+                createDocumentData["desCustomerID"] = null
+            } 
         }
+        setDataSource([])
         setcreateDocumentData(createDocumentData)
 
     }, [processType])
@@ -311,11 +313,12 @@ const AmCreateDocument = (props) => {
         if (field === "expireDate") {
             editData['expireDate'] = moment(data.value).format('MM-DD-YYYY')
         }
-
-        if (field === "auditStatus" && data !== null ) {
-            editData['auditStatus'] = data.label
+        if (field === "auditStatus" && data != null) {
+            console.log(data)
+            editData["auditStatus"] = data.label 
         }
 
+        
         if (props.itemNo && addData) {
             if (addDataID === -1) {
                 let itemNos = props.defualItemNo
@@ -338,9 +341,7 @@ const AmCreateDocument = (props) => {
 
 
         if (typeof data === "object" && data) {      
-            if (field === "auditStatus" && data !== null) {
-                editData['auditStatus'] = data.label
-            }
+           
             if (field === "unitType") {
                 editData[field] = data[field] ? data[field] : data.Code
             } else {
@@ -369,7 +370,6 @@ const AmCreateDocument = (props) => {
 
                 if (index !== -1) {
                     if (data) {
-                        console.log(key)
                         ref.current[index].current.value = data[key]
                     } else {
                         ref.current[index].current.value = ""
@@ -381,8 +381,7 @@ const AmCreateDocument = (props) => {
         if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
             row.removeRelated.forEach(x => delete editData[x])
         }
-
-        setEditData({ ...editData })
+        setEditData(editData)
 
         if (required) {
             if (!editData[field]) {
@@ -400,7 +399,6 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
-
         if (status) {
             if (!inputError.length) {
                 let chkSkuEdit
@@ -430,6 +428,7 @@ const AmCreateDocument = (props) => {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
                     for (let row in rowdata) {
+                        console.log(rowdata)
                         chkEdit[row] = rowdata[row]
                     }
                 } else {//Add
@@ -951,6 +950,8 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
+                x.incubationDay = parseInt(x.incubationDay)
+                x.shelfLifeDay = parseInt(x.shelfLifeDay)
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -962,7 +963,7 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
-            //console.log(doc)
+            console.log(doc)
             CreateDocuments(doc)
         }
     }
@@ -984,7 +985,14 @@ const AmCreateDocument = (props) => {
     const FormatDataSource = (data) => {
         let _addDataID = addDataID
         let arr = data.map(x => {
-            let obj = { ...x, ID: _addDataID, packID_map_skuID: x.packID + "-" + x.skuID }
+            let obj = {
+                ...x,
+                ID: _addDataID,
+                packID_map_skuID: x.packID + "-" + x.skuID,
+                expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
+                productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+
+            }
             _addDataID--
             return obj
         })

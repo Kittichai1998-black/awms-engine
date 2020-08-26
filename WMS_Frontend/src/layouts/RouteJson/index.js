@@ -5,7 +5,8 @@ import DefaultRoute from "./routeDefault";
 // import TMC from "./routeTMC";
 // import AAI from "./routeAAI";
 // import STGT from "./routeSTGT";
-import AERP from "./routeAERP";
+// import AERP from "./routeAERP";
+import BOSS from "./routeBOSS";
 import ENGINE from "./routeEngine";
 // import PANKAN from "./routePANKAN";
 
@@ -25,7 +26,9 @@ if (window.project === "STA") {
 } else if (window.project === "TMC") {
   //PROJ = TMC;
 } else if (window.project === "AERP") {
-  PROJ = AERP;
+  // PROJ = AERP;
+} else if (window.project === "BOSS") {
+  PROJ = BOSS;
 } else {
   PROJ = ENGINE;
 }

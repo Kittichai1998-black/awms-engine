@@ -25,7 +25,7 @@ const GR_Detail = props => {
                 columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
                 CreateputAway={true}
-                apiCreate={'/picking/create?docID='}
+                apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
                 typeDoc={"issued"}
                 typeDocNo={1012}
@@ -34,6 +34,7 @@ const GR_Detail = props => {
                 buttonBack={true}
                 linkBack={"/issue/search"}
                 history={props.history}
+                usePrintPDF={true}
             >
             </DocView>
             )

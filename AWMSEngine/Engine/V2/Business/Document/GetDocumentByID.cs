@@ -370,7 +370,23 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
                         branchCode = bs.branchCode,
-                        options = bs.options
+                        options = bs.options,
+                        diItemNo = bs.diItemNo,
+                        diAuditStatus = bs.diAuditStatus,
+                        diLot = bs.diLot,
+                        diCartonNo = bs.diCartonNo,
+                        diBatch = bs.diBatch,
+                        diIncubationDay = bs.diIncubationDay,
+                        diShelfLifeDay = bs.diShelfLifeDay,
+                        diOrderNo = bs.diOrderNo,
+                        diRef1 = bs.diRef1,
+                        diRef2 = bs.diRef2,
+                        diRef3 = bs.diRef3,
+                        diRef4 = bs.diRef4,
+                        diExpireDate = bs.diExpireDate,
+                        diProductionDate = bs.diProductionDate,
+                        dcCode = bs.dcCode,
+                        dcID = bs.dcID
 
                     });
 
