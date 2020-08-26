@@ -228,8 +228,8 @@ const Create_GR_DR = props => {
         { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
     ];
 
-    const apicreate = "/v2/CreateGIDocAPI/"; //API  √È“ß Doc
-    const apiRes = "/issue/pickingdetail?docID="; //path ÀπÈ“√“¬≈–‡Õ’¬¥ µÕππ’È¬—ß‰¡Ë‡ª‘¥
+    const apicreate = "/v2/CreateGIDocAPI/"; //API ‡∏™‡∏£‡πâ‡∏≤‡∏á Doc
+    const apiRes = "/issue/pickingdetail?docID="; //path ‡∏´‡∏ô‡πâ‡∏≤‡∏£‡∏≤‡∏¢‡∏•‡∏∞‡πÄ‡∏≠‡∏µ‡∏¢‡∏î ‡∏ï‡∏≠‡∏ô‡∏ô‡∏µ‡πâ‡∏¢‡∏±‡∏á‡πÑ‡∏°‡πà‡πÄ‡∏õ‡∏¥‡∏î
 
     return <div>
         {table}</div>;

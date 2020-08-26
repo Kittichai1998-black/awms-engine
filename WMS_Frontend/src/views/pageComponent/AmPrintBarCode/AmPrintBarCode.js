@@ -329,7 +329,7 @@ const AmPrintBarCode = props => {
           }
         }}
       >
-        BARCODE
+        QRCODE AUTO
         </AmButton>
 
     </div>

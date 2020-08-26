@@ -779,7 +779,7 @@ const DocumentView = props => {
           });
 
         }
-        
+
         let reqjson = {
           // "margins_left": 30,
           // "margins_right": 40,
@@ -906,19 +906,21 @@ const DocumentView = props => {
         }
 
       </div>
-      {props.usePrintBarcodePallet ?
-        <>
-          <PrintBarcode selection={selection} dataHeader={dataHeader} />
-        </>
+      <FormInline >
+        {props.usePrintBarcodePallet ?
+          <>
+            <PrintBarcode selection={selection} dataHeader={dataHeader} />
+          </>
 
-        : null}
-      {props.usePrintBarcodePallet ?
-        <>
-          <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
-        </>
+          : null}
 
-        : null}
+        {props.usePrintBarcodePallet ?
+          <>
+            <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
+          </>
 
+          : null}
+      </FormInline>
       {typeDoc && !props.CreateputAway ? (
         // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
         <AmTable
