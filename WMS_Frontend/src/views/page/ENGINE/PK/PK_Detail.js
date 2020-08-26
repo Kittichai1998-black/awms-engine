@@ -32,6 +32,9 @@ const PK_Detail = props => {
                 buttonBack={true}
                 linkBack={"/picking/search"}
                 history={props.history}
+                usePrintPDF={true}
+                usePickingOnFloor={true}
+                columnsPickingonFloor={columnsPickingonFloor}
             >
             </DocView>
             )
@@ -110,7 +113,16 @@ const PK_Detail = props => {
         { width: 110, accessor: "_packQty", Header: "Qty" },
         { width: 60, accessor: "packUnitCode", Header: "Unit" }
     ];
-
+    const columnsPickingonFloor = [
+        { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
+        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
+        { width: 100, accessor: "rootCode", Header: "Pallet" },
+        { width: 150, accessor: "packCode", Header: "Pack Code" },
+        { accessor: "packName", Header: "Pack Name" },
+        { width: 125, accessor: "Lot", Header: "Lot" },
+        { width: 110, accessor: "distoQtyMax", Header: "Qty" },
+        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    ];
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
