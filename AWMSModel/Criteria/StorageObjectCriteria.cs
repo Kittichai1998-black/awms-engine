@@ -61,8 +61,7 @@ namespace AWMSModel.Criteria
         public AuditStatus AuditStatus;
         public long? skuTypeID;
         public string skuTypeName;
-        public long? forCustomerID;
-        public long? transportObject_ID;
+        public long? forCustomerID; 
         public DateTime? ShelfLifeDate;
 
         public ObjectSize objectSize;

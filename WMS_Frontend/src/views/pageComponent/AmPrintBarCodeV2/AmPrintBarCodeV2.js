@@ -20,11 +20,13 @@ import AmDialogs from "../../../components/AmDialogs";
 import Card from "@material-ui/core/Card";
 import AmTable from "../../../components/AmTable/AmTable";
 import CardContent from "@material-ui/core/CardContent";
-import { PlaylistPlay, PlaylistArrowPlay } from "./IconTreeview";
+import { SkipNext, PlaylistArrowPlay, DeleteSweep } from "./IconTreeview";
 import { LoadDataPDF } from "./GendataPDF";
+import { DeletePallet } from "./DeletePallet";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Clone from "../../../components/function/Clone";
 import Checkbox from "@material-ui/core/Checkbox";
-
+import IconButton from "@material-ui/core/IconButton";
 const Axios = new apicall();
 const LabelHText = styled.label`
   width: 60px;
@@ -45,7 +47,7 @@ const FormInline = styled.div`
   align-items: center;
   label {
     margin: 5px 0 5px 0;
-    margin-left: 5px;
+    margin-left: 2px;
   }
   input {
     vertical-align: middle;
@@ -84,12 +86,15 @@ const AmPrintBarCodeV2 = props => {
   const [elePallet, setElePallet] = useState();
   const [numCount, setNumCount] = useState(1);
   const [itemList, setItemList] = useState({});
+  const [itemIni, setItemIni] = useState();
 
 
   useEffect(() => {
     // console.log(props.data)
-    setIniData(props.data)
+    //setItemIni(Clone(props.data))
+    setIniData(Clone(props.data))
   }, [props.data])
+
   const columns = [
     {
       Header: "Item",
@@ -111,89 +116,83 @@ const AmPrintBarCodeV2 = props => {
       width: 30
     }]
 
-  const onHandleChangeInputManual = (value, fieldDataKey) => {
-    valueManual[fieldDataKey] = value;
-  };
   const onHandledataConfirm = (status, rowdata) => {
     if (status) {
-      console.log(itemList)
-      // if (!genData) {
-      console.log(numCount)
-      onClickLoadPDF(itemList, props.SouSupplierName, props.SouSupplierCode, numCount)
-      // } else {
-      //   onClickLoadPDF()
-      // }
+      if (!IsEmptyObject(itemList)) {
+        onClickLoadPDF(itemList)
+      } else {
+        setDialogState({ type: "warning", content: "ยังไม่ได้ Generate ข้อมูล Pallet", state: true })
+      }
+
     } else {
       setDialog(false)
-      // Clear()
+      Clear()
     }
 
   }
 
-  const onClickLoadPDF = async (dataGen) => {
-    var data = LoadDataPDF(dataGen)
-    console.log("DIWDJ")
-    console.log(data)
+  const onClickLoadPDF = async (itemList) => {
+    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, numCount, props.Remark)
     try {
-      // console.log(data)
-      // console.log(dataSourceGenPallet)
+
       await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf", "preview").then();
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
-      // Clear()
+      Clear()
     } catch (err) {
       setDialogState({ type: "error", content: err.message, state: true })
-      // Clear()
+      Clear()
     }
   }
+  const onClickDeletePallet = (item, listDatas, indexName) => {
+    //DeletePallet(item, listDatas, indexName)
 
+    delete listDatas[indexName]
+    let newObj = {}
+    let i = 1
+    for (var item in listDatas) {
+      newObj[i] = listDatas[item]
+      i++;
+    }
+    console.log(newObj)
+    setElePallet(RanderEleListPallet(newObj, "del", i))
+    return null
+  }
 
 
 
   const onGenBarcode = () => {
-    console.log(selection)
-    console.log(iniData)
-
-    // selection.forEach(selec => {
-    //   var selectionData = iniData.find(x => x.ID !== selec.ID)
-    //   console.log(selectionData)
-    // })
-
-    var iniDatatmp = Clone(iniData)
-
-    setElePallet(RanderEleListPallet(selection))
-    // iniDatatmp.forEach(ini => {
-    //   let genQty = ini["Quantity_Genarate"] !== undefined ? ini["Quantity_Genarate"] : 0
-    //   console.log(ini)
-    //   ini.Quantity = ini.Quantity - genQty
-    //   //ini.Quantity_Genarate = 0 ถ้า ID ไม่ตรงกับ Selection ให้เป็น 0
-
-    // });
-
-    selection.forEach(selec => {
-      var selectionData = iniData.find(x => x.ID === selec.ID)
-      console.log(selec)
-      console.log(selectionData)
-      if (selectionData !== undefined) {
-        let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
-
-        selectionData.Quantity = selectionData.Quantity - genQty
-        //ini.Quantity_Genarate = 0 ถ้า ID ไม่ตรงกับ Selection ให้เป็น 0
+    if (selection.length !== 0) {
+      var ck = selection.find(x => x.Quantity - x.Quantity_Genarate < 0)
+      if (ck === undefined) {
+        setElePallet(RanderEleListPallet(selection))
+        selection.forEach(selec => {
+          var selectionData = iniData.find(x => x.ID === selec.ID)
+          if (selectionData !== undefined) {
+            let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
+            selectionData.Quantity = selectionData.Quantity - genQty
+          }
+        });
+        setIniData([...iniData])
+      } else {
+        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
+        setIniData([...iniData])
       }
-    });
-    setIniData([...iniData])
 
+    } else {
+      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+    }
   }
 
   const getQtyItem = (e) => {
 
     return (<div><AmInput
       id={"BaseQuantity"}
-      style={{ width: "50px", margin: "0px" }}
+      style={{ width: "50px", margin: "0px", paddingLeft: "10px" }}
+      disabled={e["Quantity"] === 0 ? true : false}
       type={"input"}
       defaultValue={e["SKUMaster_Info1"] ? e["SKUMaster_Info1"] : ""}
       onChange={(value, dataObject, inputID, fieldDataKey) =>
-        // onHandleChangeInputManual(value, e.SKUMaster_Code)
         e["Quantity_Genarate"] = parseInt(value)
       }
     /></div >)
@@ -201,44 +200,78 @@ const AmPrintBarCodeV2 = props => {
 
   //==================================================================================
   console.log(itemList)
-  const RanderEleListPallet = (item) => {
+  const RanderEleListPallet = (item, type, i) => {
     console.log(item)
     var xx = Clone(item)
+    let listDatas = {}
+    //let n = numCount
     //itemList[numCount] = item
     //setNumCount(numCount + 1)
     //console.log(itemList)
-    let listDatas = { ...itemList, [numCount]: xx };
+    console.log(numCount)
+    if (type !== "del") {
+      console.log(typeof item);
+      listDatas = { ...itemList, [numCount]: xx };
+      //setNumCount(numCount + 1)
+    } else {
+      console.log(typeof item);
+      listDatas = item
+    }
     setItemList(listDatas)
+    console.log(numCount)
     console.log(listDatas)
     setNumCount(numCount + 1)
     let e = []
     for (let indexName in listDatas) {
       console.log("fhgurghdifsuyfey")
       console.log(indexName)
-      e.push(listDatas[indexName].map((ele, index) => {
-        console.log(ele)
 
-        return (
-          <Paper key={index} className={classes.paper}
-            style={{
-              padding: "0px",
-              textAlign: "left",
+      e.push(<div style={{ paddingBottom: "5px" }}>
+        <Paper className={classes.paper}
+          style={{
+            padding: "0px",
+            textAlign: "left",
 
-            }} >
-            <FormInline >
-              <LabelH>{"Item : "}</LabelH>{ele.SKUMaster_Code}
-              <LabelH>{"Lot : "}</LabelH>{ele.Lot}
-              <FormInline > <LabelH>{"Qty : "}</LabelH>{ele["Quantity_Genarate"]}</FormInline>
+          }} >
+          <FormInline >
+            <Grid container spacing={5}>
 
+              <Grid item xs={4}>
+                <LabelH style={{ paddingRight: "2px", width: "100px" }}>
+                  {"Pallet No. :"}{indexName + "/" + numCount}
+                </LabelH>
+              </Grid>
+              <Grid item xs={6}>
+                {listDatas[indexName].map((ele, index) => {
+                  return <FormInline style={{ width: "180px" }} >
+                    {ele.SKUMaster_Code}
+                    <FormInline >
+                      <LabelH style={{ paddingRight: "2px" }}>
+                        {"Q : "}</LabelH>
+                      {ele["Quantity_Genarate"]}
+                    </FormInline>
+                    {" "} {<div style={{ paddingLeft: "2px" }}>{ele.UnitType_Code}{" "}</div>}
 
+                  </FormInline>
+                })}
+              </Grid>
+              <Grid item xs={1} style={{ paddingLeft: "0px", paddingTop: "25px" }}>
+                <IconButton
+                  size="small"
+                  aria-label="info"
+                  style={{ padding: "0px" }}
+                >
+                  <DeleteIcon
+                    fontSize="small"
+                    style={{ color: "#e74c3c" }}
+                    onClick={() => { onClickDeletePallet(listDatas[indexName], listDatas, indexName) }} />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </FormInline>
+        </Paper>
+      </div >)
 
-            </FormInline>
-
-          </Paper>
-
-        );
-      })
-      )
     }
 
     return e
@@ -248,48 +281,43 @@ const AmPrintBarCodeV2 = props => {
   }
 
   const RanderEleListItem = (item) => {
-    console.log(item)
+    // console.log(item)
 
     return item === null ? null : item.map((ele, index) => {
-      return (
+      return (<div style={{ paddingBottom: "5px" }} >
         <Paper key={index} className={classes.paper}
           style={{
             padding: "0px",
             textAlign: "left",
 
           }} >
-          <FormInline >
+          <FormInline style={{ paddingLeft: "5px" }} >
             <input
               type="checkbox"
               id={ele.ID}
               name="selection"
               value={ele}
+              disabled={ele.Quantity === 0 ? true : false}
               onChange={e => {
 
-                let selec = selection.filter(y => y.ID != ele.ID)
+                let selec = selection.filter(y => y.ID != ele.ID && y.Quantity != 0)
                 if (e.target.checked) {
-                  console.log(ele)
-                  console.log(selec)
                   setSelection([...selec, ele])
                 } else {
-                  console.log(selec)
                   setSelection([...selec])
-                  console.log("dfghjk")
                 }
               }}
             />
 
-            <LabelH>{"Item : "}</LabelH>{ele.SKUMaster_Code}
-            <LabelH>{"Lot : "}</LabelH>{ele.Lot}
-            <FormInline > <LabelH>{"Qty : "}</LabelH>{getQtyItem(ele)}</FormInline>
-            {" / " + ele.Quantity}
-
+            <LabelH style={{ paddingRight: "5px" }}>{"Item Code : "}</LabelH>{ele.SKUMaster_Code}
+            <FormInline > <LabelH>{"Q : "}</LabelH>
+              {getQtyItem(ele)}
+              {" / " + ele.Quantity}{" "}{ele.UnitType_Code}
+            </FormInline>
 
           </FormInline>
-
         </Paper>
-
-      );
+      </div>);
     })
 
   }
@@ -306,11 +334,9 @@ const AmPrintBarCodeV2 = props => {
 
 
                 <Grid container spacing={1}>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} style={{ backgroundColor: "#F5F5F5", height: "300px" }}>
                     {console.log(iniData)}
                     {RanderEleListItem(iniData)}
-
-                    {/* <PlaylistPlay /> */}
 
                   </Grid>
                   <Grid item xs={1}>
@@ -318,14 +344,41 @@ const AmPrintBarCodeV2 = props => {
                       textAlign: "center",
                       paddingTop: "100%"
                     }}>
-                      <PlaylistArrowPlay
-                        onClick={() => { onGenBarcode() }}
-                      />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                      >
+                        <PlaylistArrowPlay
+                          fontSize="medium"
+                          style={{ color: "#4FC3F7" }}
+                          onClick={() => { onGenBarcode() }}
+                        />
+                      </IconButton>
+
                       <br />
-                      <PlaylistPlay />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                      >
+                        <SkipNext
+                          fontSize="medium"
+                          style={{ color: "#039BE5" }} />
+                      </IconButton>
+
+                      <br />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                        onClick={() => { Clear() }}
+                      >
+                        <DeleteSweep
+                          fontSize="medium"
+                          style={{ color: "#e74c3c" }} />
+                      </IconButton>
+
                     </div>
                   </Grid>
-                  <Grid item xs={5}>
+                  <Grid item xs={5} style={{ backgroundColor: "#F5F5F5", height: "300px" }}>
 
                     {elePallet}
                     {console.log(selection)}
@@ -338,6 +391,16 @@ const AmPrintBarCodeV2 = props => {
         };
       });
     }
+  };
+
+  const Clear = () => {
+    console.log(itemIni)
+
+    setIniData(Clone(props.data))
+    setSelection([])
+    setNumCount(1)
+    setItemList({})
+    setElePallet()
   };
 
 

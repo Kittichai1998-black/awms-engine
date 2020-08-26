@@ -165,6 +165,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 },
                 this.BuVO);
 
+           foreach(var dicitem in docItems)
+            {
+                dicitem.Quantity_Genarate = dicitem.SKUMaster_Info1;
+            }
 
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;

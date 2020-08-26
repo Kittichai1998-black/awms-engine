@@ -269,9 +269,10 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
+                console.log(Path[1])
                 if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1] === "dashboard") {
                     row.WebPages.forEach((res) => {
-                        if (res.PathLV2 === Path[2]) {
+                        if (Path[1]===res.PathLV1 && res.PathLV2=== Path[2]) { 
                             name = t(res.pageName.trim());
                             //name = res.pageName;
                             icon_s = iconMenuTree[res.Icon];

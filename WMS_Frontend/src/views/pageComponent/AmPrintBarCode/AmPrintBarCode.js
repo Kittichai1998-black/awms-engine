@@ -104,9 +104,13 @@ const AmPrintBarCode = props => {
         lot: ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
+        name: ele.SKUMaster_Name,
+        unit: ele.UnitType_Code,
         skuType: ele.SKUMasterTypeName,
         vol: ele.Volume * ele.BaseQuantity,
-        skuType: ele.SKUMasterTypeName
+        skuType: ele.SKUMasterTypeName,
+        expdate: ele.ExpireDate,
+        prodDate: ele.ProductionDate
 
       }
       itemList.push(item)
@@ -119,6 +123,7 @@ const AmPrintBarCode = props => {
       maxVolume: 999,
       supplierName: props.SouSupplierName,
       supplierCode: props.SouSupplierCode,
+      remark: props.Remark,
       Item: itemList
     }
     // console.log(dataSend)

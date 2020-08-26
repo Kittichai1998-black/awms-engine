@@ -37,7 +37,8 @@ import AmToolTip from "../../components/AmToolTip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
-import AmPrintBarCode from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
+import AmPrintBarCodeV2 from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
+import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import PrintIcon from '@material-ui/icons/Print';
 import _ from 'lodash';
@@ -127,9 +128,6 @@ const BtnReceive = withStyles(theme => ({
 });
 function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocItems, onConfirm) {
   if (status === 10 && open) {
-    console.log("xxxxx tr")
-    console.log(open)
-
     return <AmReceivePallet
       open={open}
       close={(val) => close(val)}
@@ -144,13 +142,21 @@ function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocIt
 }
 
 const PrintBarcode = React.memo(({ selection, dataHeader }) => {
-    return <AmPrintBarCode data={selection}
-        SouSupplierCode={dataHeader.SouSupplier}
-        SouSupplierName={dataHeader.SouSupplierName}
-    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
-    />
+  return <AmPrintBarCode data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
 })
-
+const PrintBarcodeV2 = React.memo(({ selection, dataHeader }) => {
+  return <AmPrintBarCodeV2 data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
+})
 const DocumentView = props => {
   const { t } = useTranslation();
   const [statusdoc, setStatusdoc] = useState(0);
@@ -419,10 +425,10 @@ const DocumentView = props => {
     }
   }, [props.columnsDetailSOU, dataHeader])
   const renderDocumentStatus = () => {
-    const res = DocumentEventStatus.filter(row => {
-      return row.code === dataHeader.EventStatus;
-    });
-    return res.map(row => row.status);
+    var _statustxt = _.result(_.find(DocumentEventStatus, function (obj) {
+      return obj.code === dataHeader.EventStatus;
+    }), 'status');
+    return _statustxt;
   };
 
   const buttonBack = () => {
@@ -435,7 +441,7 @@ const DocumentView = props => {
 
   //======================================================================================================
 
-  const getDataHeater = (type, value) => {
+  const getDataHeader = (type, value) => {
     if (type === "date") {
       if (dataHeader[value] === null || dataHeader[value] === "") {
         return "-";
@@ -464,6 +470,7 @@ const DocumentView = props => {
         <Grid key={idx} container spacing={24}>
           {x.map((y, i) => {
             let syn = y.label ? " :" : "";
+            let showval = getDataHeader(y.type, y.values);
             return (
               <Grid
                 key={i}
@@ -473,7 +480,7 @@ const DocumentView = props => {
               >
                 <FormInline>
                   <LabelT style={LabelH}>{y.label + syn}</LabelT>
-                  <label>{getDataHeater(y.type, y.values)}</label>
+                  <label>{showval}</label>
                 </FormInline>
               </Grid>
             );
@@ -502,7 +509,6 @@ const DocumentView = props => {
     }
   }
   const ReturnMapping = (res) => {
-    console.log(res)
     setOpenReceive(res);
     getData()
   }
@@ -676,84 +682,104 @@ const DocumentView = props => {
     try {
       let hor_align_center = "ALIGN_CENTER";
 
-      let data_document = dataDoc.document;
-      if (data_document !== null || data_document !== undefined) {
+      if (dataHeader !== null || dataHeader !== undefined) {
         let textTitle = "";
+        let txtListSou = "List of Receive";
         if (props.typeDocNo === 1001) {
           textTitle = "Putaway Document Report";
         } else if (props.typeDocNo === 1011) {
           textTitle = "Good Receive Document Report";
         } else if (props.typeDocNo === 1012) {
           textTitle = "Good Issue Document Report";
+          txtListSou = "List of Pick";
         } else if (props.typeDocNo === 1002) {
           textTitle = "Picking Document Report";
+          txtListSou = "List of Pick";
         } else if (props.typeDocNo === 2003) {
           textTitle = "Audit Document Report";
+          txtListSou = "List of Audit";
         }
-        let documentStatus = "";
-        const resDocEvent = DocumentEventStatus.find(row => {
-          return row.code === data_document.EventStatus;
-        });
-        documentStatus = resDocEvent.status;
-        let DocDate = moment(data_document.DocumentDate).format("DD/MM/YYYY");
-        let ActionDate = moment(data_document.ActionTime).format("DD/MM/YYYY HH:mm");
 
-        let sou_head = "";
-        let sou_text = "";
-        if (data_document.DocumentProcessType_ID === 4011) //การรับเข้า FGs จากไลน์ผลิต
-        {
-          sou_head = "Source Warehouse :";
-          sou_text = data_document.SouWarehouseName ? data_document.SouWarehouseName : "";
-        } else if (data_document.DocumentProcessType_ID === 4012 ||
-          data_document.DocumentProcessType_ID === 4132 ||
-          data_document.DocumentProcessType_ID === 4292) {
-          //FG_TRANSFER_CUS, การรับเข้า/รับคืน FGs Recall, การรับเข้า/รับคืน FGs Return จากลูกค้า
-          sou_head = "Source Customer :";
-          sou_text = data_document.SouCustomerName ? data_document.SouCustomerName : "";
-        } else if (data_document.DocumentProcessType_ID === 5013) { // PM:การรับเข้าจาก Supplier
-          sou_head = "Source Supplier :";
-          sou_text = data_document.SouSupplierName ? data_document.SouSupplierName : "";
-        } else {
-          sou_head = "Source Warehouse :";
-          sou_text = data_document.SouWarehouseName ? data_document.SouWarehouseName : "";
+        //header 
+        let table_header = [];
+        if (header && dataHeader) {
+          let headers = [];
+          header.forEach(rows => {
+            let cellsHead = [];
+            rows.forEach(cols => {
+              cellsHead.push({
+                text: cols.label,
+                font_style: "bold",
+                padding_bottom: 5
+              })
+              let resVal = cols.type ? getDataHeader(cols.type, cols.values) : dataHeader[cols.values];
+              cellsHead.push({
+                text: resVal,
+                font_style: "normal",
+                padding_bottom: 5
+              })
+            });
+            headers.push({ cells: cellsHead })
+          });
+
+          let _header = {
+            "widths": [150, 251, 150, 251],
+            "def_cell_border": "BOX",
+            "locked_width": true,
+            "headers": headers
+          }
+          table_header.push(_header);
+
         }
 
         //=== data of docitems : table 1
-        let table1_content = null;
+        let table1_content = [];
         let dataDocumentItem = data;
 
         if (dataDocumentItem && columns) {
           let resDataTable = GetHeaderData_PDF(dataDocumentItem, columns);
-          table1_content = {
+          table1_content.push({
             "hor_align": hor_align_center,
-            // "ver_align": null,
-            // "total_width": null,
             "widths": resDataTable.widths,
             "def_cell_border": "BOX",
             "locked_width": true,
             "headers": resDataTable.header,
             "bodys": resDataTable.tabledatas
-          }
+          });
+
         }
 
-        //=== data Detail SOU
-        let table2_content = null;
+        //=== data Detail receive
+        let table2_content = [];
 
         if (dataDetailSOU && columnsDetailSOU) {
+          table2_content.push({
+            "hor_align": "ALIGN_LEFT",
+            "def_cell_border": "BOX",
+            "locked_width": true,
+            "spacing_after": 5,
+            "headers": [{
+              cells: [
+                {
+                  text: txtListSou,
+                  font_style: "bold",
+                  font_size: 10,
+                },
+              ]
+            }]
+          });
           let resDataTable = GetHeaderData_PDF(dataDetailSOU, columnsDetailSOU);
-          table2_content = {
+          table2_content.push({
             "hor_align": hor_align_center,
-            // "ver_align": null,
-            // "total_width": null,
             "widths": resDataTable.widths,
             "def_cell_border": "BOX",
             "locked_width": true,
             "headers": resDataTable.header,
             "bodys": resDataTable.tabledatas
-          }
+          });
 
         }
-
+        
         let reqjson = {
           // "margins_left": 30,
           // "margins_right": 40,
@@ -791,110 +817,9 @@ const DocumentView = props => {
                 }
               ]
             },
-            {
-              // "hor_align": hor_align_center,
-              // "ver_align": null,
-              // "total_width": null,
-              "widths": [150, 251, 150, 251],
-              "def_cell_border": "BOX",
-              "locked_width": true,
-              "headers": [
-                {
-                  cells: [
-                    {
-                      text: "Document :",
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: data_document.Code,
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: "Docment Date :",
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: DocDate,
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                  ]
-                },
-                {
-                  cells: [
-                    {
-                      text: "Process No. :",
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: data_document.DocumentProcessTypeName,
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: "Action Time :",
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: ActionDate,
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                  ]
-                },
-                {
-                  cells: [
-                    {
-                      text: sou_head,
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: sou_text,
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: "Destinaton Warehouse :",
-                      font_style: "bold",
-                      padding_bottom: 5
-                    },
-                    {
-                      text: data_document.DesWarehouseName ? data_document.DesWarehouseName : "",
-                      font_style: "normal",
-                      padding_bottom: 5
-                    },
-                  ]
-                },
-                {
-                  cells: [
-                    {
-                      text: "Document Status :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: documentStatus,
-                      font_style: "normal",
-                    },
-                    {
-                      text: "Remark :",
-                      font_style: "bold",
-                    },
-                    {
-                      text: data_document.Remark,
-                      font_style: "normal",
-                    },
-                  ]
-                }
-              ],
-            }, table1_content
-            , table2_content,
-            
+            ...table_header,
+            ...table1_content,
+            ...table2_content,
           ]
           // "footer":
           // {
@@ -932,10 +857,9 @@ const DocumentView = props => {
           // }
         };
 
-        console.log(reqjson)
+        // console.log(reqjson)
 
-
-        await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + data_document.Code + ".pdf").then();
+        await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + dataHeader.Code + ".pdf").then();
 
       }
     } catch (err) {
@@ -981,11 +905,17 @@ const DocumentView = props => {
             : null
         }
 
-            </div>
-            {props.usePrintBarcodePallet ?
-                <>
-                    <PrintBarcode selection={selection} dataHeader={dataHeader} />
-                </>
+      </div>
+      {props.usePrintBarcodePallet ?
+        <>
+          <PrintBarcode selection={selection} dataHeader={dataHeader} />
+        </>
+
+        : null}
+      {props.usePrintBarcodePallet ?
+        <>
+          <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
+        </>
 
         : null}
 
