@@ -199,7 +199,7 @@ const Create_GR_DR = props => {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "PalletSto",
         q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝ '[{ "f": "Status", "c":"<", "v": 2}]'
         f:
             "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
         g: "",
@@ -327,8 +327,8 @@ const Create_GR_DR = props => {
         { Header: "Unit", accessor: "UnitType_Code", width: 90 }
     ];
 
-    const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-    const apiRes = "/putaway/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apicreate = "/v2/CreateGIDocAPI/"; //API ๏ฟฝ๏ฟฝ๏ฟฝาง Doc
+    const apiRes = "/issue/pickingdetail?docID="; //path หน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยด ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝิด
 
     return <div>
         {table}</div>;

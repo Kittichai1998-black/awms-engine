@@ -108,7 +108,7 @@ const DocumentSearch = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/putaway/detail?docID=" + data.ID}
+                    api={"/receive/putawaydetail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
