@@ -150,7 +150,7 @@ const RD_Create_FGCustomer = props => {
             { Header: "Batch", accessor: "batch", type: "input" },
             { Header: "Lot", accessor: "lot", type: "input" },
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
-            { Header: "Unit", accessor: "unitType", type: "dropdown", key: "Code", queryApi: UnitTypeQuery, fieldLabel: ["Code"], defaultValue: "ขวด" },
+            { Header: "Unit", accessor: "unitType", type: "unitConvert" },
             AuditStatusDDL,
             Headers,
             { Header: "Ref2", accessor: "ref2", type: "input" },
@@ -190,12 +190,12 @@ const RD_Create_FGCustomer = props => {
     };
 
     const UnitTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "UnitType",
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "UnitTypeConvert",
         q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "ID,Code,Name",
+        f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{ 'f': 'unitTypeID', 'od': 'asc' }]",
         sk: 0,
         l: 100,
         all: ""
