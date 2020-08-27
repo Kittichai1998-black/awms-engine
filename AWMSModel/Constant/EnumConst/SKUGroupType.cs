@@ -12,7 +12,6 @@ namespace AWMSModel.Constant.EnumConst
         FG = 4,
         PM = 5,
         ESP = 8,
-        OTH = 9,
-        STO = 99
+        OTH = 9
     }
 }

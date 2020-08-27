@@ -46,6 +46,15 @@ const FormInline = styled.div`
 
 const AmSearchDocumentV2 = props => {
   const { t } = useTranslation();
+  const [dataSource, setDataSource] = useState([])
+  const [count, setCount] = useState(0)
+  const [page, setPage] = useState(1);
+  const [iniQuery, setIniQuery] = useState(true);
+  const [selection, setSelection] = useState();
+  const [dialog, setDialog] = useState(false);
+  const [dialogState, setDialogState] = useState({});
+  const [remark, setRemark] = useState("");
+  const [pageSize, setPageSize] = useState(50);
 
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -55,19 +64,10 @@ const AmSearchDocumentV2 = props => {
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
     sk: 0,
-    l: 20,
+    l: pageSize,
     all: ""
   };
-
-  const [dataSource, setDataSource] = useState([])
-  const [count, setCount] = useState(0)
   const [queryViewData, setQueryViewData] = useState(Query);
-  const [page, setPage] = useState(1);
-  const [iniQuery, setIniQuery] = useState(true);
-  const [selection, setSelection] = useState();
-  const [dialog, setDialog] = useState(false);
-  const [dialogState, setDialogState] = useState({});
-  const [remark, setRemark] = useState("");
 
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
@@ -154,9 +154,7 @@ const AmSearchDocumentV2 = props => {
 
   const onChangeFilterData = (filterValue) => {
     var res = {};
-    console.log(filterValue)
     filterValue.forEach(fdata => {
-      console.log(fdata)
       if (fdata.customFilter !== undefined) {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
@@ -314,7 +312,7 @@ const AmSearchDocumentV2 = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={20}
+        pageSize={pageSize}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
@@ -328,7 +326,9 @@ const AmSearchDocumentV2 = props => {
           else
             setIniQuery(false)
         }}
+        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
         customTopLeftControl={<div>{generateClose()}{generateReject()}</div>}
+        tableConfig={true}
       />
 
     </div>

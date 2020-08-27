@@ -107,4 +107,4 @@ LoadWorkbook.propTypes = {
     columns: PropTypes.array.isRequired,
     onToggleLoad: PropTypes.func.isRequired
 }
-export default LoadWorkbook;
+export default React.memo(LoadWorkbook);

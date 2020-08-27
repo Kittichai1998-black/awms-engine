@@ -82,9 +82,9 @@ namespace AWMSModel.Constant.EnumConst
         FG_DELIVERY_ORDER_CUS = 4082,
         FG_DELIVERY_ORDER_SUP = 4083,
 
-        FG_PICK_RETURN_WM = 4091,
-        FG_PICK_RETURN_CUS = 4092,
-        FG_PICK_RETURN_SUP = 4093,
+        FG_RETURN_WM = 4091,
+        FG_RETURN_CUS = 4092,
+        FG_RETURN_SUP = 4093,
 
         FG_CORRECTIONS_WM = 4101,
         FG_CORRECTIONS_CUS = 4102,
@@ -97,10 +97,6 @@ namespace AWMSModel.Constant.EnumConst
         FG_RECALL_WM = 4131,
         FG_RECALL_CUS = 4132,
         FG_RECALL_SUP = 4133,
-
-        FG_RETURN_WM = 4291,
-        FG_RETURN_CUS = 4292,
-        FG_RETURN_SUP = 4293,
 
         FG_OTHER_WM = 4181,
         FG_OTHER_CUS = 4182,
@@ -151,7 +147,7 @@ namespace AWMSModel.Constant.EnumConst
         ESP_CORRECTIONS_CUS = 8102,
         ESP_CORRECTIONS_SUP = 8103,
 
-        OTH_OTHER_WM = 9181
+        OTH_OTHER_WM = 9991
 
     }
 }
