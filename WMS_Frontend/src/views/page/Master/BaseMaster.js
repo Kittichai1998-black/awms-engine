@@ -345,6 +345,7 @@ const BaseMaster = props => {
   ];
   const onPrintBarcode = async(dataSel) => {
     try {
+      console.log(dataSel)
       let listCode = [];
       if (dataSel && dataSel.length > 0) {
         dataSel.map(x => {
@@ -391,6 +392,8 @@ const BaseMaster = props => {
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
         customAction={customActions}
+        selection={"checkbox"}
+        selectionData={(sel)=> {}}
       />
     </div>
   );
