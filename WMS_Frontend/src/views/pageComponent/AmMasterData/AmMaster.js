@@ -187,6 +187,15 @@ const AmMasterData = (props) => {
     const { dataSource, count } = useQueryData(queryObj);
     const [popupTitle, setPopupTitle] = useState();
     const [sort, setSort] = useState({});
+    const [pageSize, setPageSize] = useState(props.pageSize ? props.pageSize : 20);
+
+    useEffect(() => {
+        console.log(queryObj)
+        if(queryObj.l !== pageSize){
+            queryObj.l = pageSize
+            setQueryObj({ ...queryObj })
+        }
+    }, [pageSize])
 
     const updateRow = (tableUpd, update, url) => {
         const updateData = (table, data) => {
@@ -315,7 +324,9 @@ const AmMasterData = (props) => {
                     setIniQuery(false)
             }}
             selection={"checkbox"}
+            onPageSizeChange={(pg)=> {setPageSize(pg)}}
             customAction={props.customActions}
+            tableConfig={true}
         />
     </>
 }
