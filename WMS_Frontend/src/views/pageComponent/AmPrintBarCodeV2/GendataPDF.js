@@ -1,13 +1,9 @@
 import React from "react";
 
 import moment from "moment";
-function LoadDataPDF(data, supplierName, supplierCode, numCount, remark) {
-  console.log(data)
+function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark) {
   let dataGenPDF = []
-
-
   for (let indexName in data) {
-    console.log(indexName)
     var pcodeArr = []
     var pnameArr = []
     var pidArr = []
@@ -21,7 +17,6 @@ function LoadDataPDF(data, supplierName, supplierCode, numCount, remark) {
     var skuID = ""
     data[indexName].forEach((pts) => {
 
-      console.log(pts)
       if (pts.SKUMaster_Code !== null)
         pcodeArr.push(pts.SKUMaster_Code)
       if (pts.SKUMaster_Name !== null)
@@ -44,7 +39,6 @@ function LoadDataPDF(data, supplierName, supplierCode, numCount, remark) {
       skuID = pts.SKUMasterTypeID
       skutype = pts.SKUMasterTypeName
     })
-    console.log(pcodeArr)
     let itemPDF = {}
     var pcode = pcodeArr.join()
     var pid = pidArr.join()
@@ -55,7 +49,6 @@ function LoadDataPDF(data, supplierName, supplierCode, numCount, remark) {
     var productionDate = productionDateArr.join()
     var expireDate = expireDateArr.join()
     var unitTypeCode = unitTypeCodeArr.join()
-    console.log(pcode)
     itemPDF = {
       code: "N|" + indexName + "|" + pid + "|" + qty,
       title: skutype,
@@ -66,20 +59,16 @@ function LoadDataPDF(data, supplierName, supplierCode, numCount, remark) {
         "&mfgdate=" + productionDate + "&expdate=" + expireDate +
         "&qty=" + qty +
         "&unit=" + unitTypeCode +
-        "&palletNo=" + indexName + "/" + (numCount - 1) +
+        "&palletNo=" + indexName + "/" + totalPallet +
         "&remark=" + remark
     }
 
     dataGenPDF.push(itemPDF)
-    console.log(itemPDF)
-
   }
-  console.log(dataGenPDF)
   let reqjson = {
     "layoutType": 91,
     "listsCode": dataGenPDF
   }
-  console.log(reqjson)
   return reqjson
 }
 export { LoadDataPDF }
