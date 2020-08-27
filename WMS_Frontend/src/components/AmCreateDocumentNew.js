@@ -313,11 +313,12 @@ const AmCreateDocument = (props) => {
         if (field === "expireDate") {
             editData['expireDate'] = moment(data.value).format('MM-DD-YYYY')
         }
-
-        if (field === "auditStatus" && data !== null ) {
-            editData['auditStatus'] = data.label
+        if (field === "auditStatus" && data != null) {
+            console.log(data)
+            editData["auditStatus"] = data.label 
         }
 
+        
         if (props.itemNo && addData) {
             if (addDataID === -1) {
                 let itemNos = props.defualItemNo
@@ -340,9 +341,7 @@ const AmCreateDocument = (props) => {
 
 
         if (typeof data === "object" && data) {      
-            if (field === "auditStatus" && data !== null) {
-                editData['auditStatus'] = data.label
-            }
+           
             if (field === "unitType") {
                 editData[field] = data[field] ? data[field] : data.Code
             } else {
@@ -371,7 +370,6 @@ const AmCreateDocument = (props) => {
 
                 if (index !== -1) {
                     if (data) {
-                        console.log(key)
                         ref.current[index].current.value = data[key]
                     } else {
                         ref.current[index].current.value = ""
@@ -383,8 +381,7 @@ const AmCreateDocument = (props) => {
         if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
             row.removeRelated.forEach(x => delete editData[x])
         }
-
-        setEditData({ ...editData })
+        setEditData(editData)
 
         if (required) {
             if (!editData[field]) {
@@ -408,7 +405,7 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 //let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot)
+                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
@@ -431,6 +428,7 @@ const AmCreateDocument = (props) => {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
                     for (let row in rowdata) {
+                        console.log(rowdata)
                         chkEdit[row] = rowdata[row]
                     }
                 } else {//Add
@@ -965,6 +963,7 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
+            console.log(doc)
             CreateDocuments(doc)
         }
     }
@@ -989,9 +988,9 @@ const AmCreateDocument = (props) => {
             let obj = {
                 ...x,
                 ID: _addDataID,
-                packID_map_skuID: x.packID + "-" + x.skuID,
-                expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
-                productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+                packID_map_skuID: x.packID + "-" + x.skuID
+                //expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
+                //productionDate: moment(x.productionDate).format('MM-DD-YYYY')
 
             }
             _addDataID--

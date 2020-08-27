@@ -314,6 +314,10 @@ const PK_Search = Loadable({
   loader: () => import("../../views/page/ENGINE/PK/PK_Search"),
   loading: Loading
 });
+const PK_Checker = Loadable({
+  loader: () => import("../../views/page/ENGINE/PK/PK_Checker"),
+  loading: Loading
+});
 
 const GI_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
@@ -429,14 +433,15 @@ let routes = [
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
   { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
 
-  { path: "/putaway/create", name: "PA Create", compoment: PA_Create, exact: true },
-  { path: "/putaway/detail", name: "PA View", compoment: PA_Detail, exact: true },
-  { path: "/putaway/search", name: "PA View", compoment: PA_Search, exact: true },
+  { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
+  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
+  { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
 
-  { path: "/picking/create", name: "PK Create", compoment: PK_Create, exact: true },
-  { path: "/picking/detail", name: "PK View", compoment: PK_Detail, exact: true },
-  { path: "/picking/search", name: "PK View", compoment: PK_Search, exact: true },
-
+  { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
+  { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
+  { path: "/issue/pickingchecker", name: "PK Checker", compoment: PK_Checker, exact: true },
+  
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },

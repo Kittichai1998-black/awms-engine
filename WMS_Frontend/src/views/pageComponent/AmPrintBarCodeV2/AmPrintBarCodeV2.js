@@ -27,6 +27,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Clone from "../../../components/function/Clone";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+
+
 const Axios = new apicall();
 const LabelHText = styled.label`
   width: 60px;
@@ -87,6 +89,7 @@ const AmPrintBarCodeV2 = props => {
   const [numCount, setNumCount] = useState(1);
   const [itemList, setItemList] = useState({});
   const [itemIni, setItemIni] = useState();
+  const [totalPallet, setTotalPallet] = useState(0);
 
 
   useEffect(() => {
@@ -132,7 +135,7 @@ const AmPrintBarCodeV2 = props => {
   }
 
   const onClickLoadPDF = async (itemList) => {
-    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, numCount, props.Remark)
+    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark)
     try {
 
       await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf", "preview").then();
@@ -146,7 +149,17 @@ const AmPrintBarCodeV2 = props => {
   }
   const onClickDeletePallet = (item, listDatas, indexName) => {
     //DeletePallet(item, listDatas, indexName)
+    console.log(listDatas[indexName])
 
+    listDatas[indexName].forEach(dt => {
+      var list = iniData.find(x => x.ID === dt.ID)
+      console.log(list)
+      if (list !== undefined) {
+        list.Quantity = list.Quantity + parseInt(list.Quantity_Genarate)
+      }
+    });
+
+    console.log(iniData)
     delete listDatas[indexName]
     let newObj = {}
     let i = 1
@@ -158,7 +171,48 @@ const AmPrintBarCodeV2 = props => {
     setElePallet(RanderEleListPallet(newObj, "del", i))
     return null
   }
+  // const onNextSkip = () => {
+  //   var datax = []
+  //   if (selection.length !== 0) {
+  //     var ck = selection.find(x => x.Quantity - x.Quantity_Genarate < 0)
+  //     if (ck === undefined) {
+  //       selection.forEach(selec => {
+  //         var selectionData = iniData.find(x => x.ID === selec.ID)
+  //         if (selectionData !== undefined) {
+  //           console.log(selectionData)
+  //           var Quantity_s = selectionData.Quantity % parseInt(selectionData.Quantity_Genarate)
+  //           var Quantity_t = selectionData.Quantity / parseInt(selectionData.Quantity_Genarate)
+  //           console.log(Quantity_s)
+  //           console.log(Math.round(Quantity_t))
 
+  //           // let selec = selection.filter(y => y.ID != ele.ID && y.Quantity != 0)
+
+
+  //           for (var i = 0; i < Quantity_t; i++) {
+  //             datax.push(selectionData)
+  //             setElePallet(RanderEleListPallet([selectionData]))
+  //           }
+  //           // let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
+  //           // selectionData.Quantity = selectionData.Quantity - genQty
+  //         }
+  //       });
+  //       console.log(datax)
+  //       // for (let ind in datax) {
+
+  //       //   setElePallet(RanderEleListPallet(datax[ind]))
+  //       // }
+
+  //       setIniData([...iniData])
+  //     } else {
+  //       setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
+  //       setIniData([...iniData])
+  //     }
+
+  //   } else {
+  //     setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+  //   }
+  //   return null
+  // }
 
 
   const onGenBarcode = () => {
@@ -210,17 +264,21 @@ const AmPrintBarCodeV2 = props => {
     //console.log(itemList)
     console.log(numCount)
     if (type !== "del") {
-      console.log(typeof item);
       listDatas = { ...itemList, [numCount]: xx };
-      //setNumCount(numCount + 1)
+      setNumCount(numCount + 1)
     } else {
       console.log(typeof item);
       listDatas = item
+      setNumCount(i)
+      i--
+      console.log(i - 1)
     }
     setItemList(listDatas)
     console.log(numCount)
     console.log(listDatas)
-    setNumCount(numCount + 1)
+    console.log(i)
+    // setNumCount(numCount + 1)
+    setTotalPallet(type !== "del" ? numCount : i)
     let e = []
     for (let indexName in listDatas) {
       console.log("fhgurghdifsuyfey")
@@ -238,7 +296,7 @@ const AmPrintBarCodeV2 = props => {
 
               <Grid item xs={4}>
                 <LabelH style={{ paddingRight: "2px", width: "100px" }}>
-                  {"Pallet No. :"}{indexName + "/" + numCount}
+                  {"Pallet No. :"}{indexName + "/" + (type !== "del" ? numCount : i)}
                 </LabelH>
               </Grid>
               <Grid item xs={6}>
@@ -355,17 +413,19 @@ const AmPrintBarCodeV2 = props => {
                         />
                       </IconButton>
 
-                      <br />
+                      {/* <br />
                       <IconButton
                         size="small"
                         aria-label="info"
                       >
                         <SkipNext
                           fontSize="medium"
-                          style={{ color: "#039BE5" }} />
-                      </IconButton>
+                          style={{ color: "#039BE5" }}
+                          onClick={() => { onNextSkip() }}
+                        />
+                      </IconButton> */}
 
-                      <br />
+                      {/* <br />
                       <IconButton
                         size="small"
                         aria-label="info"
@@ -374,7 +434,7 @@ const AmPrintBarCodeV2 = props => {
                         <DeleteSweep
                           fontSize="medium"
                           style={{ color: "#e74c3c" }} />
-                      </IconButton>
+                      </IconButton> */}
 
                     </div>
                   </Grid>
@@ -433,8 +493,9 @@ const AmPrintBarCodeV2 = props => {
           }
         }}
       >
-        BARCODE
+        QRCODE MANUAL
         </AmButton>
+
 
     </div>
   );
