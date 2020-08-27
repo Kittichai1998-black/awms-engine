@@ -284,7 +284,7 @@ const AmPrintBarCode = props => {
     try {
       // console.log(data)
       // console.log(dataSourceGenPallet)
-      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data == undefined ? dataSourceGenPallet : data, "printcode.pdf").then();
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data == undefined ? dataSourceGenPallet : data, "printcode.pdf", "preview").then();
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()

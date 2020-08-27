@@ -85,6 +85,20 @@ const colss = [
 ];
 
 
+const UnitTypeConvert = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "UnitTypeConvert",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{ 'f': 'unitTypeID', 'od': 'asc' }]",
+    sk: 0,
+    l: 100,
+    all: ""
+};
+
+
+
 
 
 
@@ -119,6 +133,9 @@ const AmCreateDocument = (props) => {
     const [headerBody, setheaderBody] = useState();
     const [addlistAPI, setaddlistAPI] = useState();
     const [BtnAddLists, setBtnAddLists] = useState();
+    const [skuID, setskuID] = useState(0);
+    const [dataUnit, setdataUnit] = useState();
+    const UnitQurys = UnitTypeConvert;
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -168,6 +185,13 @@ const AmCreateDocument = (props) => {
     }, [props.columnEdit])
 
     useEffect(() => {
+        if (skuID !== undefined && UnitQurys !== undefined) {
+            getUnitTypeConvertQuery(skuID, UnitQurys)
+            //getDataUnitType(UnitConvert)
+        }
+    }, [skuID])
+
+    useEffect(() => {
         let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
             //arr[el.key] = el.valueTexts || el.defaultValue    
             if (el.key === "documentProcessTypeID" && processType === undefined) {
@@ -189,7 +213,7 @@ const AmCreateDocument = (props) => {
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
                 createDocumentData["souCustomerID"] = null
-                createDocumentData["desSupplierID"] = null   
+                createDocumentData["desSupplierID"] = null
                 createDocumentData["desCustomerID"] = null
             } else if (processType === 2) {
                 createDocumentData["souSupplierID"] = null
@@ -201,7 +225,7 @@ const AmCreateDocument = (props) => {
                 createDocumentData["souWarehouseID"] = null
                 createDocumentData["desSupplierID"] = null
                 createDocumentData["desCustomerID"] = null
-            } 
+            }
         }
         setDataSource([])
         setcreateDocumentData(createDocumentData)
@@ -233,6 +257,10 @@ const AmCreateDocument = (props) => {
 
 
 
+
+
+
+
     const PopupObjSize = React.memo(({ relationComponent, open }) => {
         return <AmEditorTable
             open={open}
@@ -245,6 +273,35 @@ const AmCreateDocument = (props) => {
     });
 
 
+    const getUnitTypeConvertQuery = (skuID, unitTypeQuery) => {
+
+        if (unitTypeQuery != null && skuID != undefined && skuID != 0) {
+            let objQuery = unitTypeQuery;
+            if (objQuery !== null) {              
+                console.log(objQuery)
+                let unitqry = JSON.parse(objQuery.q)
+                   unitqry.push({ 'f': 'SKUMaster_ID', 'c': '=', 'v': skuID })
+                    objQuery.q = JSON.stringify(unitqry);
+
+              }
+            getDataUnitType(objQuery)
+         
+            }
+    }
+
+
+
+    const getDataUnitType = (unitqury) => {
+        Axios.get(createQueryString(unitqury)).then(res => {
+            if (res.data.datas.length != 0 && res.data.datas != []) {
+                setdataUnit(res.data.datas)
+            } else {
+
+            }
+
+        })
+
+    }
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
@@ -306,6 +363,7 @@ const AmCreateDocument = (props) => {
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
+     
 
         if (field === "productionDate") {
             editData['productionDate'] = moment(data.value).format('MM-DD-YYYY')
@@ -315,10 +373,13 @@ const AmCreateDocument = (props) => {
         }
         if (field === "auditStatus" && data != null) {
             console.log(data)
-            editData["auditStatus"] = data.label 
+            editData["auditStatus"] = data.label
+        }
+        if (field === "skuCode") {
+            setskuID(data.skuID);
         }
 
-        
+
         if (props.itemNo && addData) {
             if (addDataID === -1) {
                 let itemNos = props.defualItemNo
@@ -340,13 +401,13 @@ const AmCreateDocument = (props) => {
         }
 
 
-        if (typeof data === "object" && data) {      
-           
-            if (field === "unitType") {
-                editData[field] = data[field] ? data[field] : data.Code
-            } else {
+        if (typeof data === "object" && data) {
+
+            //if (field === "unitType") {
+            //    editData[field] = data[field] ? data[field] : data.Code
+            //} else {
                 editData[field] = data[field] ? data[field] : data.value
-            }
+            //}
         }
         else {
             editData[field] = data
@@ -428,7 +489,7 @@ const AmCreateDocument = (props) => {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
                     for (let row in rowdata) {
-                        console.log(rowdata)
+                     
                         chkEdit[row] = rowdata[row]
                     }
                 } else {//Add
@@ -592,6 +653,35 @@ const AmCreateDocument = (props) => {
                             // valueData={valueText[idddl]} //ค่า value ที่เลือก
                             queryApi={queryApi}
                             // data={dataUnit}
+                            returnDefaultValue={true}
+                            defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
+                            ddlType={"search"} //รูปแบบ Dropdown 
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
+        } else if (type === "unitConvert") {
+            return (
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <AmDropdown
+                            required={required}
+                            error={rowError}
+                            // helperText={inputError.length ? "required field" : false}
+                            id={idddl}
+                            DDref={ref.current[index]}
+                            placeholder={placeholder ? placeholder : "Select"}
+                            fieldDataKey={"unitCode"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={["unitCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                            width={width ? width : 300} //กำหนดความกว้างของช่อง input
+                            ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
+                            // valueData={valueText[idddl]} //ค่า value ที่เลือก
+                            //data={}
+                            //queryApi={UnitTypeConqury}
+                            data={dataUnit}
                             returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
@@ -1068,14 +1158,14 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
-                        {dataSource.length > 0 ?  
+                        {dataSource.length > 0 ?
                             < AmButton className="float-right" styleType="confirm" style={{ width: "150px" }}
                                 onClick={() => { CreateDoc() }}>Create</AmButton> : null}
-                </div>
+                    </div>
+                </Grid>
             </Grid>
-        </Grid>
-    </div >
-)
+        </div >
+    )
 }
 
 AmCreateDocument.propTypes = {
