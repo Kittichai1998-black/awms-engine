@@ -16,15 +16,15 @@ const AmTableComponent = lazy(() => import("./AmTableComponent"));
 
 const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items, selection}) => {
     return <>
-        {items ? <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:"2px solid #ddd", paddingRight:"4px"}} items={items} datas={selection} title="Action"/> : null}
+        {items ? <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/> : null}
         <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopLeftControl}</div>
     </>;
 });
 
-const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig}) => {
+const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination}) => {
     return <>
         {tableConfig ? <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
-        style={{display:"inline-block", borderRight:"2px solid #ddd", paddingRight:"4px"}} 
+        style={{display:"inline-block", borderRight:customTopRightControl || pagination ? "2px solid #ddd" : "", paddingRight:"4px"}} 
         items={items} datas={selection} title=""/> : null}
         <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopRightControl}</div>
     </>;
@@ -146,7 +146,7 @@ const AmTable = (props) => {
                 clearSelectionChangePage={props.clearSelectionChangePage}
                 customTopControl={props.customTopControl}
                 customTopLeftControl={<CustomTopLeft customToggleBTN={customToggleBTN} customTopLeftControl={props.customTopLeftControl} items={props.customAction} selection={selection}/>}
-                customTopRightControl={<CustomTopRight customSettingBTN={customSettingBTN} customSettingMenu={customSettingMenu} customTopRightControl={props.customTopRightControl} items={configItems} tableConfig={props.tableConfig} selection={selection}/>}
+                customTopRightControl={<CustomTopRight customSettingBTN={customSettingBTN} customSettingMenu={customSettingMenu} customTopRightControl={props.customTopRightControl} items={configItems} tableConfig={props.tableConfig} selection={selection} pagination={props.pagination}/>}
                 customBtmControl={props.customBtmControl}
                 customBtmLeftControl={props.customBtmLeftControl}
                 customBtmRightControl={props.customBtmRightControl}
@@ -181,6 +181,11 @@ AmTable.propTypes = {...AmTablePropTypes,
      ** value? : true | false
     */
     customAction:PropTypes.object,
+    /**
+     * ฟังก์ชั่นสำหรับรับค่า PageSize
+     ** value? : (pagesize) => {}
+    */
+    onPageSizeChange:PropTypes.func
 };
 AmTable.defaultProps ={
     pageSize:50,
