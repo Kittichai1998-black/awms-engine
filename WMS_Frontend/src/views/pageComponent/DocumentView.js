@@ -876,6 +876,11 @@ const DocumentView = props => {
   }
   return (
     <div>
+      <AmDialogs
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       {stateDialog ? showDialog ? showDialog : null : null}
       <AmDialogConfirm
         titleDialog={t("Edit Quantity")}
