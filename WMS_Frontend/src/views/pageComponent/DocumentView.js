@@ -42,6 +42,7 @@ import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import PrintIcon from '@material-ui/icons/Print';
 import _ from 'lodash';
+
 const Axios = new apicall();
 // import Axios from "axios";
 
@@ -141,24 +142,31 @@ function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocIt
   }
 }
 
-const PrintBarcode = React.memo(({ selection, dataHeader }) => {
+const PrintBarcode = React.memo(({ selection, dataHeader, open, onClose }) => {
   return <AmPrintBarCode data={selection}
     SouSupplierCode={dataHeader.SouSupplier}
     SouSupplierName={dataHeader.SouSupplierName}
     Remark={dataHeader.Remark}
+    open={open}
+    onClose={onClose}
   // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
   />
 })
-const PrintBarcodeV2 = React.memo(({ selection, dataHeader }) => {
+const PrintBarcodeV2 = React.memo(({ selection, dataHeader, open, onClose }) => {
   return <AmPrintBarCodeV2 data={selection}
     SouSupplierCode={dataHeader.SouSupplier}
     SouSupplierName={dataHeader.SouSupplierName}
     Remark={dataHeader.Remark}
+    open={open}
+    onClose={onClose}
   // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
   />
 })
 const DocumentView = props => {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [dialogState, setDialogState] = useState({});
+  const [openQR, setOpenQR] = useState(false);
   const [statusdoc, setStatusdoc] = useState(0);
   const [docID, setDocID] = useState(props.docID);
   const [typeDoc, setTypeDoc] = useState(props.typeDoc);
@@ -909,14 +917,14 @@ const DocumentView = props => {
       <FormInline >
         {props.usePrintBarcodePallet ?
           <>
-            <PrintBarcode selection={selection} dataHeader={dataHeader} />
+            <PrintBarcode selection={selection} dataHeader={dataHeader} open={openQR} onClose={() => setOpenQR(false)} />
           </>
 
           : null}
 
         {props.usePrintBarcodePallet ?
           <>
-            <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} />
+            <PrintBarcodeV2 selection={selection} dataHeader={dataHeader} open={open} onClose={() => setOpen(false)} />
           </>
 
           : null}
@@ -929,17 +937,41 @@ const DocumentView = props => {
             setSelection(data);
           }} dataKey="ID"
           columns={columns}
-          pageSize={data.length}
+          pageSize={100}
           dataSource={data}
           height={200}
           rowNumber={false}
-          customAction={[{label:"หำ", action:(data) => {alert("หำใหญ่")}}]}
-          />
+          customAction={
+            [{
+              label: <div style={{ fontSize: "12px" }}>
+                {"QRCODE MANUAL"}</div>,
+              action: (data) => {
+                if (selection.length === 0) {
+                  setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+                } else {
+                  setOpen(true)
+                }
+              }
+
+            },
+            {
+              label: <div style={{ fontSize: "12px" }}>
+                {"QRCODE AUTO"}</div>,
+              action: (data) => {
+                if (selection.length === 0) {
+                  setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+                } else {
+                  setOpenQR(true)
+                }
+
+              }
+            }]}
+        />
       ) :
         typeDoc && props.CreateputAway ?
           <AmTable
             columns={columns}
-            pageSize={data.length}
+            pageSize={100}
             dataSource={data}
             height={200}
           ></AmTable> :

@@ -92,8 +92,14 @@ const AmPrintBarCodeV2 = props => {
 
 
   useEffect(() => {
+
     setIniData(Clone(props.data))
   }, [props.data])
+
+  useEffect(() => {
+
+    setDialog(props.open)
+  }, [props.open])
 
   const columns = [
     {
@@ -126,6 +132,7 @@ const AmPrintBarCodeV2 = props => {
 
     } else {
       setDialog(false)
+      props.onClose(false)
       Clear()
     }
 
@@ -463,7 +470,7 @@ const AmPrintBarCodeV2 = props => {
         data={iniData}
         columns={RanderEle()}
       />
-      <AmButton
+      {/* <AmButton
         style={{ marginRight: "5px" }}
         styleType="confirm"
         onClick={() => {
@@ -476,7 +483,7 @@ const AmPrintBarCodeV2 = props => {
         }}
       >
         QRCODE MANUAL
-        </AmButton>
+        </AmButton> */}
 
 
     </div>
