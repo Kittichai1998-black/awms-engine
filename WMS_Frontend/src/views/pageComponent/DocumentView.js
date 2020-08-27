@@ -932,7 +932,9 @@ const DocumentView = props => {
           pageSize={data.length}
           dataSource={data}
           height={200}
-          rowNumber={false} />
+          rowNumber={false}
+          customAction={[{label:"หำ", action:(data) => {alert("หำใหญ่")}}]}
+          />
       ) :
         typeDoc && props.CreateputAway ?
           <AmTable
