@@ -323,9 +323,10 @@ const AmMasterData = (props) => {
                 else
                     setIniQuery(false)
             }}
-            selection={"checkbox"}
+            selection={props.selection}
+            selectionData={props.selectionData}
             onPageSizeChange={(pg)=> {setPageSize(pg)}}
-            customAction={props.customActions}
+            customAction={props.customAction}
             tableConfig={true}
         />
     </>
