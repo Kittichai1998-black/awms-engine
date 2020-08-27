@@ -242,7 +242,7 @@ const Create_GR_DR = props => {
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc
-    const apiRes = "/putaway/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
+    const apiRes = "/receive/putawaydetail?docID="; //path ˹����������´ �͹����ѧ����Դ
 
     return <div>
         {table}</div>;

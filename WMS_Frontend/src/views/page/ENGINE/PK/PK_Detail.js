@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
+import moment from "moment";
 
 const PK_Detail = props => {
 
@@ -19,7 +20,7 @@ const PK_Detail = props => {
         if (header !== undefined) {
             setdocview(<DocView
                 openSOU={true}
-                openDES={true}
+                openDES={false}
                 optionDocItems={optionDocItems}
                 columnsDetailSOU={columnsDetailSOU}
                 columnsDetailDES={columnsDetailDES}
@@ -30,7 +31,7 @@ const PK_Detail = props => {
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/picking/search"}
+                linkBack={"/issue/pickingsearch"}
                 history={props.history}
                 usePrintPDF={true}
                 usePickingOnFloor={true}
@@ -86,23 +87,88 @@ const PK_Detail = props => {
 
 
     const columns = [
-        // { width: 200, accessor: "SKUMaster_Code", Header: "Reorder" },
-        { accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 130, accessor: "OrderNo", Header: "Order No." },
-        { width: 120, accessor: "_qty", Header: "Qty" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
+        { width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
+        {
+            Header: "Item",
+            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name },
+            CellPDF: e => { return e.SKUMaster_Code + " : " + e.SKUMaster_Name },
+            widthPDF: 40
+        },
+        { Header: "OrderNo", accessor: "OrderNo", widthPDF: 20 },
+        { Header: "Batch", accessor: "Batch", widthPDF: 20 },
+        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Acual Qty", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
+        {
+            Header: "Audit Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatus(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 30
+        },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
+        { Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
+        { Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
+        { Header: "CartonNo", accessor: "CartonNo", widthPDF: 20 },
+        { Header: "IncubationDay", accessor: "IncubationDay", widthPDF: 20 },
+        { Header: "ProductDate", accessor: "ProductionDate", widthPDF: 35 },
+        { Header: "ExpireDate", accessor: "ExpireDate", widthPDF: 35 },
+        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
+
 
     const columnsDetailSOU = [
-        { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 100, accessor: "rootCode", Header: "Pallet" },
-        { width: 150, accessor: "packCode", Header: "Pack Code" },
-        { accessor: "packName", Header: "Pack Name" },
-        { width: 125, accessor: "orderNo", Header: "Order No." },
-        { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
+        { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
+        {
+            width: 40, accessor: "status", Header: "Task",
+            Cell: e => getStatusGR(e.original), widthPDF: 5,
+            CellPDF: value => {
+                if (value.status === 1 || value.status === 3) return "Y";
+                else if (value.status === 0)
+                    return "";
+                else return null;
+            }
+        },
+        { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
+        { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
+        { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
+        { Header: "OrderNo", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
+        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
+        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
+        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        {
+            Header: "Audit Status",
+            accessor: "diAuditStatus",
+            Cell: e => GetAuditStatus(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
+        { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
+        { Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
+        { Header: "CartonNo", accessor: "diCartonNo", widthPDF: 10 },
+        { Header: "IncubationDay", accessor: "diIncubationDay", widthPDF: 10 },
+        {
+            Header: "ProductDate", accessor: "diProductionDate",
+            Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
+        },
+        {
+            Header: "ExpireDate", accessor: "diExpireDate",
+            Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
+        },
+        { Header: "ShelfLifeDay", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
+    const getFormatDatePro = (e) => {
+        return moment(e.diProductionDate).format("DD/MM/YYYY");
+    }
+
+    const getFormatDateExp = (e) => {
+        return moment(e.diExpireDate).format("DD/MM/YYYY");
+    }
     const columnsDetailDES = [
         //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
         { width: 100, accessor: "code ", Header: "Pallet" },
@@ -137,6 +203,19 @@ const PK_Detail = props => {
         var ID = values.docID.toString();
         return ID;
     };
+
+    const GetAuditStatus = (value) => {
+        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
+            return "QUARANTINE"
+        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
+            return "PASS"
+        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
+            return "NOTPASS"
+        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
+            return "HOLD"
+        }
+    };
+
 
     const colListDocItems = [
         { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },

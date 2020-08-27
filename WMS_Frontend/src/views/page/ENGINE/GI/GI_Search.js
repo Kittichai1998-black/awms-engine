@@ -12,13 +12,15 @@ import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import IconButton from "@material-ui/core/IconButton";
 import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
+import Grid from '@material-ui/core/Grid';
 import AmPopup from "../../../../components/AmPopup";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
 import { DocumentEventStatus } from "../../../../components/Models/DocumentEventStatus";
 import { DataGeneratePopup, DataGenerateStatus } from "../../../pageComponent/AmSearchDocumentV2/SetPopup";
 const Axios = new apicall();
 
 //======================================================================
-const GI_Search = props => {
+const DocumentSearch = props => {
 
     const [dialogState, setDialogState] = useState({});
 
@@ -55,15 +57,16 @@ const GI_Search = props => {
                 filterType: "dropdown",
                 dataDropDown: DocumentEventStatus,
                 typeDropDown: "normal",
-                widthDD: 170,
+                widthDD: 150,
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-        { Header: "Doc.ProcessType", accessor: "DocumentProcessTypeName", width: 200 },
-        { Header: "Wh Order", accessor: "Ref1", width: 120 },
-        { Header: "Project", accessor: "Project", width: 100 },
-        { Header: "Customer", accessor: "ForCustomer", width: 150 },
+        { Header: "Process No.", accessor: "DocumentProcessTypeName", width: 200 },
+        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", width: 150 },
+        { Header: "Sou.Customer", accessor: "SouCustomerName", width: 150 },
+        { Header: "Sou.Supplier", accessor: "SouSupplierName", width: 150 },
+        { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
         {
             Header: "Doc. Date",
             accessor: "DocumentDate",
@@ -74,6 +77,7 @@ const GI_Search = props => {
                 filterType: "datetime",
             },
             dateFormat: "DD/MM/YYYY"
+            , customFilter: { field: "DocumentDate" }
         },
         {
             Header: "Action Time",
@@ -124,6 +128,17 @@ const GI_Search = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
+            <Grid container>
+                <Grid item xs container direction="column">
+                </Grid>
+                <Grid item>
+                    <AmCreateDoc
+                        apicreate={"/v2/CreateDIDocAPI/"}
+                        apiRes={"/issue/detail?docID="}
+                        history={props.history}
+                    ></AmCreateDoc>
+                </Grid>
+            </Grid>
             <AmSearchDocument
                 iniCols={iniCols}
                 docTypeCode="1012"
@@ -136,4 +151,4 @@ const GI_Search = props => {
     );
 };
 
-export default GI_Search;
+export default DocumentSearch;

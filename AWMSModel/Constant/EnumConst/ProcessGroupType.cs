@@ -23,6 +23,6 @@ namespace AWMSModel.Constant.EnumConst
         DONATE = 15,
         EXAMPLE = 16,
         RD = 17,
-        OTHER = 18
+        OTHER = 99
     }
 }
