@@ -29,10 +29,10 @@ function AreaMasterQuery() {
 }
 function DocumentProcessTypeQuery() {
   return {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "DocumentProcessType",
-    q: '[{ "f": "Status", "c":"=", "v": 1}]',
-    f: "ID as processType,Name,Code",
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "DocumentProcessTypeMap",
+    q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+    f: "ID as processType,ReProcessType_Name as Name,Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
