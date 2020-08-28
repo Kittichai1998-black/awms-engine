@@ -1077,7 +1077,7 @@ const DocumentView = props => {
         typeDoc ? (
           <AmTable dataKey="id"
             columns={columnsDetailSOU}
-            pageSize={dataDetailSOU.length}
+           pageSize={100}
             dataSource={dataDetailSOU}
             height={200}
             rowNumber={false} />
@@ -1093,7 +1093,7 @@ const DocumentView = props => {
           // />
           <AmTable dataKey="id"
             columns={columnsDetailDES}
-            pageSize={dataDetailDES.length}
+              pageSize={100}
             dataSource={dataDetailDES}
             height={200}
             rowNumber={false} />
