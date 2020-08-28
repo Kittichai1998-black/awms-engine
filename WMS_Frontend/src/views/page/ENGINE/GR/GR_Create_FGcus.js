@@ -1,6 +1,8 @@
 ﻿import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
+import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
 import {
     apicall,
@@ -271,7 +273,20 @@ const RD_Create_FGCustomer = props => {
     const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
-        {table}</div>;
+        <Grid container>
+            <Grid item xs container direction="column">
+            </Grid>
+            <Grid item>
+                <AmCreateDoc
+                    apicreate={"/v2/CreateDRDocAPI/"}
+                    apiRes={"/receive/detail?docID="}
+                    history={props.history}
+                    docTypename={"receive"}
+                ></AmCreateDoc>
+            </Grid>
+        </Grid>
+        <div>
+        {table}</div></div>;
 };
 
 export default RD_Create_FGCustomer;

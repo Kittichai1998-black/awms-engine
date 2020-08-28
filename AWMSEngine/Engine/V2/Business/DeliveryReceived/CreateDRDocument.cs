@@ -164,73 +164,81 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
        }, this.BuVO).FirstOrDefault();
 
 
-
-
-
             if (DocumentProcessTypeCodes != null)
             {
-                var DocprocessID = DocumentProcessTypeCodes.ID;
-                var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
+                var ProceesTypedoc = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
+               new SQLConditionCriteria[] {
+                new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
+           }, this.BuVO).FirstOrDefault();
+
+                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt();
 
 
-                DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeCodes.Code);
+                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1001)
+                {
+                    var DocprocessID = DocumentProcessTypeCodes.ID;
+                    var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
 
-                var OwnerProcess = DocumentProcessTypeCodes.OwnerGroupType.GetValueInt();
+
+                    DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeCodes.Code);
+
+                    var OwnerProcess = DocumentProcessTypeCodes.OwnerGroupType.GetValueInt();
 
 
-                var skuCode = reqVO.receivedOrderItem.Select(x => x.skuCode).ToArray();
+                    var skuCode = reqVO.receivedOrderItem.Select(x => x.skuCode).ToArray();
 
-                var skuLists = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                    var skuLists = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
                    new SQLConditionCriteria("Code",string.Join(',', skuCode), SQLOperatorType.IN),
                       }, this.BuVO);
 
-                if (skuLists.Any(x => x.SKUMasterType_ID != SkuType))
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.U0000, "Item not match DocumantProcessType");
-                }
-
-                if (OwnerProcess == '0')
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
-                }
-                else if (OwnerProcess == '1')
-                {
-                    if (souWarehouseModel.ID == null)
+                    if (skuLists.Any(x => x.SKUMasterType_ID != SkuType))
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse Not Found");
-                    }
-                    else if (Sou_Supplier_ID != null || Sou_Customer_ID != null)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        throw new AMWException(this.Logger, AMWExceptionCode.U0000, "Item not match DocumantProcessType");
                     }
 
-                }
-                else if (OwnerProcess == '2')
-                {
-                    if (Sou_Customer_ID == null)
+                    if (OwnerProcess == '0')
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souCustomer Not Found");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
                     }
-                    else if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
+                    else if (OwnerProcess == '1')
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        if (souWarehouseModel.ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse Not Found");
+                        }
+                        else if (Sou_Supplier_ID != null || Sou_Customer_ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
+                    }
+                    else if (OwnerProcess == '2')
+                    {
+                        if (Sou_Customer_ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souCustomer Not Found");
+                        }
+                        else if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
+                    }
+                    else if (OwnerProcess == '3')
+                    {
+                        if (Sou_Supplier_ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souSupplier Not Found");
+                        }
+                        else if (Sou_Customer_ID != null || souWarehouseModel.ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
                     }
 
+                    reqVO.documentProcessTypeID = documentProcessTypeID;
                 }
-                else if (OwnerProcess == '3')
-                {
-                    if (Sou_Supplier_ID == null)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souSupplier Not Found");
-                    }
-                    else if (Sou_Customer_ID != null || souWarehouseModel.ID != null)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
-                    }
-
-                }
-
-                reqVO.documentProcessTypeID = documentProcessTypeID;
             }
 
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,

@@ -6,8 +6,10 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
+import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo"
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
 import moment from "moment";
 
 const GR_Detail = props => {
@@ -211,7 +213,9 @@ const GR_Detail = props => {
 
 
     return (
-        <div>{docview}</div>
+        <div>
+            <div>{docview}</div>
+        </div>
 
     );
 };
