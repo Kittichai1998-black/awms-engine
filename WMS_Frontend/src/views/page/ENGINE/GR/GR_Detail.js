@@ -90,7 +90,7 @@ const GR_Detail = props => {
         { Header: "OrderNo", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Acual Qty", widthPDF: 20 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
