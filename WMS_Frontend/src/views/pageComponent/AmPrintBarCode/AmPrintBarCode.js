@@ -75,6 +75,10 @@ const AmPrintBarCode = props => {
   useEffect(() => {
     getData()
   }, [])
+  useEffect(() => {
+    setDialog(props.open)
+  }, [props.open])
+
   function getData() {
     const Query = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -276,6 +280,7 @@ const AmPrintBarCode = props => {
       }
     } else {
       setDialog(false)
+      props.onClose(false)
       Clear()
     }
 
@@ -317,7 +322,7 @@ const AmPrintBarCode = props => {
         columns={RanderEle()}
       />
 
-      <AmButton
+      {/* <AmButton
         style={{ marginRight: "5px" }}
         styleType="confirm"
         onClick={() => {
@@ -330,7 +335,7 @@ const AmPrintBarCode = props => {
         }}
       >
         QRCODE AUTO
-        </AmButton>
+        </AmButton> */}
 
     </div>
   );

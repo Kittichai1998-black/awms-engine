@@ -39,7 +39,7 @@ const DataGenerateElePopDisplay = (data) => {
       <FormInline>
         <label style={LabelH}>{"Item Code : "}</label>
         <label style={LabelD}>{pack.Code}</label>
-        <label style={LabelDQty}>{pack.BaseQuantity}</label>
+        <label style={LabelDQty}>{pack.Quantity}</label>
         <label style={LabelDQty}>{pack.UnitType_Code}</label>
       </FormInline>
       {/* <FormInline>

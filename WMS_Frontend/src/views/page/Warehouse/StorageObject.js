@@ -200,21 +200,28 @@ const StorageObject = props => {
       </div>
     ));
   };
+
   const getStatus1 = Status => {
     if (Status === "RECEIVING") {
-      return <AmStorageObjectStatus key={Status} statusCode={101} />;
+      return <AmStorageObjectStatus key={Status} statusCode={11} />;
     } else if (Status === "RECEIVED") {
-      return <AmStorageObjectStatus key={Status} statusCode={102} />;
+      return <AmStorageObjectStatus key={Status} statusCode={12} />;
     } else if (Status === "AUDITING") {
-      return <AmStorageObjectStatus key={Status} statusCode={103} />;
+      return <AmStorageObjectStatus key={Status} statusCode={13} />;
     } else if (Status === "AUDITED") {
-      return <AmStorageObjectStatus key={Status} statusCode={104} />;
+      return <AmStorageObjectStatus key={Status} statusCode={14} />;
     } else if (Status === "PICKING") {
-      return <AmStorageObjectStatus key={Status} statusCode={153} />;
+      return <AmStorageObjectStatus key={Status} statusCode={33} />;
     } else if (Status === "PICKED") {
-      return <AmStorageObjectStatus key={Status} statusCode={154} />;
+      return <AmStorageObjectStatus key={Status} statusCode={34} />;
     } else if (Status === "NEW") {
-      return <AmStorageObjectStatus key={Status} statusCode={100} />;
+      return <AmStorageObjectStatus key={Status} statusCode={10} />;
+    } else if (Status === "COUNTING") {
+      return <AmStorageObjectStatus key={Status} statusCode={15} />;
+    } else if (Status === "COUNTED") {
+      return <AmStorageObjectStatus key={Status} statusCode={16} />;
+    } else if (Status === "CONSOLIDATING") {
+      return <AmStorageObjectStatus key={Status} statusCode={35} />;
     } else {
       return null;
     }
@@ -236,6 +243,7 @@ const StorageObject = props => {
         dataRemark={columns}
         export={false}
         multi={true}
+
       />
     </div>
   );

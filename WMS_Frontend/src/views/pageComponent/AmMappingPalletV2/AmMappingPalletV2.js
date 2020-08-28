@@ -300,9 +300,19 @@ const AmMappingPalletV2 = props => {
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
+    if (fieldDataKey === "areaID")
+      localStorage.setItem("areaIDs", value);
+    if (fieldDataKey === "processType")
+      localStorage.setItem("processTypes", value);
+
     valueInput[fieldDataKey] = value;
   };
   const handleNext = index => {
+    if (localStorage.getItem("processTypes") !== null)
+      valueInput["processType"] = localStorage.getItem("processTypes")
+    if (localStorage.getItem("areaIDs") !== null)
+      valueInput["areaID"] = localStorage.getItem("areaIDs")
+    //==========================================================
     if (index === 0) {
       if (valueInput.areaID && valueInput.processType) {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -383,7 +393,6 @@ const AmMappingPalletV2 = props => {
     })
   }
   const onConfirmMappingSTO = () => {
-    console.log(dataPallet)
     if (dataPallet !== undefined && dataPallet !== null) {
       const tempDataReq = { bstoID: parseInt(dataPallet.id) }
       Axios.post(window.apipath + "/v2/confirm_mappingSTOandDiSTOBybstoID", tempDataReq).then((res) => {
@@ -496,6 +505,7 @@ const AmMappingPalletV2 = props => {
                 fieldLabel={["Code", "Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
+                defaultValue={localStorage.getItem("processTypes")}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)}
@@ -512,8 +522,11 @@ const AmMappingPalletV2 = props => {
                 labelPattern=" : "
                 ddlMinWidth={300}
                 queryApi={AreaMasterQuery()}
+                defaultValue={localStorage.getItem("areaIDs")}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
-                  onHandleChangeInput(value, fieldDataKey)}
+                  onHandleChangeInput(value, fieldDataKey)
+
+                }
                 ddlType={"search"}
               />
             </FormInline>

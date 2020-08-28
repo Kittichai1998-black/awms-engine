@@ -45,21 +45,11 @@ const FormInline = styled.div`
 
 const AmStorageObjectMulti = props => {
   const { t } = useTranslation();
-  const Query = {
-    queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "r_StorageObject",
-    q: '[{ "f": "Status", "c":"!=", "v": 0}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'Pallet','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+
 
   const [dataSource, setDataSource] = useState([])
   const [count, setCount] = useState(0)
-  const [queryViewData, setQueryViewData] = useState(Query);
+
   const [page, setPage] = useState(1);
   const [iniQuery, setIniQuery] = useState(true);
   const [selection, setSelection] = useState();
@@ -68,7 +58,20 @@ const AmStorageObjectMulti = props => {
   const [hold, setHold] = useState(true);
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
+  const [pageSize, setPageSize] = useState(100);
 
+  const Query = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "r_StorageObject",
+    q: '[{ "f": "Status", "c":"!=", "v": 0}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: pageSize,
+    all: ""
+  };
+  const [queryViewData, setQueryViewData] = useState(Query);
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
@@ -82,6 +85,15 @@ const AmStorageObjectMulti = props => {
       getData(queryEdit)
     }
   }, [page])
+
+  useEffect(() => {
+
+    if (queryViewData.l !== pageSize) {
+      queryViewData.l = pageSize
+      setQueryViewData({ ...queryViewData })
+    }
+  }, [pageSize])
+
 
   function getData(data) {
 
@@ -291,7 +303,8 @@ const AmStorageObjectMulti = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={100}
+        pageSize={pageSize}
+        onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
@@ -299,45 +312,52 @@ const AmStorageObjectMulti = props => {
         selectionData={(data) => {
           setSelection(data);
         }}
+        tableConfig={true}
         onPageChange={p => {
           if (page !== p)
             setPage(p)
           else
             setIniQuery(false)
         }}
-        customTopLeftControl={<div><AmButton
-          style={{ marginRight: "5px" }}
-          styleType="confirm"
-          onClick={() => {
-            setDialog(true)
-            if (selection.length === 0)
-              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-          }}
-        >
-          HOLD
-        </AmButton><AmButton
-            style={{ marginRight: "5px" }}
-            styleType="confirm"
-            onClick={() => {
-              setDialog(true)
-              setHold(false)
-              if (selection.length === 0)
+        customAction={
+          [{
+            label: <div style={{ fontSize: "12px" }}>
+              {"HOLD"}</div>,
+            action: (data) => {
+              if (selection.length === 0) {
                 setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-            }}
-          >
-            UNHOLD
-        </AmButton><AmButton
-            style={{ marginRight: "5px" }}
-            styleType="confirm"
-            onClick={() => {
-              setDialog(true)
-              setRemarkMode(true)
-              if (selection.length === 0)
+              } else {
+                setDialog(true)
+              }
+            }
+
+          },
+          {
+            label: <div style={{ fontSize: "12px" }}>
+              {"UNHOLD"}</div>,
+            action: (data) => {
+              if (selection.length === 0) {
                 setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-            }}
-          >
-            REMARK
-        </AmButton></div>}
+              } else {
+                setDialog(true)
+                setHold(false)
+              }
+
+            }
+          },
+          {
+            label: <div style={{ fontSize: "12px" }}>
+              {"REMARK"}</div>,
+            action: (data) => {
+              if (selection.length === 0) {
+                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+              } else {
+                setDialog(true)
+                setRemarkMode(true)
+              }
+
+            }
+          }]}
       />
 
     </div>
