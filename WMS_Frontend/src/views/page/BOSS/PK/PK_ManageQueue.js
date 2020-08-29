@@ -55,30 +55,44 @@ const desAreaQuery = {
 };
 
 const processCondition = {
-    "conditions": [
-        {
-            "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": true,
-        },
-        {
-            "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
-            // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-        },
-        {
-            "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true,
-            // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-        }
-    ],
+    // "conditions": [
+    //     {
+    //         "field": "Full Pallet", "key": "useFullPick", "enable": false, "defaultValue": true, "editable": true,
+    //     },
+    //     {
+    //         "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
+    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
+    //     },
+    //     {
+    //         "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true,
+    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
+    //     }
+    // ],
     "eventStatuses": [
         {
             "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": true,
             // custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } 
-        },
+        }
         // {
         //     "field": "Consolidated", "value": 36, "enable": true, "defaultValue": true, "editable": true,
         //     // custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } 
         // },
         //{ "field": "Block", "value": 907, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
         //{ "field": "QC", "value": 908, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } }
+    ],
+    "auditStatuses": [
+        {
+            "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": false, "editable": true,
+        },
+        {
+            "field": "PASSED", "value": 1, "enable": true, "defaultValue": false, "editable": true,
+        },
+        {
+            "field": "REJECTED", "value": 2, "enable": true, "defaultValue": false, "editable": true,
+        },
+        {
+            "field": "HOLD", "value": 9, "enable": true, "defaultValue": false, "editable": true,
+        }
     ],
     "orderBys": [
         {
@@ -135,8 +149,8 @@ const ProcessQueue = () => {
         areaDefault={customDesAreaDefault}
         columnsConfirm={columnsConfirm}
         modeDefault={"1"}
-        waveProcess={true}
-        confirmProcessUrl={"wave_process_wq"}
+        waveProcess={false}
+        confirmProcessUrl={"confirm_process_wq"}
     />
 }
 

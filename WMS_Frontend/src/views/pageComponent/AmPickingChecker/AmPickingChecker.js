@@ -185,11 +185,21 @@ function QRIcon(props) {
     );
 }
 
+const CreateViewPickLists = React.memo((dataStoPick, onClickPick) => {
+    if (dataStoPick != null && dataStoPick.stoItems != null && dataStoPick.stoItems.length > 0) {
+    //    let baseCode 
+
+    } else {
+        return null;
+    }
+});
 const AmPickingChecker = (props) => {
     const { t } = useTranslation();
     const { classes } = props;
     const [valueInput, setValueInput] = useState({});
     const [activeStep, setActiveStep] = useState(0);
+
+    const [dataStoPick, setDataStoPick] = useState(null);
 
 
     const [openAlert, setOpenAlert] = useState(false);
@@ -269,18 +279,36 @@ const AmPickingChecker = (props) => {
 
     const GetStoPicking = (baseCode) => {
         Axios.get(window.apipath + '/v2/get_sto_picking?' +
-            '&baseCode=' + (baseCode === undefined || baseCode === null ? ''
+            '&bstoCode=' + (baseCode === undefined || baseCode === null ? ''
                 : encodeURIComponent(baseCode.trim()))).then(res => {
                     if (res.data._result.status === 1) {
-                        if (res.data.pickItems != null && res.data.pickItems.length > 0) {
+                        if (res.data.stoItems != null && res.data.stoItems.length > 0) {
+                            setDataStoPick(res.data)
                             setActiveStep((prevActiveStep) => prevActiveStep + 1);
                         } else {
+                            setDataStoPick(null)
                             alertDialogRenderer("warning", "ไม่พบรายการสินค้าที่เบิกได้")
                         }
                     } else {
                         alertDialogRenderer("error", res.data._result.message)
                     }
                 });
+    }
+    const onClickPick = (sel) => {
+var req = null;
+        Axios.post(window.apipath + '/v2/picking_checker', req).then(res => {
+            if (res.data._result.status === 1) {
+                if (res.data.stoItems != null && res.data.stoItems.length > 0) {
+                    setDataStoPick(res.data)
+                } else {
+                    setDataStoPick(null)
+                    alertDialogRenderer("warning", "ไม่พบรายการสินค้าที่เบิกได้")
+                }
+            } else {
+                alertDialogRenderer("error", res.data._result.message)
+            }
+        });
+
     }
     // Alert Dialog
     const alertDialogRenderer = (type, message) => {
