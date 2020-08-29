@@ -158,7 +158,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             unitTypeCode = data.unitTypeCode,
                             packUnitTypeCode = data.packUnitTypeCode,
                             expiryDate = data.expiryDate,
-                            productDate = data.productDate
+                            productDate = data.productDate,
+                            auditStatus = data.auditStatus
                         });
                     });
                     req_ScanMappingSTO.pstos = packStos;

@@ -48,7 +48,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string options;
                 public decimal addQty;
                 public string unitTypeCode; // old unit 
-                public string packUnitTypeCode; 
+                public string packUnitTypeCode;
+                public AuditStatus? auditStatus;
                 public DateTime? expiryDate;
                 public DateTime? incubationDate;
                 public DateTime? productDate;
@@ -228,8 +229,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(unitTypeConvt.newPackMaster_ID, BuVO);
 
                 }
+               
                 var auditstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.AUDIT_STATUS_DEFAULT, reqVO.processType);
-                  
+                var _auditstatus = psto.auditStatus != null ? psto.auditStatus : EnumUtil.GetValueEnum<AuditStatus>(auditstatus);
                 var holdstatus = StaticValueManager.GetInstant().GetConfigValue(ConfigFlow.HOLD_STATUS_DEFAULT, reqVO.processType);
                  
                 StorageObjectCriteria newPackSto = new StorageObjectCriteria()
@@ -260,7 +262,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ref3 = psto.ref3,
                     ref4 = psto.ref4,
                     itemNo = psto.itemNo,
-                    AuditStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? AuditStatus.PASSED : EnumUtil.GetValueEnum<AuditStatus>(auditstatus),
+                    AuditStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? AuditStatus.PASSED : _auditstatus.Value,
                     IsHold = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ?  false : Convert.ToBoolean(Convert.ToInt16(holdstatus))
                 };
                 var newPackCheckSum = newPackSto.GetCheckSum();

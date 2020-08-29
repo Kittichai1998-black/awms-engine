@@ -62,6 +62,7 @@ namespace AWMSEngine.Engine.V2.General
             public decimal addQty;
             public string unitTypeCode; // old unit 
             public string packUnitTypeCode;
+            public AuditStatus? auditStatus;
             public DateTime? expiryDate;
             public DateTime? incubationDate;
             public DateTime? productDate;
@@ -130,7 +131,7 @@ namespace AWMSEngine.Engine.V2.General
                         lot = docitemPutaway.Lot,
                         orderNo = docitemPutaway.OrderNo,
                         itemNo = docitemPutaway.ItemNo,
-                        refID = docitemPutaway.Ref1,
+                        refID = docitemPutaway.RefID,
                         ref1 = docitemPutaway.Ref1,
                         ref2 = docitemPutaway.Ref2,
                         ref3 = docitemPutaway.Ref3,
@@ -142,8 +143,8 @@ namespace AWMSEngine.Engine.V2.General
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
                         expiryDate = docitemPutaway.ExpireDate,
-                        productDate = docitemPutaway.ProductionDate
-
+                        productDate = docitemPutaway.ProductionDate,
+                        auditStatus = docitemPutaway.AuditStatus
                     });
                     i++;
                 });
