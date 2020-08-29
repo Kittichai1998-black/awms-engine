@@ -449,7 +449,7 @@ let routes = [
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
+  // { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },

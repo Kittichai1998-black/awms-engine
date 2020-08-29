@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class DoneWorkQueueOnFloor : BaseQueue<DoneWorkQueueOnFloor.TReq, DoneWorkQueueOnFloor.TReq>
+    public class DoneWorkQueueOnFloor : BaseEngine<DoneWorkQueueOnFloor.TReq, DoneWorkQueueOnFloor.TReq>
     {
         public class TReq
         {

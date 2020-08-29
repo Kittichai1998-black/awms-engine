@@ -392,8 +392,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     });
                     
                 }
-
-                return this.GenerateResponse(sto, queueTrx);
+                var res = this.GenerateResponse(sto, queueTrx);
+                var LocationCondition = ADO.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
+                if (LocationCondition == null)
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่พบ location ที่สามารถจัดเก็บในคลังสินค้าได้");
+                }
+                else
+                {
+                    res.locationBankNumRang = LocationCondition.LocationBankNumRang;
+                    res.locationBayNumRang = LocationCondition.LocationBayNumRang;
+                    res.locationLvNumRang = LocationCondition.LocationLvNumRang;
+                }
+                return res;
             }
             else
             {

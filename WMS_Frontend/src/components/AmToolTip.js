@@ -122,15 +122,12 @@ export default function CustomizedTooltips(props) {
     // const { children, classes, className, texttitle, placement, ...other } = this.props;
 
     return (
-        <div>
-            <BootstrapTooltip
-                title={props.texttitle}
-                placement={props.placement}
-                {...props}
-                >
-                {props.children}
-            </BootstrapTooltip>
-
-        </div>
+        <BootstrapTooltip
+            title={props.texttitle}
+            placement={props.placement}
+            {...props}
+        >
+            {props.children}
+        </BootstrapTooltip>
     );
 }
