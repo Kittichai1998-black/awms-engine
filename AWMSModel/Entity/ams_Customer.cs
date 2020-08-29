@@ -6,5 +6,10 @@ namespace AWMSModel.Entity
 {
     public class ams_Customer : BaseEntitySTD
     {
+        public long? ShelfLifeDay;
+        public long? IncubationDay;
+        public string Info1;
+        public string Info2;
+        public string Info3;
     }
 }

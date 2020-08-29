@@ -108,8 +108,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             switch (reqVO.layoutType)
             {
                 case LayoutType.LANDSCAPE_BARCODE:
-                    document.SetPageSize(new Rectangle(283.5f, 170.1f));
-                    document.SetMargins(2f, 2f, 10f, 10f);
+                    document.SetPageSize(new Rectangle(283.5f, 141.7f));
+                    document.SetMargins(1f, 1f, 8f, 5f);
                     break;
                 case LayoutType.PORTRAIT_BARCODE:
                     document.SetPageSize(new Rectangle(100, 80));
@@ -178,7 +178,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 var qrcode = new GenerateTagCode().CreateBarCode(info.code);
                 iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
                 img.Alignment = Element.ALIGN_MIDDLE;
-                img.ScaleAbsolute(260f, 120f);
+                img.ScaleAbsolute(261f, 100f);
                 document.Add(img);
                 PdfPTable table = new PdfPTable(1);
                 table.TotalWidth = 279.5f;
