@@ -359,6 +359,10 @@ const AD_Search = Loadable({
   loader: () => import("../../views/page/ENGINE/AD/AD_Search"),
   loading: Loading
 });
+const RePackaging = Loadable({
+  loader: () => import("../../views/page/Warehouse/RePackaging"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -441,7 +445,7 @@ let routes = [
   { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
   { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
   { path: "/issue/pickingchecker", name: "PK Checker", compoment: PK_Checker, exact: true },
-  
+
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
   { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
@@ -455,7 +459,7 @@ let routes = [
   { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
 
-
+  { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
 ];
 
 export default routes;
