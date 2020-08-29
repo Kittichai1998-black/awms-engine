@@ -8,8 +8,8 @@ namespace AWMSModel.Criteria.SP.Response
     {
         public long bsto_id;
         public int Priority;
-        public string LocationBankNumRang;
-        public string LocationBayNumRang;
-        public string LocationLvNumRang;
+        public string LocationBankNumRange;
+        public string LocationBayNumRange;
+        public string LocationLvNumRange;
     }
 }

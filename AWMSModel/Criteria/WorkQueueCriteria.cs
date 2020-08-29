@@ -25,9 +25,9 @@ namespace AWMSModel.Criteria
         public string desWarehouseCode;//รหัสคลังสินค้า
         public string desAreaCode;//รหัสโซน
         public string desLocationCode;//รหัสเกต
-        public string locationBankNumRang;
-        public string locationBayNumRang;
-        public string locationLvNumRang;
+        public string locationBankNumRange;
+        public string locationBayNumRange;
+        public string locationLvNumRange;
         public BaseInfo baseInfo;//ข้อมูลพาเลทและสินค้าในพาเลท
         public class BaseInfo
         {

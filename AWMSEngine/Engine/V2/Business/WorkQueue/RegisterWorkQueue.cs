@@ -400,9 +400,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    res.locationBankNumRang = LocationCondition.LocationBankNumRang;
-                    res.locationBayNumRang = LocationCondition.LocationBayNumRang;
-                    res.locationLvNumRang = LocationCondition.LocationLvNumRang;
+                    res.locationBankNumRange = LocationCondition.LocationBankNumRange;
+                    res.locationBayNumRange = LocationCondition.LocationBayNumRange;
+                    res.locationLvNumRange = LocationCondition.LocationLvNumRange;
                 }
                 return res;
             }
