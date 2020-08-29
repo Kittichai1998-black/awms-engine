@@ -393,6 +393,7 @@ const AmMappingPalletV2 = props => {
     })
   }
   const onConfirmMappingSTO = () => {
+
     if (dataPallet !== undefined && dataPallet !== null) {
       const tempDataReq = { bstoID: parseInt(dataPallet.id) }
       Axios.post(window.apipath + "/v2/confirm_mappingSTOandDiSTOBybstoID", tempDataReq).then((res) => {
