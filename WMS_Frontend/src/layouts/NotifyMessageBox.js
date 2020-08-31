@@ -8,13 +8,46 @@ import Popper from '@material-ui/core/Popper';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as signalR from '@aspnet/signalr';
+import AmDropdownMenu from "../components/AmDropDownMenu";
 import Axios from "axios";
+import NotificationsIcon from '@material-ui/icons/Notifications';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
       flexGrow: 1,
     }
   }));
+
+const NotifyBox = React.memo(({notify}) => {
+  const customToggleBTN = React.forwardRef(({ children, onClick }, ref) => (
+    <div
+      ref={ref}
+      onClick={(e) => {
+          e.preventDefault();
+          onClick(e);
+      }}
+      style={{cursor:"pointer", height:54,margin:"auto", userSelect:"none", padding:"15px 0", verticalAlign:"middle"}}
+      >
+      {children}
+    </div>
+  ));
+  const reCreateItems = notify.notifyList.map(x=> {return {label:
+        <div style={{cursor:"pointer", fontSize:"14px",width:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace: "nowrap"}}><label style={{fontWeight:"bold", margin:0}}>{x.Title} : </label>{x.Message}</div>
+        , action:() => {
+        notify.setNotifyState(false)
+      }
+    }
+  });
+  reCreateItems.push({label:
+      <div style={{borderTop:"1px rgba(0,0,0,.5) solid"}}><label style={{fontWeight:"bold", margin:0}}>More...</label></div>
+      , action:() => {
+        window.open("/Notify");notify.setNotifyState(false)
+    }
+  })
+  return <AmDropdownMenu customToggle={customToggleBTN} title={<div><NotificationsIcon /></div>} 
+  id={"notifyBox"} 
+  items={reCreateItems}/>
+});
 
 export default (props) => {
     const {notify} = useContext(LayoutContext);
@@ -60,15 +93,9 @@ export default (props) => {
     //     }
     // }, [])
 
-    const handleListKeyDown = (event) =>{
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        notify.notifyState(false);
-      }
-    }
-
     return <>
-        <Popper style={{zIndex:9999}} open={notify.notifyState} anchorEl={props.btnRef.current} role={undefined} transition disablePortal>
+      <NotifyBox notify={notify}/>
+        {/* <Popper style={{zIndex:9999}} open={notify.notifyState} anchorEl={props.btnRef.current} role={undefined} transition disablePortal>
             {({ TransitionProps, placement }) => (
                 <Grow {...TransitionProps} style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}>
                   <Paper>
@@ -83,6 +110,6 @@ export default (props) => {
                   </Paper>
                 </Grow>
             )}
-        </Popper>
+        </Popper> */}
     </>
 }
