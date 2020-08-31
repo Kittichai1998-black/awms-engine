@@ -60,7 +60,7 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark) {
         "&qty=" + qty +
         "&unit=" + unitTypeCode +
         "&palletNo=" + indexName + "/" + totalPallet +
-        "&remark=" + remark
+        "&remark=" + (remark === null ? "" : remark)
     }
 
     dataGenPDF.push(itemPDF)

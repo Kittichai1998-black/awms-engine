@@ -146,9 +146,11 @@ const AmPrintBarCodeV2 = props => {
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()
+      props.onClose(false)
     } catch (err) {
       setDialogState({ type: "error", content: err.message, state: true })
       Clear()
+      props.onClose(false)
     }
   }
   const onClickDeletePallet = (item, listDatas, indexName) => {
