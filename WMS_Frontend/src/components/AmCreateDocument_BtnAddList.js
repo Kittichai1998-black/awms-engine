@@ -226,18 +226,17 @@ const BtnAddList = props => {
                 quantity: x.Quantity,
                 expireDate: x.expireDate ? moment(x.expireDate).format('MM-DD-YYYY') : null,
                 productionDate: x.productionDate ? moment(x.productionDate).format('MM-DD-YYYY') : null,
-                auditStatus: x.auditStatus ? GetAuditStatus(x.auditStatus) : null
-
+                auditStatus: GetAuditStatus(x.auditStatus)
             }
             return obj
         })
-
         setData(dataSet)
        
     }
 
     const GetAuditStatus = (value) => {
-        if (value) {
+        console.log(value)
+        if (value === 0) {
             return "QUARANTINE"
         } else if (value === 1) {
             return "PASS"

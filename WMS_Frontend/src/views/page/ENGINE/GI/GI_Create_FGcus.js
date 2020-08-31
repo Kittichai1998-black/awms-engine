@@ -1,6 +1,8 @@
 ﻿import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
+import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
 import {
     apicall,
@@ -77,7 +79,7 @@ const GI_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 4011, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 
@@ -176,7 +178,7 @@ const GI_Create_FGCustomer = props => {
             { Header: "Batch", accessor: "batch", type: "input" },
             { Header: "Lot", accessor: "lot", type: "input" },
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
-            { Header: "Unit", accessor: "unitType", type: "dropdown", key: "Code", queryApi: UnitTypeQuery, fieldLabel: ["Code"], defaultValue: "ขวด" },
+            { Header: "Unit", accessor: "unitType", type: "unitConvert" },
             AuditStatusDDL,
             Headers,
             { Header: "Ref2", accessor: "ref2", type: "input" },
@@ -250,7 +252,7 @@ const GI_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -349,6 +351,18 @@ const GI_Create_FGCustomer = props => {
     const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
+        <Grid container>
+            <Grid item xs container direction="column">
+            </Grid>
+            <Grid item>
+                <AmCreateDoc
+                    apicreate={"/v2/CreateDRDocAPI/"}
+                    apiRes={"/receive/detail?docID="}
+                    history={props.history}
+                    docTypename={"issue"}
+                ></AmCreateDoc>
+            </Grid>
+        </Grid>
         {table}</div>;
 };
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.V2.Business
+namespace AWMSEngine.APIService.V2.Business.Picking
 {
     public class GetSTOPickingAPI : BaseAPIService
     {

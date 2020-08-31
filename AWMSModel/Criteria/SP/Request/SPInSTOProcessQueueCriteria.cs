@@ -18,12 +18,18 @@ namespace AWMSModel.Criteria.SP.Request
         public bool useIncubateDate;
         public bool useFullPick;
         public string refID;
+        
+        public long? forCustomerID;
+        public long? desCustomerID;
+
+
+        public List<AuditStatus> auditStatuses;
 
         public ConditionProcess condition;
         public List<StorageObjectEventStatus> eventStatuses;
         public List<OrderByProcess> orderBys;
 
-        public List<long> @not_pstoIDs;
+        public List<long> not_pstoIDs;
         public class ConditionProcess
         {
             public string batch;

@@ -1,6 +1,8 @@
 ﻿import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
+import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
 import {
     apicall,
@@ -53,7 +55,7 @@ const RD_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "Name"], defaultValue: 4011, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
@@ -172,7 +174,7 @@ const RD_Create_FGCustomer = props => {
     const AuditStatus = [
         { label: 'QUARANTINE', value: '0' },
         { label: 'PASSED', value: '1' },
-        { label: 'REJECTED ', value: '2' },
+        { label: 'REJECTED', value: '2' },
         { label: 'HOLD', value: '9' },
     ];
 
@@ -231,7 +233,7 @@ const RD_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -271,7 +273,20 @@ const RD_Create_FGCustomer = props => {
     const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
-        {table}</div>;
+        <Grid container>
+            <Grid item xs container direction="column">
+            </Grid>
+            <Grid item>
+                <AmCreateDoc
+                    apicreate={"/v2/CreateDRDocAPI/"}
+                    apiRes={"/receive/detail?docID="}
+                    history={props.history}
+                    docTypename={"receive"}
+                ></AmCreateDoc>
+            </Grid>
+        </Grid>
+        <div>
+        {table}</div></div>;
 };
 
 export default RD_Create_FGCustomer;

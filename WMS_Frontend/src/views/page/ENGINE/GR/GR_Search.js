@@ -14,7 +14,6 @@ import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
 import Grid from '@material-ui/core/Grid';
 import AmPopup from "../../../../components/AmPopup";
-import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
 import { DocumentEventStatus } from "../../../../components/Models/DocumentEventStatus";
 import { DataGeneratePopup, DataGenerateStatus } from "../../../pageComponent/AmSearchDocumentV2/SetPopup";
 const Axios = new apicall();
@@ -128,17 +127,6 @@ const DocumentSearch = props => {
         open={dialogState.state}
         content={dialogState.content}
       />
-      <Grid container>
-        <Grid item xs container direction="column">
-        </Grid>
-        <Grid item>
-          <AmCreateDoc
-            apicreate={"/v2/CreateDRDocAPI/"}
-            apiRes={"/receive/detail?docID="}
-            history={props.history}
-          ></AmCreateDoc>
-        </Grid>
-      </Grid>
       <AmSearchDocument
         iniCols={iniCols}
         docTypeCode="1011"

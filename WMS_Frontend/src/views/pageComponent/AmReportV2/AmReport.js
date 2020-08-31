@@ -47,6 +47,7 @@ const AmReport = props => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0)
   const [iniQuery, setIniQuery] = useState(true);
+  const [pageSize, setPageSize] = useState(100);
 
   useEffect(() => {
     if (!iniQuery)
@@ -59,6 +60,9 @@ const AmReport = props => {
     }
     valueText[inputID] = value;
   }
+  useEffect(() => {
+    getData()
+  }, [pageSize])
 
   const onChangeFilterData = (filterValue) => {
     var res = {};
@@ -85,7 +89,7 @@ const AmReport = props => {
     var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
     let pathGetAPI = pathAPI +
       "&page=" + (page - 1)
-      + "&limit=100"
+      + "&limit=" + pageSize
     Axios.get(pathGetAPI).then((res) => {
       if (res) {
         if (res.data._result.status !== 0) {
@@ -165,7 +169,9 @@ const AmReport = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
+        tableConfig={true}
         pageSize={100}
+        onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}

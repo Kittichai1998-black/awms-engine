@@ -75,27 +75,6 @@ const BaseMaster = props => {
       type: "datetime",
       dateFormat: "DD/MM/YYYY HH:mm"
     },
-    {
-      Header: "Print Barcode",
-      colStyle: { textAlign: 'center' },
-      filterable: false,
-      Cell: e =>
-        <div style={{ display: "inline-flex" }}>
-          <AmToolTip title={"Print Barcode"} placement={"top"}>
-            <IconButton
-              size="small"
-              aria-label="info"
-              style={{ marginLeft: "3px" }}
-              onClick={() => { handleClickPrintbarcode(e.original) }}
-            >
-              <PrintIcon
-                fontSize="small"
-              // style={{ color: "#f39c12" }}
-              />
-            </IconButton>
-          </AmToolTip>
-        </div >
-    }
   ];
   const columns = [
     {
@@ -340,11 +319,16 @@ const BaseMaster = props => {
       console.log(err)
     }
   }
+
   const customActions = [
-    { label: "Print Barcode", action: (data) => onPrintBarcode(data) },
+    {
+      label: <label style={{ marginBottom: 0 }}><PrintIcon fontSize="small" style={{ marginRight: 5 }} />{"Print Barcode"}</label>,
+      action: (data) => onPrintBarcode(data)
+    },
   ];
-  const onPrintBarcode = async(dataSel) => {
+  const onPrintBarcode = async (dataSel) => {
     try {
+      console.log(dataSel)
       let listCode = [];
       if (dataSel && dataSel.length > 0) {
         dataSel.map(x => {
@@ -391,6 +375,8 @@ const BaseMaster = props => {
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
         customAction={customActions}
+        selection={"checkbox"}
+        selectionData={(sel) => { }}
       />
     </div>
   );

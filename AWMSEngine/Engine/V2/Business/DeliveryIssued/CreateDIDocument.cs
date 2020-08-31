@@ -2,10 +2,12 @@
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.Business.IssuedOrder
 {
@@ -25,6 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
             public string batch;
             public string lot;
             public DocumentProcessTypeID documentProcessTypeID;
+            public String documentProcessTypeCode;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -68,6 +71,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                 public string baseunitType;
                 public string batch;
                 public string lot;
+                public string palletCode;
                 public string orderNo;
                 public string cartonNo;
                 public string itemNo;
@@ -153,6 +157,111 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
+
+            var DocumentProcessTypeCodes = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
+        new SQLConditionCriteria[] {
+                new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
+    }, this.BuVO).FirstOrDefault();
+
+
+            if (DocumentProcessTypeCodes != null)
+            {
+
+                var ProceesTypedoc = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
+               new SQLConditionCriteria[] {
+                new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
+           }, this.BuVO).FirstOrDefault();
+
+                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt();
+
+
+                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1001)
+                {
+                    var DocprocessID = DocumentProcessTypeCodes.ID;
+                    var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
+
+
+                    DocumentProcessTypeID documentProcessTypeID = EnumUtil.GetValueEnum<DocumentProcessTypeID>(DocumentProcessTypeCodes.Code);
+
+                    var OwnerProcess = DocumentProcessTypeCodes.OwnerGroupType.GetValueInt();
+
+
+                    if (OwnerProcess == '0')
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Not Found");
+                    }
+                    else if (OwnerProcess == '1')
+                    {
+                        if (souWarehouseModel.ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse Not Found");
+                        }
+                        else if (Sou_Supplier_ID != null || Sou_Customer_ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
+                    }
+                    else if (OwnerProcess == '2')
+                    {
+                        if (Sou_Customer_ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souCustomer Not Found");
+                        }
+                        else if (Sou_Supplier_ID != null || souWarehouseModel.ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
+                    }
+                    else if (OwnerProcess == '3')
+                    {
+                        if (Sou_Supplier_ID == null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souSupplier Not Found");
+                        }
+                        else if (Sou_Customer_ID != null || souWarehouseModel.ID != null)
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data Source not correct");
+                        }
+
+                    }
+
+                    reqVO.documentProcessTypeID = documentProcessTypeID;
+
+
+                    foreach (var Item in reqVO.issuedOrderItem)
+                    {
+                      var Sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                             new SQLConditionCriteria[] {
+                             new SQLConditionCriteria("Code",Item.palletCode, SQLOperatorType.EQUALS),
+                          }, this.BuVO).FirstOrDefault();
+
+                        var SKUCode = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
+                         new SQLConditionCriteria[] {
+                             new SQLConditionCriteria("Code",Item.skuCode, SQLOperatorType.EQUALS),
+                      }, this.BuVO).FirstOrDefault();
+
+                        if (Sto != null && Sto.ObjectType.GetValueInt() == 2 && Sto.PackMaster_ID != null)
+                        {
+                            if (Sto.SKUMaster_ID != SKUCode.ID) {
+
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet not match Item");
+                            }
+
+                        }
+                        else {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet not correct");
+
+                        }
+
+                        if (SKUCode == null) {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Item not correct");
+                        }
+                    }
+
+                }
+            }
 
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()

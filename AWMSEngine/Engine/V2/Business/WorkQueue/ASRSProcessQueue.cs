@@ -46,6 +46,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 public List<SPInSTOProcessQueueCriteria.ConditionProcess> conditions;
                 public List<StorageObjectEventStatus> eventStatuses;
+                public List<AuditStatus> auditStatuses;
                 public List<SPInSTOProcessQueueCriteria.OrderByProcess> orderBys;
             }
         }
@@ -185,6 +186,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 baseCode = proc.baseCode,
                                 skuCode = proc.skuCode,
                                 eventStatuses = proc.eventStatuses,
+                                auditStatuses = proc.auditStatuses,
                                 condition = _condi,
                                 orderBys = proc.orderBys,
                                 useExpireDate = proc.useExpireDate,
@@ -193,7 +195,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 useShelfLifeDate = proc.useShelfLifeDate,
                                 warehouseCode = souWM.Code,
                                 refID = docItem.RefID,
-                                not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList()
+                                not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList(),
+                                forCustomerID = doc.For_Customer_ID,
+                                desCustomerID = doc.Des_Customer_ID
                             };
                             var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
                             this.ValidateWCS(_pickStos, reqVO);

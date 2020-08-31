@@ -96,7 +96,7 @@ namespace AWMSEngine.Engine.V2.General
                     lengthM = reqVO.length,
                     heightM = reqVO.height,
                     widthM = reqVO.width,
-                    AuditStatus = AuditStatus.PASS,
+                    AuditStatus = AuditStatus.PASSED,
                     IsHold = false
                 };
 

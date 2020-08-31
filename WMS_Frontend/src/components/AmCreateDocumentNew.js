@@ -87,11 +87,11 @@ const colss = [
 
 const UnitTypeConvert = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "UnitTypeConvert",
+    t: "UnitTypeFromPack",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "*",
     g: "",
-    s: "[{ 'f': 'unitTypeID', 'od': 'asc' }]",
+    s: "[{ 'f': 'ID', 'od': 'desc' }]",
     sk: 0,
     l: 100,
     all: ""
@@ -280,7 +280,7 @@ const AmCreateDocument = (props) => {
             if (objQuery !== null) {              
                 console.log(objQuery)
                 let unitqry = JSON.parse(objQuery.q)
-                   unitqry.push({ 'f': 'SKUMaster_ID', 'c': '=', 'v': skuID })
+                unitqry.push({ 'f': 'SKUMaster_ID', 'c': '=', 'v': skuID })
                     objQuery.q = JSON.stringify(unitqry);
 
               }
@@ -673,8 +673,8 @@ const AmCreateDocument = (props) => {
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
-                            fieldDataKey={"unitCode"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            fieldLabel={["unitCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            fieldDataKey={"UnitType_Code"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={["UnitType_Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             width={width ? width : 300} //กำหนดความกว้างของช่อง input
                             ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
@@ -1040,14 +1040,14 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
-                x.incubationDay = parseInt(x.incubationDay)
-                x.shelfLifeDay = parseInt(x.shelfLifeDay)
+                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
+                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 return x
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
-                x.incubationDay = parseInt(x.incubationDay)
-                x.shelfLifeDay = parseInt(x.shelfLifeDay)
+                x.incubationDay = x.incubationDay != null ?parseInt(x.incubationDay)  : null
+                x.shelfLifeDay = x.shelfLifeDay != null ?  parseInt(x.shelfLifeDay) : null
                 return x
             })
         }
