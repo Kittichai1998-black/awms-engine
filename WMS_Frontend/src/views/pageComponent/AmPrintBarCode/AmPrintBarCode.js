@@ -103,6 +103,7 @@ const AmPrintBarCode = props => {
     var item = {};
     // console.log(props.data)
     props.data.forEach(ele => {
+      console.log(ele)
       item = {
         docItemID: ele.ID,
         lot: ele.Lot,
@@ -111,7 +112,7 @@ const AmPrintBarCode = props => {
         name: ele.SKUMaster_Name,
         unit: ele.UnitType_Code,
         skuType: ele.SKUMasterTypeName,
-        vol: ele.Volume * ele.BaseQuantity,
+        vol: ele.Volume * ele.Quantity,
         skuType: ele.SKUMasterTypeName,
         expdate: ele.ExpireDate,
         prodDate: ele.ProductionDate
@@ -247,8 +248,14 @@ const AmPrintBarCode = props => {
         lot: ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
+        name: ele.SKUMaster_Name,
+        unit: ele.UnitType_Code,
         skuType: ele.SKUMasterTypeName,
-        vol: (ele.Volume * ele.BaseQuantity)
+        vol: ele.Volume * ele.Quantity,
+        skuType: ele.SKUMasterTypeName,
+        expdate: ele.ExpireDate,
+        prodDate: ele.ProductionDate
+
       }
       itemList.push(item)
     });
@@ -286,6 +293,7 @@ const AmPrintBarCode = props => {
 
   }
   const onClickLoadPDF = async (data) => {
+
     try {
       // console.log(data)
       // console.log(dataSourceGenPallet)
@@ -293,9 +301,11 @@ const AmPrintBarCode = props => {
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()
+      props.onClose(false)
     } catch (err) {
       setDialogState({ type: "error", content: err.message, state: true })
       Clear()
+      props.onClose(false)
     }
   }
 

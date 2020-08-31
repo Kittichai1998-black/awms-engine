@@ -53,6 +53,7 @@ const DataGenerateElePalletListDisplay = (data) => {
   if (data != undefined && data.listsCode !== undefined) {
     return data.listsCode.map((pt, index) => {
       var qryStr = queryString.parse(pt.options);
+
       var itemName_list = qryStr.codeNo.split(',');
       var qtyReceived_list = qryStr.qty.split(',');
       var unit = qryStr.unit.split(',');

@@ -211,11 +211,9 @@ const AmRepack = props => {
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
 
-  const [flagConfirm, setFlagConfirm] = useState(false);
-  const [flaggetDataDoc, setFlaggetDataDoc] = useState(false);
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
-  const [warehouseID, setWarehouseID] = useState(1);
+  const [newQtyRepack, setNewQtyRepack] = useState();
 
   const [dialog, setDialog] = useState(false);
   const [datasTreeView, setDatasTreeView] = useState([])
@@ -311,12 +309,14 @@ const AmRepack = props => {
     }
   };
   const handleSelect = (event, nodeIds) => {
+    console.log(nodeIds)
     if (nodeIds !== "1") {
       setSelected(nodeIds)
       setDialog(true)
 
     }
   };
+
   const onHandleChangeInputPalletCode = (keydata, value) => {
     setPalletCode(value);
     scanMappingSto(value)
@@ -333,12 +333,34 @@ const AmRepack = props => {
     setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
+
+
   const onHandledataConfirm = (status, rowdata) => {
     if (status) {
       scanMappingSto(valueInput.palletCode)
     } else {
       setDialog(false)
     }
+
+  }
+
+  const onConvertUnitRepack = (unitID, data) => {
+    console.log(data)
+    const dataSend = {
+      skuID: data.skuID,
+      unitRepackID: data.unitID,
+      oldQty: data.qty,
+      newUnitID: unitID
+    }
+    Axios.post(window.apipath + "/v2/unit_convert", dataSend).then((res) => {
+      console.log(res.data)
+      if (res.data._result.status === 1) {
+        setNewQtyRepack(res.data)
+      } else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
+      }
+
+    });
 
   }
 
@@ -422,52 +444,104 @@ const AmRepack = props => {
             </StyledTreeItem>
           </TreeView>
           <br />
-
-          <Paper style={{ backgroundColor: "#F5F5F5", height: "200px" }}>
-
-            <FormInline>
-              <LabelH1>{"Qty Original :"}</LabelH1>
-              <AmInput
-                id={"qtyOriginal"}
-                placeholder="Qty Original"
-                type="input"
-                autoFocus={autoFocus}
-                style={{ width: "100%" }}
-              />
-            </FormInline>
-            <FormInline>
-              <AmDropdown
-                placeholder="Select"
-                fieldDataKey="areaID"
-                fieldLabel={["Name"]}
-                labelPattern=" : "
-                ddlMinWidth={300}
-                queryApi={UnitTypeQuery()}
-                //defaultValue={localStorage.getItem("areaIDs")}
-                // onChange={(value, dataObject, inputID, fieldDataKey) =>
-                //   onHandleChangeInput(value, fieldDataKey)
-
-                // }
-                ddlType={"search"}
-              />
-            </FormInline>
-            <FormInline>
-              <LabelH1>{"Qty Original :"}</LabelH1>
-              <AmInput
-                id={"qtyOriginal"}
-                placeholder="Qty Original"
-                type="input"
-                autoFocus={autoFocus}
-                style={{ width: "100%" }}
-              />
-            </FormInline>
-          </Paper>
+          {console.log(selected)}
+          {selected.length !== 0 ? randerEleRepack(selected, dataPallet) : null}
         </div >)
 
       default:
         return "Unknown step";
     }
   }
+
+  const randerEleRepack = (selec, data) => {
+    console.log(newQtyRepack)
+    var mapstosSelected = data.mapstos.filter(x => x.id === selec)
+    console.log(mapstosSelected)
+    return <Paper style={{ backgroundColor: "#F5F5F5", height: "200px", paddingTop: "5px" }}>
+
+      <FormInline>
+        <LabelH1>{"Qty Original :"}</LabelH1>
+        <AmInput
+          id={"qtyOriginal"}
+          placeholder="Qty Original"
+          type="input"
+          defaultValue={mapstosSelected ? mapstosSelected[0]["qty"] : 0}
+          onChange={(value, fieldDataKey) =>
+            onHandleChangeInput(value, fieldDataKey)}
+          style={{ width: "200px" }}
+        />
+        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{mapstosSelected[0]["unitCode"]}</LabelH1>
+      </FormInline>
+      <FormInline>
+        <LabelH1>{"Unit Repack :"}</LabelH1>
+        <AmDropdown
+          placeholder="Select"
+          fieldDataKey="ID"
+          fieldLabel={["Code", "Name"]}
+          labelPattern=" : "
+          ddlMinWidth={300}
+          style={{ width: "200px" }}
+          queryApi={UnitTypeQuery()}
+          onChange={(value, dataObject, inputID, fieldDataKey) =>
+            onConvertUnitRepack(value, mapstosSelected[0])
+
+          }
+          ddlType={"search"}
+        />
+      </FormInline>
+      <FormInline>
+        <LabelH1>{"New Qty :"}</LabelH1>
+        <AmInput
+          id={"qtyOriginal"}
+          placeholder="New Qty"
+          type="input"
+          // disabled={true}
+          value={newQtyRepack !== undefined ?
+            (newQtyRepack.qtyRepack !== undefined ? newQtyRepack.qtyRepack.newQty : null)
+            : null}
+
+          style={{ width: "200px" }}
+        />
+        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>
+          {
+            newQtyRepack !== undefined ?
+              (newQtyRepack.newUnitRepack !== undefined ? newQtyRepack.newUnitRepack : null)
+              : null
+          }
+        </LabelH1>
+      </FormInline>
+      <br />
+      {onRanderEleNewPallet()}
+    </Paper>
+  };
+
+  const onRanderEleNewPallet = () => {
+    return <FormInline>
+      <LabelH1>{"New Pallet :"}</LabelH1>
+      <AmInput
+        id={"palletcodeNew"}
+        placeholder="New Pallet Code"
+        type="input"
+        //autoFocus={autoFocus}
+        style={{ width: "200px" }}
+        onChange={(value, obj, element, event) =>
+          onHandleChangeInput(value, "palletcodeNew")
+        }
+
+        onBlur={(e) => {
+          if (e !== undefined && e !== null)
+            onHandleChangeInput(e, "palletcodeNew")
+        }}
+        onKeyPress={(value, obj, element, event) => {
+          if (event.key === "Enter") {
+            onHandleChangeInput(value, "palletcodeNew")
+          }
+        }}
+      />
+    </FormInline>
+
+  }
+
   //==========================================================================================
 
   return (
