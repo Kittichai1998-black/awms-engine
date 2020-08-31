@@ -1,17 +1,12 @@
 /* eslint-disable default-case */
 import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import InboxIcon from '@material-ui/icons/Inbox';
 import { Link, withRouter } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import PropTypes from 'prop-types';
-import purple from '@material-ui/core/colors/purple';
 import React, { useContext, useState, useEffect } from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { useTranslation } from 'react-i18next';
@@ -125,6 +120,7 @@ const Aside = props => {
                             button
                             component={Link}
                             to={y.to}
+                            onClick={()=> sidebar.setMobileSidebarToggle(false)}
                           >
                             <span
                               className='cui-user'

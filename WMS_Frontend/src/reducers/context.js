@@ -25,7 +25,8 @@ const SidebarAction = () => {
     const [state, dispatch] = useReducer(sidebar, sidebarInitialState);
     const setMenuToggle = (payload) => dispatch({"type":"expand", payload})
     const setSidebarToggle = (payload) => dispatch({"type":"open", payload})
-    return {menuToggle:state.menuToggle, sidebarToggle:state.sidebarToggle, setMenuToggle, setSidebarToggle}
+    const setMobileSidebarToggle = (payload) => dispatch({"type":"moblieOpen", payload})
+    return {menuToggle:state.menuToggle, sidebarToggle:state.sidebarToggle, mobileSidebarToggle:state.mobileSidebarToggle, setMenuToggle, setSidebarToggle, setMobileSidebarToggle}
 }
 
 export const LayoutProvider = ({children}) => {
