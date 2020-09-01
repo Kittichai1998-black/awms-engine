@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             var docItems = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("EventStatus","10,11", SQLOperatorType.IN),
                 new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL)
             }, this.BuVO);
 

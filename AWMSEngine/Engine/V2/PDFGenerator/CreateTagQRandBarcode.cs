@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
+using AWMSModel.Entity;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -12,9 +15,10 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
     {
         public class TReq
         {
-            public List<ListsCode> listsCode; 
+            public List<ListsCode> listsCode;
             //public PageSize pageSize;
             //public TagSize tagSize;
+            public long? docID;
             public LayoutType layoutType;
         }
 
@@ -44,6 +48,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 
         public class OptionConst 
         {
+            public const string OPT_PDF_NO = "_pdf_no";
             public const string OPT_ITEMNAME = "itemName";
             public const string OPT_LOT_NO = "lotNo";
             public const string OPT_CONTROL_NO = "controlNo";
@@ -70,6 +75,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         private Font p5;
         private Font p6;
         private Font p7;
+        private Font p8;
         public BaseFont CreateFont(string fontName)
         {
             string fg = Path.Combine(Environment.CurrentDirectory + "\\assets\\fonts\\", fontName);
@@ -94,6 +100,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             p5 = new Font(font_p, 14);
             p6 = new Font(font_p, 12);
             p7 = new Font(font_p, 10);
+            p8 = new Font(font_p, 8);
         }
 
 
@@ -108,8 +115,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             switch (reqVO.layoutType)
             {
                 case LayoutType.LANDSCAPE_BARCODE:
-                    document.SetPageSize(new Rectangle(283.5f, 170.1f));
-                    document.SetMargins(2f, 2f, 10f, 10f);
+                    document.SetPageSize(new Rectangle(283.5f, 141.7f));
+                    document.SetMargins(1f, 1f, 8f, 5f);
                     break;
                 case LayoutType.PORTRAIT_BARCODE:
                     document.SetPageSize(new Rectangle(100, 80));
@@ -147,7 +154,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                     document = CreatePort_QR(document, reqVO.listsCode);
                     break;
                 case LayoutType.CUSTOM1:
-                    document = CreateCustom1(document, reqVO.listsCode);
+                    document = CreateCustom1(document, reqVO);
                     break;
             }
 
@@ -160,10 +167,29 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             
         }
        
-        public Document CreateCustom1(Document document, List<ListsCode> listsCode)
+        public Document CreateCustom1(Document document, TReq reqVO)
         {
-            listsCode.ForEach(info => {
-                document.Add(GetHeaderQRCustom1(info.title, info.code));
+            //getDoc
+            amt_Document doc = ADO.DocumentADO.GetInstant().Get(reqVO.docID.Value, this.BuVO);
+            if (doc == null)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบเอกสารรับเข้า");
+            int pdfno = String.IsNullOrEmpty(doc.Ref4) ? 1 : int.Parse(doc.Ref4) + 1;
+            
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
+                  new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Ref4", pdfno)
+                  });
+
+            string date = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            var txt = string.Format("print datetime: {0} ครั้งที่ {1}", date, pdfno.ToString());
+            PdfPCell printtime = new PdfPCell(new Phrase(txt, p8));
+            printtime.HorizontalAlignment = Element.ALIGN_RIGHT;
+            printtime.VerticalAlignment = Element.ALIGN_BOTTOM;
+            printtime.Border = Rectangle.NO_BORDER;
+
+           
+            reqVO.listsCode.ForEach(info => {
+                document.Add(GetHeaderQRCustom1(info.title, info.code, printtime));
                 document.Add(GetDetailCustom1(info.skuType, info.options));
                 document.NewPage();
             });
@@ -178,7 +204,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 var qrcode = new GenerateTagCode().CreateBarCode(info.code);
                 iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(qrcode);
                 img.Alignment = Element.ALIGN_MIDDLE;
-                img.ScaleAbsolute(260f, 120f);
+                img.ScaleAbsolute(261f, 100f);
                 document.Add(img);
                 PdfPTable table = new PdfPTable(1);
                 table.TotalWidth = 279.5f;
@@ -209,16 +235,17 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             return null;
         }
 
-        private PdfPTable GetHeaderQRCustom1(string title, string qrcode)
+        private PdfPTable GetHeaderQRCustom1(string title, string qrcode, PdfPCell printtime)
         {
-            PdfPTable headerTable = new PdfPTable(2);
+            PdfPTable headerTable = new PdfPTable(3);
             headerTable.TotalWidth = 406f;
             headerTable.HorizontalAlignment = Element.ALIGN_LEFT;
             headerTable.DefaultCell.Border = Rectangle.BOX;
 
-            float[] headerTableColWidth = new float[2];
-            headerTableColWidth[0] = 351f;
-            headerTableColWidth[1] = 55f;
+            float[] headerTableColWidth = new float[3];
+            headerTableColWidth[0] = 80f;
+            headerTableColWidth[1] = 271f;
+            headerTableColWidth[2] = 55f;
             headerTable.SetWidths(headerTableColWidth);
             headerTable.LockedWidth = true;
 
@@ -226,13 +253,18 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             pnglogo.ScaleAbsolute(78f, 37f);
             PdfPCell headerTableCell = new PdfPCell(pnglogo);
             headerTableCell.HorizontalAlignment = Element.ALIGN_LEFT;
-            headerTableCell.Border = Rectangle.NO_BORDER;
-            headerTableCell.Colspan = 2;
+            headerTableCell.Border = Rectangle.NO_BORDER; 
             headerTableCell.PaddingBottom = 5f;
             headerTable.AddCell(headerTableCell);
 
+            //add print datetime
+            printtime.PaddingBottom = 12f;
+            printtime.Colspan = 2;
+            headerTable.AddCell(printtime);
+
             Font _font = FontFactory.GetFont(BaseFont.HELVETICA_BOLD, 24, Font.NORMAL);
             PdfPCell headerTableCell_0 = new PdfPCell(new Phrase(title, _font));
+            headerTableCell_0.Colspan = 2;
             headerTableCell_0.HorizontalAlignment = Element.ALIGN_CENTER;
             headerTableCell_0.VerticalAlignment = Element.ALIGN_MIDDLE;
             headerTable.AddCell(headerTableCell_0);
@@ -251,6 +283,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         }
         private PdfPTable GetDetailCustom1(SKUGroupType skuType, string details)
         {
+            
             var itemName = ObjectUtil.QryStrGetValue(details, OptionConst.OPT_ITEMNAME);
             var lotNo = ObjectUtil.QryStrGetValue(details, OptionConst.OPT_LOT_NO);
             var controlNo = ObjectUtil.QryStrGetValue(details, OptionConst.OPT_CONTROL_NO);
@@ -376,6 +409,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
 
             tableCell_3 = new PdfPCell(new Phrase(palletNo, p7));
             table.AddCell(SetInfoCol(tableCell_3));
+
+           
 
             PdfPCell SetHeaderCol(PdfPCell pCell)
             {

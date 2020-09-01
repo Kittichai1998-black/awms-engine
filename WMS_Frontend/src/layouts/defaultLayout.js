@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import Axios from "axios";
 import withWidth from '@material-ui/core/withWidth';
-import {
-    withStyles,
-    MuiThemeProvider,
-} from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, useTheme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
@@ -35,11 +32,11 @@ import Header from "./headerLayout";
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        [theme.breakpoints.down('sm')]: {
-            aa: theme.palette.secondary.main
-        },
+        // [theme.breakpoints.down('sm')]: {
+        //     aa: theme.palette.secondary.main
+        // },
         display: 'flex'
     },
     menuButton: {
@@ -63,7 +60,8 @@ const styles = theme => ({
     },
     drawer: {
         width: drawerWidth,
-        flexShrink: 0
+        flexShrink: 0,
+        visibility: "visible"
     },
     drawerPaper: {
         backgroundColor: '#263238',
@@ -78,13 +76,18 @@ const styles = theme => ({
     },
     content: {
         width: '100%',
-        flexGrow: 1,
+        flexGrow: 3,
         padding: theme.spacing(1),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
         }),
-        marginLeft: -drawerWidth
+        position:"absolute",
+        [theme.breakpoints.up('md')]: {
+            marginLeft: -drawerWidth,
+            growFlex:1,
+            position:"static",
+        },
     },
     contentShift: {
         width: `calc(100% - ${240}px)`,
@@ -101,8 +104,44 @@ const styles = theme => ({
     },
     icon: {
         marginRight: 0
-    }
-});
+    },
+    sectionDesktop: {
+        display: 'none',
+        [theme.breakpoints.up('md')]: {
+            display: 'flex'
+        },
+    },
+    sectionMobile: {
+        display: 'flex',
+        position:"relative",
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
+    },
+    divfull: {
+        top: '0 !important',
+        left: '0 !important',
+        position: 'fixed',
+        boxOrient: 'horizontal',
+        display: '-webkit-box',
+        display: '-moz-box',
+        display: '-ms-flexbox',
+        display: '-moz-flex',
+        display: '-webkit-flex',
+        display: 'flex',
+        padding: '0',
+        margin: '0',
+        width: '100%',
+        height: '100%',
+        textAlign: 'center',
+        verticalAlign: 'middle !important',
+        padding: '1em',
+        backgroundColor: 'rgba(0,0,0,.85)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: '99999'
+    },
+}));
 
 const checkstatus = () => {
     const d1 = new Date(localStorage.ExpireTime);
@@ -157,6 +196,69 @@ function useInterval(callback, delay) {
     }, [delay]);
 }
 
+const MenuListDesktop = React.memo(({classes, theme, sidebar}) => {
+    return <Drawer
+        className={classes.drawer}
+        variant='persistent'
+        anchor='left'
+        open={sidebar.sidebarToggle}
+        classes={{
+            paper: classes.drawerPaper
+        }}
+    >
+        <div className={classes.drawerHeader}>
+            <IconButton onClick={() => sidebar.setSidebarToggle(false)} style={{ color: 'white' }}>
+                {theme.direction === 'ltr' ? (
+                    <ChevronLeftIcon />
+                ) : (
+                        <ChevronRightIcon />
+                    )}
+            </IconButton>
+        </div>
+        <Divider />
+        <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+            <AmMenuBar
+                icon={true}
+                iconChild={true}
+                colorLink={'#37474F'}
+                backgroundColorChild={'#78909C'}
+            />
+        </List>
+    </Drawer>
+});
+
+const MenuListMoblie = React.memo(({classes, theme, sidebar}) => {
+    return <Drawer
+        className={classes.drawer}
+        variant='persistent'
+        anchor='left'
+        open={sidebar.mobileSidebarToggle}
+        classes={{
+            paper: classes.drawerPaper
+        }}
+        style={{zIndex:100000}}
+    >
+        <div className={classes.drawerHeader}>
+            <IconButton onClick={() => sidebar.setMobileSidebarToggle(false)} style={{ color: 'white' }}>
+                {theme.direction === 'ltr' ? (
+                    <ChevronLeftIcon />
+                ) : (
+                        <ChevronRightIcon />
+                    )}
+            </IconButton>
+        </div>
+        <Divider />
+        <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+            <AmMenuBar
+                icon={true}
+                iconChild={true}
+                colorLink={'#37474F'}
+                backgroundColorChild={'#78909C'}
+            />
+        </List>
+    </Drawer>
+});
+
 const MainContainer = React.memo(({route, path}) => {
     return <Switch>
         {route.map((x, idx) => (
@@ -174,17 +276,14 @@ const MainContainer = React.memo(({route, path}) => {
     </Switch>
 });
 
+const theme = createMuiTheme();
 const Default = props => {
-    const { classes, theme } = props;
-    const [open, setOpen] = useState(true);
-    const [openMenuHeader, setOpenMenuHeader] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const classes = useStyles();
+    const theme = useTheme();
     const [routes, setRoutes] = useState([]);
-    const [openLangHeader, setOpenLangHeader] = useState(false)
     const { t, i18n } = useTranslation()
 
-    const [menuVisible, setMenuVisible] = useState({ visibility: "visible" });
-
+    const matches = useMediaQuery(theme.breakpoints.up('md'));
     const refContainer = useRef();
 
     const {sidebar} = useContext(LayoutContext);
@@ -202,6 +301,7 @@ const Default = props => {
         }, []);
         return size;
     }
+
     useInterval(() => {
         var now = moment();
         var exp = moment(localStorage.getItem("ExpireTime"));
@@ -234,19 +334,6 @@ const Default = props => {
     };
 
     const size = useWindowSize(refContainer)
-
-    // const openMenuHeader = Boolean(anchorEl);
-    const handleDrawerOpen = () => {
-        sidebar.setSidebarToggle(true);
-    };
-
-    // console.log(size)
-
-    const handleDrawerClose = () => {
-        sidebar.setSidebarToggle(false);
-    };
-
-    const matches = useMediaQuery('(max-width:400px)');
     
     let Path = window.location.pathname.split('/');
     useEffect(() => {
@@ -269,7 +356,6 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
-                console.log(Path[1])
                 if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1] === "dashboard") {
                     row.WebPages.forEach((res) => {
                         if (Path[1]===res.PathLV1 && res.PathLV2=== Path[2]) { 
@@ -348,80 +434,49 @@ const Default = props => {
         }
     };
 
-    useEffect(() => {
-        if (props.width === "xs") {
-            setMenuVisible({ visibility: "hidden" })
-            handleDrawerClose()
-        }
-        else {
-            setMenuVisible({ visibility: "visible" })
-            handleDrawerOpen()
-        }
-    }, [props.width])
-
     return (
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             <div className={classes.root}>
                 {checkstatus()}
                 <CssBaseline />
                 <Header/>
-                <Drawer
-                    style={menuVisible}
-                    className={classes.drawer}
-                    variant='persistent'
-                    anchor='left'
-                    open={sidebar.sidebarToggle}
-                    classes={{
-                        paper: classes.drawerPaper
-                    }}
-                >
-                    <div className={classes.drawerHeader}>
-                        <IconButton onClick={handleDrawerClose} style={{ color: 'white' }}>
-                            {theme.direction === 'ltr' ? (
-                                <ChevronLeftIcon />
-                            ) : (
-                                    <ChevronRightIcon />
-                                )}
-                        </IconButton>
-                    </div>
-                    <Divider />
-                    <List style={{ paddingTop: '0px', paddingBottom: '0px' }}>
-                        <AmMenuBar
-                            icon={true}
-                            iconChild={true}
-                            colorLink={'#37474F'}
-                            backgroundColorChild={'#78909C'}
-                        />
-                    </List>
-                </Drawer>
-                <main
-                    className={classNames(classes.content, {
-                        [classes.contentShift]: sidebar.sidebarToggle
+                <div className={classes.sectionDesktop}>
+                    <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar}/>
+                </div>
+
+                <div className={classes.sectionMobile}>
+                    <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar}/>
+                    {sidebar.mobileSidebarToggle ? 
+                    <div onClick={() => sidebar.setMobileSidebarToggle(false)} className={[classes.divfull]}></div> 
+                    : null}
+                </div>
+
+                <main className={classNames(classes.content, {
+                        [classes.contentShift]: (matches ? sidebar.sidebarToggle : matches)
                     })}
                 >
                     <div className={classes.drawerHeader} />
-
-                    <Paper
-                        elevation={0}
-                        className={classes.paper}
-                        style={{ background: "none" }}
-                    >
-                        <Breadcrumbs
-                            separator={<NavigateNextIcon fontSize="small" />}
-                            aria-label="Breadcrumb"
-
+                        <Paper
+                            elevation={0}
+                            className={classes.paper}
+                            style={{ background: "none" }}
                         >
-                            {Home_Link()}
-                            {Route_1()}
-                            {NavicateBarN()}
-                        </Breadcrumbs>
-                    </Paper>
-                    <div ref={refContainer} style={{width:"100%", height:size[1] }}>
-                        <MainContainer route={routeLink} path={window.location.pathname}/>
-                    </div>
+                            <Breadcrumbs
+                                separator={<NavigateNextIcon fontSize="small" />}
+                                aria-label="Breadcrumb"
+                            >
+                                {Home_Link()}
+                                {Route_1()}
+                                {NavicateBarN()}
+                            </Breadcrumbs>
+                        </Paper>
+                        <div ref={refContainer} style={{width:"100%", height:size[1] }}>
+                            <MainContainer route={routeLink} path={window.location.pathname}/>
+                        </div> 
                 </main>
+
             </div>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
 };
 
@@ -430,4 +485,4 @@ Default.propTypes = {
     theme: PropTypes.object.isRequired
 };
 
-export default withWidth()(withStyles(styles, { withTheme: true })(Default));
+export default Default;

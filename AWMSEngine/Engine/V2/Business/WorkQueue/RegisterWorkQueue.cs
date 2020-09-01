@@ -158,7 +158,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             unitTypeCode = data.unitTypeCode,
                             packUnitTypeCode = data.packUnitTypeCode,
                             expiryDate = data.expiryDate,
-                            productDate = data.productDate
+                            productDate = data.productDate,
+                            auditStatus = data.auditStatus
                         });
                     });
                     req_ScanMappingSTO.pstos = packStos;
@@ -392,8 +393,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     });
                     
                 }
-
-                return this.GenerateResponse(sto, queueTrx);
+                var res = this.GenerateResponse(sto, queueTrx);
+                var LocationCondition = ADO.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
+                if (LocationCondition == null)
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่พบ location ที่สามารถจัดเก็บในคลังสินค้าได้");
+                }
+                else
+                {
+                    res.locationBankNumRange = LocationCondition.LocationBankNumRange;
+                    res.locationBayNumRange = LocationCondition.LocationBayNumRange;
+                    res.locationLvNumRange = LocationCondition.LocationLvNumRange;
+                }
+                return res;
             }
             else
             {

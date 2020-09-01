@@ -143,24 +143,26 @@ function PalletMapSTOMeomo(open, close, status, setting, dataDocument, dataDocIt
 }
 
 const PrintBarcode = React.memo(({ selection, dataHeader, open, onClose }) => {
-    return <AmPrintBarCode data={selection}
-        SouSupplierCode={dataHeader.SouSupplier}
-        SouSupplierName={dataHeader.SouSupplierName}
-        Remark={dataHeader.Remark}
-        open={open}
-        onClose={onClose}
-    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
-    />
+  return <AmPrintBarCode data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+    open={open}
+    onClose={onClose}
+    docID={dataHeader.ID}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
 })
 const PrintBarcodeV2 = React.memo(({ selection, dataHeader, open, onClose }) => {
-    return <AmPrintBarCodeV2 data={selection}
-        SouSupplierCode={dataHeader.SouSupplier}
-        SouSupplierName={dataHeader.SouSupplierName}
-        Remark={dataHeader.Remark}
-        open={open}
-        onClose={onClose}
-    // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
-    />
+  return <AmPrintBarCodeV2 data={selection}
+    SouSupplierCode={dataHeader.SouSupplier}
+    SouSupplierName={dataHeader.SouSupplierName}
+    Remark={dataHeader.Remark}
+    open={open}
+    onClose={onClose}
+    docID={dataHeader.ID}
+  // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
+  />
 })
 const DocumentView = props => {
     const { t } = useTranslation();
@@ -1043,47 +1045,22 @@ const DocumentView = props => {
                                     <br />
                                     {typeDoc ? (
 
-                                        <AmTable
-                                            dataKey="id"
-                                            columns={columnsDetailSOU}
-                                            pageSize={dataDetailSOU.length}
-                                            dataSource={dataDetailSOU}
-                                            height={200}
-                                            rowNumber={false} />
-                                    ) : null}
-                                </Col>
-                            </Row>
-                        </TabPane>
-                        <TabPane tabId="2">
-                            <Row>
-                                <Col sm="12">
-                                    <br />
-                                    {typeDoc ? (
-                                        // <Table
-                                        //   columns={columnsDetailDES}
-                                        //   pageSize={100}
-                                        //   data={dataDetailDES}
-                                        //   sortable={false}
-                                        //   currentPage={0}
-                                        // />
-                                        <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={false} />
-                                    ) : null}
-                                </Col>
-                            </Row>
-                        </TabPane>
-                    </TabContent>
-                </div>
-            ) : props.openSOU === true ? (
-                typeDoc ? (
-                    <AmTable dataKey="id"
-                        columns={columnsDetailSOU}
-                        pageSize={100}
-                        dataSource={dataDetailSOU}
-                        height={200}
-                        rowNumber={false} />
-                ) : null
-            ) : props.openDES === true ? (
-                typeDoc ? (
+                    <AmTable
+                      dataKey="id"
+                      columns={columnsDetailSOU}
+                      pageSize={dataDetailSOU.length}
+                      dataSource={dataDetailSOU}
+                      height={200}
+                      rowNumber={false} />
+                  ) : null}
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tabId="2">
+              <Row>
+                <Col sm="12">
+                  <br />
+                  {typeDoc ? (
                     // <Table
                     //   columns={columnsDetailDES}
                     //   pageSize={100}
@@ -1091,26 +1068,51 @@ const DocumentView = props => {
                     //   sortable={false}
                     //   currentPage={0}
                     // />
-                    <AmTable dataKey="id"
-                        columns={columnsDetailDES}
-                        pageSize={100}
-                        dataSource={dataDetailDES}
-                        height={200}
-                        rowNumber={false} />
-                ) : null
-            ) : (
-                            ""
-                        )}
-            <br />
-            <div>
-                {props.buttonBack === true ? (
-                    <AmButton styleType="default" className="float-left" onClick={buttonBack}>
-                        {t("Back")}
-                    </AmButton>
-                ) : null}
-            </div>
+                    <AmTable dataKey="id" columns={columnsDetailDES} pageSize={dataDetailDES.length} dataSource={dataDetailDES} height={200} rowNumber={false} />
+                  ) : null}
+                </Col>
+              </Row>
+            </TabPane>
+          </TabContent>
         </div>
-    );
+      ) : props.openSOU === true ? (
+        typeDoc ? (
+          <AmTable dataKey="id"
+            columns={columnsDetailSOU}
+           pageSize={100}
+            dataSource={dataDetailSOU}
+            height={200}
+            rowNumber={false} />
+        ) : null
+      ) : props.openDES === true ? (
+        typeDoc ? (
+          // <Table
+          //   columns={columnsDetailDES}
+          //   pageSize={100}
+          //   data={dataDetailDES}
+          //   sortable={false}
+          //   currentPage={0}
+          // />
+          <AmTable dataKey="id"
+            columns={columnsDetailDES}
+              pageSize={100}
+            dataSource={dataDetailDES}
+            height={200}
+            rowNumber={false} />
+        ) : null
+      ) : (
+              ""
+            )}
+      <br />
+      <div>
+        {props.buttonBack === true ? (
+          <AmButton styleType="default" className="float-left" onClick={buttonBack}>
+            {t("Back")}
+          </AmButton>
+        ) : null}
+      </div>
+    </div>
+  );
 };
 DocumentView.propTypes = {
     openSOU: PropType.bool.isRequired,

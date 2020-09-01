@@ -448,24 +448,28 @@ namespace AWMSEngine.ADO
             param.Add("locationCode", search.locationCode);
             param.Add("baseCode", search.baseCode);
             param.Add("skuCode", search.skuCode);
+            param.Add("forCustomerID", search.forCustomerID);
+            param.Add("desCustomerID", search.desCustomerID);
+            param.Add("packUnitID", search.packUnitID);
+            param.Add("packUnitCode", search.packUnitCode);
 
             param.Add("useFullPick", search.useFullPick);
             param.Add("useExpireDate", search.useExpireDate); 
             param.Add("useIncubateDate", search.useIncubateDate);
             param.Add("useShelfLifeDate", search.useShelfLifeDate);
             param.Add("eventStatuses", search.eventStatuses.Select(x => (int)x).JoinString());
-
+            param.Add("auditStatuses", search.auditStatuses.Select(x => (int)x).JoinString());
             param.Add("baseQty", search.condition.baseQty);
             param.Add("batch", search.condition.batch);
             param.Add("lot", search.condition.lot);
             param.Add("orderNo", search.condition.orderNo);
-            param.Add("options", search.condition.options);
+            param.Add("options", search.condition.options); 
 
             param.Add("orderBys", search.orderBys.Select(x => x.fieldName + " " + x.orderByType.ToString()).JoinString());
             param.Add("not_pstoIDs", search.not_pstoIDs.JoinString());
 
             
-            var res = this.Query<SPOutSTOProcessQueueCriteria>("SP_STO_PROCESS_QUEUE_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+            var res = this.Query<SPOutSTOProcessQueueCriteria>("SP_STO_PROCESS_QUEUE_V3", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
 
             return res;
         }
@@ -532,6 +536,17 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public List<SPOutLocationCondCriteria> ListLocationCondition(List<long> bsto_ids, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("bsto_ids", string.Join(",", bsto_ids.ToArray()));
+            var res = this.Query<SPOutLocationCondCriteria>("SP_LOCATIONCONDITION_PROCESS", 
+                CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
+
     }
 
 }

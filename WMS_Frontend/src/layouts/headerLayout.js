@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { LayoutContext } from '../reducers/context';
 
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles, createMuiTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,19 +12,13 @@ import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Popper from '@material-ui/core/Popper';
-import MenuList from '@material-ui/core/MenuList';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Redirect } from 'react-router-dom';
 import NotifyBox from "./NotifyMessageBox";
+import AmDropdownMenu from "../components/AmDropDownMenu";
 
 const drawerWidth = 240;
 
@@ -38,17 +32,6 @@ const divLingLogo = {
   fontSize: '2.2vw'
 };
 
-const divLingLogo_phone = {
-
-  width: '4vw',
-  display: 'inline-block',
-  height: '2.5vw',
-  lineHeight: '2.5vw',
-  Float: 'Left',
-  marginLeft: '1vw',
-  fontSize: '0.7rem'
-
-};
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -93,12 +76,15 @@ const useStyles = makeStyles((theme) => ({
     })
   },
   appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
+    width: `100%`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
-    })
+    }),
+    [theme.breakpoints.up('md')]: {
+        width: `calc(100% - ${240}px)`,
+    },
   },
   inputRoot: {
     color: 'inherit',
@@ -125,17 +111,20 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  appLogo:{
+    margin:"auto"
+  }
 }));
 
 const convertLang = l => {
   return l === "EN" ? "English" : "ไทย"
 }
 
-export default (props) => {
+const HeaderLayout = (props) => {
   const {notify, sidebar} = useContext(LayoutContext);
+  const theme = useTheme();
 
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const [lang, setLang] = React.useState(() => {
     if(localStorage.getItem("Lang")){
       return convertLang(localStorage.getItem("Lang"));
@@ -145,13 +134,8 @@ export default (props) => {
       return convertLang(localStorage.getItem("Lang"));
     }
   });
-  const accountRef = React.useRef(null);
-  const notifyRef = React.useRef(null);
-  const langRef = React.useRef(null);
-  const [ref, setRef] = React.useState(accountRef)
-  const [item, setItem] = React.useState([])
   const { t, i18n } = useTranslation()
-  const matches = useMediaQuery('(max-width:400px)');
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
 
   const changeLang = (l) => {
       if (lang !== l) {
@@ -160,20 +144,7 @@ export default (props) => {
           i18n.changeLanguage(l)
       }
   }
-
-  const handleListKeyDown = (event) =>{
-    if (event.key === 'Tab') {
-      event.preventDefault();
-      setOpen(false);
-    }
-  }
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
   const handleLogout = event => {
-    setOpen(false);
     sessionStorage.clear();
     localStorage.removeItem("User_ID");
     localStorage.removeItem("Token");
@@ -181,13 +152,7 @@ export default (props) => {
     localStorage.removeItem("ExpireTime");
     localStorage.removeItem("ExtendTime");
     localStorage.removeItem("Username");
-    //window.open("/login", "_self")
-  };
-
-  const handleClose = (event) => {
-    //if (accountRef.current && accountRef.current.contains(event.target)) 
-      //return;
-    setOpen(false);
+    window.open("/", "_self")
   };
 
   const checkstatus = () => {
@@ -223,22 +188,25 @@ export default (props) => {
     }
   };
 
-  const renderMenu = (ref, item) => (
-      <Popper style={{zIndex:9999}} open={open} anchorEl={ref.current} role={undefined} transition disablePortal>
-          {({ TransitionProps, placement }) => (
-            <Grow {...TransitionProps} style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}>
-              <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    {open ? item.map(x => <MenuItem onClick={() => {x.onClick()}}>{x.label}</MenuItem>) : null}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-      </Popper>
-  );
+  const customToggleBTN = React.forwardRef(({ children, onClick }, ref) => (
+    <div
+      ref={ref}
+      onClick={(e) => {
+          e.preventDefault();
+          onClick(e);
+      }}
+      style={{cursor:"pointer",height:"54px", marginLeft:"10px", userSelect:"none", padding:"15px 0"}}
+      >
+      {children}
+      &nbsp; &#x25bc;
+    </div>
+  ));
 
+  const renderMenu = (items, id, text) => {
+    const reCreateItems = items.map(x=> {return {label:x.label, action:() => x.onClick()}})
+    return <AmDropdownMenu customToggle={customToggleBTN} title={text} id={id} datas={[]} item={items.label} items={reCreateItems}/>
+  };
+  
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -273,8 +241,7 @@ export default (props) => {
     </Menu>
   );
 
-  const LogoIn = () => {
-    return (<a
+  const LogoIn = (<a
         href='/'
         style={{
             display: 'inline-block',
@@ -282,7 +249,7 @@ export default (props) => {
             textDecoration: 'none',
             color: '#FFF'
         }}>
-        {matches ? (
+        {!matches ? (
             <img
                 src={require('../assets/logo/logo.png')}
                 style={{
@@ -303,7 +270,7 @@ export default (props) => {
                     alt=''
                 />
             )}
-        {matches ? (
+        {!matches ? (
             ''
         ) : (
                 <div style={divLingLogo}>AMS</div>
@@ -311,97 +278,69 @@ export default (props) => {
 
     </a>
     )
-}
+    
   return (
-    <div className={classes.grow}>
+    <div>
       {checkstatus()}
       <AppBar position='fixed' className={classNames(classes.appBar, {[classes.appBarShift]: sidebar.sidebarToggle})}>
         <Toolbar>
-          {!sidebar.sidebarToggle ? <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-            onClick={()=> sidebar.setSidebarToggle(true)}
-          >
-            <MenuIcon  />
-          </IconButton> : null}
-          <Typography
-                aria-haspopup='true'
-                variant='subtitle1'
-                color='inherit'
-                className={classes.username}
-              >
-            {LogoIn()}
-          </Typography>
-          <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton 
-              aria-label="notifications" 
-              color="inherit"
-              ref={notifyRef}
-              onClick={() => {notify.setNotifyState(true)}}
-            >
-              <Badge badgeContent={notify.notifyCount} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton 
-              aria-label="notifications" 
-              color="inherit"
-              ref={langRef}
-              onClick={() => {handleToggle(); setRef(langRef); setItem([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}])}}
-            >
-              <Typography
-                aria-haspopup='true'
-                variant='subtitle1'
-                color='inherit'
-                className={classes.lang}
-              >
-                {localStorage.getItem("Lang")}
-                <ArrowDropDownIcon />
-              </Typography>
-            </IconButton>
-            <IconButton
-              edge="end"
-              ref={accountRef}
-              aria-controls={open ? 'menu-list-grow' : undefined}
-              aria-label="account of current user"
-              aria-haspopup="true"
-              onClick={() => {
-                handleToggle(); setRef(accountRef); setItem([{label:"Logout", onClick:()=> handleLogout()}])
+            {!sidebar.sidebarToggle ? 
+            <div
+              onClick={(e) => {
+                  e.preventDefault();
+                  sidebar.setSidebarToggle(true)
               }}
-              color="inherit"
-            >
-                <AccountCircle />
-              <Typography
-                aria-haspopup='true'
-                variant='subtitle1'
-                color='inherit'
-                className={classes.username}
-              >
-                {localStorage.getItem('Username')}
-                <ArrowDropDownIcon />
-              </Typography>
-            </IconButton>
+              style={{marginLeft:"-15px",cursor:"pointer",height:"54px", userSelect:"none", padding:"15px"}}>
+              <MenuIcon/>
+            </div> : null}
+            <Typography
+                  aria-haspopup='true'
+                  variant='subtitle1'
+                  color='inherit'
+                  className={classes.appLogo}
+                >
+              {LogoIn}
+            </Typography>
           </div>
           <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              //onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
+            <div
+              onClick={(e) => {
+                  e.preventDefault();
+                  sidebar.setMobileSidebarToggle(true);
+                  console.log("xx")
+              }}
+              style={{marginLeft:"-15px",cursor:"pointer",height:"54px", userSelect:"none", padding:"15px"}}>
+              <MenuIcon/>
+            </div>
+            <Typography
+                  aria-haspopup='true'
+                  variant='subtitle1'
+                  color='inherit'
+                  className={classes.appLogo}
+                >
+              {LogoIn}
+            </Typography>
+          </div>
+          <div className={classes.grow} />
+          <div style={{display:"flex"}}>
+            <NotifyBox/>
+            {renderMenu([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}], "lang", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}>{localStorage.getItem("Lang")}</label>)}
+            {renderMenu([{label:"Logout", onClick:()=> handleLogout()}], "user", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}><AccountCircle />{localStorage.getItem('Username')}</label>)}
           </div>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu(ref, item)}
-      <NotifyBox btnRef={notifyRef}/>
     </div>
+  );
+}
+
+const theme = createMuiTheme();
+export default function ThemeHelper() {
+  return (
+    <ThemeProvider theme={theme}>
+      <HeaderLayout />
+    </ThemeProvider>
   );
 }
 

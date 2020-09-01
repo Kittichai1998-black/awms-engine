@@ -23,7 +23,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             DoneWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneWorkQueue.TReq>(this.RequestVO);
             var resDoneQ = new DoneWorkQueue().Execute(this.Logger, this.BuVO, req);
             new WorkedDocument().Execute(this.Logger, this.BuVO, new WorkedDocument.TReq() { docIDs = resDoneQ.docIDs });
-
+            this.CommitTransaction();
             return resDoneQ;
         }
          

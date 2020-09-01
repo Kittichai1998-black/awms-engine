@@ -261,41 +261,20 @@ function Test5(props) {
     }
     const onClickLoadPDF = async () => {
         try {
-            let reqjson = {
-                "layoutType": 0,
-                "listsCode": [
-                    {
-                        "code": "ARS0000001"
-                    },
-                    {
-                        "code": "ARS0000002"
-                    }
-                ]
-            }
             // let reqjson = {
-            //     "layoutType": 91,
-            //     "listsCode":
-            //         [
-            //             {
-            //                 "code": "N|1|20381|100",
-            //                 "title": "FINISHED GOODS",
-            //                 "skuType": 4, //4:FG, 5:PM, 9:OTH
-            //                 "options": "codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=20200811&controlNo=2&supplier=xxxxxxxx&mfgdate=07/16/2020&expdate=07/07/2020&qty=100&unit=ขวด&palletNo=1/2&remark=ccccccccccccc"
-            //             },
-            //             {
-            //                 "code": "N|1|20381|100",
-            //                 "title": "PACKING MATERIAL",
-            //                 "skuType": 9, //4:FG, 5:PM, 9:OTH
-            //                 "options": "codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=20200811&controlNo=2&supplier=xxxxxxxx&mfgdate=07/16/2020&expdate=07/07/2020&qty=100&unit=ขวด&palletNo=1/2&remark=ccccccccccccc"
-            //             },
-            //             {
-            //                 "code": "N|1|20381|100",
-            //                 "title": "OTHER",
-            //                 "skuType": 9, //4:FG, 5:PM, 9:OTH
-            //                 "options": "codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=20200811&controlNo=2&supplier=xxxxxxxx&mfgdate=07/16/2020&expdate=07/07/2020&qty=100&unit=ขวด&palletNo=1/2&remark=ccccccccccccc"
-            //             }
-            //         ]
+            //     "layoutType": 0,
+            //     "listsCode": [
+            //         {
+            //             "code": "ARS0000001"
+            //         },
+            //         {
+            //             "code": "ARS0000002"
+            //         }
+            //     ]
             // }
+            let reqjson = {
+                "layoutType":91,"docID": 162, "listsCode":[{"code":"N|1|246|50","title":"Finished Goods","skuType":4,"options":"codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/10/2020&qty=50&unit=ลัง&palletNo=1/2&remark=null"},{"code":"N|2|247|10","title":"Finished Goods","skuType":4,"options":"codeNo=FF0006&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 200 ml(Lao)&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/08/2020&qty=10&unit=ลัง&palletNo=2/2&remark=null"}]
+            }
             await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf", "preview").then();
 
         } catch (err) {

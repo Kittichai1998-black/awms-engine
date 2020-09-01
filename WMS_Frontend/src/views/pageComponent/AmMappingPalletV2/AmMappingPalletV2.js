@@ -43,7 +43,7 @@ import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
 import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
 import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPalletV2/RanderEleDocDisplay";
-import { PlusSquare, MinusSquare } from "./IconTreeview";
+import { PlusSquare, MinusSquare } from "../../../constant/IconTreeview";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";
@@ -393,6 +393,7 @@ const AmMappingPalletV2 = props => {
     })
   }
   const onConfirmMappingSTO = () => {
+
     if (dataPallet !== undefined && dataPallet !== null) {
       const tempDataReq = { bstoID: parseInt(dataPallet.id) }
       Axios.post(window.apipath + "/v2/confirm_mappingSTOandDiSTOBybstoID", tempDataReq).then((res) => {

@@ -8,6 +8,7 @@ export const headerInitialState={
 export const sidebarInitialState={
     menuToggle:{"toggle":false},
     sidebarToggle:true,
+    mobileSidebarToggle:false,
 }
 
 
@@ -15,7 +16,6 @@ export const headerToggle = (state, action) => {
     switch (action.type) {
         case "open":
             state = !state;
-            
             break;
         default:
             break;
@@ -52,6 +52,9 @@ export const sidebar = (state, action) => {
         }
         case "open":{
             return {...state, sidebarToggle:action.payload};
+        }
+        case "moblieOpen":{
+            return {...state, mobileSidebarToggle:action.payload};
         }
         default:
             break;

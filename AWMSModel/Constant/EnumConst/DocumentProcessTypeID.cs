@@ -97,15 +97,22 @@ namespace AWMSModel.Constant.EnumConst
         FG_RECALL_WM = 4131,
         FG_RECALL_CUS = 4132,
         FG_RECALL_SUP = 4133,
-
-        FG_OTHER_WM = 4181,
-        FG_OTHER_CUS = 4182,
-        FG_OTHER_SUP = 4183,
+        FG_WELFARE_WM = 4141,
+        FG_DONATE_WM = 4151,
+        FG_TRANSFER_EXAMPLE_WM = 4161,
+        FG_TRANSFER_RD_WM = 4171,
+       
+        FG_OTHER_WM = 4991,
 
         PM_TRANSFER_WM = 5011,
         PM_TRANSFER_CUS = 5012,
         PM_TRANSFER_SUP = 5013,
-
+        PM_REWORK_WM =5061,
+        PM_TRANSFER_WELFARE_WM  =5141,
+        PM_TRANSFER_DONATE_WM  =  5151,
+        PM_TRANSFER_EXAMPLE_WM =5161,
+        PM_TRANSFER_RD_WM  =  5171,
+        PM_OTHER_WM=5991,
 
         ESP_TRANSFER_WM = 8011,
         ESP_TRANSFER_CUS = 8012,

@@ -1,7 +1,7 @@
 import React from "react";
 
 import moment from "moment";
-function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark) {
+function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark, docID) {
   let dataGenPDF = []
   for (let indexName in data) {
     var pcodeArr = []
@@ -60,13 +60,14 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark) {
         "&qty=" + qty +
         "&unit=" + unitTypeCode +
         "&palletNo=" + indexName + "/" + totalPallet +
-        "&remark=" + remark
+        "&remark=" + (remark === null ? "" : remark)
     }
 
     dataGenPDF.push(itemPDF)
   }
   let reqjson = {
     "layoutType": 91,
+    "docID": docID,
     "listsCode": dataGenPDF
   }
   return reqjson
