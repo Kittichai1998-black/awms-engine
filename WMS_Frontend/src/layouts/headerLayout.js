@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { LayoutContext } from '../reducers/context';
 
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles, createMuiTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,7 +19,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Redirect } from 'react-router-dom';
 import NotifyBox from "./NotifyMessageBox";
 import AmDropdownMenu from "../components/AmDropDownMenu";
-import { createMuiTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
@@ -33,17 +32,6 @@ const divLingLogo = {
   fontSize: '2.2vw'
 };
 
-const divLingLogo_phone = {
-
-  width: '4vw',
-  display: 'inline-block',
-  height: '2.5vw',
-  lineHeight: '2.5vw',
-  Float: 'Left',
-  marginLeft: '1vw',
-  fontSize: '0.7rem'
-
-};
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -218,11 +206,6 @@ const HeaderLayout = (props) => {
     const reCreateItems = items.map(x=> {return {label:x.label, action:() => x.onClick()}})
     return <AmDropdownMenu customToggle={customToggleBTN} title={text} id={id} datas={[]} item={items.label} items={reCreateItems}/>
   };
-
-  const renderMenuMoblie = (items, id, text) => {
-    const reCreateItems = items.map(x=> {return {label:x.label, action:() => x.onClick()}})
-    return <AmDropdownMenu customToggle={customToggleBTN} title={text} id={id} datas={[]} item={items.label} items={reCreateItems}/>
-  }
   
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
