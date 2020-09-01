@@ -149,6 +149,7 @@ const PrintBarcode = React.memo(({ selection, dataHeader, open, onClose }) => {
     Remark={dataHeader.Remark}
     open={open}
     onClose={onClose}
+    docID={dataHeader.ID}
   // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
   />
 })
@@ -159,6 +160,7 @@ const PrintBarcodeV2 = React.memo(({ selection, dataHeader, open, onClose }) => 
     Remark={dataHeader.Remark}
     open={open}
     onClose={onClose}
+    docID={dataHeader.ID}
   // onSucess={(e) => { console.log(e); if (e === true) getData(); }}
   />
 })
@@ -1077,7 +1079,7 @@ const DocumentView = props => {
         typeDoc ? (
           <AmTable dataKey="id"
             columns={columnsDetailSOU}
-           pageSize={100}
+            pageSize={100}
             dataSource={dataDetailSOU}
             height={200}
             rowNumber={false} />
@@ -1093,7 +1095,7 @@ const DocumentView = props => {
           // />
           <AmTable dataKey="id"
             columns={columnsDetailDES}
-              pageSize={100}
+            pageSize={100}
             dataSource={dataDetailDES}
             height={200}
             rowNumber={false} />

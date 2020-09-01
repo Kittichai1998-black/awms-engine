@@ -15,11 +15,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string supplierName;
             public string supplierCode;
             public string remark;
+            public int docID;
             public List<Item> item;
         }
         public class TRes
         {
             public int layoutType;
+            public int docID;
             public List<pallet_list_item> listsCode;
         }
         public class pallet_list
@@ -61,6 +63,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string skuType;
             public string expdate;
             public string prodDate;
+            
 
         }
 
@@ -107,6 +110,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var expdate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.expdate)).Select(x => x.expdate));
                 var prodDate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.prodDate)).Select(x => x.prodDate));
 
+
                 listItem.Add(new pallet_list_item()
                 {
                     code = "N|" + pts.palletsNO + "|" + pID + "|" + vol,
@@ -125,6 +129,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             res = new TRes()
             {
                 layoutType = 91,
+                docID = reqVO.docID,
                 listsCode = listItem
             };
 
@@ -161,7 +166,6 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 pallet.skuType = itemData.skuType;
                 pallet.prodDate = itemData.prodDate;
                 pallet.expdate = itemData.expdate;
-
                 if (mode == 0)
                 {
                     if (itemData.vol > 0)

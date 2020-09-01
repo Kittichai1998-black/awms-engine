@@ -139,16 +139,18 @@ const AmPrintBarCodeV2 = props => {
   }
 
   const onClickLoadPDF = async (itemList) => {
-    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark)
+    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark, props.docID)
     try {
 
       await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf").then();
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()
+      props.onClose(false)
     } catch (err) {
       setDialogState({ type: "error", content: err.message, state: true })
       Clear()
+      props.onClose(false)
     }
   }
   const onClickDeletePallet = (item, listDatas, indexName) => {
