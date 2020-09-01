@@ -320,9 +320,12 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            if (dataObject !== undefined || dataObject !== null) {
+            if (dataObject !== undefined || dataObject !== null || dataObject.length < 0) {
                 props.onChangeProcessType(dataObject.OwnerGroupType);
                 props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
+                if (props.onChangeProcessTypeCode != undefined)
+                    props.onChangeProcessTypeCode(dataObject.Code)
+
                 setprocessType(dataObject.OwnerGroupType)
                 createDocumentData[key] = dataObject.ID
                 setcreateDocumentData(createDocumentData)
@@ -372,7 +375,6 @@ const AmCreateDocument = (props) => {
             editData['expireDate'] = moment(data.value).format('MM-DD-YYYY')
         }
         if (field === "auditStatus" && data != null) {
-            console.log(data)
             editData["auditStatus"] = data.label
         }
         if (field === "skuCode") {
@@ -402,12 +404,15 @@ const AmCreateDocument = (props) => {
 
 
         if (typeof data === "object" && data) {
-
-            //if (field === "unitType") {
-            //    editData[field] = data[field] ? data[field] : data.Code
-            //} else {
+            if (field === "auditStatus" && data != null) {
+                editData["auditStatus"] = data.label
+            } else {
+                //if (field === "unitType") {
+                //    editData[field] = data[field] ? data[field] : data.Code
+                //} else {
                 editData[field] = data[field] ? data[field] : data.value
-            //}
+                //}
+            }
         }
         else {
             editData[field] = data
@@ -703,7 +708,7 @@ const AmCreateDocument = (props) => {
                             zIndex={2000}
                             data={datas}
                             fieldDataKey={key}
-                            autoDefaultValue={true}
+                            //autoDefaultValue={false}
                             returnDefaultValue={true}
                             //value={valueText.ddlTest.value}
                             disabled={disabled ? disabled : false}

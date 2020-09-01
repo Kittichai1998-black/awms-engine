@@ -33,8 +33,8 @@ const PK_Detail = props => {
                 buttonBack={true}
                 linkBack={"/issue/pickingsearch"}
                 history={props.history}
-                usePrintPDF={true}
-                usePickingOnFloor={true}
+                usePrintPDF={false}
+                usePickingOnFloor={false}
                 columnsPickingonFloor={columnsPickingonFloor}
             >
             </DocView>
