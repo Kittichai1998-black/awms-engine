@@ -4,6 +4,7 @@ import XLSX from 'xlsx';
 import { apicall, createQueryString } from "../components/function/CoreFunction2";
 import AmDialogs from '../components/AmDialogs'
 import { makeStyles } from "@material-ui/core/styles";
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import moment from "moment";
 import "moment/locale/pt-br";
 
@@ -39,7 +40,7 @@ const AmImportDocumentExcel = (props) => {
     const readFile = (e) => {
         const files = e.target.files;
         setfilesRead(files[0])
-        setfilesname(files[0].name)     
+        setfilesname(files[0].name)
     }
 
     const ConvertJsoon = () => {
@@ -62,7 +63,6 @@ const AmImportDocumentExcel = (props) => {
             }
         };
 
-        console.log(filesRead)
         if (filesRead !== undefined) {
             if (rABS) {
                 reader.readAsBinaryString(filesRead);
@@ -77,7 +77,12 @@ const AmImportDocumentExcel = (props) => {
         }
     }
     const getHeaderdata = (datas) => {
-        let datsobj = datas.slice(0, 5)
+        let datsobj;
+        if (props.docTypename === "receive")
+            datsobj = datas.slice(0, 5)
+        if (props.docTypename === "issue")
+            datsobj = datas.slice(0, 6)
+
         let datsobjItem = datas.slice(10)
         let datsobjItemCheck = datas.slice(5, 9)
         let dataItems = [];
@@ -94,7 +99,6 @@ const AmImportDocumentExcel = (props) => {
                 var ActionTime = actime[2].concat('-').concat(actime[1]).concat('-').concat(actime[0]);
                 DocumentProcessType = datsobj[0][1];
                 let datas;
-
                 if (props.docTypename === "receive") {
                     datas = {
                         "documentProcessTypeCode": datsobj[0][1],
@@ -112,14 +116,14 @@ const AmImportDocumentExcel = (props) => {
                     datas = {
                         "documentProcessTypeCode": datsobj[0][1],
                         "documentDate": DocumentDate,
-                        "souCustomerCode": datsobj[1][1],
                         "actionTime": ActionTime,
+                        "souCustomerCode": datsobj[1][1],
                         "souSupplierCode": datsobj[2][1],
-                        "desCustomerCode": datsobj[2][3],
                         "souWarehouseCode": datsobj[3][1],
+                        "desCustomerCode": datsobj[4][3],
                         "desSupplierCode": datsobj[3][3],
                         "deswarehouseCode": datsobj[4][3],
-                        "forCustomerCode": datsobj[5][1],
+                        "forCustomerCode": datsobj[4][1],
                         "remark": datsobj[5][3],
                     }
 
@@ -135,21 +139,31 @@ const AmImportDocumentExcel = (props) => {
         datsobjItemCheck.forEach((x, i) => {
             dataChexck = datsobjItemCheck[i][i]
         })
-        if (dataChexck != undefined) {
+
+        if (dataChexck === undefined && props.docTypename === "receive") {
             setMsgDialog(" Format Data Not Correct");
             setStateDialogErr(true);
         } else {
             if (datsobjItem !== undefined) {
+                console.log(datsobjItem)
                 datsobjItem.forEach((x, i) => {
-                    if (x[13] !== undefined && x[14] !== undefined || x[15] !== undefined && x[16] !== undefined) {
-                        let Incubate = props.docTypename === "receive"  ?  x[13] :x[14]
+                    if (x) {
+                        let Incubate = props.docTypename === "receive" ? x[13] : x[14]
                         let Producdate = props.docTypename === "receive" ? x[14] : x[15]
-                        let Expire = props.docTypename === "receive" ? x[15] :x[16]
-                        let Shelf = props.docTypename === "receive" ? x[16]: x[17]
-                        let DayIn = Incubate.split("-");
-                        let DayPro = Producdate.split("-");
-                        let DayExp = Expire.split("-");
-                        let DayShelf = Shelf.split("-");
+                        let Expire = props.docTypename === "receive" ? x[15] : x[16]
+                        let Shelf = props.docTypename === "receive" ? x[16] : x[17]
+                        let DayIn = 0;
+                        let DayPro = 0;
+                        let DayExp = 0;
+                        let DayShelf = 0;
+                        if (Incubate)
+                            DayIn = Incubate.split("-");
+                        if (Producdate)
+                            DayPro = Producdate.split("-");
+                        if (Expire)
+                             DayExp = Expire.split("-");
+                        if (Shelf)
+                            DayShelf = Shelf.split("-");
                         var IntDayIn = parseInt(DayIn[0])
                         var IntDayPro = parseInt(DayPro[0])
                         var IntDayExp = parseInt(DayExp[0])
@@ -159,10 +173,10 @@ const AmImportDocumentExcel = (props) => {
                         var AuditStatus = x[7];
                         var VandorLot = x[8];
                         let datsItem;
+                        console.log(i)
                         if (i > 0) {
                             var ProducDatess = DayPro[2].concat('-').concat(DayPro[1]).concat('-').concat(DayPro[0]);
                             var Expiredatess = DayShelf[2].concat('-').concat(DayShelf[1]).concat('-').concat(DayShelf[0]);
-
                             if (props.docTypename === "receive") {
                                 datsItem = {
                                     "itemNo": x[0],
@@ -178,17 +192,18 @@ const AmImportDocumentExcel = (props) => {
                                     "ref3": x[10],
                                     "ref4": x[11],
                                     "cartonNo": x[12],
-                                    "incubationDay": Incubatedays,
-                                    "productionDate": ProducDatess,
-                                    "expireDate": Expiredatess,
-                                    "shelfLifeDay": Shelfdays,
-
+                                    "incubationDay": Incubatedays ? Incubatedays : null,
+                                    "productionDate": ProducDatess ? ProducDatess : null,
+                                    "expireDate": Expiredatess ? Expiredatess : null,
+                                    "shelfLifeDay": Shelfdays ? Shelfdays : null,
 
                                 }
+
+                                dataItems.push(datsItem)
                             } else if (props.docTypename === "issue") {
                                 datsItem = {
                                     "itemNo": x[0],
-                                    "palletcode" :x[1],
+                                    "palletcode": x[1],
                                     "skuCode": x[2],
                                     "orderNo": x[3],
                                     "batch": x[4],
@@ -201,17 +216,16 @@ const AmImportDocumentExcel = (props) => {
                                     "ref3": x[11],
                                     "ref4": x[12],
                                     "cartonNo": x[13],
-                                    "incubationDay": Incubatedays,
-                                    "productionDate": ProducDatess,
-                                    "expireDate": Expiredatess,
-                                    "shelfLifeDay": Shelfdays,
+                                    "incubationDay": Incubatedays ? Incubatedays : null,
+                                    "productionDate": ProducDatess ? ProducDatess:null,
+                                    "expireDate": Expiredatess ? Expiredatess:null,
+                                    "shelfLifeDay": Shelfdays ? Shelfdays: null,
 
                                 }
+                                dataItems.push(datsItem)
                             }
 
-
-                            dataItems.push(datsItem)
-
+                         
                         }
 
                         var DocumentProcessTypeS = DocumentProcessType.split(" ")
@@ -231,7 +245,6 @@ const AmImportDocumentExcel = (props) => {
                         } else if (DocumentProcessTypeS[0] = "PM:การรับเข้าจาก") {
 
                             if (DocumentProcessTypeS[1] = "Supplier") {
-                                console.log(VandorLot)
                                 if (VandorLot = null) {
                                     dataItems = [{
                                         "Check": false
@@ -270,16 +283,21 @@ const AmImportDocumentExcel = (props) => {
                             }
 
                         } else {
-                        
+
                         }
                     }
 
 
                 })
-            
-                dataHdr[0]['receivedOrderItem'] = dataItems
-                CreateDocuments(dataHdr[0])
 
+                if (props.docTypename === "receive") {
+                    dataHdr[0]["receivedOrderItem"] = dataItems
+                    CreateDocuments(dataHdr[0])
+                } else if (props.docTypename === "issue") {
+                    dataHdr[0]["issuedOrderItem"] = dataItems
+                    CreateDocuments(dataHdr[0])
+                }
+    
             }
 
         }
@@ -289,12 +307,20 @@ const AmImportDocumentExcel = (props) => {
 
 
     const CreateDocuments = (CreateData) => {
-        CreateData.receivedOrderItem.forEach((x, i) => {
-            if (x.Check === false) {
-                CreateData.receivedOrderItem = []
-            }
+        if (props.docTypename === "receive") {
+            CreateData.receivedOrderItem.forEach((x, i) => {
+                if (x.Check === false) {
+                    CreateData.receivedOrderItem = []
+                }
 
-        })
+            })
+        } else if (props.docTypename === "issue") {
+            CreateData.issuedOrderItem.forEach((x, i) => {
+                if (x.Check === false) {
+                    CreateData.receivedOrderItem = []
+                }
+            })
+        }
 
         if (CreateData.receivedOrderItem !== [] || CreateData.receivedOrderItem !== undefined) {
             Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
@@ -328,11 +354,12 @@ const AmImportDocumentExcel = (props) => {
             />
             <label htmlFor="contained-button-file">
                 <AmButton variant="contained" styleType="info" component="span"
-                >  Create Docment 
+                    startIcon={<InsertDriveFileIcon/>}
+                >Import Excel File
         </AmButton>
 
             </label>
-         
+
             <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
             <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
         </div>
