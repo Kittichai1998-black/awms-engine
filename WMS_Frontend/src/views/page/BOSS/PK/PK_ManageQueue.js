@@ -85,7 +85,7 @@ const processCondition = {
             "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": false, "editable": true,
         },
         {
-            "field": "PASSED", "value": 1, "enable": true, "defaultValue": false, "editable": true,
+            "field": "PASSED", "value": 1, "enable": true, "defaultValue": true, "editable": true,
         },
         {
             "field": "REJECTED", "value": 2, "enable": true, "defaultValue": false, "editable": true,
