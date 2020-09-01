@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amv_DocumentProcessMap : ams_DocumentProcessType
+    public class amv_DocumentProcessTypeMap : ams_DocumentProcessType
     {
         public DocumentProcessTypeID DocumentProcessType_ID;
         public DocumentTypeID DocumentType_ID;

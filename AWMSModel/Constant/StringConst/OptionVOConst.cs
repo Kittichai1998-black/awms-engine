@@ -19,6 +19,7 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
         public const string OPT_PARENT_DOCUMENT_ID = "_parent_document_id";
         public const string OPT_DOCITEM_ID = "_docitem_id";
+        public const string OPT_DOC_ID = "_doc_id";
         public const string OPT_PALLET_NO = "_pallet_no";
         //AAI
         public const string OPT_LGNUM = "lgnum"; 

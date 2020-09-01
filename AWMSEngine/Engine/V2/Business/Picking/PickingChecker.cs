@@ -17,11 +17,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         public class TReq
         {
             public long bstoID;
-            public string bstoCode;
-            public long docID;
-            public long distoID;
-            public long docItemID;
             public long pstoID;
+            public long pk_docID;
+            public long pk_docItemID;
+            public long distoID;
             public decimal pickQty;
             public decimal pickBaseQty;
         }
@@ -29,12 +28,12 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         protected override GetSTOPicking.TRes ExecuteEngine(TReq reqVO)
         {
             
-            var doc = ADO.DocumentADO.GetInstant().Get(reqVO.docID, this.BuVO);
-            doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID, this.BuVO);
+            var doc = ADO.DocumentADO.GetInstant().Get(reqVO.pk_docID, this.BuVO);
+            doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pk_docID, this.BuVO);
 
             var pstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
 
-            var docitem = doc.DocumentItems.Find(y => y.ID == reqVO.docItemID); 
+            var docitem = doc.DocumentItems.Find(y => y.ID == reqVO.pk_docItemID); 
             var disto = docitem.DocItemStos.Find(z => z.ID == reqVO.distoID);
 
             if(pstos.baseQty >= reqVO.pickBaseQty)
@@ -62,7 +61,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 var updSto = new StorageObjectCriteria();
                 updSto = sto;
                 updSto.baseQty -= disto.BaseQuantity.Value;
-                var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.unitID);
+                var qtyConvert = StaticValue.ConvertToNewUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.baseUnitID, updSto.unitID);
                 updSto.qty = qtyConvert.newQty;
 
 
@@ -71,7 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 issuedSto = sto.Clone();
                 issuedSto.id = null;
                 issuedSto.baseQty = disto.BaseQuantity.Value;
-                var qtyConvert_issued = StaticValue.ConvertToBaseUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.unitID);
+                var qtyConvert_issued = StaticValue.ConvertToNewUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.baseUnitID, issuedSto.unitID);
                 issuedSto.qty = qtyConvert_issued.newQty;
                 issuedSto.parentID = null;
                 issuedSto.mapstos = null;
@@ -163,18 +162,18 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
             //ถ้ายังมีของให้pick
             GetSTOPicking.TRes res = new GetSTOPicking.TRes();
-            res = new GetSTOPicking().Execute(this.Logger, this.BuVO, new GetSTOPicking.TReq() { bstoCode = reqVO.bstoCode });
+            res = new GetSTOPicking().Execute(this.Logger, this.BuVO, new GetSTOPicking.TReq() { bstoID = reqVO.bstoID });
             if (res == null)
             {//disto ปิดหมด 
 
                 res = new GetSTOPicking.TRes()
                 {
-                    docIDs = new List<long>() { reqVO.docID }
+                    docIDs = new List<long>() { reqVO.pk_docID }
                 };
             }
             else
             {
-                res.docIDs = new List<long>() { reqVO.docID };
+                res.docIDs = new List<long>() { reqVO.pk_docID };
             }
             return res;
         }
