@@ -73,12 +73,18 @@ const AmPrintBarCode = props => {
 
 
   useEffect(() => {
+
     getData()
   }, [])
+
   useEffect(() => {
     setDialog(props.open)
+    //genDataPalletList()
   }, [props.open])
+  useEffect(() => {
 
+    genDataPalletList()
+  }, [props.open])
   function getData() {
     const Query = {
       queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -101,48 +107,48 @@ const AmPrintBarCode = props => {
   const genDataPalletList = () => {
     var itemList = [];
     var item = {};
-    // console.log(props.data)
-    props.data.forEach(ele => {
-      console.log(ele)
-      item = {
-        docItemID: ele.ID,
-        lot: ele.Lot,
-        orderNo: ele.OrderNo,
-        code: ele.Code,
-        name: ele.SKUMaster_Name,
-        unit: ele.UnitType_Code,
-        skuType: ele.SKUMasterTypeName,
-        vol: ele.Volume * ele.Quantity,
-        skuType: ele.SKUMasterTypeName,
-        expdate: ele.ExpireDate,
-        prodDate: ele.ProductionDate
+    if (props.data !== undefined) {
+      props.data.forEach(ele => {
+        item = {
+          docItemID: ele.ID,
+          lot: ele.Lot,
+          orderNo: ele.OrderNo,
+          code: ele.Code,
+          name: ele.SKUMaster_Name,
+          unit: ele.UnitType_Code,
+          skuType: ele.SKUMasterTypeName,
+          vol: ele.Volume * ele.Quantity,
+          skuType: ele.SKUMasterTypeName,
+          expdate: ele.ExpireDate,
+          prodDate: ele.ProductionDate
+        }
+        itemList.push(item)
+      });
 
+
+      const dataSend = {
+        mode: valueDataRadio,
+        docID: props.docID,
+        minVolume: 1,
+        maxVolume: 999,
+        supplierName: props.SouSupplierName,
+        supplierCode: props.SouSupplierCode,
+        remark: props.Remark,
+        Item: itemList
       }
-      itemList.push(item)
-    });
+      // console.log(dataSend)
+      setDataItemsSend(dataSend)
+      Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
+        // console.log(res.data)
+        if (res.data._result.status === 1) {
+          setDataItemsSend(res.data)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
 
-
-    const dataSend = {
-      mode: valueDataRadio,
-      minVolume: 1,
-      maxVolume: 999,
-      supplierName: props.SouSupplierName,
-      supplierCode: props.SouSupplierCode,
-      remark: props.Remark,
-      Item: itemList
+      });
+      return null;
     }
-    // console.log(dataSend)
-    setDataItemsSend(dataSend)
-    Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
-      // console.log(res.data)
-      if (res.data._result.status === 1) {
-        setDataItemsSend(res.data)
-      } else {
-        setDialogState({ type: "error", content: res.data._result.message, state: true })
-      }
-
-    });
-    return null;
   };
   const RanderEle = () => {
     if (props.data) {
@@ -256,6 +262,7 @@ const AmPrintBarCode = props => {
         expdate: ele.ExpireDate,
         prodDate: ele.ProductionDate
 
+
       }
       itemList.push(item)
     });
@@ -263,6 +270,7 @@ const AmPrintBarCode = props => {
 
     const dataSend = {
       mode: mode,
+      docID: props.docID,
       minVolume: value === undefined ? 1 : (value.min === undefined ? 1 : parseInt(value.min)),
       maxVolume: value === undefined ? 999 : (value.max === undefined ? 999 : parseInt(value.max)),
       supplierName: props.SouSupplierName,
