@@ -43,7 +43,7 @@ import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
 import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
 import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPalletV2/RanderEleDocDisplay";
-import { PlusSquare, MinusSquare } from "./IconTreeview";
+import { PlusSquare, MinusSquare } from "../../../constant/IconTreeview";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";

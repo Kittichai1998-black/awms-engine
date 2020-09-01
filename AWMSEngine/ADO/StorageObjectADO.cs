@@ -450,6 +450,8 @@ namespace AWMSEngine.ADO
             param.Add("skuCode", search.skuCode);
             param.Add("forCustomerID", search.forCustomerID);
             param.Add("desCustomerID", search.desCustomerID);
+            param.Add("packUnitID", search.packUnitID);
+            param.Add("packUnitCode", search.packUnitCode);
 
             param.Add("useFullPick", search.useFullPick);
             param.Add("useExpireDate", search.useExpireDate); 

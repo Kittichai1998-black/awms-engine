@@ -139,7 +139,7 @@ const AmPrintBarCodeV2 = props => {
   }
 
   const onClickLoadPDF = async (itemList) => {
-    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark)
+    var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark, props.docID)
     try {
 
       await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf").then();
