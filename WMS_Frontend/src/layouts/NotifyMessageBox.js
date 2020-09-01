@@ -1,16 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { LayoutContext } from '../reducers/context';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import Popper from '@material-ui/core/Popper';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
 import * as signalR from '@aspnet/signalr';
 import AmDropdownMenu from "../components/AmDropDownMenu";
 import Axios from "axios";
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import {Dropdown} from "react-bootstrap";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -35,14 +31,13 @@ const NotifyBox = React.memo(({notify}) => {
         <div style={{cursor:"pointer", fontSize:"14px",width:"200px",textOverflow:"ellipsis",overflow:"hidden",whiteSpace: "nowrap"}}><label style={{fontWeight:"bold", margin:0}}>{x.Title} : </label>{x.Message}</div>
         , action:() => {
         notify.setNotifyState(false)
-      }
+      }, selectable:true
     }
   });
+  reCreateItems.push({label:"", action:() => {}, divider:true})
   reCreateItems.push({label:
-      <div style={{borderTop:"1px rgba(0,0,0,.5) solid"}}><label style={{fontWeight:"bold", margin:0}}>More...</label></div>
-      , action:() => {
-        window.open("/Notify");notify.setNotifyState(false)
-    }
+      <div><label style={{fontWeight:"bold", margin:0}}><Link to={"/Notify"}>More...</Link></label></div>
+      , action:() => {notify.setNotifyState(false)}
   })
   return <AmDropdownMenu customToggle={customToggleBTN} title={<div><NotificationsIcon /></div>} 
   id={"notifyBox"} 
