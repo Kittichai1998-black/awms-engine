@@ -87,6 +87,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             {
                 getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             }
+            if (getSto == null)
+                return null;
 
             var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
             if (packsList !=null && packsList.Count > 0)

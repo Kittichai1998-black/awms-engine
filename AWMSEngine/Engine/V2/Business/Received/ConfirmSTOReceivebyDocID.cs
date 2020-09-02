@@ -28,39 +28,42 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY)
             {
-                if (docs.EventStatus == DocumentEventStatus.NEW)
+                if (docs.EventStatus == DocumentEventStatus.NEW || docs.EventStatus == DocumentEventStatus.WORKING)
                 {
                     var docitemsto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, BuVO);
                     docitemsto.ForEach(item =>
                     {
-                        decimal sumQtyDisto = item.DocItemStos.Sum(z => z.BaseQuantity ?? 0);
-                        decimal totalQty = item.BaseQuantity ?? 0;
-                        if (sumQtyDisto != totalQty)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + item.Code + " ที่ต้องการรับเข้าไม่ตรงกับจำนวนที่ระบุในเอกสาร");
-
-                        item.DocItemStos.ForEach(disto =>
+                        if (item.EventStatus == DocumentEventStatus.NEW)
                         {
-                            var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+                            decimal sumQtyDisto = item.DocItemStos.Sum(z => z.BaseQuantity ?? 0);
+                            decimal totalQty = item.BaseQuantity ?? 0;
+                            if (sumQtyDisto != totalQty)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + item.Code + " ที่ต้องการรับเข้าไม่ตรงกับจำนวนที่ระบุในเอกสาร");
 
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+                            item.DocItemStos.ForEach(disto =>
+                            {
+                                var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+
+                                ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
                             //update Audit status, Hold status
 
                             //set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
                             disto.Status = EntityStatus.ACTIVE;
-                            ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
+                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
                             //ถ้าไม่มี des_waveseq สุดท้ายเเล้ว ให้อัพเดท disto เป็น Done
                             if (disto.Des_WaveSeq_ID == null)
+                                {
+                                    disto.Status = EntityStatus.DONE;
+                                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                                }
+                            });
+
+                            if (item.DocItemStos.Any(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE))
                             {
-                                disto.Status = EntityStatus.DONE;
-                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                                item.EventStatus = DocumentEventStatus.WORKING;
+                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                             }
-                        });
-
-                        if (item.DocItemStos.Any(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE))
-                        {
-                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                         }
-
                     });
 
                     /*void set_status_base(long parent_id, StorageObjectType parent_type)
@@ -85,13 +88,17 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ADO.DocumentADO.GetInstant().UpdateEventStatus(reqVO.docID.Value, DocumentEventStatus.WORKING, this.BuVO);
 
                     var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
-                    
-                    docs.DocumentItems.ForEach(item => {
+
+                    docitemsto.ForEach(item =>
+                    {
                         var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
-                        grItem.EventStatus = DocumentEventStatus.WORKING;
-                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        if (item.EventStatus == DocumentEventStatus.WORKING)
+                        {
+                            grItem.EventStatus = DocumentEventStatus.WORKING;
+                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        }
                     });
-                    
+
                     ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                      
                 }

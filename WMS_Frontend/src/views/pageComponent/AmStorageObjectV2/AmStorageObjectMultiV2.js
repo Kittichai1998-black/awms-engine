@@ -308,7 +308,7 @@ const AmStorageObjectMulti = props => {
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
-        selection={"checkbox"}
+        selection={props.action === true ? "checkbox" : ""}
         selectionData={(data) => {
           setSelection(data);
         }}
@@ -320,44 +320,45 @@ const AmStorageObjectMulti = props => {
             setIniQuery(false)
         }}
         customAction={
-          [{
-            label: <div style={{ fontSize: "12px" }}>
-              {"HOLD"}</div>,
-            action: (data) => {
-              if (selection.length === 0) {
-                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-              } else {
-                setDialog(true)
-              }
-            }
-
-          },
-          {
-            label: <div style={{ fontSize: "12px" }}>
-              {"UNHOLD"}</div>,
-            action: (data) => {
-              if (selection.length === 0) {
-                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-              } else {
-                setDialog(true)
-                setHold(false)
+          props.action === true ?
+            [{
+              label: <div style={{ fontSize: "12px" }}>
+                {"HOLD"}</div>,
+              action: (data) => {
+                if (selection.length === 0) {
+                  setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+                } else {
+                  setDialog(true)
+                }
               }
 
-            }
-          },
-          {
-            label: <div style={{ fontSize: "12px" }}>
-              {"REMARK"}</div>,
-            action: (data) => {
-              if (selection.length === 0) {
-                setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-              } else {
-                setDialog(true)
-                setRemarkMode(true)
-              }
+            },
+            {
+              label: <div style={{ fontSize: "12px" }}>
+                {"UNHOLD"}</div>,
+              action: (data) => {
+                if (selection.length === 0) {
+                  setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+                } else {
+                  setDialog(true)
+                  setHold(false)
+                }
 
-            }
-          }]}
+              }
+            },
+            {
+              label: <div style={{ fontSize: "12px" }}>
+                {"REMARK"}</div>,
+              action: (data) => {
+                if (selection.length === 0) {
+                  setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+                } else {
+                  setDialog(true)
+                  setRemarkMode(true)
+                }
+
+              }
+            }] : null}
       />
 
     </div>

@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -121,7 +122,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     }
                     ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
                 }
-
+                if (disto.WorkQueue_ID != null)
+                {
+                    UpdateWorkQueueWork(disto.WorkQueue_ID);
+                }
             }
 
             void updatePallet(long parent_id, StorageObjectType parent_type)
@@ -193,6 +197,29 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });
+        }
+        private void UpdateWorkQueueWork(long? workQueue_ID)
+        {
+            var queueTrx = ADO.WorkQueueADO.GetInstant().Get(workQueue_ID.Value, this.BuVO);
+            if (queueTrx.EventStatus == WorkQueueEventStatus.WORKING
+                || queueTrx.EventStatus == WorkQueueEventStatus.WORKED)
+            {
+
+                queueTrx.ActualTime = DateTime.Now;
+                queueTrx.EndTime = DateTime.Now;
+                queueTrx.EventStatus = WorkQueueEventStatus.WORKED;
+                WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
+
+                queueTrx.ActualTime = DateTime.Now;
+                queueTrx.EndTime = DateTime.Now;
+                queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
+                WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
+
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
+            }
         }
     }
 }
