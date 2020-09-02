@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
@@ -36,7 +36,7 @@ const view_sto = {
 };
 
 
-const AD_Create = props => {
+const GI_Create_FGCustomer = props => {
     const [CodeprocessType, setCodeprocessType] = useState(1);
     const [table, setTable] = useState(null);
     const [HeaderDoc, setHeaderDoc] = useState([]);
@@ -50,9 +50,9 @@ const AD_Create = props => {
 
 
     useEffect(() => {
-
-
-        if (CodeprocessType !== "" && CodeprocessType !== null) {
+        
+        
+        if (CodeprocessType !== "" && CodeprocessType !== null) {    
             var DataprocessTypeID;
             var defaulProcessType = 1010
             if (CodeprocessType === 1) {
@@ -61,16 +61,16 @@ const AD_Create = props => {
                     { label: "Des Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ]
             } else if (CodeprocessType === 2) {
-
-                DataprocessTypeID = [{ label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
-                { label: "Des Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
-                ]
+                
+                 DataprocessTypeID =[ { label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
+                     { label: "Des Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
+                   ]
             } else if (CodeprocessType === 3) {
                 DataprocessTypeID = [
                     { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" },
                     { label: "Des Supplier", type: "dropdown", key: "desSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Des Supplier" }]
             } else {
-                // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+               // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
 
 
@@ -80,13 +80,13 @@ const AD_Create = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4041, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4071, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
-
-                DataprocessTypeID,
-
-
+                
+                    DataprocessTypeID,
+                  
+                
                 [
                     { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
@@ -102,7 +102,7 @@ const AD_Create = props => {
             setskuquery();
             setaddlistquery();
             setType(true)
-
+         
         } else {
 
         }
@@ -117,11 +117,11 @@ const AD_Create = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
-                    onChangeProcessTypeCode={((e) => { setProcessTypeCode(e) })}
+                    onChangeProcessTypeCode={((e)=> { setProcessTypeCode(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
-                    createDocType={"audit"}
+                    createDocType={"counting"}
                     history={props.history}
                     //itemNo={true}
                     //defualItemNo={'0001'}
@@ -129,7 +129,7 @@ const AD_Create = props => {
                 />
             );
         }
-
+     
 
     }, [HeaderDoc, CodeprocessType, columSKU, addlist])
 
@@ -154,7 +154,7 @@ const AD_Create = props => {
         } else {
             Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts: "-" }
         }
-        console.log(ProcessTypeCode)
+
         if (ProcessTypeCode === '4081' || ProcessTypeCode === '4141' || ProcessTypeCode === '4151' ||
             ProcessTypeCode === '5011' || ProcessTypeCode === '5141' || ProcessTypeCode === '5151') {
             AuditStatusDDL = { Header: "Audits Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
@@ -164,7 +164,7 @@ const AD_Create = props => {
 
         console.log(AuditStatusDDL)
         var columnEdit = [
-            { Header: "Item No.", accessor: "itemNo", type: "input" },
+            { Header: "Item No.", accessor: "itemNo", type: "input"},
             {
                 // search: false,
                 Header: "Item",
@@ -181,7 +181,7 @@ const AD_Create = props => {
             { Header: "OrderNo", accessor: "orderNo", type: "input" },
             { Header: "Batch", accessor: "batch", type: "input" },
             { Header: "Lot", accessor: "lot", type: "input" },
-            { Header: "Quantity", accessor: "quantity", type: "inputNum", TextInputnum : "%" ,required: true },
+            { Header: "Quantity", accessor: "quantity", type: "inputNum", TextInputnum: "%" ,required: true },
             { Header: "Unit", accessor: "unitType", type: "unitConvert" },
             AuditStatusDDL,
             Headers,
@@ -203,8 +203,8 @@ const AD_Create = props => {
             let objQueryaddlist = view_sto;
             if (objQueryaddlist !== null && Type === true && skuType !== undefined) {
                 let addqrys = JSON.parse(objQueryaddlist.q);
-                addqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
-                objQueryaddlist.q = JSON.stringify(addqrys);
+             addqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
+              objQueryaddlist.q = JSON.stringify(addqrys);
             }
 
             setaddlistquery(objQueryaddlist)
@@ -249,7 +249,7 @@ const AD_Create = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2003}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -319,10 +319,10 @@ const AD_Create = props => {
         { Header: "ProductDate", accessor: "productionDate" },
         { Header: "ExpireDate", accessor: "expireDate" },
         { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
-
+    
     ];
 
-
+  
     const columns = [
         // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item No.", accessor: "itemNo" },
@@ -344,11 +344,11 @@ const AD_Create = props => {
         { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
     ];
 
-    const apicreate = "/v2/CreateADDocAPI/"; //API สร้าง Doc
-    const apiRes = "/audit/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc
+    const apiRes = "/counting/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>       
         {table}</div>;
 };
 
-export default AD_Create;
+export default GI_Create_FGCustomer;

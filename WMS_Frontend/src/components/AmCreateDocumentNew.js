@@ -366,7 +366,11 @@ const AmCreateDocument = (props) => {
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
-     
+
+        if (props.createDocType === "audit" && field === "quantity" && data != null) {
+            editData["quantity"] = (data + "%")
+        }
+
 
         if (field === "productionDate") {
             editData['productionDate'] = moment(data.value).format('MM-DD-YYYY')
@@ -410,6 +414,11 @@ const AmCreateDocument = (props) => {
                 //if (field === "unitType") {
                 //    editData[field] = data[field] ? data[field] : data.Code
                 //} else {
+
+                if (props.createDocType === "audit" && field === "quantity" && data != null ) {
+                    editData["quantity"] = (data + "%")
+                }
+
                 editData[field] = data[field] ? data[field] : data.value
                 //}
             }
@@ -447,6 +456,8 @@ const AmCreateDocument = (props) => {
         if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
             row.removeRelated.forEach(x => delete editData[x])
         }
+
+        console.log(editData)
         setEditData(editData)
 
         if (required) {
@@ -615,7 +626,7 @@ const AmCreateDocument = (props) => {
                                     error={rowError}
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
-                                    defaultValue={editData !== null && editData !== {} && editData["qtyrandom"] !== undefined ? editData[accessor].replace("%", "") : ""}
+                                    defaultValue={editData !== null && editData !== {} && editData["quantity"] !== undefined ? editData[accessor].replace("%", "") : ""}
                                     style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
@@ -1033,15 +1044,13 @@ const AmCreateDocument = (props) => {
                 return _docItem
             })
         }
-        else if (props.createDocType === "audit") {
-            doc.docItems = dataSource.map(x => {
-                let _docItem = { ...docItem }
-                for (let [key, value] of Object.entries(x)) {
-                    if (key in docItem)
-                        _docItem[key] = value
-
-                }
-                return _docItem
+        else if (props.createDocType === "counting") {
+            doc.countingItems = dataSource.map(x => {
+                return x
+            })
+        } else if (props.createDocType === "audit") {
+            doc.auditItems = dataSource.map(x => {
+                return x
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
@@ -1058,7 +1067,6 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
-            console.log(doc)
             CreateDocuments(doc)
         }
     }
