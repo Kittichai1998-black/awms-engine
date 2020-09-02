@@ -242,8 +242,8 @@ const AmPickingChecker = (props) => {
 
     const handleNext = (index) => {
         if (index === 0) {
-            if (valueInput.baseCode) {
-                GetStoPicking(valueInput.baseCode);
+            if (valueInput.bstoCode) {
+                GetStoPicking(valueInput.bstoCode);
             } else {
                 alertDialogRenderer("warning", "กรุณากรอกหมายเลขพาเลท")
             }
@@ -252,23 +252,33 @@ const AmPickingChecker = (props) => {
 
     const handleBack = (index) => {
         if (index === 1) {
-            setValueInput({ ...valueInput, ['baseCode']: null })
+            setValueInput({ ...valueInput, ['bstoCode']: null })
+            ClearInput('bstoCode');
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const handleReset = () => {
+        setValueInput({});
+        ClearInput('bstoCode');
         setActiveStep(0);
     };
+    const ClearInput = (field) => {
+        let ele2 = document.getElementById(field);
+        if (ele2)
+            ele2.value = "";
+        valueInput[field] = null;
+        ele2.focus();
+    }
 
     function getSteps() {
 
-        var baseCode = "";
+        var bstoCode = "";
         if (valueInput) {
-            if (valueInput.baseCode) { baseCode = valueInput.baseCode; }
+            if (valueInput.bstoCode) { bstoCode = valueInput.bstoCode; }
         }
         return [
-            { label: "Scan Pallet Code", value: baseCode },
+            { label: "Scan Pallet Code", value: bstoCode },
             { label: 'Confirm Picking', value: null },
         ];
     };
@@ -277,19 +287,19 @@ const AmPickingChecker = (props) => {
             case 0:
                 return <div>
                     <AmInput
-                        id={"baseCode"}
+                        id={"bstoCode"}
                         type="input"
                         placeholder="Scan Pallet Code"
                         autoFocus={true}
                         style={{ width: "100%" }}
-                        onChange={(value, obj, element, event) => onHandleChangeInput(value, "baseCode")}
+                        onChange={(value, obj, element, event) => onHandleChangeInput(value, "bstoCode")}
                         onBlur={(value, obj, element, event) => {
-                            onHandleChangeInput(value, "baseCode");
+                            onHandleChangeInput(value, "bstoCode");
                             handleNext(0);
                         }}
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
-                                onHandleChangeInput(value, "baseCode");
+                                onHandleChangeInput(value, "bstoCode");
                                 handleNext(0);
                             }
                         }
@@ -308,7 +318,7 @@ const AmPickingChecker = (props) => {
 
     const RenderTreeViewData = React.memo(({ data, onClick }) => {
         if (data != null && data.stoItems != null && data.stoItems.length > 0) {
-            //    let baseCode 
+            //    let bstoCode 
             console.log(data)
             return (<div>
                 <TreeView
@@ -322,16 +332,18 @@ const AmPickingChecker = (props) => {
                         let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
                         let lot = sto.lot != null ? " | Lot:" + sto.lot : "";
                         let batch = sto.batch != null ? " | Batch:" + sto.batch : "";
+                        let orderNo = sto.orderNo != null ? " | Order No.:" + sto.orderNo : "";
+                        let cartonNo = sto.cartonNo != null ? " | Carton No.:" + sto.cartonNo : "";
                         return (
                             <StyledTreeItem
                                 key={idx}
                                 nodeId={idx}
-                                label={pstoCode + lot + batch}>
+                                label={pstoCode + lot + batch + orderNo + cartonNo}>
                                 {sto.pickItems.map((row, index) => {
                                     let pk_docCode = row.pk_docCode != null ? row.pk_docCode : "";
                                     let processTypeName = row.processTypeName != null ? " | " + row.processTypeName : "";
                                     let pickQty = row.pickQty != null ? " | " + row.pickQty + " " + row.unitCode : "";
-                                    let destination = row.destination != null ? " | " + row.destination : "";
+                                    let destination = row.destination != null ? " | To:" + row.destination : "";
                                     let remark = row.remark != null ? " | " + row.remark : "";
                                     return (
                                         <StyledTreeItem
@@ -340,9 +352,10 @@ const AmPickingChecker = (props) => {
                                             label={
                                                 pk_docCode +
                                                 processTypeName +
-                                                pickQty +
                                                 destination +
-                                                remark}
+                                                remark +
+                                                pickQty
+                                            }
                                             onIconClick={() => onClick(row)}
                                             onLabelClick={() => onClick(row)}
                                         />
@@ -356,20 +369,20 @@ const AmPickingChecker = (props) => {
                 </TreeView>
             </div>);
         } else {
-            return <div><LabelH>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</LabelH></div>;
+            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
         }
     });
-    const GetStoPicking = (baseCode) => {
+    const GetStoPicking = (bstoCode) => {
         Axios.get(window.apipath + '/v2/get_sto_picking?' +
-            '&bstoCode=' + (baseCode === undefined || baseCode === null ? ''
-                : encodeURIComponent(baseCode.trim()))).then(res => {
+            '&bstoCode=' + (bstoCode === undefined || bstoCode === null ? ''
+                : encodeURIComponent(bstoCode.trim()))).then(res => {
                     if (res.data._result.status === 1) {
                         if (res.data.stoItems != null && res.data.stoItems.length > 0) {
                             setActiveStep((prevActiveStep) => prevActiveStep + 1);
                             setDataStoPick(res.data)
                         } else {
                             setDataStoPick(null)
-                            setActiveStep((prevActiveStep) => prevActiveStep - 1);
+                            handleReset();
                             alertDialogRenderer("warning", "ไม่พบรายการสินค้าที่เบิกได้")
                         }
                     } else {
@@ -385,9 +398,12 @@ const AmPickingChecker = (props) => {
             if (res.data._result.status === 1) {
                 if (res.data.stoItems != null && res.data.stoItems.length > 0) {
                     setDataStoPick(res.data)
+                    alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
                 } else {
-                    setDataStoPick(null)
-                    alertDialogRenderer("warning", "ไม่พบรายการสินค้าที่เบิกได้")
+                    if (res.data.docIDs != null && res.data.docIDs.length > 0) {
+                        alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
+                        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+                    }
                 }
             } else {
                 alertDialogRenderer("error", res.data._result.message)
