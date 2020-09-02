@@ -19,12 +19,13 @@ namespace AWMSEngine.Engine.Business
         //private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
         public class TReq
         {
+            public long psto;
             public string oldbstoCode;
             public long oldqty;
             public string newbstoCode;
             public long newQty;
             public long newUnitID;
-           
+
         }
         public class TRes
         {
@@ -51,20 +52,57 @@ namespace AWMSEngine.Engine.Business
 
                 });
             }
-                
-            mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.oldbstoCode, null, null, false, true, this.BuVO);
+
+            mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.PACK, false, false, this.BuVO);
+            var newBaseQty = StaticValue.ConvertToBaseUnitBySKU(mapsto.skuID.Value, reqVO.newQty, reqVO.newUnitID);
             if (mapsto != null)
             {   //มีพาเลทในระบบแล้ว
 
-                res.bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
+                var cloneSto = mapsto.Clone();
+                cloneSto.qty = cloneSto.qty - reqVO.oldqty;
+                cloneSto.baseQty = cloneSto.baseQty - newBaseQty.newQty;
+
+                //var updateNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
+                //Insert
+
+                var cloneStoInsert = mapsto.Clone();
+                cloneStoInsert.id = null;
+                cloneStoInsert.qty = reqVO.newQty;
+                cloneStoInsert.baseQty = newBaseQty.newQty;
+                cloneStoInsert.unitID = reqVO.newUnitID;
+                cloneStoInsert.unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == reqVO.newUnitID).Code;
+
+                //var insertNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
             }
             else
             {
 
-              
+
             }
 
             return res;
         }
-    }
+        private StorageObjectCriteria mapPallet(AMWLogger logger, StorageObjectCriteria psto, TReq reqVO, VOCriteria buVO)
+        {
+            var palletList = new List<PalletDataCriteriaV2>();
+            palletList.Add(new PalletDataCriteriaV2()
+            {
+                code = reqVO.newbstoCode,
+                qty = 1,
+                unit = null,
+                orderNo = null,
+                batch = null,
+                lot = null
+            });
+
+
+            return null;
+        }
+
+
+
+
+
+        }
 }
+
