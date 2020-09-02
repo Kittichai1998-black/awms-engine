@@ -120,7 +120,7 @@ const AmTable = (props) => {
     }
 
     return <>
-        <Suspense fallback="...Loading">
+        <Suspense fallback="">
             <AmTableComponent
                 dataSource={props.dataSource}
                 width={props.width}

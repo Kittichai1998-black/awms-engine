@@ -21,7 +21,8 @@ namespace AWMSModel.Criteria.SP.Request
         
         public long? forCustomerID;
         public long? desCustomerID;
-
+        public long? packUnitID;
+        public string packUnitCode;
 
         public List<AuditStatus> auditStatuses;
 

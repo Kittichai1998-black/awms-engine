@@ -116,9 +116,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     doci.DocItemStos.AddRange(distos.FindAll(disto => disto.DocumentItem_ID == doci.ID));
                 });
                 if (rstos.Any(x => x.docItems.Any(y => y.docID == doc.ID)))
+                {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                }
                 else
+                {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
+                }
             });
 
             //create by anon

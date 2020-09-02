@@ -15,8 +15,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
     {
         public class TReq
         {
+            public long? bstoID;
             public string bstoCode;
-
         }
         public class TRes
         {
@@ -41,11 +41,14 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                 public class PickItems
                 {
+                    public long? bstoID;
+                    public long? pstoID;
+                    public long? pk_docID;
                     public string pk_docCode;
                     public long? pk_docItemID;
+                    public long? distoID;
                     public DocumentProcessTypeID processTypeID;
                     public string processTypeName;
-                    public long? distoID;
                     public decimal? pickQty;
                     public string unitCode;
                     public decimal? pickBaseQty;
@@ -66,15 +69,34 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         {
             TRes res = new TRes();
             
-            if(reqVO.bstoCode == null)
-                throw new AMWException(Logger, AMWExceptionCode.V1001, "กรุณาระบุรหัสพาเลทที่ต้องการเบิก");
-            //var getDisto = ADO.DocumentADO.GetInstant().Lis
-            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             
+            var getSto = new StorageObjectCriteria();
+            
+            if (reqVO.bstoCode == null)
+            {
+                if(reqVO.bstoID != null)
+                {
+                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                }
+                else
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "กรุณาระบุรหัสพาเลทที่ต้องการเบิก");
+                }
+            }
+            else
+            {
+                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+            }
+            if (getSto == null)
+                return null;
+
             var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
             if (packsList !=null && packsList.Count > 0)
             {
-                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PUTAWAY, BuVO);
+                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PICKING, BuVO);
+                if (docItems == null || docItems.Count() == 0)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบรายการเอกสารเบิก");
+
                 docItems.ForEach(x =>
                 {
                     var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
@@ -85,7 +107,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                 });
 
-
+                res.stoItems = new List<TRes.STOItems>();
                 docItems.ForEach(docItem =>
                 {
                     if (docItem.BaseQuantity == null)
@@ -144,6 +166,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     ref2 = pack.ref2,
                                     ref3 = pack.ref3,
                                     ref4 = pack.ref4,
+                                    pickItems = new List<TRes.STOItems.PickItems>() { }
                                 };
                                 distos.ForEach(disto =>
                                 {
@@ -153,12 +176,12 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     if (disto.BaseQuantity == null)
                                     {
                                         //ไม่ได้ระบุจำนวนที่ต้องการเบิก 
-                                        var pickQTY = remainBaseQty - pack.baseQty; //จำนวนที่ต้องการเบิก - สินค้าที่มีอยุ่ 
-                                        if (pickQTY > 0)
+                                        var tmpQTY = pack.baseQty - remainBaseQty; // สินค้าที่มีอยุ่  - จำนวนเหลือจากdocitemที่ต้องการเบิก = 
+                                        if (tmpQTY > 0)
                                         {
                                             //ของเหลือ 
                                             disto.BaseQuantity = remainBaseQty;
-                                            var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(pack.skuID.Value, remainBaseQty.Value, pack.baseUnitID);
+                                            var qtyConvert = StaticValue.ConvertToNewUnitBySKU(pack.skuID.Value, remainBaseQty.Value, pack.baseUnitID,pack.unitID);
                                             disto.Quantity = qtyConvert.newQty;
 
                                             pack.baseQty = remainBaseQty.Value;
@@ -214,11 +237,14 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     var docitem = docItems.Find(i => i.ID == disto.DocumentItem_ID);
                 
                     var doc = ADO.DocumentADO.GetInstant().Get(docitem.Document_ID, BuVO);
-                    var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessMap>(new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("DocumentType_ID", doc.DocumentType_ID,SQLOperatorType.EQUALS),
+                    var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
+                                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUE,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
                                 }, this.BuVO).FirstOrDefault();
+                    if(processType == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Process Type Map");
+
                     var processTypeName = String.IsNullOrEmpty(processType.ReProcessType_Name) ? processType.Name : processType.ReProcessType_Name;
 
                     string des_warehouse = "", des_customer = "", des_suplier = "";
@@ -231,6 +257,9 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                     var pickItem = new TRes.STOItems.PickItems()
                     {
+                        bstoID = pack.parentID,
+                        pstoID = pack.id,
+                        pk_docID = doc.ID,
                         pk_docCode = doc.Code,
                         pk_docItemID = disto.DocumentItem_ID.Value,
                         processTypeID = doc.DocumentProcessType_ID,

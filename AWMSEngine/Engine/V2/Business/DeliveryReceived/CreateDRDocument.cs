@@ -167,14 +167,14 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             if (DocumentProcessTypeCodes != null)
             {
                 var ProceesTypedoc = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
-               new SQLConditionCriteria[] {
-                new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
-           }, this.BuVO).FirstOrDefault();
+             new SQLConditionCriteria[] {
+                new SQLConditionCriteria("DocumentProcessType_ID",DocumentProcessTypeCodes.ID, SQLOperatorType.EQUALS),
+         }, this.BuVO).FirstOrDefault();
 
-                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt();
+                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt(); ;
 
 
-                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1001)
+                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1012)
                 {
                     var DocprocessID = DocumentProcessTypeCodes.ID;
                     var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();

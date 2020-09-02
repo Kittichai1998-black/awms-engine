@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import Axios from "axios";
 import withWidth from '@material-ui/core/withWidth';
-import {
-    withStyles,
-    MuiThemeProvider,
-} from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, useTheme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
@@ -35,7 +32,7 @@ import Header from "./headerLayout";
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         // [theme.breakpoints.down('sm')]: {
         //     aa: theme.palette.secondary.main
@@ -109,14 +106,12 @@ const styles = theme => ({
         marginRight: 0
     },
     sectionDesktop: {
-        width: '100%',
         display: 'none',
         [theme.breakpoints.up('md')]: {
-            display: 'flex',
+            display: 'flex'
         },
     },
     sectionMobile: {
-        width: '100%',
         display: 'flex',
         position:"relative",
         [theme.breakpoints.up('md')]: {
@@ -146,7 +141,7 @@ const styles = theme => ({
         justifyContent: 'center',
         zIndex: '99999'
     },
-});
+}));
 
 const checkstatus = () => {
     const d1 = new Date(localStorage.ExpireTime);
@@ -281,11 +276,14 @@ const MainContainer = React.memo(({route, path}) => {
     </Switch>
 });
 
+const theme = createMuiTheme();
 const Default = props => {
-    const { classes, theme } = props;
+    const classes = useStyles();
+    const theme = useTheme();
     const [routes, setRoutes] = useState([]);
     const { t, i18n } = useTranslation()
 
+    const matches = useMediaQuery(theme.breakpoints.up('md'));
     const refContainer = useRef();
 
     const {sidebar} = useContext(LayoutContext);
@@ -336,8 +334,6 @@ const Default = props => {
     };
 
     const size = useWindowSize(refContainer)
-
-    const matches = useMediaQuery('(max-width:400px)');
     
     let Path = window.location.pathname.split('/');
     useEffect(() => {
@@ -439,37 +435,13 @@ const Default = props => {
     };
 
     return (
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             <div className={classes.root}>
                 {checkstatus()}
                 <CssBaseline />
                 <Header/>
                 <div className={classes.sectionDesktop}>
                     <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar}/>
-                    <main
-                        className={classNames(classes.content, {
-                            [classes.contentShift]: sidebar.sidebarToggle
-                        })}
-                    >
-                        <div className={classes.drawerHeader} />
-                        <Paper
-                            elevation={0}
-                            className={classes.paper}
-                            style={{ background: "none" }}
-                        >
-                            <Breadcrumbs
-                                separator={<NavigateNextIcon fontSize="small" />}
-                                aria-label="Breadcrumb"
-                            >
-                                {Home_Link()}
-                                {Route_1()}
-                                {NavicateBarN()}
-                            </Breadcrumbs>
-                        </Paper>
-                        <div ref={refContainer} style={{width:"100%", height:size[1] }}>
-                            <MainContainer route={routeLink} path={window.location.pathname}/>
-                        </div>
-                    </main>
                 </div>
 
                 <div className={classes.sectionMobile}>
@@ -477,8 +449,13 @@ const Default = props => {
                     {sidebar.mobileSidebarToggle ? 
                     <div onClick={() => sidebar.setMobileSidebarToggle(false)} className={[classes.divfull]}></div> 
                     : null}
-                    <main className={classes.content}>
-                        <div className={classes.drawerHeader} />
+                </div>
+
+                <main className={classNames(classes.content, {
+                        [classes.contentShift]: (matches ? sidebar.sidebarToggle : matches)
+                    })}
+                >
+                    <div className={classes.drawerHeader} />
                         <Paper
                             elevation={0}
                             className={classes.paper}
@@ -495,12 +472,11 @@ const Default = props => {
                         </Paper>
                         <div ref={refContainer} style={{width:"100%", height:size[1] }}>
                             <MainContainer route={routeLink} path={window.location.pathname}/>
-                        </div>
-                    </main>
-                </div>
-                
+                        </div> 
+                </main>
+
             </div>
-        </MuiThemeProvider>
+        </ThemeProvider>
     );
 };
 
@@ -509,4 +485,4 @@ Default.propTypes = {
     theme: PropTypes.object.isRequired
 };
 
-export default withWidth()(withStyles(styles, { withTheme: true })(Default));
+export default Default;
