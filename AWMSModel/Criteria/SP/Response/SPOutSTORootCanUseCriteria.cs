@@ -106,6 +106,7 @@ namespace AWMSModel.Criteria.SP.Response
         public DateTime? diExpireDate;
         public DateTime? diProductionDate;
         public string dcCode;
+        public long dcDocType_ID;
         public long dcID;
 
         //public DateTime createTime;
