@@ -4,11 +4,11 @@ import {
     createQueryString,
     Clone,
     IsEmptyObject
-} from "../../../components/function/CoreFunction";
+} from "../../../../components/function/CoreFunction";
 import { useTranslation } from "react-i18next";
-import AmDialogs from "../../../components/AmDialogs";
-import AmButton from "../../../components/AmButton";
-import AmInput from "../../../components/AmInput";
+import AmDialogs from "../../../../components/AmDialogs";
+import AmButton from "../../../../components/AmButton";
+import AmInput from "../../../../components/AmInput";
 import { fade, makeStyles, withStyles } from "@material-ui/core";
 import moment from "moment";
 import Paper from "@material-ui/core/Paper";
@@ -37,7 +37,7 @@ import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from '@material-ui/lab/TreeItem';
 import Collapse from '@material-ui/core/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs';
-import { PlusSquare, MinusSquare } from "../../../constant/IconTreeview";
+import { PlusSquare, MinusSquare } from "../../../../constant/IconTreeview";
 import EditIcon from '@material-ui/icons/Edit';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 const Axios = new apicall();
@@ -225,7 +225,7 @@ const useStyles = makeStyles({
     },
 });
 
-const AmPickingChecker = (props) => {
+const AuditChecker = (props) => {
     const { t } = useTranslation();
     const { classes } = props;
     const [valueInput, setValueInput] = useState({});
@@ -279,7 +279,7 @@ const AmPickingChecker = (props) => {
         }
         return [
             { label: "Scan Pallet Code", value: bstoCode },
-            { label: 'Confirm Picking', value: null },
+            { label: 'Select Auditing', value: null },
         ];
     };
     function getStepContent(step) {
@@ -386,7 +386,7 @@ const AmPickingChecker = (props) => {
                             alertDialogRenderer("warning", "ไม่พบรายการสินค้าที่เบิกได้")
                         }
                     } else {
-                        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+                        handleReset();
                         alertDialogRenderer("error", res.data._result.message)
                     }
                 });
@@ -481,7 +481,7 @@ const AmPickingChecker = (props) => {
         </div>
     )
 }
-AmPickingChecker.propTypes = {
+AuditChecker.propTypes = {
 
 }
-export default withStyles(styles)(AmPickingChecker);
+export default withStyles(styles)(AuditChecker);

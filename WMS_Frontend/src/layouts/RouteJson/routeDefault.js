@@ -318,6 +318,10 @@ const PK_Checker = Loadable({
   loader: () => import("../../views/page/ENGINE/PK/PK_Checker"),
   loading: Loading
 });
+const AD_Checker = Loadable({
+  loader: () => import("../../views/page/ENGINE/AD/AD_Checker"),
+  loading: Loading
+});
 
 const GI_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
@@ -458,6 +462,7 @@ let routes = [
   { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
+  { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
 ];
