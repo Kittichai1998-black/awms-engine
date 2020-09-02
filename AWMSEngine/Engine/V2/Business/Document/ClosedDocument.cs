@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 }
                                 else
                                 {
-                                    if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY || docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
+                                    if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY || docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT || docs.DocumentType_ID == DocumentTypeID.AUDIT)
                                     {
                                         distos.ForEach(disto =>
                                         {
@@ -83,9 +83,17 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                     {
                                         AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                        if (docs.ParentDocument_ID != null)
+                                        {
+                                            var getParentDoc = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                            if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
+                                            {
+                                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                            }
+                                        }
+
                                         RemoveOPTDocument(x, docs.Options, this.BuVO);
                                         docLists.Add(x);
-
                                     }
                                     else
                                     {
