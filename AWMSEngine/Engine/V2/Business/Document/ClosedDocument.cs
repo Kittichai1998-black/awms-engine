@@ -36,7 +36,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
                                 var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
-                                if (distos == null)
+                                if (distos == null || distos.Count == 0)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
                                     {
