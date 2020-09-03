@@ -36,7 +36,7 @@ const AD_Detail = props => {
                 buttonBack={true}
                 linkBack={"/audit/search"}
                 history={props.history}
-                //usePrintPDF={false}
+                usePrintPDF={false}
             >
             </DocView>
             )
@@ -98,8 +98,8 @@ const AD_Detail = props => {
         { Header: "OrderNo", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        //{ width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Qty", Cell: e => getFormatQty(e.original),widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",
@@ -171,6 +171,9 @@ const AD_Detail = props => {
 
     const getFormatDateExp = (e) => {
         return moment(e.diExpireDate).format("DD/MM/YYYY");
+    }
+    const getFormatQty = (e) => {
+        return e.Quantity + '%'
     }
     const getDoccode = (e) => {
         return (

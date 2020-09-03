@@ -913,7 +913,7 @@ const DocumentView = props => {
                                         onClick={() => {
                                             onCreatePut();
                                         }}
-                                    >Create PutAway</AmButton>
+                                    >{props.TextBtnCreateputAway}</AmButton>
                                 </div>
                             </Grid>
                         </Grid>
@@ -936,7 +936,7 @@ const DocumentView = props => {
 
                     : null}
             </FormInline>
-            {typeDoc && !props.CreateputAway && typeDoc !== "issued" ? (
+            {typeDoc && props.QrCodemanuak ? (
                 // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
                 <AmTable
                     selection={"checkbox"}

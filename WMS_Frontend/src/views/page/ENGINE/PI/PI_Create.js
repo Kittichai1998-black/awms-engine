@@ -80,7 +80,7 @@ const GI_Create_FGCustomer = props => {
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4071, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4041, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 
@@ -138,7 +138,7 @@ const GI_Create_FGCustomer = props => {
             let objQuery = SKUMaster;
             if (objQuery !== null && Type === true && skuType !== undefined) {
                 let skuqrys = JSON.parse(objQuery.q);
-                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
+                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
 
@@ -160,7 +160,6 @@ const GI_Create_FGCustomer = props => {
             AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
 
-        console.log(AuditStatusDDL)
         var columnEdit = [
             { Header: "Item No.", accessor: "itemNo", type: "input"},
             {
