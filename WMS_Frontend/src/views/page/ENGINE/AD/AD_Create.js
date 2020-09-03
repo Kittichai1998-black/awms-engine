@@ -88,13 +88,11 @@ const AD_Create = props => {
 
 
                 [
-                    { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
+                   // { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-                [
-
                     { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
+               
 
             ];
 
@@ -161,8 +159,6 @@ const AD_Create = props => {
         } else {
             AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
-
-        console.log(AuditStatusDDL)
         var columnEdit = [
             { Header: "Item No.", accessor: "itemNo", type: "input" },
             {

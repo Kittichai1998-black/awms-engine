@@ -87,12 +87,10 @@ const GI_Create_FGCustomer = props => {
                     DataprocessTypeID,
                   
                 
-                [
-                    { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
-                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-                [
 
+                [
+                    // { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
+                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                     { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
