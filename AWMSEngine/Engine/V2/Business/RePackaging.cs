@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -23,7 +24,7 @@ namespace AWMSEngine.Engine.Business
             public string oldbstoCode;
             public long oldqty;
             public string newbstoCode;
-            public long newQty;
+            public decimal newQty;
             public long newUnitID;
 
         }
@@ -36,8 +37,117 @@ namespace AWMSEngine.Engine.Business
         {
             var res = new TRes();
             StorageObjectCriteria mapsto = new StorageObjectCriteria();
-            var ckBase = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.newbstoCode, BuVO);
-            if (ckBase == null)
+            var newbstoBaseMaster = GetBaseSTO(reqVO);
+
+            if(reqVO.newQty <= 0)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "New Qty เท่ากับ 0");
+
+            var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.BASE, true, true, this.BuVO);
+
+            mapsto = bsto.mapstos.FindAll(x => x.id == reqVO.psto).FirstOrDefault();
+
+            var newBaseQty = StaticValue.ConvertToBaseUnitBySKU(mapsto.skuID.Value, reqVO.newQty, reqVO.newUnitID);
+            if (bsto != null)
+            {
+                //มีพาเลทในระบบแล้ว
+                var dataupdate = this.updateQtyPallet(this.Logger, mapsto, newBaseQty, reqVO, this.BuVO);
+                res.bsto = dataupdate;
+
+                var dataMap = this.mapPallet(this.Logger, mapsto, newBaseQty, newbstoBaseMaster, reqVO, this.BuVO);
+                var ck = dataupdate.mapstos.FindAll(x => x.id == reqVO.psto).FirstOrDefault();
+                if (ck.qty == 0)
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatus(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+
+                var ckQty = dataupdate.mapstos.TrueForAll(x => x.qty == 0);
+                if (ckQty)
+                {
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    res.bsto = dataMap;
+                }
+                
+            }
+            else
+            {
+                res.bsto = this.mapPallet(this.Logger, mapsto, newBaseQty, newbstoBaseMaster, reqVO, this.BuVO);
+            }
+            
+            return res;
+        }
+
+        private StorageObjectCriteria updateQtyPallet(AMWLogger logger, StorageObjectCriteria psto, ConvertUnitCriteria convertUnit, TReq reqVO, VOCriteria buVO)
+        {
+            var cloneSto = psto.Clone();
+            cloneSto.qty = cloneSto.qty - reqVO.oldqty;
+            cloneSto.baseQty = cloneSto.baseQty - convertUnit.newQty;
+
+            var updateNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
+
+            var newPallet = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(updateNewSto, StorageObjectType.BASE, true, true, this.BuVO);
+            return newPallet;
+        }
+        private StorageObjectCriteria mapPallet(AMWLogger logger, StorageObjectCriteria psto, ConvertUnitCriteria convertUnit,ams_BaseMaster newbstoBaseMaster,TReq reqVO, VOCriteria buVO)
+        {
+            //Insert
+            var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.PACK, true, false, this.BuVO);
+
+            var oldDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                 new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Sou_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
+                 }, this.BuVO).FirstOrDefault();
+
+            var cloneBsto = bsto.Clone();
+            cloneBsto.id = null;
+            cloneBsto.code = reqVO.newbstoCode;
+            cloneBsto.mstID = newbstoBaseMaster.ID;
+            
+            var insertNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneBsto, this.BuVO);
+
+           
+            var cloneStoInsert = psto.Clone();
+            cloneStoInsert.id = null;
+            cloneStoInsert.parentID = insertNewSto;
+            cloneStoInsert.qty = reqVO.newQty;
+            cloneStoInsert.baseQty = convertUnit.newQty;
+            cloneStoInsert.unitID = reqVO.newUnitID;
+            cloneStoInsert.unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == reqVO.newUnitID).Code;
+
+            var insertNewStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneStoInsert, this.BuVO);
+
+            var newPallet = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(insertNewSto, StorageObjectType.BASE, true, true, this.BuVO);
+
+
+            amt_DocumentItemStorageObject dataNewDisto = new amt_DocumentItemStorageObject()
+            {
+              IsLastSeq = oldDisto.IsLastSeq,
+              DocumentType_ID = null,
+              WorkQueue_ID = null,
+              DocumentItem_ID = null,
+              Sou_StorageObject_ID = oldDisto.Sou_StorageObject_ID,
+              Sou_WaveSeq_ID = null,
+              Des_StorageObject_ID = insertNewStopack,
+              Des_WaveSeq_ID = null,
+              Quantity = reqVO.newQty,
+              UnitType_ID = reqVO.newUnitID,
+              BaseQuantity = convertUnit.newQty,
+              BaseUnitType_ID = oldDisto.BaseUnitType_ID,
+              Status = oldDisto.Status
+            };
+
+            AWMSEngine.ADO.DistoADO.GetInstant().Insert(dataNewDisto, this.BuVO);
+
+
+            return newPallet;
+        }
+        private ams_BaseMaster GetBaseSTO(TReq reqVO)
+        {
+            var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("Code",reqVO.newbstoCode),
+                    new KeyValuePair<string,object>("Status",1),
+                }, this.BuVO);
+
+            if (baseMasterData.Count <= 0)
             {
                 AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
                 {
@@ -52,57 +162,10 @@ namespace AWMSEngine.Engine.Business
 
                 });
             }
+            var newbstoBaseMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.newbstoCode, BuVO);
 
-            mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.PACK, false, false, this.BuVO);
-            var newBaseQty = StaticValue.ConvertToBaseUnitBySKU(mapsto.skuID.Value, reqVO.newQty, reqVO.newUnitID);
-            if (mapsto != null)
-            {   //มีพาเลทในระบบแล้ว
-
-                var cloneSto = mapsto.Clone();
-                cloneSto.qty = cloneSto.qty - reqVO.oldqty;
-                cloneSto.baseQty = cloneSto.baseQty - newBaseQty.newQty;
-
-                //var updateNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
-                //Insert
-
-                var cloneStoInsert = mapsto.Clone();
-                cloneStoInsert.id = null;
-                cloneStoInsert.qty = reqVO.newQty;
-                cloneStoInsert.baseQty = newBaseQty.newQty;
-                cloneStoInsert.unitID = reqVO.newUnitID;
-                cloneStoInsert.unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == reqVO.newUnitID).Code;
-
-                //var insertNewSto = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
-            }
-            else
-            {
-
-
-            }
-
-            return res;
+            return newbstoBaseMaster;
         }
-        private StorageObjectCriteria mapPallet(AMWLogger logger, StorageObjectCriteria psto, TReq reqVO, VOCriteria buVO)
-        {
-            var palletList = new List<PalletDataCriteriaV2>();
-            palletList.Add(new PalletDataCriteriaV2()
-            {
-                code = reqVO.newbstoCode,
-                qty = 1,
-                unit = null,
-                orderNo = null,
-                batch = null,
-                lot = null
-            });
-
-
-            return null;
-        }
-
-
-
-
-
-        }
+    }
 }
 
