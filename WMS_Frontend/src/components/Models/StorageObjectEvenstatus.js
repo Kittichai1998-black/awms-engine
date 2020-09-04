@@ -34,12 +34,11 @@ const StorageObjectEvenStatusAll = [
   { label: "PICKED", value: 34 },
   { label: "CONSOLIDATING", value: 35 },
   { label: "CONSOLIDATED", value: 36 },
- 
 ];
 const AuditStatus =[
   { label: "QUARANTINE", value: 0 },
-  { label: "NOTPASS", value: 1 },
-  { label: "PASS", value: 2 },
+  { label: "PASSED", value: 1 },
+  { label: "REJECTED", value: 2 },
   { label: "HOLD", value: 9 },
 ]
 export { StorageObjectEvenstatus, StorageObjectEvenstatusTxt, StorageObjectEvenStatusAll, AuditStatus }

@@ -96,15 +96,22 @@ const processCondition = {
     ],
     "orderBys": [
         {
-            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", "sortBy": "0", "editable": true,
+            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", 
+            "defaultSortBy": "0", 
+            "editable": true, 
+            "order":1,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
-            "field": "Batch", "enable": true, "sortField": "psto.batch", "sortBy": "0", "editable": true,
+            "field": "Batch", "enable": true, "sortField": "psto.batch", 
+            "defaultSortBy": "0", 
+            "editable": true, 
+            "order":2,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {
-            "field": "Lot", "enable": true, "sortField": "psto.lot", "sortBy": "0", "editable": true,
+            "field": "Lot", "enable": true, "sortField": "psto.lot", 
+            "editable": true, 
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
         }
     ]

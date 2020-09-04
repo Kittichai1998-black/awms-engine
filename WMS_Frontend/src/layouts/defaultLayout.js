@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import Axios from "axios";
-import withWidth from '@material-ui/core/withWidth';
 import { createMuiTheme, ThemeProvider, useTheme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -20,7 +19,6 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import route from './route';
-import iconMenuTree from '../components/AmIconMenu';
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import '../i18n';
@@ -123,11 +121,6 @@ const useStyles = makeStyles((theme) => ({
         left: '0 !important',
         position: 'fixed',
         boxOrient: 'horizontal',
-        display: '-webkit-box',
-        display: '-moz-box',
-        display: '-ms-flexbox',
-        display: '-moz-flex',
-        display: '-webkit-flex',
         display: 'flex',
         padding: '0',
         margin: '0',
@@ -135,7 +128,6 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         textAlign: 'center',
         verticalAlign: 'middle !important',
-        padding: '1em',
         backgroundColor: 'rgba(0,0,0,.85)',
         alignItems: 'center',
         justifyContent: 'center',
@@ -352,7 +344,6 @@ const Default = props => {
         let json = { items: jsonresult };
         let Path = window.location.pathname.split('/');
         let name = '';
-        let icon_s = '';
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
@@ -361,19 +352,15 @@ const Default = props => {
                         if (Path[1]===res.PathLV1 && res.PathLV2=== Path[2]) { 
                             name = t(res.pageName.trim());
                             //name = res.pageName;
-                            icon_s = iconMenuTree[res.Icon];
                         } else if (Path[2] === "inbound" && res.PathLV2.match("inbound")) {
                             name = t(res.pageName.trim());
                             // name = "Inbound Progress";
-                            icon_s = iconMenuTree["ReceiveingSub"];
                         } else if (Path[2] === "outbound" && res.PathLV2.match("outbound")) {
                             name = t(res.pageName.trim());
                             // name = "Outbound Progress";
-                            icon_s = iconMenuTree["IssuingSub"];
                         } else if (Path[2] === "detail") {
                             name = t((Path[2].charAt(0).toUpperCase() + Path[2].slice(1)).trim())
                             // name = Path[2].charAt(0).toUpperCase() + Path[2].slice(1);
-                            icon_s = iconMenuTree["Report"];
                         }
                     });
                 }
