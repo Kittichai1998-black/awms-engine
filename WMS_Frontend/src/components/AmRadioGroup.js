@@ -30,10 +30,10 @@ const RadioButtonsGroup = props => {
   const { classes, dataValue, name, formLabel, row, onChange, defaultValue, returnDefaultValue } = props;
 
   // const [Data, setData] = useState({});
-  const [value, setValue] = useState(defaultValue.value);
+  const [value, setValue] = useState(defaultValue ? defaultValue.value : null);
 
   useEffect(() => {
-    if (returnDefaultValue) {
+    if (returnDefaultValue && defaultValue && defaultValue.value) {
       onChange(defaultValue.value, null, null, true);
     }
   }, []);
@@ -66,9 +66,11 @@ const RadioButtonsGroup = props => {
                 // disableRipple
                 // classes={{root: classes.radio, checked: classes.checked}}
                 />}
-                checked={row.checked}
-                disabled={row.value === defaultValue.value ? defaultValue.disabled !== null  ? defaultValue.disabled : row.disabled : row.disabled !== null  ? row.disabled : false}
-                label={row.label} 
+                // checked={defaultValue && defaultValue.value ? row.value === defaultValue.value : false}
+                disabled={defaultValue && defaultValue.value && row.value === defaultValue.value ?
+                  defaultValue.disabled !== null || defaultValue.disabled !== undefined ? defaultValue.disabled : row.disabled
+                  : false}
+                label={row.label}
               />
             );
           }) : null}
