@@ -23,8 +23,8 @@ const AD_Search = Loadable({
     loading: Loading
 });
 
-const AD_WorkQueue = Loadable({
-    loader: () => import("../../views/page/ENGINE/AD/AD_WorkQueue"),
+const AD_ManageQueue = Loadable({
+    loader: () => import("../../views/page/BOSS/AD/AD_ManageQueue"),
     loading: Loading
 });
 
@@ -42,20 +42,20 @@ const PI_Search = Loadable({
     loading: Loading
 });
 
-const PI_WorkQueue = Loadable({
-    loader: () => import("../../views/page/ENGINE/PI/PI_WorkQueue"),
+const PI_ManageQueue = Loadable({
+    loader: () => import("../../views/page/ENGINE/PI/PI_ManageQueue"),
     loading: Loading
 });
 const routes = [
     { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
     { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
     { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
-    { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_WorkQueue, exact: true },
+    { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_ManageQueue, exact: true },
 
     { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
     { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
     { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
-    { path: "/audit/managequeue", name: "GI Manage Queue", compoment: AD_WorkQueue, exact: true },
+    { path: "/audit/managequeue", name: "GI Manage Queue", compoment: AD_ManageQueue, exact: true },
 
     { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
 ]
