@@ -214,14 +214,14 @@ const AmRepack = props => {
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
   const [newQtyRepack, setNewQtyRepack] = useState();
-
+  const [newQty, setNewQty] = useState(null);
   const [dialog, setDialog] = useState(false);
   const [datasTreeView, setDatasTreeView] = useState([])
   const [dataPallet, setDataPallet] = useState();
   const [dataDoc, setDataDoc] = useState();
   const [dialogState, setDialogState] = useState({});
 
-  const [checkedAuto, setCheckedAuto] = useState(true);
+  const [checkedClear, setCheckedClear] = useState("");
   const [checkedAutoClear, setCheckedAutoClear] = useState(true);
   const [autoFocus, setAutoFocus] = useState(true)
   const [autoFocusBarcode, setAutoFocusBarcode] = useState(false)
@@ -231,7 +231,7 @@ const AmRepack = props => {
     setStateDialog(state);
   };
   const [selected, setSelected] = React.useState([]);
-
+  const [autoQty, setAutoQty] = useState(0)
   //============================================================================
   function TransitionComponent(props) {
     const style = useSpring({
@@ -286,9 +286,6 @@ const AmRepack = props => {
       maxWidth: 400,
     },
   });
-  //============================================================================
-
-
 
   function getSteps() {
     return [
@@ -298,19 +295,22 @@ const AmRepack = props => {
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
     valueInput[fieldDataKey] = value;
+    setValueInput({ ...valueInput })
   };
   const handleNext = index => {
     if (index === 0) {
-
-      setActiveStep(prevActiveStep => prevActiveStep + 1);
-
-    } else if (index === 1) {
-
+      if (palletCode !== "") {
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+      } else {
+        setDialogState({ type: "warning", content: "กรุณากรอกเลขพาเลท", state: true })
+      }
     }
   };
   const handleSelect = (event, nodeIds) => {
-    console.log(nodeIds)
     if (nodeIds !== "1") {
+      var dataQty = dataPallet.mapstos.filter(x => x.id === nodeIds)
+      valueInput.qtyOriginal = dataQty.qty
+      setNewQty(null)
       setSelected(nodeIds)
       setDialog(true)
 
@@ -323,63 +323,82 @@ const AmRepack = props => {
   };
 
   function handleBack() {
-    valueInput.warehouseID = null
-    valueInput.processType = null
-    valueInput.areaID = null
+    valueInput.palletcodeNew = null
     valueInput.palletCode = null
-    setCheckedAutoClear(true)
-    setCheckedAuto(true)
+    setSelected([])
     setDataPallet(null)
-    setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
 
 
-  const onHandledataConfirm = (status, rowdata) => {
-    if (status) {
-      scanMappingSto(valueInput.palletCode)
-    } else {
-      setDialog(false)
-    }
-
-  }
-
   const onConvertUnitRepack = (unitID, data) => {
-    console.log(data)
-    const dataSend = {
-      skuID: data.skuID,
-      unitRepackID: data.unitID,
-      oldQty: data.qty,
-      newUnitID: unitID
-    }
-    Axios.post(window.apipath + "/v2/unit_convert", dataSend).then((res) => {
-      console.log(res.data)
-      if (res.data._result.status === 1) {
-        setNewQtyRepack(res.data)
-      } else {
-        setDialogState({ type: "error", content: res.data._result.message, state: true })
+    if (unitID !== null) {
+      const dataSend = {
+        skuID: data.skuID,
+        unitRepackID: data.unitID,
+        oldQty: valueInput.qtyOriginal === undefined ? data.qty : parseInt(valueInput.qtyOriginal),
+        newUnitID: unitID
       }
+      Axios.post(window.apipath + "/v2/unit_convert", dataSend).then((res) => {
+        if (res.data._result.status === 1) {
+          setNewQtyRepack(res.data)
+          setNewQty(res.data !== undefined ?
+            (res.data.qtyRepack !== undefined ? res.data.qtyRepack.newQty : null)
+            : null)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
 
-    });
-
+      });
+    } else {
+      setNewQty()
+      setNewQtyRepack()
+    }
   }
 
   function scanMappingSto(pallet) {
-    console.log(pallet)
-    const dataSend = {
-      bstoCode: pallet,
+    if (pallet !== "") {
+      const dataSend = {
+        bstoCode: pallet,
+      }
+
+      Axios.post(window.apipath + "/v2/getInfo_pallet", dataSend).then((res) => {
+        if (res.data._result.status === 1) {
+          setDataPallet(res.data.bsto)
+
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
+
+      });
+    } else {
+      setDialogState({ type: "warning", content: "กรุณากรอกเลขพาเลท", state: true })
     }
-    Axios.post(window.apipath + "/v2/getInfo_pallet", dataSend).then((res) => {
-      console.log(res.data)
+
+  }
+  function repackSto() {
+    var psto = dataPallet.mapstos.filter(x => x.id === selected)
+    let dataSend = {
+      psto: psto[0].id,
+      oldbstoCode: dataPallet.code,
+      oldqty: newQtyRepack.qtyRepack.oldQty,
+      newbstoCode: valueInput.palletcodeNew,
+      newQty: newQtyRepack.qtyRepack.newQty,
+      newUnitID: newQtyRepack.qtyRepack.newUnitType_ID,
+    }
+
+    Axios.post(window.apipath + "/v2/repeckaging", dataSend).then((res) => {
       if (res.data._result.status === 1) {
-        setDataPallet(res.data.bsto)
+        // setDataPallet(res.data.bsto)
+        scanMappingSto(res.data.bsto.code)
+        Clear()
+        setDialogState({ type: "success", content: "Success", state: true })
       } else {
         setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
 
     });
   }
-
 
   function getStepContent(step) {
     switch (step) {
@@ -409,54 +428,56 @@ const AmRepack = props => {
           </div>
         );
       case 1:
-        return (<div>
+        if (dataPallet !== null) {
+          if (dataPallet !== undefined) {
+            var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
+          }
 
-          {/* =================================== TreeView ===================================== */}
-          <TreeView
-            className={classes.root}
-            defaultExpanded={['1']}
-            defaultCollapseIcon={<MinusSquare />}
-            defaultExpandIcon={<PlusSquare />}
-            defaultEndIcon={dataPallet != undefined ? (
-              dataPallet.mapstos === null ? <MinusSquare /> : <EditIcon />) : null}
+          return (<div>
 
-            onNodeSelect={handleSelect}
-          >
-            {console.log(dataPallet)}
-            <StyledTreeItem nodeId="1" label={dataPallet !== undefined && dataPallet !== null ? dataPallet.code : null}>
-              {dataPallet === undefined || dataPallet === null ? null :
-                dataPallet.mapstos === null ? null : dataPallet.mapstos.map((x, index) => {
-                  return (
-                    <div key={index} syle={{ marginLeft: "30px" }} >
-                      <FormInline>
-                        <StyledTreeItem
-                          nodeId={x.id}
-                          label={
-                            x.code + " | " +
-                            x.qty + " " +
-                            x.unitCode + " | " +
-                            (x.lot === null ? "" : x.lot)}
-                        />
-                      </FormInline>
-                    </div>
-                  );
-                })}
-            </StyledTreeItem>
-          </TreeView>
-          <br />
-          {console.log(selected)}
-          {selected.length !== 0 ? randerEleRepack(selected, dataPallet) : null}
-        </div >)
+            {/* =================================== TreeView ===================================== */}
+            <TreeView
+              className={classes.root}
+              defaultExpanded={['1']}
+              defaultCollapseIcon={<MinusSquare />}
+              defaultExpandIcon={<PlusSquare />}
+              defaultEndIcon={dataPallet != undefined ? (
+                dataPallet.mapstos === null ? <MinusSquare /> : <EditIcon />) : null}
 
+              onNodeSelect={handleSelect}
+            >
+
+              <StyledTreeItem nodeId="1" label={dataPallet !== undefined && dataPallet !== null ? dataPallet.code : null}>
+                {dataPallet === undefined || dataPallet === null ? null :
+                  dataPallet.mapstos === null ? null : dataPallet.mapstos.map((x, index) => {
+
+                    return (
+                      <div key={index} syle={{ marginLeft: "30px" }} >
+                        <FormInline>
+                          <StyledTreeItem
+                            nodeId={x.id}
+                            label={
+                              x.code + " | " +
+                              x.qty + " " +
+                              x.unitCode + " | " +
+                              (x.lot === null ? "" : x.lot)}
+                          />
+                        </FormInline>
+                      </div>
+                    );
+                  })}
+              </StyledTreeItem>
+            </TreeView>
+            <br />
+            {selected.length !== 0 ? randerEleRepack(mapstosSelected[0], mapstosSelected[0]["qty"], mapstosSelected[0]["unitCode"]) : null}
+          </div >)
+        }
       default:
         return "Unknown step";
     }
   }
 
-  const randerEleRepack = (selec, data) => {
-    console.log(newQtyRepack)
-    var mapstosSelected = data.mapstos.filter(x => x.id === selec)
-    console.log(mapstosSelected)
+  const randerEleRepack = (data, qty, unit) => {
     return <Paper style={{ backgroundColor: "#F5F5F5", height: "200px", paddingTop: "5px" }}>
 
       <FormInline>
@@ -465,16 +486,19 @@ const AmRepack = props => {
           id={"qtyOriginal"}
           placeholder="Qty Original"
           type="input"
-          defaultValue={mapstosSelected ? mapstosSelected[0]["qty"] : 0}
-          onChange={(value, fieldDataKey) =>
-            onHandleChangeInput(value, fieldDataKey)}
+          value={valueInput.qtyOriginal === undefined ? qty : parseInt(valueInput.qtyOriginal)}
+          type={"number"}
+          //defaultValue={qty ? qty : 0}
+          onChangeV2={(value, fieldDataKey) =>
+            onHandleChangeInput(value, "qtyOriginal")}
           style={{ width: "200px" }}
         />
-        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{mapstosSelected[0]["unitCode"]}</LabelH1>
+        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{unit}</LabelH1>
       </FormInline>
       <FormInline>
         <LabelH1>{"Unit Repack :"}</LabelH1>
         <AmDropdown
+          ID="repackID"
           placeholder="Select"
           fieldDataKey="ID"
           fieldLabel={["Code", "Name"]}
@@ -483,8 +507,7 @@ const AmRepack = props => {
           style={{ width: "200px" }}
           queryApi={UnitTypeQuery()}
           onChange={(value, dataObject, inputID, fieldDataKey) =>
-            onConvertUnitRepack(value, mapstosSelected[0])
-
+            onConvertUnitRepack(value, data)
           }
           ddlType={"search"}
         />
@@ -492,14 +515,14 @@ const AmRepack = props => {
       <FormInline>
         <LabelH1>{"New Qty :"}</LabelH1>
         <AmInput
-          id={"qtyOriginal"}
+          id={"qtyNew"}
           placeholder="New Qty"
           type="input"
           // disabled={true}
-          value={newQtyRepack !== undefined ?
-            (newQtyRepack.qtyRepack !== undefined ? newQtyRepack.qtyRepack.newQty : null)
-            : null}
-
+          // value={newQtyRepack !== undefined ?
+          //   (newQtyRepack.qtyRepack !== undefined ? newQtyRepack.qtyRepack.newQty : "")
+          //   : ""}
+          value={newQty}
           style={{ width: "200px" }}
         />
         <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>
@@ -524,6 +547,7 @@ const AmRepack = props => {
         type="input"
         //autoFocus={autoFocus}
         style={{ width: "200px" }}
+
         onChange={(value, obj, element, event) =>
           onHandleChangeInput(value, "palletcodeNew")
         }
@@ -541,7 +565,11 @@ const AmRepack = props => {
     </FormInline>
 
   }
-
+  const Clear = () => {
+    setSelected([])
+    setNewQtyRepack()
+    setNewQty(0)
+  };
   //==========================================================================================
 
   return (
@@ -582,7 +610,11 @@ const AmRepack = props => {
                     <AmButton
                       styleType="confirm"
                       onClick={() => {
-                        scanMappingSto(valueInput.palletCode, "confirm")
+                        if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
+                          setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
+                        } else {
+                          repackSto()
+                        }
                       }}
                       className="float-right"
                       style={{ margin: '5px 0px 5px 0px' }}

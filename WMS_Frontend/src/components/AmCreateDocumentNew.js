@@ -367,9 +367,6 @@ const AmCreateDocument = (props) => {
             editData["ID"] = addDataID
         }
 
-        if (props.createDocType === "audit" && field === "quantity" && data != null) {
-            editData["quantity"] = (data + "%")
-        }
 
 
         if (field === "productionDate") {
@@ -415,9 +412,6 @@ const AmCreateDocument = (props) => {
                 //    editData[field] = data[field] ? data[field] : data.Code
                 //} else {
 
-                if (props.createDocType === "audit" && field === "quantity" && data != null ) {
-                    editData["quantity"] = (data + "%")
-                }
 
                 editData[field] = data[field] ? data[field] : data.value
                 //}
@@ -457,8 +451,24 @@ const AmCreateDocument = (props) => {
             row.removeRelated.forEach(x => delete editData[x])
         }
 
-        console.log(editData)
-        setEditData(editData)
+        if (props.createDocType === "audit" || props.createDocType === "counting") {
+            if (field === 'quantity') {
+                if (data < 101 && data > 0) {
+                    editData['quantitys'] = data
+                    editData['quantity'] = data + '%'
+                    setEditData(editData)
+                } else {
+                    setStateDialogErr(true)
+                    setMsgDialog("quantity Not Correct")
+                }
+            } else {
+
+            }
+           
+        } else {
+
+            setEditData(editData)
+        }
 
         if (required) {
             if (!editData[field]) {
@@ -1046,10 +1056,16 @@ const AmCreateDocument = (props) => {
         }
         else if (props.createDocType === "counting") {
             doc.countingItems = dataSource.map(x => {
+                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
+                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.quantity = x.quantitys
                 return x
             })
         } else if (props.createDocType === "audit") {
             doc.auditItems = dataSource.map(x => {
+                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
+                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.quantity = x.quantitys
                 return x
             })
         } else if (props.createDocType === "issue") {

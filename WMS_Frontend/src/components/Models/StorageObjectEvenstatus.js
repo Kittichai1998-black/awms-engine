@@ -34,12 +34,12 @@ const StorageObjectEvenStatusAll = [
   { label: "PICKED", value: 34 },
   { label: "CONSOLIDATING", value: 35 },
   { label: "CONSOLIDATED", value: 36 },
-
+ 
 ];
 const AuditStatus = [
   { label: "QUARANTINE", value: 0 },
   { label: "PASSED", value: 1 },
-  { label: "REJECT", value: 2 },
+  { label: "REJECTED", value: 2 },
   { label: "HOLD", value: 9 },
 ]
 const AuditStatus1_2 = AuditStatus.map(function (x) {

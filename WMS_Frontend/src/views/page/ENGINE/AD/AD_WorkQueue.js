@@ -19,7 +19,7 @@ const columnsConfirm = [
 const documentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
     t: "Document",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 2003}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -55,64 +55,37 @@ const desAreaQuery = {
 };
 
 const processCondition = {
-    // "conditions": [
-    //     {
-    //         "field": "Full Pallet", "key": "useFullPick", "enable": false, "defaultValue": true, "editable": true,
-    //     },
-    //     {
-    //         "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
-    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-    //     },
-    //     {
-    //         "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true,
-    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-    //     }
-    // ],
-    "eventStatuses": [
+    "conditions": [
         {
-            "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": true,
-            // custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } 
-        }
-        // {
-        //     "field": "Consolidated", "value": 36, "enable": true, "defaultValue": true, "editable": true,
-        //     // custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } 
-        // },
+            "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": true, custom: (c) => {
+                //c.item = manual by docitem , c.document manual by doc
+                if (c.docItem.Code === 'PJAAN04-0020')
+                    return { "enable": true, "defaultValue": false, "editable": true }
+                else
+                    return { "enable": true, "defaultValue": true, "editable": true }
+            }
+        },
+        { "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true, custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } },
+        { "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true, custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } }
+    ],
+    "eventStatuses": [
+        { "field": "Recevied", "value": 102, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
+        { "field": "Consolidated", "value": 156, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
         //{ "field": "Block", "value": 907, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } },
         //{ "field": "QC", "value": 908, "enable": true, "defaultValue": true, "editable": true, custom: (c) => { return { "defaultValue": true, "editable": true, "enable": true } } }
     ],
-    "auditStatuses": [
-        {
-            "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": false, "editable": true,
-        },
-        {
-            "field": "PASSED", "value": 1, "enable": true, "defaultValue": true, "editable": true,
-        },
-        {
-            "field": "REJECTED", "value": 2, "enable": true, "defaultValue": false, "editable": true,
-        },
-        {
-            "field": "HOLD", "value": 9, "enable": true, "defaultValue": false, "editable": true,
-        }
-    ],
     "orderBys": [
         {
-            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":1,
-            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", "sortBy": "0", "editable": true,
+            custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
-            "field": "Batch", "enable": true, "sortField": "psto.batch", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":2,
-            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
+            "field": "Batch", "enable": true, "sortField": "psto.batch", "sortBy": "0", "editable": true,
+            custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {
-            "field": "Lot", "enable": true, "sortField": "psto.lot", 
-            "editable": true, 
-            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
+            "field": "Lot", "enable": true, "sortField": "psto.lot", "sortBy": "0", "editable": true,
+            custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
         }
     ]
 }
@@ -128,7 +101,7 @@ const documentDetail = {
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
         if (doc.document.DocumentProcessType_ID === 1013) {
-            return areaList.filter(x => x.ID === 9 || x.ID === 10 || x.ID === 11 || x.ID === 12)
+            return areaList.filter(x => x.ID === 17 || x.ID === 18)
         }
         else
             return areaList
@@ -136,10 +109,10 @@ const ProcessQueue = () => {
 
     const customDesAreaDefault = (doc) => {
         if (doc.document.DocumentProcessType_ID === 1013) {
-            return "10"
+            return "13"
         }
         else
-            return "10"
+            return "14"
     }
 
     return <AmProcessQueue
@@ -151,13 +124,13 @@ const ProcessQueue = () => {
         documentDetail={documentDetail}
         processSingle={true}
         processCondition={processCondition}
-        percentRandom={false}
+        percentRandom={true}
         customDesArea={customDesArea}
         areaDefault={customDesAreaDefault}
         columnsConfirm={columnsConfirm}
         modeDefault={"1"}
         waveProcess={false}
-        confirmProcessUrl={"confirm_process_wq"}
+        confirmProcessUrl={"wave_process_wq"}
     />
 }
 

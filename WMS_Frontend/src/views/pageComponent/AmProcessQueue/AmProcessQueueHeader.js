@@ -35,16 +35,16 @@ const useDocumentQuery = (warehouseID, docQuery, addDocList) => {
     const [documentQuery, setDocumentQuery] = useState(docQuery);
 
     useEffect(() => {
-        if(docQuery != null){
+        if(warehouseID != null ){
             let objQuery = {...docQuery};
             if(objQuery !== null){
               let getWarehouse = JSON.parse(objQuery.q);
-              if(getWarehouse.filter(x=> x.f === "Sou_Warehouse_ID") === null){
-                let setWarehouse = getWarehouse.find(x=> x.Warehouse_ID)
-                setWarehouse.v = warehouseID;
+              if(getWarehouse.find(x=> x.f === "Sou_Warehouse_ID") === undefined){
+                getWarehouse.push({ 'f': 'Sou_Warehouse_ID', 'c':'=', 'v': warehouseID})
               }
               else{
-                getWarehouse.push({ 'f': 'Sou_Warehouse_ID', 'c':'=', 'v': warehouseID})
+                let setWarehouse = getWarehouse.find(x=> x.f === "Sou_Warehouse_ID")
+                setWarehouse.v = warehouseID;
               }
               objQuery.q = JSON.stringify(getWarehouse);
               setDocumentQuery(objQuery)
@@ -83,6 +83,23 @@ const useDocumentQuery = (warehouseID, docQuery, addDocList) => {
   
     return documentQuery;
 }
+const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandleSelectDocument}) => {
+  console.log(columns)
+  return <AmFindPopup
+  id={"DocumentSelection"}
+  placeholder={"Document"}
+  fieldDataKey={"ID"}
+  fieldLabel={["Code"]}
+  labelPattern=" : "
+  valueData={valueData}
+  labelTitle={"Document"}
+  queryApi={queryApi}
+  columns={columns}
+  width={300}
+  clearText={clearText}
+  onChange={(value, dataObject) => onHandleSelectDocument(value, dataObject)}
+/>
+})
 
 const ProcessQueueHeader = (props) => {
     const { documents, documentDetail, warehouse } = useContext(ProcessQueueContext);
@@ -176,20 +193,14 @@ const ProcessQueueHeader = (props) => {
       
       <FormInline>
         <label style={{"width":100}}>Document : </label>
-        <AmFindPopup
-          id={"DocumentSelection"}
-          placeholder={"Document"}
-          fieldDataKey={"ID"}
-          fieldLabel={["Code"]}
-          labelPattern=" : "
-          valueData={documentSelection["ID"]}
-          labelTitle={"Document"}
-          queryApi={documentData}
+        <FindPopup 
           columns={props.documentPopup}
-          width={300}
-          clearText={clearText}
-          onChange={(value, dataObject) => onHandleSelectDocument(value, dataObject)}
+          valueData={documentSelection["ID"]} 
+          queryApi={documentData} 
+          clearText={clearText} 
+          onHandleSelectDocument={onHandleSelectDocument}
         />
+
         {props.processSingle ? null : <AmButton 
           style={{marginLeft:"10px"}}
           styleType="add" 
@@ -259,4 +270,4 @@ ProcessQueueHeader.defaultProps = {
     processSingle:false
 }
 
-export default ProcessQueueHeader;
+export default React.memo(ProcessQueueHeader);
