@@ -45,6 +45,7 @@ const GI_Create_FGCustomer = props => {
     const [skuquery, setskuquery] = useState(SKUMaster);
     const [addlistquery, setaddlistquery] = useState(view_sto);
     const [Type, setType] = useState(true);
+    const [ProcessTypeCode, setProcessTypeCode] = useState();
     const [addlist, setaddlist] = useState({})
 
 
@@ -86,12 +87,10 @@ const GI_Create_FGCustomer = props => {
                     DataprocessTypeID,
                   
                 
-                [
-                    { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
-                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                ],
-                [
 
+                [
+                    // { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
+                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                     { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
@@ -116,6 +115,7 @@ const GI_Create_FGCustomer = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
+                    onChangeProcessTypeCode={((e)=> { setProcessTypeCode(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
@@ -129,7 +129,7 @@ const GI_Create_FGCustomer = props => {
         }
      
 
-    }, [HeaderDoc, skuquery, addlist])
+    }, [HeaderDoc, CodeprocessType, columSKU, addlist])
 
 
     useEffect(() => {
@@ -152,13 +152,15 @@ const GI_Create_FGCustomer = props => {
         } else {
             Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts: "-" }
         }
-
-        if (skuType === 5 && CodeprocessType === 1) {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 0, disabled: true }
+        console.log(ProcessTypeCode)
+        if (ProcessTypeCode === '4081' || ProcessTypeCode === '4141' || ProcessTypeCode === '4151' ||
+            ProcessTypeCode === '5011' || ProcessTypeCode === '5141' || ProcessTypeCode === '5151') {
+            AuditStatusDDL = { Header: "Audits Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
         } else {
-            AuditStatusDDL = { Header: "Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "label", defaultValue: 1 }
+            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
 
+        console.log(AuditStatusDDL)
         var columnEdit = [
             { Header: "Item No.", accessor: "itemNo", type: "input"},
             {
@@ -190,13 +192,8 @@ const GI_Create_FGCustomer = props => {
             { Header: "ExpireDate", accessor: "expireDate", type: "date" },
             { Header: "ShelfLifeDay", accessor: "shelfLifeDay", type: "inputNum" }
         ];
-
-
         setcolumSKU(columnEdit)
-        //setType(false)
-
-        //setskuquery()
-    }, [skuType])
+    }, [skuType, ProcessTypeCode])
 
 
     useEffect(() => {
@@ -225,8 +222,6 @@ const GI_Create_FGCustomer = props => {
         };
 
         setaddlist(addLists)
-
-
 
     }, [skuType])
 
@@ -356,8 +351,8 @@ const GI_Create_FGCustomer = props => {
             </Grid>
             <Grid item>
                 <AmCreateDoc
-                    apicreate={"/v2/CreateDRDocAPI/"}
-                    apiRes={"/receive/detail?docID="}
+                    apicreate={"/v2/CreateDIDocAPI/"}
+                    apiRes={"/issue/detail?docID="}
                     history={props.history}
                     docTypename={"issue"}
                 ></AmCreateDoc>

@@ -132,6 +132,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public DateTime? diExpireDate;
             public DateTime? diProductionDate;
             public string dcCode;
+            public long  dcDocType_ID;
             public long dcID;
 
             public string sou_options;
@@ -173,7 +174,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
-            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001, 1002, 2003, 2004) && doc.documentItems.Count != 0)
+            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1011, 1012, 2003, 2004) && doc.documentItems.Count != 0)
             {
                 set_sou_des(doc.ID.Value);
             }
@@ -303,6 +304,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         diExpireDate = bs.diExpireDate,
                         diProductionDate = bs.diProductionDate,
                         dcCode = bs.dcCode,
+                        dcDocType_ID =bs.dcDocType_ID,
                         dcID = bs.dcID
 
 

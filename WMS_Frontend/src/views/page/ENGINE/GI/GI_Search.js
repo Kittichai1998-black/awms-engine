@@ -128,17 +128,7 @@ const DocumentSearch = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
-            <Grid container>
-                <Grid item xs container direction="column">
-                </Grid>
-                <Grid item>
-                    <AmCreateDoc
-                        apicreate={"/v2/CreateDIDocAPI/"}
-                        apiRes={"/issue/detail?docID="}
-                        history={props.history}
-                    ></AmCreateDoc>
-                </Grid>
-            </Grid>
+         
             <AmSearchDocument
                 iniCols={iniCols}
                 docTypeCode="1012"

@@ -61,7 +61,7 @@ const DocumentSearch = props => {
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
-        { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
+        { Header: "Docssssss No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         { Header: "Process No.", accessor: "DocumentProcessTypeName", width: 200 },
         { Header: "Sou.Warehouse", accessor: "SouWarehouseName", width: 150 },
         { Header: "Sou.Customer", accessor: "SouCustomerName", width: 150 },
@@ -110,7 +110,7 @@ const DocumentSearch = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/audit/detail?docID=" + data.ID}
+                    api={"/counting/detail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -128,10 +128,10 @@ const DocumentSearch = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
-
+         
             <AmSearchDocument
                 iniCols={iniCols}
-                docTypeCode="2003"
+                docTypeCode="2004"
                 buttonClose={true}
                 buttonReject={false}
                 apiReject={"/v2/RejectGRDocAPI"}

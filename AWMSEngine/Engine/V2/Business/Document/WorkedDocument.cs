@@ -46,19 +46,28 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     });
                                 }
                                 
-                                var distos = new List<amt_DocumentItemStorageObject>();
-                                docs.DocumentItems.ForEach(di => distos.AddRange(di.DocItemStos));
-
                                 docs.DocumentItems.ForEach(y =>
                                 {
-                                    decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
-                                    decimal totalQty = y.BaseQuantity ?? 0;
-                                    if (sumQtyDisto == totalQty)
+                                    if (y.DocItemStos == null || y.DocItemStos.Count() == 0)
                                     {
-                                        y.EventStatus = DocumentEventStatus.WORKED;
-
-                                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                        if (docs.DocumentType_ID == DocumentTypeID.PICKING)
+                                        {
+                                            y.EventStatus = DocumentEventStatus.WORKED;
+                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                        }
                                     }
+                                    else
+                                    {
+                                        decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
+                                        decimal totalQty = y.BaseQuantity ?? 0;
+                                        if (sumQtyDisto == totalQty)
+                                        {
+                                            y.EventStatus = DocumentEventStatus.WORKED;
+
+                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                        }
+                                    }
+
                                 });
                                 if(docs.DocumentItems.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
@@ -67,101 +76,80 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);
                                 }
-                                else
+                                //else
+                                //{
+                                //    //no docItem id
+                                //    //กรณีที่มีdocitem เป็น working แต่ไม่มีผูกกับ disto ให้อัพเดทเป็น workedอัตโนมัติ
+                                //    if (docs.DocumentType_ID == DocumentTypeID.PICKING)
+                                //    {
+                                //        docs.DocumentItems.ForEach(docItem =>
+                                //        {
+                                //            if (docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos == null || docItem.DocItemStos.Count() == 0)
+                                //            {
+                                //                docItem.EventStatus = DocumentEventStatus.WORKED;
+                                //                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                //            }
+                                //        });
+                                //    }
+                                //    else
+                                //    {
+                                //        docs.DocumentItems.ForEach(docItem =>
+                                //        {
+                                //            if (docItem.EventStatus == DocumentEventStatus.WORKING)
+                                //            {
+                                //                if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
+                                //                {
+                                //                    decimal sumQtyDisto = docItem.DocItemStos.Sum(z => z.BaseQuantity ?? 0);
+                                //                    decimal totalQty = docItem.BaseQuantity ?? 0;
+                                //                    if (sumQtyDisto != totalQty)
+                                //                    {
+                                //                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + docItem.Code + " ที่ต้องการรับเข้าไม่ตรงกับจำนวนที่ระบุในเอกสาร");
+                                //                    }
+                                //                    else
+                                //                    {
+                                //                        docItem.EventStatus = DocumentEventStatus.WORKED;
+                                //                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                //                    }
+                                //                }
+                                //            }
+                                //        });
+                                //    }
+                                //    if (docs.DocumentItems.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
+                                //    {
+                                //        docs.EventStatus = DocumentEventStatus.WORKED;
+                                //        ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
+                                //        RemoveOPTDocument(x, docs.Options, this.BuVO);
+                                //        docLists.Add(x);
+                                //    }
+                                //}
+                                if(docs.ParentDocument_ID != null)
                                 {
-                                    //no docItem id
-                                    //กรณีที่มีdocitem เป็น working แต่ไม่มีผูกกับ disto ให้อัพเดทเป็น workedอัตโนมัติ
-                                    docs.DocumentItems.ForEach(docItem => {
-                                        if (docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos == null || docItem.DocItemStos.Count() == 0)
-                                        {
-                                            docItem.EventStatus = DocumentEventStatus.WORKED;
-                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                        }
-                                    });
-
-                                    if (docs.DocumentItems.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
+                                    var getParentDoc = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                    if(getParentDoc == null)
                                     {
-                                        docs.EventStatus = DocumentEventStatus.WORKED;
-                                        ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
-                                        RemoveOPTDocument(x, docs.Options, this.BuVO);
-                                        docLists.Add(x);
+                                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
                                     }
-                                }
-                                /*var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(x, this.BuVO);
-                                if (distos == null)
-                                {
-                                    this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                                    {
-                                        docID = x,
-                                        msgError = "Document Items of Storage Object Not Found."
-                                    });
-                                }
-                                else
-                                {
-                                    var docItemID = distos.Select(y => y.DocumentItem_ID).Distinct().ToList();
 
-                                    docItemID.ForEach(y =>
-                                    {
-                                        decimal sumQtyDisto = distos.Where(z => z.DocumentItem_ID == y && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
-                                        decimal totalQty = docs.DocumentItems.First(z => z.ID == y).BaseQuantity ?? 0;
-                                        if (sumQtyDisto == totalQty)
+                                    var ParentDoc = docs.DocumentItems.GroupBy(
+                                        p => p.ParentDocumentItem_ID, (key, g) => new { ParentItemID = key, DocItems = g.ToList() }).ToList();
+
+                                    ParentDoc.ForEach(group => { 
+                                        if(group.DocItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
                                         {
-                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                        }
-                                    });
-                                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, this.BuVO);
-                                    if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
-                                    {
-                                        docs.EventStatus = DocumentEventStatus.WORKED;
-                                        ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
-                                        RemoveOPTDocument(x, docs.Options, this.BuVO);
-                                        docLists.Add(x);
-                                    }
-                                    else
-                                    {   //กรณีที่มีdocitem เป็น working แต่ไม่มีผูกกับ disto ให้อัพเดทเป็น workedอัตโนมัติ
-                                        listItem.ForEach(docItem => { 
-                                            if(docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos == null || docItem.DocItemStos.Count() == 0)
+                                            var qrItems = getParentDoc.DocumentItems.FindAll(y => y.ID == group.ParentItemID);
+                                            qrItems.ForEach(grItem =>
                                             {
-                                                docItem.EventStatus = DocumentEventStatus.WORKED;
-                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                            }
-                                        });
-                                        
-                                        if (listItem.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
-                                        {
-                                            docs.EventStatus = DocumentEventStatus.WORKED;
-                                            ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
-                                            RemoveOPTDocument(x, docs.Options, this.BuVO);
-                                            docLists.Add(x);
+                                                grItem.EventStatus = DocumentEventStatus.WORKED;
+                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                            });
                                         }
-                                    }
-                                }*/
 
-                                var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
-                                if(getGR == null)
-                                {
-                                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Good Receive Not Found");
-                                }
+                                    });
 
-                                var groupGR = docs.DocumentItems.GroupBy(
-                                    p => p.ParentDocumentItem_ID, (key, g) => new { ParentItemID = key, DocItems = g.ToList() }).ToList();
-
-                                groupGR.ForEach(group => { 
-                                    if(group.DocItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
+                                    if (getParentDoc.DocumentItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
                                     {
-                                        var qrItems = getGR.DocumentItems.FindAll(y => y.ID == group.ParentItemID);
-                                        qrItems.ForEach(grItem =>
-                                        {
-                                            grItem.EventStatus = DocumentEventStatus.WORKED;
-                                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                        });
+                                        ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                                     }
-
-                                });
-
-                                if (getGR.DocumentItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
-                                {
-                                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                                 }
                             }
                             else
@@ -185,7 +173,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     else
                     {
-                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document PUTAWAY Not Found");
+                        throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
                     }
                 });
                 res = docLists;

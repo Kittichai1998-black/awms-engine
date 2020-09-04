@@ -27,6 +27,7 @@ const GR_Detail = props => {
                 //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
                 CreateputAway={true}
+                TextBtnCreateputAway={"Create Picking"}
                 apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
                 typeDoc={"issued"}

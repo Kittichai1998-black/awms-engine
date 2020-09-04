@@ -124,14 +124,14 @@ const DefaultProcessCondition = (doc, con) => {
                     else {
                         if (y.enable && y.defaultValue)
                             arrAuditstatus.push(y.value);
-                        else
-                            arrAuditstatus.push(0);
+                        // else
+                        //     arrAuditstatus.push(0);
                     }
                 })
                 x.auditStatuses = [...new Set(arrAuditstatus)];
             }
             else {
-                x.auditStatuses = [0];
+                // x.auditStatuses = [0];
             }
 
             if (con.orderBys !== undefined) {

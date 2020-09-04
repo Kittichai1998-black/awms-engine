@@ -158,7 +158,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             if (docItems.Count > 0)
             {
-                if (docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT)
+                if (docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
                 {
                     docItems.ForEach(docItem =>
                     {

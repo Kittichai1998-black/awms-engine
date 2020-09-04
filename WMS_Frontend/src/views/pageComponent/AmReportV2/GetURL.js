@@ -46,6 +46,10 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
       + "&docProcessTypeID=" + (valueText.DocProcessName === undefined || valueText.DocProcessName === null ? '' : encodeURIComponent(valueText.DocProcessName))
       + "&docType=" + typeDoc
+      + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
+      + "&orderNo=" + (valueText.pstoOrderNo === undefined || valueText.pstoOrderNo === null ? '' : encodeURIComponent(valueText.pstoOrderNo.trim()))
+      + "&batch=" + (valueText.pstoBatch === undefined || valueText.pstoBatch === null ? '' : encodeURIComponent(valueText.pstoBatch.trim()))
+      + "&lot=" + (valueText.pstoLot === undefined || valueText.pstoLot === null ? '' : encodeURIComponent(valueText.pstoLot.trim()))
       + "&spname=DAILY_STO";
 
   } else if (fileNameTable === "STC") {
@@ -78,6 +82,10 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
       + "&docProcessTypeID=" + (valueText.documentProcessType === undefined || valueText.documentProcessType === null ? '' : encodeURIComponent(valueText.documentProcessType))
       + "&docType=" + typeDoc
+      + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
+      + "&orderNo=" + (valueText.pstoOrderNo === undefined || valueText.pstoOrderNo === null ? '' : encodeURIComponent(valueText.pstoOrderNo.trim()))
+      + "&batch=" + (valueText.pstoBatch === undefined || valueText.pstoBatch === null ? '' : encodeURIComponent(valueText.pstoBatch.trim()))
+      + "&lot=" + (valueText.pstoLot === undefined || valueText.pstoLot === null ? '' : encodeURIComponent(valueText.pstoLot.trim()))
       + "&spname=DAILY_STOSUM";
 
   } else if (fileNameTable === "DAILY_LOAD") {

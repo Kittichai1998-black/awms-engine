@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.Issued
 {
-    public class CreateGIDocument : BaseEngine<CreateGIDocument.TReq, amt_Document>
+    public class CreatePIDocument : BaseEngine<CreatePIDocument.TReq, amt_Document>
     {
 
         public class TReq

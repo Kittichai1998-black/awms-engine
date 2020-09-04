@@ -200,6 +200,19 @@ const AD_Search = Loadable({
   loader: () => import("../../views/page/ENGINE/AD/AD_Search"),
   loading: Loading
 });
+
+const PI_Create = Loadable({
+    loader: () => import("../../views/page/ENGINE/PI/PI_Create"),
+    loading: Loading
+});
+const PI_Detail = Loadable({
+    loader: () => import("../../views/page/ENGINE/PI/PI_Detail"),
+    loading: Loading
+});
+const PI_Search = Loadable({
+    loader: () => import("../../views/page/ENGINE/PI/PI_Search"),
+    loading: Loading
+});
 const DoneWorkQueue = Loadable({
   loader: () => import("../../views/page/ENGINE/WorkQueue/DoneWorkQueue"),
   loading: Loading
@@ -248,9 +261,13 @@ const routes = [
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
   { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
 
-  { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
-  { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
-  { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
+    { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
+    { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
+    { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
+
+    { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
+    { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
+    { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
 
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
