@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItems.Select(x=> x.ID).ToArray()), SQLOperatorType.IN),
-                new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.NOTEQUALS)
+                new SQLConditionCriteria("Status", "0,2", SQLOperatorType.NOTIN)
             }, this.BuVO).OrderByDescending(x => x.CreateTime).ToList();
 
             var newBaseQty = psto.BaseQuantity - distos.FindAll(disto => disto.Sou_StorageObject_ID == psto.ID).Sum(x => x.BaseQuantity).Value;

@@ -33,10 +33,16 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                    if (docs.ParentDocument_ID != null)
+                                    {
+                                        var getParentDoc = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                        if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.WORKED))
+                                        {
+                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                        }
+                                    }
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
-
                                     docLists.Add(x);
-
                                 }
                                 else
                                 {

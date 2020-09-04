@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.Auditor
+namespace AWMSEngine.Engine.V2.Business.Counting
 {
-    public class CreateADDocument : BaseEngine<CreateADDocument.TReq, amt_Document>
+    public class CreatePIDocument : BaseEngine<CreatePIDocument.TReq, amt_Document>
     {
+
         public class TReq
         {
             public long? parentDocumentID;
@@ -55,8 +56,8 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
-            public List<AuditItem> auditItems;
-            public class AuditItem
+            public List<CountingItem> countingItems;
+            public class CountingItem
             {
 
                 public string packCode;
@@ -177,14 +178,14 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
                     ref3 = reqVO.ref3,
-                    ref4 = reqVO.ref4,
+                    ref4 = reqVO.ref4, 
                     options = reqVO.options,
-                    docTypeId = DocumentTypeID.AUDIT,
+                    docTypeId = DocumentTypeID.PHYSICAL_COUNT,
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
 
-                    Items = reqVO.auditItems.Select(
+                    Items = reqVO.countingItems.Select(
                         x => new CreateDocument.TReq.Item
                         {
                             skuCode = x.skuCode,

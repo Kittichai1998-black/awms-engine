@@ -143,8 +143,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     groupSTOLeft.ForEach(gsto =>
                     {
-                        var createGI = new CreateGIDocument();
-                        var res = createGI.Execute(this.Logger, this.BuVO, new CreateGIDocument.TReq
+                        var createGI = new CreatePIDocument();
+                        var res = createGI.Execute(this.Logger, this.BuVO, new CreatePIDocument.TReq
                         {
                             refID = null,
                             ref1 = null,
@@ -159,8 +159,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             documentDate = DateTime.Now,
                             actionTime = DateTime.Now,
                             eventStatus = DocumentEventStatus.NEW,
-                            issueItems = new List<CreateGIDocument.TReq.IssueItem>() {
-                                    new CreateGIDocument.TReq.IssueItem
+                            issueItems = new List<CreatePIDocument.TReq.IssueItem>() {
+                                    new CreatePIDocument.TReq.IssueItem
                                     {
                                         packCode = gsto.BaseCode,
                                         quantity = null,

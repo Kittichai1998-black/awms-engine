@@ -38,6 +38,7 @@ const PA_Detail = props => {
                 // addPalletMapSTO={addPalletMapSTO}
                 buttonConfirmMappingSTO={true}
                 usePrintBarcodePallet={true}
+                QrCodemanuak={true}
                 usePrintPDF={true}
             >
             </DocView>

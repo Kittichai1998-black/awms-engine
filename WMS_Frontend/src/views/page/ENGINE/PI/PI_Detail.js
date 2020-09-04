@@ -9,7 +9,7 @@ import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo"
 import moment from "moment";
 
-const AD_Detail = props => {
+const PI_Detail = props => {
 
     const [OwnerGroupType, setOwnerGroupType] = useState(1);
     const [docview, setdocview] = useState();
@@ -29,12 +29,12 @@ const AD_Detail = props => {
                 CreateputAway={false}
                 apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
-                typeDoc={"audit"}
-                typeDocNo={2003}
+                typeDoc={"counting"}
+                typeDocNo={2004}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/audit/search"}
+                linkBack={"/issue/search"}
                 history={props.history}
                 usePrintPDF={false}
             >
@@ -52,10 +52,10 @@ const AD_Detail = props => {
                 { label: "Destination Warehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
                 DataprocessType = [{ label: "Source Customer", values: "SouCustomerName" },
-                { label: "Destination Customer", values: "DesCustomerName" }]
+                    { label: "Destination Customer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
                 DataprocessType = [{ label: "Source Supplier", values: "SouSupplierName" },
-                { label: "Destination Supplier", values: "DesSupplierName" }]
+                    { label: "Destination Supplier", values: "DesSupplierName" }]
             } else {
                 DataprocessType = [{ label: "Source Warehouse", values: "SouWarehouseName" },
                 { label: "Destination Warehouse", values: "DesWarehouseName" }]
@@ -72,10 +72,10 @@ const AD_Detail = props => {
                 { label: "Process Type", values: "DocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
+            
+                DataprocessType,
 
-            DataprocessType,
-
-
+            
             [
                 { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
                 { label: "Remark", values: "Remark" }
@@ -85,7 +85,7 @@ const AD_Detail = props => {
 
 
     }, [OwnerGroupType])
-
+  
 
 
     const columns = [
@@ -99,7 +99,7 @@ const AD_Detail = props => {
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         //{ width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", Cell: e => getFormatQty(e.original),widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Qty", Cell: e => getFormatQty(e.original), widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",
@@ -172,9 +172,6 @@ const AD_Detail = props => {
     const getFormatDateExp = (e) => {
         return moment(e.diExpireDate).format("DD/MM/YYYY");
     }
-    const getFormatQty = (e) => {
-        return e.Quantity + '%'
-    }
     const getDoccode = (e) => {
         return (
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
@@ -190,6 +187,10 @@ const AD_Detail = props => {
         );
     };
 
+    const getFormatQty = (e) => {
+        return e.Quantity + '%'
+
+    }
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
@@ -217,11 +218,11 @@ const AD_Detail = props => {
             return "HOLD"
         }
     };
-
+   
     return (
         <div>{docview}</div>
-
+      
     );
 };
 
-export default AD_Detail;
+export default PI_Detail;

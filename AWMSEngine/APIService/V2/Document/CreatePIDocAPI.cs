@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.Engine.V2.Business.Issued;
+using AWMSEngine.Engine.V2.Business.Counting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.V2.Document
 {
-    public class CreateGIDocAPI : BaseAPIService
+    public class CreatePIDocAPI : BaseAPIService
     {
-        public CreateGIDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public CreatePIDocAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
