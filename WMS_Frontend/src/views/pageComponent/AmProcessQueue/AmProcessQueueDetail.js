@@ -807,7 +807,8 @@ const ProcessQueueDetail = (props) => {
             flagAuto={flagAuto}
             columnsConfirm={props.columnsConfirm}
             onClose={(confirmState, dialogState) => {
-                if (confirmState !== null) {
+                console.log(confirmState)
+                if (confirmState !== null && confirmState !== undefined) {
                     if (confirmState._result.status === 0) {
                         setDialogState(!dialogState)
                         setDialogText(confirmState._result.message)
@@ -951,6 +952,7 @@ const ConfirmDialog = (props) => {
     const [mode, setMode] = useState(props.mode);
     const [datetime, setDatetime] = useState(null);
     const columns = useColumnsConfirm(props.columnsConfirm);
+    const {documents} = useContext(ProcessQueueContext);
 
     useEffect(() => {
         setOpen(props.open)
@@ -967,8 +969,11 @@ const ConfirmDialog = (props) => {
                         if (obj !== "pickStos") {
                             if (obj === "docItemCode")
                                 itemHeader["bstoCode"] = processRes[obj]
-                            else if (obj === "baseQty")
-                                itemHeader["pickQty"] = processRes[obj]
+                            else if (obj === "baseQty"){
+                                let findQty = documents.documentListValue.find(x=> x.ID === processRes["Document_ID"]).docItems.find(x=> x.ID === processRes["docItemID"])
+                                console.log(findQty)
+                                itemHeader["pickQty"] = findQty.Quantity
+                            }
                             else
                                 itemHeader[obj] = processRes[obj]
 
