@@ -327,6 +327,7 @@ const AmPrintBarCode = props => {
 
   return (
     <div>
+      {console.log(props.data)}
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}

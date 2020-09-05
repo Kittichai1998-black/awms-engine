@@ -17,8 +17,8 @@ namespace AWMSEngine.APIService.V2.Document
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var reqDoc = ObjectUtil.DynamicToModel<CreatePIDocument.TReq>(this.RequestVO);
-            var res = new CreatePIDocument().Execute(
+            var reqDoc = ObjectUtil.DynamicToModel<CreateGIDocument.TReq>(this.RequestVO);
+            var res = new CreateGIDocument().Execute(
                 this.Logger,
                 this.BuVO,
                 reqDoc);

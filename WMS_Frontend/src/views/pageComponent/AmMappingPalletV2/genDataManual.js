@@ -2,9 +2,9 @@ import React from "react";
 import queryString from "query-string";
 
 function genDataManual(postdata, valueInput, columnsManual) {
-  console.log(postdata)
-  console.log(valueInput)
-  console.log(columnsManual)
+  // console.log(postdata)
+  // console.log(valueInput)
+  // console.log(columnsManual)
   let manualData = {}
 
 
@@ -32,12 +32,12 @@ function genDataManual(postdata, valueInput, columnsManual) {
 }
 
 function GenMapstosSelected(postdata, mapstosSelected) {
-  console.log(mapstosSelected)
+  // console.log(mapstosSelected)
   mapstosSelected.forEach(element => {
-    console.log(element)
+    //console.log(element)
     element.pstoCode = element.code
     element.pstoID = element.id
-    element.addQty = parseInt(element.addQty)
+    element.addQty = (parseInt(element.addQty) - element.qty)
     element.unitTypeCode = element.unitCode
     element.packUnitTypeCode = element.baseUnitCode
     postdata.pstos.push(element)

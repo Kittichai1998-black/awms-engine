@@ -295,12 +295,12 @@ const AmPrintBarCodeV2 = props => {
               </Grid>
               <Grid item xs={6}>
                 {listDatas[indexName].map((ele, index) => {
-                  return <FormInline style={{ width: "180px" }} >
+                  return <FormInline style={{ width: "180px", paddingTop: "5px", paddingRight: "2px" }} >
                     {ele.SKUMaster_Code}
                     <FormInline >
-                      <LabelH style={{ paddingRight: "2px" }}>
-                        {"Q : "}</LabelH>
-                      {ele["Quantity_Genarate"]}
+                      {/* <LabelH style={{ paddingRight: "2px" }}>
+                        {"Q : "}</LabelH> */}
+                      {<div style={{ paddingLeft: "5px" }}>{ele["Quantity_Genarate"]}</div>}
                     </FormInline>
                     {" "} {<div style={{ paddingLeft: "2px" }}>{ele.UnitType_Code}{" "}</div>}
 
@@ -357,8 +357,9 @@ const AmPrintBarCodeV2 = props => {
               }}
             />
 
-            <LabelH style={{ paddingRight: "5px" }}>{"Item Code : "}</LabelH>{ele.SKUMaster_Code}
-            <FormInline > <LabelH>{"Q : "}</LabelH>
+            <LabelH style={{ paddingRight: "10px" }}>{"Code : "}</LabelH>{ele.SKUMaster_Code}
+            <FormInline >
+              {/* <LabelH>{"Q : "}</LabelH> */}
               {getQtyItem(ele)}
               {" / " + ele.Quantity}{" "}{ele.UnitType_Code}
             </FormInline>
