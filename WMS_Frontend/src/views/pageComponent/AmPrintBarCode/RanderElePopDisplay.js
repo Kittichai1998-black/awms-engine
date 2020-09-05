@@ -37,7 +37,7 @@ const DataGenerateElePopDisplay = (data) => {
     console.log(pack)
     return (<div key={index}>
       <FormInline>
-        <label style={LabelH}>{"Item Code : "}</label>
+        <label style={LabelH}>{"Code : "}</label>
         <label style={LabelD}>{pack.Code}</label>
         <label style={LabelDQty}>{pack.Quantity}</label>
         <label style={LabelDQty}>{pack.UnitType_Code}</label>
