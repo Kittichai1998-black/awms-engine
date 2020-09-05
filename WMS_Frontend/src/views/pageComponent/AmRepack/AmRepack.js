@@ -162,8 +162,7 @@ const FormInline = styled.div`
 `;
 
 const LabelH = styled.label`
-  font-weight: bold;
-  width: 40px;
+  width: 100px;
   paddingleft: 20px;
 `;
 const LabelH2 = styled.label`
@@ -176,6 +175,7 @@ const LabelH1 = styled.label`
   width: 100px;
   paddingleft: 20px;
 `;
+
 const LabelHText = styled.label`
   width: 60px;
 `;
@@ -216,6 +216,7 @@ const AmRepack = props => {
   const [newQtyRepack, setNewQtyRepack] = useState();
   const [newQty, setNewQty] = useState(null);
   const [dialog, setDialog] = useState(false);
+  const [dialogPopup, setDialogPopup] = useState(false);
   const [datasTreeView, setDatasTreeView] = useState([])
   const [dataPallet, setDataPallet] = useState();
   const [dataDoc, setDataDoc] = useState();
@@ -289,8 +290,8 @@ const AmRepack = props => {
 
   function getSteps() {
     return [
-      { label: "Pallet", value: null },
-      { label: "Description", value: null },
+      { label: "Pallet of Depack", value: null },
+      { label: "Depackaging", value: null },
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
@@ -312,7 +313,8 @@ const AmRepack = props => {
       valueInput.qtyOriginal = dataQty.qty
       setNewQty(null)
       setSelected(nodeIds)
-      setDialog(true)
+      setDialogPopup(true)
+      //setDialog(true)
 
     }
   };
@@ -392,6 +394,7 @@ const AmRepack = props => {
         // setDataPallet(res.data.bsto)
         scanMappingSto(res.data.bsto.code)
         Clear()
+        setDialogPopup(false)
         setDialogState({ type: "success", content: "Success", state: true })
       } else {
         setDialogState({ type: "error", content: res.data._result.message, state: true })
@@ -399,7 +402,21 @@ const AmRepack = props => {
 
     });
   }
+  const onHandledataConfirm = (status, rowdata) => {
+    if (status) {
+      if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
+        setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
+        Clear()
+      } else {
+        repackSto()
+      }
+    } else {
+      setDialogPopup(false)
+      // props.onClose(false)
+      // Clear()
+    }
 
+  }
   function getStepContent(step) {
     switch (step) {
       case 0:
@@ -469,7 +486,7 @@ const AmRepack = props => {
               </StyledTreeItem>
             </TreeView>
             <br />
-            {selected.length !== 0 ? randerEleRepack(mapstosSelected[0], mapstosSelected[0]["qty"], mapstosSelected[0]["unitCode"]) : null}
+            {/* {selected.length !== 0 ? randerEleRepack(mapstosSelected[0], mapstosSelected[0]["qty"], mapstosSelected[0]["unitCode"]) : null} */}
           </div >)
         }
       default:
@@ -478,10 +495,12 @@ const AmRepack = props => {
   }
 
   const randerEleRepack = (data, qty, unit) => {
-    return <Paper style={{ backgroundColor: "#F5F5F5", height: "200px", paddingTop: "5px" }}>
+    return <div>
+
+      <LabelH1 style={{ width: "150px" }}>{"DePackaging From"}</LabelH1>
 
       <FormInline>
-        <LabelH1>{"Qty Original :"}</LabelH1>
+        <LabelH>{"Quantity :"}</LabelH>
         <AmInput
           id={"qtyOriginal"}
           placeholder="Qty Original"
@@ -491,20 +510,40 @@ const AmRepack = props => {
           //defaultValue={qty ? qty : 0}
           onChangeV2={(value, fieldDataKey) =>
             onHandleChangeInput(value, "qtyOriginal")}
-          style={{ width: "200px" }}
+          style={{ width: "70px" }}
         />
         <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{unit}</LabelH1>
       </FormInline>
+      <br />
+      <LabelH1 style={{ width: "150px" }}>{"DePackaging To"}</LabelH1>
       <FormInline>
-        <LabelH1>{"Unit Repack :"}</LabelH1>
+        <FormInline>
+          <LabelH>{"Quantity :"}</LabelH>
+          <AmInput
+            id={"qtyNew"}
+            type="input"
+            value={newQty}
+            disabled={true}
+            style={{ width: "70px" }}
+          />
+          {/* <LabelH1 style={{ width: "10px", paddingLeft: "10px" }}>
+            {
+              newQtyRepack !== undefined ?
+                (newQtyRepack.newUnitRepack !== undefined ? newQtyRepack.newUnitRepack : null)
+                : null
+            }
+          </LabelH1> */}
+
+        </FormInline>
+        <LabelH style={{ paddingLeft: "5px", width: "50px" }}>{"Unit :"}</LabelH>
         <AmDropdown
           ID="repackID"
-          placeholder="Select"
+          placeholder="Select DePack"
           fieldDataKey="ID"
           fieldLabel={["Code", "Name"]}
           labelPattern=" : "
-          ddlMinWidth={300}
-          style={{ width: "200px" }}
+          ddlMinWidth={150}
+          style={{ width: "150px" }}
           queryApi={UnitTypeQuery()}
           onChange={(value, dataObject, inputID, fieldDataKey) =>
             onConvertUnitRepack(value, data)
@@ -512,30 +551,9 @@ const AmRepack = props => {
           ddlType={"search"}
         />
       </FormInline>
-      <FormInline>
-        <LabelH1>{"New Qty :"}</LabelH1>
-        <AmInput
-          id={"qtyNew"}
-          placeholder="New Qty"
-          type="input"
-          // disabled={true}
-          // value={newQtyRepack !== undefined ?
-          //   (newQtyRepack.qtyRepack !== undefined ? newQtyRepack.qtyRepack.newQty : "")
-          //   : ""}
-          value={newQty}
-          style={{ width: "200px" }}
-        />
-        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>
-          {
-            newQtyRepack !== undefined ?
-              (newQtyRepack.newUnitRepack !== undefined ? newQtyRepack.newUnitRepack : null)
-              : null
-          }
-        </LabelH1>
-      </FormInline>
       <br />
       {onRanderEleNewPallet()}
-    </Paper>
+    </div >
   };
 
   const onRanderEleNewPallet = () => {
@@ -565,6 +583,30 @@ const AmRepack = props => {
     </FormInline>
 
   }
+  const RanderEle = () => {
+
+    if (dataPallet !== null) {
+      if (dataPallet !== undefined) {
+        var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
+      }
+
+      const columns = [{ field: "Code" }]
+      return columns.map(y => {
+        return {
+          component: (data, cols, key) => {
+            return (
+              <div >
+                {selected.length !== 0 ?
+                  randerEleRepack(mapstosSelected[0],
+                    mapstosSelected[0]["qty"],
+                    mapstosSelected[0]["unitCode"]) : null}
+              </div>
+            );
+          }
+        };
+      });
+    }
+  };
   const Clear = () => {
     setSelected([])
     setNewQtyRepack()
@@ -574,6 +616,13 @@ const AmRepack = props => {
 
   return (
     <div className={classes.root}>
+      <AmEditorTable
+        open={dialogPopup}
+        onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
+        titleText={"Depackaging"}
+        data={dataPallet !== undefined ? dataPallet : []}
+        columns={RanderEle()}
+      />
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -606,32 +655,17 @@ const AmRepack = props => {
               <StepContent>
                 {getStepContent(index)}
                 <div>
-                  {activeStep === steps.length - 1 ? (
+                  {activeStep == 1 ? null : (
                     <AmButton
-                      styleType="confirm"
-                      onClick={() => {
-                        if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
-                          setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
-                        } else {
-                          repackSto()
-                        }
-                      }}
                       className="float-right"
                       style={{ margin: '5px 0px 5px 0px' }}
-                    >
-                      {t("Confirm")}
-                    </AmButton>
-                  ) : (
-                      <AmButton
-                        className="float-right"
-                        style={{ margin: '5px 0px 5px 0px' }}
-                        styleType="confirm"
-                        onClick={() => handleNext(index)}
+                      styleType="confirm"
+                      onClick={() => handleNext(index)}
 
-                      >
-                        {t("Next")}
-                      </AmButton>
-                    )}
+                    >
+                      {t("Next")}
+                    </AmButton>
+                  )}
                   {activeStep == 0 ? null : (
                     <AmButton
                       styleType="delete_clear"
