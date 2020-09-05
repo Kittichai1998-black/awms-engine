@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.Engine.V2.Business.Picking;
+using AWMSEngine.Engine.V2.Business.Auditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +15,8 @@ namespace AWMSEngine.APIService.V2.Business.Audit
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = ObjectUtil.DynamicToModel<GetSTOPicking.TReq>(this.RequestVO);
-            var res = new GetSTOPicking().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<GetSTOAudit.TReq>(this.RequestVO);
+            var res = new GetSTOAudit().Execute(this.Logger, this.BuVO, req);
 
             return res;
         }
