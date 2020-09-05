@@ -12,6 +12,28 @@ import MonitorWorking from "./page/STGT/Monitor/MonitorWorking"
 
 const App = (props) => {
 
+  var console=(function(oldCons){
+    return {
+        log: function(text){
+            oldCons.log(text);
+            // Your code
+        },
+        info: function (text) {
+            oldCons.info(text);
+            // Your code
+        },
+        warn: function (text) {
+            oldCons.warn(text);
+            // Your code
+        },
+        error: function (text) {
+            oldCons.error(text);
+            // Your code
+        }
+    };
+  }(window.console));
+  window.console = console;
+
   const container = (comp) => {
     return <Suspense fallback={null}><div style={{ padding: "20px 20px" }}>{comp}</div></Suspense>
   }

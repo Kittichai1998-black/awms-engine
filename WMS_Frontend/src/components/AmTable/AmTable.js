@@ -15,19 +15,47 @@ const pageSize = [{label:"20", value:20},{label:"50", value:50},{label:"100", va
 const AmTableComponent = lazy(() => import("./AmTableComponent"));
 
 const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items, selection}) => {
-    return <>
-        {items ? <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/> : null}
-        <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopLeftControl}</div>
-    </>;
+    if(items && customTopLeftControl){
+        return <>
+            <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/>
+            <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopLeftControl}</div>
+        </>;
+    }
+    else if(items){
+        return <>
+            <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/>
+        </>;
+    }
+    else if(customTopLeftControl){
+        return <>
+            <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopLeftControl}</div>
+        </>;
+    }
 });
 
 const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination}) => {
-    return <>
-        {tableConfig ? <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
+    if(tableConfig && customTopRightControl){
+        return <>
+        <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
         style={{display:"inline-block", borderRight:customTopRightControl || pagination ? "2px solid #ddd" : "", paddingRight:"4px"}} 
-        items={items} datas={selection} title=""/> : null}
+        items={items} datas={selection} title=""/>
         <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopRightControl}</div>
     </>;
+    }
+    else if(tableConfig){
+        return <>
+            <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
+            style={{display:"inline-block", borderRight:customTopRightControl || pagination ? "2px solid #ddd" : "", paddingRight:"4px"}} 
+            items={items} datas={selection} title=""/>
+        </>;
+    }
+    else if(customTopRightControl){
+        return <>
+            <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopRightControl}</div>
+        </>;
+    }
+    
+    
 });
 
 const customToggleBTN = React.forwardRef(({ children, onClick }, ref) => (
@@ -122,6 +150,7 @@ const AmTable = (props) => {
     return <>
         <Suspense fallback="">
             <AmTableComponent
+                style={{marginTop:10}}
                 dataSource={props.dataSource}
                 width={props.width}
                 columns={props.columns}
@@ -145,8 +174,23 @@ const AmTable = (props) => {
                 selectionDefault={props.selectionDefault}
                 clearSelectionChangePage={props.clearSelectionChangePage}
                 customTopControl={props.customTopControl}
-                customTopLeftControl={<CustomTopLeft customToggleBTN={customToggleBTN} customTopLeftControl={props.customTopLeftControl} items={props.customAction} selection={selection}/>}
-                customTopRightControl={<CustomTopRight customSettingBTN={customSettingBTN} customSettingMenu={customSettingMenu} customTopRightControl={props.customTopRightControl} items={configItems} tableConfig={props.tableConfig} selection={selection} pagination={props.pagination}/>}
+                customTopLeftControl={
+                    props.customTopLeftControl || props.customAction ? 
+                    <CustomTopLeft 
+                        customToggleBTN={customToggleBTN} 
+                        customTopLeftControl={props.customTopLeftControl} 
+                        items={props.customAction} 
+                        selection={selection}/> : null
+                }
+                customTopRightControl={
+                    props.customTopRightControl || props.tableConfig ? <CustomTopRight 
+                        customSettingBTN={customSettingBTN} 
+                        customSettingMenu={customSettingMenu} 
+                        customTopRightControl={props.customTopRightControl} 
+                        items={configItems} tableConfig={props.tableConfig} 
+                        selection={selection} 
+                        pagination={props.pagination}/> : null
+                }
                 customBtmControl={props.customBtmControl}
                 customBtmLeftControl={props.customBtmLeftControl}
                 customBtmRightControl={props.customBtmRightControl}

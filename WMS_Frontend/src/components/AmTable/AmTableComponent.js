@@ -92,6 +92,7 @@ const AmTableComponent = (props) => {
     return <AmTableProvider>
         <AmTableSetup
             dataSource={props.dataSource}
+            style={props.style}
             width={props.width}
             columns={props.columns}
             cellStyle={props.cellStyle}
@@ -134,7 +135,7 @@ const AmTableSetup = (props) => {
     const [resetPage, setResetPage] = useState(props.resetPage)
 
     const { selectionData, sortData, sortable } = props;
-
+    console.log(props.customTopLeftControl)
     useEffect(() => {
         if(resetPage)
             setResetPage(false)
@@ -248,6 +249,7 @@ const AmTableSetup = (props) => {
             sortable={props.sortable}
             selectionDisabledCustom={props.selectionDisabledCustom}
             clearSelectionChangeData={props.clearSelectionChangeData}
+            style={props.style}
         />
         <Bottombar 
             customBtmControl={props.customBtmControl} 

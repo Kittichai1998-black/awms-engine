@@ -84,7 +84,6 @@ const useDocumentQuery = (warehouseID, docQuery, addDocList) => {
     return documentQuery;
 }
 const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandleSelectDocument}) => {
-  console.log(columns)
   return <AmFindPopup
   id={"DocumentSelection"}
   placeholder={"Document"}
