@@ -32,8 +32,11 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import { FaPallet, FaPercentage } from 'react-icons/fa';
 import AmToolTip from "../../../components/AmToolTip";
+import { StorageObjectEvenStatusAll, AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
 
 var Axios = new apicall();
+
+const orderObj = [{ label: "FIFO", value: "0" }, { label: "LIFO", value: "1" }];
 
 const FormInline = styled.div`
 display: flex;
@@ -133,27 +136,34 @@ const DefaultProcessCondition = (doc, con) => {
 
             if (con.orderBys !== undefined) {
                 let arrOrderBys = [];
-                con.orderBys.forEach(y => {
-                    if (y.custom !== undefined) {
+                con.orderBys.sort((a,b) => a-b).forEach((y,idx) => {
+                    if (y.custom !== undefined && y.defaultSortBy !== undefined) {
                         let getCustom = y.custom({ document: doc.document, docItem: x })
                         if (getCustom.enable)
-                            arrOrderBys.push({
-                                "fieldName": getCustom.sortField,
-                                "orderByType": getCustom.sortBy
-                            });
+                            if(getCustom.defaultSortBy !== undefined)
+                                arrOrderBys.push({
+                                    "fieldName": getCustom.sortField,
+                                    "orderByType": getCustom.defaultSortBy,
+                                    "order": getCustom.order ? getCustom.order : idx+1
+                                });
                     }
                     else {
-                        if (y.enable)
-                            arrOrderBys.push({
-                                "fieldName": y.sortField,
-                                "orderByType": y.sortBy
-                            });
+                        if (y.enable){
+                            if(y.defaultSortBy !== undefined){
+                                arrOrderBys.push({
+                                    "fieldName": y.sortField,
+                                    "orderByType": y.defaultSortBy,
+                                    "order": y.order ? y.order : idx+1
+                                });
+                            }
+                        }
                     }
                 })
                 if (arrOrderBys.length === 0) {
                     arrOrderBys.push({
                         "fieldName": "psto.createtime",
-                        "orderByType": 0
+                        "orderByType": "0",
+                        "order": 0
                     });
                 }
                 x.orderBys = arrOrderBys;
@@ -161,7 +171,8 @@ const DefaultProcessCondition = (doc, con) => {
             else {
                 x.orderBys = [{
                     "fieldName": "psto.createtime",
-                    "orderByType": 0
+                    "orderByType": "0",
+                    "order": 0
                 }];
             }
         });
@@ -211,7 +222,6 @@ const useArea = (areaQuery, doc, customArea, warehouse) => {
     const [area, setArea] = useState([])
 
     useEffect(() => {
-        console.log(areaQuery)
         Axios.get(createQueryString(areaQuery)).then(res => {
             setArea(res.data.datas);
         });
@@ -232,7 +242,6 @@ const ProcessQueueDetail = (props) => {
     const { processCondition } = props;
     const { documents, documentDetail, warehouse } = useContext(ProcessQueueContext);
     useDocumentData(documents, processCondition);
-    const [columns, setColumns] = useState()
     const [expanded, setExpanded] = useState([])
     const [dialog, setDialog] = useState({ "state": false, data: {} })
     const area = useArea(props.areaQuery, documents.documentListValue, props.customDesArea, warehouse.warehouseValue)
@@ -258,36 +267,73 @@ const ProcessQueueDetail = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props, documents.documentListValue, area])
 
-    useEffect(() => {
-        const onClickDialog = (key, cell) => {
-            const doc = documents.documentListValue.find(x => x.document.ID === cell.original.Document_ID);
-            doc.docItem = { ...doc.docItems.find(x => cell.original.ID === x.ID) };
-            dialog["state"] = true;
-            dialog["key"] = key;
-            dialog["data"] = doc
-            setDialog({ ...dialog });
-        }
+    const onClickDialog = (key, docData) => {
+        dialog["state"] = true;
+        dialog["key"] = key;
+        dialog["data"] = {...docData.docItems[0]}
+        setDialog({ ...dialog });
+    }
 
-        const createCustomDialog = (event) => {
-            var btnObj = [];
-            if (processCondition.conditions !== undefined)
-                btnObj.push(<AmToolTip title={"Conditions"} placement={"top"}><EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" /></AmToolTip>)
-            if (processCondition.orderBys !== undefined)
-                btnObj.push(<AmToolTip title={"Order By"} placement={"top"}><SortIcon onClick={() => { onClickDialog("orderBys", event) }} fontSize="small" /></AmToolTip>)
-            if (processCondition.eventStatuses !== undefined)
-                btnObj.push(<AmToolTip title={"Event Status"} placement={"top"}><ListIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" /></AmToolTip>)
-            if (processCondition.auditStatuses !== undefined)
-                btnObj.push(<AmToolTip title={"Audit Status"} placement={"top"}><ListIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" /></AmToolTip>)
-            if (props.percentRandom)
-                btnObj.push(<AmToolTip title={"Percent Random"} placement={"top"}><FaPercentage onClick={() => { onClickDialog("percentRandom", event) }} /></AmToolTip>)
-            return btnObj;
-        }
-
-        var createCustomColumns = { "Header": "Configs", "sortable": false, "width": 100, Cell: (x) => createCustomDialog(x) };
-        setColumns([createCustomColumns, ...props.documentItemDetail])
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [processCondition, documents]);
+    const createCustomDialog = (event) => {
+        var btnObj = [];
+        if (processCondition.conditions !== undefined)
+            btnObj.push(
+                <FormInline>
+                    <label style={{ marginRight: "10px" }}>Conditions : </label>
+                    <AmToolTip title={"Conditions"} placement={"top"}>
+                        <EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" />
+                    </AmToolTip>
+                </FormInline>
+            )
+        if (processCondition.orderBys !== undefined)
+            btnObj.push(
+                <FormInline style={{display:"inline"}}>
+                    <label style={{ marginRight: "10px" }}>Order By : </label>
+                    {event.docItems[0]["orderBys"].map(odb => {
+                        let field = props.processCondition.orderBys.find(y=> odb.fieldName === y.sortField).field;
+                        let order = orderObj.find(y=> odb.orderByType === y.value).label;
+                        return `${field} | ${order}`
+                    }).join(',')}
+                    <AmToolTip title={"Order By"} placement={"top"}>
+                        <SortIcon onClick={() => { onClickDialog("orderBys", event) }} fontSize="small" />
+                    </AmToolTip>
+                </FormInline>
+            )
+        if (processCondition.eventStatuses !== undefined)
+            btnObj.push(
+                <FormInline style={{display:"inline"}}>
+                    <label style={{ marginRight: "10px" }}>Event Status : </label>
+                    {event.docItems[0]["eventStatuses"].map(st => {
+                        return StorageObjectEvenStatusAll.find(x=> x.value === st).label
+                    }).join(',')}
+                    <AmToolTip title={"Event Status"} placement={"top"}>
+                        <ListIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" />
+                    </AmToolTip>
+                </FormInline>
+            )
+        if (processCondition.auditStatuses !== undefined)
+            btnObj.push(
+                <FormInline style={{display:"inline"}}>
+                    <label style={{ marginRight: "10px" }}>Audit Status : </label>
+                    {event.docItems[0]["auditStatuses"].map(st => {
+                        return AuditStatus.find(x=> x.value === st).label
+                    }).join(',')}
+                    <AmToolTip title={"Audit Status"} placement={"top"}>
+                        <ListIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" />
+                    </AmToolTip>
+                </FormInline>
+            )
+        if (props.percentRandom)
+            btnObj.push(
+                <FormInline style={{display:"inline"}}>
+                    <label style={{ marginRight: "10px" }}>Random : </label>
+                    <AmToolTip title={"Percent Random"} placement={"top"}>
+                        <FaPercentage onClick={() => { onClickDialog("percentRandom", event) }} />
+                    </AmToolTip>
+                </FormInline>
+            )
+        return btnObj;
+    }
 
     const genDocumentHeader = (doc) => {
         const renderColumns = [];
@@ -303,6 +349,13 @@ const ProcessQueueDetail = (props) => {
                 field.forEach(z => renderColumns.push(<Grid item xs={calColumns}>{z.label} : {doc.document[z.accessor]}</Grid>))
             }
         }
+
+        createCustomDialog(doc).forEach(i => {
+            renderColumns.push(<Grid item xs={calColumns}>
+                {i}
+            </Grid>
+            )
+        })
 
         renderColumns.push(<Grid>
             <FormInline>
@@ -329,6 +382,7 @@ const ProcessQueueDetail = (props) => {
             </FormInline>
         </Grid>
         )
+
         return renderColumns
     }
 
@@ -395,8 +449,8 @@ const ProcessQueueDetail = (props) => {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
-                                            data.docItem[x.key] = event.target.checked;
-                                        }} defaultChecked={data.docItem[x.key]} />
+                                            data[x.key] = event.target.checked;
+                                        }} defaultChecked={data[x.key]} />
                                     </FormInline>
                                 }
                                 else {
@@ -411,8 +465,8 @@ const ProcessQueueDetail = (props) => {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
-                                            data.docItem[x.key] = event.target.checked;
-                                        }} defaultChecked={data.docItem[x.key]} />
+                                            data[x.key] = event.target.checked;
+                                        }} defaultChecked={data[x.key]} />
                                     </FormInline>
                                 }
                             })
@@ -433,7 +487,7 @@ const ProcessQueueDetail = (props) => {
                             "field": x.field, "component": (data, cols, key) => {
                                 const condition = x.custom(data);
                                 if (condition.enable) {
-                                    var orb = [...data.docItem.orderBys]
+                                    var orb = [...data.orderBys]
                                     var findOrb = { ...orb.find(y => y.fieldName === x.sortField) }
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -447,13 +501,13 @@ const ProcessQueueDetail = (props) => {
                                             width={200}
                                             value={findOrb.orderByType}
                                             ddlMinWidth={200}
-                                            data={[{ label: "FIFO", value: "0" }, { label: "LIFO", value: "1" }]}
+                                            data={orderObj}
                                             zIndex={9999}
                                             onChange={(value, dataObject, inputID, fieldDataKey) => {
                                                 findOrb.orderByType = value;
                                                 let findEdit = orb.findIndex(y => y.fieldName === findOrb.fieldName);
                                                 orb[findEdit] = findOrb
-                                                data.docItem.orderBys = orb;
+                                                data.orderBys = orb;
                                             }}
                                         /></FormInline>
                                 }
@@ -466,7 +520,7 @@ const ProcessQueueDetail = (props) => {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
                                 if (x.enable) {
-                                    var orb = [...data.docItem.orderBys]
+                                    var orb = [...data.orderBys]
                                     var findOrb = { ...orb.find(y => y.fieldName === x.sortField) }
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -486,7 +540,7 @@ const ProcessQueueDetail = (props) => {
                                                 findOrb.orderByType = value;
                                                 let findEdit = orb.findIndex(y => y.fieldName === findOrb.fieldName);
                                                 orb[findEdit] = findOrb
-                                                data.docItem.orderBys = orb;
+                                                data.orderBys = orb;
                                             }}
                                         /></FormInline>
                                 }
@@ -503,7 +557,7 @@ const ProcessQueueDetail = (props) => {
                 return [];
             }
         } else if (dialog.key === "eventStatuses") {
-            var eventS = processCondition["eventStatuses"];
+            let eventS = processCondition["eventStatuses"];
             if (eventS !== undefined && eventS !== null) {
                 let cols = eventS.reduce((obj, x) => {
                     if (x.custom !== undefined) {
@@ -515,13 +569,13 @@ const ProcessQueueDetail = (props) => {
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
                                             if (event.target.checked) {
-                                                if (!data.docItem["eventStatuses"].includes(x.value)) {
-                                                    data.docItem["eventStatuses"].push(x.value)
+                                                if (!data["eventStatuses"].includes(x.value)) {
+                                                    data["eventStatuses"].push(x.value)
                                                 }
                                             } else {
-                                                data.docItem["eventStatuses"] = data.docItem["eventStatuses"].filter(y => y !== x.value);
+                                                data["eventStatuses"] = data["eventStatuses"].filter(y => y !== x.value);
                                             }
-                                        }} defaultChecked={data.docItem["eventStatuses"].includes(x.value)} />
+                                        }} defaultChecked={data["eventStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
                                 else {
@@ -536,8 +590,15 @@ const ProcessQueueDetail = (props) => {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
-                                            data.docItem[x.key] = event.target.checked;
-                                        }} defaultChecked={data.docItem["eventStatuses"].includes(x.value)} />
+                                            if (event.target.checked) {
+                                                if (!data["eventStatuses"].includes(x.value)) {
+                                                    data["eventStatuses"].push(x.value)
+                                                }
+                                            } else {
+                                                data["eventStatuses"] = data["eventStatuses"].filter(y => y !== x.value);
+                                            }
+                                            
+                                        }} defaultChecked={data["eventStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
                             })
@@ -550,7 +611,7 @@ const ProcessQueueDetail = (props) => {
                 return [];
             }
         } else if (dialog.key === "auditStatuses") {
-            var eventS = processCondition["auditStatuses"];
+            let eventS = processCondition["auditStatuses"];
             if (eventS !== undefined && eventS !== null) {
                 let cols = eventS.reduce((obj, x) => {
                     if (x.custom !== undefined) {
@@ -562,13 +623,13 @@ const ProcessQueueDetail = (props) => {
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
                                             if (event.target.checked) {
-                                                if (!data.docItem["auditStatuses"].includes(x.value)) {
-                                                    data.docItem["auditStatuses"].push(x.value)
+                                                if (!data["auditStatuses"].includes(x.value)) {
+                                                    data["auditStatuses"].push(x.value)
                                                 }
                                             } else {
-                                                data.docItem["auditStatuses"] = data.docItem["auditStatuses"].filter(y => y !== x.value);
+                                                data["auditStatuses"] = data["auditStatuses"].filter(y => y !== x.value);
                                             }
-                                        }} defaultChecked={data.docItem["auditStatuses"].includes(x.value)} />
+                                        }} defaultChecked={data["auditStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
                                 else {
@@ -583,8 +644,15 @@ const ProcessQueueDetail = (props) => {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
                                         <CheckboxCustom disabled={!x.editable} onClick={event => {
-                                            data.docItem[x.key] = event.target.checked;
-                                        }} defaultChecked={data.docItem["auditStatuses"].includes(x.value)} />
+                                            if (event.target.checked) {
+                                                if (!data["auditStatuses"].includes(x.value)) {
+                                                    data["auditStatuses"].push(x.value)
+                                                }
+                                            } else {
+                                                data["auditStatuses"] = data["auditStatuses"].filter(y => y !== x.value);
+                                            }
+                                            
+                                        }} defaultChecked={data["auditStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
                             })
@@ -612,10 +680,10 @@ const ProcessQueueDetail = (props) => {
                             // regExp={regExp}
                             // msgError={"Error"}
                             // styleValidate={{display: 'block'}}
-                            value={data.docItem["percentRandom"]}
+                            value={data["percentRandom"]}
                             defaultValue={100}
                             onChangeV2={(value, obj, element, event) => {
-                                data.docItem["percentRandom"] = value;
+                                data["percentRandom"] = value;
                             }}
                         />
                     </FormInline>
@@ -633,7 +701,6 @@ const ProcessQueueDetail = (props) => {
         documents.documentListValue.filter(x => x.flag).forEach(doc => {
             doc.docItems.forEach(docItem => {
                 const getOptions = queryString.parse(docItem.Options)
-                console.log(docItem.useFullPick)
                 let processQueue = {
                     docID: docItem.Document_ID,
                     docItemID: docItem.ID,
@@ -740,7 +807,8 @@ const ProcessQueueDetail = (props) => {
             flagAuto={flagAuto}
             columnsConfirm={props.columnsConfirm}
             onClose={(confirmState, dialogState) => {
-                if (confirmState !== null) {
+                console.log(confirmState)
+                if (confirmState !== null && confirmState !== undefined) {
                     if (confirmState._result.status === 0) {
                         setDialogState(!dialogState)
                         setDialogText(confirmState._result.message)
@@ -757,31 +825,40 @@ const ProcessQueueDetail = (props) => {
                 setConfirmState(dialogState)
             }
             } />
-
-        <AmEditorTable
-            open={dialog.state}
-            onAccept={(status, rowdata) => {
-                setDialog({ "state": false, data: {} });
-                if (rowdata !== undefined) {
-                    if (rowdata.docItems !== undefined) {
-                        let findEdit = rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                        if (status) {
-                            rowdata.docItems[findEdit] = rowdata.docItem;
-                        }
-                        else {
-                            rowdata.docItems.findIndex(x => x.ID === rowdata.docItem.ID);
-                            rowdata["docItem"] = rowdata.docItems[findEdit];
-                        }
+        {
+            dialog.key !== "orderBys" ? <AmEditorTable
+                open={dialog.state}
+                onAccept={(status, rowdata) => {
+                    if (rowdata !== undefined && status) {
+                        const doc = documents.documentListValue.find(x=> x.document.ID === rowdata.Document_ID)
+                        doc.docItems.forEach(x=> {
+                            x[dialog.key] = rowdata[dialog.key]
+                        })
+                    }
+                    setDialog({ "state": false, data: {} });
+                }}
+                titleText={'Edit'}
+                data={dialog.data}
+                columns={RenderDialog()}
+            /> : 
+            <OrderbyCustom 
+                confirmOrder={(docItem, data) => {
+                    const doc = documents.documentListValue.find(x=> x.document.ID === docItem.Document_ID)
+                    doc.docItems.forEach(x=> {
+                        x["orderBys"] = data
+                    });
+                    setDialog({ "state": false, data: {} })
                     }
                 }
-            }}
-            titleText={'Edit'}
-            data={dialog.data}
-            columns={RenderDialog()}
-        />
+                orderList={props.processCondition.orderBys} 
+                open={dialog.state}
+                sortData={dialog.data}
+                onClose={() => {setDialog({ "state": false, data: {} });}}
+            /> 
+        }
         <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
         {
-            <Memo documentData={documents.documentListValue} cols={columns} />
+            <Memo documentData={documents.documentListValue} cols={props.documentItemDetail} />
         }
         <Grid container>
             <Grid item xs="12">
@@ -875,6 +952,7 @@ const ConfirmDialog = (props) => {
     const [mode, setMode] = useState(props.mode);
     const [datetime, setDatetime] = useState(null);
     const columns = useColumnsConfirm(props.columnsConfirm);
+    const {documents} = useContext(ProcessQueueContext);
 
     useEffect(() => {
         setOpen(props.open)
@@ -891,8 +969,11 @@ const ConfirmDialog = (props) => {
                         if (obj !== "pickStos") {
                             if (obj === "docItemCode")
                                 itemHeader["bstoCode"] = processRes[obj]
-                            else if (obj === "baseQty")
-                                itemHeader["pickQty"] = processRes[obj]
+                            else if (obj === "baseQty"){
+                                let findQty = documents.documentListValue.find(x=> x.ID === processRes["Document_ID"]).docItems.find(x=> x.ID === processRes["docItemID"])
+                                console.log(findQty)
+                                itemHeader["pickQty"] = findQty.Quantity
+                            }
                             else
                                 itemHeader[obj] = processRes[obj]
 
@@ -992,13 +1073,12 @@ const ConfirmDialog = (props) => {
     return <AmDialogConfirm
         styleDialog={{ maxWidth: "800px" }}
         open={open}
-        close={a => { setOpen(!open); props.onClose(null, false); }}
+        close={a => { setOpen(!open); props.onClose(); }}
         bodyDialog={!IsEmptyObject(data) ? renderProcess() : []}
         customAcceptBtn={
             <AmButton
                 styleType="confirm_clear"
                 onClick={() => {
-
                     onClickConfirm();
                 }}>OK</AmButton>
         }
@@ -1007,7 +1087,7 @@ const ConfirmDialog = (props) => {
                 styleType="delete_clear"
                 onClick={() => {
                     setOpen(!open)
-                    props.onClose(null, false)
+                    props.onClose()
                 }}>Cancel</AmButton>
         }
     />;
@@ -1066,8 +1146,115 @@ const Delete = withStyles({
     root: {
         marginRight: "15px"
     },
-
 })(DeleteIcon);
+
+const OrderbyCustom = (props) => {
+    const [data, setData] = useState(() => {
+        if(props.sortData !== undefined){
+            return props.sortData.orderBys.map(x=> {
+                return {fieldName:x.fieldName, orderByType:x.orderByType ? x.orderByType : "0", order:x.order};
+            });
+        }
+        else{
+            return [];
+        }
+    });
+    const [select, setSelect] = useState({})
+    const [open, setOpen] = useState(false)
+    const [orderList, setOrderList] = useState([]);
+
+    useEffect(() => {
+        setOpen(props.open)
+    }, [props.open]);
+
+    useEffect(() => {
+        const newOrder = props.orderList.filter(x=> {
+            return data.find(y => y.fieldName === x.sortField) === undefined
+        });
+        setOrderList(newOrder);
+    }, [data]);
+
+    const onClickAddItem = () => {
+        console.log(select)
+        if(select.fieldName !== undefined && select.fieldName !== null){
+            data.push({...select, order:data.length+1})
+            setData([...data])
+            setSelect({})
+        }
+    }
+
+    const onClickRemoveItem = (item) => {
+        const res = data.filter(x=> x.fieldName !== item.fieldName)
+        .sort((a,b) => a-b)
+        .map((x,idx) => {
+            return {...x, order : idx+1};
+        });
+        setData(res)
+    }
+
+    const createElement = () => {
+        return <div>
+            <FormInline>
+            <AmDropdown
+                id={"order"}
+                placeholder={"order"}
+                fieldDataKey={"sortField"}
+                fieldLabel={["field"]}
+                width={200}
+                ddlMinWidth={200}
+                labelPattern=" : "
+                data={orderList}
+                value={select.fieldName}
+                zIndex={9999}
+                onChange={(value, dataObject, inputID, fieldDataKey) => {
+                    setSelect({fieldName:value, orderByType:"0"})
+                }} /> | 
+            <AmDropdown
+                id={"orderSign"}
+                placeholder={""}
+                fieldDataKey={"value"}
+                fieldLabel={["label"]}
+                labelPattern=" : "
+                width={100}
+                ddlMinWidth={50}
+                defaultValue={"0"}
+                data={[{ label: "FIFO", value: "0" }, { label: "LIFO", value: "1" }]}
+                zIndex={9999}
+                onChange={(value, dataObject, inputID, fieldDataKey) => {
+                    select.orderByType = value;
+                }} />
+            <AmButton style={{marginLeft:10,display:"inline"}} styleType="confirm" onClick={onClickAddItem}>Add</AmButton>
+            </FormInline>
+            {data.map(x=> <FormInline>{x.order}-{props.orderList.find(y=> x.fieldName === y.sortField).field} | {orderObj.find(y=> x.orderByType === y.value).label}
+                <AmButton styleType="delete_clear" onClick={()=>onClickRemoveItem(x)}>Remove</AmButton>
+                </FormInline>)
+            }
+        </div>
+    }
+
+    return <AmDialogConfirm
+        styleDialog={{ width: "500px" }}
+        open={open}
+        close={a => { setOpen(!open); props.onClose(); }}
+        bodyDialog={createElement(props.orderList)}
+        customAcceptBtn={
+            <AmButton
+                styleType="confirm_clear"
+                onClick={() => {
+                    props.confirmOrder(props.sortData, data);
+                    setOpen(!open);
+                }}>OK</AmButton>
+        }
+        customCancelBtn={
+            <AmButton
+                styleType="delete_clear"
+                onClick={() => {
+                    setOpen(!open)
+                    props.onClose()
+                }}>Cancel</AmButton>
+        }
+    />;
+}
 
 ProcessQueueDetail.propTypes = {
     /**
