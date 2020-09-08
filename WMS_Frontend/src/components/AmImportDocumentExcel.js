@@ -145,7 +145,7 @@ const AmImportDocumentExcel = (props) => {
             setStateDialogErr(true);
         } else {
             if (datsobjItem !== undefined) {
-                console.log(datsobjItem)
+               
                 datsobjItem.forEach((x, i) => {
                     if (x) {
                         let Incubate = props.docTypename === "receive" ? x[13] : x[14]
