@@ -468,7 +468,7 @@ let routes = [
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
   { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
-  { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
+  { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
 ];
 
 export default routes;
