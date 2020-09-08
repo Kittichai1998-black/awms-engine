@@ -70,7 +70,7 @@ const GR_Detail = props => {
                 { label: "Document Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             

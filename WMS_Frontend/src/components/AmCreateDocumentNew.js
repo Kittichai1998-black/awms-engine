@@ -178,6 +178,7 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         getHeaderCreate()
+        console.log(props.headerCreate)
     }, [props.headerCreate])
 
     useEffect(() => {
@@ -320,9 +321,10 @@ const AmCreateDocument = (props) => {
             }
         });
         if (key === 'documentProcessTypeID') {
-            if (dataObject !== undefined || dataObject !== null || dataObject.length < 0) {
+            if (dataObject) {
                 props.onChangeProcessType(dataObject.OwnerGroupType);
                 props.onChangeProcesTypeSKU(dataObject.SKUGroupType);
+
                 if (props.onChangeProcessTypeCode != undefined)
                     props.onChangeProcessTypeCode(dataObject.Code)
 
@@ -330,12 +332,9 @@ const AmCreateDocument = (props) => {
                 createDocumentData[key] = dataObject.ID
                 setcreateDocumentData(createDocumentData)
             }
-
-
         }
         createDocumentData[key] = value
         setcreateDocumentData(createDocumentData)
-
     }
 
     //เช็ตค่าที่หัวของหน้าใน Findpopup
@@ -824,16 +823,15 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
-
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, obj) => {
         if (type === "date") {
             return (
                 <AmDate
                     TypeDate={"date"}
-                    defaultValue
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     onChange={(e) => {
-                        if (e !== null) {
+                        if (e !== null) {                           
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -845,7 +843,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDate
                     TypeDate={"datetime-local"}
-                    defaultValue
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -959,7 +957,7 @@ const AmCreateDocument = (props) => {
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
                                     <LabelT style={LabelTStyle}>{y.label + syn}</LabelT>
-                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
+                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.defaultValueDate, y)}
                                 </FormInline></div>
                             </Grid>
                         )
@@ -1043,7 +1041,7 @@ const AmCreateDocument = (props) => {
             if (key in doc)
                 doc[key] = value
         }
-
+        var qtyrandom = 'qtyrandom='
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
                 let _docItem = { ...docItem }
@@ -1060,14 +1058,16 @@ const AmCreateDocument = (props) => {
             doc.countingItems = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.quantity = x.quantitys
+                x.quantity = x.quantity ? null : null
+                x.options = qtyrandom.concat(x.quantitys,'%')
                 return x
             })
         } else if (props.createDocType === "audit") {
             doc.auditItems = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.quantity = x.quantitys
+                x.quantity = x.quantity ? null : null
+                x.options = qtyrandom.concat(x.quantitys, '%')
                 return x
             })
         } else if (props.createDocType === "issue") {

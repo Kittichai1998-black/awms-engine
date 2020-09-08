@@ -74,7 +74,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<Pallet> pallets = new List<Pallet>();           
             List<Pallet> findPalletX = new List<Pallet>();
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-
+            Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             var itemVol = reqVO.item.Sum(x=>x.vol);
             if (itemVol < reqVO.minVolume)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า minVolume");
@@ -113,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                 listItem.Add(new pallet_list_item()
                 {
-                    code = "N|" + pts.palletsNO + "|" + pID + "|" + vol,
+                    code = "N|" + pts.palletsNO + "|" + pID + "|" + vol+"|"+unixTimestamp+"-"+ pts.palletsNO+ pID,
                     skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Name == skutype).ID.Value,
                     title = skutype,
                     options = "codeNo=" + pcode + "&itemName=" + pname +

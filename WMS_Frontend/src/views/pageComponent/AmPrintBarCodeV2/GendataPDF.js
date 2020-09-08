@@ -49,8 +49,9 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark, docI
     var productionDate = productionDateArr.join()
     var expireDate = expireDateArr.join()
     var unitTypeCode = unitTypeCodeArr.join()
+    var ts = Math.round((new Date()).getTime() / 1000);
     itemPDF = {
-      code: "N|" + indexName + "|" + pid + "|" + qty,
+      code: "N|" + indexName + "|" + pid + "|" + qty + "|" + ts + "-" + indexName + pid,
       title: skutype,
       skuType: 4,
       options: "codeNo=" + pcode + "&itemName=" + pname +

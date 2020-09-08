@@ -69,7 +69,7 @@ const AD_Detail = props => {
                 { label: "Document Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
 
@@ -99,7 +99,7 @@ const AD_Detail = props => {
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         //{ width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", Cell: e => getFormatQty(e.original),widthPDF: 20 },
+        { width: 120, accessor: "qtyrandom", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",

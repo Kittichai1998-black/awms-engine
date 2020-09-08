@@ -55,6 +55,15 @@ const GI_Create_FGCustomer = props => {
         if (CodeprocessType !== "" && CodeprocessType !== null) {    
             var DataprocessTypeID;
             var defaulProcessType = 1010
+            var actDate;
+
+            if (ProcessTypeCode === 4041) {
+                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate: true, codeTranslate: "Action Time" }
+            } else {
+                actDate = {label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate : false, codeTranslate: "Action Time" }
+
+            }
+            
             if (CodeprocessType === 1) {
                 DataprocessTypeID = [
                     { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -77,11 +86,11 @@ const GI_Create_FGCustomer = props => {
             var headerCreate = [
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                    { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                    { label: "Document Date", type: "date", key: "documentDate",  codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4041, codeTranslate: "Process Type" },
-                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                    actDate
                 ],
                 
                     DataprocessTypeID,
@@ -104,7 +113,7 @@ const GI_Create_FGCustomer = props => {
         } else {
 
         }
-    }, [CodeprocessType]);
+    }, [CodeprocessType, ProcessTypeCode]);
 
     useEffect(() => {
         if (HeaderDoc.length > 0) {
@@ -246,7 +255,7 @@ const GI_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

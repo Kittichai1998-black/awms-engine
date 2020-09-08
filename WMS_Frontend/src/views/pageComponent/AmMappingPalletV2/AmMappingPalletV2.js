@@ -29,7 +29,7 @@ import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
-import BoxIcon from "@material-ui/icons/Widgets";
+import SearchIcon from "@material-ui/icons/Search";
 import AmDropdown from '../../../components/AmDropdown'
 import Switch from '@material-ui/core/Switch';
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -47,6 +47,7 @@ import { PlusSquare, MinusSquare } from "../../../constant/IconTreeview";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";
+import IconButton from "@material-ui/core/IconButton";
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -216,6 +217,7 @@ const AmMappingPalletV2 = props => {
   const [flaggetDataDoc, setFlaggetDataDoc] = useState(false);
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
+  const [qrCode, setQrCode] = useState("");
   const [warehouseID, setWarehouseID] = useState(1);
 
   const [dialog, setDialog] = useState(false);
@@ -228,6 +230,8 @@ const AmMappingPalletV2 = props => {
   const [checkedAutoClear, setCheckedAutoClear] = useState(true);
   const [autoFocus, setAutoFocus] = useState(true)
   const [autoFocusBarcode, setAutoFocusBarcode] = useState(false)
+  const [disPlayQr, setDisPlayQr] = useState(true);
+  const [disPlayButton, setDisPlayButton] = useState(false);
   const alertDialogRenderer = (message, type, state) => {
     setMsgDialog(message);
     setTypeDialog(type);
@@ -330,15 +334,18 @@ const AmMappingPalletV2 = props => {
 
     }
   };
-  const onHandleChangeInputPalletCode = (keydata, value) => {
+  const onHandleChangeInputPalletCode = (keydata, value, event) => {
     setPalletCode(value);
-    scanMappingSto(value, null)
+    if (event === "Enter")
+      scanMappingSto(value, null)
   };
-  const onHandleChangeInputBarcode = (keydata, value) => {
-
+  const onHandleChangeInputBarcode = (keydata, value, event) => {
     valueManual[keydata] = value;
-    getDocByQRCode(value)
-  };
+    setQrCode(value)
+    if (event === "Enter") {
+      getDocByQRCode(value)
+    };
+  }
   const onHandleChangeInputManual = (value, fieldDataKey) => {
     valueManual[fieldDataKey] = value;
   };
@@ -347,7 +354,11 @@ const AmMappingPalletV2 = props => {
     valueInput.processType = null
     valueInput.areaID = null
     valueInput.palletCode = null
+    setDisPlayQr(true)
+    setDisPlayButton(false)
     setCheckedAutoClear(true)
+    setQrCode("")
+    setPalletCode("")
     setCheckedAuto(true)
     setDataPallet(null)
     setDataDoc(null)
@@ -366,6 +377,7 @@ const AmMappingPalletV2 = props => {
       if (res.data._result.status === 1) {
         setDataDoc(res.data)
         setFlaggetDataDoc(true)
+        setDisPlayButton(true)
       } else {
         setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
@@ -385,6 +397,11 @@ const AmMappingPalletV2 = props => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
           setDataPallet(res.data.bsto)
+          setDisPlayQr(false)
+          var el = document.getElementById('barcode');
+          if (el !== null)
+            el.value = null
+          el.focus()
         }
         setDialog(false)
       } else {
@@ -426,6 +443,7 @@ const AmMappingPalletV2 = props => {
       if (checkedAuto) {
         if (dataDoc !== undefined && dataDoc !== null) {
           dataDoc.datas.forEach(element => {
+            console.log(element)
             postdata.pstos.push(element)
           });
         }
@@ -447,9 +465,10 @@ const AmMappingPalletV2 = props => {
     Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
       if (res.data._result.status === 1) {
         if (res.data.bsto !== undefined) {
-
+          setDisPlayQr(false)
           setDataPallet(res.data.bsto)
           setDataDoc(null)
+
           if (checkedAuto === false && type === "confirm") {
             props.columnsManual.forEach(x => {
               valueManual[x.field] = null
@@ -576,28 +595,34 @@ const AmMappingPalletV2 = props => {
                 <LabelH1 style={{ width: "120px" }}>{"Clear pallet auto"}</LabelH1>
               </FormInline>
               {/* =================================== Pallet ===================================== */}
-              <AmInput
-                id={"palletcode"}
-                placeholder="Pallet Code"
-                type="input"
-                autoFocus={autoFocus}
-                style={{ width: "100%" }}
-                onChange={(value, obj, element, event) =>
-                  onHandleChangeInputPalletCode(value, "palletCode")
-                }
-
-                onBlur={(e) => {
-                  if (e !== undefined && e !== null)
-                    onHandleChangeInputPalletCode("palletCode", e)
-                }}
-                onKeyPress={(value, obj, element, event) => {
-                  if (event.key === "Enter") {
+              <FormInline>
+                <LabelH1>Pallet Code :</LabelH1>
+                <AmInput
+                  id={"palletcode"}
+                  placeholder="Pallet Code"
+                  type="input"
+                  autoFocus={autoFocus}
+                  style={{ width: "200px" }}
+                  onChange={(value, obj, element, event) =>
                     onHandleChangeInputPalletCode("palletCode", value)
                   }
-                }}
-              />
-
-
+                  onKeyPress={(value, obj, element, event) => {
+                    if (event.key === "Enter") {
+                      onHandleChangeInputPalletCode("palletCode", value, event.key)
+                    }
+                  }}
+                />
+                <IconButton
+                  size="small"
+                  aria-label="info"
+                  style={{ paddingTop: "10px" }}
+                >
+                  <SearchIcon
+                    fontSize="small"
+                    onClick={() => { scanMappingSto(palletCode, null) }}
+                  />
+                </IconButton>
+              </FormInline>
               {/* =================================== Auto  ===================================== */}
               <FormInline>
                 <CheckboxCustom onClick={event => {
@@ -610,27 +635,36 @@ const AmMappingPalletV2 = props => {
               {
                 checkedAuto === true ?
                   <div>
-                    <AmInput
-                      id={"barcode"}
-                      placeholder="Barcode Product"
-                      type="input"
-                      style={{ width: "100%" }}
-                      onChange={(value, obj, element, event) =>
-                        onHandleChangeInputBarcode("barcode", value)
-                      }
-                      autoFocus={autoFocusBarcode}
-
-                      onBlur={(e) => {
-                        if (e !== undefined && e !== null)
-                          onHandleChangeInputBarcode("palletCode", e)
-                      }}
-                      onKeyPress={(value, obj, element, event) => {
-                        if (event.key === "Enter") {
+                    <FormInline>
+                      <LabelH1>QRcode :</LabelH1>
+                      <AmInput
+                        id={"barcode"}
+                        placeholder="QRcode Product"
+                        type="input"
+                        style={{ width: "200px" }}
+                        disabled={disPlayQr}
+                        onChange={(value, obj, element, event) =>
                           onHandleChangeInputBarcode("barcode", value)
                         }
+                        autoFocus={autoFocusBarcode}
+                        onKeyPress={(value, obj, element, event) => {
+                          if (event.key === "Enter") {
+                            onHandleChangeInputBarcode("barcode", value, event.key)
+                          }
 
-                      }}
-                    />
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        aria-label="info"
+                        style={{ paddingTop: "10px" }}
+                      >
+                        <SearchIcon
+                          fontSize="small"
+                          onClick={() => { getDocByQRCode(qrCode) }}
+                        />
+                      </IconButton>
+                    </FormInline>
                   </div> :
                   <div>
                     <Card >
@@ -817,6 +851,7 @@ const AmMappingPalletV2 = props => {
               <StepContent>
                 {getStepContent(index)}
                 <div>
+
                   {activeStep == 0 ? null : (
                     <AmButton
                       styleType="add"
@@ -826,7 +861,7 @@ const AmMappingPalletV2 = props => {
                       {t("Received")}
                     </AmButton>
                   )}
-                  {activeStep === steps.length - 1 ? (
+                  {activeStep === steps.length - 1 ? ((disPlayButton === false ? null :
                     <AmButton
                       styleType="confirm"
                       onClick={() => {
@@ -837,7 +872,7 @@ const AmMappingPalletV2 = props => {
                     >
                       {t("Confirm")}
                     </AmButton>
-                  ) : (
+                  )) : (
                       <AmButton
                         className="float-right"
                         style={{ margin: '5px 0px 5px 0px' }}
