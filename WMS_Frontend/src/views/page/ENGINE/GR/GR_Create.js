@@ -40,16 +40,16 @@ export default props => {
 
     const headerCreate = [
         [
-            { label: "Document No.", type: "labeltext", key: "", texts: "-" },
-            { label: "Document Date", type: "date", key: "documentDate" }
+            { label: "Doc No.", type: "labeltext", key: "", texts: "-" },
+            { label: "Doc Date", type: "date", key: "documentDate" }
         ],
         [
-            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012" },
+            { label: "Process No.", type: "labeltext", key: "movementTypeID", texts: "FG_TRANSFER_CUS", valueTexts: "1012" },
             { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
-            { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1 },
-            { label: "Destination Customer", type: "dropdown", key: "desCustomerID", queryApi: view_Customer, fieldLabel: ["Code", "Name"], defaultValue: 1 }
+            { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: "", valueTexts: 1 },
+            { label: "Des.Customer", type: "dropdown", key: "desCustomerID", queryApi: view_Customer, fieldLabel: ["Code", "Name"], defaultValue: 1 }
         ],
         [
             { label: "Doc Status", type: "labeltext", key: "", texts: "NEW" },

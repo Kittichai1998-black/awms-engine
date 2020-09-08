@@ -159,13 +159,6 @@ const AmHeaderputandpick = (props) => {
         }
     }, [props.docIDCreate])
 
-    //useEffect(() => {
-    //    if (doc.dialogItemSet === true) {
-    //        getDataSet();
-    //        getDocItemQuerySet(DocItemsquery)
-    //    }
-    //}, [doc.dialogItemSet])
-
 
     useEffect(() => {
         let dataHead = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
@@ -369,14 +362,17 @@ const AmHeaderputandpick = (props) => {
                 key: key,
             }
         });
-        if (key === 'documentProcessTypeID') {
-            props.onChangeProcessType(value);
+        if (value) {
+            if (key === 'documentProcessTypeID') {
+                props.onChangeProcessType(value);
+                createDocumentData[key] = value
+                setcreateDocumentData(createDocumentData)
+
+            }
             createDocumentData[key] = value
             setcreateDocumentData(createDocumentData)
-
+        } else {
         }
-        createDocumentData[key] = value
-        setcreateDocumentData(createDocumentData)
     }
 
     const onHandleChangeFindpopup = (value, dataObject, inputID, fieldDataKey, pair, key) => {
