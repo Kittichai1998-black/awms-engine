@@ -323,7 +323,7 @@ const AmStorageObjectMulti = props => {
           props.action === true ?
             [{
               label: <div style={{ fontSize: "12px" }}>
-                {"HOLD"}</div>,
+                {"LOCK"}</div>,
               action: (data) => {
                 if (selection.length === 0) {
                   setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
@@ -335,7 +335,7 @@ const AmStorageObjectMulti = props => {
             },
             {
               label: <div style={{ fontSize: "12px" }}>
-                {"UNHOLD"}</div>,
+                {"UNLOCK"}</div>,
               action: (data) => {
                 if (selection.length === 0) {
                   setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
