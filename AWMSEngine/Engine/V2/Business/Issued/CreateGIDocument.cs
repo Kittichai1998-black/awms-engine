@@ -151,7 +151,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                     souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-                    docTypeId = DocumentTypeID.PUTAWAY,
+                    docTypeId = DocumentTypeID.PICKING,
                     desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                     desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                     desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
