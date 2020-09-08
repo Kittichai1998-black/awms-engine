@@ -171,6 +171,11 @@ const propTypes = {
      ** value? : (pageSize) => 
     */
     onPageSizeChange:PropTypes.func,
+    /**
+     * ค่ารูปแบบตารางเบื้องต้น
+     ** {margin:10, padding:10}
+    */
+    style:PropTypes.object,
 }
 
 export default propTypes;

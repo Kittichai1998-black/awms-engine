@@ -970,6 +970,7 @@ const AmCreateDocument = (props) => {
     }
 
     const CreateDoc = () => {
+
         const doc = {
             actionTime: null,
             batch: null,
@@ -1036,6 +1037,7 @@ const AmCreateDocument = (props) => {
             docItemStos: [],
             baseStos: []
         }
+
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
@@ -1083,7 +1085,12 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
-            CreateDocuments(doc)
+            if (doc.documentProcessTypeID === null || doc.documentProcessTypeID === null) {
+                setMsgDialog("Process No not found");
+                setStateDialogErr(true);
+            } else {
+                CreateDocuments(doc)
+            }
         }
     }
 
