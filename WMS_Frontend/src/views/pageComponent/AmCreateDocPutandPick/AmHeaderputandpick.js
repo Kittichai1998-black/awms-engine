@@ -147,9 +147,10 @@ const AmHeaderputandpick = (props) => {
             doc.setdatadocItem([])
             doc.setdialogItemSet([])
             doc.setdialogItemSet(false)
-            doc.setdialogItem(false)           
-            getData();
+            doc.setdialogItem(false)     
             getDocItemQuery(DocItemsquery);
+            getData();
+       
         }
     }, [doc.docID])
 
@@ -700,7 +701,7 @@ const AmHeaderputandpick = (props) => {
                     queryApi={queryApi} //object query string
                     columns={cols} //array column สำหรับแสดง table
                     width={width ? width : 300}
-                    returnDefaultValue={true}
+                   // returnDefaultValue={true}
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopup(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
@@ -720,7 +721,7 @@ const AmHeaderputandpick = (props) => {
                     width={width ? width : 300}
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
                     disabled={doc.docID ? true : false}
-                    defaultValue={doc.docID ? doc.docID : ""}
+                    defaultValue={doc.docID ? doc.docID : null}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopupDoc(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
             )

@@ -55,15 +55,15 @@ const GI_Create_FGCustomer = props => {
         if (CodeprocessType !== "" && CodeprocessType !== null) {    
             var DataprocessTypeID;
             var defaulProcessType = 1010
-            var docDate;
+            var actDate;
 
             if (ProcessTypeCode === 4041) {
-                docDate = { label: "Document Date", type: "date", key: "documentDate", defaultValue: true, codeTranslate: "Document Date" }
+                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate: true, codeTranslate: "Action Time" }
             } else {
-                docDate = { label: "Document Date", type: "date", key: "documentDate", defaultValue: false, codeTranslate: "Document Date" }
-            }
-            console.log(docDate)
+                actDate = {label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate : false, codeTranslate: "Action Time" }
 
+            }
+            
             if (CodeprocessType === 1) {
                 DataprocessTypeID = [
                     { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -86,11 +86,11 @@ const GI_Create_FGCustomer = props => {
             var headerCreate = [
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                    docDate
+                    { label: "Document Date", type: "date", key: "documentDate",  codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4041, codeTranslate: "Process Type" },
-                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                    actDate
                 ],
                 
                     DataprocessTypeID,
