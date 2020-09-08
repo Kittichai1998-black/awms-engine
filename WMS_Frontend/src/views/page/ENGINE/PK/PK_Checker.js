@@ -260,7 +260,7 @@ const PickingChecker = (props) => {
         }
         return [
             { label: "Scan Pallet Code", value: bstoCode },
-            { label: 'Confirm Picking', value: null },
+            { label: 'Select Picking', value: null },
         ];
     };
     function getStepContent(step) {
