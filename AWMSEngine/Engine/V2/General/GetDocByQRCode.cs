@@ -72,6 +72,7 @@ namespace AWMSEngine.Engine.V2.General
             public string numPalelt;
             public string dociID;
             public string qty;
+            public string tag;
         };
         protected override TRes ExecuteEngine(TReq reqVO)
         {
@@ -85,13 +86,15 @@ namespace AWMSEngine.Engine.V2.General
 
             if (reqVO.qr.StartsWith("N|"))
             {
-                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}");
+                var qrModel = ObjectUtil.ConvertTextFormatToModel<QR>(reqVO.qr, "N|{numPalelt}|{dociID}|{qty}|{tag}");
 
                 if (qrModel == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
                 
                 List<long> dociID = qrModel.dociID.Split(',').Select(long.Parse).ToList();
                 List<long> qty = qrModel.qty.Split(',').Select(long.Parse).ToList();
+                List<string> tag = qrModel.tag.Split(',').ToList();
+
                 int i = 0;
 
                 var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
@@ -123,6 +126,14 @@ namespace AWMSEngine.Engine.V2.General
                     //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนรับเข้าเท่ากับ 0");
 
                     //qrModel.numPalelt
+                    var ob = AMWUtil.Common.ObjectUtil.QryStrSetValue(
+                        docitemPutaway.Options, new KeyValuePair<string, object>(
+                            OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt),
+                        new KeyValuePair<string, object>(
+                            OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID),
+                         new KeyValuePair<string, object>(
+                            OptionVOConst.OPT_TAG_NO, tag[i])
+                        ); 
                     packList.Add(new PackSto()
                     {
                         pstoCode = skuPutaway.Code,
@@ -138,7 +149,8 @@ namespace AWMSEngine.Engine.V2.General
                         ref4 = docitemPutaway.Ref4,
                         cartonNo = docitemPutaway.CartonNo,
                         forCustomerID = doc.For_Customer_ID,
-                        options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
+                        //options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docitemPutaway.Options,new KeyValuePair<string, object>(OptionVOConst.OPT_PALLET_NO, qrModel.numPalelt), new KeyValuePair<string, object>(OptionVOConst.OPT_DOCITEM_ID, qrModel.dociID)),
+                        options = ob,
                         addQty = qty[i],
                         unitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.UnitType_ID).Code,
                         packUnitTypeCode = StaticValue.UnitTypes.First(x => x.ID == docitemPutaway.BaseUnitType_ID).Code,
