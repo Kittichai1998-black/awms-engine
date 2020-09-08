@@ -105,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
     },
     sectionDesktop: {
         display: 'none',
+        overflowX:'Hidden',
         [theme.breakpoints.up('md')]: {
             display: 'flex'
         },
@@ -268,7 +269,7 @@ const MainContainer = React.memo(({route, path}) => {
     </Switch>
 });
 
-const theme = createMuiTheme();
+const theme2 = createMuiTheme();
 const Default = props => {
     const classes = useStyles();
     const theme = useTheme();
@@ -422,7 +423,7 @@ const Default = props => {
     };
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme2}>
             <div className={classes.root}>
                 {checkstatus()}
                 <CssBaseline />

@@ -36,7 +36,7 @@ import { StorageObjectEvenStatusAll, AuditStatus } from "../../../components/Mod
 
 var Axios = new apicall();
 
-const orderObj = [{ label: "FIFO", value: "0" }, { label: "LIFO", value: "1" }];
+const orderObj = [{ label: "Least", value: "0" }, { label: "Most", value: "1" }];
 
 const FormInline = styled.div`
 display: flex;
@@ -57,6 +57,14 @@ input {
 const LabelH = styled.label`
   font-weight: bold;
   width: 200px;
+`;
+const SelectionItem = styled.div`
+  display:inline;
+  padding: 2px;
+  background:#B8ECF5;
+  margin-right:3px;
+  border-radius: 5px;
+  border:1px solid #37DCF9;
 `;
 
 const DefaultProcessCondition = (doc, con) => {
@@ -292,8 +300,8 @@ const ProcessQueueDetail = (props) => {
                     {event.docItems[0]["orderBys"].map(odb => {
                         let field = props.processCondition.orderBys.find(y=> odb.fieldName === y.sortField).field;
                         let order = orderObj.find(y=> odb.orderByType === y.value).label;
-                        return `${field} | ${order}`
-                    }).join(',')}
+                        return <SelectionItem>{`${field}(${order})`}</SelectionItem>
+                    })}
                     <AmToolTip title={"Order By"} placement={"top"}>
                         <SortIcon onClick={() => { onClickDialog("orderBys", event) }} fontSize="small" />
                     </AmToolTip>
@@ -304,8 +312,8 @@ const ProcessQueueDetail = (props) => {
                 <FormInline style={{display:"inline"}}>
                     <label style={{ marginRight: "10px" }}>Event Status : </label>
                     {event.docItems[0]["eventStatuses"].map(st => {
-                        return StorageObjectEvenStatusAll.find(x=> x.value === st).label
-                    }).join(',')}
+                        return <SelectionItem>{StorageObjectEvenStatusAll.find(x=> x.value === st).label}</SelectionItem>
+                    })}
                     <AmToolTip title={"Event Status"} placement={"top"}>
                         <ListIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" />
                     </AmToolTip>
@@ -316,8 +324,8 @@ const ProcessQueueDetail = (props) => {
                 <FormInline style={{display:"inline"}}>
                     <label style={{ marginRight: "10px" }}>Audit Status : </label>
                     {event.docItems[0]["auditStatuses"].map(st => {
-                        return AuditStatus.find(x=> x.value === st).label
-                    }).join(',')}
+                        return <SelectionItem>{AuditStatus.find(x=> x.value === st).label}</SelectionItem>
+                    })}
                     <AmToolTip title={"Audit Status"} placement={"top"}>
                         <ListIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" />
                     </AmToolTip>
@@ -327,6 +335,7 @@ const ProcessQueueDetail = (props) => {
             btnObj.push(
                 <FormInline style={{display:"inline"}}>
                     <label style={{ marginRight: "10px" }}>Random : </label>
+                    <SelectionItem>{event.docItems[0]["percentRandom"] ? event.docItems[0]["percentRandom"] : 100}</SelectionItem>
                     <AmToolTip title={"Percent Random"} placement={"top"}>
                         <FaPercentage onClick={() => { onClickDialog("percentRandom", event) }} />
                     </AmToolTip>
@@ -1208,7 +1217,7 @@ const OrderbyCustom = (props) => {
                 zIndex={9999}
                 onChange={(value, dataObject, inputID, fieldDataKey) => {
                     setSelect({fieldName:value, orderByType:"0"})
-                }} /> | 
+                }} />&nbsp;&nbsp;
             <AmDropdown
                 id={"orderSign"}
                 placeholder={""}
@@ -1218,7 +1227,7 @@ const OrderbyCustom = (props) => {
                 width={100}
                 ddlMinWidth={50}
                 defaultValue={"0"}
-                data={[{ label: "FIFO", value: "0" }, { label: "LIFO", value: "1" }]}
+                data={orderObj}
                 zIndex={9999}
                 onChange={(value, dataObject, inputID, fieldDataKey) => {
                     select.orderByType = value;

@@ -263,7 +263,7 @@ const AmTableBody = (props) => {
     props.dataSource
   )
 
-  return <TableContainer width={props.width} height={props.height} ref={containerRef}>
+  return <TableContainer style={props.style} width={props.width} height={props.height} ref={containerRef}>
     <Table style={props.tableStyle}>
       <GenerateHeader columns={columns} props={props} tableSize={tableSize} />
       {GenerateRow({ columns, props, dataSource })}
