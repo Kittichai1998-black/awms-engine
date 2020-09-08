@@ -178,6 +178,7 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         getHeaderCreate()
+        console.log(props.headerCreate)
     }, [props.headerCreate])
 
     useEffect(() => {
@@ -822,13 +823,12 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
-        console.log(defaultValue)
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, obj) => {
         if (type === "date") {
             return (
                 <AmDate
                     TypeDate={"date"}
-                    defaultValue
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {                           
@@ -843,7 +843,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDate
                     TypeDate={"datetime-local"}
-                    defaultValue
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -957,7 +957,7 @@ const AmCreateDocument = (props) => {
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
                                     <LabelT style={LabelTStyle}>{y.label + syn}</LabelT>
-                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y)}
+                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.defaultValueDate, y)}
                                 </FormInline></div>
                             </Grid>
                         )
