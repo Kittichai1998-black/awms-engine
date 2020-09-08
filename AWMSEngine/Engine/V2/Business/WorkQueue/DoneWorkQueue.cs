@@ -47,6 +47,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (queueTrx.Des_Warehouse_ID != queueTrx.Warehouse_ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Present Location Not Equals Destination Location.");
 
+            if(queueTrx.StorageObject_Code != reqVO.baseCode)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Incorrect Pallet Code");
+
             this.UpdateStorageObjectLocation(reqVO, queueTrx);
 
             var workQ = this.UpdateDocumentItemStorageObject(reqVO, queueTrx);

@@ -77,6 +77,7 @@ namespace AWMSModel.Entity
         public string DesAreaName;
         public string ForCustomerName;
         public string DocumentProcessTypeName;
+        public string ReDocumentProcessTypeName;
         public long? DocumentProcessType_ID;
 
         public long? OwnerGroupType;

@@ -1,4 +1,7 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,9 +60,37 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            
-            
-            throw new NotImplementedException();
+            TRes res = new TRes();
+            var getSto = new StorageObjectCriteria();
+            if (reqVO.bstoCode == null)
+            {
+                if (reqVO.bstoID != null)
+                {
+                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                }
+                else
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "กรุณาระบุรหัสพาเลทที่ต้องการตรวจสอบ");
+                }
+            }
+            else
+            {
+                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+            }
+            if (getSto == null)
+                return null;
+
+            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.AUDITED).ToList();
+            if (packsList != null && packsList.Count > 0)
+            {
+
+            }
+            else
+            {
+                res = null;
+            }
+
+            return res;
         }
 
     }

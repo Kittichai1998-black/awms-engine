@@ -26,8 +26,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             public List<STOItems> stoItems;
             public class STOItems
             {
+                public long? bstoID;
                 public long pstoID;
                 public string pstoCode;
+                public string pstoName;
                 public string lot;
                 public string cartonNo;
                 public string orderNo;
@@ -37,25 +39,19 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 public string ref2; 
                 public string ref3;
                 public string ref4;
-                public List<PickItems> pickItems;
-
-                public class PickItems
-                {
-                    public long? bstoID;
-                    public long? pstoID;
-                    public long? pk_docID;
-                    public string pk_docCode;
-                    public long? pk_docItemID;
-                    public long? distoID;
-                    public DocumentProcessTypeID processTypeID;
-                    public string processTypeName;
-                    public decimal? pickQty;
-                    public string unitCode;
-                    public decimal? pickBaseQty;
-                    public string baseUnitCode;
-                    public string destination; 
-                    public string remark;
-                }
+                public long? pk_docID;
+                public string pk_docCode;
+                public long? pk_docItemID;
+                public long? distoID;
+                public DocumentProcessTypeID processTypeID;
+                public string processTypeName;
+                public decimal? pickQty;
+                public string unitCode;
+                public decimal? pickBaseQty;
+                public string baseUnitCode;
+                public string destination;
+                public string remark;
+ 
             }
         }
 
@@ -94,14 +90,15 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if (packsList !=null && packsList.Count > 0)
             {
                 var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PICKING, BuVO);
+                
                 if (docItems == null || docItems.Count() == 0)
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบรายการเอกสารเบิก");
-
+                docItems = docItems.Where(y => y.EventStatus == DocumentEventStatus.WORKING).ToList();
                 docItems.ForEach(x =>
                 {
                     var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("DocumentItem_ID", x.ID,SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.REMOVE,SQLOperatorType.NOTEQUALS)
+                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE,SQLOperatorType.EQUALS)
                         }, this.BuVO);
                     x.DocItemStos = distos;
 
@@ -117,31 +114,16 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == pack.id);
                             if (distos.Count() > 0)
                             {
-                                var stoItem = new TRes.STOItems()
-                                {
-                                    pstoID = pack.id.Value,
-                                    pstoCode = pack.code,
-                                    batch = pack.batch,
-                                    lot = pack.lot,
-                                    orderNo = pack.orderNo,
-                                    cartonNo = pack.cartonNo,
-                                    itemNo = pack.itemNo,
-                                    ref1 = pack.ref1,
-                                    ref2 = pack.ref2,
-                                    ref3 = pack.ref3,
-                                    ref4 = pack.ref4,
-                                };
-
                                 distos.ForEach(disto =>
                                 {
 
                                     disto.BaseQuantity = pack.baseQty;
                                     disto.Quantity = pack.qty;
-                                    stoItem.pickItems.Add(mappingPickPack(disto, pack));
+                                    //stoItem.pickItems.Add(mappingPickPack(disto, pack));
+                                    res.stoItems.Add(mappingPickPack(disto, pack));
 
                                 });
 
-                                res.stoItems.Add(stoItem);
                             }
                         });
 
@@ -153,21 +135,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == pack.id);
                             if (distos.Count() > 0)
                             {
-                                var stoItem = new TRes.STOItems()
-                                {
-                                    pstoID = pack.id.Value,
-                                    pstoCode = pack.code,
-                                    batch = pack.batch,
-                                    lot = pack.lot,
-                                    orderNo = pack.orderNo,
-                                    cartonNo = pack.cartonNo,
-                                    itemNo = pack.itemNo,
-                                    ref1 = pack.ref1,
-                                    ref2 = pack.ref2,
-                                    ref3 = pack.ref3,
-                                    ref4 = pack.ref4,
-                                    pickItems = new List<TRes.STOItems.PickItems>() { }
-                                };
+                                 
                                 distos.ForEach(disto =>
                                 {
 
@@ -194,25 +162,24 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                             disto.Quantity = pack.qty;
                                         }
 
-                                        stoItem.pickItems.Add(mappingPickPack(disto, pack));
+                                            res.stoItems.Add(mappingPickPack(disto, pack));
                                     }
                                     else
                                     {
                                         if (disto.BaseQuantity >= pack.baseQty)
                                         {
                                             //จำนวนที่ต้องการเบิก มากกว่าเท่ากับ จำนวนที่สินค้ามี ให้เบิกเต็ม
-                                            stoItem.pickItems.Add(mappingPickPack(disto, pack));
+                                            res.stoItems.Add(mappingPickPack(disto, pack));
                                         }
                                         else
                                         {
                                             //จำนวนที่ต้องการเบิก น้อยกว่า จำนวนสินค้าที่สามารถเบิกได้ ให้เอาส่วนเหลือเก็บ
                                             pack.baseQty = disto.BaseQuantity.Value;
                                             pack.qty = disto.Quantity.Value;
-                                            stoItem.pickItems.Add(mappingPickPack(disto, pack));
+                                            res.stoItems.Add(mappingPickPack(disto, pack));
                                         }
                                     }
                                 });
-                                res.stoItems.Add(stoItem);
                             }
                         });
                     }
@@ -232,7 +199,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                      }).ToList();
                     return sumDisto;
                 }
-                TRes.STOItems.PickItems mappingPickPack(amt_DocumentItemStorageObject disto, StorageObjectCriteria pack)
+                TRes.STOItems mappingPickPack(amt_DocumentItemStorageObject disto, StorageObjectCriteria pack)
                 {
                     var docitem = docItems.Find(i => i.ID == disto.DocumentItem_ID);
                 
@@ -255,10 +222,22 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     if (doc.Des_Supplier_ID != null)
                         des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == doc.Des_Supplier_ID).Name;
 
-                    var pickItem = new TRes.STOItems.PickItems()
+                    var pickItem = new TRes.STOItems()
                     {
+                        pstoID = pack.id.Value,
+                        pstoCode = pack.code,
+                        pstoName =  pack.name,
+                        batch = pack.batch,
+                        lot = pack.lot,
+                        orderNo = pack.orderNo,
+                        cartonNo = pack.cartonNo,
+                        itemNo = pack.itemNo,
+                        ref1 = pack.ref1,
+                        ref2 = pack.ref2,
+                        ref3 = pack.ref3,
+                        ref4 = pack.ref4,
+
                         bstoID = pack.parentID,
-                        pstoID = pack.id,
                         pk_docID = doc.ID,
                         pk_docCode = doc.Code,
                         pk_docItemID = disto.DocumentItem_ID.Value,
