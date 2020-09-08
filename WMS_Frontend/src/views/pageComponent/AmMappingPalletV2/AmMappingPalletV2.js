@@ -443,6 +443,7 @@ const AmMappingPalletV2 = props => {
       if (checkedAuto) {
         if (dataDoc !== undefined && dataDoc !== null) {
           dataDoc.datas.forEach(element => {
+            console.log(element)
             postdata.pstos.push(element)
           });
         }
