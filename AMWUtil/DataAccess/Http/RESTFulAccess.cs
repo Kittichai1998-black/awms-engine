@@ -186,6 +186,8 @@ namespace AMWUtil.DataAccess.Http
                         streamWriter.Close();
                     }
 
+                    //int i = 0;
+                    //i = i / 0;
                     var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                     if (logger != null)
                         logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + httpResponse.StatusCode);
