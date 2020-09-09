@@ -292,7 +292,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                             if (oldPsto.qty == 0)
                             {
-                                oldPsto.eventStatus = StorageObjectEventStatus.REMOVE;
+                                oldPsto.eventStatus = StorageObjectEventStatus.REMOVED;
                             }
                             resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
 

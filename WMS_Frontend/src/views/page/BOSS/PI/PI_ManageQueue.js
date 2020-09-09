@@ -135,7 +135,7 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        if (doc.document.DocumentProcessType_ID === 4181) {
+        if (doc.document.DocumentProcessType_ID === 4181 || doc.document.DocumentProcessType_ID === 5181) {
             return areaList.filter(x => x.ID === 14)
         }
         else
@@ -143,7 +143,7 @@ const ProcessQueue = () => {
     }
 
     const customDesAreaDefault = (doc) => {
-        if (doc.document.DocumentProcessType_ID === 4181) {
+        if (doc.document.DocumentProcessType_ID === 4181 || doc.document.DocumentProcessType_ID === 5181) {
             return "14"
         }
         else

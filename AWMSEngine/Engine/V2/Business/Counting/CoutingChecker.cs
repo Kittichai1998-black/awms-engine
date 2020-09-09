@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -42,11 +43,11 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ DocItemStos");
 
             var qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
-            if (qID.EventStatus != WorkQueueEventStatus.CLOSED)
+            if (qID != null && qID.EventStatus != WorkQueueEventStatus.CLOSED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
             
             var updSto = new StorageObjectCriteria();
-            updSto = pstos;
+            updSto = pstos.Clone();
             updSto.qty = reqVO.coutingQty;
             var qtyConvert = StaticValue.ConvertToNewUnitBySKU(pstos.skuID.Value, reqVO.coutingQty, pstos.unitID, pstos.baseUnitID);
             updSto.baseQty = qtyConvert.newQty;

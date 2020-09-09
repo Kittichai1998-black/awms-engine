@@ -71,12 +71,23 @@ namespace AWMSEngine.Engine.V2.Business.Document
             res.sto = psto;
             res.documents = new List<TRes.Documents>();
 
+
             if (docItems.Count > 0)
             {
-                foreach (var docItem in docItems)
+                var docs = new List<amt_Document>();
+                docItems.ForEach(docItem =>
                 {
                     var doc = DocumentADO.GetInstant().GetDocumentAndDocItems(docItem.Document_ID, this.BuVO);
+                    docs.Add(doc);
+                });
 
+                docs = docs.FindAll(x => x.DocumentProcessType_ID == reqVO.docProcessType);
+                if (docs.Count == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND);
+
+                foreach (var docItem in docItems)
+                {
+                    var doc = docs.Find(x => x.ID == docItem.Document_ID);
                     var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
 
@@ -91,8 +102,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var remainBaseRecv = docItem.BaseQuantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.BaseQuantity).Value;
                     var remainRecv = docItem.Quantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.Quantity).Value;
                     
-                    
-
                     if (remainRecv == 0)
                         continue;
 
