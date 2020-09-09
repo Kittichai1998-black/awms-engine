@@ -33,6 +33,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }, this.BuVO).FirstOrDefault();
 
             var docID = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(disto.DocumentItem_ID, this.BuVO).Document_ID;
+            var statusDocID = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, this.BuVO).Status;
+
+            if (statusDocID != EntityStatus.ACTIVE)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document");
 
             var docs = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docID, BuVO);
             if (docs == null)

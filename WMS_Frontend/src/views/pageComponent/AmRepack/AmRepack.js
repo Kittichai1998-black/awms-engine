@@ -31,8 +31,6 @@ import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import BoxIcon from "@material-ui/icons/Widgets";
 import AmDropdown from '../../../components/AmDropdown'
-import Switch from '@material-ui/core/Switch';
-import SvgIcon from '@material-ui/core/SvgIcon';
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -45,7 +43,8 @@ import { PlusSquare, MinusSquare, LabelIcon } from "./IconTreeview";
 import { UnitTypeQuery } from "./queryString";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
-import Grid from '@material-ui/core/Grid';
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -209,7 +208,7 @@ const AmRepack = props => {
   const [typeDialog, setTypeDialog] = useState("");
 
   const [activeStep, setActiveStep] = useState(0);
-  const steps = getSteps();
+
 
   const [docID, setDocID] = useState("");
   const [palletCode, setPalletCode] = useState("");
@@ -290,10 +289,11 @@ const AmRepack = props => {
 
   function getSteps() {
     return [
-      { label: "Pallet of Depack", value: null },
+      { label: "Pallet of Depack", value: palletCode },
       { label: "Depackaging", value: null },
     ];
   }
+  const steps = getSteps();
   const onHandleChangeInput = (value, fieldDataKey) => {
     valueInput[fieldDataKey] = value;
     setValueInput({ ...valueInput })
@@ -301,6 +301,7 @@ const AmRepack = props => {
   const handleNext = index => {
     if (index === 0) {
       if (palletCode !== "") {
+        scanMappingSto(palletCode)
         setActiveStep(prevActiveStep => prevActiveStep + 1);
       } else {
         setDialogState({ type: "warning", content: "กรุณากรอกเลขพาเลท", state: true })
@@ -319,9 +320,12 @@ const AmRepack = props => {
     }
   };
 
-  const onHandleChangeInputPalletCode = (keydata, value) => {
+  const onHandleChangeInputPalletCode = (keydata, value, event) => {
     setPalletCode(value);
-    scanMappingSto(value)
+    if (event === "Enter") {
+      scanMappingSto(value)
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    }
   };
 
   function handleBack() {
@@ -406,7 +410,8 @@ const AmRepack = props => {
     if (status) {
       if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
         setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
-        Clear()
+        //setDialogPopup(false)
+        //Clear()
       } else {
         repackSto()
       }
@@ -429,16 +434,12 @@ const AmRepack = props => {
               autoFocus={autoFocus}
               style={{ width: "100%" }}
               onChange={(value, obj, element, event) =>
-                onHandleChangeInputPalletCode(value, "palletCode")
+                onHandleChangeInputPalletCode("palletCode", value)
               }
 
-              onBlur={(e) => {
-                if (e !== undefined && e !== null)
-                  onHandleChangeInputPalletCode("palletCode", e)
-              }}
               onKeyPress={(value, obj, element, event) => {
                 if (event.key === "Enter") {
-                  onHandleChangeInputPalletCode("palletCode", value)
+                  onHandleChangeInputPalletCode("palletCode", value, event.key)
                 }
               }}
             />
@@ -499,7 +500,7 @@ const AmRepack = props => {
 
       <LabelH1 style={{ width: "150px" }}>{"DePackaging From"}</LabelH1>
 
-      <FormInline>
+      <FormInline style={{ display: "block" }}>
         <LabelH>{"Quantity :"}</LabelH>
         <AmInput
           id={"qtyOriginal"}
@@ -516,26 +517,18 @@ const AmRepack = props => {
       </FormInline>
       <br />
       <LabelH1 style={{ width: "150px" }}>{"DePackaging To"}</LabelH1>
-      <FormInline>
-        <FormInline>
-          <LabelH>{"Quantity :"}</LabelH>
-          <AmInput
-            id={"qtyNew"}
-            type="input"
-            value={newQty}
-            disabled={true}
-            style={{ width: "70px" }}
-          />
-          {/* <LabelH1 style={{ width: "10px", paddingLeft: "10px" }}>
-            {
-              newQtyRepack !== undefined ?
-                (newQtyRepack.newUnitRepack !== undefined ? newQtyRepack.newUnitRepack : null)
-                : null
-            }
-          </LabelH1> */}
+      <FormInline >
 
-        </FormInline>
-        <LabelH style={{ paddingLeft: "5px", width: "50px" }}>{"Unit :"}</LabelH>
+        <LabelH>{"Quantity :"}</LabelH>
+        <AmInput
+          id={"qtyNew"}
+          type="input"
+          value={newQty}
+          disabled={true}
+          style={{ width: "70px" }}
+        />
+
+        <LabelH style={{ width: "50px" }}>{"Unit :"}</LabelH>
         <AmDropdown
           ID="repackID"
           placeholder="Select DePack"
@@ -557,29 +550,47 @@ const AmRepack = props => {
   };
 
   const onRanderEleNewPallet = () => {
-    return <FormInline>
+    return <FormInline style={{ display: "block" }}>
       <LabelH1>{"New Pallet :"}</LabelH1>
       <AmInput
         id={"palletcodeNew"}
         placeholder="New Pallet Code"
         type="input"
         //autoFocus={autoFocus}
-        style={{ width: "200px" }}
+        style={{ width: "50%" }}
 
         onChange={(value, obj, element, event) =>
           onHandleChangeInput(value, "palletcodeNew")
         }
-
-        onBlur={(e) => {
-          if (e !== undefined && e !== null)
-            onHandleChangeInput(e, "palletcodeNew")
-        }}
         onKeyPress={(value, obj, element, event) => {
           if (event.key === "Enter") {
             onHandleChangeInput(value, "palletcodeNew")
+            if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
+              setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
+            } else {
+              repackSto()
+            }
           }
         }}
       />
+      <IconButton
+        size="small"
+        aria-label="info"
+        style={{ paddingTop: "10px" }}
+      >
+        <SearchIcon
+          fontSize="small"
+          onClick={() => {
+            if (valueInput.palletcodeNew === "" || (valueInput.palletcodeNew === undefined || newQtyRepack === undefined)) {
+              setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
+              //setDialogPopup(false)
+              //Clear()
+            } else {
+              repackSto()
+            }
+          }}
+        />
+      </IconButton>
     </FormInline>
 
   }
@@ -617,6 +628,7 @@ const AmRepack = props => {
   return (
     <div className={classes.root}>
       <AmEditorTable
+        width={"100%"}
         open={dialogPopup}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
         titleText={"Depackaging"}

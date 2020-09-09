@@ -40,6 +40,8 @@ import { useSpring, animated } from 'react-spring/web.cjs';
 import { PlusSquare, MinusSquare } from "../../../../constant/IconTreeview";
 import EditIcon from '@material-ui/icons/Edit';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import AmTreeView from '../../../pageComponent/AmTreeView'
+import AmDialogConfirm from '../../../../components/AmDialogConfirm'
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -133,7 +135,19 @@ const styles = theme => ({
     divLine: {
         // borderBottom: '2px solid #000000',
         marginTop: 45
-    }
+    },
+    labelHead: {
+        fontWeight: "inherit",
+        fontWeight: 'bold',
+    },
+    labelHead2: {
+        fontWeight: "inherit",
+    },
+    labelText: {
+        fontWeight: "inherit",
+        fontSize: 12,
+        flexGrow: 1
+    },
 });
 const InputDiv = styled.div`
   
@@ -182,48 +196,14 @@ const LabelHDD = styled.label`
     width: 120px;
     paddingleft: 20px;
   `;
-
-
-function TransitionComponent(props) {
-    const style = useSpring({
-        from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
-        to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
-    });
-
+function Pallet(props) {
     return (
-        <animated.div style={style}>
-            <Collapse {...props} />
-        </animated.div>
+        <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
+            {/* tslint:disable-next-line: max-line-length */}
+            <path d="m23.25 24h-4c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-5.5c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-4c-.414 0-.75-.336-.75-.75v-3.25h24v3.25c0 .414-.336.75-.75.75z" /><path d="m16 0h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m10 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m22 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" />
+        </SvgIcon>
     );
 }
-
-TransitionComponent.propTypes = {
-    /**
-     * Show the component; triggers the enter or exit states
-     */
-    in: PropTypes.bool,
-};
-
-const StyledTreeItem = withStyles((theme) => ({
-    iconContainer: {
-        '& .close': {
-            opacity: 0.3,
-        },
-    },
-    group: {
-        marginLeft: 7,
-        paddingLeft: 18,
-        borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
-    },
-}))((props) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
-
-const useStyles = makeStyles({
-    root: {
-        height: 264,
-        flexGrow: 1,
-        maxWidth: 400,
-    },
-});
 
 const PickingChecker = (props) => {
     const { t } = useTranslation();
@@ -236,6 +216,8 @@ const PickingChecker = (props) => {
 
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [settingConfirm, setSettingConfirm] = useState(null);
 
     //steps
     const steps = getSteps();
@@ -253,14 +235,13 @@ const PickingChecker = (props) => {
     const handleBack = (index) => {
         if (index === 1) {
             setValueInput({ ...valueInput, ['bstoCode']: null })
-            ClearInput('bstoCode');
+            // ClearInput('bstoCode');
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const handleReset = () => {
         setValueInput({});
-        ClearInput('bstoCode');
         setActiveStep(0);
     };
     const ClearInput = (field) => {
@@ -279,7 +260,7 @@ const PickingChecker = (props) => {
         }
         return [
             { label: "Scan Pallet Code", value: bstoCode },
-            { label: 'Confirm Picking', value: null },
+            { label: 'Select Picking', value: null },
         ];
     };
     function getStepContent(step) {
@@ -293,10 +274,6 @@ const PickingChecker = (props) => {
                         autoFocus={true}
                         style={{ width: "100%" }}
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, "bstoCode")}
-                        onBlur={(value, obj, element, event) => {
-                            onHandleChangeInput(value, "bstoCode");
-                            handleNext(0);
-                        }}
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
                                 onHandleChangeInput(value, "bstoCode");
@@ -307,7 +284,7 @@ const PickingChecker = (props) => {
                     />
                 </div>;
             case 1:
-                return <RenderTreeViewData data={dataStoPick} onClick={(sel) => onClickPick(sel)} />
+                return <RenderTreeViewData data={dataStoPick} onClick={(sel) => ConfirmPickDialogRenderer(sel)} />
             default:
                 return 'Unknown step';
         }
@@ -318,55 +295,66 @@ const PickingChecker = (props) => {
 
     const RenderTreeViewData = React.memo(({ data, onClick }) => {
         if (data != null && data.stoItems != null && data.stoItems.length > 0) {
-            //    let bstoCode 
-            console.log(data)
-            return (<div>
-                <TreeView
-                    className={classes.root}
-                    defaultExpanded={['root']}
-                    defaultCollapseIcon={<MinusSquare />}
-                    defaultExpandIcon={<PlusSquare />}
-                    defaultEndIcon={<ShoppingCartIcon />}
-                >
-                    {data.stoItems.map((sto, idx) => {
-                        let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
-                        let lot = sto.lot != null && sto.lot.length > 0 ? " | Lot:" + sto.lot : "";
-                        let batch = sto.batch != null && sto.batch.length > 0 ? " | Batch:" + sto.batch : "";
-                        let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ? " | Order No.:" + sto.orderNo : "";
-                        let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ? " | Carton No.:" + sto.cartonNo : "";
-                        return (
-                            <StyledTreeItem
-                                key={idx}
-                                nodeId={'root'}
-                                label={pstoCode + lot + batch + orderNo + cartonNo}>
-                                {sto.pickItems.map((row, index) => {
-                                    let pk_docCode = row.pk_docCode != null ? row.pk_docCode : "";
-                                    let processTypeName = row.processTypeName != null ? " | " + row.processTypeName : "";
-                                    let pickQty = row.pickQty != null ? " | " + row.pickQty + " " + row.unitCode : "";
-                                    let destination = row.destination != null ? " | To:" + row.destination : "";
-                                    let remark = row.remark != null ? " | " + row.remark : "";
-                                    return (
-                                        <StyledTreeItem
-                                            key={index}
-                                            nodeId={row.distoID}
-                                            label={
-                                                pk_docCode +
-                                                processTypeName +
-                                                destination +
-                                                remark +
-                                                pickQty
-                                            }
-                                            onIconClick={() => onClick(row)}
-                                            onLabelClick={() => onClick(row)}
-                                        />
-                                    );
-                                })}
-                            </StyledTreeItem>
+            let treeItems = [];
+            {
+                data.stoItems.map((sto, idx) => {
+                    let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
+                    let pstoName = sto.pstoName != null ? sto.pstoName : "";
+                    let lot = sto.lot != null && sto.lot.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + sto.lot}</Typography>
+                        : null;
+                    let batch = sto.batch != null && sto.batch.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + sto.batch}</Typography>
+                        : null;
+                    let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + sto.orderNo}</Typography>
+                        : null;
+                    let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + sto.cartonNo}</Typography>
+                        : null;
 
-                        );
-                    })}
+                    let pk_docCode = sto.pk_docCode != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Document Code: " + sto.pk_docCode}</Typography>
+                        : null;
+                    let processTypeName = sto.processTypeName != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No." + sto.processTypeName}</Typography>
+                        : null;
+                    let pickQty = sto.pickQty != null ? sto.pickQty + " " + sto.unitCode : "";
+                    let destination = sto.destination != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Des:" + sto.destination}</Typography>
+                        : null;
+                    let remark = sto.remark != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Remark:" + sto.remark}</Typography>
+                        : null;
 
-                </TreeView>
+                    let treeItem = {
+                        nodeId: sto.distoID.toString(),
+                        labelText: <div style={{ flexGrow: 1 }}>
+                            <div style={{ display: "flex" }}>
+                                <Typography variant="body2" className={classes.labelHead} noWrap>{pstoCode}</Typography>
+                                <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
+                            </div>
+                            {lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}
+                        </div>,
+                        labelIcon: ShoppingCartIcon,
+                        labelInfo: pickQty,
+                        bgColor: "#e8f0fe",
+                        color: "#1a73e8",
+                        dataItem: sto,
+                        onIconClick: (dataItem) => onClick(dataItem),
+                        onLabelClick: (dataItem) => onClick(dataItem)
+                    };
+
+                    treeItems.push(treeItem);
+                })
+            }
+            let dataTreeItems = [{
+                nodeId: 'root',
+                labelText: data.bstoCode,
+                // labelIcon: Pallet,
+                treeItems: treeItems
+            }];
+            return (<div><AmTreeView dataTreeItems={dataTreeItems} />
             </div>);
         } else {
             return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
@@ -391,9 +379,9 @@ const PickingChecker = (props) => {
                     }
                 });
     }
+
     const onClickPick = (sel) => {
         var req = { ...sel };
-        console.log(req);
         Axios.post(window.apipath + '/v2/picking_checker', req).then(res => {
             if (res.data._result.status === 1) {
                 if (res.data.stoItems != null && res.data.stoItems.length > 0) {
@@ -402,14 +390,13 @@ const PickingChecker = (props) => {
                 } else {
                     if (res.data.docIDs != null && res.data.docIDs.length > 0) {
                         alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
-                        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+                        handleBack(1);
                     }
                 }
             } else {
                 alertDialogRenderer("error", res.data._result.message)
             }
         });
-
     }
     // Alert Dialog
     const alertDialogRenderer = (type, message) => {
@@ -430,10 +417,52 @@ const PickingChecker = (props) => {
             return null;
         }
     }
+    const onClose = (data) => {
+        setOpenConfirm(data)
+        if (data === false) {
+            setSettingConfirm(null)
+        }
+    }
+    function ConfirmPickDialog(open, data, onConfirm, onClose) {
+        if (open && data) {
+            let pickQty = data.pickQty != null ? data.pickQty + " " + data.unitCode : "";
+
+            let eleInfo = <div style={{ flexGrow: 1 }}>
+                <div style={{ display: "flex" }}>
+                    <Typography variant="body2" className={classes.labelHead} noWrap>{data.pstoCode}</Typography>
+                    <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + data.pstoName}</Typography>
+                </div>
+                <Typography variant="body2" className={classes.labelHead2} noWrap>{"Qty: " + pickQty}</Typography>
+            </div>
+            return <AmDialogConfirm
+                titleDialog={"Are you confirm to pick?"}
+                open={open}
+                close={a => onClose(a)}
+                bodyDialog={eleInfo}
+                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => onConfirm(data)}>{t("Confirm")}</AmButton>}
+                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => onClose(false)}>{t("Cancel")}</AmButton>}
+            />
+        } else {
+            return null;
+        }
+    }
+    const ConfirmPickDialogRenderer = (dataSel) => {
+        setSettingConfirm(dataSel);
+        setOpenConfirm(true)
+    }
+    const onConfirmPick = (data) => {
+        if (data) {
+            setOpenConfirm(false)
+            setSettingConfirm(null)
+            onClickPick(data)
+        }
+    }
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
+    const DialogConfirm = useMemo(() => ConfirmPickDialog(openConfirm, settingConfirm, onConfirmPick, onClose), [openConfirm, settingConfirm])
 
     return (
         <div>
+            {DialogConfirm}
             {DialogAlert}
             <Paper className={classes.paperContainer}>
                 <Stepper

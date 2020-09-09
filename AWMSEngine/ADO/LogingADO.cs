@@ -50,6 +50,8 @@ namespace AWMSEngine.ADO
 
         public long PutDocumentAlertMessage(FinalDatabaseLogCriteria.DocumentOptionMessage docMsg, VOCriteria buVO)
         {
+            var d = AMWUtil.Common.ObjectUtil.Json(docMsg);
+            buVO.Logger.LogInfo("PutDocumentAlertMessage : " + d);
             //return 0;
             var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docMsg.docID, buVO);
             var options = doc.Options;
@@ -69,6 +71,8 @@ namespace AWMSEngine.ADO
         }
         public long PutAPIPostBackEvent(HttpResultModel apiEvt, VOCriteria buVO)
         {
+            var d = AMWUtil.Common.ObjectUtil.Json(apiEvt);
+            buVO.Logger.LogInfo("PutAPIPostBackEvent : " + d);
             //return 0;
             var id = ADO.DataADO.GetInstant().Insert<aml_APIPostEvent>(
                 buVO,

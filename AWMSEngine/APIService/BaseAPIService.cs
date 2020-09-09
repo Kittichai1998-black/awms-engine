@@ -258,6 +258,7 @@ namespace AWMSEngine.APIService
                         string _code = result.code;
                         string _message = result.message;
                         string _stacktrace = result.stacktrace;
+                        Logger.LogInfo("[BEGIN] ----Insert FinalDBLog----");
                         this.FinalDBLog.sendAPIEvents.ForEach(x =>
                         {
                             ADO.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
@@ -268,6 +269,8 @@ namespace AWMSEngine.APIService
                         });
                         if(dbLogID != 0)
                             ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+
+                        Logger.LogInfo("[END] ----Insert FinalDBLog----");
                     }
 
                     string _response_str = ObjectUtil.Json(response);

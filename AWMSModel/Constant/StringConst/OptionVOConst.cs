@@ -21,6 +21,7 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_DOCITEM_ID = "_docitem_id";
         public const string OPT_DOC_ID = "_doc_id";
         public const string OPT_PALLET_NO = "_pallet_no";
+        public const string OPT_TAG_NO = "_tag_no";
         //AAI
         public const string OPT_LGNUM = "lgnum"; 
         public const string OPT_LENUM = "lenum"; 
