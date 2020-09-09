@@ -193,7 +193,8 @@ const LabelHDD = styled.label`
 const CheckboxCustom = withStyles({
   root: {
     padding: "0 !important",
-    marginRight: "5px"
+    //marginRight: "5px",
+    width: "50px"
   },
 
 })(Checkbox);
@@ -443,7 +444,6 @@ const AmMappingPalletV2 = props => {
       if (checkedAuto) {
         if (dataDoc !== undefined && dataDoc !== null) {
           dataDoc.datas.forEach(element => {
-            console.log(element)
             postdata.pstos.push(element)
           });
         }
@@ -587,7 +587,7 @@ const AmMappingPalletV2 = props => {
           {/* =================================== Claer ===================================== */}
           <Card>
             <CardContent>
-              <FormInline>
+              <FormInline style={{ display: "block" }}>
                 <CheckboxCustom onClick={event => {
                   setCheckedAutoClear(event.target.checked)
                 }}
@@ -595,7 +595,7 @@ const AmMappingPalletV2 = props => {
                 <LabelH1 style={{ width: "120px" }}>{"Clear pallet auto"}</LabelH1>
               </FormInline>
               {/* =================================== Pallet ===================================== */}
-              <FormInline>
+              <FormInline style={{ display: "block" }}>
                 <LabelH1>Pallet Code :</LabelH1>
                 <AmInput
                   id={"palletcode"}
@@ -624,7 +624,7 @@ const AmMappingPalletV2 = props => {
                 </IconButton>
               </FormInline>
               {/* =================================== Auto  ===================================== */}
-              <FormInline>
+              <FormInline style={{ display: "block" }}>
                 <CheckboxCustom onClick={event => {
                   setCheckedAuto(event.target.checked)
                 }}
@@ -635,7 +635,7 @@ const AmMappingPalletV2 = props => {
               {
                 checkedAuto === true ?
                   <div>
-                    <FormInline>
+                    <FormInline style={{ display: "block" }}>
                       <LabelH1>QRcode :</LabelH1>
                       <AmInput
                         id={"barcode"}
@@ -697,7 +697,7 @@ const AmMappingPalletV2 = props => {
                 null
               ) : null}
             </CardContent>
-          </Card>
+          </Card >
         </div >)
 
       default:

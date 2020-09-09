@@ -41,6 +41,10 @@ const PI_Search = Loadable({
     loader: () => import("../../views/page/ENGINE/PI/PI_Search"),
     loading: Loading
 });
+const PI_Checker = Loadable({
+    loader: () => import("../../views/page/BOSS/PI/PI_Checker"),
+    loading: Loading
+});
 
 const PI_ManageQueue = Loadable({
     loader: () => import("../../views/page/ENGINE/PI/PI_ManageQueue"),
@@ -51,6 +55,7 @@ const routes = [
     { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
     { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
     { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_ManageQueue, exact: true },
+    { path: "/counting/coutingchecker", name: "PI Checker", compoment: PI_Checker, exact: true },
 
     { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
     { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },

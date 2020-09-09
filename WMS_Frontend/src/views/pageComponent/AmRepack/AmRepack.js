@@ -500,7 +500,7 @@ const AmRepack = props => {
 
       <LabelH1 style={{ width: "150px" }}>{"DePackaging From"}</LabelH1>
 
-      <FormInline>
+      <FormInline style={{ display: "block" }}>
         <LabelH>{"Quantity :"}</LabelH>
         <AmInput
           id={"qtyOriginal"}
@@ -517,26 +517,18 @@ const AmRepack = props => {
       </FormInline>
       <br />
       <LabelH1 style={{ width: "150px" }}>{"DePackaging To"}</LabelH1>
-      <FormInline>
-        <FormInline>
-          <LabelH>{"Quantity :"}</LabelH>
-          <AmInput
-            id={"qtyNew"}
-            type="input"
-            value={newQty}
-            disabled={true}
-            style={{ width: "70px" }}
-          />
-          {/* <LabelH1 style={{ width: "10px", paddingLeft: "10px" }}>
-            {
-              newQtyRepack !== undefined ?
-                (newQtyRepack.newUnitRepack !== undefined ? newQtyRepack.newUnitRepack : null)
-                : null
-            }
-          </LabelH1> */}
+      <FormInline >
 
-        </FormInline>
-        <LabelH style={{ paddingLeft: "5px", width: "50px" }}>{"Unit :"}</LabelH>
+        <LabelH>{"Quantity :"}</LabelH>
+        <AmInput
+          id={"qtyNew"}
+          type="input"
+          value={newQty}
+          disabled={true}
+          style={{ width: "70px" }}
+        />
+
+        <LabelH style={{ width: "50px" }}>{"Unit :"}</LabelH>
         <AmDropdown
           ID="repackID"
           placeholder="Select DePack"
@@ -558,14 +550,14 @@ const AmRepack = props => {
   };
 
   const onRanderEleNewPallet = () => {
-    return <FormInline>
+    return <FormInline style={{ display: "block" }}>
       <LabelH1>{"New Pallet :"}</LabelH1>
       <AmInput
         id={"palletcodeNew"}
         placeholder="New Pallet Code"
         type="input"
         //autoFocus={autoFocus}
-        style={{ width: "200px" }}
+        style={{ width: "50%" }}
 
         onChange={(value, obj, element, event) =>
           onHandleChangeInput(value, "palletcodeNew")
@@ -636,6 +628,7 @@ const AmRepack = props => {
   return (
     <div className={classes.root}>
       <AmEditorTable
+        width={"100%"}
         open={dialogPopup}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
         titleText={"Depackaging"}
