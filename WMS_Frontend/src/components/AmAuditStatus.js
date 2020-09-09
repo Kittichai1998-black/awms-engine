@@ -11,8 +11,8 @@ const styles = theme => ({
 });
 const Status = [
     { status: 'QUARANTINE', code: 0, label: 'QUARANTINE', labelShort: 'Q' }, //เเดง
-    { status: 'NOTPASS', code: 1, label: 'NOT PASS', labelShort: 'N' }, //เขียว
-    { status: 'PASS', code: 2, label: 'PASS', labelShort: 'P' }, //เทา
+    { status: 'PASSED', code: 1, label: 'PASSED', labelShort: 'P' }, //เขียว
+    { status: 'REJECTED', code: 2, label: 'REJECTED', labelShort: 'R' }, //เทา
     { status: 'HOLD', code: 9, label: 'HOLD', labelShort: 'H' }, //
 ]
 

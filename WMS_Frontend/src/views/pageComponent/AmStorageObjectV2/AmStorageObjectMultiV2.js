@@ -16,6 +16,7 @@ import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import AmInput from "../../../components/AmInput";
 import AmDialogs from "../../../components/AmDialogs";
+
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -59,7 +60,19 @@ const AmStorageObjectMulti = props => {
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
   const [pageSize, setPageSize] = useState(100);
-
+  const [mode, setMode] = useState("");
+  const [aditStatus, setAditStatus] = useState("");
+  const QueryAudit = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "r_StorageObject",
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatus", "c":"=", "v": 0}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'Pallet','od':'asc'}]",
+    sk: 0,
+    l: pageSize,
+    all: ""
+  };
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObject",
@@ -71,7 +84,7 @@ const AmStorageObjectMulti = props => {
     l: pageSize,
     all: ""
   };
-  const [queryViewData, setQueryViewData] = useState(Query);
+  const [queryViewData, setQueryViewData] = useState(props.actionAuditStatus === true ? QueryAudit : Query);
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
@@ -126,6 +139,7 @@ const AmStorageObjectMulti = props => {
   }
 
   const useColumns = (cols) => {
+
     const [columns, setColumns] = useState(cols);
 
     useEffect(() => {
@@ -146,6 +160,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
+                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatus" ? null : 0) : null)}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -160,6 +175,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
+                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatus" ? null : 0) : null)}
                   zIndex={1000}
                   queryApi={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -255,7 +271,10 @@ const AmStorageObjectMulti = props => {
         bstosID: bstosID,
         IsHold: hold ? 1 : 0,
         remark: remark,
-        remarkMode: remarkMode
+        remarkMode: remarkMode,
+        mode: mode,
+        aditStatus: aditStatus
+
       };
 
       Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
@@ -278,9 +297,68 @@ const AmStorageObjectMulti = props => {
     }
 
   }
+
+  var auditAction = [{
+    label: <div style={{ fontSize: "12px" }}>
+      {"QUARANTINE"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("0")
+        setMode("audit")
+      }
+    }
+
+  }, {
+    label: <div style={{ fontSize: "12px" }}>
+      {"PASSED"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("1")
+        setMode("audit")
+      }
+    }
+
+  }, {
+    label: <div style={{ fontSize: "12px" }}>
+      {"REJECTED"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("2")
+        setMode("audit")
+      }
+    }
+
+  }, {
+    label: <div style={{ fontSize: "12px" }}>
+      {"HOLD"}</div>,
+    action: (data) => {
+      if (selection.length === 0) {
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      } else {
+        setDialog(true)
+        setAditStatus("9")
+        setMode("audit")
+      }
+    }
+
+  },
+  ]
+
   const Clear = () => {
     setSelection([]);
     setRemark("");
+    setMode("")
+    setAditStatus("")
+    setRemarkMode(false)
   };
   //===========================================================
   return (
@@ -320,7 +398,7 @@ const AmStorageObjectMulti = props => {
             setIniQuery(false)
         }}
         customAction={
-          props.action === true ?
+          props.action === true ? (props.actionAuditStatus === true ? auditAction :
             [{
               label: <div style={{ fontSize: "12px" }}>
                 {"LOCK"}</div>,
@@ -329,6 +407,8 @@ const AmStorageObjectMulti = props => {
                   setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
                 } else {
                   setDialog(true)
+                  setHold(true)
+                  setMode("Hold")
                 }
               }
 
@@ -342,6 +422,7 @@ const AmStorageObjectMulti = props => {
                 } else {
                   setDialog(true)
                   setHold(false)
+                  setMode("Hold")
                 }
 
               }
@@ -358,7 +439,7 @@ const AmStorageObjectMulti = props => {
                 }
 
               }
-            }] : null}
+            }]) : null}
       />
 
     </div>
