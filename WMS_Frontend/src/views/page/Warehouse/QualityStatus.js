@@ -9,19 +9,19 @@ import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageOb
 import { Hold, Lock } from "../../../components/Models/Hold";
 import { AuditStatus } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+import AuditStatusIcon from "../../../components/AmAuditStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
-import AuditStatusIcon from "../../../components/AmAuditStatus";
 
 
 const Axios = new apicall();
 
 //======================================================================
-const StorageObject = props => {
+const QualityStatus = props => {
 
   const iniCols = [
 
@@ -63,7 +63,7 @@ const StorageObject = props => {
         filterType: "dropdown",
         dataDropDown: AuditStatus,
         typeDropDown: "normal",
-        widthDD: 120,
+        widthDD: 130,
       },
       Cell: e => getAuditStatus(e.original.AuditStatus)
     },
@@ -118,27 +118,6 @@ const StorageObject = props => {
       Cell: e => getRedirectLog(e.original)
     }
   ];
-
-  const getAuditStatus = Status => {
-    //return null
-    return <div style={{ marginBottom: "3px", textAlign: "center" }}>
-      {getAuditStatusValue(Status)}
-    </div>
-
-  };
-  const getAuditStatusValue = Status => {
-    if (Status === 0) {
-      return <AuditStatusIcon key={Status} statusCode={0} />;
-    } else if (Status === 1) {
-      return <AuditStatusIcon key={Status} statusCode={1} />;
-    } else if (Status === 2) {
-      return <AuditStatusIcon key={Status} statusCode={2} />;
-    } else if (Status === 9) {
-      return <AuditStatusIcon key={Status} statusCode={9} />;
-    } else {
-      return null;
-    }
-  }
 
   const getOptions = value => {
     var qryStr = queryString.parse(value);
@@ -201,18 +180,38 @@ const StorageObject = props => {
       required: true
     }
   ];
+  //AuditStatus
+  const getAuditStatus = Status => {
+    //return null
+    return <div style={{ marginBottom: "3px", textAlign: "center" }}>
+      {getAuditStatusValue(Status)}
+    </div>
 
+  };
+  const getAuditStatusValue = Status => {
+    if (Status === 0) {
+      return <AuditStatusIcon key={Status} statusCode={0} />;
+    } else if (Status === 1) {
+      return <AuditStatusIcon key={Status} statusCode={1} />;
+    } else if (Status === 2) {
+      return <AuditStatusIcon key={Status} statusCode={2} />;
+    } else if (Status === 9) {
+      return <AuditStatusIcon key={Status} statusCode={9} />;
+    } else {
+      return null;
+    }
+  }
 
 
   const getStatus = Status => {
     return Status.split("\\n").map(y => (
       <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getStatus1(y)}
+        {getStatusValue(y)}
       </div>
     ));
   };
 
-  const getStatus1 = Status => {
+  const getStatusValue = Status => {
     if (Status === "RECEIVING") {
       return <AmStorageObjectStatus key={Status} statusCode={11} />;
     } else if (Status === "RECEIVED") {
@@ -255,9 +254,10 @@ const StorageObject = props => {
         export={false}
         multi={true}
         action={true}
+        actionAuditStatus={true}
       />
     </div>
   );
 };
 
-export default StorageObject;
+export default QualityStatus;

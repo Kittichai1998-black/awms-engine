@@ -370,6 +370,10 @@ const RePackaging = Loadable({
   loader: () => import("../../views/page/Warehouse/RePackaging"),
   loading: Loading
 });
+const QualityStatus = Loadable({
+  loader: () => import("../../views/page/Warehouse/QualityStatus"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -469,6 +473,7 @@ let routes = [
   { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
+  { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },
 ];
 
 export default routes;

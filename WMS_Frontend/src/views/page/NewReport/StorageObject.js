@@ -6,7 +6,7 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmRedirectLog from "../../../components/AmRedirectLog";
 import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
-import { Hold } from "../../../components/Models/Hold";
+import { Hold, Lock } from "../../../components/Models/Hold";
 import { AuditStatus } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
@@ -39,21 +39,21 @@ const StorageObject = props => {
       Cell: e => getStatus(e.original.Status)
     },
     {
-      Header: "IsHold",
+      Header: "Warehouse Lock",
       accessor: "IsHold",
-      width: 20,
+      width: 30,
       sortable: false,
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
-        dataDropDown: Hold,
+        dataDropDown: Lock,
         typeDropDown: "normal",
-        widthDD: 100,
+        widthDD: 120,
       },
       Cell: e => getIsHold(e.original.IsHold)
     },
     {
-      Header: "AuditStatus",
+      Header: "Quality Status",
       accessor: "AuditStatus",
       width: 50,
       sortable: false,
@@ -136,14 +136,14 @@ const StorageObject = props => {
   const getIsHold = value => {
     if (value !== undefined) {
       return value === false ? <div style={{ textAlign: "center" }}>
-        <Tooltip title="NONE" >
+        <Tooltip title="UNLOCK" >
           <RemoveCircle
             fontSize="small"
             style={{ color: "#9E9E9E" }}
           />
         </Tooltip>
       </div> : <div style={{ textAlign: "center" }}>
-          <Tooltip title="HOLD" >
+          <Tooltip title="LOCK" >
             <CheckCircle
               fontSize="small"
               style={{ color: "black" }}

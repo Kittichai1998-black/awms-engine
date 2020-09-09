@@ -20,6 +20,9 @@ namespace AWMSEngine.Engine.Business
             public bool IsHold;
             public string remark; 
             public bool RemarkMode;
+            public string mode;
+            public string aditStatus;
+
         }
         public class TDocRes
         {
@@ -40,8 +43,13 @@ namespace AWMSEngine.Engine.Business
                 }
                 else
                 {
-                  
-                    this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                    if (reqVO.mode == "audit") {
+                        this.UpdateAuditStatus(this.Logger, sto, reqVO.remark, reqVO.aditStatus, this.BuVO);
+                    }
+                    else
+                    {
+                        this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                    }
                 }
                 
 
@@ -51,6 +59,27 @@ namespace AWMSEngine.Engine.Business
             allRes.data = res;
             return allRes;
         }
+
+        private void UpdateAuditStatus(AMWLogger logger, StorageObjectCriteria sto, string remark, string aditStatus, VOCriteria buVO)
+        {
+            AuditStatus AdStatus = EnumUtil.GetValueEnum<AuditStatus>(aditStatus);
+
+            sto.AuditStatus = AdStatus;
+            sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
+
+            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            if (!checkStatus)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
+
+            foreach (var st in sto.mapstos)
+            {
+                st.AuditStatus = AdStatus;
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
+            }
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+        }
+
+
         private void UpdateHoldStatus(AMWLogger logger, StorageObjectCriteria sto ,string remark, bool IsHold, VOCriteria buVO)
         {
             
