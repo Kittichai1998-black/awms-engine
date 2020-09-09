@@ -57,27 +57,27 @@ const GI_Create_FGCustomer = props => {
             var defaulProcessType = 1010
             var actDate;
 
-            if (ProcessTypeCode === '4041') {
-                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate: true, codeTranslate: "Action Time" }
+            if (ProcessTypeCode === '4181') {
+                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
             } else {
-                actDate = {label: "Action Time", type: "input", key: "actionTime", defaultValueDate : false, codeTranslate: "Action Time" }
+                actDate = { label: "Action Time", type: "dateTimeFalse", key: "actionTime",  codeTranslate: "Action Time" }
 
             }
             
             if (CodeprocessType === 1) {
                 DataprocessTypeID = [
-                    { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
-                    { label: "Des Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
+                    { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
+                    { label: "Des. Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ]
             } else if (CodeprocessType === 2) {
                 
-                 DataprocessTypeID =[ { label: "Source Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
-                     { label: "Des Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
+                 DataprocessTypeID =[ { label: "Sou. Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
+                     { label: "Des. Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
                    ]
             } else if (CodeprocessType === 3) {
                 DataprocessTypeID = [
-                    { label: "Source Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" },
-                    { label: "Des Supplier", type: "dropdown", key: "desSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Des Supplier" }]
+                    { label: "Sou. Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" },
+                    { label: "Des. Supplier", type: "dropdown", key: "desSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Des Supplier" }]
             } else {
                // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
@@ -85,8 +85,8 @@ const GI_Create_FGCustomer = props => {
 
             var headerCreate = [
                 [
-                    { label: "Document No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                    { label: "Document Date", type: "date", key: "documentDate",  codeTranslate: "Document Date" }
+                    { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
+                    { label: "Doc Date", type: "date", key: "documentDate",  codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4041, codeTranslate: "Process Type" },
@@ -100,7 +100,7 @@ const GI_Create_FGCustomer = props => {
                 [
                     // { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remarkss", type: "input", key: "remark", codeTranslate: "Remark" }
+                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
                 ]
 
             ];
@@ -184,21 +184,21 @@ const GI_Create_FGCustomer = props => {
                 //defaultValue: "PJAAN04-0024",
                 required: true
             },
-            { Header: "OrderNo", accessor: "orderNo", type: "input" },
+            { Header: "Order No.", accessor: "orderNo", type: "input" },
             { Header: "Batch", accessor: "batch", type: "input" },
             { Header: "Lot", accessor: "lot", type: "input" },
-            { Header: "Quantity", accessor: "quantity", type: "inputNum", TextInputnum: "%" ,required: true },
+            { Header: "Qty", accessor: "quantity", type: "inputNum", TextInputnum: "%" ,required: true },
             { Header: "Unit", accessor: "unitType", type: "unitConvert" },
             AuditStatusDDL,
             Headers,
             { Header: "Ref2", accessor: "ref2", type: "input" },
             { Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "Ref4", accessor: "ref4", type: "input" },
-            { Header: "CartonNo", accessor: "cartonNo", type: "input" },
-            { Header: "IncubationDay", accessor: "incubationDay", type: "inputNum" },
-            { Header: "ProductDate", accessor: "productionDate", type: "date" },
-            { Header: "ExpireDate", accessor: "expireDate", type: "date" },
-            { Header: "ShelfLifeDay", accessor: "shelfLifeDay", type: "inputNum" }
+            { Header: "Carton No.", accessor: "cartonNo", type: "input" },
+            { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum" },
+            { Header: "Product Date", accessor: "productionDate", type: "date" },
+            { Header: "Expire Date", accessor: "expireDate", type: "date" },
+            { Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
         ];
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
@@ -255,7 +255,7 @@ const GI_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -320,11 +320,11 @@ const GI_Create_FGCustomer = props => {
         { Header: "Ref2", accessor: "ref2" },
         { Header: "Ref3", accessor: "ref3" },
         { Header: "Ref4", accessor: "ref4" },
-        { Header: "CartonNo", accessor: "cartonNo" },
-        { Header: "IncubationDay", accessor: "incubationDay" },
-        { Header: "ProductDate", accessor: "productionDate" },
-        { Header: "ExpireDate", accessor: "expireDate" },
-        { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
+        { Header: "Carton No", accessor: "cartonNo" },
+        { Header: "Incubation Day", accessor: "incubationDay" },
+        { Header: "Product Date", accessor: "productionDate" },
+        { Header: "Expire Date", accessor: "expireDate" },
+        { Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     
     ];
 
@@ -333,21 +333,21 @@ const GI_Create_FGCustomer = props => {
         // { id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item No.", accessor: "itemNo" },
         { Header: "Item", accessor: "SKUItems" },
-        { Header: "OrderNo", accessor: "orderNo" },
+        { Header: "Order No.", accessor: "orderNo" },
         { Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
-        { Header: "Quantity", accessor: "quantity" },
+        { Header: "Qty", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
         { Header: "Audit Status", accessor: "auditStatus" },
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Ref2", accessor: "ref2" },
         { Header: "Ref3", accessor: "ref3" },
         { Header: "Ref4", accessor: "ref4" },
-        { Header: "CartonNo", accessor: "cartonNo" },
-        { Header: "IncubationDay", accessor: "incubationDay" },
-        { Header: "ProductDate", accessor: "productionDate" },
-        { Header: "ExpireDate", accessor: "expireDate" },
-        { Header: "ShelfLifeDay", accessor: "shelfLifeDay" }
+        { Header: "Carton No.", accessor: "cartonNo" },
+        { Header: "Incubation Day", accessor: "incubationDay" },
+        { Header: "Product Date", accessor: "productionDate" },
+        { Header: "Expire Date", accessor: "expireDate" },
+        { Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc

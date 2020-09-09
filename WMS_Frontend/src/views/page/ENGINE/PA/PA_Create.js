@@ -41,7 +41,7 @@ const Create_GR_DR = props => {
             ];
 
         } else {
-            let DocumentProcessTypeName = dataDocument.DocumentProcessTypeName 
+            let DocumentProcessTypeName = dataDocument.ReDocumentProcessTypeName 
             let DocumentProcessType_ID = dataDocument.DocumentProcessType_ID
             let SouCustomerName = dataDocument.SouCustomerName
             let Sou_Customer_ID = dataDocument.Sou_Customer_ID
