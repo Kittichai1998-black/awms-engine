@@ -31,6 +31,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                 public long pstoID;
                 public string pstoCode;
                 public string pstoName;
+                public AuditStatus auditStatus;
                 public string lot;
                 public string cartonNo;
                 public string orderNo;
@@ -78,9 +79,9 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             if (getSto == null)
                 return null;
 
-            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
+            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.COUNTING).ToList();
 
-            var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.PICKING, DocumentTypeID.PICKING, this.BuVO);
+            var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
             if (listDocs.Count > 0)
             {
                 res.stoItems = new List<TRes.STOItems>();
@@ -93,7 +94,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                         var pack = packsList.Find(pack => pack.id.Value == disto.Sou_StorageObject_ID);
 
                         var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT,SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PICKING,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
                                 }, this.BuVO).FirstOrDefault();
@@ -116,7 +117,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                             ref2 = pack.ref2,
                             ref3 = pack.ref3,
                             ref4 = pack.ref4,
-
+                            auditStatus = pack.AuditStatus,
                             bstoID = pack.parentID,
                             pi_docID = doc.ID,
                             pi_docCode = doc.Code,

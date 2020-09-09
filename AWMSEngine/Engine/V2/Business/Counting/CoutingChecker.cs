@@ -26,6 +26,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
         protected override GetSTOCouting.TRes ExecuteEngine(TReq reqVO)
         {
             var doc = ADO.DocumentADO.GetInstant().Get(reqVO.pi_docID, this.BuVO);
+            
             doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pi_docID, this.BuVO);
 
             var pstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);

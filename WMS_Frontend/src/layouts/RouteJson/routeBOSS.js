@@ -47,7 +47,7 @@ const PI_Checker = Loadable({
 });
 
 const PI_ManageQueue = Loadable({
-    loader: () => import("../../views/page/ENGINE/PI/PI_ManageQueue"),
+    loader: () => import("../../views/page/BOSS/PI/PI_ManageQueue"),
     loading: Loading
 });
 const routes = [

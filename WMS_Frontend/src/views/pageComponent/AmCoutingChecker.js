@@ -4,11 +4,11 @@ import {
     createQueryString,
     Clone,
     IsEmptyObject
-} from "../../../../components/function/CoreFunction";
+} from "../../components/function/CoreFunction";
 import { useTranslation } from "react-i18next";
-import AmDialogs from "../../../../components/AmDialogs";
-import AmButton from "../../../../components/AmButton";
-import AmInput from "../../../../components/AmInput";
+import AmDialogs from "../../components/AmDialogs";
+import AmButton from "../../components/AmButton";
+import AmInput from "../../components/AmInput";
 import { fade, makeStyles, withStyles } from "@material-ui/core";
 import moment from "moment";
 import Paper from "@material-ui/core/Paper";
@@ -25,6 +25,7 @@ import PropTypes from "prop-types";
 import SvgIcon from '@material-ui/core/SvgIcon';
 import queryString from "query-string";
 import Grid from "@material-ui/core/Grid";
+import AmRadioGroup from "../../components/AmRadioGroup";
 import {
     indigo,
     deepPurple,
@@ -37,12 +38,12 @@ import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from '@material-ui/lab/TreeItem';
 import Collapse from '@material-ui/core/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs';
-import { PlusSquare, MinusSquare } from "../../../../constant/IconTreeview";
+import { PlusSquare, MinusSquare } from "../../constant/IconTreeview";
 import EditIcon from '@material-ui/icons/Edit';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import AmTreeView from '../../../pageComponent/AmTreeView'
-import AmDialogConfirm from '../../../../components/AmDialogConfirm'
-import { AuditStatus } from '../../../../components/Models/StorageObjectEvenstatus';
+import AmEditorTable from "../../components/table/AmEditorTable";
+import { AuditStatus } from '../../components/Models/StorageObjectEvenstatus';
+import AmTreeView from '../pageComponent/AmTreeView'
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -197,36 +198,71 @@ const LabelHDD = styled.label`
     width: 120px;
     paddingleft: 20px;
   `;
-function Pallet(props) {
+
+
+function TransitionComponent(props) {
+    const style = useSpring({
+        from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
+        to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
+    });
+
     return (
-        <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
-            {/* tslint:disable-next-line: max-line-length */}
-            <path d="m23.25 24h-4c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-5.5c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-4c-.414 0-.75-.336-.75-.75v-3.25h24v3.25c0 .414-.336.75-.75.75z" /><path d="m16 0h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m10 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m22 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" />
-        </SvgIcon>
+        <animated.div style={style}>
+            <Collapse {...props} />
+        </animated.div>
     );
 }
 
-const PickingChecker = (props) => {
+TransitionComponent.propTypes = {
+    /**
+     * Show the component; triggers the enter or exit states
+     */
+    in: PropTypes.bool,
+};
+
+const StyledTreeItem = withStyles((theme) => ({
+    iconContainer: {
+        '& .close': {
+            opacity: 0.3,
+        },
+    },
+    group: {
+        marginLeft: 7,
+        paddingLeft: 18,
+        borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+    },
+}))((props) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
+
+const useStyles = makeStyles({
+    root: {
+        height: 264,
+        flexGrow: 1,
+        maxWidth: 400,
+    },
+});
+
+const AmCoutingChecker = (props) => {
     const { t } = useTranslation();
     const { classes } = props;
     const [valueInput, setValueInput] = useState({});
     const [activeStep, setActiveStep] = useState(0);
 
-    const [dataStoPick, setDataStoPick] = useState(null);
+    const [dataStoAudit, setDataStoAudit] = useState(null);
+    const [dataSelected, setDataSelected] = useState(null);
 
+    const [dialog, setDialog] = useState(false);
 
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [settingConfirm, setSettingConfirm] = useState(null);
 
     //steps
     const steps = getSteps();
 
+
     const handleNext = (index) => {
         if (index === 0) {
             if (valueInput.bstoCode) {
-                GetStoPicking(valueInput.bstoCode);
+                GetStoAuditing(valueInput.bstoCode);
             } else {
                 alertDialogRenderer("warning", "กรุณากรอกหมายเลขพาเลท")
             }
@@ -236,7 +272,6 @@ const PickingChecker = (props) => {
     const handleBack = (index) => {
         if (index === 1) {
             setValueInput({ ...valueInput, ['bstoCode']: null })
-            // ClearInput('bstoCode');
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
@@ -261,7 +296,7 @@ const PickingChecker = (props) => {
         }
         return [
             { label: "Scan Pallet Code", value: bstoCode },
-            { label: 'Select Picking', value: null },
+            { label: 'Select Audit', value: null },
         ];
     };
     function getStepContent(step) {
@@ -275,6 +310,7 @@ const PickingChecker = (props) => {
                         autoFocus={true}
                         style={{ width: "100%" }}
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, "bstoCode")}
+
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
                                 onHandleChangeInput(value, "bstoCode");
@@ -285,7 +321,7 @@ const PickingChecker = (props) => {
                     />
                 </div>;
             case 1:
-                return <RenderTreeViewData data={dataStoPick} onClick={(sel) => ConfirmPickDialogRenderer(sel)} />
+                return <RenderTreeViewData data={dataStoAudit} onClick={(sel) => onClickAudit(sel)} />
             default:
                 return 'Unknown step';
         }
@@ -296,6 +332,7 @@ const PickingChecker = (props) => {
 
     const RenderTreeViewData = React.memo(({ data, onClick }) => {
         if (data != null && data.stoItems != null && data.stoItems.length > 0) {
+            //    let bstoCode 
             let treeItems = [];
             {
                 data.stoItems.map((sto, idx) => {
@@ -320,7 +357,7 @@ const PickingChecker = (props) => {
                     let processTypeName = sto.processTypeName != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No." + sto.processTypeName}</Typography>
                         : null;
-                    let pickQty = sto.pickQty != null ? sto.pickQty + " " + sto.unitCode : "";
+                    let coutingQty = sto.coutingQty != null ? sto.coutingQty + " " + sto.unitCode : "";
                     let destination = sto.destination != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{" | Des:" + sto.destination}</Typography>
                         : null;
@@ -340,10 +377,11 @@ const PickingChecker = (props) => {
                                 <Typography variant="body2" className={classes.labelHead} noWrap>{pstoCode}</Typography>
                                 <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
                             </div>
+
                             {auditstatus}{lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}
                         </div>,
-                        labelIcon: ShoppingCartIcon,
-                        labelInfo: pickQty,
+                        labelIcon: EditIcon,
+                        labelInfo: coutingQty,
                         bgColor: "#e8f0fe",
                         color: "#1a73e8",
                         dataItem: sto,
@@ -360,23 +398,24 @@ const PickingChecker = (props) => {
                 // labelIcon: Pallet,
                 treeItems: treeItems
             }];
+
             return (<div><AmTreeView dataTreeItems={dataTreeItems} /></div>);
         } else {
-            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
+            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการตรวจนับ</h4></div>;
         }
     });
-    const GetStoPicking = (bstoCode) => {
-        Axios.get(window.apipath + '/v2/get_sto_picking?' +
+    const GetStoAuditing = (bstoCode) => {
+        Axios.get(window.apipath + '/v2/get_sto_couting?' + //get_sto_audit
             '&bstoCode=' + (bstoCode === undefined || bstoCode === null ? ''
                 : encodeURIComponent(bstoCode.trim()))).then(res => {
                     if (res.data._result.status === 1) {
                         if (res.data.stoItems != null && res.data.stoItems.length > 0) {
                             setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                            setDataStoPick(res.data)
+                            setDataStoAudit(res.data)
                         } else {
-                            setDataStoPick(null)
+                            setDataStoAudit(null)
                             handleReset();
-                            alertDialogRenderer("error", "ไม่พบรายการสินค้าที่เบิกได้")
+                            alertDialogRenderer("error", "ไม่พบรายการสินค้าที่สามารถตรวจนับได้")
                         }
                     } else {
                         handleReset();
@@ -385,23 +424,165 @@ const PickingChecker = (props) => {
                 });
     }
 
-    const onClickPick = (sel) => {
+    const onClickAudit = (sel) => {
         var req = { ...sel };
-        Axios.post(window.apipath + '/v2/picking_checker', req).then(res => {
-            if (res.data._result.status === 1) {
-                if (res.data.stoItems != null && res.data.stoItems.length > 0) {
-                    setDataStoPick(res.data)
-                    alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
-                } else {
-                    if (res.data.docIDs != null && res.data.docIDs.length > 0) {
-                        alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
-                        handleBack(1);
+        console.log(req);
+        setDataSelected(sel)
+        setDialog(true);
+    }
+    const onHandleAdjustConfirm = (status, rowdata) => {
+        if (status) {
+            let req = { ...rowdata, ...valueInput }
+            console.log(req)
+            // Axios.post(window.apipath + '/v2/couting_checker', req).then(res => {
+            //     if (res.data._result.status === 1) {
+            //         if (res.data.stoItems != null && res.data.stoItems.length > 0) {
+            //             setDataStoAudit(res.data)
+            //             alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
+            setDialog(false)
+            ClearValSel()
+            //         } else {
+            //             if (res.data.docIDs != null && res.data.docIDs.length > 0) {
+            //                 alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
+            handleBack(1);
+            //             }
+            //         }
+            //     } else {
+            //         alertDialogRenderer("error", res.data._result.message)
+            //     }
+            // });
+        } else {
+            setDialog(false)
+            ClearValSel()
+        }
+
+    }
+
+    const ClearValSel = () => {
+        setDataSelected(null)
+        setValueInput({})
+    }
+    const RanderElement = () => {
+        if (dataSelected) {
+            console.log(dataSelected)
+            const columns = props.columnsEdit
+
+            return columns.map((x, index) => {
+                return {
+                    component: (data, cols, key) => {
+                        if (x.type === "info") {
+                            let pstoCode = dataSelected.pstoCode != null ? dataSelected.pstoCode : "";
+                            let pstoName = dataSelected.pstoName != null ? dataSelected.pstoName : "";
+                            let lot = dataSelected.lot != null && dataSelected.lot.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + dataSelected.lot}</Typography>
+                                : null;
+                            let batch = dataSelected.batch != null && dataSelected.batch.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + dataSelected.batch}</Typography>
+                                : null;
+                            let orderNo = dataSelected.orderNo != null && dataSelected.orderNo.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + dataSelected.orderNo}</Typography>
+                                : null;
+                            let cartonNo = dataSelected.cartonNo != null && dataSelected.cartonNo.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + dataSelected.cartonNo}</Typography>
+                                : null;
+
+                            let auditstatus = null;
+                            if (dataSelected.auditStatus) {
+                                let audit = " | AD:" + AuditStatus.find(x => x.value === dataSelected.auditStatus).label;
+                                auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}</Typography>
+
+                            }
+                            return (
+                                <div key={index} style={{ flexGrow: 1 }}>
+                                    <div style={{ display: "flex" }}>
+                                        <Typography variant="body1" className={classes.labelHead}>{pstoCode}</Typography>
+                                        <Typography variant="body1" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
+                                    </div>
+                                    {lot}{batch}{orderNo}{cartonNo}{auditstatus}
+                                </div>
+                            )
+                        }
+                        else if (x.type === "input") {
+                            return (
+                                <FormInline><LabelH2>{t(x.name)} : </LabelH2>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                                        <AmInput
+                                            id={x.field}
+                                            required={x.required}
+                                            disabled={x.disabled}
+                                            autoFocus={x.isFocus}
+                                            placeholder={x.placeholder}
+                                            type="input"
+                                            // style={{ width: "330px" }}
+                                            inputProps={x.maxLength ? {
+                                                maxLength: x.maxLength,
+                                            } : {}}
+                                            // validate={validate}
+                                            // regExp={x.regExp}
+                                            // msgError={"Error"}
+                                            // styleValidate={{display: 'block'}}
+                                            // defaultValue={valueInput && valueInput[x.field] ? x.clearInput ? "" : valueInput[x.field] : x.defaultValue ? x.defaultValue : ""}
+                                            onBlur={(value, obj, element, event) => onHandleChangeInput(value, x.field)}
+                                        />
+                                    </div>
+                                </FormInline>
+                            )
+                        }
+                        else if (x.type === "number") {
+                            return (
+                                <FormInline><LabelH2>{t(x.name)} : </LabelH2>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                                        <AmInput
+                                            id={x.field}
+                                            required={x.required}
+                                            disabled={x.disabled}
+                                            placeholder={x.placeholder}
+                                            type="number"
+                                            defaultValue={dataSelected.coutingQty ? dataSelected.coutingQty : ""}
+                                            // defaultValue={valueInput && valueInput[x.field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
+                                            onBlur={(value, obj, element, event) => onHandleChangeInput(parseFloat(value), x.field)}
+                                        // onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, x.field, null, event)}
+                                        />
+                                        {x.showUnit ?
+                                            <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{dataSelected.unitCode}</Typography>
+                                            : null}
+                                    </div>
+                                </FormInline>
+                            )
+                        }
+                        else if (x.type === "radiogroup") {
+                            // let valRad = x.defaultValue ? Clone(x.defaultValue) : {};
+                            // if (valueInput && valueInput[x.field]) {
+                            //     valRad.value = valueInput[x.field].toString()
+                            // }
+                            // console.log(valRad)
+                            return <div>
+                                <AmRadioGroup
+                                    formLabel={t(x.formLabel)}
+                                    row={true}
+                                    name={x.field}
+                                    dataValue={x.fieldLabel}
+                                    returnDefaultValue={true}
+                                    defaultValue={x.defaultValue ? x.defaultValue : null}
+                                    onChange={(value, obj, element, event) => {
+                                        onHandleChangeRadio(value, x.field)
+                                    }}
+                                /> </div>
+                        } else if (x.type === "label") {
+                            return (
+                                <FormInline>
+                                    <LabelH1>{x.name} : </LabelH1>
+                                    <label>{dataSelected[x.field]}</label>
+                                </FormInline>)
+                        }
+
                     }
                 }
-            } else {
-                alertDialogRenderer("error", res.data._result.message)
-            }
-        });
+            });
+        }
+    }
+    const onHandleChangeRadio = (value, field) => {
+        valueInput[field] = parseInt(value, 10);
     }
     // Alert Dialog
     const alertDialogRenderer = (type, message) => {
@@ -422,52 +603,18 @@ const PickingChecker = (props) => {
             return null;
         }
     }
-    const onClose = (data) => {
-        setOpenConfirm(data)
-        if (data === false) {
-            setSettingConfirm(null)
-        }
-    }
-    function ConfirmPickDialog(open, data, onConfirm, onClose) {
-        if (open && data) {
-            let pickQty = data.pickQty != null ? data.pickQty + " " + data.unitCode : "";
-
-            let eleInfo = <div style={{ flexGrow: 1 }}>
-                <div style={{ display: "flex" }}>
-                    <Typography variant="body2" className={classes.labelHead} noWrap>{data.pstoCode}</Typography>
-                    <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + data.pstoName}</Typography>
-                </div>
-                <Typography variant="body2" className={classes.labelHead2} noWrap>{"Qty: " + pickQty}</Typography>
-            </div>
-            return <AmDialogConfirm
-                titleDialog={"Are you confirm to pick?"}
-                open={open}
-                close={a => onClose(a)}
-                bodyDialog={eleInfo}
-                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => onConfirm(data)}>{t("Confirm")}</AmButton>}
-                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => onClose(false)}>{t("Cancel")}</AmButton>}
-            />
-        } else {
-            return null;
-        }
-    }
-    const ConfirmPickDialogRenderer = (dataSel) => {
-        setSettingConfirm(dataSel);
-        setOpenConfirm(true)
-    }
-    const onConfirmPick = (data) => {
-        if (data) {
-            setOpenConfirm(false)
-            setSettingConfirm(null)
-            onClickPick(data)
-        }
-    }
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
-    const DialogConfirm = useMemo(() => ConfirmPickDialog(openConfirm, settingConfirm, onConfirmPick, onClose), [openConfirm, settingConfirm])
 
     return (
         <div>
-            {DialogConfirm}
+            <AmEditorTable
+                open={dialog}
+                onAccept={(status, rowdata) => onHandleAdjustConfirm(status, rowdata)}
+                titleText={"Confirm Couting"}
+                data={dataSelected !== undefined ? dataSelected : []}
+                columns={RanderElement()}
+                textConfirm={"Confirm"}
+            />
             {DialogAlert}
             <Paper className={classes.paperContainer}>
                 <Stepper
@@ -515,7 +662,7 @@ const PickingChecker = (props) => {
         </div>
     )
 }
-PickingChecker.propTypes = {
+AmCoutingChecker.propTypes = {
 
 }
-export default withStyles(styles)(PickingChecker);
+export default withStyles(styles)(AmCoutingChecker);
