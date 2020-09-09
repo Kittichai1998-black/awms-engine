@@ -57,10 +57,10 @@ const GI_Create_FGCustomer = props => {
             var defaulProcessType = 1010
             var actDate;
 
-            if (ProcessTypeCode === 4041) {
+            if (ProcessTypeCode === '4041') {
                 actDate = { label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate: true, codeTranslate: "Action Time" }
             } else {
-                actDate = {label: "Action Time", type: "dateTime", key: "actionTime", defaultValueDate : false, codeTranslate: "Action Time" }
+                actDate = {label: "Action Time", type: "input", key: "actionTime", defaultValueDate : false, codeTranslate: "Action Time" }
 
             }
             
