@@ -313,6 +313,7 @@ const AmMappingPalletV2 = props => {
     valueInput[fieldDataKey] = value;
   };
   const handleNext = index => {
+
     if (localStorage.getItem("processTypes") !== null)
       valueInput["processType"] = localStorage.getItem("processTypes")
     if (localStorage.getItem("areaIDs") !== null)
@@ -525,7 +526,8 @@ const AmMappingPalletV2 = props => {
                 fieldLabel={["Code", "Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
-                defaultValue={localStorage.getItem("processTypes")}
+                //valueData={valueInput[x.field]}
+                defaultValue={parseInt(localStorage.getItem("processTypes"))}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)}
@@ -542,7 +544,7 @@ const AmMappingPalletV2 = props => {
                 labelPattern=" : "
                 ddlMinWidth={300}
                 queryApi={AreaMasterQuery()}
-                defaultValue={localStorage.getItem("areaIDs")}
+                defaultValue={parseInt(localStorage.getItem("areaIDs"))}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)
 
