@@ -370,6 +370,10 @@ const RePackaging = Loadable({
   loader: () => import("../../views/page/Warehouse/RePackaging"),
   loading: Loading
 });
+const QualityStatus = Loadable({
+  loader: () => import("../../views/page/Warehouse/QualityStatus"),
+  loading: Loading
+});
 const MaintenancePlan = Loadable({
   loader: () => import("../../views/page/ENGINE/MaintenancePlan"),
   loading: Loading
@@ -472,6 +476,8 @@ let routes = [
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
   { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
+  { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
+  { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
   { path: "/wm/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
 ];

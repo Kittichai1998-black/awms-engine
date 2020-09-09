@@ -208,12 +208,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             /////////////////////////////////CREATE Document(GR) Cross Dock
             //var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
 
-            this.WCSSendQueue(rstos);
+            this.WCSSendQueue(rstos, docs);
 
             return new TRes() { confirmResult = rstos };
         }
 
-        private void WCSSendQueue(List<RootStoProcess> rstos)
+        private void WCSSendQueue(List<RootStoProcess> rstos, List<amt_Document> docs)
         {
 
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
@@ -238,6 +238,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 groupRstos.ForEach(rstoByDoc =>
                 {
+                    var doc = docs.Find(x => x.ID == rstoByDoc.docID);
                     var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
                     var groupSeq = ADO.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
                     int seq = 1;
@@ -249,6 +250,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             {
                                 priority = rsto.priority,
                                 queueID = rsto.workQueueID.Value,
+                                actionTime = doc.ActionTime,
                                 desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
                                 desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID.Value),
                                 desLocationCode = rsto.desLocationID.HasValue ?
