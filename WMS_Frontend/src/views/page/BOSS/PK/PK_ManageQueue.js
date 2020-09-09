@@ -96,22 +96,22 @@ const processCondition = {
     ],
     "orderBys": [
         {
-            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":1,
+            "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
-            "field": "Batch", "enable": true, "sortField": "psto.batch", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":2,
+            "field": "Batch", "enable": true, "sortField": "psto.batch",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 2,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {
-            "field": "Lot", "enable": true, "sortField": "psto.lot", 
-            "editable": true, 
+            "field": "Lot", "enable": true, "sortField": "psto.lot",
+            "editable": true,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
         }
     ]
@@ -127,19 +127,13 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        if (doc.document.DocumentProcessType_ID === 1013) {
-            return areaList.filter(x => x.ID === 9 || x.ID === 10 || x.ID === 11 || x.ID === 12)
-        }
-        else
-            return areaList
+        console.log(areaList)
+        return areaList.filter(x => x.ID === 9 || x.ID === 10)
+
     }
 
     const customDesAreaDefault = (doc) => {
-        if (doc.document.DocumentProcessType_ID === 1013) {
-            return "10"
-        }
-        else
-            return "10"
+        return "9"
     }
 
     return <AmProcessQueue
@@ -151,7 +145,6 @@ const ProcessQueue = () => {
         documentDetail={documentDetail}
         processSingle={true}
         processCondition={processCondition}
-        percentRandom={false}
         customDesArea={customDesArea}
         areaDefault={customDesAreaDefault}
         columnsConfirm={columnsConfirm}

@@ -242,7 +242,6 @@ function useWindowSize(ref) {
         setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
     }
     window.addEventListener('resize', updateSize);
-    updateSize();
     return () => window.removeEventListener('resize', updateSize);
   }, []);
   return size;
@@ -490,7 +489,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
       }
     });
     let cellWidth = tableSize[0] - totalWidth;
-    totalWidth = Math.round(cellWidth / countNotSet);
+    totalWidth = Math.floor(cellWidth / countNotSet);
     return totalWidth;
   }
 

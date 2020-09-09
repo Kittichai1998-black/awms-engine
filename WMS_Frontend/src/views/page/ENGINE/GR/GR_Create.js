@@ -105,7 +105,7 @@ export default props => {
             defaultValue: "PJAAN04-0024",
             required: true
         },
-        { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true },
+        { Header: "Qty", accessor: "quantity", type: "inputNum", required: true },
         { Header: "Unit", accessor: "unitType", type: "text" }
     ];
 

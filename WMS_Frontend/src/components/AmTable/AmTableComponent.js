@@ -37,7 +37,6 @@ const Topbar = React.memo((propsTopbar) => {
                     <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopLeftControl ? propsTopbar.customTopLeftControl : null}</div>
                 </Grid>
                 <Grid item xs={6} style={{textAlign:"right"}}>
-                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
                     <div style={{display:"inline-block", verticalAlign: "middle"}}>
                         {propsTopbar.pagination ? <AmPagination
                             totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
@@ -48,6 +47,7 @@ const Topbar = React.memo((propsTopbar) => {
                             }}
                         /> : null}
                     </div>
+                    <div style={{display:"inline-block", verticalAlign: "middle"}}>{propsTopbar.customTopRightControl ? propsTopbar.customTopRightControl : null}</div>
                 </Grid>
             </Grid>
         }
@@ -135,7 +135,6 @@ const AmTableSetup = (props) => {
     const [resetPage, setResetPage] = useState(props.resetPage)
 
     const { selectionData, sortData, sortable } = props;
-    console.log(props.customTopLeftControl)
     useEffect(() => {
         if(resetPage)
             setResetPage(false)
@@ -217,7 +216,7 @@ const AmTableSetup = (props) => {
             props.onPageChange(page)
     }, [page])
 
-    return <div style={{maxHeight:props.height}}>
+    return <>
         <Topbar 
             customTopControl={props.customTopControl} 
             customTopLeftControl={props.customTopLeftControl} 
@@ -229,6 +228,7 @@ const AmTableSetup = (props) => {
             pagination={props.pagination}
             page={(e) => setPage(e)}
         />
+    <div style={{maxHeight:props.height}}>
         <AmTableBody
             dataSource={dataSource}
             width={props.width}
@@ -251,6 +251,7 @@ const AmTableSetup = (props) => {
             clearSelectionChangeData={props.clearSelectionChangeData}
             style={props.style}
         />
+    </div>
         <Bottombar 
             customBtmControl={props.customBtmControl} 
             customBtmLeftControl={props.customBtmLeftControl} 
@@ -262,7 +263,7 @@ const AmTableSetup = (props) => {
             pagination={props.pagination}
             page={(e) => setPage(e)}
         />
-    </div>
+    </>
 }
 
 export default AmTableComponent;

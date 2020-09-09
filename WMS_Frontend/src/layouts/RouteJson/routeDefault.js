@@ -374,6 +374,10 @@ const QualityStatus = Loadable({
   loader: () => import("../../views/page/Warehouse/QualityStatus"),
   loading: Loading
 });
+const MaintenancePlan = Loadable({
+  loader: () => import("../../views/page/ENGINE/MaintenancePlan"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -474,6 +478,8 @@ let routes = [
 
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },
+  { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
+  { path: "/wm/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
 ];
 
 export default routes;

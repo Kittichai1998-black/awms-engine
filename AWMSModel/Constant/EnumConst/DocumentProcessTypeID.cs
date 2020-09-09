@@ -49,6 +49,7 @@ namespace AWMSModel.Constant.EnumConst
         WIP_CORRECTIONS_WM = 2101,
         WIP_CORRECTIONS_CUS = 2102,
         WIP_CORRECTIONS_SUP = 2103,
+        WIP_PHYSICAL_COUNT_AUTO = 2181,
 
         FG_TRANSFER_WM = 4011,
         FG_TRANSFER_CUS = 4012,
@@ -101,7 +102,8 @@ namespace AWMSModel.Constant.EnumConst
         FG_DONATE_WM = 4151,
         FG_TRANSFER_EXAMPLE_WM = 4161,
         FG_TRANSFER_RD_WM = 4171,
-       
+        FG_PHYSICAL_COUNT_AUTO = 4181,
+
         FG_OTHER_WM = 4991,
 
         PM_TRANSFER_WM = 5011,
@@ -112,6 +114,7 @@ namespace AWMSModel.Constant.EnumConst
         PM_TRANSFER_DONATE_WM  =  5151,
         PM_TRANSFER_EXAMPLE_WM =5161,
         PM_TRANSFER_RD_WM  =  5171,
+        PM_PHYSICAL_COUNT_AUTO = 5181,
         PM_OTHER_WM=5991,
 
         ESP_TRANSFER_WM = 8011,

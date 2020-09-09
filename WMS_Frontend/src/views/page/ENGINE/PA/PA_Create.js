@@ -22,15 +22,15 @@ const Create_GR_DR = props => {
 
                 [
                     { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
-                    { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
-                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "",  codeTranslate: "Des Warehouse" }
+                    { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
+                    { label: "Des. Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "",  codeTranslate: "Des Warehouse" }
                 ],
                 [
                   
@@ -56,14 +56,14 @@ const Create_GR_DR = props => {
             console.log(SouWarehouseName)
             let Source;
             if (SouWarehouseName != null) {
-                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
+                Source = { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
             } else if (SouCustomerName != null) {
-                Source = { label: "Source Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
+                Source = { label: "Sou. Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
             } else if (SouSupplierName != null) {
-                Source = { label: "Source Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
+                Source = { label: "Sou. Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
 
             } else {
-                Source = { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: '', valueTexts: '', codeTranslate: "Source Warehouse" }
+                Source = { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: '', valueTexts: '', codeTranslate: "Source Warehouse" }
             }
 
             headerCreate = [
@@ -78,7 +78,7 @@ const Create_GR_DR = props => {
                 ],
                 [
                     Source,
-                    { label: "Des Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
+                    { label: "Des. Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
                 ],
                 [ 
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
@@ -170,7 +170,7 @@ const Create_GR_DR = props => {
     const columnEdit = [
         { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
         { Header: "Item", accessor: "SKUItems", type: "text"},
-        { Header: "OrderNo", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
+        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
         { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot",accessor: "Lot", type: "text", codeTranslate: "Lot" },
         { Header: "Qty", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
@@ -181,16 +181,16 @@ const Create_GR_DR = props => {
         { Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
         { Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
         { Header: "CartonNo", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
-        { Header: "ProductDate", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate"},
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay"}
+        { Header: "Incubation Day", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
+        { Header: "Product Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
+        { Header: "Expire Date", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate"},
+        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay"}
     ];
 
     const columnEditItem = [
         { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         { Header: "Item", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "OrderNo", accessor: "OrderNo", codeTranslate: "OrderNo" },
+        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
         { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot",  accessor: "Lot",  codeTranslate: "Lot" },
         { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
@@ -200,11 +200,11 @@ const Create_GR_DR = props => {
         { Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
         { Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
         { Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo", codeTranslate: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay", codeTranslate: "IncubationDay"},
-        { Header: "ProductDate", accessor: "ProductionDate", codeTranslate: "ProductDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
+        { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
+        { Header: "Incubation Day", accessor: "IncubationDay", codeTranslate: "IncubationDay"},
+        { Header: "Product Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
+        { Header: "Expire Date", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
+        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
 
     ];
 
@@ -224,7 +224,7 @@ const Create_GR_DR = props => {
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "", accessor: "row", width: 35 },
         { Header: "Item", accessor: "SKUItems" },
-        { Header: "OrderNo", accessor: "OrderNo" },
+        { Header: "Order No.", accessor: "OrderNo" },
         { Header: "Batch", accessor: "Batch" },
         { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 120, accessor: "_qty", Header: "Qty" },
@@ -234,11 +234,11 @@ const Create_GR_DR = props => {
         { Header: "Ref2", accessor: "Ref2" },
         { Header: "Ref3", accessor: "Ref3" },
         { Header: "Ref4", accessor: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo" },
-        { Header: "IncubationDay", accessor: "IncubationDay" },
-        { Header: "ProductDate", accessor: "ProductionDate" },
-        { Header: "ExpireDate", accessor: "ExpireDate" },
-        { Header: "ShelfLifeDay", accessor: "ShelfLifeDay" }
+        { Header: "Carton No.", accessor: "CartonNo" },
+        { Header: "Incubation Day", accessor: "IncubationDay" },
+        { Header: "Product Date", accessor: "ProductionDate" },
+        { Header: "Expire Date", accessor: "ExpireDate" },
+        { Header: "ShelfLife  Day", accessor: "ShelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc

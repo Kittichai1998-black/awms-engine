@@ -36,16 +36,16 @@ const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items,
 const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination}) => {
     if(tableConfig && customTopRightControl){
         return <>
-        <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
-        style={{display:"inline-block", borderRight:customTopRightControl || pagination ? "2px solid #ddd" : "", paddingRight:"4px"}} 
-        items={items} datas={selection} title=""/>
         <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopRightControl}</div>
+        <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
+        style={{display:"inline-block", paddingLeft:"4px"}} 
+        items={items} datas={selection} title=""/>
     </>;
     }
     else if(tableConfig){
         return <>
             <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
-            style={{display:"inline-block", borderRight:customTopRightControl || pagination ? "2px solid #ddd" : "", paddingRight:"4px"}} 
+            style={{display:"inline-block", paddingLeft:"4px"}} 
             items={items} datas={selection} title=""/>
         </>;
     }
@@ -150,7 +150,7 @@ const AmTable = (props) => {
     return <>
         <Suspense fallback="">
             <AmTableComponent
-                style={{marginTop:10}}
+                style={props.style}
                 dataSource={props.dataSource}
                 width={props.width}
                 columns={props.columns}
@@ -233,6 +233,6 @@ AmTable.propTypes = {...AmTablePropTypes,
 };
 AmTable.defaultProps ={
     pageSize:50,
-    tableConfig:false
+    tableConfig:true
 }
 export default AmTable;

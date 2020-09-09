@@ -678,8 +678,8 @@ const ProcessQueueDetail = (props) => {
             return [{
                 "field": "Percent", "component": (data, cols, key) => {
                     return <FormInline>
-                        <label style={{ marginRight: "10px" }}>Percent : </label>
-                        <AmInput
+                        {/* <label style={{ marginRight: "10px" }}>Percent : </label> */}
+                        {/* <AmInput
                             id={"percent"}
                             required={true}
                             placeholder={"Percent"}
@@ -694,7 +694,7 @@ const ProcessQueueDetail = (props) => {
                             onChangeV2={(value, obj, element, event) => {
                                 data["percentRandom"] = value;
                             }}
-                        />
+                        /> */}
                     </FormInline>
                 }
             }];
@@ -722,7 +722,7 @@ const ProcessQueueDetail = (props) => {
                     useIncubateDate: docItem.useIncubateDate ? docItem.useIncubateDate : false,
                     useFullPick: docItem.useFullPick ? docItem.useFullPick : false,
                     baseQty: docItem.BaseQuantity ? docItem.BaseQuantity : null,
-                    percentRandom: props.percentRandom ? docItem.percentRandom !== undefined ? docItem.percentRandom : 100 : null,
+                    percentRandom: getOptions.qtyrandom ? getOptions.qtyrandom !== undefined ? getOptions.qtyrandom : 100 : null,
                     eventStatuses: docItem.eventStatuses,
                     auditStatuses: docItem.auditStatuses,
                     conditions: docItem.conditions,

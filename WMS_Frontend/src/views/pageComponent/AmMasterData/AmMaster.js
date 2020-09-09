@@ -190,7 +190,6 @@ const AmMasterData = (props) => {
     const [pageSize, setPageSize] = useState(props.pageSize ? props.pageSize : 20);
 
     useEffect(() => {
-        console.log(queryObj)
         if(queryObj.l !== pageSize){
             queryObj.l = pageSize
             setQueryObj({ ...queryObj })
@@ -253,7 +252,6 @@ const AmMasterData = (props) => {
     }, [page])
 
     const onChangeFilterData = (filterValue) => {
-        console.log(filterValue)
         var res = queryObj;
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined) {
@@ -267,7 +265,6 @@ const AmMasterData = (props) => {
                 res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
             }
         });
-        console.log(res)
         setQueryObj(res)
     }
 

@@ -20,6 +20,7 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desWarehouseCode;
                 public string desAreaCode;
                 public string desLocationCode;
+                public DateTime? actionTime;
                 public int priority;
 
                 public baseinfo baseInfo;

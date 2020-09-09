@@ -30,6 +30,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 public long pstoID;
                 public string pstoCode;
                 public string pstoName;
+                public AuditStatus auditStatus;
                 public string lot;
                 public string cartonNo;
                 public string orderNo;
@@ -236,7 +237,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         ref2 = pack.ref2,
                         ref3 = pack.ref3,
                         ref4 = pack.ref4,
-
+                        auditStatus = pack.AuditStatus,
                         bstoID = pack.parentID,
                         pk_docID = doc.ID,
                         pk_docCode = doc.Code,
