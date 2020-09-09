@@ -174,7 +174,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
             res.document = doc;
 
-            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001,1011, 1012, 2003, 2004) && doc.documentItems.Count != 0)
+            if (reqVO.getMapSto && doc.DocumentTypeID.Value.In(1001, 1002, 2003, 2004) && doc.documentItems.Count != 0)
             {
                 set_sou_des(doc.ID.Value);
             }
