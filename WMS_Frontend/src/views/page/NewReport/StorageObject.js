@@ -15,7 +15,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
-
+import AuditStatusIcon from "../../../components/AmAuditStatus";
 
 const Axios = new apicall();
 
@@ -64,7 +64,7 @@ const StorageObject = props => {
         typeDropDown: "normal",
         widthDD: 120,
       },
-      Cell: e => getIsAuditStatus(e.original.AuditStatus)
+      Cell: e => getAuditStatus(e.original.AuditStatus)
     },
     {
       Header: "Pallet",
@@ -117,17 +117,25 @@ const StorageObject = props => {
       Cell: e => getRedirectLog(e.original)
     }
   ];
-  const getIsAuditStatus = value => {
-    if (value === 0) {
-      return "QUARANTINE"
-    } else if (value === 1) {
-      return "PASS"
-    } else if (value === 2) {
-      return "NOTPASS"
-    } else if (value === 9) {
-      return "HOLD"
-    }
+  const getAuditStatus = Status => {
+    //return null
+    return <div style={{ marginBottom: "3px", textAlign: "center" }}>
+      {getAuditStatusValue(Status)}
+    </div>
 
+  };
+  const getAuditStatusValue = Status => {
+    if (Status === 0) {
+      return <AuditStatusIcon key={Status} statusCode={0} />;
+    } else if (Status === 1) {
+      return <AuditStatusIcon key={Status} statusCode={1} />;
+    } else if (Status === 2) {
+      return <AuditStatusIcon key={Status} statusCode={2} />;
+    } else if (Status === 9) {
+      return <AuditStatusIcon key={Status} statusCode={9} />;
+    } else {
+      return null;
+    }
   }
   const getOptions = value => {
     var qryStr = queryString.parse(value);
