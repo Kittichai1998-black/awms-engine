@@ -109,6 +109,7 @@ namespace AWMSModel.Constant.EnumConst
         PM_TRANSFER_WM = 5011,
         PM_TRANSFER_CUS = 5012,
         PM_TRANSFER_SUP = 5013,
+        PM_PHYSICAL_COUNT_WM = 5041,
         PM_REWORK_WM =5061,
         PM_TRANSFER_WELFARE_WM  =5141,
         PM_TRANSFER_DONATE_WM  =  5151,

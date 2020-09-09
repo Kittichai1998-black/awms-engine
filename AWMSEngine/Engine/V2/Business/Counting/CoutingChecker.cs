@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ DocItemStos");
 
             var qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
-            if (qID.EventStatus != WorkQueueEventStatus.CLOSED)
+            if (qID != null && qID.EventStatus != WorkQueueEventStatus.CLOSED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
             
             var updSto = new StorageObjectCriteria();

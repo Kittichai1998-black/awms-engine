@@ -144,24 +144,24 @@ const DefaultProcessCondition = (doc, con) => {
 
             if (con.orderBys !== undefined) {
                 let arrOrderBys = [];
-                con.orderBys.sort((a,b) => a-b).forEach((y,idx) => {
+                con.orderBys.sort((a, b) => a - b).forEach((y, idx) => {
                     if (y.custom !== undefined && y.defaultSortBy !== undefined) {
                         let getCustom = y.custom({ document: doc.document, docItem: x })
                         if (getCustom.enable)
-                            if(getCustom.defaultSortBy !== undefined)
+                            if (getCustom.defaultSortBy !== undefined)
                                 arrOrderBys.push({
                                     "fieldName": getCustom.sortField,
                                     "orderByType": getCustom.defaultSortBy,
-                                    "order": getCustom.order ? getCustom.order : idx+1
+                                    "order": getCustom.order ? getCustom.order : idx + 1
                                 });
                     }
                     else {
-                        if (y.enable){
-                            if(y.defaultSortBy !== undefined){
+                        if (y.enable) {
+                            if (y.defaultSortBy !== undefined) {
                                 arrOrderBys.push({
                                     "fieldName": y.sortField,
                                     "orderByType": y.defaultSortBy,
-                                    "order": y.order ? y.order : idx+1
+                                    "order": y.order ? y.order : idx + 1
                                 });
                             }
                         }
@@ -278,7 +278,7 @@ const ProcessQueueDetail = (props) => {
     const onClickDialog = (key, docData) => {
         dialog["state"] = true;
         dialog["key"] = key;
-        dialog["data"] = {...docData.docItems[0]}
+        dialog["data"] = { ...docData.docItems[0] }
         setDialog({ ...dialog });
     }
 
@@ -295,11 +295,11 @@ const ProcessQueueDetail = (props) => {
             )
         if (processCondition.orderBys !== undefined)
             btnObj.push(
-                <FormInline style={{display:"inline"}}>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Order By : </label>
                     {event.docItems[0]["orderBys"].map(odb => {
-                        let field = props.processCondition.orderBys.find(y=> odb.fieldName === y.sortField).field;
-                        let order = orderObj.find(y=> odb.orderByType === y.value).label;
+                        let field = props.processCondition.orderBys.find(y => odb.fieldName === y.sortField).field;
+                        let order = orderObj.find(y => odb.orderByType === y.value).label;
                         return <SelectionItem>{`${field}(${order})`}</SelectionItem>
                     })}
                     <AmToolTip title={"Order By"} placement={"top"}>
@@ -309,10 +309,10 @@ const ProcessQueueDetail = (props) => {
             )
         if (processCondition.eventStatuses !== undefined)
             btnObj.push(
-                <FormInline style={{display:"inline"}}>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Event Status : </label>
                     {event.docItems[0]["eventStatuses"].map(st => {
-                        return <SelectionItem>{StorageObjectEvenStatusAll.find(x=> x.value === st).label}</SelectionItem>
+                        return <SelectionItem>{StorageObjectEvenStatusAll.find(x => x.value === st).label}</SelectionItem>
                     })}
                     <AmToolTip title={"Event Status"} placement={"top"}>
                         <ListIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" />
@@ -321,10 +321,10 @@ const ProcessQueueDetail = (props) => {
             )
         if (processCondition.auditStatuses !== undefined)
             btnObj.push(
-                <FormInline style={{display:"inline"}}>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Audit Status : </label>
                     {event.docItems[0]["auditStatuses"].map(st => {
-                        return <SelectionItem>{AuditStatus.find(x=> x.value === st).label}</SelectionItem>
+                        return <SelectionItem>{AuditStatus.find(x => x.value === st).label}</SelectionItem>
                     })}
                     <AmToolTip title={"Audit Status"} placement={"top"}>
                         <ListIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" />
@@ -333,7 +333,7 @@ const ProcessQueueDetail = (props) => {
             )
         if (props.percentRandom)
             btnObj.push(
-                <FormInline style={{display:"inline"}}>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Random : </label>
                     <SelectionItem>{event.docItems[0]["percentRandom"] ? event.docItems[0]["percentRandom"] : 100}</SelectionItem>
                     <AmToolTip title={"Percent Random"} placement={"top"}>
@@ -606,7 +606,7 @@ const ProcessQueueDetail = (props) => {
                                             } else {
                                                 data["eventStatuses"] = data["eventStatuses"].filter(y => y !== x.value);
                                             }
-                                            
+
                                         }} defaultChecked={data["eventStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
@@ -660,7 +660,7 @@ const ProcessQueueDetail = (props) => {
                                             } else {
                                                 data["auditStatuses"] = data["auditStatuses"].filter(y => y !== x.value);
                                             }
-                                            
+
                                         }} defaultChecked={data["auditStatuses"].includes(x.value)} />
                                     </FormInline>
                                 }
@@ -722,7 +722,7 @@ const ProcessQueueDetail = (props) => {
                     useIncubateDate: docItem.useIncubateDate ? docItem.useIncubateDate : false,
                     useFullPick: docItem.useFullPick ? docItem.useFullPick : false,
                     baseQty: docItem.BaseQuantity ? docItem.BaseQuantity : null,
-                    percentRandom: getOptions.qtyrandom ? getOptions.qtyrandom !== undefined ? getOptions.qtyrandom : 100 : null,
+                    percentRandom: getOptions.qtyrandom ? getOptions.qtyrandom !== undefined ? parseInt(getOptions.qtyrandom) : 100 : null,
                     eventStatuses: docItem.eventStatuses,
                     auditStatuses: docItem.auditStatuses,
                     conditions: docItem.conditions,
@@ -839,8 +839,8 @@ const ProcessQueueDetail = (props) => {
                 open={dialog.state}
                 onAccept={(status, rowdata) => {
                     if (rowdata !== undefined && status) {
-                        const doc = documents.documentListValue.find(x=> x.document.ID === rowdata.Document_ID)
-                        doc.docItems.forEach(x=> {
+                        const doc = documents.documentListValue.find(x => x.document.ID === rowdata.Document_ID)
+                        doc.docItems.forEach(x => {
                             x[dialog.key] = rowdata[dialog.key]
                         })
                     }
@@ -849,21 +849,21 @@ const ProcessQueueDetail = (props) => {
                 titleText={'Edit'}
                 data={dialog.data}
                 columns={RenderDialog()}
-            /> : 
-            <OrderbyCustom 
-                confirmOrder={(docItem, data) => {
-                    const doc = documents.documentListValue.find(x=> x.document.ID === docItem.Document_ID)
-                    doc.docItems.forEach(x=> {
-                        x["orderBys"] = data
-                    });
-                    setDialog({ "state": false, data: {} })
+            /> :
+                <OrderbyCustom
+                    confirmOrder={(docItem, data) => {
+                        const doc = documents.documentListValue.find(x => x.document.ID === docItem.Document_ID)
+                        doc.docItems.forEach(x => {
+                            x["orderBys"] = data
+                        });
+                        setDialog({ "state": false, data: {} })
                     }
-                }
-                orderList={props.processCondition.orderBys} 
-                open={dialog.state}
-                sortData={dialog.data}
-                onClose={() => {setDialog({ "state": false, data: {} });}}
-            /> 
+                    }
+                    orderList={props.processCondition.orderBys}
+                    open={dialog.state}
+                    sortData={dialog.data}
+                    onClose={() => { setDialog({ "state": false, data: {} }); }}
+                />
         }
         <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
         {
@@ -961,7 +961,7 @@ const ConfirmDialog = (props) => {
     const [mode, setMode] = useState(props.mode);
     const [datetime, setDatetime] = useState(null);
     const columns = useColumnsConfirm(props.columnsConfirm);
-    const {documents} = useContext(ProcessQueueContext);
+    const { documents } = useContext(ProcessQueueContext);
 
     useEffect(() => {
         setOpen(props.open)
@@ -978,8 +978,8 @@ const ConfirmDialog = (props) => {
                         if (obj !== "pickStos") {
                             if (obj === "docItemCode")
                                 itemHeader["bstoCode"] = processRes[obj]
-                            else if (obj === "baseQty"){
-                                let findQty = documents.documentListValue.find(x=> x.ID === processRes["Document_ID"]).docItems.find(x=> x.ID === processRes["docItemID"])
+                            else if (obj === "baseQty") {
+                                let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
                                 console.log(findQty)
                                 itemHeader["pickQty"] = findQty.Quantity
                             }
@@ -1036,6 +1036,7 @@ const ConfirmDialog = (props) => {
                     filterable={false}
                     dataKey="pstoID"
                     pageSize={1000}
+                    tableConfig={false}
                     minRows={3}
                 />
             </div>
@@ -1159,12 +1160,12 @@ const Delete = withStyles({
 
 const OrderbyCustom = (props) => {
     const [data, setData] = useState(() => {
-        if(props.sortData !== undefined){
-            return props.sortData.orderBys.map(x=> {
-                return {fieldName:x.fieldName, orderByType:x.orderByType ? x.orderByType : "0", order:x.order};
+        if (props.sortData !== undefined) {
+            return props.sortData.orderBys.map(x => {
+                return { fieldName: x.fieldName, orderByType: x.orderByType ? x.orderByType : "0", order: x.order };
             });
         }
-        else{
+        else {
             return [];
         }
     });
@@ -1177,7 +1178,7 @@ const OrderbyCustom = (props) => {
     }, [props.open]);
 
     useEffect(() => {
-        const newOrder = props.orderList.filter(x=> {
+        const newOrder = props.orderList.filter(x => {
             return data.find(y => y.fieldName === x.sortField) === undefined
         });
         setOrderList(newOrder);
@@ -1185,58 +1186,58 @@ const OrderbyCustom = (props) => {
 
     const onClickAddItem = () => {
         console.log(select)
-        if(select.fieldName !== undefined && select.fieldName !== null){
-            data.push({...select, order:data.length+1})
+        if (select.fieldName !== undefined && select.fieldName !== null) {
+            data.push({ ...select, order: data.length + 1 })
             setData([...data])
             setSelect({})
         }
     }
 
     const onClickRemoveItem = (item) => {
-        const res = data.filter(x=> x.fieldName !== item.fieldName)
-        .sort((a,b) => a-b)
-        .map((x,idx) => {
-            return {...x, order : idx+1};
-        });
+        const res = data.filter(x => x.fieldName !== item.fieldName)
+            .sort((a, b) => a - b)
+            .map((x, idx) => {
+                return { ...x, order: idx + 1 };
+            });
         setData(res)
     }
 
     const createElement = () => {
         return <div>
             <FormInline>
+                <AmDropdown
+                    id={"order"}
+                    placeholder={"order"}
+                    fieldDataKey={"sortField"}
+                    fieldLabel={["field"]}
+                    width={200}
+                    ddlMinWidth={200}
+                    labelPattern=" : "
+                    data={orderList}
+                    value={select.fieldName}
+                    zIndex={9999}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => {
+                        setSelect({ fieldName: value, orderByType: "0" })
+                    }} />&nbsp;&nbsp;
             <AmDropdown
-                id={"order"}
-                placeholder={"order"}
-                fieldDataKey={"sortField"}
-                fieldLabel={["field"]}
-                width={200}
-                ddlMinWidth={200}
-                labelPattern=" : "
-                data={orderList}
-                value={select.fieldName}
-                zIndex={9999}
-                onChange={(value, dataObject, inputID, fieldDataKey) => {
-                    setSelect({fieldName:value, orderByType:"0"})
-                }} />&nbsp;&nbsp;
-            <AmDropdown
-                id={"orderSign"}
-                placeholder={""}
-                fieldDataKey={"value"}
-                fieldLabel={["label"]}
-                labelPattern=" : "
-                width={100}
-                ddlMinWidth={50}
-                defaultValue={"0"}
-                data={orderObj}
-                zIndex={9999}
-                onChange={(value, dataObject, inputID, fieldDataKey) => {
-                    select.orderByType = value;
-                }} />
-            <AmButton style={{marginLeft:10,display:"inline"}} styleType="confirm" onClick={onClickAddItem}>Add</AmButton>
+                    id={"orderSign"}
+                    placeholder={""}
+                    fieldDataKey={"value"}
+                    fieldLabel={["label"]}
+                    labelPattern=" : "
+                    width={100}
+                    ddlMinWidth={50}
+                    defaultValue={"0"}
+                    data={orderObj}
+                    zIndex={9999}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => {
+                        select.orderByType = value;
+                    }} />
+                <AmButton style={{ marginLeft: 10, display: "inline" }} styleType="confirm" onClick={onClickAddItem}>Add</AmButton>
             </FormInline>
-            {data.map(x=> <FormInline>{x.order}-{props.orderList.find(y=> x.fieldName === y.sortField).field} | {orderObj.find(y=> x.orderByType === y.value).label}
-                <AmButton styleType="delete_clear" onClick={()=>onClickRemoveItem(x)}>Remove</AmButton>
-                </FormInline>)
+            {data.map(x => <FormInline>{x.order}-{props.orderList.find(y => x.fieldName === y.sortField).field} | {orderObj.find(y => x.orderByType === y.value).label}
+                <AmButton styleType="delete_clear" onClick={() => onClickRemoveItem(x)}>Remove</AmButton>
+            </FormInline>)
             }
         </div>
     }

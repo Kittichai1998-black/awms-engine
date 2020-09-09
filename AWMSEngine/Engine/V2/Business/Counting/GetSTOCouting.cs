@@ -80,70 +80,81 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                 return null;
 
             var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.COUNTING).ToList();
+            if (packsList.Count == 0)
+                return null;
 
             var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
             if (listDocs.Count > 0)
             {
+                var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_PHYSICAL_COUNT_WM || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_PHYSICAL_COUNT_WM).ToList();
+                if (newDocs.Count == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถตรวจนับเอกสารแบบ Auto ได้");
+
                 res.stoItems = new List<TRes.STOItems>();
-                listDocs.ForEach(doc => {
+                newDocs.ForEach(doc => {
+                    //var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
+                    var docItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
+                    var distoList = new List<amt_DocumentItemStorageObject>();
+                    docItems.ForEach(x => { distoList.AddRange(x.DocItemStos); });
 
-                    var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
-
-                    distos.ForEach(disto => {
+                    distoList.ForEach(disto => {
 
                         var pack = packsList.Find(pack => pack.id.Value == disto.Sou_StorageObject_ID);
-
-                        var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PICKING,SQLOperatorType.EQUALS),
+                        if (pack != null)
+                        {
+                            var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
+                                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
                                 }, this.BuVO).FirstOrDefault();
-                        if (processType == null)
-                            throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Process Type Map");
+                            if (processType == null)
+                                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Process Type Map");
 
-                        var processTypeName = String.IsNullOrEmpty(processType.ReProcessType_Name) ? processType.Name : processType.ReProcessType_Name;
+                            var processTypeName = String.IsNullOrEmpty(processType.ReProcessType_Name) ? processType.Name : processType.ReProcessType_Name;
 
-                        var packItem = new TRes.STOItems()
-                        {
-                            pstoID = pack.id.Value,
-                            pstoCode = pack.code,
-                            pstoName = pack.name,
-                            batch = pack.batch,
-                            lot = pack.lot,
-                            orderNo = pack.orderNo,
-                            cartonNo = pack.cartonNo,
-                            itemNo = pack.itemNo,
-                            ref1 = pack.ref1,
-                            ref2 = pack.ref2,
-                            ref3 = pack.ref3,
-                            ref4 = pack.ref4,
-                            auditStatus = pack.AuditStatus,
-                            bstoID = pack.parentID,
-                            pi_docID = doc.ID,
-                            pi_docCode = doc.Code,
-                            pi_docItemID = disto.DocumentItem_ID.Value,
-                            processTypeID = doc.DocumentProcessType_ID,
-                            processTypeName = processTypeName,
-                            distoID = disto.ID.Value,
-                            coutingQty = pack.qty,
-                            coutingBaseQty = pack.baseQty,
-                            unitCode = pack.unitCode,
-                            baseUnitCode = pack.baseUnitCode,
-                            remark = doc.Remark,
-                        };
-                        res.stoItems.Add(packItem);
+                            var packItem = new TRes.STOItems()
+                            {
+                                pstoID = pack.id.Value,
+                                pstoCode = pack.code,
+                                pstoName = pack.name,
+                                batch = pack.batch,
+                                lot = pack.lot,
+                                orderNo = pack.orderNo,
+                                cartonNo = pack.cartonNo,
+                                itemNo = pack.itemNo,
+                                ref1 = pack.ref1,
+                                ref2 = pack.ref2,
+                                ref3 = pack.ref3,
+                                ref4 = pack.ref4,
+                                auditStatus = pack.AuditStatus,
+                                bstoID = pack.parentID,
+                                pi_docID = doc.ID,
+                                pi_docCode = doc.Code,
+                                pi_docItemID = disto.DocumentItem_ID.Value,
+                                processTypeID = doc.DocumentProcessType_ID,
+                                processTypeName = processTypeName,
+                                distoID = disto.ID.Value,
+                                coutingQty = pack.qty,
+                                coutingBaseQty = pack.baseQty,
+                                unitCode = pack.unitCode,
+                                baseUnitCode = pack.baseUnitCode,
+                                remark = doc.Remark,
+                            };
+                            res.stoItems.Add(packItem);
+                        }
                     });
 
 
 
                 });
+                res.bstoCode = getSto.code;
+                res.bstoID = getSto.id.Value;
             }
             else
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบเอกสารตรวจนับ");
             }
-            res.bstoCode = getSto.code;
-            res.bstoID = getSto.id.Value;
+            
             return res;
         }
     }

@@ -11,7 +11,7 @@ const colDocumentItem = [
         "Header": "% Random", "sortable": false, "width": 80, 
         Cell: val => {
                 let qryStrOpt = queryString.parse(val.original.Options);
-                return qryStrOpt["qtyrandom"]
+                return qryStrOpt["qtyrandom"] + " %"
         }
     },
     { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
@@ -135,7 +135,7 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        if (doc.document.DocumentProcessType_ID === 4181) {
+        if (doc.document.DocumentProcessType_ID === 4181 || doc.document.DocumentProcessType_ID === 5181) {
             return areaList.filter(x => x.ID === 14)
         }
         else
@@ -143,7 +143,7 @@ const ProcessQueue = () => {
     }
 
     const customDesAreaDefault = (doc) => {
-        if (doc.document.DocumentProcessType_ID === 4181) {
+        if (doc.document.DocumentProcessType_ID === 4181 || doc.document.DocumentProcessType_ID === 5181) {
             return "14"
         }
         else
