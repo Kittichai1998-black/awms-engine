@@ -11,7 +11,7 @@ const colDocumentItem = [
         "Header": "% Random", "sortable": false, "width": 80, 
         Cell: val => {
                 let qryStrOpt = queryString.parse(val.original.Options);
-                return qryStrOpt["qtyrandom"]
+                return qryStrOpt["qtyrandom"] + " %"
         }
     },
     { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },

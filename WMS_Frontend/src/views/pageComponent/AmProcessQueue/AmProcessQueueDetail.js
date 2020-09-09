@@ -722,7 +722,7 @@ const ProcessQueueDetail = (props) => {
                     useIncubateDate: docItem.useIncubateDate ? docItem.useIncubateDate : false,
                     useFullPick: docItem.useFullPick ? docItem.useFullPick : false,
                     baseQty: docItem.BaseQuantity ? docItem.BaseQuantity : null,
-                    percentRandom: getOptions.qtyrandom ? getOptions.qtyrandom !== undefined ? getOptions.qtyrandom : 100 : null,
+                    percentRandom: getOptions.qtyrandom ? getOptions.qtyrandom !== undefined ? parseInt(getOptions.qtyrandom) : 100 : null,
                     eventStatuses: docItem.eventStatuses,
                     auditStatuses: docItem.auditStatuses,
                     conditions: docItem.conditions,
@@ -790,6 +790,7 @@ const ProcessQueueDetail = (props) => {
                             filterable={false}
                             dataKey="ID"
                             pageSize={1000}
+                            tableConfig={false}
                             minRows={3} />
                     </>
                 </DocumentExpansion>
