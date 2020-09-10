@@ -363,6 +363,7 @@ const AmMappingPalletV2 = props => {
     setQrCode("")
     setPalletCode("")
     setCheckedAuto(true)
+
     setDataPallet(null)
     setDataDoc(null)
     setActiveStep(activeStep - 1);
@@ -388,30 +389,30 @@ const AmMappingPalletV2 = props => {
     })
   }
 
-  function scanMappingSto(pallet, type) {
-    let postdata = {
-      processType: valueInput.processType,
-      bstoCode: pallet,
-      warehouseID: 1,
-      areaID: valueInput.areaID,
-      pstos: []
-    };
-    Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-      if (res.data._result.status === 1) {
-        if (res.data.bsto !== undefined) {
-          setDataPallet(res.data.bsto)
-          setDisPlayQr(false)
-          var el = document.getElementById('barcode');
-          if (el !== null)
-            el.value = null
-          el.focus()
-        }
-        setDialog(false)
-      } else {
-        setDialogState({ type: "error", content: res.data._result.message, state: true })
-      }
-    })
-  }
+  // function scanMappingSto(pallet, type) {
+  //   let postdata = {
+  //     processType: valueInput.processType,
+  //     bstoCode: pallet,
+  //     warehouseID: 1,
+  //     areaID: valueInput.areaID,
+  //     pstos: []
+  //   };
+  //   Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+  //     if (res.data._result.status === 1) {
+  //       if (res.data.bsto !== undefined) {
+  //         setDataPallet(res.data.bsto)
+  //         setDisPlayQr(false)
+  //         var el = document.getElementById('barcode');
+  //         if (el !== null)
+  //           el.value = null
+  //         el.focus()
+  //       }
+  //       setDialog(false)
+  //     } else {
+  //       setDialogState({ type: "error", content: res.data._result.message, state: true })
+  //     }
+  //   })
+  // }
   const onConfirmMappingSTO = () => {
 
     if (dataPallet !== undefined && dataPallet !== null) {
@@ -460,10 +461,6 @@ const AmMappingPalletV2 = props => {
 
 
       if (mapstosSelected !== undefined && mapstosSelected !== null) {
-        console.log(postdata)
-        console.log(mapstosSelected)
-        console.log(dataPallet)
-        console.log(valueInput.editQty)
         postdata.bstoCode = dataPallet.code
         mapstosSelected[0].addQty = valueInput.editQty
         postdata = GenMapstosSelected(postdata, mapstosSelected)
@@ -471,35 +468,38 @@ const AmMappingPalletV2 = props => {
     }
     if (type === "edit" && valueInput.editQty === undefined) {
       setDialog(false)
+      setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
     } else {
       Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
         if (res.data._result.status === 1) {
-          console.log(res.data.bsto)
-          console.log(res.data)
-          if (res.data.bsto !== undefined) {
-            setDisPlayQr(false)
-            setDataPallet(res.data.bsto)
-            setDataDoc(null)
+          if (res.data.bsto === null) {
+            handleBack()
+          } else {
+            if (res.data.bsto !== undefined && res.data.bsto !== null) {
+              setDisPlayQr(false)
+              setDataPallet(res.data.bsto)
+              setDataDoc(null)
 
-            if (checkedAuto === false && type === "confirm") {
-              props.columnsManual.forEach(x => {
-                valueManual[x.field] = null
-              })
-              setCheckedAuto(true)
-            }
-            if (checkedAutoClear && type === "confirm") {
-              var el = document.getElementById('palletcode');
-              var elbarcode = document.getElementById('barcode');
-              if (elbarcode !== null)
-                elbarcode.value = null
-              if (el !== null)
-                el.value = null
-              el.focus()
-            } else if (checkedAutoClear === false && type === "confirm") {
-              var el = document.getElementById('barcode');
-              if (el !== null)
-                el.value = null
-              el.focus()
+              if (checkedAuto === false && type === "confirm") {
+                props.columnsManual.forEach(x => {
+                  valueManual[x.field] = null
+                })
+                setCheckedAuto(true)
+              }
+              if (checkedAutoClear && type === "confirm") {
+                var el = document.getElementById('palletcode');
+                var elbarcode = document.getElementById('barcode');
+                if (elbarcode !== null)
+                  elbarcode.value = null
+                if (el !== null)
+                  el.value = null
+                el.focus()
+              } else if (checkedAutoClear === false && type === "confirm") {
+                var el = document.getElementById('barcode');
+                if (el !== null)
+                  el.value = null
+                el.focus()
+              }
             }
           }
           setDialog(false)
@@ -567,6 +567,7 @@ const AmMappingPalletV2 = props => {
           </div>
         );
       case 1:
+
         return (<div>
 
           {/* =================================== TreeView ===================================== */}
@@ -575,7 +576,7 @@ const AmMappingPalletV2 = props => {
             defaultExpanded={['1']}
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
-            defaultEndIcon={dataPallet != undefined ? (
+            defaultEndIcon={dataPallet !== undefined && dataPallet !== null ? (
               dataPallet.mapstos === null ? <MinusSquare /> : <EditIcon />) : null}
 
             onNodeSelect={handleSelect}
@@ -783,7 +784,7 @@ const AmMappingPalletV2 = props => {
 
   const RanderEle = () => {
     if (dataPallet) {
-      if (dataPallet !== null || dataPallet !== undefined) {
+      if (dataPallet !== null && dataPallet !== undefined) {
         const columns = props.columnsEdit
         return columns.map(y => {
           return {
@@ -824,6 +825,7 @@ const AmMappingPalletV2 = props => {
 
       }
     }
+    return []
   };
 
   return (
@@ -832,7 +834,7 @@ const AmMappingPalletV2 = props => {
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
         titleText={"Edit"}
-        data={dataPallet !== undefined ? dataPallet : []}
+        data={dataPallet !== undefined && dataPallet !== null ? dataPallet : []}
         columns={RanderEle()}
       />
       <AmDialogs
