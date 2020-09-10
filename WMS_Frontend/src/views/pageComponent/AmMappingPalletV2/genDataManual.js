@@ -33,11 +33,12 @@ function genDataManual(postdata, valueInput, columnsManual) {
 
 function GenMapstosSelected(postdata, mapstosSelected) {
   // console.log(mapstosSelected)
+
   mapstosSelected.forEach(element => {
-    //console.log(element)
+    console.log(element.addQty)
     element.pstoCode = element.code
     element.pstoID = element.id
-    element.addQty = (parseInt(element.addQty) - element.qty)
+    element.addQty = element.addQty === undefined ? element.qty : ((parseInt(element.addQty) - element.qty) === 0 ? element.qty : (parseInt(element.addQty) - element.qty))
     element.unitTypeCode = element.unitCode
     element.packUnitTypeCode = element.baseUnitCode
     postdata.pstos.push(element)
