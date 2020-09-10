@@ -171,10 +171,10 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 new SQLConditionCriteria("DocumentProcessType_ID",DocumentProcessTypeCodes.ID, SQLOperatorType.EQUALS),
          }, this.BuVO).FirstOrDefault();
 
-                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt(); ;
+                var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt(); 
 
 
-                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1012)
+                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1011)
                 {
                     var DocprocessID = DocumentProcessTypeCodes.ID;
                     var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
