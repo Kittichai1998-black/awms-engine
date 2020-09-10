@@ -113,7 +113,7 @@ const styles = theme => ({
     AUDITED: {
         background: '#08c249',
         border: '2px solid #08c249',
-        color: '#eafff1',
+        color: '#2f353a',
     },
     PENDING: {
         background: '#3d6dff',
@@ -184,7 +184,7 @@ const styles = theme => ({
         border: '2px solid #ffc107',
         color: '#2f353a',
     },
-    PASS: {
+    PASSED: {
         background: '#357a38',
         border: '2px solid #357a38',
         color: '#ffffff',
@@ -194,7 +194,6 @@ const styles = theme => ({
         background: '#ffc107',
         border: '2px solid #ffc107',
         color: '#ffffff',
-
     },
     NOTPASS: {
         background: '#73818f',

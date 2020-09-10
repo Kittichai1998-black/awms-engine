@@ -11,6 +11,7 @@ import AmButton from "../../components/AmButton";
 import AmToolTip from "../../components/AmToolTip";
 import { Link as RouterLink } from 'react-router-dom'
 import AmWorkQueueStatus from "../../components/AmWorkQueueStatus";
+import AmAuditStatus from "../../components/AmAuditStatus";
 import AmDocumentStatus from "../../components/AmDocumentStatus";
 import AmIconStatus from "../../components/AmIconStatus";
 import AmEntityStatus from "../../components/AmEntityStatus";
@@ -213,6 +214,7 @@ function Test5(props) {
     const docEventStatusList = [10, 11, 12, 812, 24, 31, 32];
     const stoStatusList = [10, 11, 12, 13, 14, 17, 18, 99, 98, 97, 96];
     const entityStatus = [0, 1, 2, 3];
+    const adStatusList = [0, 1, 2, 9];
     const [state, setState] = React.useState({
         checkedA: true,
         checkedB: false,
@@ -273,7 +275,7 @@ function Test5(props) {
             //     ]
             // }
             let reqjson = {
-                "layoutType":91,"docID": 162, "listsCode":[{"code":"N|1|246|50","title":"Finished Goods","skuType":4,"options":"codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/10/2020&qty=50&unit=ลัง&palletNo=1/2&remark=null"},{"code":"N|2|247|10","title":"Finished Goods","skuType":4,"options":"codeNo=FF0006&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 200 ml(Lao)&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/08/2020&qty=10&unit=ลัง&palletNo=2/2&remark=null"}]
+                "layoutType": 91, "docID": 162, "listsCode": [{ "code": "N|1|246|50", "title": "Finished Goods", "skuType": 4, "options": "codeNo=FF0001&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 50 ml&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/10/2020&qty=50&unit=ลัง&palletNo=1/2&remark=null" }, { "code": "N|2|247|10", "title": "Finished Goods", "skuType": 4, "options": "codeNo=FF0006&itemName=ยาธาตุน้ำขาวตรากระต่ายบิน 200 ml(Lao)&lotNo=&controlNo=&supplier=null&codeNo=null&mfgdate=31/08/2020&expdate=31/08/2020&qty=10&unit=ลัง&palletNo=2/2&remark=null" }]
             }
             await Axios.postload(window.apipath + "/v2/download/print_tag_code", reqjson, "printcode.pdf", "preview").then();
 
@@ -593,6 +595,13 @@ function Test5(props) {
                 {
                     entityStatus.map((number, idx) => {
                         return <AmEntityStatus key={idx} statusCode={number} />
+                    })
+                }
+                <span>เรียกใช้ผ่าน component  [AmAuditStatus]</span>
+                <br />
+                {
+                    adStatusList.map((number, idx) => {
+                        return <AmAuditStatus key={idx} statusCode={number} />
                     })
                 }
                 <br />
