@@ -1119,7 +1119,7 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                   // CreateDocuments(doc)
+                   CreateDocuments(doc)
                 }
             }
         }
