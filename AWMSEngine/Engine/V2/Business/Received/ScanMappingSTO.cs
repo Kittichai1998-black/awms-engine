@@ -149,8 +149,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area ไม่ถูกต้อง");
                             
 
-                            res.bsto = this.ADOSto.Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
-
+                            var bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                            if (bsto == null)
+                                res.bsto = new StorageObjectCriteria();
+                            else
+                                res.bsto = bsto;
                         }
                     }
 
