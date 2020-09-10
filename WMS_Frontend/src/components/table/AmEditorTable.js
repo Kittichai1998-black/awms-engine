@@ -24,14 +24,15 @@ const AmEditiorTable = (props) => {
         if (props.titleText === "Edit") {
             return 'Save';
         } else {
-            if(props.textConfirm){
+            if (props.textConfirm) {
                 return props.textConfirm;
-            }else{
+            } else {
                 return 'Add';
             }
         }
     }
     const generateComponent = (cols) => {
+        console.log(cols)
         let comp = cols.map((row, idx) => {
             if (row.component) {
                 let comp2 = row.component(props.data ? props.data.original ? props.data.original : props.data : {}, row, idx)
