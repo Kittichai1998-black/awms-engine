@@ -59,7 +59,14 @@ const AmImportDocumentExcel = (props) => {
             const headerDatas = XLSX.utils.sheet_to_json(ws, { header: 1 })
             let dataJson = JSON.stringify(data, null, 2)
             if (headerDatas !== undefined) {
-                getHeaderdata(headerDatas)
+                console.log(headerDatas[0][0])
+                if (headerDatas[0][0] === 'Process Type') {
+                     getHeaderdata(headerDatas)
+                } else {
+                    setMsgDialog("File Not Found");
+                    setStateDialogErr(true);
+                }
+              
             }
         };
 
@@ -90,7 +97,7 @@ const AmImportDocumentExcel = (props) => {
         var DocumentProcessType;
         if (datsobj !== undefined) {
             let datH = datsobj.forEach((x, i) => {
-
+              
                 var datedoc = datsobj[0][3];
                 var actionT = datsobj[1][3]
                 var docdate = datedoc.split('-')
@@ -134,16 +141,7 @@ const AmImportDocumentExcel = (props) => {
             })
 
         }
-
-        let dataChexck;
-        datsobjItemCheck.forEach((x, i) => {
-            dataChexck = datsobjItemCheck[i][i]
-        })
-
-        if (dataChexck === undefined && props.docTypename === "receive") {
-            setMsgDialog(" Format Data Not Correct");
-            setStateDialogErr(true);
-        } else {
+     
             if (datsobjItem !== undefined) {
                
                 datsobjItem.forEach((x, i) => {
@@ -300,7 +298,7 @@ const AmImportDocumentExcel = (props) => {
     
             }
 
-        }
+        
 
 
     }

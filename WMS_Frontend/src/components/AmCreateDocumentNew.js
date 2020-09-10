@@ -178,7 +178,6 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         getHeaderCreate()
-        console.log(props.headerCreate)
     }, [props.headerCreate])
 
     useEffect(() => {
@@ -278,16 +277,16 @@ const AmCreateDocument = (props) => {
 
         if (unitTypeQuery != null && skuID != undefined && skuID != 0) {
             let objQuery = unitTypeQuery;
-            if (objQuery !== null) {              
+            if (objQuery !== null) {
                 console.log(objQuery)
                 let unitqry = JSON.parse(objQuery.q)
                 unitqry.push({ 'f': 'SKUMaster_ID', 'c': '=', 'v': skuID })
-                    objQuery.q = JSON.stringify(unitqry);
+                objQuery.q = JSON.stringify(unitqry);
 
-              }
-            getDataUnitType(objQuery)
-         
             }
+            getDataUnitType(objQuery)
+
+        }
     }
 
 
@@ -463,7 +462,7 @@ const AmCreateDocument = (props) => {
             } else {
 
             }
-           
+
         } else {
 
             setEditData(editData)
@@ -514,7 +513,7 @@ const AmCreateDocument = (props) => {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
                     for (let row in rowdata) {
-                     
+
                         chkEdit[row] = rowdata[row]
                     }
                 } else {//Add
@@ -831,7 +830,7 @@ const AmCreateDocument = (props) => {
                     defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     onChange={(e) => {
-                        if (e !== null) {                           
+                        if (e !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -843,7 +842,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDate
                     TypeDate={"datetime-local"}
-                    defaultValue={defaultValueDate ? defaultValueDate : true}
+                    defaultValue
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -853,6 +852,27 @@ const AmCreateDocument = (props) => {
                         } else { }
                     }}
                 />
+            )
+        } else if (type === "dateTimeFalse") {
+            return (
+                <div>
+                    <FormInline>
+                        <label style={{ color: 'red' }}> ***</label>
+                        <AmDate
+                            TypeDate={"datetime-local"}
+                            defaultValue={false}
+                            value={createDocumentData[key]}
+                            onChange={(e) => {
+                                if (e !== null) {
+                                    let docData = createDocumentData
+                                    docData[key] = e.fieldDataObject
+                                    setcreateDocumentData(docData)
+                                } else { }
+                            }}
+                        />
+                    </FormInline>
+                </div>
+
             )
         } else if (type === "input") {
             return (
@@ -1056,18 +1076,20 @@ const AmCreateDocument = (props) => {
         }
         else if (props.createDocType === "counting") {
             doc.countingItems = dataSource.map(x => {
+
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.quantity = x.quantity ? null : null
-                x.options = qtyrandom.concat(x.quantitys,'%')
+                x.quantity = x.quantity ? 0 : 0
+                x.options = qtyrandom.concat(x.quantitys)
                 return x
+
             })
         } else if (props.createDocType === "audit") {
             doc.auditItems = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.quantity = x.quantity ? null : null
-                x.options = qtyrandom.concat(x.quantitys, '%')
+                x.quantity = x.quantity ? 0 : 0
+                x.options = qtyrandom.concat(x.quantitys)
                 return x
             })
         } else if (props.createDocType === "issue") {
@@ -1078,8 +1100,8 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
-                x.incubationDay = x.incubationDay != null ?parseInt(x.incubationDay)  : null
-                x.shelfLifeDay = x.shelfLifeDay != null ?  parseInt(x.shelfLifeDay) : null
+                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
+                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 return x
             })
         }
@@ -1089,7 +1111,16 @@ const AmCreateDocument = (props) => {
                 setMsgDialog("Process No not found");
                 setStateDialogErr(true);
             } else {
-                CreateDocuments(doc)
+                if (props.createDocType === "counting") {
+                    if (doc.actionTime) {
+                        CreateDocuments(doc)
+                    } else {
+                        setMsgDialog('Actiomtime Not Found');
+                        setStateDialogErr(true);
+                    }
+                } else {
+                   // CreateDocuments(doc)
+                }
             }
         }
     }

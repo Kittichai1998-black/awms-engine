@@ -439,13 +439,14 @@ const AmCoutingChecker = (props) => {
                     if (res.data.stoItems != null && res.data.stoItems.length > 0) {
                         setDataStoAudit(res.data)
                         alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
-                        setDialog(false)
                     } else {
                         if (res.data.docIDs != null && res.data.docIDs.length > 0) {
                             alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
                             handleBack(1);
                         }
                     }
+                    setDialog(false)
+                    ClearValSel()
                 } else {
                     alertDialogRenderer("error", res.data._result.message)
                 }

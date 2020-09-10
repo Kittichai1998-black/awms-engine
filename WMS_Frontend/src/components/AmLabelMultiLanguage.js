@@ -10,7 +10,7 @@ export default withTranslation()((props) => {
     textInitial = children || ""
   }
   let findColon = textInitial.split(":")
-  let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim(), text.trim() ? text.trim() + " - Not Translate" : "") + " : ", "")
+  let textShow = findColon.reduce((textAll, text) => textAll += t(text.trim(), text.trim() ? text.trim() : "") + " : ", "")
   textShow = textShow.substring(0, textShow.length - 2);
   // return <label style={style}>{t(code || "", children + " - Not Translate")}{append}</label>
   return <label style={style} {...other}>{textShow}</label>

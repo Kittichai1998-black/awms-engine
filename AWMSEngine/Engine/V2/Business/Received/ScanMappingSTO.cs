@@ -104,7 +104,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             tempMapping.Add(createSTO(psto, idBase.Value));
                         });
                         res.pstos = tempMapping;
-                        res.bsto = this.ADOSto.Get(idBase.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
+                        var bsto = this.ADOSto.Get(idBase.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                        if (bsto == null)
+                            res.bsto = createBaseSTO(reqVO.bstoCode);
+                        else
+                            res.bsto = bsto;
                     }
                     else
                     {
@@ -134,7 +138,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                 areaID = reqVO.areaID,
                                 warehouseID = reqVO.warehouseID,
                                 mstID = checkBaseMaster.ID.Value,
-                        };
+                            };
                             res.bsto = mapsto;
                         }
                         else
@@ -185,6 +189,36 @@ namespace AWMSEngine.Engine.V2.Business.Received
                  
 
                 res.bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO); 
+            }
+
+            StorageObjectCriteria createBaseSTO(string bastCode)
+            {
+                var checkBaseMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+                if (checkBaseMaster == null)
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
+                }
+
+                var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == checkBaseMaster.UnitType_ID);
+                var mapsto = new StorageObjectCriteria()
+                {
+                    code = reqVO.bstoCode,
+                    eventStatus = StorageObjectEventStatus.ACTIVE,
+                    name = "Pallet",
+                    parentID = reqVO.areaID,
+                    parentType = StorageObjectType.LOCATION,
+                    qty = 1,
+                    baseQty = 1,
+                    unitID = _unitType.ID.Value,
+                    baseUnitID = _unitType.ID.Value,
+                    unitCode = _unitType.Code,
+                    baseUnitCode = _unitType.Code,
+                    type = StorageObjectType.BASE,
+                    areaID = reqVO.areaID,
+                    warehouseID = reqVO.warehouseID,
+                    mstID = checkBaseMaster.ID.Value,
+                };
+                return mapsto;
             }
             MappingDistoAndDocumentItem.TRes createSTO(TReq.PackSto psto, long idBase)
             {
