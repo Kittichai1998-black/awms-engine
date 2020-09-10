@@ -1,5 +1,6 @@
 ﻿using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Notification;
+using AWMSModel.Constant.EnumConst;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,6 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
 {
     public class DailyNotify : BaseNotification
     {
-        private enum NotifySend
-        {
-            email = 1,
-            line = 2
-        }
-
         public class DailyReport
         {
             public string pstoCode;
@@ -45,7 +40,7 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
 
         protected override EmailFormat GetMessageEmail(dynamic reqVO, dynamic data)
         {
-            string msg = this.GetMessage(data.Message, NotifySend.email);
+            string msg = this.GetMessage(data.Message, NotifyPlatform.Email);
 
             var res = new EmailFormat();
             res.Subject = data.Title;
@@ -60,7 +55,7 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
 
         protected override string GetMessageLine(dynamic reqVO, dynamic data)
         {
-            string msg = this.GetMessage(data.Message, NotifySend.line);
+            string msg = this.GetMessage(data.Message, NotifyPlatform.Line);
             return msg;
         }
 
@@ -81,7 +76,7 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
             return res;
         }
 
-        private string GetMessage(dynamic message, NotifySend notifySend)
+        private string GetMessage(dynamic message, NotifyPlatform notifySend)
         {
             List<DailyReport> dailyDatas = AMWUtil.Common.ObjectUtil.DynamicToModel<List<DailyReport>>(message);
 
@@ -94,7 +89,7 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
 
             var strBody = new StringBuilder();
 
-            if(notifySend == NotifySend.line)
+            if(notifySend == NotifyPlatform.Line)
             {
                 int i = 1;
                 strBody.Append("").AppendLine();
