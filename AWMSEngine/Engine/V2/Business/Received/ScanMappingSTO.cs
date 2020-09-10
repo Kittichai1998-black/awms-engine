@@ -106,7 +106,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         res.pstos = tempMapping;
                         var bsto = this.ADOSto.Get(idBase.Value, StorageObjectType.BASE, false, true, this.BuVO);
                         if (bsto == null)
-                            res.bsto = createBaseSTO(reqVO.bstoCode);
+                            res.bsto = new StorageObjectCriteria();
                         else
                             res.bsto = bsto;
                     }
@@ -186,9 +186,13 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     });
                     res.pstos = tempMapping; 
                 }
-                 
 
-                res.bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO); 
+
+                var bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                if (bsto == null)
+                    res.bsto = new StorageObjectCriteria();
+                else
+                    res.bsto = bsto;
             }
 
             StorageObjectCriteria createBaseSTO(string bastCode)
