@@ -200,7 +200,17 @@ const styles = theme => ({
         background: '#73818f',
         border: '2px solid #73818f',
         color: '#ffffff',
-    }
+    },
+    COUNTING: {
+        background: '#eafff1',
+        border: '2px solid #08c249',
+        color: '#2f353a',
+    },
+    COUNTED: {
+        background: '#08c249',
+        border: '2px solid #08c249',
+        color: '#2f353a',
+    },
 });
 
 function IconStatus(props) {

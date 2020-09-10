@@ -360,7 +360,7 @@ const PickingChecker = (props) => {
                 // labelIcon: Pallet,
                 treeItems: treeItems
             }];
-            return (<div><AmTreeView dataTreeItems={dataTreeItems} /></div>);
+            return (<div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /></div>);
         } else {
             return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
         }

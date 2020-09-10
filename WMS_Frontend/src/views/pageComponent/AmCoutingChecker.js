@@ -399,7 +399,7 @@ const AmCoutingChecker = (props) => {
                 treeItems: treeItems
             }];
 
-            return (<div><AmTreeView dataTreeItems={dataTreeItems} /></div>);
+            return (<div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /></div>);
         } else {
             return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการตรวจนับ</h4></div>;
         }

@@ -196,7 +196,8 @@ const useStyles = makeStyles({
 export default function AmTreeView(props) {
   const classes = useStyles();
   const {
-    dataTreeItems
+    dataTreeItems,
+    defaultExpanded
   } = props;
 
   function ListTreeItems(row, i) {
@@ -222,7 +223,7 @@ export default function AmTreeView(props) {
   return (
     <TreeView
       className={classes.root}
-      defaultExpanded={["root"]}
+      defaultExpanded={defaultExpanded}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<div style={{ width: 24 }} />}
