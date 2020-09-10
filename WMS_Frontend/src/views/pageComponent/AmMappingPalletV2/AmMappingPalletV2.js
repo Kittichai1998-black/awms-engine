@@ -435,81 +435,84 @@ const AmMappingPalletV2 = props => {
     }
   }
   function scanMappingSto(pallet, type) {
-    let postdata = {
-      processType: valueInput.processType,
-      bstoCode: pallet === undefined || pallet === null ? palletCode : pallet,
-      warehouseID: 1,
-      areaID: valueInput.areaID,
-      pstos: []
-    };
-
-    if (type === "confirm") {
-      if (checkedAuto) {
-        if (dataDoc !== undefined && dataDoc !== null) {
-          dataDoc.datas.forEach(element => {
-            postdata.pstos.push(element)
-          });
-        }
-      } else {
-        postdata = genDataManual(postdata, valueManual, props.columnsManual)
-        // props.columnsManual.forEach(x => {
-        //   valueManual[x.field] = null
-        // })
-      }
-    } else if (type === "edit") {
-      var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
-
-
-      if (mapstosSelected !== undefined && mapstosSelected !== null) {
-        postdata.bstoCode = dataPallet.code
-        mapstosSelected[0].addQty = valueInput.editQty
-        postdata = GenMapstosSelected(postdata, mapstosSelected)
-      }
-    }
-    if (type === "edit" && valueInput.editQty === undefined) {
-      setDialog(false)
-      setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
+    if ((parseInt(valueInput.editQty)) < 0) {
+      setDialogState({ type: "warning", content: "qty มีค่าน้อยกว่า 0 ", state: true })
     } else {
-      Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-        if (res.data._result.status === 1) {
-          if (res.data.bsto === null) {
-            handleBack()
-          } else {
-            if (res.data.bsto !== undefined && res.data.bsto !== null) {
-              setDisPlayQr(false)
-              setDataPallet(res.data.bsto)
-              setDataDoc(null)
+      let postdata = {
+        processType: valueInput.processType,
+        bstoCode: pallet === undefined || pallet === null ? palletCode : pallet,
+        warehouseID: 1,
+        areaID: valueInput.areaID,
+        pstos: []
+      };
 
-              if (checkedAuto === false && type === "confirm") {
-                props.columnsManual.forEach(x => {
-                  valueManual[x.field] = null
-                })
-                setCheckedAuto(true)
-              }
-              if (checkedAutoClear && type === "confirm") {
-                var el = document.getElementById('palletcode');
-                var elbarcode = document.getElementById('barcode');
-                if (elbarcode !== null)
-                  elbarcode.value = null
-                if (el !== null)
-                  el.value = null
-                el.focus()
-              } else if (checkedAutoClear === false && type === "confirm") {
-                var el = document.getElementById('barcode');
-                if (el !== null)
-                  el.value = null
-                el.focus()
+      if (type === "confirm") {
+        if (checkedAuto) {
+          if (dataDoc !== undefined && dataDoc !== null) {
+            dataDoc.datas.forEach(element => {
+              postdata.pstos.push(element)
+            });
+          }
+        } else {
+          postdata = genDataManual(postdata, valueManual, props.columnsManual)
+          // props.columnsManual.forEach(x => {
+          //   valueManual[x.field] = null
+          // })
+        }
+      } else if (type === "edit") {
+        var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
+
+
+        if (mapstosSelected !== undefined && mapstosSelected !== null) {
+          postdata.bstoCode = dataPallet.code
+          mapstosSelected[0].addQty = valueInput.editQty
+          postdata = GenMapstosSelected(postdata, mapstosSelected)
+        }
+      }
+      if (type === "edit" && valueInput.editQty === undefined) {
+        setDialog(false)
+      } else {
+        Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+          if (res.data._result.status === 1) {
+            if (res.data.bsto === null) {
+              handleBack()
+              setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
+            } else {
+              if (res.data.bsto !== undefined && res.data.bsto !== null) {
+                setDisPlayQr(false)
+                setDataPallet(res.data.bsto)
+                setDataDoc(null)
+
+                if (checkedAuto === false && type === "confirm") {
+                  props.columnsManual.forEach(x => {
+                    valueManual[x.field] = null
+                  })
+                  setCheckedAuto(true)
+                }
+                if (checkedAutoClear && type === "confirm") {
+                  var el = document.getElementById('palletcode');
+                  var elbarcode = document.getElementById('barcode');
+                  if (elbarcode !== null)
+                    elbarcode.value = null
+                  if (el !== null)
+                    el.value = null
+                  el.focus()
+                } else if (checkedAutoClear === false && type === "confirm") {
+                  var el = document.getElementById('barcode');
+                  if (el !== null)
+                    el.value = null
+                  el.focus()
+                }
               }
             }
+            setDialog(false)
+          } else {
+            setDialogState({ type: "error", content: res.data._result.message, state: true })
           }
-          setDialog(false)
-        } else {
-          setDialogState({ type: "error", content: res.data._result.message, state: true })
-        }
-      })
+        })
+      }
     }
   }
-
   function getStepContent(step) {
     switch (step) {
       case 0:
