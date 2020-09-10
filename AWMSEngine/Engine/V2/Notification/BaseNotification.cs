@@ -63,7 +63,7 @@ namespace AWMSEngine.Engine.V2.Notification
             if (groupEmail != null)
             {
                 EmailFormat sendEmail = GetMessageEmail(reqVO, data);
-                if (groupEmail.userIDs.Count > 0)
+                if (groupEmail.userIDs.Count > 0 && sendEmail != null)
                 {
                     var emailData = new AMWUtil.DataAccess.Http.EmailNotification.TReq()
                     {
@@ -89,13 +89,13 @@ namespace AWMSEngine.Engine.V2.Notification
             if (groupLine != null)
             {
                 string sendLine = GetMessageLine(reqVO, data);
-                if (groupLine.userIDs.Count > 0)
+                if (groupLine.userIDs.Count > 0 && string.IsNullOrWhiteSpace(sendLine))
                     user.Select(x => x.LineToken).Distinct().ToList().ForEach(x => {AMWUtil.DataAccess.Http.LineAccess.Notify(this.Logger, x, sendLine);});
             }
             if (groupFacebook != null)
             {
                 string sendFacebook = GetMessageFacebook(reqVO, data);
-                if (groupFacebook.userIDs.Count > 0)
+                if (groupFacebook.userIDs.Count > 0  && string.IsNullOrWhiteSpace(sendFacebook))
                 {
 
                 }
