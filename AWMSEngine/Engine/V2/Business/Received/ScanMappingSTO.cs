@@ -147,13 +147,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse ไม่ถูกต้อง");
                             if (mapsto.areaID != reqVO.areaID)
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area ไม่ถูกต้อง");
-                            
 
-                            var bsto = this.ADOSto.Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
-                            if (bsto == null)
-                                res.bsto = new StorageObjectCriteria();
-                            else
-                                res.bsto = bsto;
+
+                            res.bsto = this.ADOSto.Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                           
                         }
                     }
 
