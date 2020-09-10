@@ -58,6 +58,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             updSto.eventStatus = StorageObjectEventStatus.COUNTED;
             ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
 
+            disto.Des_StorageObject_ID = updSto.id;
             disto.Quantity = reqVO.coutingQty - pstos.qty;
             var distoqtyConvert = StaticValue.ConvertToNewUnitBySKU(pstos.skuID.Value, disto.Quantity.Value, pstos.unitID, pstos.baseUnitID);
             disto.BaseQuantity = distoqtyConvert.newQty;

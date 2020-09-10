@@ -356,6 +356,7 @@ const AmMappingPalletV2 = props => {
     valueInput.processType = null
     valueInput.areaID = null
     valueInput.palletCode = null
+    valueInput.addQty = null
     setDisPlayQr(true)
     setDisPlayButton(false)
     setCheckedAutoClear(true)
@@ -419,7 +420,7 @@ const AmMappingPalletV2 = props => {
         if (res.data != null) {
           if (res.data._result.status === 1) {
             setDialogState({ type: "success", content: "Success", state: true })
-
+            setDialog(false)
             handleBack()
           } else {
             setDialogState({ type: "error", content: res.data._result.message, state: true })
@@ -459,43 +460,54 @@ const AmMappingPalletV2 = props => {
 
 
       if (mapstosSelected !== undefined && mapstosSelected !== null) {
+        console.log(postdata)
+        console.log(mapstosSelected)
+        console.log(dataPallet)
+        console.log(valueInput.editQty)
+        postdata.bstoCode = dataPallet.code
         mapstosSelected[0].addQty = valueInput.editQty
         postdata = GenMapstosSelected(postdata, mapstosSelected)
       }
     }
-    Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-      if (res.data._result.status === 1) {
-        if (res.data.bsto !== undefined) {
-          setDisPlayQr(false)
-          setDataPallet(res.data.bsto)
-          setDataDoc(null)
+    if (type === "edit" && valueInput.editQty === undefined) {
+      setDialog(false)
+    } else {
+      Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+        if (res.data._result.status === 1) {
+          console.log(res.data.bsto)
+          console.log(res.data)
+          if (res.data.bsto !== undefined) {
+            setDisPlayQr(false)
+            setDataPallet(res.data.bsto)
+            setDataDoc(null)
 
-          if (checkedAuto === false && type === "confirm") {
-            props.columnsManual.forEach(x => {
-              valueManual[x.field] = null
-            })
-            setCheckedAuto(true)
+            if (checkedAuto === false && type === "confirm") {
+              props.columnsManual.forEach(x => {
+                valueManual[x.field] = null
+              })
+              setCheckedAuto(true)
+            }
+            if (checkedAutoClear && type === "confirm") {
+              var el = document.getElementById('palletcode');
+              var elbarcode = document.getElementById('barcode');
+              if (elbarcode !== null)
+                elbarcode.value = null
+              if (el !== null)
+                el.value = null
+              el.focus()
+            } else if (checkedAutoClear === false && type === "confirm") {
+              var el = document.getElementById('barcode');
+              if (el !== null)
+                el.value = null
+              el.focus()
+            }
           }
-          if (checkedAutoClear && type === "confirm") {
-            var el = document.getElementById('palletcode');
-            var elbarcode = document.getElementById('barcode');
-            if (elbarcode !== null)
-              elbarcode.value = null
-            if (el !== null)
-              el.value = null
-            el.focus()
-          } else if (checkedAutoClear === false && type === "confirm") {
-            var el = document.getElementById('barcode');
-            if (el !== null)
-              el.value = null
-            el.focus()
-          }
+          setDialog(false)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
         }
-        setDialog(false)
-      } else {
-        setDialogState({ type: "error", content: res.data._result.message, state: true })
-      }
-    })
+      })
+    }
   }
 
   function getStepContent(step) {
@@ -771,44 +783,46 @@ const AmMappingPalletV2 = props => {
 
   const RanderEle = () => {
     if (dataPallet) {
-      const columns = props.columnsEdit
-      return columns.map(y => {
-        return {
-          component: (data, cols, key) => {
-            {
-              var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
-              return mapstosSelected === null ? null : mapstosSelected.map((x, index) => {
-                return (
-                  <div key={index} syle={{ marginLeft: "30px" }} >
-                    <FormInline>
-                      <LabelH2>{y.name} :</LabelH2>
-                      <AmInput
-                        id={y.field}
-                        style={{ width: "150px", margin: "0px" }}
-                        type="input"
-                        disabled={y.disabled}
-                        defaultValue={x ? x[y.field] : 0}
-                        onKeyPress={(value, obj, element, event) => {
-                          if (event.key === "Enter") {
+      if (dataPallet !== null || dataPallet !== undefined) {
+        const columns = props.columnsEdit
+        return columns.map(y => {
+          return {
+            component: (data, cols, key) => {
+              {
+                var mapstosSelected = dataPallet.mapstos.filter(x => x.id === selected)
+                return mapstosSelected === null ? null : mapstosSelected.map((x, index) => {
+                  return (
+                    <div key={index} syle={{ marginLeft: "30px" }} >
+                      <FormInline>
+                        <LabelH2>{y.name} :</LabelH2>
+                        <AmInput
+                          id={y.field}
+                          style={{ width: "150px", margin: "0px" }}
+                          type="input"
+                          disabled={y.disabled}
+                          defaultValue={x ? x[y.field] : 0}
+                          onKeyPress={(value, obj, element, event) => {
+                            if (event.key === "Enter") {
+                              onHandleChangeInput(value, "editQty")
+                            }
+
+                          }}
+                          onChange={(value, obj, element, event) =>
                             onHandleChangeInput(value, "editQty")
                           }
+                        />
+                      </FormInline>
 
-                        }}
-                        onChange={(value, obj, element, event) =>
-                          onHandleChangeInput(value, "editQty")
-                        }
-                      />
-                    </FormInline>
+                    </div >
+                  );
+                })
+              }
 
-                  </div >
-                );
-              })
             }
+          };
+        });
 
-          }
-        };
-      });
-
+      }
     }
   };
 
