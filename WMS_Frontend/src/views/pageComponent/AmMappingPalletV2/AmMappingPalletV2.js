@@ -356,6 +356,7 @@ const AmMappingPalletV2 = props => {
     valueInput.processType = null
     valueInput.areaID = null
     valueInput.palletCode = null
+    valueInput.addQty = null
     setDisPlayQr(true)
     setDisPlayButton(false)
     setCheckedAutoClear(true)
@@ -462,47 +463,51 @@ const AmMappingPalletV2 = props => {
         console.log(postdata)
         console.log(mapstosSelected)
         console.log(dataPallet)
-        console.log(dataPallet.code)
+        console.log(valueInput.editQty)
         postdata.bstoCode = dataPallet.code
         mapstosSelected[0].addQty = valueInput.editQty
         postdata = GenMapstosSelected(postdata, mapstosSelected)
       }
     }
-    Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-      if (res.data._result.status === 1) {
-        console.log(res.data.bsto)
-        console.log(res.data)
-        if (res.data.bsto !== undefined) {
-          setDisPlayQr(false)
-          setDataPallet(res.data.bsto)
-          setDataDoc(null)
+    if (type === "edit" && valueInput.editQty === undefined) {
+      setDialog(false)
+    } else {
+      Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+        if (res.data._result.status === 1) {
+          console.log(res.data.bsto)
+          console.log(res.data)
+          if (res.data.bsto !== undefined) {
+            setDisPlayQr(false)
+            setDataPallet(res.data.bsto)
+            setDataDoc(null)
 
-          if (checkedAuto === false && type === "confirm") {
-            props.columnsManual.forEach(x => {
-              valueManual[x.field] = null
-            })
-            setCheckedAuto(true)
+            if (checkedAuto === false && type === "confirm") {
+              props.columnsManual.forEach(x => {
+                valueManual[x.field] = null
+              })
+              setCheckedAuto(true)
+            }
+            if (checkedAutoClear && type === "confirm") {
+              var el = document.getElementById('palletcode');
+              var elbarcode = document.getElementById('barcode');
+              if (elbarcode !== null)
+                elbarcode.value = null
+              if (el !== null)
+                el.value = null
+              el.focus()
+            } else if (checkedAutoClear === false && type === "confirm") {
+              var el = document.getElementById('barcode');
+              if (el !== null)
+                el.value = null
+              el.focus()
+            }
           }
-          if (checkedAutoClear && type === "confirm") {
-            var el = document.getElementById('palletcode');
-            var elbarcode = document.getElementById('barcode');
-            if (elbarcode !== null)
-              elbarcode.value = null
-            if (el !== null)
-              el.value = null
-            el.focus()
-          } else if (checkedAutoClear === false && type === "confirm") {
-            var el = document.getElementById('barcode');
-            if (el !== null)
-              el.value = null
-            el.focus()
-          }
+          setDialog(false)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
         }
-        setDialog(false)
-      } else {
-        setDialogState({ type: "error", content: res.data._result.message, state: true })
-      }
-    })
+      })
+    }
   }
 
   function getStepContent(step) {
