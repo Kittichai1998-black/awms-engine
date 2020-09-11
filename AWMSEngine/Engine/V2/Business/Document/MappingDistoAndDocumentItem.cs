@@ -91,8 +91,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
 
-                    if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
+                    //if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
+                    //    throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
 
                     if (doc.DocumentProcessType_ID != reqVO.docProcessType)
                         continue;
@@ -102,9 +102,6 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var remainBaseRecv = docItem.BaseQuantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.BaseQuantity).Value;
                     var remainRecv = docItem.Quantity.Value - distos.FindAll(x => x.DocumentItem_ID == docItem.ID).Sum(x => x.Quantity).Value;
                     
-                    if (remainRecv == 0)
-                        continue;
-
                     if (disto != null)
                     {
                         if (remainBaseRecv > 0 && newBaseQty > 0)
@@ -179,9 +176,18 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 newBaseQty = 0;
                             }
                         }
+                        else if (remainRecv == 0)
+                        {
+                            continue;
+                        }
                     }
                     else
                     {
+                        if (remainRecv == 0)
+                        {
+                            continue;
+                        }
+
                         // update incubatedate, shelflifedate
                         StorageObjectCriteria packSto = new StorageObjectCriteria()
                         {
