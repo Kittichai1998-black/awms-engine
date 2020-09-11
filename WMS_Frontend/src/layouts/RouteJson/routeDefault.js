@@ -65,6 +65,11 @@ const AreaLocationMaster = Loadable({
   loader: () => import("../../views/page/Master/AreaLocationMaster"),
   loading: Loading
 });
+
+const AreaLocationCondition = Loadable({
+    loader: () => import("../../views/page/Master/AreaLocationCondition"),
+    loading: Loading
+});
 const AreaRoute = Loadable({
   loader: () => import("../../views/page/Master/AreaRoute"),
   loading: Loading
@@ -292,6 +297,7 @@ const GR_Search = Loadable({
   loading: Loading
 });
 
+
 const PA_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/PA/PA_Create"),
   loading: Loading
@@ -413,7 +419,8 @@ let routes = [
   { path: "/setting/branch", name: "base5", compoment: BranchMaster, exact: true },
   { path: "/setting/warehouse", name: "base5", compoment: WarehouseMaster, exact: true },
   { path: "/setting/area", name: "base5", compoment: AreaMaster, exact: true },
-  { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
+    { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
+    { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
   { path: "/setting/arearoute", name: "base5", compoment: AreaRoute, exact: true },
   { path: "/setting/customer", name: "base5", compoment: Customer, exact: true },
   { path: "/setting/supplier", name: "base5", compoment: Supplier, exact: true },

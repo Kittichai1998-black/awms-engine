@@ -135,7 +135,7 @@ const AmCreateDocument = (props) => {
     const [BtnAddLists, setBtnAddLists] = useState();
     const [skuID, setskuID] = useState(0);
     const [dataUnit, setdataUnit] = useState();
-    const UnitQurys = UnitTypeConvert;
+    const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -274,17 +274,17 @@ const AmCreateDocument = (props) => {
 
 
     const getUnitTypeConvertQuery = (skuID, unitTypeQuery) => {
-
+        console.log(skuID)
         if (unitTypeQuery != null && skuID != undefined && skuID != 0) {
             let objQuery = unitTypeQuery;
             if (objQuery !== null) {
-                console.log(objQuery)
                 let unitqry = JSON.parse(objQuery.q)
                 unitqry.push({ 'f': 'SKUMaster_ID', 'c': '=', 'v': skuID })
                 objQuery.q = JSON.stringify(unitqry);
 
             }
             getDataUnitType(objQuery)
+            setUnitQurys(UnitTypeConvert)
 
         }
     }
@@ -360,6 +360,9 @@ const AmCreateDocument = (props) => {
 
     const onChangeEditor = (field, data, required, row) => {
 
+        if (data === "") {
+            editData[field]  = null
+        }
 
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
@@ -416,7 +419,11 @@ const AmCreateDocument = (props) => {
             }
         }
         else {
-            editData[field] = data
+            if (data === "") {
+                editData[field] = null
+            } else {
+                editData[field] = data
+            }
         }
 
 
@@ -1213,7 +1220,7 @@ const AmCreateDocument = (props) => {
             <AmTable
                 dataKey="ID"
                 columns={props.columnsModifi ? props.columnsModifi : columns}
-                // pageSize={200}
+                pageSize={200}
                 dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
                 //   height={200}
                 rowNumber={false}
