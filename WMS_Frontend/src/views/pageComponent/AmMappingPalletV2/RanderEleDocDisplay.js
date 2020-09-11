@@ -41,11 +41,11 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
   return <Card>
     <CardContent>
       <div>
-        <FormInline>
+        <FormInline style={{ display: "block" }}>
           <LabelH2>GR Doc :</LabelH2>
           {dataDoc.grCode}
         </FormInline>
-        <FormInline>
+        <FormInline style={{ display: "block" }}>
           <LabelH2>PA Doc :</LabelH2>
           {dataDoc.putawayCode}
         </FormInline>
@@ -59,15 +59,15 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
                 borderColor: "#E0E0E0"
               }}>
                 <div key={index}>
-                  <FormInline>
+                  <FormInline style={{ display: "block" }}>
                     <LabelH2>Item :</LabelH2>
                     {x.pstoCode}
                   </FormInline>
-                  <FormInline>
+                  <FormInline style={{ display: "block" }}>
                     <LabelH2>Lot :</LabelH2>
                     {x.lot}
                   </FormInline>
-                  <FormInline>
+                  <FormInline style={{ display: "block" }}>
                     <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
                   </FormInline>
                 </div>

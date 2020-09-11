@@ -50,6 +50,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string skuType;
             public string expdate;
             public string prodDate;
+            public string tag_qr;
         }
         public class Item
         {
@@ -63,7 +64,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string skuType;
             public string expdate;
             public string prodDate;
-            
+            public string tag_qr;
+
 
         }
 
@@ -74,7 +76,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<Pallet> pallets = new List<Pallet>();           
             List<Pallet> findPalletX = new List<Pallet>();
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-            Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+           
             var itemVol = reqVO.item.Sum(x=>x.vol);
             if (itemVol < reqVO.minVolume)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Volume item น้อยกว่า minVolume");
@@ -106,14 +108,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var unit = string.Join(',', pts.palletsDetail.Select(x => x.unit));               
                 var lot = string.Join(',', pts.palletsDetail.FindAll(x=> !string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
                 var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
-                var skutype = string.Join(',', pts.palletsDetail.Select(x => x.skuType));
+                var skutype = pts.palletsDetail.Select(x => x.skuType).FirstOrDefault();
                 var expdate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.expdate)).Select(x => x.expdate));
                 var prodDate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.prodDate)).Select(x => x.prodDate));
-
+                var tag_qr = string.Join(',', pts.palletsDetail.Select(x => x.tag_qr));
 
                 listItem.Add(new pallet_list_item()
                 {
-                    code = "N|" + pts.palletsNO + "|" + pID + "|" + vol+"|"+unixTimestamp+"-"+ pts.palletsNO+ pID,
+                    code = "N|" + pts.palletsNO + "|" + pID + "|" + vol+"|"+ tag_qr,
                     skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Name == skutype).ID.Value,
                     title = skutype,
                     options = "codeNo=" + pcode + "&itemName=" + pname +
@@ -139,7 +141,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             int palletVolRemail = palletVol;
             var pallet = new Pallet();
-
+            Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             if (item.FirstOrDefault() != null)
             {
                 var itemData = item.FirstOrDefault();
@@ -166,6 +168,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 pallet.skuType = itemData.skuType;
                 pallet.prodDate = itemData.prodDate;
                 pallet.expdate = itemData.expdate;
+                pallet.tag_qr = unixTimestamp + "-" + bcode+itemData.docItemID;
                 if (mode == 0)
                 {
                     if (itemData.vol > 0)

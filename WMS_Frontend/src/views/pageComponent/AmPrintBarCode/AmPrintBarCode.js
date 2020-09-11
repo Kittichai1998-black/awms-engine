@@ -111,7 +111,7 @@ const AmPrintBarCode = props => {
       props.data.forEach(ele => {
         item = {
           docItemID: ele.ID,
-          lot: ele.Lot,
+          lot: ele.SKUMasterTypeName === "Pack Material" || ele.SKUMasterTypeName === "Other" ? ele.Ref1 : ele.Lot,
           orderNo: ele.OrderNo,
           code: ele.Code,
           name: ele.SKUMaster_Name,
@@ -248,10 +248,11 @@ const AmPrintBarCode = props => {
     setGenData(true)
     var itemList = [];
     var item = {};
+
     props.data.forEach(ele => {
       item = {
         docItemID: ele.ID,
-        lot: ele.Lot,
+        lot: ele.SKUMasterTypeName === "Pack Material" || ele.SKUMasterTypeName === "Other" ? ele.Ref1 : ele.Lot,
         orderNo: ele.OrderNo,
         code: ele.Code,
         name: ele.SKUMaster_Name,

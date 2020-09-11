@@ -222,6 +222,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             Quantity = remainRecv > newQty ? newQty : remainRecv,
                             UnitType_ID = psto.UnitType_ID,
                             Sou_StorageObject_ID = psto.ID.Value,
+                            Des_StorageObject_ID = psto.ID.Value,
                             DocumentItem_ID = docItem.ID.Value,
                             DocumentType_ID = doc.DocumentType_ID,
                             Status = EntityStatus.INACTIVE
