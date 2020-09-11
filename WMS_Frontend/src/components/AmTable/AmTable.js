@@ -91,7 +91,7 @@ const AmTable = (props) => {
     useEffect(() => {
         if(props.onPageSizeChange)
             props.onPageSizeChange(props.pageSize)
-    }, [])
+    }, [pgSize])
 
     const customPageSizeBtn = React.forwardRef(({ children, onClick }, ref) => (
         <Button disableRipple
@@ -120,7 +120,6 @@ const AmTable = (props) => {
                         {pageSize.map(item => {
                             return <Dropdown.Item as="button" onClick={() => {
                                 setPgSize(item.value)
-                                props.onPageSizeChange(item.value)
                             }}>{item.label}</Dropdown.Item>
                         })}
                         </Dropdown.Menu>
@@ -221,8 +220,8 @@ AmTable.propTypes = {...AmTablePropTypes,
     */
     tableConfig:PropTypes.bool,
     /**
-     * เปิดปิดตั้งค่าตาราง
-     ** value? : true | false
+     * เปิดปิดตั้ง actions ข้อมูลตาราง
+     ** value? : [label:element, action:function(data)]
     */
     customAction:PropTypes.object,
     /**

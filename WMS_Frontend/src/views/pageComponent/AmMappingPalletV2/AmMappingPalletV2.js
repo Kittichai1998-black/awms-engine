@@ -797,7 +797,7 @@ const AmMappingPalletV2 = props => {
                 return mapstosSelected === null ? null : mapstosSelected.map((x, index) => {
                   return (
                     <div key={index} syle={{ marginLeft: "30px" }} >
-                      <FormInline>
+                      <FormInline style={{ display: "block" }}>
                         <LabelH2>{y.name} :</LabelH2>
                         <AmInput
                           id={y.field}

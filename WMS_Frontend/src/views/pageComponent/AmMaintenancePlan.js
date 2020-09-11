@@ -51,6 +51,11 @@ const MaintenancePlan = (props) => {
     const [page, setPage] = useState(1);
     const {dataSource, count} = useGetData(pageSize, page);
 
+    const statusData = [
+        {label:"ไม่เสร็จ", value:11},
+        {label:"เสร็จ", value:32}
+    ];
+
     const headerColumns = [
         {accessor:"Code", Header:"Code", Cell:(row)=> <div style={{ display: "flex", padding: "0px", paddingLeft: "10px"}}>
             <label>{`${row.data.Code}`}</label>
@@ -60,6 +65,10 @@ const MaintenancePlan = (props) => {
         {accessor:"Warehouse_Name", Header:"Warehouse"},
         {accessor:"Description", Header:"Description"},
         {accessor:"MaintenanceDate", Header:"Date"},
+        {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
+            const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
+            return <label>{evnt ? evnt.label : ""}</label>
+        }},
         {accessor:"Create", Header:"CreateTime"},
         {accessor:"Modify", Header:"ModifyTime"},
     ];

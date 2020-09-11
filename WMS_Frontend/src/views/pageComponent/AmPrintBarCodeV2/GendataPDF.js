@@ -13,20 +13,28 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark, docI
     var productionDateArr = []
     var expireDateArr = []
     var unitTypeCodeArr = []
+    var tag_qr = []
     var skutype = ""
     var skuID = ""
     data[indexName].forEach((pts) => {
-
+      var ts = Math.round((new Date()).getTime() / 1000);
       if (pts.SKUMaster_Code !== null)
         pcodeArr.push(pts.SKUMaster_Code)
       if (pts.SKUMaster_Name !== null)
         pnameArr.push(pts.SKUMaster_Name)
-      if (pts.ID !== null)
+      if (pts.ID !== null) {
         pidArr.push(pts.ID)
+        tag_qr.push(ts + "-" + indexName + pts.ID)
+      }
       if (pts.OrderNo !== null)
         orderNoArr.push(pts.OrderNo)
-      if (pts.Lot !== null)
-        lotArr.push(pts.Lot)
+      if (pts.Lot !== null) {
+        if (pts.SKUMasterTypeName === "Pack Material" || pts.SKUMasterTypeName === "Other") {
+          lotArr.push(pts.Ref1)
+        } else {
+          lotArr.push(pts.Lot)
+        }
+      }
       if (pts.Quantity_Genarate !== null)
         qtyArr.push(pts.Quantity_Genarate)
       if (pts.ProductionDate !== null)
@@ -35,6 +43,8 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark, docI
         expireDateArr.push(pts.ExpireDate)
       if (pts.UnitType_Code !== null)
         unitTypeCodeArr.push(pts.UnitType_Code)
+
+
 
       skuID = pts.SKUMasterTypeID
       skutype = pts.SKUMasterTypeName
@@ -49,9 +59,10 @@ function LoadDataPDF(data, supplierName, supplierCode, totalPallet, remark, docI
     var productionDate = productionDateArr.join()
     var expireDate = expireDateArr.join()
     var unitTypeCode = unitTypeCodeArr.join()
-    var ts = Math.round((new Date()).getTime() / 1000);
+    var tag = tag_qr.join()
+
     itemPDF = {
-      code: "N|" + indexName + "|" + pid + "|" + qty + "|" + ts + "-" + indexName + pid,
+      code: "N|" + indexName + "|" + pid + "|" + qty + "|" + tag,
       title: skutype,
       skuType: 4,
       options: "codeNo=" + pcode + "&itemName=" + pname +

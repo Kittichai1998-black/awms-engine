@@ -136,7 +136,7 @@ const PA_Detail = props => {
         { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
         { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        { width: 70, accessor: "packUnitCode", Header: "Unit", widthPDF: 10 },
         {
             Header: "Audit Status",
             accessor: "diAuditStatus", 
