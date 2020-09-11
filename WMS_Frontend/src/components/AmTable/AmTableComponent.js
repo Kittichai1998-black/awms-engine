@@ -216,7 +216,7 @@ const AmTableSetup = (props) => {
             props.onPageChange(page)
     }, [page])
 
-    return <>
+    return <div>
         <Topbar 
             customTopControl={props.customTopControl} 
             customTopLeftControl={props.customTopLeftControl} 
@@ -263,7 +263,7 @@ const AmTableSetup = (props) => {
             pagination={props.pagination}
             page={(e) => setPage(e)}
         />
-    </>
+    </div>
 }
 
 export default AmTableComponent;
