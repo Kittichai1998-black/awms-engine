@@ -44,6 +44,7 @@ import AmTreeView from '../../../pageComponent/AmTreeView'
 import AmDialogConfirm from '../../../../components/AmDialogConfirm'
 import AmAuditStatus from '../../../../components/AmAuditStatus'
 import { AuditStatus } from '../../../../components/Models/StorageObjectEvenstatus';
+import AmScanQRbyCamera from '../../../../components/AmScanQRbyCamera';
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -264,27 +265,40 @@ const GetPickedDetail = (props) => {
     function getStepContent(step) {
         switch (step) {
             case 0:
-                return <div>
-                    <AmInput
-                        id={"qr"}
-                        type="input"
-                        placeholder="Scan QR Code"
-                        autoFocus={true}
-                        style={{ width: "100%" }}
-                        onChange={(value, obj, element, event) => onHandleChangeInput(value, "qr")}
-                        onKeyPress={(value, obj, element, event) => {
-                            if (event.key === "Enter") {
-                                onHandleChangeInput(value, "qr");
-                                handleNext(0);
+                return <div style={{ flexGrow: 1 }}>
+                    <div style={{ display: "flex" }}>
+                        <AmInput
+                            id={"qr"}
+                            type="input"
+                            placeholder="Scan QR Code"
+                            autoFocus={true}
+                            style={{ width: "100%" }}
+                            onChange={(value, obj, element, event) => onHandleChangeInput(value, "qr")}
+                            onKeyPress={(value, obj, element, event) => {
+                                if (event.key === "Enter") {
+                                    onHandleChangeInput(value, "qr");
+                                    handleNext(0);
+                                }
                             }
-                        }
-                        }
-                    />
+                            }
+                        />
+                        {/* <AmScanQRbyCamera returnResult={(data) => showRes(data)} /> */}
+                    </div>
                 </div>;
             case 1:
                 return <RenderTreeViewData data={dataStoPick} />
             default:
                 return 'Unknown step';
+        }
+    }
+    const showRes = (data) => {
+        if (data) {
+            // console.log(data)
+            let ele = document.getElementById("qr");
+            if (ele) {
+                ele.value = data;
+                ele.focus();
+            }
         }
     }
     const onHandleChangeInput = (value, field) => {
