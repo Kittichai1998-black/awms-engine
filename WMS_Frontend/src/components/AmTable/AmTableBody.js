@@ -524,8 +524,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
                   <TextField size="small" id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
-                        event.currentTarget.childNodes[0].blur()
-                        console.log(event.currentTarget.childNodes[0])
+                        document.getElementById(`filter_${idx}`).blur();
                       }
                     }}
                     onBlur={(event) => { onChangeFilter(col.accessor, event.target.value, col.customFilter === undefined ? {} : col.customFilter) }} />
@@ -558,8 +557,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
                   <TextField size="small" id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
-                        event.currentTarget.childNodes[0].blur()
-                        console.log(event.currentTarget.childNodes[0])
+                        document.getElementById(`filter_${idx}`).blur();
                       }
                     }}
                     onBlur={(event) => {

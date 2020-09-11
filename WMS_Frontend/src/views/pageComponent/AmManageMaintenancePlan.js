@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import AmTable from "../../components/AmTable/AmTable";
 import {apicall} from "../../components/function/CoreFunction";
 import queryString from "query-string";
-import { TextField  } from "@material-ui/core";
+import { TextField, Grid  } from "@material-ui/core";
 import AmButton from '../../components/AmButton';
 import AmInput from '../../components/AmInput';
 import AmDropdown from '../../components/AmDropdown';
 import styled from 'styled-components'
 import AmEditorTable from '../../components/table/AmEditorTable';
+import AmDocumentStatus from "../../components/AmDocumentStatus";
 
 var API = new apicall();
 
@@ -27,14 +28,18 @@ const FormInline = styled.div`
     }
 `;
 
+const Label = styled.label`
+    font-weight:bold;
+    width: 200px;
+`;
+
 const MaintenancePlan = (props) => {
-    const [pageSize, setPageSize] = useState(50);
     const [data, setData] = useState({});
     const [open, setOpen] = useState(false);
     
     const statusData = [
-        {label:"ไม่เสร็จ", value:11},
-        {label:"เสร็จ", value:32}
+        {label:"WORKING", value:11},
+        {label:"CLOSED", value:32}
     ];
 
     const headerColumns = [
@@ -42,7 +47,7 @@ const MaintenancePlan = (props) => {
         {accessor:"ServiceBy", Header:"Service By", width:150},
         {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
             const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
-            return <label>{evnt ? evnt.label : ""}</label>
+            return evnt ? <AmDocumentStatus statusCode={evnt.value}/> : null
         }},
     ];
 
@@ -61,7 +66,6 @@ const MaintenancePlan = (props) => {
     }];
 
     const onClickConfirm = (rowdata) => {
-        console.log(rowdata)
         let maintenanceID = queryString.parse(window.location.search).maintenanceID;
         let postData = {
             MaintenanceResult_ID:maintenanceID,
@@ -123,7 +127,13 @@ const MaintenancePlan = (props) => {
             data={{desc:"", by:"", status:10}} 
             columns={editorCols}
         />
-        
+        <Grid container>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Code : </Label>{data.Code}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Name : </Label>{data.Name}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Description : </Label>{data.Description}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Warehouse Name : </Label>{data.Warehouse_Name}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Maintenance Date : </Label>{data.MaintenanceDate}</Grid>
+        </Grid>
         <AmTable
             columns={headerColumns}
             dataSource={data.maintenanceItems !== undefined ? data.maintenanceItems : []}
