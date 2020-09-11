@@ -15,7 +15,7 @@ import {
 import { AmTableContext } from "./AmTableContext";
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 //import Input from "@material-ui/core/Input";
-import Input from "@material-ui/core/Input";
+import TextField from "@material-ui/core/TextField";
 //import Checkbox from "@material-ui/core/Checkbox";
 import Moment from "moment";
 //import Radio from "@material-ui/core/Radio";
@@ -521,7 +521,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
             col.filterable === false ? null : typeof col.Filter === "function" ?
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <Input id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
+                  <TextField size="small" id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
                         event.currentTarget.childNodes[0].blur()
@@ -555,7 +555,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
             col.filterable === false ? null : typeof col.Filter === "function" ?
               (<div>{col.Filter(col.accessor, onChangeFilter)}</div>) : (
                 <div>
-                  <Input id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
+                  <TextField size="small" id={`filter_${idx}`} style={{ width: "100%", background: "white" }}
                     onKeyPress={(event) => {
                       if (event.key === "Enter") {
                         event.currentTarget.childNodes[0].blur()

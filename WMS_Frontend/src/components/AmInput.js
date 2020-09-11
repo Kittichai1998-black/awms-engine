@@ -128,6 +128,7 @@ function CustomTextField(props) {
   return (
     <>
       <TextField
+        size={"small"}
         className={classNames(className)}
         InputProps={{
           classes: {
