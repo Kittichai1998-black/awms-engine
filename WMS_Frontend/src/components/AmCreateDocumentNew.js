@@ -136,6 +136,7 @@ const AmCreateDocument = (props) => {
     const [skuID, setskuID] = useState(0);
     const [dataUnit, setdataUnit] = useState();
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
+    const [unitCon, setunitCon] = useState()
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -186,10 +187,15 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (skuID !== undefined && UnitQurys !== undefined) {
+            setunitCon(UnitTypeConverts)
             getUnitTypeConvertQuery(skuID, UnitQurys)
-            //getDataUnitType(UnitConvert)
+            
         }
     }, [skuID])
+
+    useEffect(() => {
+        setdataUnit(dataUnit)
+    }, [dataUnit])
 
     useEffect(() => {
         let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
@@ -257,7 +263,17 @@ const AmCreateDocument = (props) => {
 
 
 
-
+    const UnitTypeConverts = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "UnitTypeFromPack",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "*",
+        g: "",
+        s: "[{ 'f': 'ID', 'od': 'desc' }]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
 
 
@@ -274,7 +290,6 @@ const AmCreateDocument = (props) => {
 
 
     const getUnitTypeConvertQuery = (skuID, unitTypeQuery) => {
-        console.log(skuID)
         if (unitTypeQuery != null && skuID != undefined && skuID != 0) {
             let objQuery = unitTypeQuery;
             if (objQuery !== null) {
@@ -283,9 +298,8 @@ const AmCreateDocument = (props) => {
                 objQuery.q = JSON.stringify(unitqry);
 
             }
+            setUnitQurys(unitCon)
             getDataUnitType(objQuery)
-            setUnitQurys(UnitTypeConvert)
-
         }
     }
 
