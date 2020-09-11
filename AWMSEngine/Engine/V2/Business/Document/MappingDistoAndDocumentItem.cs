@@ -91,8 +91,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
 
-                    if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
+                    //if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
+                    //    throw new AMWException(this.Logger, AMWExceptionCode.V0_STO_OVER_DOC);
 
                     if (doc.DocumentProcessType_ID != reqVO.docProcessType)
                         continue;
