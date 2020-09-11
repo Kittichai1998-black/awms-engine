@@ -23,6 +23,7 @@ const QueryHeader = {
 
 const useGetData = (pageSize, page) => {
     const [dataSource, setDataSource] = useState([]);
+    const [count, setCount] = useState(0);
 
     useEffect(()=> {
         console.log(page)
@@ -35,29 +36,39 @@ const useGetData = (pageSize, page) => {
 
             const res = await API.get(createQueryString(QueryHeader));
             setDataSource(res.data.datas);
+            setCount(res.data.count)
         }
         getData();
         //return () => {console.log("unmount")}
     },[pageSize, page]);
 
-    return dataSource;
+    return {dataSource:dataSource, count:count};
 }
 
 
 const MaintenancePlan = (props) => {
     const [pageSize, setPageSize] = useState(50);
     const [page, setPage] = useState(1);
-    const dataSource = useGetData(pageSize, page);
+    const {dataSource, count} = useGetData(pageSize, page);
+
+    const statusData = [
+        {label:"ไม่เสร็จ", value:11},
+        {label:"เสร็จ", value:32}
+    ];
 
     const headerColumns = [
         {accessor:"Code", Header:"Code", Cell:(row)=> <div style={{ display: "flex", padding: "0px", paddingLeft: "10px"}}>
             <label>{`${row.data.Code}`}</label>
-            <AmRediRectInfo api={"/issue/detail?docID=" + row.data.ID} history={props.history}/></div>
+            <AmRediRectInfo api={"/wm/managemtnplan?maintenanceID=" + row.data.ID} history={props.history}/></div>
         },
         {accessor:"Name", Header:"Name"},
         {accessor:"Warehouse_Name", Header:"Warehouse"},
         {accessor:"Description", Header:"Description"},
         {accessor:"MaintenanceDate", Header:"Date"},
+        {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
+            const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
+            return <label>{evnt ? evnt.label : ""}</label>
+        }},
         {accessor:"Create", Header:"CreateTime"},
         {accessor:"Modify", Header:"ModifyTime"},
     ];
@@ -66,7 +77,7 @@ const MaintenancePlan = (props) => {
         dataSource={dataSource}
         dataKey={"ID"}
         pageSize={50}
-        totalSize={100}
+        totalSize={count}
         pagination={true}
         onPageChange={(p) => setPage(p)}
         onPageSizeChange={(pz) => setPageSize(pz)}

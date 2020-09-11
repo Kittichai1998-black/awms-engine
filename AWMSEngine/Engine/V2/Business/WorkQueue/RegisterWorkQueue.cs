@@ -329,8 +329,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                     packs.ForEach(pack => {
-                        if (pack.eventStatus == StorageObjectEventStatus.NEW)
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                        if (pack.eventStatus == StorageObjectEventStatus.NEW ||
+                        pack.eventStatus == StorageObjectEventStatus.AUDITED ||
+                        pack.eventStatus == StorageObjectEventStatus.COUNTED)
+                        {
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                        }
                     });
                     
                 }

@@ -63,9 +63,9 @@ namespace AMWUtil.DataAccess.Http
                 }
                 return "Send Success";
             }
-            catch
+            catch(AMWException ex)
             {
-                throw new AMWException(logger, AMWExceptionCode.B0001, "Cannot Send Email");
+                throw new AMWException(logger, AMWExceptionCode.B0001, ex.Message);
             }
         }
     }

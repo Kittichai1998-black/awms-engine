@@ -35,7 +35,7 @@ function GenMapstosSelected(postdata, mapstosSelected) {
   // console.log(mapstosSelected)
 
   mapstosSelected.forEach(element => {
-    console.log(element.addQty)
+
     element.pstoCode = element.code
     element.pstoID = element.id
     element.addQty = element.addQty === undefined ? element.qty : ((parseInt(element.addQty) - element.qty) === 0 ? element.qty : (parseInt(element.addQty) - element.qty))

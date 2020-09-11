@@ -16,4 +16,9 @@ namespace AWMSModel.Constant.EnumConst
         Normal = 1,
         Critical = 2,
     }
+    public enum NotifyPlatform
+    {
+        Email = 1,
+        Line = 2,
+    }
 }

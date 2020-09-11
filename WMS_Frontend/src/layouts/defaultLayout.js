@@ -35,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
         // [theme.breakpoints.down('sm')]: {
         //     aa: theme.palette.secondary.main
         // },
-        display: 'flex'
+        display: 'flex',
+        overflow: 'hidden'
     },
     menuButton: {
         marginLeft: 5,

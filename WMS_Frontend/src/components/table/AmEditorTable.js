@@ -24,9 +24,9 @@ const AmEditiorTable = (props) => {
         if (props.titleText === "Edit") {
             return 'Save';
         } else {
-            if(props.textConfirm){
+            if (props.textConfirm) {
                 return props.textConfirm;
-            }else{
+            } else {
                 return 'Add';
             }
         }

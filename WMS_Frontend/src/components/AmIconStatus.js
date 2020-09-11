@@ -113,7 +113,7 @@ const styles = theme => ({
     AUDITED: {
         background: '#08c249',
         border: '2px solid #08c249',
-        color: '#eafff1',
+        color: '#2f353a',
     },
     PENDING: {
         background: '#3d6dff',
@@ -184,7 +184,7 @@ const styles = theme => ({
         border: '2px solid #ffc107',
         color: '#2f353a',
     },
-    PASS: {
+    PASSED: {
         background: '#357a38',
         border: '2px solid #357a38',
         color: '#ffffff',
@@ -193,14 +193,23 @@ const styles = theme => ({
     QUARANTINE: {
         background: '#ffc107',
         border: '2px solid #ffc107',
-        color: '#ffffff',
-
+        color: '#2f353a',
     },
     NOTPASS: {
         background: '#73818f',
         border: '2px solid #73818f',
         color: '#ffffff',
-    }
+    },
+    COUNTING: {
+        background: '#eafff1',
+        border: '2px solid #08c249',
+        color: '#2f353a',
+    },
+    COUNTED: {
+        background: '#08c249',
+        border: '2px solid #08c249',
+        color: '#2f353a',
+    },
 });
 
 function IconStatus(props) {
