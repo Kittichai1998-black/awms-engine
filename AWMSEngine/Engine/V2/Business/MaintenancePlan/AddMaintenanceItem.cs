@@ -19,20 +19,16 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
         }
         protected override amt_MaintenanceResult ExecuteEngine(TReq reqVO)
         {
-            var maintenanceResult = ADO.DataADO.GetInstant().SelectBy<amt_MaintenanceResult>(
-                new SQLConditionCriteria() { field = "ID", operatorType = SQLOperatorType.EQUALS, value = reqVO.MaintenanceResult_ID }
-            , this.BuVO).FirstOrDefault();
-
             ADO.DataADO.GetInstant().Insert<amt_MaintenanceResultItem>(BuVO, new amt_MaintenanceResultItem()
             {
                 MaintenanceResult_ID = reqVO.MaintenanceResult_ID,
                 ServiceResult = reqVO.ServiceResult,
                 ServiceBy = reqVO.ServiceBy,
-                EventStatus= reqVO.EventStatus,
+                EventStatus = reqVO.EventStatus,
                 Status = reqVO.EventStatus == MaintenancePlanEventStatus.CLOSED ? EntityStatus.DONE : EntityStatus.ACTIVE,
             });
 
-            if (reqVO.EventStatus != MaintenancePlanEventStatus.CLOSED)
+            if (reqVO.EventStatus == MaintenancePlanEventStatus.CLOSED)
             {
                 UpdateStatus(reqVO.MaintenanceResult_ID, MaintenancePlanEventStatus.CLOSED, EntityStatus.DONE);
             }
@@ -53,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
                     new SQLConditionCriteria(){field = "ID", operatorType = SQLOperatorType.EQUALS, value = id},
                     new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
                 }, new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object>("EveneStatus", eventStatus),
+                    new KeyValuePair<string, object>("EventStatus", eventStatus),
                     new KeyValuePair<string, object>("Status", status)
                 }, this.BuVO);
 
@@ -61,7 +57,7 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
                     new SQLConditionCriteria(){field = "MaintenanceResult_ID", operatorType = SQLOperatorType.EQUALS, value = id},
                     new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
                 }, new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object>("EveneStatus", eventStatus),
+                    new KeyValuePair<string, object>("EventStatus", eventStatus),
                     new KeyValuePair<string, object>("Status", status)
                 }, this.BuVO);
         }
