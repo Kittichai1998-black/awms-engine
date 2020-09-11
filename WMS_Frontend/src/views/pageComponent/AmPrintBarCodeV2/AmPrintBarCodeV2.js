@@ -469,7 +469,7 @@ const AmPrintBarCodeV2 = props => {
         style={{ width: "700px" }}
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Generate BarCode Detail"}
+        titleText={"Generate QRCode Detail"}
         data={iniData}
         columns={RanderEle()}
       />
