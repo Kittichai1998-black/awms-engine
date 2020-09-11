@@ -9,6 +9,10 @@ const PK_ManageQueue = Loadable({
     loader: () => import("../../views/page/BOSS/PK/PK_ManageQueue"),
     loading: Loading
 });
+const PK_GetDetail = Loadable({
+    loader: () => import("../../views/page/BOSS/PK/PK_GetDetail"),
+    loading: Loading
+});
 
 const AD_Create = Loadable({
     loader: () => import("../../views/page/ENGINE/AD/AD_Create"),
@@ -61,8 +65,9 @@ const routes = [
     { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
     { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
     { path: "/audit/managequeue", name: "GI Manage Queue", compoment: AD_ManageQueue, exact: true },
-
+    
     { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
+    { path: "/issue/pickedinfo", name: "PK Get Detail", compoment: PK_GetDetail, exact: true },
 ]
 
 export default routes;

@@ -32,7 +32,7 @@ const useTreeItemStyles = makeStyles((theme) => ({
     }
   },
   content: {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
     borderTopRightRadius: theme.spacing(2),
     borderBottomRightRadius: theme.spacing(2),
     paddingRight: theme.spacing(1),
@@ -126,7 +126,7 @@ function StyledTreeItem(props) {
               {labelText}
             </Typography>
             : labelText}
-          <Typography variant="caption" color="inherit" className={classes.labelInfo}>
+          <Typography variant="body2" color="inherit" className={classes.labelInfo}>
             {labelInfo}
           </Typography>
         </div>

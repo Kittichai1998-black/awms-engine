@@ -99,12 +99,12 @@ namespace AWMSEngine.Engine.V2.General
 
                 var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
                 if (docitem == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ DocItem นี้ในระบบ");
 
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
                 var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
                 if (parentDoc == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ DocItem นี้ในระบบ");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ DocItem นี้ในระบบ");
 
                 res.processType = doc.DocumentProcessType_ID;
                 res.grID = parentDoc.ID.Value;

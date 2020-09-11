@@ -44,6 +44,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import AmEditorTable from "../../components/table/AmEditorTable";
 import { AuditStatus } from '../../components/Models/StorageObjectEvenstatus';
 import AmTreeView from '../pageComponent/AmTreeView'
+import AmAuditStatus from '../../components/AmAuditStatus'
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -279,6 +280,7 @@ const AmCoutingChecker = (props) => {
     const handleReset = () => {
         setValueInput({});
         setActiveStep(0);
+        ClearInput('bstoCode')
     };
     const ClearInput = (field) => {
         let ele2 = document.getElementById(field);
@@ -339,35 +341,40 @@ const AmCoutingChecker = (props) => {
                     let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
                     let pstoName = sto.pstoName != null ? sto.pstoName : "";
                     let lot = sto.lot != null && sto.lot.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + sto.lot}</Typography>
-                        : null;
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot: " + sto.lot}</Typography>
+                        : sto.ref1 != null && sto.ref1.length > 0 ?
+                            <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot Vendor: " + sto.ref1}</Typography>
+                            : null;
                     let batch = sto.batch != null && sto.batch.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + sto.batch}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Batch: " + sto.batch}</Typography>
                         : null;
                     let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + sto.orderNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No. " + sto.orderNo}</Typography>
                         : null;
                     let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + sto.cartonNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No. " + sto.cartonNo}</Typography>
                         : null;
 
                     let pk_docCode = sto.pk_docCode != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{" | Document Code: " + sto.pk_docCode}</Typography>
                         : null;
                     let processTypeName = sto.processTypeName != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No." + sto.processTypeName}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No. " + sto.processTypeName}</Typography>
                         : null;
                     let coutingQty = sto.coutingQty != null ? sto.coutingQty + " " + sto.unitCode : "";
                     let destination = sto.destination != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Des:" + sto.destination}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Des: " + sto.destination}</Typography>
                         : null;
                     let remark = sto.remark != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Remark:" + sto.remark}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Remark: " + sto.remark}</Typography>
                         : null;
+
                     let auditstatus = null;
-                    if (sto.auditStatus) {
-                        let audit = " | AD:" + AuditStatus.find(x => x.value === sto.auditStatus).label;
-                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}</Typography>
+                    if (sto.auditStatus != null) {
+                        let audit = "Audit Status: ";
+                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
+                            <AmAuditStatus statusCode={sto.auditStatus} />
+                        </Typography>
 
                     }
                     let treeItem = {
@@ -474,21 +481,23 @@ const AmCoutingChecker = (props) => {
                             let pstoCode = dataSelected.pstoCode != null ? dataSelected.pstoCode : "";
                             let pstoName = dataSelected.pstoName != null ? dataSelected.pstoName : "";
                             let lot = dataSelected.lot != null && dataSelected.lot.length > 0 ?
-                                <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + dataSelected.lot}</Typography>
-                                : null;
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Lot: " + dataSelected.lot}</Typography>
+                                : dataSelected.ref1 != null && dataSelected.ref1.length > 0 ?
+                                    <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor: " + dataSelected.ref1}</Typography>
+                                    : null;
                             let batch = dataSelected.batch != null && dataSelected.batch.length > 0 ?
-                                <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + dataSelected.batch}</Typography>
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Batch: " + dataSelected.batch}</Typography>
                                 : null;
                             let orderNo = dataSelected.orderNo != null && dataSelected.orderNo.length > 0 ?
-                                <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + dataSelected.orderNo}</Typography>
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Order No. " + dataSelected.orderNo}</Typography>
                                 : null;
                             let cartonNo = dataSelected.cartonNo != null && dataSelected.cartonNo.length > 0 ?
-                                <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + dataSelected.cartonNo}</Typography>
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No. " + dataSelected.cartonNo}</Typography>
                                 : null;
 
                             let auditstatus = null;
                             if (dataSelected.auditStatus) {
-                                let audit = " | AD:" + AuditStatus.find(x => x.value === dataSelected.auditStatus).label;
+                                let audit = "Audit Status: " + AuditStatus.find(x => x.value === dataSelected.auditStatus).label;
                                 auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}</Typography>
 
                             }
