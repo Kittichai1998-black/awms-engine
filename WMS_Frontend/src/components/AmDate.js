@@ -17,7 +17,7 @@ const AmDate = props => {
   const [DateNow, setDateNow] = useState(
     type === "date"
       ? moment().format("YYYY-MM-DD")
-      : props.setTimeZero ? moment().format("YYYY-MM-DDT00:00") : moment().format("YYYY-MM-DDTHH:mm") 
+      : props.setTimeZero ? moment().format("YYYY-MM-DDT00:00") : moment().format("YYYY-MM-DDTHH:mm")
   );
   const [TimeNow, setTimeNow] = useState(moment().format("HH:mm"));
   const [fieldID, setFieldID] = useState(props.FieldID);
@@ -116,7 +116,12 @@ const AmDate = props => {
   return (
     <form noValidate>
       <TextField
-        style={{ backgroundColor: "white", width: props.width }}
+        size={"small"}
+        style={{
+          backgroundColor: "white",
+          maxWidth: props.width ? props.width :
+            type === "date" ? 140 : type === "datetime-local" ? 185 : 90
+        }}
         // id="date"
         type={type}
         disabled={disabled ? disabled : false}
@@ -131,7 +136,7 @@ const AmDate = props => {
           shrink: true
         }}
         onChange={e => {
-          if(props.onChange !== undefined){
+          if (props.onChange !== undefined) {
             if (type === "time") {
               if (e.target.value) {
                 onHandleDateChange(e.target.value, type);
@@ -148,7 +153,7 @@ const AmDate = props => {
           }
         }}
         onBlur={e => {
-          if(props.onBlur !== undefined){
+          if (props.onBlur !== undefined) {
             if (type === "time") {
               if (e.target.value) {
                 onHandleDateBlur(e.target.value, type);
