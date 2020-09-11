@@ -2,6 +2,7 @@
 import moment from "moment";
 
 const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
+    console.log(searchValue)
     var convertFilter = JSON.parse(queryStr.q)
     var queryFilter = [...convertFilter];
     var searchData = queryFilter.find(x => x.f === field);
@@ -35,7 +36,10 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         }
         else if (searchValue.includes(",")) {
             searchSign = "IN";
-
+        }
+        else{
+            searchValue = `%${searchValue}%`
+            searchSign = "LIKE";
         }
 
         if (searchData !== undefined) {
