@@ -83,7 +83,7 @@ const useDocumentQuery = (warehouseID, docQuery, addDocList) => {
   
     return documentQuery;
 }
-const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandleSelectDocument}) => {
+const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandleSelectDocument, warehouseID}) => {
   return <AmFindPopup
   id={"DocumentSelection"}
   placeholder={"Document"}
@@ -96,6 +96,7 @@ const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandle
   columns={columns}
   width={300}
   clearText={clearText}
+  disabled={warehouseID ? false : true}
   onChange={(value, dataObject) => onHandleSelectDocument(value, dataObject)}
 />
 })
@@ -197,6 +198,7 @@ const ProcessQueueHeader = (props) => {
           valueData={documentSelection["ID"]} 
           queryApi={documentData} 
           clearText={clearText} 
+          warehouseID={warehouseID}
           onHandleSelectDocument={onHandleSelectDocument}
         />
 

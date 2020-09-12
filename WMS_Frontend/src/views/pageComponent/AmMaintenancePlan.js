@@ -5,6 +5,8 @@ import {
     createQueryString
   } from "../../components/function/CoreFunction";
 import AmRediRectInfo from "../../components/AmRedirectInfo";
+import moment from "moment";
+import AmDocumentStatus from "../../components/AmDocumentStatus";
 
 var API = new apicall();
 
@@ -52,8 +54,8 @@ const MaintenancePlan = (props) => {
     const {dataSource, count} = useGetData(pageSize, page);
 
     const statusData = [
-        {label:"ไม่เสร็จ", value:11},
-        {label:"เสร็จ", value:32}
+        {label:"WORKING", value:11},
+        {label:"CLOSED", value:32}
     ];
 
     const headerColumns = [
@@ -64,15 +66,37 @@ const MaintenancePlan = (props) => {
         {accessor:"Name", Header:"Name"},
         {accessor:"Warehouse_Name", Header:"Warehouse"},
         {accessor:"Description", Header:"Description"},
-        {accessor:"MaintenanceDate", Header:"Date"},
+        {accessor:"MaintenanceDate", Header:"Date", Cell:(dt)=>{
+            if(moment(dt.data["MaintenanceDate"]).isValid()){
+                return <label>{moment(dt.data["MaintenanceDate"]).format("DD/MM/YYYY")}</label>
+            }
+            else{
+                return ""
+            }
+        }},
         {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
             const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
-            return <label>{evnt ? evnt.label : ""}</label>
+            return evnt ? <AmDocumentStatus statusCode={evnt.value}/> : null
         }},
-        {accessor:"Create", Header:"CreateTime"},
-        {accessor:"Modify", Header:"ModifyTime"},
+        {accessor:"CreateTime", Header:"Create", Cell:(dt)=>{
+            if(moment(dt.data["CreateTime"]).isValid()){
+                return <label>{moment(dt.data["CreateTime"]).format("DD/MM/YYYY")}</label>
+            }
+            else{
+                return ""
+            }
+        }},
+        {accessor:"ModifyTime", Header:"Modify", Cell:(dt)=>{
+            if(moment(dt.data["ModifyTime"]).isValid()){
+                return <label>{moment(dt.data["ModifyTime"]).format("DD/MM/YYYY")}</label>
+            }
+            else{
+                return ""
+            }
+        }},
     ];
     return <AmTable
+        rowNumber={true}
         columns={headerColumns}
         dataSource={dataSource}
         dataKey={"ID"}

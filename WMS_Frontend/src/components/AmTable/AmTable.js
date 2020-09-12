@@ -3,8 +3,9 @@ import PropTypes from "prop-types"
 import AmTablePropTypes from "./AmTablePropTypes";
 import AmDropDownMenu from "../AmDropDownMenu";
 import SettingsIcon from '@material-ui/icons/Settings';
-import {IconButton, Button} from '@material-ui/core';
+import {IconButton as IconButtonBase, Button} from '@material-ui/core';
 import {Dropdown} from "react-bootstrap";
+import { withStyles } from "@material-ui/core/styles";
 import AmExportExcel from "../AmExportExcel";
 import {
     Clone
@@ -212,6 +213,15 @@ const AmTable = (props) => {
         </Suspense>
     </>
 }
+
+const IconButton = withStyles({
+    root: {
+        padding: "5px !important",
+        marginRight:"10px",
+        color:"black"
+    },
+
+})(IconButtonBase);
 
 AmTable.propTypes = {...AmTablePropTypes,
     /**
