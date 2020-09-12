@@ -13,7 +13,6 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         if (searchValue.startsWith(">=")) {
             searchSign = ">=";
             searchValue = searchValue.substr(2, searchValue.length - 1)
-
         }
         else if (searchValue.startsWith("<=")) {
             searchSign = "<=";
@@ -38,8 +37,10 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
             searchSign = "IN";
         }
         else{
-            searchValue = `%${searchValue}%`
-            searchSign = "LIKE";
+            if(dataType !== "datetime"){
+                searchValue = `%${searchValue}%`
+                searchSign = "LIKE";
+            }
         }
 
         if (searchData !== undefined) {

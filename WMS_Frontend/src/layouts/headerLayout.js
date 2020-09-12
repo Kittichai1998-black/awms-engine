@@ -219,7 +219,7 @@ const HeaderLayout = (props) => {
       //onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
+        <IconButton style={{position:"relative"}} aria-label="show 11 new notifications" color="inherit">
           <Badge badgeContent={notify.notifyCount} color="secondary">
             <NotificationsIcon />
           </Badge>
@@ -232,6 +232,7 @@ const HeaderLayout = (props) => {
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
+          style={{position:"relative"}}
           onClick={() => handleLogout()}
         >
           <AccountCircle />
