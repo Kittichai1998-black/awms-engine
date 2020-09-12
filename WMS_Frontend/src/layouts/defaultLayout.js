@@ -201,7 +201,7 @@ const MenuListDesktop = React.memo(({classes, theme, sidebar}) => {
         }}
     >
         <div className={classes.drawerHeader}>
-            <IconButton onClick={() => sidebar.setSidebarToggle(false)} style={{ color: 'white' }}>
+            <IconButton onClick={() => sidebar.setSidebarToggle(false)} style={{ color: 'white', position:"relative" }}>
                 {theme.direction === 'ltr' ? (
                     <ChevronLeftIcon />
                 ) : (
@@ -233,7 +233,7 @@ const MenuListMoblie = React.memo(({classes, theme, sidebar}) => {
         style={{zIndex:100000}}
     >
         <div className={classes.drawerHeader}>
-            <IconButton onClick={() => sidebar.setMobileSidebarToggle(false)} style={{ color: 'white' }}>
+            <IconButton onClick={() => sidebar.setMobileSidebarToggle(false)} style={{ color: 'white', position:"relative" }}>
                 {theme.direction === 'ltr' ? (
                     <ChevronLeftIcon />
                 ) : (
