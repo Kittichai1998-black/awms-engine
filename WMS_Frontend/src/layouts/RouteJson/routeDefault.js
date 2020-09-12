@@ -490,8 +490,8 @@ let routes = [
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
-  { path: "/wm/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
-  { path: "/wm/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
+  { path: "/warehouse/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
+  { path: "/warehouse/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
 ];
 
 export default routes;

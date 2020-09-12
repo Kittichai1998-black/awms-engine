@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import classnames from 'classnames';
 import {
     apicall,
     createQueryString,
@@ -42,8 +43,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import AmTreeView from '../../../pageComponent/AmTreeView'
 import AmDialogConfirm from '../../../../components/AmDialogConfirm'
-import { AuditStatus } from '../../../../components/Models/StorageObjectEvenstatus';
 import AmAuditStatus from '../../../../components/AmAuditStatus'
+import { AuditStatus } from '../../../../components/Models/StorageObjectEvenstatus';
+import AmScanQRbyCamera from '../../../../components/AmScanQRbyCamera';
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -139,17 +141,23 @@ const styles = theme => ({
         marginTop: 45
     },
     labelHead: {
-        fontWeight: "inherit",
         fontWeight: 'bold',
+        fontSize: 16,
     },
     labelHead2: {
-        fontWeight: "inherit",
+        fontWeight: "inherit"
     },
     labelText: {
         fontWeight: "inherit",
-        fontSize: 12,
         flexGrow: 1
     },
+    statusLabel: {
+        fontSize: 18,
+        height: '1.75em',
+        width: 'auto',
+    },
+    textNowrap: { flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
+
 });
 const InputDiv = styled.div`
   
@@ -198,16 +206,9 @@ const LabelHDD = styled.label`
     width: 120px;
     paddingleft: 20px;
   `;
-function Pallet(props) {
-    return (
-        <SvgIcon {...props} id="bold" enableBackground="new 0 0 24 24" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg">
-            {/* tslint:disable-next-line: max-line-length */}
-            <path d="m23.25 24h-4c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-5.5c-.414 0-.75-.336-.75-.75v-1.25h-3v1.25c0 .414-.336.75-.75.75h-4c-.414 0-.75-.336-.75-.75v-3.25h24v3.25c0 .414-.336.75-.75.75z" /><path d="m16 0h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m10 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" /><path d="m22 10h-3v2c0 .552-.448 1-1 1s-1-.448-1-1v-2h-3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" />
-        </SvgIcon>
-    );
-}
 
-const PickingChecker = (props) => {
+const GetPickedDetail = (props) => {
+
     const { t } = useTranslation();
     const { classes } = props;
     const [valueInput, setValueInput] = useState({});
@@ -226,8 +227,8 @@ const PickingChecker = (props) => {
 
     const handleNext = (index) => {
         if (index === 0) {
-            if (valueInput.bstoCode) {
-                GetStoPicking(valueInput.bstoCode);
+            if (valueInput.qr) {
+                GetStoPicked(valueInput.qr);
             } else {
                 alertDialogRenderer("warning", "กรุณากรอกหมายเลขพาเลท")
             }
@@ -236,8 +237,7 @@ const PickingChecker = (props) => {
 
     const handleBack = (index) => {
         if (index === 1) {
-            setValueInput({ ...valueInput, ['bstoCode']: null })
-            // ClearInput('bstoCode');
+            setValueInput({ ...valueInput, ['qr']: null })
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
@@ -245,7 +245,7 @@ const PickingChecker = (props) => {
     const handleReset = () => {
         setValueInput({});
         setActiveStep(0);
-        ClearInput('bstoCode')
+        ClearInput('qr')
     };
     const ClearInput = (field) => {
         let ele2 = document.getElementById(field);
@@ -254,165 +254,158 @@ const PickingChecker = (props) => {
         valueInput[field] = null;
         ele2.focus();
     }
-
     function getSteps() {
 
-        var bstoCode = "";
+        var qr = "";
         if (valueInput) {
-            if (valueInput.bstoCode) { bstoCode = valueInput.bstoCode; }
+            if (valueInput.qr) { qr = valueInput.qr; }
         }
         return [
-            { label: "Scan Pallet Code", value: bstoCode },
-            { label: 'Select Picking', value: null },
+            { label: "Scan QR Code", value: qr },
+            { label: 'Detail of Pack', value: null },
         ];
     };
     function getStepContent(step) {
         switch (step) {
             case 0:
-                return <div>
-                    <AmInput
-                        id={"bstoCode"}
-                        type="input"
-                        placeholder="Scan Pallet Code"
-                        autoFocus={true}
-                        style={{ width: "100%" }}
-                        onChange={(value, obj, element, event) => onHandleChangeInput(value, "bstoCode")}
-                        onKeyPress={(value, obj, element, event) => {
-                            if (event.key === "Enter") {
-                                onHandleChangeInput(value, "bstoCode");
-                                handleNext(0);
+                return <div style={{ flexGrow: 1 }}>
+                    <div style={{ display: "flex" }}>
+                        <AmInput
+                            id={"qr"}
+                            type="input"
+                            placeholder="Scan QR Code"
+                            autoFocus={true}
+                            style={{ width: "100%" }}
+                            onChange={(value, obj, element, event) => onHandleChangeInput(value, "qr")}
+                            onKeyPress={(value, obj, element, event) => {
+                                if (event.key === "Enter") {
+                                    onHandleChangeInput(value, "qr");
+                                    handleNext(0);
+                                }
                             }
-                        }
-                        }
-                    />
+                            }
+                        />
+                        {/* <AmScanQRbyCamera returnResult={(data) => showRes(data)} /> */}
+                    </div>
                 </div>;
             case 1:
-                return <RenderTreeViewData data={dataStoPick} onClick={(sel) => ConfirmPickDialogRenderer(sel)} />
+                return <RenderTreeViewData data={dataStoPick} />
             default:
                 return 'Unknown step';
+        }
+    }
+    const showRes = (data) => {
+        if (data) {
+            // console.log(data)
+            let ele = document.getElementById("qr");
+            if (ele) {
+                ele.value = data;
+                ele.focus();
+            }
         }
     }
     const onHandleChangeInput = (value, field) => {
         valueInput[field] = value;
     };
 
-    const RenderTreeViewData = React.memo(({ data, onClick }) => {
-        if (data != null && data.stoItems != null && data.stoItems.length > 0) {
-            let treeItems = [];
+    const RenderTreeViewData = React.memo(({ data }) => {
+        if (data != null && data.pstos != null && data.pstos.length > 0) {
+            let dataTreeItems = [];
             {
-                data.stoItems.map((sto, idx) => {
+                data.pstos.map((sto, idx) => {
                     let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
                     let pstoName = sto.pstoName != null ? sto.pstoName : "";
                     let lot = sto.lot != null && sto.lot.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot:" + sto.lot}</Typography>
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Lot: " + sto.lot}</Typography>
                         : sto.ref1 != null && sto.ref1.length > 0 ?
-                            <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot Vendor:" + sto.ref1}</Typography>
+                            <Typography variant="body1" className={classes.labelText} noWrap>{"Lot Vendor: " + sto.ref1}</Typography>
                             : null;
                     let batch = sto.batch != null && sto.batch.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Batch:" + sto.batch}</Typography>
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Batch: " + sto.batch}</Typography>
                         : null;
                     let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + sto.orderNo}</Typography>
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Order No. " + sto.orderNo}</Typography>
                         : null;
+
                     let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + sto.cartonNo}</Typography>
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Carton No. " + sto.cartonNo}</Typography>
+                        : null;
+                    let forCustomerName = sto.forCustomerName != null && sto.forCustomerName.length > 0 ?
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"For Customer: " + sto.forCustomerName}</Typography>
                         : null;
 
-                    let pk_docCode = sto.pk_docCode != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Document Code: " + sto.pk_docCode}</Typography>
+                    let productDate = sto.productDate != null ?
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Mfg. Date " + moment(sto.productDate).format("DD-MM-YYYY")}</Typography>
                         : null;
-                    let processTypeName = sto.processTypeName != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No." + sto.processTypeName}</Typography>
+                    let expiryDate = sto.expiryDate != null ?
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Exp. Date " + moment(sto.expiryDate).format("DD-MM-YYYY")}</Typography>
                         : null;
-                    let pickQty = sto.pickQty != null ? sto.pickQty + " " + sto.unitCode : "";
-                    let destination = sto.destination != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Des:" + sto.destination}</Typography>
+                    let pickQty = sto.qty != null ? sto.qty + " " + sto.unitCode : "";
+                    let destination = sto.destination != null && sto.destination.length > 0 ?
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Destination: " + sto.destination}</Typography>
                         : null;
-                    let remark = sto.remark != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Remark:" + sto.remark}</Typography>
+                    let remark = sto.remark != null && sto.remark.length > 0 ?
+                        <Typography variant="body1" className={classes.labelText} noWrap>{"Remark: " + sto.remark}</Typography>
                         : null;
-                    // if (sto.auditStatus) {
-                    //     let audit = " | AD:" + AuditStatus.find(x => x.value === sto.auditStatus).label;
-                    //     auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}</Typography>
-
-                    // }
                     let auditstatus = null;
                     if (sto.auditStatus != null) {
-                        let audit = " | Audit Status: ";
-                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
-                            <AmAuditStatus statusCode={sto.auditStatus} />
-                        </Typography>
+                        let audit = "Audit Status: ";
+                        auditstatus = <Typography variant="body1" className={classes.labelText} noWrap>{audit}<AmAuditStatus className={classes.statusLabel} statusCode={sto.auditStatus} /></Typography>
 
                     }
                     let treeItem = {
-                        nodeId: sto.distoID.toString(),
-                        labelText: <div style={{ flexGrow: 1 }}>
-                            <div style={{ display: "flex" }}>
-                                <Typography variant="body2" className={classes.labelHead} noWrap>{pstoCode}</Typography>
-                                <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
-                            </div>
-                            {auditstatus}{lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}
+                        nodeId: "sub-" + sto.pstoID.toString(),
+                        labelText: <div className={classes.textNowrap}>
+                            {lot}{batch}{orderNo}{cartonNo}
+                            {forCustomerName}
+                            {productDate}{expiryDate}
+                            {destination}{remark}
+                            {auditstatus}
                         </div>,
-                        labelIcon: ShoppingCartIcon,
-                        labelInfo: pickQty,
+
                         bgColor: "#e8f0fe",
                         color: "#1a73e8",
                         dataItem: sto,
-                        onIconClick: (dataItem) => onClick(dataItem),
-                        onLabelClick: (dataItem) => onClick(dataItem)
+                        // onIconClick: (dataItem) => onClick(dataItem),
+                        // onLabelClick: (dataItem) => onClick(dataItem)
                     };
-
-                    treeItems.push(treeItem);
+                    let rootItem = {
+                        nodeId: sto.pstoID.toString(),
+                        labelText:
+                            <Typography variant="body2" className={classes.labelText} noWrap>
+                                <span className={classes.labelHead}>{pstoCode}</span>
+                                    &nbsp;{"- " + pstoName}
+                            </Typography>
+                        ,
+                        labelInfo: pickQty,
+                        treeItems: [treeItem]
+                    }
+                    dataTreeItems.push(rootItem);
                 })
             }
-            let dataTreeItems = [{
-                nodeId: 'root',
-                labelText: data.bstoCode,
-                // labelIcon: Pallet,
-                treeItems: treeItems
-            }];
-            return (<div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /></div>);
+            return (<div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={[dataTreeItems[0].nodeId]} /></div>);
         } else {
-            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
+            return <div><h4>ไม่พบข้อมูลสินค้า</h4></div>;
         }
     });
-    const GetStoPicking = (bstoCode) => {
-        Axios.get(window.apipath + '/v2/get_sto_picking?' +
-            '&bstoCode=' + (bstoCode === undefined || bstoCode === null ? ''
-                : encodeURIComponent(bstoCode.trim()))).then(res => {
+    const GetStoPicked = (qr) => {
+        Axios.get(window.apipath + '/v2/get_picked_detail?' +
+            '&qr=' + (qr === undefined || qr === null ? ''
+                : encodeURIComponent(qr.trim()))).then(res => {
                     if (res.data._result.status === 1) {
-                        if (res.data.stoItems != null && res.data.stoItems.length > 0) {
+                        if (res.data.pstos != null && res.data.pstos.length > 0) {
                             setActiveStep((prevActiveStep) => prevActiveStep + 1);
                             setDataStoPick(res.data)
                         } else {
                             setDataStoPick(null)
                             handleReset();
-                            alertDialogRenderer("error", "ไม่พบรายการสินค้าที่เบิกได้")
+                            alertDialogRenderer("error", "ไม่พบข้อมูลสินค้า")
                         }
                     } else {
                         handleReset();
                         alertDialogRenderer("error", res.data._result.message)
                     }
                 });
-    }
-
-    const onClickPick = (sel) => {
-        var req = { ...sel };
-        Axios.post(window.apipath + '/v2/picking_checker', req).then(res => {
-            if (res.data._result.status === 1) {
-                if (res.data.stoItems != null && res.data.stoItems.length > 0) {
-                    setDataStoPick(res.data)
-                    alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
-                } else {
-                    if (res.data.docIDs != null && res.data.docIDs.length > 0) {
-                        alertDialogRenderer("success", "เบิกสินค้าเรียบร้อย")
-                        handleBack(1);
-                    }
-                }
-            } else {
-                alertDialogRenderer("error", res.data._result.message)
-            }
-        });
     }
     // Alert Dialog
     const alertDialogRenderer = (type, message) => {
@@ -433,52 +426,10 @@ const PickingChecker = (props) => {
             return null;
         }
     }
-    const onClose = (data) => {
-        setOpenConfirm(data)
-        if (data === false) {
-            setSettingConfirm(null)
-        }
-    }
-    function ConfirmPickDialog(open, data, onConfirm, onClose) {
-        if (open && data) {
-            let pickQty = data.pickQty != null ? data.pickQty + " " + data.unitCode : "";
-
-            let eleInfo = <div style={{ flexGrow: 1 }}>
-                <div style={{ display: "flex" }}>
-                    <Typography variant="body2" className={classes.labelHead} noWrap>{data.pstoCode}</Typography>
-                    <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + data.pstoName}</Typography>
-                </div>
-                <Typography variant="body2" className={classes.labelHead2} noWrap>{"Qty: " + pickQty}</Typography>
-            </div>
-            return <AmDialogConfirm
-                titleDialog={"Are you confirm to pick?"}
-                open={open}
-                close={a => onClose(a)}
-                bodyDialog={eleInfo}
-                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => onConfirm(data)}>{t("Confirm")}</AmButton>}
-                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => onClose(false)}>{t("Cancel")}</AmButton>}
-            />
-        } else {
-            return null;
-        }
-    }
-    const ConfirmPickDialogRenderer = (dataSel) => {
-        setSettingConfirm(dataSel);
-        setOpenConfirm(true)
-    }
-    const onConfirmPick = (data) => {
-        if (data) {
-            setOpenConfirm(false)
-            setSettingConfirm(null)
-            onClickPick(data)
-        }
-    }
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
-    const DialogConfirm = useMemo(() => ConfirmPickDialog(openConfirm, settingConfirm, onConfirmPick, onClose), [openConfirm, settingConfirm])
 
     return (
         <div>
-            {DialogConfirm}
             {DialogAlert}
             <Paper className={classes.paperContainer}>
                 <Stepper
@@ -524,9 +475,9 @@ const PickingChecker = (props) => {
                 </Stepper>
             </Paper>
         </div>
-    )
+    );
 }
-PickingChecker.propTypes = {
+GetPickedDetail.propTypes = {
 
 }
-export default withStyles(styles)(PickingChecker);
+export default withStyles(styles)(GetPickedDetail);

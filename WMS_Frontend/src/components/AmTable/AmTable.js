@@ -3,8 +3,9 @@ import PropTypes from "prop-types"
 import AmTablePropTypes from "./AmTablePropTypes";
 import AmDropDownMenu from "../AmDropDownMenu";
 import SettingsIcon from '@material-ui/icons/Settings';
-import {IconButton, Button} from '@material-ui/core';
+import {IconButton as IconButtonBase, Button} from '@material-ui/core';
 import {Dropdown} from "react-bootstrap";
+import { withStyles } from "@material-ui/core/styles";
 import AmExportExcel from "../AmExportExcel";
 import {
     Clone
@@ -36,7 +37,7 @@ const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items,
 const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination}) => {
     if(tableConfig && customTopRightControl){
         return <>
-        <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopRightControl}</div>
+        <div style={{display:"inline-block", paddingLeft:"4px", marginRight:"4px"}} >{customTopRightControl}</div>
         <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
         style={{display:"inline-block", paddingLeft:"4px"}} 
         items={items} datas={selection} title=""/>
@@ -45,7 +46,7 @@ const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customT
     else if(tableConfig){
         return <>
             <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
-            style={{display:"inline-block", paddingLeft:"4px"}} 
+            style={{display:"inline-block"}} 
             items={items} datas={selection} title=""/>
         </>;
     }
@@ -72,7 +73,7 @@ const customToggleBTN = React.forwardRef(({ children, onClick }, ref) => (
 ));
 
 const customSettingBTN = React.forwardRef(({ children, onClick }, ref) => (
-    <IconButton disableRipple
+    <IconButton
         ref={ref}
         onClick={(e) => {
             e.preventDefault();
@@ -212,6 +213,15 @@ const AmTable = (props) => {
         </Suspense>
     </>
 }
+
+const IconButton = withStyles({
+    root: {
+        position:"relative",
+        padding: "5px !important",
+        color:"black"
+    },
+
+})(IconButtonBase);
 
 AmTable.propTypes = {...AmTablePropTypes,
     /**

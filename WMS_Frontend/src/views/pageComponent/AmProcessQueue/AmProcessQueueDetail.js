@@ -8,21 +8,17 @@ import {
 } from "../../../components/function/CoreFunction";
 import AmDialogs from "../../../components/AmDialogs";
 import AmButton from "../../../components/AmButton";
-import AmInput from "../../../components/AmInput";
 import queryString from "query-string";
 import AmDropdown from "../../../components/AmDropdown";
 import Checkbox from "@material-ui/core/Checkbox";
 import styled from 'styled-components';
 import AmTable from '../../../components/AmTable';
 import { ProcessQueueContext } from './ProcessQueueContext';
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
-import EditIcon from '@material-ui/icons/Edit';
-import ListIcon from '@material-ui/icons/List';
-import SortIcon from '@material-ui/icons/Sort';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmDialogConfirm from '../../../components/AmDialogConfirm';
@@ -33,6 +29,8 @@ import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRigh
 import { FaPallet, FaPercentage } from 'react-icons/fa';
 import AmToolTip from "../../../components/AmToolTip";
 import { StorageObjectEvenStatusAll, AuditStatus } from "../../../components/Models/StorageObjectEvenstatus";
+
+import EditIcon from '@material-ui/icons/Edit';
 
 var Axios = new apicall();
 
@@ -289,7 +287,7 @@ const ProcessQueueDetail = (props) => {
                 <FormInline>
                     <label style={{ marginRight: "10px" }}>Conditions : </label>
                     <AmToolTip title={"Conditions"} placement={"top"}>
-                        <EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" />
+                        <IconButtonCustom><EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
                 </FormInline>
             )
@@ -303,7 +301,7 @@ const ProcessQueueDetail = (props) => {
                         return <SelectionItem>{`${field}(${order})`}</SelectionItem>
                     })}
                     <AmToolTip title={"Order By"} placement={"top"}>
-                        <SortIcon onClick={() => { onClickDialog("orderBys", event) }} fontSize="small" />
+                        <IconButtonCustom><EditIcon onClick={() => { onClickDialog("orderBys", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
                 </FormInline>
             )
@@ -315,7 +313,7 @@ const ProcessQueueDetail = (props) => {
                         return <SelectionItem>{StorageObjectEvenStatusAll.find(x => x.value === st).label}</SelectionItem>
                     })}
                     <AmToolTip title={"Event Status"} placement={"top"}>
-                        <ListIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" />
+                        <IconButtonCustom><EditIcon onClick={() => { onClickDialog("eventStatuses", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
                 </FormInline>
             )
@@ -327,7 +325,7 @@ const ProcessQueueDetail = (props) => {
                         return <SelectionItem>{AuditStatus.find(x => x.value === st).label}</SelectionItem>
                     })}
                     <AmToolTip title={"Audit Status"} placement={"top"}>
-                        <ListIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" />
+                        <IconButtonCustom><EditIcon onClick={() => { onClickDialog("auditStatuses", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
                 </FormInline>
             )
@@ -438,7 +436,7 @@ const ProcessQueueDetail = (props) => {
                     doc.flag = !doc.flag;
                 }}
                     defaultChecked={doc.flag} />
-                <Delete onClick={() => RemoveDocument(doc.document["ID"])} />
+                <IconButtonCustom><Delete onClick={() => RemoveDocument(doc.document["ID"])} /></IconButtonCustom>
                 <Typography>{setFieldHeader}</Typography>
             </ExpansionPanelSummary>
             {children}
@@ -871,12 +869,19 @@ const ProcessQueueDetail = (props) => {
         }
         <Grid container>
             <Grid item xs="12">
-                <AmButton
+                <IconButtonCustom>
+                    <DeleteIcon 
+                    style={{ float: "left" }}
+                    styleType="delete"
+                    disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0}
+                    onClick={() => { documents.clearDocument() }}
+                /></IconButtonCustom>
+                {/* <AmButton
                     style={{ float: "left" }}
                     styleType="delete"
                     disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0}
                     onClick={() => { documents.clearDocument() }
-                    }>Clear</AmButton>
+                    }>Clear</AmButton> */}
                 <AmButton
                     style={{ marginLeft: 10, float: "right" }}
                     styleType="info"
@@ -1152,6 +1157,15 @@ const CheckboxCustom = withStyles({
 
 })(Checkbox);
 
+const IconButtonCustom = withStyles({
+    root: {
+        padding: "0 !important",
+        color:"black",
+        position:"relative"
+    },
+
+})(IconButton);
+
 const Delete = withStyles({
     root: {
         marginRight: "15px"
@@ -1236,7 +1250,8 @@ const OrderbyCustom = (props) => {
                 <AmButton style={{ marginLeft: 10, display: "inline" }} styleType="confirm" onClick={onClickAddItem}>Add</AmButton>
             </FormInline>
             {data.map(x => <FormInline>{x.order}-{props.orderList.find(y => x.fieldName === y.sortField).field} | {orderObj.find(y => x.orderByType === y.value).label}
-                <AmButton styleType="delete_clear" onClick={() => onClickRemoveItem(x)}>Remove</AmButton>
+                <IconButtonCustom><DeleteIcon onClick={() => onClickRemoveItem(x)}/></IconButtonCustom>
+                 {/* <AmButton styleType="delete_clear" onClick={() => onClickRemoveItem(x)}>Remove</AmButton> */}
             </FormInline>)
             }
         </div>

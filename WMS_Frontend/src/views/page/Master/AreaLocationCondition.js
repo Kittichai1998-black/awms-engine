@@ -8,7 +8,7 @@ const AreaLocationCondition = props => {
 
     const AreaMasterQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "AreaMaster",
+        t: "AreaLocationCondition",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
@@ -28,11 +28,12 @@ const AreaLocationCondition = props => {
         l: 100,
         all: ""
     };
-    const ObjectSizeQuery = {
+
+
+    const SKUMasterQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "ObjectSize",
-        q:
-            '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ObjectType", "c":"=", "v": 0}]',
+        t: "SKUMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -40,6 +41,21 @@ const AreaLocationCondition = props => {
         l: 100,
         all: ""
     };
+
+    const SKUMasterTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "SKUMasterType",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+
+
     const EntityEventStatus = [
         { label: "INACTIVE", value: 0 },
         { label: "ACTIVE", value: 1 }
@@ -60,16 +76,14 @@ const AreaLocationCondition = props => {
             },
             Cell: e => getStatus(e.original)
         },
-        { Header: "Area Code", accessor: "AreaCode", width: 150 },
-        { Header: "Code", accessor: "Code", width: 150 },
-        { Header: "Name", accessor: "Name", width: 200 },
-        { Header: "Gate", accessor: "Gate", width: 100 },
-        { Header: "Bank", accessor: "Bank", width: 70, type: "number" },
-        { Header: "Bay", accessor: "Bay", width: 70, type: "number" },
-        { Header: "Level", accessor: "Level", width: 70, type: "number" },
-        { Header: "GroupType", accessor: "GroupType", width: 100, type: "number" },
-        { Header: "Unit Type", accessor: "UnitType_Code", width: 200 },
-        { Header: "ObjectSize", accessor: "ObjectSize_Code", width: 200 },
+        { Header: "Priority", accessor: "Priority"},   
+        { Header: "Bank", accessor: "LocationBankNumRange" },
+        { Header: "Bay", accessor: "LocationBayNumRange" },
+        { Header: "Level", accessor: "LocationLvNumRange"},
+        { Header: "SKU Code", accessor: "SKU_Code" },
+        { Header: "SKU Name", accessor: "SKU_Name" },
+        { Header: "SKUType", accessor: "SKUType_Name" },
+        { Header: "Unit Type", accessor: "UnitType_Name"},
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -81,56 +95,53 @@ const AreaLocationCondition = props => {
     ];
     const columns = [
         {
-            field: "AreaMaster_ID",
-            type: "dropdown",
-            typeDropDown: "search",
-            name: "Area Code",
-            dataDropDown: AreaMasterQuery,
-            placeholder: "Area Code",
-            fieldLabel: ["Code", "Name"]
-        },
-        {
-            field: "Code",
+            field: "Priority",
             type: "input",
-            name: "Code",
-            placeholder: "Code",
+            name: "Priority",
+            placeholder: "Priority",
             validate: /^[0-9\.]+$/,
             required: true
         },
         {
-            field: "Name",
-            type: "input",
-            name: "Name",
-            placeholder: "Name",
-            required: true
-        },
-        {
-            field: "Gate",
-            type: "input",
-            name: "Gate",
-            placeholder: "Gate",
-            validate: /^[0-9\.]+$/
-        },
-        {
-            field: "Bank",
+            field: "LocationBankNumRange",
             type: "input",
             name: "Bank",
             placeholder: "Bank",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Bay",
+            field: "LocationBayNumRange",
             type: "input",
             name: "Bay",
             placeholder: "Bay",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Level",
+            field: "LocationLvNumRange",
             type: "input",
             name: "Level",
             placeholder: "Level",
             validate: /^[0-9\.]+$/
+        },
+        {
+            field: "SKUMaster_ID",
+            type: "dropdown",
+            typeDropDown: "search",
+            name: "SKU Master",
+            dataDropDown: SKUMasterQuery,
+            placeholder: "SKU Master",
+            fieldLabel: ["Code", "Name"],
+            required: true
+        }, 
+        {
+            field: "SKUMasterType_ID",
+            type: "dropdown",
+            typeDropDown: "search",
+            name: "SKU Type",
+            dataDropDown: SKUMasterTypeQuery,
+            placeholder: "SKU Type",
+            fieldLabel: ["Code", "Name"],
+            fieldValue: "ID",
         },
         {
             field: "UnitType_ID",
@@ -140,95 +151,78 @@ const AreaLocationCondition = props => {
             dataDropDown: UnitTypeQuery,
             placeholder: "Unit Type",
             fieldLabel: ["Code", "Name"],
-            required: true
-        },
-        {
-            field: "ObjectSize_ID",
-            type: "dropdown",
-            typeDropDown: "search",
-            name: "ObjectSize",
-            dataDropDown: ObjectSizeQuery,
-            placeholder: "ObjectSize",
-            fieldLabel: ["Code", "Name"],
-            required: true
-        }
+            fieldValue: "ID",
+        }  
     ];
 
     const columnsEdit = [
         {
-            field: "AreaMaster_ID",
-            type: "dropdown",
-            typeDropDown: "search",
-            name: "Area Code",
-            dataDropDown: AreaMasterQuery,
-            placeholder: "Area Code",
-            fieldLabel: ["Code", "Name"]
-        },
-        {
-            field: "Code",
+            field: "Priority",
             type: "input",
-            name: "Code",
-            placeholder: "Code",
+            name: "Priority",
+            placeholder: "Priority",
             validate: /^[0-9\.]+$/,
             required: true
         },
+    
         {
-            field: "Name",
-            type: "input",
-            name: "Name",
-            placeholder: "Name",
-            validate: /^.+$/,
-            required: true
-        },
-        {
-            field: "Gate",
-            type: "input",
-            name: "Gate",
-            placeholder: "Gate",
-            validate: /^[0-9\.]+$/
-        },
-        {
-            field: "Bank",
+            field: "LocationBankNumRange",
             type: "input",
             name: "Bank",
             placeholder: "Bank",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Bay",
+            field: "LocationBayNumRange",
             type: "input",
             name: "Bay",
             placeholder: "Bay",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Level",
+            field: "LocationLvNumRange",
             type: "input",
             name: "Level",
             placeholder: "Level",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "UnitType_ID",
+            field: "SKU_Code",
+            type: "input",
+            name: "SKU Code",
+            placeholder: "SKU Code",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "SKU_Name",
+            type: "input",
+            name: "SKU Name",
+            placeholder: "SKU Name",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "SKUType_Name",
+            type: "dropdown",
+            typeDropDown: "search",
+            name: "SKU Type",
+            dataDropDown: SKUMasterTypeQuery,
+            placeholder: "SKU Type",
+            fieldLabel: ["Code", "Name"],
+            validate: /^.+$/,
+            fieldValue: "ID",
+        },
+        {
+            field: "UnitType_Code",
             type: "dropdown",
             typeDropDown: "search",
             name: "Unit Type",
             dataDropDown: UnitTypeQuery,
             placeholder: "Unit Type",
             fieldLabel: ["Code", "Name"],
+            fieldValue: "ID",
             required: true
-        },
-        {
-            field: "ObjectSize_ID",
-            type: "dropdown",
-            typeDropDown: "search",
-            name: "ObjectSize",
-            dataDropDown: ObjectSizeQuery,
-            placeholder: "ObjectSize",
-            fieldLabel: ["Code", "Name"],
-            required: true
-        },
-        {
+        },     
+          {
             field: "Status",
             type: "dropdown",
             typeDropDown: "normal",
@@ -263,16 +257,6 @@ const AreaLocationCondition = props => {
             name: "Unit Type",
             dataDropDown: UnitTypeQuery,
             placeholder: "Unit Type",
-            fieldLabel: ["Code", "Name"],
-            fieldDataKey: "Code"
-        },
-        {
-            field: "ObjectSize_Code",
-            type: "dropdown",
-            typeDropDown: "search",
-            name: "ObjectSize",
-            dataDropDown: ObjectSizeQuery,
-            placeholder: "ObjectSize",
             fieldLabel: ["Code", "Name"],
             fieldDataKey: "Code"
         },
@@ -330,8 +314,8 @@ const AreaLocationCondition = props => {
             <AmMaster
                 columnsFilterPrimary={columnsFilterPri}
                 columnsFilter={columnsFilter}
-                tableQuery={"AreaLocationMaster"}
-                table={"ams_AreaLocationMaster"}
+                tableQuery={"AreaLocationCondition"}
+                table={"ams_AreaLocationCondition"}
                 dataAdd={columns}
                 history={props.history}
                 columns={iniCols}
