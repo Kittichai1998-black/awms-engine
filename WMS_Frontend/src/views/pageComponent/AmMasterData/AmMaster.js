@@ -141,7 +141,7 @@ const useColumns = (cols) => {
             Cell: (e) => <><IconButton
                 size="small"
                 aria-label="info"
-                style={{ marginLeft: "3px" }}
+                style={{ marginLeft: "3px", position:"relative" }}
                 onClick={() => { setEditData({ ...e.data }) }}
             >
                 <EditIcon
@@ -153,7 +153,7 @@ const useColumns = (cols) => {
                     size="small"
                     aria-label="info"
                     onClick={() => { setRemoveData({ ...e.data, "Status": 2 }) }}
-                    style={{ marginLeft: "3px" }}>
+                    style={{ marginLeft: "3px", position:"relative" }}>
                     <DeleteIcon
                         fontSize="small"
                         style={{ color: "#e74c3c" }} />

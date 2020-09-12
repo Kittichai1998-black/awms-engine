@@ -122,7 +122,7 @@ function StyledTreeItem(props) {
           {LabelIcon !== undefined ?
             <LabelIcon color="inherit" className={classes.labelIcon} /> : null}
           {typeof labelText === "string" ?
-            <Typography variant="body2" className={nodeId === "root" ? classes.labelTextRoot : classes.labelText}>
+            <Typography variant="body2" className={nodeId === "root" ? classes.labelTextRoot : classes.labelText} noWrap>
               {labelText}
             </Typography>
             : labelText}

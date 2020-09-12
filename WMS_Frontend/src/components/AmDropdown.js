@@ -658,7 +658,7 @@ const DropdownComponent = (props) => {
                                 tabSelectsValue={false}
                                 value={valueData}
                                 menuPortalTarget={document.body}
-                                maxMenuHeight={150}
+                                maxMenuHeight={300}
                                 // menuPosition={'fixed'}
                                 menuPlacement={'auto'}
                             />
@@ -673,6 +673,7 @@ const DropdownComponent = (props) => {
                                     value={valueData}
                                     isDisabled={disabled ? true : false}
                                     required={required}
+                                    isSearchable
                                     classes={classes}
                                     options={optionList}
                                     styles={selectStyles2(zIndex)}
@@ -680,7 +681,7 @@ const DropdownComponent = (props) => {
                                     onChange={onSelectChange}
                                     placeholder={placeholder}
                                     isClearable
-                                    maxMenuHeight={150}
+                                    maxMenuHeight={300}
                                     menuPortalTarget={document.body}
                                     // menuPosition={'fixed'} 
                                     menuPlacement={'auto'}
