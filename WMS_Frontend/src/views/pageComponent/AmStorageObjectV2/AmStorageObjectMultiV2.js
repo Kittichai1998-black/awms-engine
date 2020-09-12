@@ -114,8 +114,8 @@ const AmStorageObjectMulti = props => {
     var queryStr = createQueryString(data)
     Axios.get(queryStr).then(res => {
 
-      var respone = DataGenerateMulti(res.data.datas)
-      setDataSource(respone)
+      //var respone = DataGenerateMulti(res.data.datas)
+      setDataSource(res.data.datas)
       setCount(res.data.counts)
     });
   }
