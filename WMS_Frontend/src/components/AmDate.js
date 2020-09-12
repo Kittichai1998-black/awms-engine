@@ -52,7 +52,7 @@ const AmDate = props => {
     console.log(text)
     if (tDate === "date") {
       if (text === null) {
-        //props.onChange(null);
+        props.onChange(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text.format("YYYY-MM-DD");
@@ -61,7 +61,7 @@ const AmDate = props => {
       }
     } else if (tDate === "datetime-local") {
       if (text === null) {
-        // props.onChange(null);
+        props.onChange(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm:ss");
@@ -70,7 +70,7 @@ const AmDate = props => {
       }
     } else if (tDate === "time") {
       if (text === null) {
-        // props.onChange(null);
+        props.onChange(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text;
@@ -85,7 +85,7 @@ const AmDate = props => {
     const dataReturn = {};
     if (tDate === "date") {
       if (text === null) {
-        // props.onBlur(null);
+        props.onBlur(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text.format("YYYY-MM-DD");
@@ -94,7 +94,7 @@ const AmDate = props => {
       }
     } else if (tDate === "datetime-local") {
       if (text === null) {
-        // props.onBlur(null);
+        props.onBlur(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text.format("YYYY-MM-DDTHH:mm:ss");
@@ -103,7 +103,7 @@ const AmDate = props => {
       }
     } else if (tDate === "time") {
       if (text === null) {
-        // props.onBlur(null);
+        props.onBlur(null);
       } else {
         dataReturn.fieldID = fieldID;
         dataReturn.fieldDataKey = text;
