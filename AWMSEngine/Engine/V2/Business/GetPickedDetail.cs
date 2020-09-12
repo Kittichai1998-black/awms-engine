@@ -70,15 +70,23 @@ namespace AWMSEngine.Engine.V2.Business
                 List<long> dociID = qrModel.dociID.Split(',').Select(long.Parse).ToList();
                 List<string> tag = qrModel.tag.Split(',').ToList();
                 var getpstos = new List<PackSto>();
+                int i = 0;
+                dociID.ForEach(docitemID => {
 
-                tag.ForEach(x => {
+                    var docitemPutaway = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docitemID, this.BuVO);
+                    if (docitemPutaway == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Item Putaway Not Found");
                     var optTag = AMWUtil.Common.ObjectUtil.QryStrSetValue(
-                       null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, x));
+                                          null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, tag[i]));
                     var packpicked = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE),
-                    }, this.BuVO).FirstOrDefault();
-                    if(packpicked != null)
+                            new SQLConditionCriteria("RefID", docitemPutaway.RefID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE)
+                    }, new SQLOrderByCriteria[] { 
+                        new SQLOrderByCriteria("CreateTime", SQLOrderByType.DESC),
+                        new SQLOrderByCriteria("ID", SQLOrderByType.DESC)
+                    },5,null, this.BuVO).FirstOrDefault();
+                    if (packpicked != null)
                     {
                         var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("Des_StorageObject_ID", packpicked.ID.Value, SQLOperatorType.EQUALS),
@@ -96,10 +104,11 @@ namespace AWMSEngine.Engine.V2.Business
                         if (doc.Des_Supplier_ID != null)
                             des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == doc.Des_Supplier_ID).Name;
                         string forCustomerName = "";
-                        if (packpicked.For_Customer_ID !=null)
+                        if (packpicked.For_Customer_ID != null)
                             forCustomerName = ADO.DataADO.GetInstant().SelectByID<ams_Customer>(packpicked.For_Customer_ID, this.BuVO).Name;
 
-                        getpstos.Add(new PackSto() {
+                        getpstos.Add(new PackSto()
+                        {
                             pstoID = packpicked.ID.Value,
                             pstoCode = packpicked.Code,
                             pstoName = packpicked.Name,
@@ -127,7 +136,17 @@ namespace AWMSEngine.Engine.V2.Business
                             remark = doc.Remark,
                         });
                     }
+                    i++;
                 });
+                /*tag.ForEach(x => {
+                    var optTag = AMWUtil.Common.ObjectUtil.QryStrSetValue(
+                       null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, x));
+                    var packpicked = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE),
+                    }, this.BuVO).FirstOrDefault();
+                    
+                });*/
                 res.pstos = getpstos;
             }
 

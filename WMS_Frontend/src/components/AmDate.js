@@ -49,6 +49,7 @@ const AmDate = props => {
 
   const onHandleDateChange = (text, tDate) => {
     const dataReturn = {};
+    console.log(text)
     if (tDate === "date") {
       if (text === null) {
         props.onChange(null);
