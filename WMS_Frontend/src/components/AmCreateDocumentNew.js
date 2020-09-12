@@ -144,7 +144,7 @@ const AmCreateDocument = (props) => {
             Header: "", width: 30, Cell: (e) => <IconButton
                 size="small"
                 aria-label="info"
-                style={{ marginLeft: "3px" }}
+                style={{ marginLeft: "3px", position: 'relative' }}
                 onClick={() => {
                     setEditData(Clone(e.original));
                     setDialog(true);
@@ -154,7 +154,7 @@ const AmCreateDocument = (props) => {
             >
                 <EditIcon
                     fontSize="small"
-                    style={{ color: "#f39c12" }}
+                    style={{ color: "#f39c12",position: 'relative' }}
                 />
             </IconButton>
         },
@@ -166,10 +166,10 @@ const AmCreateDocument = (props) => {
                     onClick={() => {
                         onHandleDelete(e.original.ID, e.original, e);
                     }}
-                    style={{ marginLeft: "3px" }}>
+                    style={{ marginLeft: "3px", position: 'relative' }}>
                     <DeleteIcon
                         fontSize="small"
-                        style={{ color: "#e74c3c" }} />
+                        style={{ color: "#e74c3c", position: 'relative' }} />
                 </IconButton>
 
         }

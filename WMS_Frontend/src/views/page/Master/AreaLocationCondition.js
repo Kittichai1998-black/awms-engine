@@ -83,7 +83,7 @@ const AreaLocationCondition = props => {
         { Header: "SKU Code", accessor: "SKU_Code" },
         { Header: "SKU Name", accessor: "SKU_Name" },
         { Header: "SKUType", accessor: "SKUType_Name" },
-        { Header: "Unit Type", accessor: "UnitType_Code"},
+        { Header: "Unit Type", accessor: "UnitType_Name"},
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -103,21 +103,21 @@ const AreaLocationCondition = props => {
             required: true
         },
         {
-            field: "Bank",
+            field: "LocationBankNumRange",
             type: "input",
             name: "Bank",
             placeholder: "Bank",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Bay",
+            field: "LocationBayNumRange",
             type: "input",
             name: "Bay",
             placeholder: "Bay",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "Level",
+            field: "LocationLvNumRange",
             type: "input",
             name: "Level",
             placeholder: "Level",
