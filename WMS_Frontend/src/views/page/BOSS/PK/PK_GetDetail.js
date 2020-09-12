@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import classnames from 'classnames';
 import {
     apicall,
     createQueryString,
@@ -140,11 +141,11 @@ const styles = theme => ({
         marginTop: 45
     },
     labelHead: {
-        fontWeight: "inherit",
         fontWeight: 'bold',
+        fontSize: 16,
     },
     labelHead2: {
-        fontWeight: "inherit",
+        fontWeight: "inherit"
     },
     labelText: {
         fontWeight: "inherit",
@@ -154,7 +155,9 @@ const styles = theme => ({
         fontSize: 18,
         height: '1.75em',
         width: 'auto',
-    }
+    },
+    textNowrap: { flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
+
 });
 const InputDiv = styled.div`
   
@@ -352,14 +355,14 @@ const GetPickedDetail = (props) => {
                     }
                     let treeItem = {
                         nodeId: "sub-" + sto.pstoID.toString(),
-                        labelText: <div style={{ flexGrow: 1 }}>
+                        labelText: <div className={classes.textNowrap}>
                             {lot}{batch}{orderNo}{cartonNo}
                             {forCustomerName}
                             {productDate}{expiryDate}
                             {destination}{remark}
                             {auditstatus}
                         </div>,
-                        labelInfo: pickQty,
+
                         bgColor: "#e8f0fe",
                         color: "#1a73e8",
                         dataItem: sto,
@@ -368,11 +371,13 @@ const GetPickedDetail = (props) => {
                     };
                     let rootItem = {
                         nodeId: sto.pstoID.toString(),
-                        labelText: <div style={{ flexGrow: 1 }}>
-                            <div style={{ display: "flex" }}>
-                                <Typography variant="body1" className={classes.labelHead} noWrap>{pstoCode}</Typography>
-                                <Typography variant="body1" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
-                            </div></div>,
+                        labelText:
+                            <Typography variant="body2" className={classes.labelText} noWrap>
+                                <span className={classes.labelHead}>{pstoCode}</span>
+                                    &nbsp;{"- " + pstoName}
+                            </Typography>
+                        ,
+                        labelInfo: pickQty,
                         treeItems: [treeItem]
                     }
                     dataTreeItems.push(rootItem);
