@@ -146,10 +146,17 @@ const styles = theme => ({
         fontWeight: "inherit",
     },
     labelText: {
-        fontWeight: "inherit",
-        fontSize: 12,
+        // fontWeight: "inherit",
+        // fontSize: 12,
         flexGrow: 1
     },
+    statusLabel: {
+        fontSize: 16,
+        // height: '1.75em',
+        padding: 3,
+        width: 'auto',
+    },
+    textNowrap: { flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
 });
 const InputDiv = styled.div`
   
@@ -304,32 +311,34 @@ const PickingChecker = (props) => {
                     let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
                     let pstoName = sto.pstoName != null ? sto.pstoName : "";
                     let lot = sto.lot != null && sto.lot.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot:" + sto.lot}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + sto.lot}</Typography>
                         : sto.ref1 != null && sto.ref1.length > 0 ?
-                            <Typography variant="body2" className={classes.labelText} noWrap>{" | Lot Vendor:" + sto.ref1}</Typography>
+                            <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor:" + sto.ref1}</Typography>
                             : null;
                     let batch = sto.batch != null && sto.batch.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Batch:" + sto.batch}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + sto.batch}</Typography>
                         : null;
                     let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Order No." + sto.orderNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Order No." + sto.orderNo}</Typography>
                         : null;
                     let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Carton No." + sto.cartonNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No." + sto.cartonNo}</Typography>
                         : null;
 
                     let pk_docCode = sto.pk_docCode != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Document Code: " + sto.pk_docCode}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Document Code: " + sto.pk_docCode}</Typography>
                         : null;
                     let processTypeName = sto.processTypeName != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Process No." + sto.processTypeName}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Process No." + sto.processTypeName}</Typography>
                         : null;
-                    let pickQty = sto.pickQty != null ? sto.pickQty + " " + sto.unitCode : "";
+                    let pickQty = sto.pickQty != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.pickQty + " " + sto.unitCode}</Typography>
+                        : null;
                     let destination = sto.destination != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Des:" + sto.destination}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Des:" + sto.destination}</Typography>
                         : null;
                     let remark = sto.remark != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{" | Remark:" + sto.remark}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Remark:" + sto.remark}</Typography>
                         : null;
                     // if (sto.auditStatus) {
                     //     let audit = " | AD:" + AuditStatus.find(x => x.value === sto.auditStatus).label;
@@ -338,23 +347,25 @@ const PickingChecker = (props) => {
                     // }
                     let auditstatus = null;
                     if (sto.auditStatus != null) {
-                        let audit = " | Audit Status: ";
+                        let audit = "Audit Status: ";
                         auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
-                            <AmAuditStatus statusCode={sto.auditStatus} />
+                            <AmAuditStatus className={classes.statusLabel} statusCode={sto.auditStatus} />
                         </Typography>
 
                     }
                     let treeItem = {
                         nodeId: sto.distoID.toString(),
-                        labelText: <div style={{ flexGrow: 1 }}>
-                            <div style={{ display: "flex" }}>
-                                <Typography variant="body2" className={classes.labelHead} noWrap>{pstoCode}</Typography>
-                                <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
-                            </div>
-                            {auditstatus}{lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}
-                        </div>,
+                        labelText:
+                            <div className={classes.textNowrap}>
+                                <Typography variant="body2" className={classes.labelText} noWrap>
+                                    <span className={classes.labelHead}>{pstoCode}</span>
+                                    &nbsp;{"- " + pstoName}
+                                </Typography>
+                                {pickQty}
+                                {lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}{auditstatus}
+                            </div>,
                         labelIcon: ShoppingCartIcon,
-                        labelInfo: pickQty,
+                        // labelInfo: pickQty,
                         bgColor: "#e8f0fe",
                         color: "#1a73e8",
                         dataItem: sto,
@@ -448,7 +459,7 @@ const PickingChecker = (props) => {
                     <Typography variant="body2" className={classes.labelHead} noWrap>{data.pstoCode}</Typography>
                     <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{"- " + data.pstoName}</Typography>
                 </div>
-                <Typography variant="body2" className={classes.labelHead2} noWrap>{"Qty: " + pickQty}</Typography>
+                <Typography variant="body2" className={classes.labelHead2} noWrap>{"Quantity: " + pickQty}</Typography>
             </div>
             return <AmDialogConfirm
                 titleDialog={"Are you confirm to pick?"}

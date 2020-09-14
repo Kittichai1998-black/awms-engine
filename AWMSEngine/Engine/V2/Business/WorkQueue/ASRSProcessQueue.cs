@@ -178,8 +178,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         }
 
 
-                        if (!_condi.baseQty.HasValue || (_condi.baseQty.HasValue && _condi.baseQty.Value > 0))//query ใหม่จาก DB
+                        if (_condi.baseQty.HasValue)//query ใหม่จาก DB
                         {
+                            if(_condi.baseQty == 0)
+                            {
+                                _condi.baseQty = null;
+                            }
                             SPInSTOProcessQueueCriteria stoProcCri = new SPInSTOProcessQueueCriteria()
                             {
                                 locationCode = proc.locationCode,

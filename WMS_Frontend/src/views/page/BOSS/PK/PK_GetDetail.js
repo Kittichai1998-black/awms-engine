@@ -152,8 +152,9 @@ const styles = theme => ({
         flexGrow: 1
     },
     statusLabel: {
-        fontSize: 18,
-        height: '1.75em',
+        fontSize: 16,
+        // height: '1.75em',
+        padding: 3,
         width: 'auto',
     },
     textNowrap: { flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
@@ -316,69 +317,63 @@ const GetPickedDetail = (props) => {
                     let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
                     let pstoName = sto.pstoName != null ? sto.pstoName : "";
                     let lot = sto.lot != null && sto.lot.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Lot: " + sto.lot}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot: " + sto.lot}</Typography>
                         : sto.ref1 != null && sto.ref1.length > 0 ?
-                            <Typography variant="body1" className={classes.labelText} noWrap>{"Lot Vendor: " + sto.ref1}</Typography>
+                            <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor: " + sto.ref1}</Typography>
                             : null;
                     let batch = sto.batch != null && sto.batch.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Batch: " + sto.batch}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch: " + sto.batch}</Typography>
                         : null;
                     let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Order No. " + sto.orderNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Order No. " + sto.orderNo}</Typography>
                         : null;
 
                     let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Carton No. " + sto.cartonNo}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No. " + sto.cartonNo}</Typography>
                         : null;
                     let forCustomerName = sto.forCustomerName != null && sto.forCustomerName.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"For Customer: " + sto.forCustomerName}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"For Customer: " + sto.forCustomerName}</Typography>
                         : null;
 
                     let productDate = sto.productDate != null ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Mfg. Date " + moment(sto.productDate).format("DD-MM-YYYY")}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Mfg. Date " + moment(sto.productDate).format("DD-MM-YYYY")}</Typography>
                         : null;
                     let expiryDate = sto.expiryDate != null ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Exp. Date " + moment(sto.expiryDate).format("DD-MM-YYYY")}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Exp. Date " + moment(sto.expiryDate).format("DD-MM-YYYY")}</Typography>
                         : null;
-                    let pickQty = sto.qty != null ? sto.qty + " " + sto.unitCode : "";
+                    let pickQty = sto.qty != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.qty + " " + sto.unitCode}</Typography>
+                        : null;
                     let destination = sto.destination != null && sto.destination.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Destination: " + sto.destination}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Destination: " + sto.destination}</Typography>
                         : null;
                     let remark = sto.remark != null && sto.remark.length > 0 ?
-                        <Typography variant="body1" className={classes.labelText} noWrap>{"Remark: " + sto.remark}</Typography>
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Remark: " + sto.remark}</Typography>
                         : null;
                     let auditstatus = null;
                     if (sto.auditStatus != null) {
                         let audit = "Audit Status: ";
-                        auditstatus = <Typography variant="body1" className={classes.labelText} noWrap>{audit}<AmAuditStatus className={classes.statusLabel} statusCode={sto.auditStatus} /></Typography>
+                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}<AmAuditStatus className={classes.statusLabel} statusCode={sto.auditStatus} /></Typography>
 
                     }
-                    let treeItem = {
-                        nodeId: "sub-" + sto.pstoID.toString(),
-                        labelText: <div className={classes.textNowrap}>
-                            {lot}{batch}{orderNo}{cartonNo}
-                            {forCustomerName}
-                            {productDate}{expiryDate}
-                            {destination}{remark}
-                            {auditstatus}
-                        </div>,
 
-                        bgColor: "#e8f0fe",
-                        color: "#1a73e8",
-                        dataItem: sto,
-                        // onIconClick: (dataItem) => onClick(dataItem),
-                        // onLabelClick: (dataItem) => onClick(dataItem)
-                    };
                     let rootItem = {
                         nodeId: sto.pstoID.toString(),
                         labelText:
-                            <Typography variant="body2" className={classes.labelText} noWrap>
-                                <span className={classes.labelHead}>{pstoCode}</span>
+                            <div className={classes.textNowrap}>
+                                <Typography variant="body2" className={classes.labelText} noWrap>
+                                    <span className={classes.labelHead}>{pstoCode}</span>
                                     &nbsp;{"- " + pstoName}
-                            </Typography>
+                                </Typography>
+                                {pickQty}
+                                {lot}{batch}{orderNo}{cartonNo}
+                                {forCustomerName}
+                                {productDate}{expiryDate}
+                                {destination}{remark}
+                                {auditstatus}
+                            </div>
                         ,
-                        labelInfo: pickQty,
-                        treeItems: [treeItem]
+                        // labelInfo: pickQty,
                     }
                     dataTreeItems.push(rootItem);
                 })
