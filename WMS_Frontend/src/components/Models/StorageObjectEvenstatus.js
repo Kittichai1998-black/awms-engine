@@ -6,11 +6,11 @@ const StorageObjectEvenstatus = [
   { label: "PICKING", value: 33 },
 ];
 const StorageObjectEvenstatusTxt = [
-  { label: "RECEIVING", value: "%RECEIVING%" },
-  { label: "RECEIVED", value: "%RECEIVED%" },
-  { label: "AUDITING", value: "%AUDITING%" },
-  { label: "AUDITED", value: "%AUDITED%" },
-  { label: "PICKING", value: "%PICKING%" },
+  { label: "RECEIVING", value: "RECEIVING" },
+  { label: "RECEIVED", value: "RECEIVED" },
+  { label: "AUDITING", value: "AUDITING" },
+  { label: "AUDITED", value: "AUDITED" },
+  { label: "PICKING", value: "PICKING" },
 ];
 const StorageObjectEvenStatusAll = [
   { label: "INACTIVE", value: 0 },
@@ -34,7 +34,7 @@ const StorageObjectEvenStatusAll = [
   { label: "PICKED", value: 34 },
   { label: "CONSOLIDATING", value: 35 },
   { label: "CONSOLIDATED", value: 36 },
- 
+
 ];
 const AuditStatus = [
   { label: "QUARANTINE", value: 0 },
