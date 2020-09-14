@@ -63,20 +63,20 @@ namespace AMWUtil.Validation
                             if (tMethod.IsStatic)
                             {
                                 if(tMethod.GetParameters().Length != 1)
-                                    return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_METHOD_PARAMETER_1ARG_ONLY, a.MethodValidate);
+                                    return new AMWExceptionModel(a.ExceptionCode, a.MethodValidate);
                                 else if (!tMethod.GetParameters()[0].ParameterType.IsAssignableFrom(t.FieldType))
-                                    return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_METHOD_PARAMETER_TYPE_NOT_EQ, a.MethodValidate);
+                                    return new AMWExceptionModel(a.ExceptionCode, a.MethodValidate);
                                 
                                 isVerify = (bool)tMethod.Invoke(null, new object[] { v2 });
                             }
                             else
                             {
-                                return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_METHOD_NOT_STATIC, a.MethodValidate);
+                                return new AMWExceptionModel(a.ExceptionCode, a.MethodValidate);
                             }
 
                             if (!isVerify)
                             {
-                                return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_VALIDATE_METHOD_FAIL, a.MethodValidate, t.Name, v2);
+                                return new AMWExceptionModel(a.ExceptionCode, a.MethodValidate, t.Name, v2);
                             }
                         }
                     }

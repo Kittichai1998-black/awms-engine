@@ -59,9 +59,13 @@ const MaintenancePlan = (props) => {
     ];
 
     const headerColumns = [
+        {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
+            const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
+            return evnt ? <AmDocumentStatus statusCode={evnt.value}/> : null
+        }},
         {accessor:"Code", Header:"Code", Cell:(row)=> <div style={{ display: "flex", padding: "0px", paddingLeft: "10px"}}>
             <label>{`${row.data.Code}`}</label>
-            <AmRediRectInfo api={"/wm/managemtnplan?maintenanceID=" + row.data.ID} history={props.history}/></div>
+            <AmRediRectInfo api={"/warehouse/managemtnplan?maintenanceID=" + row.data.ID} history={props.history}/></div>
         },
         {accessor:"Name", Header:"Name"},
         {accessor:"Warehouse_Name", Header:"Warehouse"},
@@ -73,10 +77,6 @@ const MaintenancePlan = (props) => {
             else{
                 return ""
             }
-        }},
-        {accessor:"EventStatus", Header:"Status", width:100, Cell:(dt) => {
-            const evnt = statusData.find(x=> x.value === dt.data.EventStatus);
-            return evnt ? <AmDocumentStatus statusCode={evnt.value}/> : null
         }},
         {accessor:"CreateTime", Header:"Create", Cell:(dt)=>{
             if(moment(dt.data["CreateTime"]).isValid()){
