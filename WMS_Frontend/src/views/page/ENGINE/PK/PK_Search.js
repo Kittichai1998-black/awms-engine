@@ -134,7 +134,7 @@ const DocumentSearch = props => {
                 docTypeCode="1002"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/RejectGRDocAPI"}
+                apiReject={"/v2/reject_document"}
                 apiClose={"/v2/ClosingDocumentAPI"}
             />
         </div>

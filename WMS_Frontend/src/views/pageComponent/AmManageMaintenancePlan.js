@@ -82,22 +82,7 @@ const MaintenancePlan = (props) => {
         setOpen(false);
     }
 
-    const editorCols = [{
-            "field":"desc",
-            "component":(data=null, cols, key)=>{
-            return <FormInline>
-                <label style={{width:100, textAlign:"right"}}>ผลการบริการ : </label>
-                <TextField size={"small"} style={{width:400}} multiline rowsMax={4} onChange={(e)=> {data.desc = e.target.value}}/>
-            </FormInline>
-        }},
-        {
-            "field":"by",
-            "component":(data=null, cols, key)=>{
-              return <FormInline>
-                <label style={{width:100,textAlign:"right"}}>ผู้ให้บริการ : </label>
-                <AmInput style={{width:250}} onChangeV2={(value)=> {data.by = value}}/>
-            </FormInline>
-          }},
+    const editorCols = [
         {
             "field":"status",
             "component":(data=null, cols, key)=>{
@@ -116,7 +101,23 @@ const MaintenancePlan = (props) => {
                     onChange={(value) => {data.status = value}}
                 />
             </FormInline>
-        }}
+        }},
+        {
+            "field":"desc",
+            "component":(data=null, cols, key)=>{
+            return <FormInline>
+                <label style={{width:100, textAlign:"right"}}>ผลการบริการ : </label>
+                <TextField size={"small"} style={{width:400}} multiline rowsMax={4} onChange={(e)=> {data.desc = e.target.value}}/>
+            </FormInline>
+        }},
+        {
+            "field":"by",
+            "component":(data=null, cols, key)=>{
+              return <FormInline>
+                <label style={{width:100,textAlign:"right"}}>ผู้ให้บริการ : </label>
+                <AmInput style={{width:250}} onChangeV2={(value)=> {data.by = value}}/>
+            </FormInline>
+          }}
     ]
 
     return <>
