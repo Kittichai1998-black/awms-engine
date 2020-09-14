@@ -36,15 +36,7 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         else if (searchValue.includes(",")) {
             searchSign = "IN";
         }
-        else if (searchValue.startsWith("=")) {
-            searchSign = "=";
-        }
-        else{
-            if(dataType !== "datetime"){
-                searchValue = `%${searchValue}%`
-                searchSign = "LIKE";
-            }
-        }
+
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
@@ -81,14 +73,14 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
                 // console.log(field)
                 // console.log(searchSign)
                 // console.log(searchValue)
-                //searchData = {};
-                // searchData.f = field;
-                // searchData.c = searchSign;
-                // searchData.v = searchValue;
                 searchData = {};
                 searchData.f = field;
-                searchData.c = "LIKE";
-                searchData.v = "%*" + searchValue + "*%";
+                searchData.c = searchSign;
+                searchData.v = searchValue;
+                // searchData = {};
+                // searchData.f = field;
+                // searchData.c = "LIKE";
+                // searchData.v = "%*" + searchValue + "*%";
                 queryFilter.push(searchData)
             }
         }
