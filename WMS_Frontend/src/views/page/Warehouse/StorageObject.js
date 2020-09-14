@@ -178,7 +178,7 @@ const StorageObject = props => {
         {data.Code}
         <AmRedirectLog
           api={
-            "/log/docitemstolog?id=" +
+            "/log/storageobjectlog?id=" +
             data.ID +
             "&ParentStorageObject_ID=" +
             data.ID
