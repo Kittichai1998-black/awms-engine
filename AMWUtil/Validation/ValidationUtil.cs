@@ -42,13 +42,13 @@ namespace AMWUtil.Validation
                         ///////////////////Verify by IsRequest
                         if (a.IsRequire && string.IsNullOrWhiteSpace(v2))
                         {
-                            return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_VALIDATE_REQUIRE_FAIL, a.IsRequire.ToString(), t.Name, v2);
+                            return new AMWExceptionModel(a.ExceptionCode, a.IsRequire.ToString(), t.Name, v2);
                         }
 
                         //////////////////Verify RegexPatterm
                         if (!string.IsNullOrEmpty(a.RegexPattern) && !Regex.IsMatch(v2, a.RegexPattern))
                         {
-                            return new AMWExceptionModel(a.ExceptionCode ?? AMWExceptionCode.V0_VALIDATE_REGEX_FAIL, a.RegexPattern, t.Name, v2);
+                            return new AMWExceptionModel(a.ExceptionCode, a.RegexPattern, t.Name, v2);
                         }
 
                         //////////////////Verify by Method
