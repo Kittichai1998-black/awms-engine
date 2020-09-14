@@ -65,7 +65,7 @@ const AmStorageObjectMulti = props => {
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatus", "c":"=", "v": 0}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"=", "v": "QUARANTINE"}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -160,7 +160,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
-                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatus" ? null : 0) : null)}
+                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatusName" ? null : "QUARANTINE") : null)}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -175,7 +175,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
-                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatus" ? null : 0) : null)}
+                  defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatusName" ? null : "QUARANTINE") : null)}
                   zIndex={1000}
                   queryApi={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}

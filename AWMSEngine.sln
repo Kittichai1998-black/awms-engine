@@ -40,6 +40,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectAERP", "ProjectAERP\
 		{3A240D68-826A-4271-8CA5-C9058B6B6B8A} = {3A240D68-826A-4271-8CA5-C9058B6B6B8A}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSEngine", "AWCSEngine\AWCSEngine.csproj", "{051CE739-D8A9-462D-B9C5-12FC0CA3E572}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSModel", "AWCSModel\AWCSModel.csproj", "{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +114,14 @@ Global
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80453F85-4E46-4ED6-84D7-9358939A32A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{051CE739-D8A9-462D-B9C5-12FC0CA3E572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{051CE739-D8A9-462D-B9C5-12FC0CA3E572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{051CE739-D8A9-462D-B9C5-12FC0CA3E572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{051CE739-D8A9-462D-B9C5-12FC0CA3E572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

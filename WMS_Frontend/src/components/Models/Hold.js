@@ -3,7 +3,7 @@ const Hold = [
   { label: "UNHOLD", value: 0 }
 ];
 const Lock = [
-  { label: "LOCK", value: 1 },
-  { label: "UNLOCK", value: 0 }
+  { label: "LOCK", value: "LOCK" },
+  { label: "UNLOCK", value: "UNLOCK" }
 ];
 export { Hold, Lock }
