@@ -36,10 +36,5 @@ namespace AWMSEngine.Common
             return getInstanct.ExecuteEngine(logger, buVO, req);
         }
 
-        public static bool EvalExec(string fullClassName, dynamic data)
-        {
-            var eval = (IEval)Activator.CreateInstance(ClassType.GetClassType(fullClassName));
-            return eval.exec(data);
-        }
     }
 }

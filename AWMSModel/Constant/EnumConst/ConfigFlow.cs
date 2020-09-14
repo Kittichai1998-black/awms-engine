@@ -15,5 +15,8 @@ namespace AWMSModel.Constant.EnumConst
         AUDIT_STATUS_DEFAULT,
         [EnumValueAttribute(ValueString = "FLOW.RECEIVE.{0}.HOLD_STATUS_DEFAULT")]
         HOLD_STATUS_DEFAULT,
+
+        [EnumValueAttribute(ValueString = "FLOW.CLASSPLUGIN.SERVICE.{0}.")]
+        CLASS_PLUGIN,
     }
 }
