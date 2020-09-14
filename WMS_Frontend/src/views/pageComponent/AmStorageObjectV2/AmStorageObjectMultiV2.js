@@ -64,7 +64,7 @@ const AmStorageObjectMulti = props => {
   const [aditStatus, setAditStatus] = useState("");
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "r_StorageObject",
+    t: "r_StorageObjectV3",
     q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatus", "c":"=", "v": 0}]',
     f: "*",
     g: "",
@@ -75,7 +75,7 @@ const AmStorageObjectMulti = props => {
   };
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "r_StorageObject",
+    t: "r_StorageObjectV3",
     q: '[{ "f": "Status", "c":"!=", "v": 0}]',
     f: "*",
     g: "",
@@ -114,8 +114,8 @@ const AmStorageObjectMulti = props => {
     var queryStr = createQueryString(data)
     Axios.get(queryStr).then(res => {
 
-      var respone = DataGenerateMulti(res.data.datas)
-      setDataSource(respone)
+      //var respone = DataGenerateMulti(res.data.datas)
+      setDataSource(res.data.datas)
       setCount(res.data.counts)
     });
   }
