@@ -36,6 +36,9 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         else if (searchValue.includes(",")) {
             searchSign = "IN";
         }
+        else if (searchValue.startsWith("=")) {
+            searchSign = "=";
+        }
         else{
             if(dataType !== "datetime"){
                 searchValue = `%${searchValue}%`
