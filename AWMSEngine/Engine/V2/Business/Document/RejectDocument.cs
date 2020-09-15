@@ -38,7 +38,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 {
                     if (dataDoc.EventStatus == DocumentEventStatus.NEW)
                     {
-                        if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE)
+                        if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || dataDoc.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                         {
                             //var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
                             var listDocChild = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
@@ -57,7 +57,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         else
                         {
                             this.checkStoDocument(this.Logger, dataDoc, reqVO.remark, this.BuVO);
-                            if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY)
+                            if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY || dataDoc.DocumentType_ID == DocumentTypeID.PICKING)
                                 this.updateDocParent(dataDoc, this.BuVO);
                         }
 
