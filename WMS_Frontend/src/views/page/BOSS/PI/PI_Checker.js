@@ -5,7 +5,7 @@ const AuditChecker = (props) => {
  
     const columnsEdit = [
         { "type": "info"},
-        { "field": "coutingQty", "type": "number", "name": "Qty", "clearInput": true, "required": true, "showUnit": true },
+        { "field": "coutingQty", "type": "number", "name": "Quantity", "clearInput": true, "required": true, "showUnit": true },
         { "field": "remark", "type": "input", "name": "Remark", "clearInput": true },
     ]
     return (

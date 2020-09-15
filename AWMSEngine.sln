@@ -44,6 +44,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSEngine", "AWCSEngine\AW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSModel", "AWCSModel\AWCSModel.csproj", "{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBOSS", "ProjectBOSS\ProjectBOSS.csproj", "{C23FF890-5CBC-499B-84C0-DB7A4153C3E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C212334F-94B2-4902-ADBB-D4E1B38BC63E} = {C212334F-94B2-4902-ADBB-D4E1B38BC63E}
+		{CF0D3166-2C4F-4591-9CA4-00C03FC7BC15} = {CF0D3166-2C4F-4591-9CA4-00C03FC7BC15}
+		{3A240D68-826A-4271-8CA5-C9058B6B6B8A} = {3A240D68-826A-4271-8CA5-C9058B6B6B8A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +129,10 @@ Global
 		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A29F98CC-EE37-4E62-B306-6C36B1ACDB0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C23FF890-5CBC-499B-84C0-DB7A4153C3E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C23FF890-5CBC-499B-84C0-DB7A4153C3E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C23FF890-5CBC-499B-84C0-DB7A4153C3E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C23FF890-5CBC-499B-84C0-DB7A4153C3E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
