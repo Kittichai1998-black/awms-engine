@@ -86,7 +86,8 @@ const AmReport = props => {
 
   const getData = () => {
 
-    var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
+      var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
+      console.log(valueText)
     let pathGetAPI = pathAPI +
       "&page=" + (page - 1)
       + "&limit=" + pageSize

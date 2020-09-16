@@ -39,6 +39,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 import AmPrintBarCodeV2 from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
 import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
+import Amdocumentstatus from '../../components/AmDocumentStatus';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import PrintIcon from '@material-ui/icons/Print';
 import _ from 'lodash';
@@ -215,6 +216,10 @@ const DocumentView = props => {
         setHeader(props.header)
         //getHeader()
     }, [props.header]);
+
+    useEffect(() => {
+        renderDocumentStatusIcon();
+    })
 
     const getData = () => {
         //========================================================================================================
@@ -442,6 +447,11 @@ const DocumentView = props => {
             return obj.code === dataHeader.EventStatus;
         }), 'status');
         return _statustxt;
+    };
+
+    const renderDocumentStatusIcon = () => {
+        return <div><Amdocumentstatus key={1} statusCode={dataHeader.EventStatus} /></div>;
+     
     };
 
     const buttonBack = () => {

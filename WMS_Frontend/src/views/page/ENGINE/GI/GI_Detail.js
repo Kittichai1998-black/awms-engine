@@ -6,7 +6,8 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
-import AmRediRectInfo from "../../../../components/AmRedirectInfo"
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import moment from "moment";
 
 const GR_Detail = props => {
@@ -78,7 +79,7 @@ const GR_Detail = props => {
 
             
             [
-                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
@@ -99,12 +100,12 @@ const GR_Detail = props => {
         { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
@@ -139,11 +140,11 @@ const GR_Detail = props => {
         { Header: "OrderNo", accessor: "diOrder No.", widthPDF: 10 },
         { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
+        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
         {
             Header: "Audit Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
@@ -215,7 +216,16 @@ const GR_Detail = props => {
             return "HOLD"
         }
     };
-   
+
+    const GetAuditStatusIcon = (value) => {
+        console.log(value.diAuditStatus)
+        if (value.diAuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
+        } else if (value.AuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
+        }
+    };
+
     return (
         <div>{docview}</div>
       

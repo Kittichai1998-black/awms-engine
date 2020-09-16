@@ -170,12 +170,12 @@ const AmTableSetup = (props) => {
     }, [sort.sortValue,  sortData])
 
     useEffect(() => {
-        if (props.filterable){
+        if (props.filterable && filter.filteredValue){
             props.filterData(filter.filterValue)
             setResetPage(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter.filterValue])
+    }, [filter.filterValue, filter.filteredValue])
 
     useEffect(() => {
         if (props.selectionDefault !== undefined){
@@ -191,10 +191,10 @@ const AmTableSetup = (props) => {
     }, [dataSource])
     
     useEffect(() => {
-        if (selectionData !== undefined && !IsEmptyObject(selection.selectionValue)) {
+        if (selectionData !== undefined && !IsEmptyObject(selection.selectionValue) && selection.selectedValue) {
             selectionData(selection.selectionValue)
         }
-    }, [selection.selectionValue, selectionData])
+    }, [selection.selectionValue, selectionData, selection.selectedValue])
 
     useEffect(() => {
         if(props.clearSelectionChangeData){

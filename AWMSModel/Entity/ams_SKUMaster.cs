@@ -6,7 +6,6 @@ namespace AWMSModel.Entity
 {
     public class ams_SKUMaster : BaseEntitySTD
     {
-        public decimal? WeightKG;
         public decimal? WidthM;
         public decimal? LengthM;
         public decimal? HeightM;

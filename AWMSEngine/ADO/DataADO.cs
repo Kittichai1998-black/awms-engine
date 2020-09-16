@@ -61,7 +61,7 @@ namespace AWMSEngine.ADO
                 columns += rowlist.Key;
 
                 string v = rowlist.Value == null ? null : rowlist.Value.ToString();
-                if (v != null && v.StartsWith("@@sql"))
+                if (v != null && v.StartsWith("API.INSERT.SQLCUSTOM"))
                 {
                     if (!string.IsNullOrEmpty(parameter))
                         parameter += ",";

@@ -8,8 +8,9 @@ import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutline
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
-import AmRediRectInfo from "../../../../components/AmRedirectInfo"
-import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import moment from "moment";
 
 const GR_Detail = props => {
@@ -73,7 +74,7 @@ const GR_Detail = props => {
                 { label: "Des. Warehouse", values: "DesWarehouseName" }
             ],
             [
-                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
@@ -91,12 +92,12 @@ const GR_Detail = props => {
         { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
@@ -133,11 +134,11 @@ const GR_Detail = props => {
         { Header: "OrderNo", accessor: "diOrderNo", widthPDF: 10 },
         { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
+        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
         {
             Header: "Audit Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
@@ -169,18 +170,37 @@ const GR_Detail = props => {
     }
 
     const getDoccode = (e) => {
-        return (
-            <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
-                {e.dcCode}
-                <AmRediRectInfo
-                    api={"/receive/putawaydetail?docID=" + e.dcID}
-                    history={props.history}
-                    docID={""}
-                >
-                    {" "}
-                </AmRediRectInfo>
-            </div>
-        );
+        console.log(e)
+        if (e.dcDocType_ID === 1001) {
+            return (
+                <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                    {e.dcCode}
+                    <AmRediRectInfo
+                        api={"/receive/putawaydetail?docID=" + e.dcID}
+                        history={props.history}
+                        docID={""}
+                    >
+                        {" "}
+                    </AmRediRectInfo>
+                </div>
+
+            );
+        } else if (e.dcDocType_ID === 1002) {
+
+            return (
+                <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                    {e.dcCode}
+                    <AmRediRectInfo
+                        api={"/issue/pickingdetail?docID=" + e.dcID}
+                        history={props.history}
+                        docID={""}
+                    >
+                        {" "}
+                    </AmRediRectInfo>
+                </div>
+
+            );
+        }
     };
 
 
@@ -202,6 +222,16 @@ const GR_Detail = props => {
             return "REJECTED"
         } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
             return "HOLD"
+        }
+    };
+
+
+    const GetAuditStatusIcon = (value) => {
+        console.log(value.diAuditStatus)
+        if (value.diAuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
+        } else if (value.AuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
         }
     };
 

@@ -6,7 +6,8 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
-import AmRediRectInfo from "../../../../components/AmRedirectInfo"
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import moment from "moment";
 
 const PI_Detail = props => {
@@ -77,7 +78,7 @@ const PI_Detail = props => {
 
             
             [
-                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
@@ -207,15 +208,7 @@ const PI_Detail = props => {
     };
 
     const GetAuditStatus = (value) => {
-        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
-            return "QUARANTINE"
-        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
-            return "PASSED"
-        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
-            return "REJECTED"
-        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
-            return "HOLD"
-        }
+        return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
     };
    
     return (
