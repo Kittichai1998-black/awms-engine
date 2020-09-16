@@ -34,7 +34,7 @@ const AmRedirectInfo = props => {
         setopenDialogCon(true);
     };
     return (
-        <div>
+        <>
             <GlobalBtnBaseCss />
             {type === "link" ? (
                 <Link
@@ -47,7 +47,7 @@ const AmRedirectInfo = props => {
                     {textLink}
                 </Link>
             ) : type === "dialog" ? (
-                <div>
+                <>
                     <IconButton
                         size="small"
                         aria-label="info"
@@ -63,9 +63,9 @@ const AmRedirectInfo = props => {
                         bodyDialog={bodyDialog}
                         textCancel="Close"
                     />
-                </div>
+                </>
             ) : type === "customdialog" ? (
-                <div>
+                <>
                     <IconButton
                         size="small"
                         aria-label="info"
@@ -83,9 +83,9 @@ const AmRedirectInfo = props => {
                         styleDialog={{ padding: "5px 15px" }}
                         styleDialogTitle={{ padding: "4px" }}
                     />
-                </div>
+                </>
             ) : type === "custom_button_dialog" ? (
-                <div>
+                <>
                     <AmButton
                         styleType={styleTypeBtn ? styleTypeBtn : 'default'}
                         onClick={handleClickOpenDialog}
@@ -103,7 +103,7 @@ const AmRedirectInfo = props => {
                         bodyDialog={bodyDialog}
                         textCancel="Close"
                     />
-                </div>
+                </>
             ) : type === "custom_icon" ? (
                 <IconButton
                     size="small"
@@ -123,7 +123,7 @@ const AmRedirectInfo = props => {
                                         <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
                                     </IconButton>
                                 )}
-        </div>
+        </>
     );
 };
 

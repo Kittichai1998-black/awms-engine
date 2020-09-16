@@ -3,13 +3,11 @@ import { apicall, createQueryString } from '../../../components/function/CoreFun
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmTable from "../../../components/AmTable/AmTable";
 import AmDialogs from "../../../components/AmDialogs";
-import AmButton from "../../../components/AmButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 import AmDropdown from '../../../components/AmDropdown';
-import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
 
@@ -211,7 +209,7 @@ const AmMasterData = (props) => {
                     setDialogState({ type: "success", content: "Success", state: true })
                 }
                 else {
-                    setDialogState({ type: "error", content: data._result.message, state: true })
+                    setDialogState({ type: "error", content: res.data._result.message, state: true })
                 }
             });
         }
@@ -269,9 +267,24 @@ const AmMasterData = (props) => {
     }
 
     const onClickAdd = () => {
+        let obj = {ID: null, status: 1, revision: 1}
+        if(props.customAddData !== undefined){
+            obj ={ ...obj, ...props.customAddData }
+        }
         setEditorColumns(props.dataAdd);
-        setUpdateData({ ID: null, status: 1, revision: 1 })
+        setUpdateData(obj)
         setPopupTitle("Add")
+    }
+
+    const genMenuAction = () => {
+        let obj = [];
+        if(props.customAction !== undefined){
+            props.customAction.forEach(x => obj.push(x))
+        }
+        if(props.dataAdd !== undefined){
+            obj.push({label:"Add", action:()=>{onClickAdd()}})
+        }
+        return obj;
     }
 
     return <>
@@ -290,13 +303,13 @@ const AmMasterData = (props) => {
             onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
             open={dialogState.state}
             content={dialogState.content} />
-        <FormInline style={{ float: "right", marginBottom: "10px" }} >
+        {/* <FormInline style={{ float: "right", marginBottom: "10px" }} >
             <AmButton
                 style={{ marginRight: "5px", float: "right" }}
                 styleType="add"
                 onClick={onClickAdd}>{"Add"}
             </AmButton>
-        </FormInline>
+        </FormInline> */}
         <div style={{ clear: "both" }}></div>
         <AmTable
             sortable={props.sortable ? props.sortable : false}
@@ -323,10 +336,9 @@ const AmMasterData = (props) => {
             selection={props.selection}
             selectionData={props.selectionData}
             onPageSizeChange={(pg)=> {setPageSize(pg)}}
-            customAction={props.customAction}
+            customAction={genMenuAction()}
             tableConfig={true}
         />
     </>
 }
-
 export default AmMasterData;

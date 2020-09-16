@@ -5,7 +5,7 @@ import {InputComponent, DropDownComponent, FindPopupComponent,PasswordComponent}
 
 const EditorData = ({config, editorColumns, editData, response}) => {
     const [popupState, setPopState] = useState(false);
-    
+
     useEffect(() => {
         if(editData !== undefined && editData !== null){
             setPopState(!popupState)
@@ -29,7 +29,12 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     config={config} 
                     defaultData={data !== undefined ? data[field] : ""}
                     response={(e)=>{if(!IsEmptyObject(e)){
-                        data[e.field] =  e.value
+                        if(config.custom !== undefined){
+                            data[e.field] =  config.custom(e.value)
+                        }
+                        else{
+                            data[e.field] =  e.value
+                        }
                     }
                     }}
                 />
@@ -80,7 +85,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
         onAccept={(status, rowdata)=> {
-            var updateData = {ID:null, Status:1, Revision:1}
+            var updateData = {...editData}
             let chkRequire = []
 
             if(rowdata !== undefined){

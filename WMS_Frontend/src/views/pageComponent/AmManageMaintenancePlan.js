@@ -133,6 +133,7 @@ const MaintenancePlan = (props) => {
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Description : </Label>{data.Description}</Grid>
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Warehouse Name : </Label>{data.Warehouse_Name}</Grid>
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Maintenance Date : </Label>{data.MaintenanceDate}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Status : </Label>{data.EventStatus}</Grid>
         </Grid>
         <AmTable
             columns={headerColumns}

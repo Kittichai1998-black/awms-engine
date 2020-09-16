@@ -330,7 +330,7 @@ const GenerateCell = React.memo(({ columns, data, rowIndex, cellStyle }) => {
 
     let style = {};
     if (cellStyle !== undefined && column.colStyle === undefined) {
-      cellStyle(column.code, data[column.accessor], data)
+      style = cellStyle(column.code, data[column.accessor], data)
     }
 
     if (column.fixed) {
