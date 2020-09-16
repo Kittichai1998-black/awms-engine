@@ -15,8 +15,11 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing(0)
   },
+  formLabel: {
+    color: 'black'
+  },
   group: {
-    margin: theme.spacing(1, 0)  //`${theme.spacing(1)}px 0`
+    margin: theme.spacing(0)  //`${theme.spacing(1)}px 0`
   },
   radio: {
     '&$checked': {
@@ -47,7 +50,7 @@ const RadioButtonsGroup = props => {
   return (
     <div className={classes.root}>
       <FormControl component='fieldset' className={classes.formControl}>
-        <FormLabel component="legend">{formLabel}</FormLabel>
+        <FormLabel component="legend" className={classes.formLabel}>{formLabel}</FormLabel>
         <RadioGroup
           row={row !== undefined ? row : false}
           aria-label={name}

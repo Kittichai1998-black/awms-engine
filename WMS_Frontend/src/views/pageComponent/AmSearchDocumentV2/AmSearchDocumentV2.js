@@ -120,7 +120,7 @@ const AmSearchDocumentV2 = props => {
                 return <AmDropdown
                   id={field}
                   placeholder={col.placeholder}
-                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "Name" : filterConfig.fieldDataKey}
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
@@ -190,21 +190,7 @@ const AmSearchDocumentV2 = props => {
      </AmButton>
     } else { return null; }
   }
-  const generateReject = () => {
-    if (props.buttonReject) {
-      return <AmButton
-        style={{ marginRight: "5px" }}
-        styleType="confirm"
-        onClick={() => {
-          setDialog(true)
-          if (selection.length === 0)
-            setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
-        }}
-      >
-        REJECT
-     </AmButton>
-    } else { return null; }
-  }
+
   const DataGenerateRemark = () => {
     const columns = [
       {
@@ -327,8 +313,33 @@ const AmSearchDocumentV2 = props => {
             setIniQuery(false)
         }}
         onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-        customTopLeftControl={<div>{generateClose()}{generateReject()}</div>}
+        //customTopLeftControl={<div>{generateClose()}{generateReject()}</div>}
         tableConfig={true}
+        customAction={[{
+          label: <div style={{ fontSize: "12px" }}>
+            {"REJECT"}</div>,
+          action: (data) => {
+            if (selection.length === 0) {
+              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+            } else {
+
+              setDialog(true)
+
+            }
+
+          }
+        }, {
+          label: <div style={{ fontSize: "12px" }}>
+            {"CLOSE"}</div>,
+          action: (data) => {
+            if (selection.length === 0) {
+              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+            } else {
+              onUpdateStatus()
+            }
+
+          }
+        }]}
       />
 
     </div>

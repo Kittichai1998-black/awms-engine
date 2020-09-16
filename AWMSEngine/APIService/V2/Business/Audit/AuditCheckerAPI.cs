@@ -23,6 +23,14 @@ namespace AWMSEngine.APIService.V2.Business.Audit
             var resWorked = new WorkedDocument().Execute(this.Logger, this.BuVO,
                 new WorkedDocument.TReq() { docIDs = res.docIDs });
             this.CommitTransaction();
+
+            this.BeginTransaction();
+            var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
+            this.CommitTransaction();
+
+            this.BeginTransaction();
+            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
+            this.CommitTransaction();
             return res;
 
         }

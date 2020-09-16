@@ -34,36 +34,40 @@ namespace AWMSEngine.Engine.V2.Business.Document
             foreach (var docID in reqVO.docIDs)
             {
                 var dataDoc = ADO.DocumentADO.GetInstant().Get(docID, this.BuVO);
-                if (dataDoc.EventStatus == DocumentEventStatus.NEW)
+                if (dataDoc != null)
                 {
-                    if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE)
+                    if (dataDoc.EventStatus == DocumentEventStatus.NEW)
                     {
-                        var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                        var listDocChild = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
-                                            new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("ParentDocument_ID",docParent, SQLOperatorType.EQUALS),
-                                            }, this.BuVO);
-
-                        foreach (var docChild in listDocChild)
+                        if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || dataDoc.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                         {
-                            this.checkStoDocument(this.Logger, docChild, reqVO.remark, this.BuVO);
+                            //var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                            var listDocChild = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
+                                                new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("ParentDocument_ID",dataDoc.ID, SQLOperatorType.EQUALS),
+                                                }, this.BuVO);
+
+                            foreach (var docChild in listDocChild)
+                            {
+                                this.checkStoDocument(this.Logger, docChild, reqVO.remark, this.BuVO);
+                            }
+
+                            this.updateDocChild(dataDoc, reqVO.remark, this.BuVO);
+
+                        }
+                        else
+                        {
+                            this.checkStoDocument(this.Logger, dataDoc, reqVO.remark, this.BuVO);
+                            if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY || dataDoc.DocumentType_ID == DocumentTypeID.PICKING)
+                                this.updateDocParent(dataDoc, this.BuVO);
                         }
 
-                        this.updateDocChild(dataDoc, this.BuVO);
                     }
                     else
                     {
-                        this.checkStoDocument(this.Logger, dataDoc, reqVO.remark, this.BuVO);
-                        if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY)
-                            this.updateDocParent(dataDoc, this.BuVO);
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะเอกสารต้องเป็น New เท่านั้น");
                     }
-
+                    docs.Add(dataDoc);
                 }
-                else
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะเอกสารต้องเป็น New เท่านั้น");
-                }
-                docs.Add(dataDoc);
             }
             return docs;
         }
@@ -115,26 +119,41 @@ namespace AWMSEngine.Engine.V2.Business.Document
             var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
             var listDocChild = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                                 new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("ParentDocument_ID",docParent, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("ParentDocument_ID",docParent.ID, SQLOperatorType.EQUALS),
                                 }, this.BuVO);
-            var ckDocChild = listDocChild.TrueForAll(x => x.EventStatus == DocumentEventStatus.REMOVED);
+            var ckDocChild = listDocChild.TrueForAll(x => x.EventStatus == DocumentEventStatus.REJECTED);
             if (ckDocChild)
             {
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(docParent.ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
             }
         }
-        private void updateDocChild(amt_Document dataDoc, VOCriteria buVO)
+        private void updateDocChild(amt_Document dataDoc, string remark, VOCriteria buVO)
         {
             var docParent = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ID, this.BuVO);
             var listDocChild = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                                 new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("ParentDocument_ID",docParent, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("ParentDocument_ID",docParent.ID, SQLOperatorType.EQUALS),
                                 }, this.BuVO);
-            var ckDocChild = listDocChild.TrueForAll(x => x.EventStatus == DocumentEventStatus.REMOVED);
+            var ckDocChild = listDocChild.TrueForAll(x => x.EventStatus == DocumentEventStatus.REJECTED);
             if (ckDocChild)
             {
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(docParent.ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
             }
+            ADO.DataADO.GetInstant().UpdateByID<amt_Document>(dataDoc.ID.Value, this.BuVO,
+                new KeyValuePair<string, object>[]
+                {
+                    new KeyValuePair<string, object>("remark",remark)
+                });
+
+            listDocChild.ForEach(x =>
+            {
+                ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
+                    new KeyValuePair<string, object>[]
+                    {
+                        new KeyValuePair<string, object>("remark",remark)
+                    });
+            });
+
 
         }
 

@@ -423,6 +423,8 @@ const AmHeaderputandpick = (props) => {
 
 
             } else if (value <= datarow.Quantity) {
+                console.log(value)
+                console.log(datarow.Quantity)
                 setValueQtyDocItems({
                     ...valueQtyDocItems, [element.id]: {
                         recQty: parseFloat(value),
@@ -431,7 +433,7 @@ const AmHeaderputandpick = (props) => {
                 });
             }
         }
-        //doc.setdialogItem(false)
+
     }
 
     const onSubmitAddItem = () => {
@@ -480,23 +482,9 @@ const AmHeaderputandpick = (props) => {
                             } else {
 
                                 if (x.Qty) {
-                                    let Quantitys = x.Quantity - x.Qty
-                                    //if (Quantitys = '0') {
-                                    //    x.Quantity = 0
-                                    //    dia.setdailogMsg("Item is empty")
-                                    //    dia.setdailogErr(true)
-
-                                    //} else {
-
-                                    //    if (Quantitys > 0) {
+                                    let Quantitys = x.Quantity - x.Qty                                  
                                     x.Quantity = Quantitys
-                                    //    } else {
-
-                                    //    }
-
-                                    //}
-
-
+                               
                                 }
                                 else if (x.Qty === undefined) {
 

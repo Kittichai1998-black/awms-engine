@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import HighlightOff from "@material-ui/icons/HighlightOff";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import queryString from "query-string";
 import moment from "moment";
 

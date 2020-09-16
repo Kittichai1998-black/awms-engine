@@ -107,6 +107,11 @@ const CurrentInventory = Loadable({
   loading: Loading
 });
 
+const StockLocationUsed =  Loadable({
+    loader: () => import("../../views/page/NewReport/StockLocationUsed"),
+    loading: Loading
+});
+
 const StockCardV2 = Loadable({
   loader: () => import("../../views/page/NewReport/StockCard"),
   loading: Loading
@@ -327,10 +332,7 @@ const PK_Checker = Loadable({
   loader: () => import("../../views/page/ENGINE/PK/PK_Checker"),
   loading: Loading
 });
-const AD_Checker = Loadable({
-  loader: () => import("../../views/page/ENGINE/AD/AD_Checker"),
-  loading: Loading
-});
+
 
 const GI_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
@@ -406,7 +408,8 @@ let routes = [
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+    { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+    { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },
@@ -485,7 +488,6 @@ let routes = [
   { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
-  { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },
