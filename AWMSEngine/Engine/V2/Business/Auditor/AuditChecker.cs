@@ -127,6 +127,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
                 if (updSto.qty == 0) { //audit all เปลี่ยนสถานะ 500
                     pstos.AuditStatus = reqVO.auditStatus;
+                    pstos.eventStatus = StorageObjectEventStatus.AUDITED;
                     ADO.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
 
                     ADO.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.DONE, BuVO);

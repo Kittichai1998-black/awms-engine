@@ -1,11 +1,19 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
+import queryString from 'query-string'
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
     { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
     { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
+    {
+        "Header": "% Random", "sortable": false, "width": 80, 
+        Cell: val => {
+                let qryStrOpt = queryString.parse(val.original.Options);
+                return qryStrOpt["qtyrandom"] + " %"
+        }
+    },
     { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
 ];
 const columnsConfirm = [

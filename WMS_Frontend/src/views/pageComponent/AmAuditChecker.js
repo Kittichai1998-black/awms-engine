@@ -507,7 +507,7 @@ const AmAuditChecker = (props) => {
                                 : null;
 
                             let auditstatus = null;
-                            if (dataSelected.auditStatus) {
+                            if (dataSelected.auditStatus != null) {
                                 let audit = "Audit Status: ";
                                 auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
                                     <AmAuditStatus className={classes.statusLabel} statusCode={dataSelected.auditStatus} />
@@ -519,7 +519,7 @@ const AmAuditChecker = (props) => {
                                         <Typography variant="body1" className={classes.labelHead}>{pstoCode}</Typography>
                                         <Typography variant="body1" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
                                     </div>
-                                    {lot}{batch}{orderNo}{cartonNo} 
+                                    {lot}{batch}{orderNo}{cartonNo}{auditstatus} 
                                 </div>
                             )
                         }

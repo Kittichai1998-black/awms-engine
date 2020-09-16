@@ -8,11 +8,11 @@ const AuditChecker = (props) => {
     });
     const columnsEdit = [
         { "type": "info" },
-        {
-            "field": "auditStatus", "type": "radiogroup", "name": "auditStatus",
-            "formLabel": "Select Audit Status", "fieldLabel": newAuditStatus,
-            // "defaultValue": { value: '1' }
-        },
+        // {
+        //     "field": "auditStatus", "type": "radiogroup", "name": "auditStatus",
+        //     "formLabel": "Select New Audit Status", "fieldLabel": newAuditStatus,
+        //     // "defaultValue": { value: '1' }
+        // },
         { "field": "auditQty", "type": "number", "name": "Quantity", "clearInput": true, "required": true, "showUnit": true },
         { "field": "remark", "type": "input", "name": "Remark", "clearInput": true },
         // { "field": "unitCode", "type": "label", "name": "Unit", },
