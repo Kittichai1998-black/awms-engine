@@ -127,19 +127,19 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        if (doc.document.DocumentProcessType_ID === 1013) {
-            return areaList.filter(x => x.ID === 9 || x.ID === 10 || x.ID === 11 || x.ID === 12)
+        if (doc.document.DocumentProcessType_ID === 4071 || doc.document.DocumentProcessType_ID === 5071) {
+            return areaList.filter(x => x.ID === 9 || x.ID === 10)
         }
         else
-            return areaList
+            return areaList.filter(x => x.ID === 9 || x.ID === 10)
     }
 
     const customDesAreaDefault = (doc) => {
         if (doc.document.DocumentProcessType_ID === 1013) {
-            return "10"
+            return "9"
         }
         else
-            return "10"
+            return "9"
     }
 
     return <AmProcessQueue
@@ -151,7 +151,6 @@ const ProcessQueue = () => {
         documentDetail={documentDetail}
         processSingle={true}
         processCondition={processCondition}
-        percentRandom={true}
         customDesArea={customDesArea}
         areaDefault={customDesAreaDefault}
         columnsConfirm={columnsConfirm}

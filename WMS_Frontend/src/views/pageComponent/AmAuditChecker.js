@@ -43,6 +43,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import AmEditorTable from "../../components/table/AmEditorTable";
 import { AuditStatus } from '../../components/Models/StorageObjectEvenstatus';
+import AmTreeView from '../pageComponent/AmTreeView'
+import AmAuditStatus from '../../components/AmAuditStatus'
 const Axios = new apicall();
 const styles = theme => ({
     root: {
@@ -136,7 +138,26 @@ const styles = theme => ({
     divLine: {
         // borderBottom: '2px solid #000000',
         marginTop: 45
-    }
+    },
+    labelHead: {
+        fontWeight: "inherit",
+        fontWeight: 'bold',
+    },
+    labelHead2: {
+        fontWeight: "inherit",
+    },
+    labelText: {
+        // fontWeight: "inherit",
+        // fontSize: 12,
+        flexGrow: 1
+    },
+    statusLabel: {
+        fontSize: 16,
+        // height: '1.75em',
+        padding: 3,
+        width: 'auto',
+    },
+    textNowrap: { flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
 });
 const InputDiv = styled.div`
   
@@ -165,7 +186,7 @@ const LabelH = styled.label`
   `;
 const LabelH2 = styled.label`
     font-weight: bold;
-    width: 90px;
+    width: 70px;
     paddingleft: 20px;
   `;
 const LabelH1 = styled.label`
@@ -259,15 +280,14 @@ const AmAuditChecker = (props) => {
     const handleBack = (index) => {
         if (index === 1) {
             setValueInput({ ...valueInput, ['bstoCode']: null })
-            ClearInput('bstoCode');
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const handleReset = () => {
         setValueInput({});
-        ClearInput('bstoCode');
         setActiveStep(0);
+        ClearInput('bstoCode')
     };
     const ClearInput = (field) => {
         let ele2 = document.getElementById(field);
@@ -299,10 +319,7 @@ const AmAuditChecker = (props) => {
                         autoFocus={true}
                         style={{ width: "100%" }}
                         onChange={(value, obj, element, event) => onHandleChangeInput(value, "bstoCode")}
-                        onBlur={(value, obj, element, event) => {
-                            onHandleChangeInput(value, "bstoCode");
-                            handleNext(0);
-                        }}
+
                         onKeyPress={(value, obj, element, event) => {
                             if (event.key === "Enter") {
                                 onHandleChangeInput(value, "bstoCode");
@@ -325,66 +342,87 @@ const AmAuditChecker = (props) => {
     const RenderTreeViewData = React.memo(({ data, onClick }) => {
         if (data != null && data.stoItems != null && data.stoItems.length > 0) {
             //    let bstoCode 
-            return (<div>
-                <TreeView
-                    className={classes.root}
-                    defaultExpanded={['root']}
-                    defaultCollapseIcon={<MinusSquare />}
-                    defaultExpandIcon={<PlusSquare />}
-                    defaultEndIcon={<ShoppingCartIcon />}
-                // onNodeSelect={handleSelect}
-                >
-                    {data.stoItems.map((sto, idx) => {
-                        let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
-                        let lot = sto.lot != null ? " | Lot:" + sto.lot : "";
-                        let batch = sto.batch != null ? " | Batch:" + sto.batch : "";
-                        let orderNo = sto.orderNo != null ? " | Order No.:" + sto.orderNo : "";
-                        let cartonNo = sto.cartonNo != null ? " | Carton No.:" + sto.cartonNo : "";
-                        return (
-                            <StyledTreeItem
-                                key={idx}
-                                nodeId={'root'}
-                                label={pstoCode + lot + batch + orderNo + cartonNo}>
-                                {sto.pickItems.map((row, index) => {
-                                    let pk_docCode = row.pk_docCode != null ? row.pk_docCode : "";
-                                    let processTypeName = row.processTypeName != null ? " | " + row.processTypeName : "";
-                                    let destination = row.destination != null ? " | To:" + row.destination : "";
-                                    let remark = row.remark != null ? " | " + row.remark : "";
-                                    let auditstatus = "";
-                                    if (row.auditStatus) {
-                                        auditstatus = " | AD:" +  AuditStatus.find(x => x.value === row.auditStatus).label;
-                                    }
-                                    let pickQty = row.pickQty != null ? " | " + row.pickQty + " " + row.unitCode : "";
-                                    return (
-                                        <StyledTreeItem
-                                            key={index}
-                                            nodeId={row.distoID}
-                                            label={
-                                                pk_docCode +
-                                                processTypeName +
-                                                destination +
-                                                remark +
-                                                auditstatus +
-                                                pickQty
-                                            }
-                                            onIconClick={() => onClick(row)}
-                                            onLabelClick={() => onClick(row)}
-                                        />
-                                    );
-                                })}
-                            </StyledTreeItem>
+            let treeItems = [];
+            {
+                data.stoItems.map((sto, idx) => {
+                    let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
+                    let pstoName = sto.pstoName != null ? sto.pstoName : "";
+                    let lot = sto.lot != null && sto.lot.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Lot: " + sto.lot}</Typography>
+                        : sto.ref1 != null && sto.ref1.length > 0 ?
+                            <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor: " + sto.ref1}</Typography>
+                            : null;
+                    let batch = sto.batch != null && sto.batch.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Batch: " + sto.batch}</Typography>
+                        : null;
+                    let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Order No. " + sto.orderNo}</Typography>
+                        : null;
+                    let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No. " + sto.cartonNo}</Typography>
+                        : null;
 
-                        );
-                    })}
+                    let pk_docCode = sto.pk_docCode != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Document Code: " + sto.pk_docCode}</Typography>
+                        : null;
+                    let processTypeName = sto.processTypeName != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Process No. " + sto.processTypeName}</Typography>
+                        : null;
+                    let coutingQty = sto.coutingQty != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.coutingQty + " " + sto.unitCode}</Typography>
+                        : null;
+                    let destination = sto.destination != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Destination: " + sto.destination}</Typography>
+                        : null;
+                    let remark = sto.remark != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Remark: " + sto.remark}</Typography>
+                        : null;
 
-                </TreeView>
-            </div>);
+                    let auditstatus = null;
+                    if (sto.auditStatus != null) {
+                        let audit = "Audit Status: ";
+                        auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
+                            <AmAuditStatus className={classes.statusLabel} statusCode={sto.auditStatus} />
+                        </Typography>
+
+                    }
+                    let treeItem = {
+                        nodeId: sto.distoID.toString(),
+                        labelText:
+                            <div className={classes.textNowrap}>
+                                <Typography variant="body2" className={classes.labelText} noWrap>
+                                    <span className={classes.labelHead}>{pstoCode}</span>
+                                    &nbsp;{"- " + pstoName}
+                                </Typography>
+                                {coutingQty}
+                                {lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}{auditstatus}
+                            </div>,
+                        labelIcon: EditIcon,
+                        // labelInfo: coutingQty,
+                        bgColor: "#e8f0fe",
+                        color: "#1a73e8",
+                        dataItem: sto,
+                        onIconClick: (dataItem) => onClick(dataItem),
+                        onLabelClick: (dataItem) => onClick(dataItem)
+                    };
+
+                    treeItems.push(treeItem);
+                })
+            }
+            let dataTreeItems = [{
+                nodeId: 'root',
+                labelText: data.bstoCode,
+                // labelIcon: Pallet,
+                treeItems: treeItems
+            }];
+
+            return (<div><AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /></div>);
         } else {
-            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการเบิก</h4></div>;
+            return <div><h4>ไม่พบข้อมูลสินค้าที่ต้องการตรวจนับ</h4></div>;
         }
     });
     const GetStoAuditing = (bstoCode) => {
-        Axios.get(window.apipath + '/v2/get_sto_picking?' + //get_sto_audit
+        Axios.get(window.apipath + '/v2/get_sto_couting?' + //get_sto_audit
             '&bstoCode=' + (bstoCode === undefined || bstoCode === null ? ''
                 : encodeURIComponent(bstoCode.trim()))).then(res => {
                     if (res.data._result.status === 1) {
@@ -394,7 +432,7 @@ const AmAuditChecker = (props) => {
                         } else {
                             setDataStoAudit(null)
                             handleReset();
-                            alertDialogRenderer("error", "ไม่พบรายการสินค้าที่สามารถตรวจสอบได้")
+                            alertDialogRenderer("error", "ไม่พบรายการสินค้าที่สามารถตรวจนับได้")
                         }
                     } else {
                         handleReset();
@@ -413,23 +451,23 @@ const AmAuditChecker = (props) => {
         if (status) {
             let req = { ...rowdata, ...valueInput }
             console.log(req)
-            // Axios.post(window.apipath + '/v2/audit_checker', req).then(res => {
-            //     if (res.data._result.status === 1) {
-            //         if (res.data.stoItems != null && res.data.stoItems.length > 0) {
-            //             setDataStoAudit(res.data)
-            //             alertDialogRenderer("success", "ตรวจสอบสินค้าเรียบร้อย")
-            setDialog(false)
-            ClearValSel()
-            //         } else {
-            //             if (res.data.docIDs != null && res.data.docIDs.length > 0) {
-            //                 alertDialogRenderer("success", "ตรวจสอบสินค้าเรียบร้อย")
-            //                 setActiveStep((prevActiveStep) => prevActiveStep - 1);
-            //             }
-            //         }
-            //     } else {
-            //         alertDialogRenderer("error", res.data._result.message)
-            //     }
-            // });
+            Axios.post(window.apipath + '/v2/couting_checker', req).then(res => {
+                if (res.data._result.status === 1) {
+                    if (res.data.stoItems != null && res.data.stoItems.length > 0) {
+                        setDataStoAudit(res.data)
+                        alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
+                    } else {
+                        if (res.data.docIDs != null && res.data.docIDs.length > 0) {
+                            alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
+                            handleBack(1);
+                        }
+                    }
+                    setDialog(false)
+                    ClearValSel()
+                } else {
+                    alertDialogRenderer("error", res.data._result.message)
+                }
+            });
         } else {
             setDialog(false)
             ClearValSel()
@@ -445,10 +483,72 @@ const AmAuditChecker = (props) => {
         if (dataSelected) {
             console.log(dataSelected)
             const columns = props.columnsEdit
+
             return columns.map((x, index) => {
                 return {
                     component: (data, cols, key) => {
-                        if (x.type === "number") {
+                        if (x.type === "info") {
+                            let pstoCode = dataSelected.pstoCode != null ? dataSelected.pstoCode : "";
+                            let pstoName = dataSelected.pstoName != null ? dataSelected.pstoName : "";
+                            let lot = dataSelected.lot != null && dataSelected.lot.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Lot: " + dataSelected.lot}</Typography>
+                                : dataSelected.ref1 != null && dataSelected.ref1.length > 0 ?
+                                    <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor: " + dataSelected.ref1}</Typography>
+                                    : null;
+                            let batch = dataSelected.batch != null && dataSelected.batch.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Batch: " + dataSelected.batch}</Typography>
+                                : null;
+                            let orderNo = dataSelected.orderNo != null && dataSelected.orderNo.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Order No. " + dataSelected.orderNo}</Typography>
+                                : null;
+                            let cartonNo = dataSelected.cartonNo != null && dataSelected.cartonNo.length > 0 ?
+                                <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No. " + dataSelected.cartonNo}</Typography>
+                                : null;
+
+                            let auditstatus = null;
+                            if (dataSelected.auditStatus) {
+                                let audit = "Audit Status: ";
+                                auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
+                                    <AmAuditStatus className={classes.statusLabel} statusCode={dataSelected.auditStatus} />
+                                </Typography>
+                            }
+                            return (
+                                <div key={index} style={{ flexGrow: 1 }}>
+                                    <div style={{ display: "flex" }}>
+                                        <Typography variant="body1" className={classes.labelHead}>{pstoCode}</Typography>
+                                        <Typography variant="body1" className={classes.labelHead2} noWrap>&nbsp;{"- " + pstoName}</Typography>
+                                    </div>
+                                    {lot}{batch}{orderNo}{cartonNo} 
+                                </div>
+                            )
+                        }
+                        else if (x.type === "input") {
+                            return (
+                                <FormInline><LabelH2>{t(x.name)} : </LabelH2>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                                        <AmInput
+                                            id={x.field}
+                                            required={x.required}
+                                            disabled={x.disabled}
+                                            autoFocus={x.isFocus}
+                                            placeholder={x.placeholder}
+                                            type="input"
+                                            // style={{ width: "330px" }}
+                                            inputProps={x.maxLength ? {
+                                                maxLength: x.maxLength,
+                                            } : {}}
+                                            // validate={validate}
+                                            // regExp={x.regExp}
+                                            // msgError={"Error"}
+                                            // styleValidate={{display: 'block'}}
+                                            // defaultValue={valueInput && valueInput[x.field] ? x.clearInput ? "" : valueInput[x.field] : x.defaultValue ? x.defaultValue : ""}
+                                            onBlur={(value, obj, element, event) => onHandleChangeInput(value, x.field)}
+                                        />
+                                    </div>
+                                </FormInline>
+                            )
+                        }
+                        else if (x.type === "number") {
                             return (
                                 <FormInline><LabelH2>{t(x.name)} : </LabelH2>
                                     <div style={{ display: 'inline-flex', alignItems: 'center' }} >
@@ -458,12 +558,14 @@ const AmAuditChecker = (props) => {
                                             disabled={x.disabled}
                                             placeholder={x.placeholder}
                                             type="number"
-                                            style={{ width: "100px" }}
+                                            defaultValue={dataSelected.coutingQty ? dataSelected.coutingQty : ""}
                                             // defaultValue={valueInput && valueInput[x.field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                                             onBlur={(value, obj, element, event) => onHandleChangeInput(parseFloat(value), x.field)}
                                         // onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, x.field, null, event)}
                                         />
-                                        {x.showUnit ? <label>{dataSelected.unitCode}</label> : null}
+                                        {x.showUnit ?
+                                            <Typography variant="body2" className={classes.labelHead2} noWrap>&nbsp;{dataSelected.unitCode}</Typography>
+                                            : null}
                                     </div>
                                 </FormInline>
                             )
@@ -474,8 +576,8 @@ const AmAuditChecker = (props) => {
                             //     valRad.value = valueInput[x.field].toString()
                             // }
                             // console.log(valRad)
-                            return <div>
-                                <AmRadioGroup
+                            return <div style={{marginTop: 15}}>
+                                <AmRadioGroup 
                                     formLabel={t(x.formLabel)}
                                     row={true}
                                     name={x.field}
@@ -487,11 +589,11 @@ const AmAuditChecker = (props) => {
                                     }}
                                 /> </div>
                         } else if (x.type === "label") {
-                            return <div key={index} syle={{ marginLeft: "100px" }}>
+                            return (
                                 <FormInline>
-                                    <LabelH2>{x.name} : {dataSelected[x.field]}</LabelH2>
-                                </FormInline>
-                            </div>
+                                    <LabelH1>{x.name} : </LabelH1>
+                                    <label>{dataSelected[x.field]}</label>
+                                </FormInline>)
                         }
 
                     }
@@ -528,7 +630,7 @@ const AmAuditChecker = (props) => {
             <AmEditorTable
                 open={dialog}
                 onAccept={(status, rowdata) => onHandleAdjustConfirm(status, rowdata)}
-                titleText={"Adjust & Auditing"}
+                titleText={"Confirm Couting"}
                 data={dataSelected !== undefined ? dataSelected : []}
                 columns={RanderElement()}
                 textConfirm={"Confirm"}

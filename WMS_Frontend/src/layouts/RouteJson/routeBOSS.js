@@ -31,7 +31,10 @@ const AD_ManageQueue = Loadable({
     loader: () => import("../../views/page/BOSS/AD/AD_ManageQueue"),
     loading: Loading
 });
-
+const AD_Checker = Loadable({
+    loader: () => import("../../views/page/BOSS/AD/AD_Checker"),
+    loading: Loading
+});
 
 const PI_Create = Loadable({
     loader: () => import("../../views/page/ENGINE/PI/PI_Create"),
@@ -65,7 +68,8 @@ const routes = [
     { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
     { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
     { path: "/audit/managequeue", name: "GI Manage Queue", compoment: AD_ManageQueue, exact: true },
-    
+    { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
+
     { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
     { path: "/issue/pickedinfo", name: "PK Get Detail", compoment: PK_GetDetail, exact: true },
 ]
