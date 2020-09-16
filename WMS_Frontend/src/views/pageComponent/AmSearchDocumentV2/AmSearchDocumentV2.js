@@ -120,7 +120,7 @@ const AmSearchDocumentV2 = props => {
                 return <AmDropdown
                   id={field}
                   placeholder={col.placeholder}
-                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "Name" : filterConfig.fieldDataKey}
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
@@ -325,6 +325,17 @@ const AmSearchDocumentV2 = props => {
 
               setDialog(true)
 
+            }
+
+          }
+        }, {
+          label: <div style={{ fontSize: "12px" }}>
+            {"CLOSE"}</div>,
+          action: (data) => {
+            if (selection.length === 0) {
+              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+            } else {
+              onUpdateStatus()
             }
 
           }

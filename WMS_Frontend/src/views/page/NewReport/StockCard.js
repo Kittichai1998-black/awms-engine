@@ -68,10 +68,10 @@ const StockCard = (props) => {
 
 
     const MVTQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "*",
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"in", "v": "1001,1002,2004"},{ "f": "ReProcessType_Name", "c":"!=", "v": ""}]',
+        f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -110,7 +110,7 @@ const StockCard = (props) => {
             Header: 'Description', accessor: 'Description', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
-                fieldLabel: ["Name"],
+                fieldLabel: ["Code", "Name"],
                 dataDropDown: MVTQuery,
                 typeDropDown: "normal",
                 widthDD: 220,
