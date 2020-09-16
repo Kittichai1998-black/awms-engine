@@ -107,28 +107,32 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT)
                 {
-                    //Wave
-                    var distoByQueue = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(queueTrx.ID.Value, this.BuVO);
-                    var doneDistoWaveSeq = new DoneDistoWaveSeq();
-                    var doneDistoWave = new List<DoneDistoWaveSeq.TReq.DistoList>();
+                    if(docs.DocumentType_ID == DocumentTypeID.PICKING)
+                    {
+                        //Wave
+                        var distoByQueue = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(queueTrx.ID.Value, this.BuVO);
+                        var doneDistoWaveSeq = new DoneDistoWaveSeq();
+                        var doneDistoWave = new List<DoneDistoWaveSeq.TReq.DistoList>();
 
-                    if (distoByQueue.FirstOrDefault().Sou_WaveSeq_ID != null)
-                    {
-                        distoByQueue.ForEach(di =>
+                        if (distoByQueue.FirstOrDefault().Sou_WaveSeq_ID != null)
                         {
-                            doneDistoWave.Add(new DoneDistoWaveSeq.TReq.DistoList
+                            distoByQueue.ForEach(di =>
                             {
-                                distoID = di.ID.Value,
+                                doneDistoWave.Add(new DoneDistoWaveSeq.TReq.DistoList
+                                {
+                                    distoID = di.ID.Value,
+                                });
                             });
-                        });
-                        doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() { distos = doneDistoWave });
-                    }
-                    else
-                    {
-                        if (docItems.Count > 0)
-                        {
-                            ManageDocumentOutput(reqVO, docs, queueTrx, docItems, stos);
+                            doneDistoWaveSeq.Execute(this.Logger, this.BuVO, new DoneDistoWaveSeq.TReq() { distos = doneDistoWave });
                         }
+                        else
+                        {
+                            if (docItems.Count > 0)
+                            {
+                                ManageDocumentOutput(reqVO, docs, queueTrx, docItems, stos);
+                            }
+                        }
+
                     }
                 }
 

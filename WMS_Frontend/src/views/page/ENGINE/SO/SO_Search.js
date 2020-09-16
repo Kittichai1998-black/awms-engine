@@ -255,9 +255,9 @@ const SO_Search = props => {
         buttonClose={true}
         buttonReject={true}
         dataReject={dataReject}
-        apiReject={"/v2/RejectGIDocAPI"}
+        apiReject={"/v2/reject_document"}
         //apiWorking={""}
-        apiClose={"/v2/CloseDocAPI"}
+        apiClose={"/v2/closed_document_manual"}
       />
     </div>
   );

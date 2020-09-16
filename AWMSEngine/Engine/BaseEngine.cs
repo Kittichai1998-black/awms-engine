@@ -82,7 +82,7 @@ namespace AWMSEngine.Engine
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 this.ValidateRequestParameter(reqVO);
-                resVO = Common.FeatureExecute.ExectProject<TReq, TRes>("PLUGIN." + this.GetType().Name, this.Logger, this.BuVO, reqVO);
+                resVO = Common.FeatureExecute.ExectProject<TReq, TRes>("PLUGIN.CLASS.ENGINE." + this.GetType().Name, this.Logger, this.BuVO, reqVO);
                 if(resVO == null)
                     resVO = this.ExecuteEngine(reqVO);
                 //resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };

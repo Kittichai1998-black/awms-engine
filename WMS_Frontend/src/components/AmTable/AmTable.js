@@ -139,7 +139,7 @@ const AmTable = (props) => {
         {label:"ExportExcel", action:(data) => {setExportExcel(true);}},
     ];
 
-    const FilterColumns = () => {
+    const ExcelColumns = () => {
         return props.columns.map(x=> {
             if(x.accessor)
                 return {Header:typeof(x.Header) === "function" ? x.accessor : x.Header, accessor:x.accessor}
@@ -203,7 +203,7 @@ const AmTable = (props) => {
                 props.tableConfig ? 
                 <AmExportExcel 
                     fileName="ExcelExport" 
-                    columns={FilterColumns()} 
+                    columns={ExcelColumns()} 
                     data={Clone(props.dataSource)} 
                     isLoading={exportExcel} 
                     onToggleLoad={(value)=> {setExportExcel(value)}}

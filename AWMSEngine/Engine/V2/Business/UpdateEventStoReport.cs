@@ -36,7 +36,7 @@ namespace AWMSEngine.Engine.Business
             List<amt_StorageObject> res = new List<amt_StorageObject>();
             foreach (var bstoid in reqVO.bstosID)
             {
-                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.BASE, false, true, this.BuVO);
+                var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.PACK,false, false, this.BuVO);
                 if (reqVO.RemarkMode)
                 {
                     this.UpdateRemark(this.Logger, sto, reqVO.remark, this.BuVO);
@@ -49,6 +49,15 @@ namespace AWMSEngine.Engine.Business
                     else
                     {
                         this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                        var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
+
+                        var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
+                        if (ckHold)
+                        {
+                            bsto.IsHold = reqVO.IsHold;
+                            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                        }
+
                     }
                 }
                 
@@ -71,11 +80,6 @@ namespace AWMSEngine.Engine.Business
             if (!checkStatus)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
-            foreach (var st in sto.mapstos)
-            {
-                st.AuditStatus = AdStatus;
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
-            }
             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
 
@@ -90,11 +94,11 @@ namespace AWMSEngine.Engine.Business
             if (!checkStatus)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
-            foreach (var st in sto.mapstos)
-            {
-                st.IsHold = IsHold;
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
-            }
+            //foreach (var st in sto.mapstos)
+            //{
+            //    st.IsHold = IsHold;
+            //    AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
+            //}
             AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
         private void UpdateRemark(AMWLogger logger, StorageObjectCriteria sto, string remark, VOCriteria buVO)

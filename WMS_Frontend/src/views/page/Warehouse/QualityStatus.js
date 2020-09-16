@@ -41,7 +41,7 @@ const QualityStatus = props => {
     },
     {
       Header: "Warehouse Lock",
-      accessor: "IsHold",
+      accessor: "IsHoldName",
       width: 30,
       sortable: false,
       filterType: "dropdown",
@@ -51,11 +51,11 @@ const QualityStatus = props => {
         typeDropDown: "normal",
         widthDD: 120,
       },
-      Cell: e => getIsHold(e.original.IsHold)
+      Cell: e => getIsHold(e.original.IsHoldName)
     },
     {
       Header: "Quality Status",
-      accessor: "AuditStatus",
+      accessor: "AuditStatusName",
       width: 50,
       sortable: false,
       filterType: "dropdown",
@@ -63,9 +63,9 @@ const QualityStatus = props => {
         filterType: "dropdown",
         dataDropDown: AuditStatus,
         typeDropDown: "normal",
-        widthDD: 130,
+        widthDD: 120,
       },
-      Cell: e => getAuditStatus(e.original.AuditStatus)
+      Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     {
       Header: "Pallet",
@@ -124,24 +124,24 @@ const QualityStatus = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-    if (value !== undefined) {
-      return value === false ? <div style={{ textAlign: "center" }}>
+    if (value === "UNLOCK") {
+      return <div style={{ textAlign: "center" }}>
         <Tooltip title="UNLOCK" >
           <RemoveCircle
             fontSize="small"
             style={{ color: "#9E9E9E" }}
           />
         </Tooltip>
-      </div> : <div style={{ textAlign: "center" }}>
-          <Tooltip title="LOCK" >
-            <CheckCircle
-              fontSize="small"
-              style={{ color: "black" }}
-            />
-          </Tooltip>
-        </div>
+      </div>
     } else {
-      return null
+      return <div style={{ textAlign: "center" }}>
+        <Tooltip title="LOCK" >
+          <CheckCircle
+            fontSize="small"
+            style={{ color: "black" }}
+          />
+        </Tooltip>
+      </div>
     }
   }
   const getRedirectLog = data => {
@@ -189,14 +189,14 @@ const QualityStatus = props => {
 
   };
   const getAuditStatusValue = Status => {
-    if (Status === 0) {
-      return <AuditStatusIcon key={Status} statusCode={0} />;
-    } else if (Status === 1) {
-      return <AuditStatusIcon key={Status} statusCode={1} />;
-    } else if (Status === 2) {
-      return <AuditStatusIcon key={Status} statusCode={2} />;
-    } else if (Status === 9) {
-      return <AuditStatusIcon key={Status} statusCode={9} />;
+    if (Status === "QUARANTINE") {
+      return <AuditStatusIcon key={0} statusCode={0} />;
+    } else if (Status === "PASSED") {
+      return <AuditStatusIcon key={1} statusCode={1} />;
+    } else if (Status === "REJECTED") {
+      return <AuditStatusIcon key={2} statusCode={2} />;
+    } else if (Status === "HOLD") {
+      return <AuditStatusIcon key={9} statusCode={9} />;
     } else {
       return null;
     }

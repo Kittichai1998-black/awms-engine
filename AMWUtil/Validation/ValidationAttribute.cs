@@ -22,7 +22,7 @@ namespace AMWUtil.Validation
         /// <summary>
         /// Default : null
         /// </summary>
-        public AMWExceptionCode? ExceptionCode = null;
+        public AMWExceptionCode ExceptionCode = AMWExceptionCode.U0000;
 
         public ValidationAttribute() { }
     }

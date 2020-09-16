@@ -53,13 +53,13 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
                     new KeyValuePair<string, object>("Status", status)
                 }, this.BuVO);
 
-            ADO.DataADO.GetInstant().UpdateBy<amt_MaintenanceResultItem>(new SQLConditionCriteria[]{
-                    new SQLConditionCriteria(){field = "MaintenanceResult_ID", operatorType = SQLOperatorType.EQUALS, value = id},
-                    new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
-                }, new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object>("EventStatus", eventStatus),
-                    new KeyValuePair<string, object>("Status", status)
-                }, this.BuVO);
+            //ADO.DataADO.GetInstant().UpdateBy<amt_MaintenanceResultItem>(new SQLConditionCriteria[]{
+            //        new SQLConditionCriteria(){field = "MaintenanceResult_ID", operatorType = SQLOperatorType.EQUALS, value = id},
+            //        new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
+            //    }, new KeyValuePair<string, object>[] {
+            //        new KeyValuePair<string, object>("EventStatus", eventStatus),
+            //        new KeyValuePair<string, object>("Status", status)
+            //    }, this.BuVO);
         }
     }
 }

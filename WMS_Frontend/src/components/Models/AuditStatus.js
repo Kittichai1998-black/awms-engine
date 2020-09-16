@@ -1,8 +1,8 @@
 const AuditStatus = [
-  { label: "QUARANTINE", value: 0 },
-  { label: "PASSED", value: 1 },
-  { label: "REJECTED", value: 2 },
-  { label: "HOLD", value: 9 }
+  { label: "QUARANTINE", value: "QUARANTINE" },
+  { label: "PASSED", value: "PASSED" },
+  { label: "REJECTED", value: "REJECTED" },
+  { label: "HOLD", value: "HOLD" }
 
 ];
 
