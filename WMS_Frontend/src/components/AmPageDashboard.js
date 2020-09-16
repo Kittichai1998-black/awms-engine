@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react'
 // import Typography from '@material-ui/core/Typography';
 
 import AmAux from './AmAux';
-import AmTable from './table/AmTable'
+import AmTable from './AmTable/AmTableComponent'
 import { useTranslation } from 'react-i18next'
 
 
@@ -188,11 +188,12 @@ const AmMonitor = props => {
                     <Grid item md={12}>
                         <AmTable
                             // primaryKey="ID"
-                            data={x[0].table[0].data}
+                            dataSource={x[0].table[0].data}
                             columns={formatDatas(x[0].table[0].headercol)}
                             pageSize={20}
                             minRows={6}
                             currentPage={0}
+                            cellStyle={(accessor, cellData, dataSource) => { return { backgroundColor: "red" } }}
                             getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                             style={{
                                 background: 'white',
