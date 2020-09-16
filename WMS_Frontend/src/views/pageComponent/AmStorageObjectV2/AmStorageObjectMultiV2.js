@@ -59,9 +59,10 @@ const AmStorageObjectMulti = props => {
   const [hold, setHold] = useState(true);
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(20);
   const [mode, setMode] = useState("");
   const [aditStatus, setAditStatus] = useState("");
+
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
@@ -390,6 +391,7 @@ const AmStorageObjectMulti = props => {
         selectionData={(data) => {
           setSelection(data);
         }}
+        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
         tableConfig={true}
         onPageChange={p => {
           if (page !== p)

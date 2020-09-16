@@ -68,7 +68,7 @@ export default props => {
     useEffect(() => {
         if (count > 0) {
             window.loading.onLoaded();
-        }else{
+        } else {
             window.loading.onLoading();
         }
     }, [count])
