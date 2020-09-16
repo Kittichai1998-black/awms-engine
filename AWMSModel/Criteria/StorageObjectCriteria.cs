@@ -62,7 +62,7 @@ namespace AWMSModel.Criteria
         public long? skuTypeID;
         public string skuTypeName;
         public long? forCustomerID; 
-        public DateTime? ShelfLifeDate;
+        public DateTime? shelfLifeDate;
 
         public ObjectSize objectSize;
         public class ObjectSize

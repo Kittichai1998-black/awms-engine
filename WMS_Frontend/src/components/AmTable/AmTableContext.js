@@ -96,22 +96,35 @@ const filterReducer = (state, action) => {
     switch(action.type){
         case "add" : {
             let findData = [...state.filter].find(x=> x.field === action.payload.field)
-            if(findData !== undefined){
-                let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
-                if(action.payload.value !== undefined)
-                    filterData.push(action.payload)
-                return {
-                    ...state,
-                    "filtered":true,
-                    "filter":filterData
+            if(findData === undefined){
+                if(action.payload.value !== undefined && action.payload.value !== ''){
+                    let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+                    if(action.payload.value !== undefined)
+                        filterData.push(action.payload)
+                    return {
+                        ...state,
+                        "filtered":true,
+                        "filter":filterData
+                    }
+                }else{
+                    return state
                 }
             }
             else{
-                if(action.payload.value !== undefined && action.payload.value === ''){
-
+                if(findData.value !== action.payload.value){
+                    let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+                    if(action.payload.value !== undefined)
+                        filterData.push(action.payload)
+                    return {
+                        ...state,
+                        "filtered":true,
+                        "filter":filterData
+                    }
+                }
+                else{
+                    return state
                 }
             }
-            break;
         }
         case "removeall" : {
             return {

@@ -189,10 +189,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         }
 
                         // update incubatedate, shelflifedate
-                        StorageObjectCriteria packSto = new StorageObjectCriteria()
-                        {
-                            id = psto.ID,
-                        };
+                        var packSto = ADO.StorageObjectADO.GetInstant().Get(psto.ID.Value, StorageObjectType.PACK, false, false, this.BuVO);
+
                         DateTime? incubatedate = null;
                         DateTime? shelflifedate = null;
                         
@@ -208,9 +206,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             shelflifedate = docItem.ExpireDate == null ? (DateTime?)null : docItem.ShelfLifeDay != null ?
                                 docItem.ExpireDate.Value.AddDays(Convert.ToDouble(-docItem.ShelfLifeDay) + 1) : (DateTime?)null;
                            
-                            packSto.ShelfLifeDate = shelflifedate;
+                            packSto.shelfLifeDate = shelflifedate;
                         }
-                        if (packSto.incubationDate != null || packSto.ShelfLifeDate != null)
+                        if (packSto.incubationDate != null || packSto.shelfLifeDate != null)
                         {
                             var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
                         }

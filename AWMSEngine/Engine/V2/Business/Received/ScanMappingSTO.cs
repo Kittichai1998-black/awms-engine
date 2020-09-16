@@ -285,7 +285,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     productDate = psto.productDate,
                     expiryDate = psto.expiryDate,
                     incubationDate = psto.incubationDate,
-                    ShelfLifeDate = psto.shelfLifeDate,
+                    shelfLifeDate = psto.shelfLifeDate,
                     //refID = psto.refID,
                     ref1 = psto.ref1,
                     ref2 = psto.ref2,
