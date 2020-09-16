@@ -192,7 +192,7 @@ namespace AWMSEngine.Engine.V2.Business
                         productDate = getDocItem.ProductionDate,
                         expiryDate = getDocItem.ExpireDate,
                         incubationDate = incubatedate,
-                        ShelfLifeDate = shelflifedate,
+                        shelfLifeDate = shelflifedate,
                         AuditStatus = EnumUtil.GetValueEnum<AuditStatus>(auditstatus),
                         IsHold = Convert.ToBoolean(Convert.ToInt16(holdstatus))
                     };
