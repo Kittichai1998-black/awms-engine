@@ -79,7 +79,9 @@ const AreaLocationCondition = props => {
         { Header: "Priority", accessor: "Priority"},   
         { Header: "Bank", accessor: "LocationBankNumRange" },
         { Header: "Bay", accessor: "LocationBayNumRange" },
-        { Header: "Level", accessor: "LocationLvNumRange"},
+        { Header: "Level", accessor: "LocationLvNumRange" },
+        { Header: "MinQuantity", accessor: "MinQuantity" },
+        { Header: "MaxQuantity", accessor: "MaxQuantity" },
         { Header: "SKU Code", accessor: "SKU_Code" },
         { Header: "SKU Name", accessor: "SKU_Name" },
         { Header: "SKUType", accessor: "SKUType_Name" },
@@ -121,6 +123,20 @@ const AreaLocationCondition = props => {
             type: "input",
             name: "Level",
             placeholder: "Level",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "MinQuantity",
+            type: "input",
+            name: "MinQuantity",
+            placeholder: "MinQuantity",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "MaxQuantity",
+            type: "input",
+            name: "MaxQuantity",
+            placeholder: "MaxQuantity",
             validate: /^[0-9\.]+$/
         },
         {

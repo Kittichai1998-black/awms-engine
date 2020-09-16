@@ -110,6 +110,13 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
     return window.apipath + "/v2/GetSPReportAPI?"
       + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
       + "&spname=LOG_SEARCH";
+  } else if (fileNameTable === "STOCKUSE") {
+      return window.apipath + "/v2/GetSPReportAPI?"
+          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+          + "&bank=" + (valueText.bank === undefined || valueText.bank === null ? '' : encodeURIComponent(valueText.bank.trim()))
+          + "&bay=" + (valueText.bay === undefined || valueText.bay === null ? '' : encodeURIComponent(valueText.bay.trim()))
+          + "&level=" + (valueText.level === undefined || valueText.level === null ? '' : encodeURIComponent(valueText.level.trim()))
+          + "&spname=STOCKLOCATIONUSE";
   }
 
 }

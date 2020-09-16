@@ -107,6 +107,11 @@ const CurrentInventory = Loadable({
   loading: Loading
 });
 
+const StockLocationUsed =  Loadable({
+    loader: () => import("../../views/page/NewReport/StockLocationUsed"),
+    loading: Loading
+});
+
 const StockCardV2 = Loadable({
   loader: () => import("../../views/page/NewReport/StockCard"),
   loading: Loading
@@ -403,7 +408,8 @@ let routes = [
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+    { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+    { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },

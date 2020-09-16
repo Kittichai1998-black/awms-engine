@@ -32,11 +32,11 @@ namespace AWMSEngine.Engine.V2.Business.Counting
 
             var pstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
             if(pstos == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจสอบ");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจนับ");
 
             var docitem = doc.DocumentItems.Find(y => y.ID == reqVO.pi_docItemID);
             if (docitem == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบเอกสารที่ต้องการตรวจสอบ");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจนับ");
 
             var disto = docitem.DocItemStos.Find(z => z.ID == reqVO.distoID);
             if (disto == null)

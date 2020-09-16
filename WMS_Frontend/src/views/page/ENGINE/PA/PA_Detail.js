@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import queryString from "query-string";
 import moment from "moment";
 
@@ -76,7 +77,7 @@ const PA_Detail = props => {
                 { label: "Des. Warehouse", values: "DesWarehouseName" }
             ],
             [
-                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
@@ -97,12 +98,12 @@ const PA_Detail = props => {
         { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Audit Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
@@ -140,7 +141,7 @@ const PA_Detail = props => {
         {
             Header: "Audit Status",
             accessor: "diAuditStatus", 
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
@@ -182,11 +183,20 @@ const PA_Detail = props => {
         if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
             return "QUARANTINE"
         } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
-            return "PASS"
+            return "PASSED"
         } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
-            return "NOTPASS"
+            return "REJECTED"
         } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
             return "HOLD"
+        }
+    };
+
+    const GetAuditStatusIcon = (value) => {
+        console.log(value.diAuditStatus)
+        if (value.diAuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
+        } else if (value.AuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
         }
     };
 

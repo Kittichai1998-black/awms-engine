@@ -25,13 +25,11 @@ namespace AWMSEngine.APIService.V2.Business.Couting
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var resClosing = new WorkedDocument().Execute(this.Logger, this.BuVO,
-               new WorkedDocument.TReq() { docIDs = resWorked });
+            var resClosing = new ClosingDocument().Execute(this.Logger, this.BuVO, resWorked);
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var resClosed = new WorkedDocument().Execute(this.Logger, this.BuVO,
-               new WorkedDocument.TReq() { docIDs = resClosing });
+            var resClosed = new ClosedDocument().Execute(this.Logger, this.BuVO, resClosing);
             this.CommitTransaction();
             return res;
 
