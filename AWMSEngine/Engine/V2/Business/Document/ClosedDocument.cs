@@ -46,11 +46,11 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 }
                                 else
                                 {
-                                    if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY || docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT || docs.DocumentType_ID == DocumentTypeID.AUDIT)
+                                    if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY)
                                     {
                                         distos.ForEach(disto =>
                                         {
-                                            var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+                                            var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, BuVO);
                                             stosPack.IsStock = true;
                                             ADO.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
                                             updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);

@@ -368,8 +368,8 @@ const AmAuditChecker = (props) => {
                     let processTypeName = sto.processTypeName != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{"Process No. " + sto.processTypeName}</Typography>
                         : null;
-                    let coutingQty = sto.coutingQty != null ?
-                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.coutingQty + " " + sto.unitCode}</Typography>
+                    let auditQty = sto.auditQty != null ?
+                        <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.auditQty + " " + sto.unitCode}</Typography>
                         : null;
                     let destination = sto.destination != null ?
                         <Typography variant="body2" className={classes.labelText} noWrap>{"Destination: " + sto.destination}</Typography>
@@ -394,11 +394,11 @@ const AmAuditChecker = (props) => {
                                     <span className={classes.labelHead}>{pstoCode}</span>
                                     &nbsp;{"- " + pstoName}
                                 </Typography>
-                                {coutingQty}
+                                {auditQty}
                                 {lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}{auditstatus}
                             </div>,
                         labelIcon: EditIcon,
-                        // labelInfo: coutingQty,
+                        // labelInfo: auditQty,
                         bgColor: "#e8f0fe",
                         color: "#1a73e8",
                         dataItem: sto,
@@ -422,7 +422,7 @@ const AmAuditChecker = (props) => {
         }
     });
     const GetStoAuditing = (bstoCode) => {
-        Axios.get(window.apipath + '/v2/get_sto_couting?' + //get_sto_audit
+        Axios.get(window.apipath + '/v2/get_sto_audit?' + //get_sto_audit
             '&bstoCode=' + (bstoCode === undefined || bstoCode === null ? ''
                 : encodeURIComponent(bstoCode.trim()))).then(res => {
                     if (res.data._result.status === 1) {
@@ -451,7 +451,7 @@ const AmAuditChecker = (props) => {
         if (status) {
             let req = { ...rowdata, ...valueInput }
             console.log(req)
-            Axios.post(window.apipath + '/v2/couting_checker', req).then(res => {
+            Axios.post(window.apipath + '/v2/audit_checker', req).then(res => {
                 if (res.data._result.status === 1) {
                     if (res.data.stoItems != null && res.data.stoItems.length > 0) {
                         setDataStoAudit(res.data)
@@ -460,6 +460,7 @@ const AmAuditChecker = (props) => {
                         if (res.data.docIDs != null && res.data.docIDs.length > 0) {
                             alertDialogRenderer("success", "ตรวจนับสินค้าเรียบร้อย")
                             handleBack(1);
+                            
                         }
                     }
                     setDialog(false)
@@ -477,7 +478,7 @@ const AmAuditChecker = (props) => {
 
     const ClearValSel = () => {
         setDataSelected(null)
-        setValueInput({})
+        // setValueInput({})
     }
     const RanderElement = () => {
         if (dataSelected) {
@@ -558,7 +559,7 @@ const AmAuditChecker = (props) => {
                                             disabled={x.disabled}
                                             placeholder={x.placeholder}
                                             type="number"
-                                            defaultValue={dataSelected.coutingQty ? dataSelected.coutingQty : ""}
+                                            defaultValue={dataSelected.auditQty ? dataSelected.auditQty : ""}
                                             // defaultValue={valueInput && valueInput[x.field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                                             onBlur={(value, obj, element, event) => onHandleChangeInput(parseFloat(value), x.field)}
                                         // onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, x.field, null, event)}

@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import AmAuditChecker from '../../../pageComponent/AmAuditChecker'
-import { AuditStatus1_2 } from '../../../../components/Models/StorageObjectEvenstatus';
+import { AuditStatus, AuditStatus1_2 } from '../../../../components/Models/StorageObjectEvenstatus';
 const AuditChecker = (props) => {
     const { classes } = props;
- 
+    const newAuditStatus = AuditStatus.map(function (x) {
+        return { ...x, value: x.value.toString() }
+    });
     const columnsEdit = [
-        { "type": "info"},
+        { "type": "info" },
         {
-            "field": "new_auditStatus", "type": "radiogroup", "name": "new_auditStatus", "formLabel": "Select Audit Status", "fieldLabel": AuditStatus1_2,
+            "field": "auditStatus", "type": "radiogroup", "name": "auditStatus",
+            "formLabel": "Select Audit Status", "fieldLabel": newAuditStatus,
             // "defaultValue": { value: '1' }
         },
         { "field": "auditQty", "type": "number", "name": "Quantity", "clearInput": true, "required": true, "showUnit": true },
