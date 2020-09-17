@@ -85,20 +85,22 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
         onAccept={(status, rowdata)=> {
-            var updateData = {...editData}
+            var updateData = {ID:null, Status:1, Revision:1}
             let chkRequire = []
 
             if(rowdata !== undefined){
-                if(rowdata["ID"] !== null)
+                if(rowdata["ID"] !== null){
                     updateData["ID"] = rowdata["ID"]
-                    chkRequire = editorColumns.map(x => {
-                    if(rowdata[x.field] !== undefined){
-                        updateData[x.field] = rowdata[x.field]
-                    }
-                    if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
-                        return false;
-                    else 
-                        return true;
+                }
+                
+                chkRequire = editorColumns.map(x => {
+                if(rowdata[x.field] !== undefined){
+                    updateData[x.field] = rowdata[x.field]
+                }
+                if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
+                    return false;
+                else 
+                    return true;
                 });
             }
             

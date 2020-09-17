@@ -113,7 +113,7 @@ const MaintenancePlan = (props) => {
                 return ""
             }
         }},
-        {accessor:"CreateTime", Header:"Create", Cell:(dt)=>{
+        {accessor:"CreateTime", Header:"Create", filterable:false, Cell:(dt)=>{
             if(moment(dt.data["CreateTime"]).isValid()){
                 return <label>{moment(dt.data["CreateTime"]).format("DD/MM/YYYY")}</label>
             }
@@ -121,7 +121,7 @@ const MaintenancePlan = (props) => {
                 return ""
             }
         }},
-        {accessor:"ModifyTime", Header:"Modify", Cell:(dt)=>{
+        {accessor:"ModifyTime", Header:"Modify", filterable:false, Cell:(dt)=>{
             if(moment(dt.data["ModifyTime"]).isValid()){
                 return <label>{moment(dt.data["ModifyTime"]).format("DD/MM/YYYY")}</label>
             }
