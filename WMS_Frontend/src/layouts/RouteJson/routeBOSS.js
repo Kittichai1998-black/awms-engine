@@ -57,6 +57,14 @@ const PI_ManageQueue = Loadable({
     loader: () => import("../../views/page/BOSS/PI/PI_ManageQueue"),
     loading: Loading
 });
+const MonitorWorking_PD = Loadable({
+    loader: () => import("../../views/page/BOSS/Monitor/MonitorWorkingPD"),
+    loading: Loading
+});
+const MonitorWorking_LD = Loadable({
+    loader: () => import("../../views/page/BOSS/Monitor/MonitorWorkingLD"),
+    loading: Loading
+});
 const routes = [
     { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
     { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
@@ -72,6 +80,9 @@ const routes = [
 
     { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
     { path: "/issue/pickedinfo", name: "PK Get Detail", compoment: PK_GetDetail, exact: true },
+
+    { path: "/monitor/workingPD", name: "Monitor Working Zone Production", compoment: MonitorWorking_PD, exact: true },
+    { path: "/monitor/workingLD", name: "Monitor Working Zone Loading", compoment: MonitorWorking_LD, exact: true },
 ]
 
 export default routes;

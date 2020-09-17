@@ -391,6 +391,10 @@ const ManageMaintenancePlan = Loadable({
   loader: () => import("../../views/page/ENGINE/ManageMaintenancePlan"),
   loading: Loading
 });
+const MoveLocation = Loadable({
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -403,6 +407,7 @@ let routes = [
   // {path: "/dashboard/picking",name: "Pickiing Progress",compoment: Picking,exact: true},
   // {path: "/dashboard/pickingjobs",name: "Dashboard Gate Picking Return by GR",compoment: dashboardReturnPicking,exact: true},
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
+  { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
   { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },

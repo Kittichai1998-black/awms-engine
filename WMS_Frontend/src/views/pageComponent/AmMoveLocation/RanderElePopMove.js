@@ -68,7 +68,7 @@ const DataGenerateElePopMove = (data) => {
         <FormInline>
           <Grid item xs={6} >
             <FormInline>
-              <label style={LabelH}>{"Base : "}</label>
+              <label style={LabelH}>{"Pallet : "}</label>
             </FormInline>
           </Grid>
           <Grid item xs={6} >
@@ -114,11 +114,13 @@ const DataGenerateElePopMove = (data) => {
 }
 const getStatus = value => {
   if (value === "RECEIVED") {
-    return <AmStorageObjectStatus key={"RECEIVED"} statusCode={102} />;
+    return <AmStorageObjectStatus key={"RECEIVED"} statusCode={12} />;
   } else if (value === "AUDITED") {
-    return <AmStorageObjectStatus key={"AUDITED"} statusCode={104} />;
+    return <AmStorageObjectStatus key={"AUDITED"} statusCode={14} />;
+  } else if (value === "COUNTED") {
+    return <AmStorageObjectStatus key={"COUNTED"} statusCode={16} />;
   } else if (value === "CONSOLIDATED") {
-    return <AmStorageObjectStatus key={"CONSOLIDATED"} statusCode={156} />;
+    return <AmStorageObjectStatus key={"CONSOLIDATED"} statusCode={36} />;
   } else {
     return null;
   }
