@@ -67,8 +67,8 @@ const AreaLocationMaster = Loadable({
 });
 
 const AreaLocationCondition = Loadable({
-    loader: () => import("../../views/page/Master/AreaLocationCondition"),
-    loading: Loading
+  loader: () => import("../../views/page/Master/AreaLocationCondition"),
+  loading: Loading
 });
 const AreaRoute = Loadable({
   loader: () => import("../../views/page/Master/AreaRoute"),
@@ -107,9 +107,9 @@ const CurrentInventory = Loadable({
   loading: Loading
 });
 
-const StockLocationUsed =  Loadable({
-    loader: () => import("../../views/page/NewReport/StockLocationUsed"),
-    loading: Loading
+const StockLocationUsed = Loadable({
+  loader: () => import("../../views/page/NewReport/StockLocationUsed"),
+  loading: Loading
 });
 
 const StockCardV2 = Loadable({
@@ -182,6 +182,7 @@ const MonitorIO = Loadable({
   loader: () => import("../../views/page/Monitor/MonitorIO"),
   loading: Loading
 });
+
 const MonitorPicking = Loadable({
   loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
   loading: Loading
@@ -416,8 +417,8 @@ let routes = [
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-    { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
-    { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
+  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },
@@ -434,8 +435,8 @@ let routes = [
   { path: "/setting/branch", name: "base5", compoment: BranchMaster, exact: true },
   { path: "/setting/warehouse", name: "base5", compoment: WarehouseMaster, exact: true },
   { path: "/setting/area", name: "base5", compoment: AreaMaster, exact: true },
-    { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
-    { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
+  { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
+  { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
   { path: "/setting/arearoute", name: "base5", compoment: AreaRoute, exact: true },
   { path: "/setting/customer", name: "base5", compoment: Customer, exact: true },
   { path: "/setting/supplier", name: "base5", compoment: Supplier, exact: true },

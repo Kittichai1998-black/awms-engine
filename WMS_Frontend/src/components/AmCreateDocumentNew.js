@@ -136,7 +136,8 @@ const AmCreateDocument = (props) => {
     const [skuID, setskuID] = useState(0);
     const [dataUnit, setdataUnit] = useState();
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
-    const [unitCon, setunitCon] = useState()
+    const [unitCon, setunitCon] = useState();
+    const [defaulact, setdefaulact] = useState()
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -177,9 +178,7 @@ const AmCreateDocument = (props) => {
 
     const columns = props.columns.concat(rem)
 
-    useEffect(() => {
-        getHeaderCreate()
-    }, [props.headerCreate])
+
 
     useEffect(() => {
         getTypeEditor()
@@ -198,19 +197,32 @@ const AmCreateDocument = (props) => {
     }, [dataUnit])
 
     useEffect(() => {
+        if (createDocumentData != {}) {
+            console.log(props.defaulact)
+            if (createDocumentData.actionTime !== null && props.defaulact === false) {
+                createDocumentData.actionTime = null
+                setcreateDocumentData(createDocumentData)
+            } else {
+                setcreateDocumentData(createDocumentData)
+            }
+        }
+        //setcreateDocumentData({})
+        getHeaderCreate()
         let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-            //arr[el.key] = el.valueTexts || el.defaultValue    
+            //arr[el.key] = el.valueTexts || el.defaultValue   
             if (el.key === "documentProcessTypeID" && processType === undefined) {
                 createDocumentData["documentProcessTypeID"] = el.defaultValue
             } else {
                 if (el.key !== "documentProcessTypeID") {
                     createDocumentData[el.key] = el.valueTexts || el.defaultValue
-                }
+                  
+                } 
 
             }
             return arr
         }, {})
-    }, [props.headerCreate])
+
+    }, [props.headerCreate, props.defaulact])
 
 
     useEffect(() => {
@@ -878,19 +890,21 @@ const AmCreateDocument = (props) => {
             return (
                 <div>
                     <FormInline>
-                        <label style={{ color: 'red' }}> ***</label>
                         <AmDate
                             TypeDate={"datetime-local"}
                             defaultValue={false}
                             value={createDocumentData[key]}
                             onChange={(e) => {
-                                if (e !== null) {
+                                if (e.fieldDataObject !== null) {
                                     let docData = createDocumentData
                                     docData[key] = e.fieldDataObject
                                     setcreateDocumentData(docData)
-                                } else { }
+                                } else {
+
+                                }
                             }}
                         />
+                        <label style={{ color: 'red' }}> *</label>
                     </FormInline>
                 </div>
 
@@ -1128,11 +1142,13 @@ const AmCreateDocument = (props) => {
         }
 
         if (Object.keys(doc).length > countDoc) {
-            if (doc.documentProcessTypeID === null || doc.documentProcessTypeID === null) {
+            console.log(doc)
+            if (doc.documentProcessTypeID === null ) {
                 setMsgDialog("Process No not found");
                 setStateDialogErr(true);
             } else {
                 if (props.createDocType === "counting") {
+                    console.log(doc.actionTime)
                     if (doc.actionTime) {
                         CreateDocuments(doc)
                     } else {
