@@ -390,6 +390,14 @@ const ManageMaintenancePlan = Loadable({
   loader: () => import("../../views/page/ENGINE/ManageMaintenancePlan"),
   loading: Loading
 });
+const Car = Loadable({
+  loader: () => import("../../views/page/Master/TransportCar"),
+  loading: Loading
+});
+const CarType = Loadable({
+  loader: () => import("../../views/page/Master/TransportCarType"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -436,6 +444,8 @@ let routes = [
   { path: "/setting/skuvolume", name: "base5", compoment: ObjectSize, exact: true },
   { path: "/setting/ObjectSizeMap", name: "base5", compoment: ObjectSizeMap, exact: true },
   { path: "/setting/APIKey", name: "base5", compoment: APIKey, exact: true },
+  { path: "/setting/car", name: "base5", compoment: Car, exact: true },
+  { path: "/setting/carType", name: "base5", compoment: CarType, exact: true },
   { path: "/exbutton", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/exdropdown", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/sto/picking", name: "base5", compoment: FindpopupDDL, exact: true },

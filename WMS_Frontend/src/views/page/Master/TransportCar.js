@@ -5,7 +5,32 @@ import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
-const Customer = props => {
+const ObjSizeQuery = {
+  queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  t: "ObjectSize",
+  q:
+    '[{ "f": "Status", "c":"<", "v": 2}]',
+  f: "*",
+  g: "",
+  s: "[{'f':'ID','od':'asc'}]",
+  sk: 0,
+  l: 100,
+  all: ""
+};
+
+const CarTypeQuery = {
+  queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  t: "TransportCarType",
+  q: '[{ "f": "Status", "c":"<", "v": 2}]',
+  f: "*",
+  g: "",
+  s: "[{'f':'ID','od':'asc'}]",
+  sk: 0,
+  l: 100,
+  all: ""
+};
+
+const TransportCar = props => {
 
   const iniCols = [
     {
@@ -25,10 +50,10 @@ const Customer = props => {
     { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
     { Header: "Description", accessor: "Description" },
-    { Header: "TransportCarType", accessor: "Type" },
-    { Header: "Brand", accessor: "Description" },
-    { Header: "Model", accessor: "Description" },
-    { Header: "Color", accessor: "Description" },
+    { Header: "TransportCarType", accessor: "TransportCarType" },
+    { Header: "Brand", accessor: "Brand" },
+    { Header: "Model", accessor: "Model" },
+    { Header: "Color", accessor: "Color" },
     { Header: "ObjectSize", accessor: "ObjectSize" },
     { Header: "Update By", accessor: "UpdateBy", width: 100 },
     {
@@ -39,50 +64,66 @@ const Customer = props => {
       dateFormat: "DD/MM/YYYY HH:mm"
     }
   ];
-  
+
   const columns = [
     {
       field: "Code",
       type: "input",
-      name: "SKU Code",
+      name: "Code",
       placeholder: "Code",
       required: true
     },
     {
       field: "Name",
       type: "input",
-      name: "SKU Name",
+      name: "Name",
       placeholder: "Name",
       required: true
     },
     {
-      field: "SKUMasterType_ID",
-      type: "dropdown",
-      typeDropDown: "search",
-      name: "SKU Type",
-      dataDropDown: SKUMasterTypeQuery,
-      placeholder: "SKU Type",
-      fieldLabel: ["Code", "Name"],
-      fieldValue: "ID",
-    },
-    {
-      field: "WeightKG",
+      field: "Description",
       type: "input",
-      inputType: "number",
-      name: "Gross Weight",
-      placeholder: "Gross Weight",
-      validate: /^[0-9\.]+$/
+      name: "Description",
+      placeholder: "Description"
     },
     {
-      field: "UnitType_ID",
+      field: "ObjectSize_ID",
       type: "dropdown",
       typeDropDown: "search",
-      name: "Unit Type",
-      dataDropDown: UnitTypeQuery,
-      placeholder: "Unit Type",
+      name: "Object Size",
+      dataDropDown: ObjSizeQuery,
+      placeholder: "Object Size",
       fieldLabel: ["Code", "Name"],
       fieldValue: "ID",
-    }
+    },
+    {
+      field: "TransportCarType_ID",
+      type: "dropdown",
+      typeDropDown: "search",
+      name: "Car Type",
+      dataDropDown: CarTypeQuery,
+      placeholder: "Car Type",
+      fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
+    },
+    {
+      field: "Brand",
+      type: "input",
+      name: "Brand",
+      placeholder: "Brand"
+    },
+    {
+      field: "Model",
+      type: "input",
+      name: "Model",
+      placeholder: "Model"
+    },
+    {
+      field: "Color",
+      type: "input",
+      name: "Color",
+      placeholder: "Color"
+    },
   ];
 
   const columnsEdit = [
@@ -91,7 +132,6 @@ const Customer = props => {
       type: "input",
       name: "Code",
       placeholder: "Code",
-      validate: /^.+$/,
       required: true
     },
     {
@@ -99,7 +139,6 @@ const Customer = props => {
       type: "input",
       name: "Name",
       placeholder: "Name",
-      validate: /^.+$/,
       required: true
     },
     {
@@ -109,50 +148,50 @@ const Customer = props => {
       placeholder: "Description"
     },
     {
+      field: "ObjectSize_ID",
+      type: "dropdown",
+      typeDropDown: "search",
+      name: "Object Size",
+      dataDropDown: ObjSizeQuery,
+      placeholder: "Object Size",
+      fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
+    },
+    {
+      field: "TransportCarType_ID",
+      type: "dropdown",
+      typeDropDown: "search",
+      name: "Car Type",
+      dataDropDown: CarTypeQuery,
+      placeholder: "Car Type",
+      fieldLabel: ["Code", "Name"],
+      fieldValue: "ID",
+    },
+    {
+      field: "Brand",
+      type: "input",
+      name: "Brand",
+      placeholder: "Brand"
+    },
+    {
+      field: "Model",
+      type: "input",
+      name: "Model",
+      placeholder: "Model"
+    },
+    {
+      field: "Color",
+      type: "input",
+      name: "Color",
+      placeholder: "Color"
+    },
+    {
       field: "Status",
       type: "dropdown",
       typeDropDown: "normal",
       name: "Status",
       dataDropDown: EntityEventStatus,
       placeholder: "Status"
-    }
-  ];
-  const primarySearch = [
-    { field: "Code", type: "input", name: "Code", placeholder: "Code" },
-    { field: "Name", type: "input", name: "Name", placeholder: "Name" }
-  ];
-  const columnsFilter = [
-    {
-      field: "Description",
-      type: "input",
-      name: "Description",
-      placeholder: "Description"
-    },
-    {
-      field: "Status",
-      type: "dropdown",
-      typeDropDown: "normal",
-      name: "Status",
-      dataDropDown: EntityEventStatus,
-      placeholder: "Status"
-    },
-    {
-      field: "LastUpdateBy",
-      type: "input",
-      name: "Update By",
-      placeholder: "Update By"
-    },
-    {
-      field: "LastUpdateTime",
-      type: "dateFrom",
-      name: "Update From",
-      placeholder: "Update Time From"
-    },
-    {
-      field: "LastUpdateTime",
-      type: "dateTo",
-      name: "Update To",
-      placeholder: "Update Time To"
     }
   ];
 
@@ -171,15 +210,13 @@ const Customer = props => {
   return (
     <div>
       <AmMaster
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"Customer"}
-        table={"ams_Customer"}
+        tableType="view"
+        tableQuery={"TransportCar"}
+        table={"ams_TransportCar"}
         dataAdd={columns}
         history={props.history}
         columns={iniCols}
         dataEdit={columnsEdit}
-        tableType="view"
         height={500}
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
@@ -188,4 +225,4 @@ const Customer = props => {
   );
 };
 
-export default Customer;
+export default TransportCar;
