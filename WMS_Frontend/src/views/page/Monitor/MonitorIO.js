@@ -42,13 +42,13 @@ export default props => {
         { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
         { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
         { accessor: "PalletCode", Header: "Pallet", width: 100, sortable: false, style: { textAlign: "center" } },
-        { accessor: "PackName", Header: "Item Code", width: 150, sortable: false },
+        { accessor: "PackName", Header: "Item Code", width: 100, sortable: false },
         // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
         // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
         // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
 
 
-        { accessor: "DocumentCode", Header: "Doc No.", width: 140, sortable: false, style: { textAlign: "center" } },
+        { accessor: "DocumentCode", Header: "Doc No.", width: 100, sortable: false, style: { textAlign: "center" } },
     ]
 
     const [data, setData] = useState([
