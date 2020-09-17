@@ -47,6 +47,7 @@ const GI_Create_FGCustomer = props => {
     const [Type, setType] = useState(true);
     const [ProcessTypeCode, setProcessTypeCode] = useState();
     const [addlist, setaddlist] = useState({})
+    const [defaulacts, setdefaulacts] = useState();
 
 
     useEffect(() => {
@@ -57,10 +58,12 @@ const GI_Create_FGCustomer = props => {
             var defaulProcessType = 1010
             var actDate;
 
-            if (ProcessTypeCode === '4181') {
-                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+            if (ProcessTypeCode === '4181' || ProcessTypeCode === '5181') {
+                setdefaulacts (false)
+                actDate = { label: "Action Time", type: "dateTimeFalse", key: "actionTime", codeTranslate: "Action Time" }
             } else {
-                actDate = { label: "Action Time", type: "dateTimeFalse", key: "actionTime",  codeTranslate: "Action Time" }
+                setdefaulacts(true)
+                actDate = { label: "Action Time", type: "dateTime", key: "actionTime",  codeTranslate: "Action Time" }
 
             }
             
@@ -130,6 +133,7 @@ const GI_Create_FGCustomer = props => {
                     apicreate={apicreate}
                     createDocType={"counting"}
                     history={props.history}
+                    defaulact={defaulacts}
                     //itemNo={true}
                     //defualItemNo={'0001'}
                     apiRes={apiRes}
