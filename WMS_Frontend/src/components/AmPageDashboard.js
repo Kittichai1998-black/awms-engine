@@ -179,6 +179,15 @@ const AmMonitor = props => {
         else
             return {}
     }
+    const checkStatusColor = (rowInfo) => {
+        // console.log(rowInfo)
+        if (rowInfo.StyleStatus === "normal") {
+            return { backgroundColor: "white", lineHeight: "35px" }
+        } else if (rowInfo.StyleStatus === "working") {
+            return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+        }
+
+    }
 
     const table = props.coltable.map((x, xi) => {
         if (x.length === 1) {
@@ -193,7 +202,7 @@ const AmMonitor = props => {
                             pageSize={20}
                             minRows={6}
                             currentPage={0}
-                            cellStyle={(accessor, cellData, dataSource) => { return { backgroundColor: "red" } }}
+                            cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
                             getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                             style={{
                                 background: 'white',
