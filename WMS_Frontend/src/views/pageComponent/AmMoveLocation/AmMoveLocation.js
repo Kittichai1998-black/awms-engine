@@ -98,7 +98,7 @@ const AmMoveLocation = props => {
     g: "",
     s: '[{"f":"Pallet","od":"asc"}]',
     sk: 0,
-    l: 100,
+    l: pageSize,
     all: ""
   };
   const LocationQuery = {
@@ -122,6 +122,7 @@ const AmMoveLocation = props => {
   const [valueDataRadio, setValueDataRadio] = useState(0);
   const [count, setCount] = useState(0)
   const [dialogState, setDialogState] = useState({});
+  const [pageSize, setPageSize] = useState(20);
   const [queryViewData, setQueryViewData] = useState(Query);
   useEffect(() => {
     setQueryViewData(Query)
@@ -133,7 +134,13 @@ const AmMoveLocation = props => {
       getData(queryViewData)
   }, [queryViewData])
 
+  useEffect(() => {
 
+    if (queryViewData.l !== pageSize) {
+      queryViewData.l = pageSize
+      setQueryViewData({ ...queryViewData })
+    }
+  }, [pageSize])
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -189,7 +196,7 @@ const AmMoveLocation = props => {
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
-                  ddlMinWidth={200}
+                  ddlMinWidth={150}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -203,7 +210,7 @@ const AmMoveLocation = props => {
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
-                  ddlMinWidth={200}
+                  ddlMinWidth={150}
                   zIndex={1000}
                   queryApi={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -477,11 +484,13 @@ const AmMoveLocation = props => {
         dataSource={dataSource}
         rowNumber={true}
         totalSize={count}
-        pageSize={100}
+        pageSize={pageSize}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         height={props.height}
         pagination={true}
+        customTopLeftControl={props.customTopLeftControl}
+        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
         onPageChange={p => {
           if (page !== p)
             setPage(p)

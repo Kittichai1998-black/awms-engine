@@ -180,11 +180,13 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        // console.log(rowInfo)
+        //console.log(rowInfo)
         if (rowInfo.StyleStatus === "normal") {
             return { backgroundColor: "white", lineHeight: "35px" }
         } else if (rowInfo.StyleStatus === "working") {
             return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+        } else {
+            return { backgroundColor: "white", lineHeight: "35px" }
         }
 
     }
@@ -224,11 +226,12 @@ const AmMonitor = props => {
                                 <Grid item md={6} key={yi}>
                                     <AmTable
                                         // primaryKey="ID"
-                                        data={y.table[0].data}
+                                        dataSource={y.table[0].data}
                                         columns={formatDatas(y.table[0].headercol)}
                                         pageSize={20}
                                         minRows={6}
                                         currentPage={0}
+                                        cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
                                         getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                                         style={{
                                             background: 'white',
@@ -250,11 +253,12 @@ const AmMonitor = props => {
                                                     <AmTable
                                                         key={zi}
                                                         // primaryKey="ID"
-                                                        data={z.data}
+                                                        dataSource={z.data}
                                                         columns={formatDatas(z.headercol)}
                                                         pageSize={20}
                                                         minRows={6}
                                                         currentPage={0}
+                                                        cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
                                                         getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                                                         style={{
                                                             background: 'white',
@@ -277,11 +281,12 @@ const AmMonitor = props => {
                                                 <AmTable
                                                     key={zi}
                                                     // primaryKey="ID"
-                                                    data={z.data}
+                                                    dataSource={z.data}
                                                     columns={formatDatas(z.headercol)}
                                                     pageSize={20}
                                                     minRows={6}
                                                     currentPage={0}
+                                                    cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
                                                     getTrProps={(state, rowInfo) => checkStatus(rowInfo)}
                                                     style={{
                                                         background: 'white',

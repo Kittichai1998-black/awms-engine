@@ -383,7 +383,7 @@ const AmStorageObjectMulti = props => {
         rowNumber={true}
         totalSize={count}
         pageSize={pageSize}
-        onPageSizeChange={(pg) => { setPageSize(pg) }}
+        // onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
