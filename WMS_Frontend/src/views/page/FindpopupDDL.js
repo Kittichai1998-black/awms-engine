@@ -393,6 +393,16 @@ function Test6(props) {
     }
     return (
         <>
+            <AmDatePicker
+                defaultValue={true}
+                style={{ display: "inline-block" }}
+                // onChange={(ele) => { console.log(ele) }}
+                TypeDate={"datetime-local"}
+                fieldID="fromDate"
+                // setTimeZero={true}
+                onBlur={(e) => { console.log(e) }} required
+            />
+
             <AmButton id="btnSearch" styleType="add" className={classNames(classes.button)} onClick={onHandleSearch}>
                 {'Test Search'}
             </AmButton>
@@ -677,15 +687,7 @@ function Test6(props) {
             </FormInline>
 
             {convertData()}
-            <AmDatePicker
-                defaultValue={true}
-                style={{ display: "inline-block" }}
-                // onChange={(ele) => { console.log(ele) }}
-                TypeDate={"datetime-local"}
-                fieldID="fromDate"
-                // setTimeZero={true}
-                onBlur={(e) => { console.log(e) }} 
-                />
+
 
         </>
     );

@@ -190,14 +190,14 @@ const APIServiceLog = (props) => {
                         col.width = 250;
                         col.Filter = (field, onChangeFilter) => {
                             return <FormInline>
-                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                <AmDatePicker defaultValue={filterConfig.default} style={{ display: "inline-block" }}
                                     onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
                                             onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "date" })
                                     }} TypeDate={"date"} fieldID="dateFrom" />
                                 <label>-</label>
-                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                <AmDatePicker defaultValue={filterConfig.default} style={{ display: "inline-block" }}
                                     onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
@@ -209,7 +209,7 @@ const APIServiceLog = (props) => {
                         col.width = 250;
                         col.Filter = (field, onChangeFilter) => {
                             return <FormInline>
-                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                <AmDatePicker defaultValue={filterConfig.default} style={{ display: "inline-block" }}
                                     // onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
@@ -219,7 +219,7 @@ const APIServiceLog = (props) => {
                                         }
                                     }} TypeDate={"datetime-local"} setTimeZero={true} fieldID="dateFrom" />
                                 <label>-</label>
-                                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
+                                <AmDatePicker defaultValue={filterConfig.default} style={{ display: "inline-block" }}
                                     // onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
