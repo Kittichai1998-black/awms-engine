@@ -28,7 +28,7 @@ const LabelDD = {
   width: "100px"
 };
 const LabelD = {
-  width: "120px"
+  //width: "120px"
 };
 const DataGenerateElePopMove = (data) => {
 

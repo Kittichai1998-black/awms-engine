@@ -75,21 +75,20 @@ const MoveLocation = props => {
     {
       Header: "Status",
       accessor: "PackStatus",
-      width: 120,
+      width: 150,
       sortable: false,
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: StorageObjectEvenstatusTxt,
         typeDropDown: "normal",
-        widthDD: 120,
       },
       Cell: e => getStatus(e.original.PackStatus)
     },
     {
       Header: "Current Area",
       accessor: "Area",
-      width: 100
+      width: 150
     },
     {
       Header: "Location",
@@ -98,8 +97,8 @@ const MoveLocation = props => {
     },
     {
       Header: "Sou Area",
-      accessor: "Sou_Area_Code",
-      width: 100
+      accessor: "Sou_Area_Name",
+      width: 150
     },
     {
       Header: "Location",
@@ -108,8 +107,8 @@ const MoveLocation = props => {
     },
     {
       Header: "Des Area",
-      accessor: "Des_Area_Code",
-      width: 100
+      accessor: "Des_Area_Name",
+      width: 150
     },
     {
       Header: "Location",
