@@ -147,8 +147,26 @@ const AmReport = props => {
             col.width = 200;
             col.Filter = (field, onChangeFilter) => {
               return <div>
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} TypeDate={"date"} fieldID="fromDate" onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) }} />
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
+                <AmDatePicker 
+                  defaultValue={true}
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null) 
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) 
+                  }}
+                  style={{ display: "inline-block" }} 
+                  onChange={(ele) => { }} 
+                  TypeDate={"date"} 
+                  fieldID="fromDate" 
+                  onBlur={(e) => {
+                    if (e !== undefined && e !== null) 
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) 
+                  }}
+                />
+                <AmDatePicker 
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null) 
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) 
+                  }} defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
               </div>
             }
           }
@@ -174,7 +192,7 @@ const AmReport = props => {
         pageSize={100}
         onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
-        filterData={res => { onChangeFilterData(res) }}
+        filterData={res => { console.log(res); onChangeFilterData(res) }}
         pagination={true}
         onPageChange={p => {
           if (page !== p)
