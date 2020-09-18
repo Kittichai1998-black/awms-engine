@@ -73,8 +73,16 @@ export default function DateAndTimePickers(props) {
                 fieldDataKey: datetime,
                 fieldDataObject: datetime
             }
-            if (onChange) {
-                onChange(dataReturn);
+            if (props.onDefaultSet) {
+                typeof props.onDefaultSet === "function" ? props.onDefaultSet(dataReturn) : onBlur(dataReturn);
+            }
+            else{
+                if(!onBlur){
+                    onChange(dataReturn)
+                }else{
+                    onBlur(dataReturn)
+                }
+                
             }
         } else {
             setValue("");
