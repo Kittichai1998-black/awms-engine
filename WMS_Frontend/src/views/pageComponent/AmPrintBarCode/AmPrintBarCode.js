@@ -105,6 +105,7 @@ const AmPrintBarCode = props => {
 
   }
   const genDataPalletList = () => {
+    console.log("ghjk")
     var itemList = [];
     var item = {};
     if (props.data !== undefined) {
@@ -189,18 +190,18 @@ const AmPrintBarCode = props => {
               checked={valueDataRadio === 1}
               onChange={(checked) => handleRadioChange(checked, 1)}
             />}
-          label="Single"
+          label={t("Single")}
         /><FormControlLabel value="1"
           control={
             <Radio color="primary"
             />}
           checked={valueDataRadio === 0}
-          label="Multi"
+          label={t("Multi")}
           onChange={(checked) => handleRadioChange(checked, 0)} />
         <br />
       </div>
       <FormInline>
-        <label style={{ fontWeight: "bold", width: "50px" }}>{"Min : "}</label>
+        <label style={{ fontWeight: "bold", width: "50px" }}>{t("Min") + " : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="number"
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
           onKeyPress={(value, obj, element, event) => {
@@ -217,10 +218,10 @@ const AmPrintBarCode = props => {
               onHandleChangeGeneratePallet({ min: e }, valueDataRadio)
           }}
         />
-        <label style={{ width: "60px" }}>{"Volume"}</label>
+        <label style={{ width: "60px" }}>{t("Volume")}</label>
       </FormInline>
       <FormInline>
-        <label style={{ fontWeight: "bold", width: "50px" }}>{"Max : "}</label>
+        <label style={{ fontWeight: "bold", width: "50px" }}>{t("Max") + " : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="number"
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
           onKeyPress={(value, obj, element, event) => {
@@ -244,6 +245,7 @@ const AmPrintBarCode = props => {
     </div>
   };
   const onHandleChangeGeneratePallet = (value, mode) => {
+    console.log(value)
     setValueQty({ min: value.min, max: value.max })
     setGenData(true)
     var itemList = [];
@@ -268,17 +270,17 @@ const AmPrintBarCode = props => {
       itemList.push(item)
     });
 
-
+    console.log(valueQty)
     const dataSend = {
       mode: mode,
       docID: props.docID,
-      minVolume: value === undefined ? 1 : (value.min === undefined ? 1 : parseInt(value.min)),
-      maxVolume: value === undefined ? 999 : (value.max === undefined ? 999 : parseInt(value.max)),
+      minVolume: valueQty === undefined ? 1 : (valueQty.min === undefined ? 1 : (value.min !== undefined ? parseInt(value.min) : 1)),
+      maxVolume: valueQty === undefined ? 999 : (valueQty.max === undefined ? 999 : (value.max !== undefined ? parseInt(value.max) : 999)),
       supplierName: props.SouSupplierName,
       supplierCode: props.SouSupplierCode,
       Item: itemList
     }
-    // console.log(dataSend)
+    console.log(dataSend)
     Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
       // console.log(res.data)
       setDataSourceGenPallet(res.data)
@@ -337,7 +339,7 @@ const AmPrintBarCode = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Generate BarCode Detail"}
+        titleText={t("Generate BarCode Detail")}
         data={props.data}
         columns={RanderEle()}
       />

@@ -522,7 +522,7 @@ const AmMappingPalletV2 = props => {
         return (
           <div>
             <FormInline>
-              <LabelH1>Warehouse :</LabelH1>
+              <LabelH1>  {t("Warehouse")}</LabelH1>
               <AmDropdown
                 placeholder="Select"
                 fieldDataKey="warehouseID"
@@ -537,9 +537,9 @@ const AmMappingPalletV2 = props => {
               />
             </FormInline>
             <FormInline>
-              <LabelH1>Process No.:</LabelH1>
+              <LabelH1>{t("Process No.")}</LabelH1>
               <AmDropdown
-                placeholder="Select"
+                placeholder={t("Select")}
                 fieldDataKey="processType"
                 fieldLabel={["Code", "Name"]}
                 labelPattern=" : "
@@ -554,9 +554,9 @@ const AmMappingPalletV2 = props => {
             </FormInline>
 
             <FormInline>
-              <LabelH1>Area :</LabelH1>
+              <LabelH1>{t("Area")}</LabelH1>
               <AmDropdown
-                placeholder="Select"
+                placeholder={t("Select")}
                 fieldDataKey="areaID"
                 fieldLabel={["Name"]}
                 labelPattern=" : "
@@ -613,14 +613,14 @@ const AmMappingPalletV2 = props => {
                   setCheckedAutoClear(event.target.checked)
                 }}
                   defaultChecked={checkedAutoClear} />
-                <LabelH1 style={{ width: "120px" }}>{"Clear pallet auto"}</LabelH1>
+                <LabelH1 style={{ width: "120px" }}>{t("Clear pallet auto")}</LabelH1>
               </FormInline>
               {/* =================================== Pallet ===================================== */}
               <FormInline style={{ display: "block" }}>
-                <LabelH1>Pallet Code :</LabelH1>
+                <LabelH1>{t("Pallet Code")}</LabelH1>
                 <AmInput
                   id={"palletcode"}
-                  placeholder="Pallet Code"
+                  placeholder={t("Pallet Code")}
                   type="input"
                   autoFocus={autoFocus}
                   style={{ width: "200px" }}
@@ -650,17 +650,17 @@ const AmMappingPalletV2 = props => {
                   setCheckedAuto(event.target.checked)
                 }}
                   defaultChecked={checkedAuto} />
-                <LabelH1 style={{ width: "120px" }}>{"Scan barcode"}</LabelH1>
+                <LabelH1 style={{ width: "120px" }}>{t("Scan QRcode")}</LabelH1>
               </FormInline>
               {/* =================================== CheckedAuto ===================================== */}
               {
                 checkedAuto === true ?
                   <div>
                     <FormInline style={{ display: "block" }}>
-                      <LabelH1>QRcode :</LabelH1>
+                      <LabelH1>{t("QRcode")}</LabelH1>
                       <AmInput
                         id={"barcode"}
-                        placeholder="QRcode Product"
+                        placeholder={t("QRcode Product")}
                         type="input"
                         style={{ width: "200px" }}
                         disabled={disPlayQr}
@@ -707,7 +707,7 @@ const AmMappingPalletV2 = props => {
               <br />
               {checkedAuto && flaggetDataDoc ? (dataDoc !== undefined && dataDoc !== null ?
                 <div>
-                  <LabelH1>{"Detail"}</LabelH1>
+                  <LabelH1>{t("Detail")}</LabelH1>
                   {DataGenerateEleDocDisplay(dataDoc)}
                 </div> :
                 // <div>
@@ -731,7 +731,7 @@ const AmMappingPalletV2 = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH1>{x.name} : </LabelH1>
+          <LabelH1>{t(x.name)} : </LabelH1>
           <InputDiv>
             <AmInput
               required={x.required}
@@ -739,7 +739,7 @@ const AmMappingPalletV2 = props => {
               required={x.required}
               validate={true}
               style={{ width: "200px", margin: "0px" }}
-              placeholder={x.placeholder}
+              placeholder={t(x.placeholder)}
               type={"input"}
               defaultValue={valueManual[x.field] ? valueManual[x.field] : ""}
               onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -752,12 +752,12 @@ const AmMappingPalletV2 = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH1>{x.name} : </LabelH1>
+          <LabelH1>{t(x.name)} : </LabelH1>
           <AmDropdown
             required={x.required}
             id={x.field}
             disabled={x.disable}
-            placeholder={x.placeholder}
+            placeholder={t(x.placeholder)}
             fieldDataKey={"Code"}
             fieldLabel={x.fieldLabel}
             labelPattern=" : "
@@ -774,7 +774,7 @@ const AmMappingPalletV2 = props => {
     } else if (x.type === "datetime") {
       return <FormInline>
         {" "}
-        <LabelH1>{x.name} : </LabelH1>
+        <LabelH1>{t(x.name)} : </LabelH1>
         <AmDatePicker
           style={{ display: "inline-block" }}
           onBlur={(e) => {
@@ -801,7 +801,7 @@ const AmMappingPalletV2 = props => {
                   return (
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <FormInline style={{ display: "block" }}>
-                        <LabelH2>{y.name} :</LabelH2>
+                        <LabelH2>{t(y.name)} :</LabelH2>
                         <AmInput
                           id={y.field}
                           style={{ width: "150px", margin: "0px" }}
@@ -839,7 +839,7 @@ const AmMappingPalletV2 = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Edit"}
+        titleText={t("Edit")}
         data={dataPallet !== undefined && dataPallet !== null ? dataPallet : []}
         columns={RanderEle()}
       />
