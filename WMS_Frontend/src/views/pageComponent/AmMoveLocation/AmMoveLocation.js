@@ -42,7 +42,7 @@ const styles = theme => ({
   },
   paperContainer: {
     maxWidth: "450px",
-    width: "100%",
+    // width: "100%",
     minWidth: "300px",
     padding: theme.spacing(2, 1)
   },
@@ -195,8 +195,8 @@ const AmMoveLocation = props => {
                   fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
-                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
-                  ddlMinWidth={150}
+                  //width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
@@ -209,8 +209,8 @@ const AmMoveLocation = props => {
                   fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
-                  width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
-                  ddlMinWidth={150}
+                  //width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                  ddlMinWidth={200}
                   zIndex={1000}
                   queryApi={filterConfig.dataDropDown}
                   onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}

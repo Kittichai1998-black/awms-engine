@@ -161,6 +161,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
+
                   defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatusName" ? null : "QUARANTINE") : null)}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
