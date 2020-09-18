@@ -13,5 +13,8 @@ namespace AWMSModel.Entity
         public long SKUMasterType_ID;
         public decimal? Cost;
         public decimal? Price;
+        public long? IncubationDay;
+        public long? ShelfLifeDay;
+        public long? ShelfLifePercent;
     }
 }
