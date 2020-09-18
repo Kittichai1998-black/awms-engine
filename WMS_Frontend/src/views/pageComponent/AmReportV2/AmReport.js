@@ -10,7 +10,7 @@ import {
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateURL } from "../AmReportV2/GetURL";
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
