@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import AmButton from "../../components/AmButton";
 import { IsEmptyObject } from "../../components/function/CoreFunction2";
 import { QueryGenerate } from '../../components/function/UtilFunction';
-import AmDatePicker from '../../components/AmDate';
+import AmDatePicker from '../../components/AmDatePicker';
 import styled from 'styled-components';
 import moment from "moment";
 import queryString from "query-string";
@@ -121,6 +121,7 @@ const APIServiceLog = (props) => {
     }, [sort])
     const onChangeFilterData = (filterValue) => {
         var res = {};
+        console.log(filterValue)
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined) {
                 if (IsEmptyObject(fdata.customFilter)) {
@@ -209,17 +210,23 @@ const APIServiceLog = (props) => {
                         col.Filter = (field, onChangeFilter) => {
                             return <FormInline>
                                 <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
-                                    onChange={(ele) => { }}
+                                    // onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
+                                        {
+                                            console.log(e)
                                             onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom", dateType: "datetime-local" })
+                                        }
                                     }} TypeDate={"datetime-local"} setTimeZero={true} fieldID="dateFrom" />
                                 <label>-</label>
                                 <AmDatePicker defaultValue={true} style={{ display: "inline-block" }}
-                                    onChange={(ele) => { }}
+                                    // onChange={(ele) => { }}
                                     onBlur={(e) => {
                                         if (e !== undefined && e !== null)
+                                        {
+                                            console.log(e)
                                             onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo", dateType: "datetime-local" })
+                                        }   
                                     }} TypeDate={"datetime-local"} setTimeZero={true} fieldID="dateTo" />
                             </FormInline>
                         }
@@ -245,7 +252,10 @@ const APIServiceLog = (props) => {
                 dataKey={dataKey}
                 dataSource={dataSource} //
                 filterable={true}
-                filterData={res => { onChangeFilterData(res) }}
+                filterData={res => { 
+                    console.log(res)
+                    onChangeFilterData(res);
+                }}
                 rowNumber={true}
                 totalSize={count}//
                 pageSize={pageSize}
