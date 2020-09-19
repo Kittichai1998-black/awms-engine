@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { grey } from "@material-ui/core/colors";
+import { grey, red } from "@material-ui/core/colors";
 import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme) => ({
             color: grey[800],
             cursor: "pointer"
         }
+    },
+    required: {
+        color: red[600],
+        fontSize: "18px"
     }
 }));
 
@@ -34,9 +38,9 @@ export default function DateAndTimePickers(props) {
         fieldID,
         TypeDate = "datetime-local",
         disabled,
+        required,
         defaultValue,
         onChange,
-        onClear,
         onBlur,
         setTimeZero
     } = props;
@@ -73,17 +77,13 @@ export default function DateAndTimePickers(props) {
                 fieldDataKey: datetime,
                 fieldDataObject: datetime
             }
-            if (props.onDefaultSet) {
-                typeof props.onDefaultSet === "function" ? props.onDefaultSet(dataReturn) : onBlur(dataReturn);
+
+            if (!onBlur) {
+                onChange(dataReturn)
+            } else {
+                onBlur(dataReturn)
             }
-            else{
-                if(!onBlur){
-                    onChange(dataReturn)
-                }else{
-                    onBlur(dataReturn)
-                }
-                
-            }
+
         } else {
             setValue("");
         }
@@ -157,7 +157,7 @@ export default function DateAndTimePickers(props) {
         if (onBlur) {
             console.log(dataReturn)
             onBlur(dataReturn);
-        }else{
+        } else {
             console.log(dataReturn)
             onChange(dataReturn);
         }
@@ -189,6 +189,14 @@ export default function DateAndTimePickers(props) {
                 onChange={handleDateonChange}
                 onBlur={handleDateonBlur}
             />
+            <div
+                style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                }}
+            >
+                {required ? <label className={classes.required}>*</label> : null}
+            </div>
         </form>
     );
 }
