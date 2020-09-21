@@ -1,11 +1,11 @@
 import React, { Component, useState, useEffect } from "react";
-import SaveIcon from "@material-ui/icons/ListAlt";
+import SaveIcon from "@material-ui/icons/Dns";
 import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
 import AmDialogConfirm from "./AmDialogConfirm";
 import AmToolTip from "./AmToolTip";
 
-const AmRedirectLog = props => {
+const AmRedirectLogPallet = props => {
   const { api, titleDialog, bodyDialog, textLink, type, title } = props;
   const [openDialogCon, setopenDialogCon] = useState(false);
   const PageDetail = () => {
@@ -37,7 +37,7 @@ const AmRedirectLog = props => {
               onClick={handleClickOpenDialog}
               style={{ marginLeft: "3px" }}
             >
-              <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
+              <SaveIcon fontSize="small" style={{ color: "#4E342E" }} />
             </IconButton>
             <AmDialogConfirm
               titleDialog={titleDialog}
@@ -56,7 +56,7 @@ const AmRedirectLog = props => {
                 onClick={PageDetail}
                 style={{ marginLeft: "3px" }}
               >
-                <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
+                <SaveIcon fontSize="small" style={{ color: "#4E342E" }} />
               </IconButton>
             </AmToolTip>
           )}
@@ -64,4 +64,4 @@ const AmRedirectLog = props => {
   );
 };
 
-export default AmRedirectLog;
+export default AmRedirectLogPallet;

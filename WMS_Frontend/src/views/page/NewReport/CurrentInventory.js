@@ -79,6 +79,28 @@ const CurrentInventory = (props) => {
         },
         { Header: 'Unit', accessor: 'baseUnitType', filterable: false, width: 70, sortable: false },
         {
+            Header: 'Quarantine', accessor: 'baseQty_avt0', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        },
+        {
+            Header: 'Passed', accessor: 'baseQty_avt1', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        },
+        {
+            Header: 'Rejected', accessor: 'baseQty_avt2', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        }, {
+            Header: 'Hold', accessor: 'baseQty_avt9', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        }, {
             Header: 'New', accessor: 'baseQty_evt10', width: 85, sortable: false,
             Footer: true,
             filterable: false,
