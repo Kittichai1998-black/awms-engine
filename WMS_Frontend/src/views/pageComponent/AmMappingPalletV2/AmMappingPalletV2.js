@@ -305,25 +305,33 @@ const AmMappingPalletV2 = props => {
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
+    console.log(value)
+    console.log(fieldDataKey)
     if (fieldDataKey === "areaID")
       localStorage.setItem("areaIDs", value);
     if (fieldDataKey === "processType")
       localStorage.setItem("processTypes", value);
 
+
+    valueInput["processType"] = localStorage.getItem("processTypes")
+    valueInput["areaID"] = localStorage.getItem("areaIDs")
     valueInput[fieldDataKey] = value;
   };
   const handleNext = index => {
 
-    if (localStorage.getItem("processTypes") !== null)
-      valueInput["processType"] = localStorage.getItem("processTypes")
-    if (localStorage.getItem("areaIDs") !== null)
-      valueInput["areaID"] = localStorage.getItem("areaIDs")
+    // if (localStorage.getItem("processTypes") !== null)
+    //   valueInput["processType"] = localStorage.getItem("processTypes")
+    // if (localStorage.getItem("areaIDs") !== null)
+    //   valueInput["areaID"] = localStorage.getItem("areaIDs")
     //==========================================================
     if (index === 0) {
-      console.log(valueInput.areaID)
-      console.log(valueInput.processType)
-      if (valueInput.areaID && valueInput.processType) {
+      // console.log(localStorage.getItem("processTypes"))
+      // console.log(localStorage.getItem("areaIDs"))
+      // console.log(valueInput.areaID)
+      // console.log(valueInput.processType)
+      if (valueInput.areaID !== null && valueInput.processType !== null) {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
+
       } else {
         setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
       }
