@@ -5,7 +5,6 @@ import {
   createQueryString
 } from "../../../components/function/CoreFunction";
 import AmRedirectLog from "../../../components/AmRedirectLog";
-import AmRedirectLogPallet from "../../../components/AmRedirectLogPallet";
 import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageObjectEvenstatus";
 import { Hold, Lock } from "../../../components/Models/Hold";
 import { AuditStatus } from "../../../components/Models/AuditStatus";
@@ -100,7 +99,7 @@ const StorageObject = props => {
     { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
     { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
     { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
-    { Header: "Weight Pallet", accessor: "Pallet", width: 100, Cell: e => getRedirectPallet(e.original.Pallet) },
+    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
       Header: "Received Date",
@@ -170,30 +169,7 @@ const StorageObject = props => {
       </div>
     }
   }
-  const getRedirectPallet = data => {
-    return (
-      <div
-        style={{
-          display: "flex",
-          padding: "0px",
-          paddingLeft: "35px"
-        }}
-      >
-        {data.Code}
-        <AmRedirectLogPallet
-          api={
-            "/setting/pallet?Code=" +
-            data
-          }
-          history={props.history}
-          docID={""}
-          title={"Standard Weight Pallet"}
-        >
-          {" "}
-        </AmRedirectLogPallet>
-      </div>
-    );
-  };
+
   const getRedirectLog = data => {
     return (
       <div
