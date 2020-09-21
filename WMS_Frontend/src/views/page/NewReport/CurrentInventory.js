@@ -68,7 +68,7 @@ const CurrentInventory = (props) => {
     const columns = [
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'Name', width: 150, sortable: false, filterable: false, },
-        { Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
+        //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
         { Header: 'Order No.', accessor: 'OrderNo', width: 100, sortable: false },
         {
