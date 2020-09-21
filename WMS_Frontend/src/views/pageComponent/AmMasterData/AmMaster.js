@@ -10,6 +10,7 @@ import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
+import queryString from "query-string";
 
 import AmMasterEditorData from "./AmMasterEditorData";
 
@@ -35,6 +36,14 @@ const FormInline = styled.div`
 const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
     const [count, setCount] = useState(0)
+
+    useEffect(()=> {
+        let objQueryStr = queryString.parse(window.location.search)
+        for(let str in objQueryStr){
+            QueryGenerate(queryObj, str, objQueryStr[str], '', '', window.location.search)
+        }
+        console.log(queryObj)
+    }, [])
 
     useEffect(() => {
         if (typeof queryObj === "object") {
@@ -262,6 +271,8 @@ const AmMasterData = (props) => {
             else {
                 res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
             }
+            props.history.push(window.location.pathname + "?" + res.querySearch.toString());
+
         });
         setQueryObj(res)
     }
