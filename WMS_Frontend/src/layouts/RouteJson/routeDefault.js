@@ -270,7 +270,7 @@ const SearchLog = Loadable({
   loading: Loading
 });
 const Dash = Loadable({
-  loader: () => import("../../views/page/Dashboard/ExDashboard"),
+  loader: () => import("../../views/page/Dashboard/DashboardSummary"),
   loading: Loading
 });
 const WebPage = Loadable({
@@ -473,7 +473,7 @@ let routes = [
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
-  { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
+  { path: "/dashboard/dashboardsummary", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },

@@ -5,6 +5,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableContainer from '@material-ui/core/TableContainer';
 import Paper from '@material-ui/core/Paper';
 import { apicall } from '../../../components/function/CoreFunction'
 const Axios = new apicall();
@@ -45,12 +46,17 @@ const GenerateChart = props => {
         let dataHeader = []
 
         let datalist = []
+        console.log(datas[0])
+
         for (var key in datas[0]) {
           if (key.substring(key.length - 2, key.length - 1) === '_') {
             datalist.push(key.substring(key.length - 1, key.length))
           }
         }
+        console.log(datalist)
+
         let numDatasets = new Set([...datalist]);
+        console.log(numDatasets)
         for (let item of numDatasets) {
 
           let _header = datas[0]['header_' + item] ? datas[0]['header_' + item] : '';
@@ -74,7 +80,7 @@ const GenerateChart = props => {
           fontColor: datas[0].options_title_fontColor ? datas[0].options_title_fontColor : null,
           fontSize: datas[0].options_title_fontSize ? datas[0].options_title_fontSize : null,
         }
-        // console.log(dataTitle)
+        console.log(dataTitle)
 
         let temp = {
           dataHeader: dataHeader,
@@ -92,7 +98,7 @@ const GenerateChart = props => {
   }, [chartConfig])
 
   const genTableRow = (datas) => {
-    // console.log(datas)
+    console.log(datas)
     return (
       <div>
         {datas.dataTitle.title ?
@@ -111,70 +117,67 @@ const GenerateChart = props => {
           </div>
           : null
         }
-        <Table size="small" >
-          <TableHead >
-            <TableRow >
-              {datas.dataHeader.map((row, idx) => (
-                (idx + 1) !== datas.dataHeader.length ?
-                  <TableCell style={{
-                    fontWeight: 'bolder', width: row.width,
-                    backgroundColor: row.backgroundColor ? row.backgroundColor : '#bdbdbd',
-                    borderRight: row.borderRight ? row.borderRight : '1px solid #9e9e9e',
-                    color: row.fontColor
-                  }}
-                    key={idx} align={row.position}>{row.label}</TableCell>
-                  :
-                  <TableCell style={{
-                    fontWeight: 'bolder',
-                    backgroundColor: row.backgroundColor ? row.backgroundColor : '#bdbdbd',
-                    color: row.fontColor
-                  }}
-                    key={idx} align={row.position}>{row.label}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {datas.dataRows.map((row, idx) => (
-              <TableRow key={idx}>
-                {
-                  datas.dataHeader.map((rowx, idxs) => (
-                    idxs === 0 ?
-                      <TableCell key={idxs} component="th" scope="row" align={row['cellPosition_' + (idxs + 1)]}
-                        style={{
-                          borderRight: row['cellBorderRight_' + (idxs + 1)] ? row['cellBorderRight_' + (idxs + 1)] : '1px solid #e0e0e0',
-                          backgroundColor: row['cellBGColor_' + (idxs + 1)] ? row['cellBGColor_' + (idxs + 1)] : null,
-                          color: row['cellFontColor_' + (idxs + 1)] ? row['cellFontColor_' + (idxs + 1)] : null
-                        }}>
-                        {row['data_' + (idxs + 1)]}
-                      </TableCell>
-                      :
-                      (idxs + 1) !== datas.dataHeader.length ?
-                        <TableCell key={idxs} align={row['cellPosition_' + (idxs + 1)]}
+        <TableContainer component={Paper}>
+          <Table size="small" >
+            <TableHead >
+              <TableRow >
+                {datas.dataHeader.map((row, idx) => (
+                  (idx + 1) !== datas.dataHeader.length ?
+                    <TableCell style={{
+                      fontWeight: 'bolder', width: row.width,
+                      backgroundColor: row.backgroundColor ? row.backgroundColor : '#bdbdbd',
+                      borderRight: row.borderRight ? row.borderRight : '1px solid #9e9e9e',
+                      color: row.fontColor
+                    }}
+                      key={idx} align={row.position}>{row.label}</TableCell>
+                    :
+                    <TableCell style={{
+                      fontWeight: 'bolder',
+                      backgroundColor: row.backgroundColor ? row.backgroundColor : '#bdbdbd',
+                      color: row.fontColor
+                    }}
+                      key={idx} align={row.position}>{row.label}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {datas.dataRows.map((row, idx) => (
+                <TableRow key={idx}>
+                  {
+                    datas.dataHeader.map((rowx, idxs) => (
+                      idxs === 0 ?
+                        <TableCell key={idxs} component="th" scope="row" align={row['cellPosition_' + (idxs + 1)]}
                           style={{
                             borderRight: row['cellBorderRight_' + (idxs + 1)] ? row['cellBorderRight_' + (idxs + 1)] : '1px solid #e0e0e0',
                             backgroundColor: row['cellBGColor_' + (idxs + 1)] ? row['cellBGColor_' + (idxs + 1)] : null,
                             color: row['cellFontColor_' + (idxs + 1)] ? row['cellFontColor_' + (idxs + 1)] : null
                           }}>
                           {row['data_' + (idxs + 1)]}
-                        </TableCell> :
-                        <TableCell key={idxs} align={row['cellPosition_' + (idxs + 1)]}
-                          style={{
-                            backgroundColor: row['cellBGColor_' + (idxs + 1)] ? row['cellBGColor_' + (idxs + 1)] : null,
-                            color: row['cellFontColor_' + (idxs + 1)] ? row['cellFontColor_' + (idxs + 1)] : null
-                          }}>
-                          {row['data_' + (idxs + 1)]}
                         </TableCell>
-                  ))
-                  // Object.keys(row).map((key) => key === 0 ?
-                  //   <TableCell key={key} component="th" scope="row">{row[key]}</TableCell>
-                  //   :
-                  //   <TableCell key={key} >{row[key]}</TableCell>
-                  // )
-                }
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                        :
+                        (idxs + 1) !== datas.dataHeader.length ?
+                          <TableCell key={idxs} align={row['cellPosition_' + (idxs + 1)]}
+                            style={{
+                              borderRight: row['cellBorderRight_' + (idxs + 1)] ? row['cellBorderRight_' + (idxs + 1)] : '1px solid #e0e0e0',
+                              backgroundColor: row['cellBGColor_' + (idxs + 1)] ? row['cellBGColor_' + (idxs + 1)] : null,
+                              color: row['cellFontColor_' + (idxs + 1)] ? row['cellFontColor_' + (idxs + 1)] : null
+                            }}>
+                            {row['data_' + (idxs + 1)]}
+                          </TableCell> :
+                          <TableCell key={idxs} align={row['cellPosition_' + (idxs + 1)]}
+                            style={{
+                              backgroundColor: row['cellBGColor_' + (idxs + 1)] ? row['cellBGColor_' + (idxs + 1)] : null,
+                              color: row['cellFontColor_' + (idxs + 1)] ? row['cellFontColor_' + (idxs + 1)] : null
+                            }}>
+                            {row['data_' + (idxs + 1)]}
+                          </TableCell>
+                    ))
+                  }
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     )
   }
