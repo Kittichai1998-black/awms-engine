@@ -70,8 +70,10 @@ const  StockLocationUsed= (props) => {
 
     const getFormatdata = (data) => {
        // console.log(data.toFixed(2))
-        let per = data.toFixed(3) + '%'
-        return per
+        if (data) {
+            let per = data.toFixed(3) + '%'
+            return per
+        }
     }
 
     const SumTotal = (data, datarow, e) => {
@@ -88,7 +90,6 @@ const  StockLocationUsed= (props) => {
             let usedata = _.sumBy(data, 'levelUse')
             let Totaldata = _.sumBy(data, 'TotalLevel')
             Totalper = (usedata / Totaldata) * 100
-
         }
          let totalPerCent =Totalper.toFixed(3) + '%'
 

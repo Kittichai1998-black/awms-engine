@@ -42,7 +42,8 @@ export default function DateAndTimePickers(props) {
         defaultValue,
         onChange,
         onBlur,
-        setTimeZero
+        setTimeZero,
+        ...other
     } = props;
     const [value, setValue] = useState("");
     useEffect(() => {
@@ -188,6 +189,7 @@ export default function DateAndTimePickers(props) {
                 }}
                 onChange={handleDateonChange}
                 onBlur={handleDateonBlur}
+                {...other}
             />
             <div
                 style={{

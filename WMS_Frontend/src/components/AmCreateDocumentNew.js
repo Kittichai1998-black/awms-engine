@@ -4,7 +4,7 @@ import React, { useState, useRef, createRef, useEffect } from "react";
 import styled from 'styled-components'
 import AmButton from '../components/AmButton'
 import AmDate from '../components/AmDate'
-import AmDatepicker from '../components/AmDate'
+import AmDatepicker from '../components/AmDatePicker'
 import AmDialogs from '../components/AmDialogs'
 import AmDropdown from '../components/AmDropdown'
 import AmEditorTable from '../components/table/AmEditorTable'
@@ -640,7 +640,7 @@ const AmCreateDocument = (props) => {
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
 
                     <InputDiv>
-                        <AmInput style={style ? style : { width: "300px" }}
+                        <AmInput style={style ? style : { width: width}}
                             required={required}
                             error={rowError}
                             // helperText={inputError.length ? "required field" : false}
@@ -668,7 +668,7 @@ const AmCreateDocument = (props) => {
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
                                     defaultValue={editData !== null && editData !== {} && editData["quantity"] !== undefined ? editData[accessor].replace("%", "") : ""}
-                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
+                                    style={width ? width : TextInputnum ? { width: "100px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
@@ -814,7 +814,7 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
-                        <AmDate
+                        <AmDatepicker
                             required={required}
                             error={rowError}
                             // helperText={inputError.length ? "required field" : false}
@@ -830,7 +830,7 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
-                        <AmDate
+                        <AmDatepicker
                             required={required}
                             error={rowError}
                             // helperText={inputError.length ? "required field" : false}
@@ -858,9 +858,10 @@ const AmCreateDocument = (props) => {
     const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, obj) => {
         if (type === "date") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"date"}
                     defaultValue={defaultValueDate ? defaultValueDate : true}
+                    style={{ width: width ? width : '300px'}}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -873,10 +874,11 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "dateTime") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"datetime-local"}
                     defaultValue
                     value={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
                         if (e !== null) {
                             let docData = createDocumentData
@@ -890,7 +892,7 @@ const AmCreateDocument = (props) => {
             return (
                 <div>
                     <FormInline>
-                        <AmDate
+                        <AmDatepicker
                             TypeDate={"datetime-local"}
                             defaultValue={false}
                             value={createDocumentData[key]}
@@ -916,7 +918,7 @@ const AmCreateDocument = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    //style={style ? style : { width: "300px" }}
+                    style={{ width: width? width: "300px" }}
 
                     onChange={(e) => {
                         if (obj.search)
@@ -1097,6 +1099,7 @@ const AmCreateDocument = (props) => {
                 doc[key] = value
         }
         var qtyrandom = 'qtyrandom='
+        var remark = 'remark='
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
                 let _docItem = { ...docItem }
@@ -1131,12 +1134,14 @@ const AmCreateDocument = (props) => {
             doc.issuedOrderItem = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.options = remark.concat(x.remark)
                 return x
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.options = remark.concat(x.remark)
                 return x
             })
         }
