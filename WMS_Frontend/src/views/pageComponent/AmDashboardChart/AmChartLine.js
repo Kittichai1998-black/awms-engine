@@ -175,10 +175,7 @@ const GenerateChart = props => {
 
 
     return (
-        <div>
-            <canvas ref={chartContainer} style={{ width: '100%' }} />
-        </div>
-
+        <canvas ref={chartContainer} style={{ width: '100%' }} />
     )
 }
 
