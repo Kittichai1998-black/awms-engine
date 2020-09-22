@@ -117,6 +117,24 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
           + "&bay=" + (valueText.bay === undefined || valueText.bay === null ? '' : encodeURIComponent(valueText.bay.trim()))
           + "&level=" + (valueText.level === undefined || valueText.level === null ? '' : encodeURIComponent(valueText.level.trim()))
           + "&spname=STOCKLOCATIONUSE";
+  } else if (fileNameTable === "DEADSTOCK") {
+      return window.apipath + "/v2/GetSPReportAPI?"
+          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+          + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+          + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+          + "&Code=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
+          + "&Name=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
+          + "&spname=STO_DEADSTOCK";
+  } else if (fileNameTable === "THROUGHPUT") {
+      return window.apipath + "/v2/GetSPReportAPI?"
+          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+          + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+          + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+          + "&byHour=" + (valueText.byHour === undefined || valueText.byHour === null ? '' : encodeURIComponent(valueText.byHour.trim()))
+          + "&byDate=" + (valueText.byDate === undefined || valueText.byDate === null ? '' : encodeURIComponent(valueText.byDate.trim()))
+          + "&byMonth=" + (valueText.byMonth === undefined || valueText.byMonth === null ? '' : encodeURIComponent(valueText.byMonth.trim()))
+          + "&byYear=" + (valueText.byYear === undefined || valueText.byYear === null ? '' : encodeURIComponent(valueText.byYear.trim()))
+          + "&spname=THROUGHPUT";
   }
 
 }

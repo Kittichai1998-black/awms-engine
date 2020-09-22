@@ -40,9 +40,8 @@ const useQueryData = (queryObj) => {
     useEffect(()=> {
         let objQueryStr = queryString.parse(window.location.search)
         for(let str in objQueryStr){
-            QueryGenerate(queryObj, str, objQueryStr[str], '', '', window.location.search)
+            QueryGenerate(queryObj, str, objQueryStr[str], '', '')
         }
-        console.log(queryObj)
     }, [])
 
     useEffect(() => {
@@ -263,13 +262,13 @@ const AmMasterData = (props) => {
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined) {
                 if (IsEmptyObject(fdata.customFilter)) {
-                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
                 } else {
-                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField, window.location.search)
                 }
             }
             else {
-                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
             }
             props.history.push(window.location.pathname + "?" + res.querySearch.toString());
 
