@@ -429,7 +429,7 @@ const AmRepack = props => {
           <div>
             <AmInput
               id={"palletcode"}
-              placeholder="Pallet Code"
+              placeholder={t("Pallet Code")}
               type="input"
               autoFocus={autoFocus}
               style={{ width: "100%" }}
@@ -498,13 +498,13 @@ const AmRepack = props => {
   const randerEleRepack = (data, qty, unit) => {
     return <div>
 
-      <LabelH1 style={{ width: "150px" }}>{"DePackaging From"}</LabelH1>
+      <LabelH1 style={{ width: "150px" }}>{t("DePackaging From")}</LabelH1>
 
       <FormInline style={{ display: "block" }}>
-        <LabelH>{"Quantity :"}</LabelH>
+        <LabelH>{t("Quantity")}</LabelH>
         <AmInput
           id={"qtyOriginal"}
-          placeholder="Qty Original"
+          placeholder={t("Qty Original")}
           type="input"
           value={valueInput.qtyOriginal === undefined ? qty : parseInt(valueInput.qtyOriginal)}
           type={"number"}
@@ -513,13 +513,13 @@ const AmRepack = props => {
             onHandleChangeInput(value, "qtyOriginal")}
           style={{ width: "70px" }}
         />
-        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{unit}</LabelH1>
+        <LabelH1 style={{ width: "50px", paddingLeft: "10px" }}>{t(unit)}</LabelH1>
       </FormInline>
       <br />
-      <LabelH1 style={{ width: "150px" }}>{"DePackaging To"}</LabelH1>
+      <LabelH1 style={{ width: "150px" }}>{t("DePackaging To")}</LabelH1>
       <FormInline >
 
-        <LabelH>{"Quantity :"}</LabelH>
+        <LabelH>{t("Quantity")}</LabelH>
         <AmInput
           id={"qtyNew"}
           type="input"
@@ -528,10 +528,10 @@ const AmRepack = props => {
           style={{ width: "70px" }}
         />
 
-        <LabelH style={{ width: "50px" }}>{"Unit :"}</LabelH>
+        <LabelH style={{ width: "50px" }}>{t("Unit")}</LabelH>
         <AmDropdown
           ID="repackID"
-          placeholder="Select DePack"
+          placeholder={t("Select DePack")}
           fieldDataKey="ID"
           fieldLabel={["Code", "Name"]}
           labelPattern=" : "
@@ -551,10 +551,10 @@ const AmRepack = props => {
 
   const onRanderEleNewPallet = () => {
     return <FormInline style={{ display: "block" }}>
-      <LabelH1>{"New Pallet :"}</LabelH1>
+      <LabelH1>{t("New Pallet")}</LabelH1>
       <AmInput
         id={"palletcodeNew"}
-        placeholder="New Pallet Code"
+        placeholder={t("New Pallet Code")}
         type="input"
         //autoFocus={autoFocus}
         style={{ width: "50%" }}
@@ -648,7 +648,7 @@ const AmRepack = props => {
           className={classes.stepperContainer}
         >
           {steps.map((row, index) => (
-            <Step key={row.label}>
+            <Step key={t(row.label)}>
               <StepLabel>
                 <Typography variant="h6">
                   {t(row.label)}

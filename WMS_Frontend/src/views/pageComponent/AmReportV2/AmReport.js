@@ -10,7 +10,7 @@ import {
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateURL } from "../AmReportV2/GetURL";
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
@@ -86,8 +86,8 @@ const AmReport = props => {
 
   const getData = () => {
 
-      var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
-      console.log(valueText)
+    var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
+    console.log(valueText)
     let pathGetAPI = pathAPI +
       "&page=" + (page - 1)
       + "&limit=" + pageSize
@@ -147,8 +147,26 @@ const AmReport = props => {
             col.width = 200;
             col.Filter = (field, onChangeFilter) => {
               return <div>
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} TypeDate={"date"} fieldID="fromDate" onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) }} />
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
+                <AmDatePicker
+                  defaultValue={true}
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }}
+                  style={{ display: "inline-block" }}
+                  onChange={(ele) => { }}
+                  TypeDate={"date"}
+                  fieldID="fromDate"
+                  onBlur={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }}
+                />
+                <AmDatePicker
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }} defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
               </div>
             }
           }
@@ -174,13 +192,19 @@ const AmReport = props => {
         pageSize={100}
         onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
-        filterData={res => { onChangeFilterData(res) }}
+        filterData={res => { console.log(res); onChangeFilterData(res) }}
         pagination={true}
         onPageChange={p => {
           if (page !== p)
             setPage(p)
           else
             setIniQuery(false)
+        }}
+        groupBy={{
+          "field": ["Code", "Lot", "baseUnitType"],
+          "sumField": ["baseQty", "baseQty_avt0", "baseQty_avt1", "baseQty_avt2", "baseQty_avt9",
+            "baseQty_evt10", "baseQty_evt11", "baseQty_evt12", "baseQty_evt13", "baseQty_evt14",
+            "baseQty_evt15", "baseQty_evt16", "baseQty_evt33", "baseQty_evt34",]
         }}
       />
 

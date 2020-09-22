@@ -1,14 +1,18 @@
-
 import moment from "moment";
+import queryString from "query-string";
 
-const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
-    console.log(searchValue)
+const QueryGenerate = (queryStr, field, searchValue, dataType, dateField, searchString) => {
+
+    const qrySearch = queryString.parse(searchString);
+    let qryArr = [];
+    for(let str in qrySearch){
+        qryArr.push({f:str,c:'=',v:qrySearch[str]});
+    }
     var convertFilter = JSON.parse(queryStr.q)
-    var queryFilter = [...convertFilter];
-    var searchData = queryFilter.find(x => x.f === field);
+    var queryFilter = [...qryArr,...convertFilter];
+    var searchData = queryFilter.find(x => x.f.toUpperCase() === field.toUpperCase());
     var searchSign = "=";
     searchValue = searchValue === null ? "" : searchValue.toString();
-    console.log(searchValue)
     if (searchValue !== "") {
         if (searchValue.startsWith(">=")) {
             searchSign = ">=";
@@ -36,7 +40,6 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
         else if (searchValue.includes(",")) {
             searchSign = "IN";
         }
-
 
         if (searchData !== undefined) {
             if (dataType === "datetime") {
@@ -90,6 +93,12 @@ const QueryGenerate = (queryStr, field, searchValue, dataType, dateField) => {
     }
 
     queryStr.q = JSON.stringify(queryFilter);
+
+    let urlParams = new URLSearchParams();
+    queryFilter.filter(x=> x.c === '=').forEach(x => {
+        urlParams.set(x.f, x.v)
+    })
+    queryStr.querySearch = urlParams.toString();
     return queryStr;
 }
 

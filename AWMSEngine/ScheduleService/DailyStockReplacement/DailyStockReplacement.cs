@@ -10,21 +10,19 @@ using System.Text;
 using System.Threading.Tasks;
 using ThoughtWorks.QRCode.Codec.Ecc;
 
-namespace AWMSEngine.ScheduleService.DailyStockTransaction
+namespace AWMSEngine.ScheduleService.DailyStockReplacement
 {
-    public class DailyNotify : BaseNotification
+    public class DailyStockReplacement : BaseNotification
     {
         public class DailyReport
         {
-            public string pstoCode;
-            public string pstoName;
-            public string pstoBatch;
-            public string pstoLot;
-            public string pstoOrderNo;
-            public decimal qty;
-            public string unitType;
-            public decimal baseQty;
-            public string baseUnitType;
+            public string Code;
+            public string UnitType;
+            public decimal MinQuantity;
+            public decimal MaxQuantity;
+            public string TotalQuantity;
+            public bool MinQtyStatus;
+            public bool MaxQtyStatus;
         }
 
         protected override string GetCode(dynamic reqVO)
@@ -80,22 +78,15 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
         {
             List<DailyReport> dailyDatas = AMWUtil.Common.ObjectUtil.DynamicToModel<List<DailyReport>>(message);
 
-            var groupDailyData = dailyDatas.GroupBy(data => data.pstoCode).Select(data => new {
-                code = data.Key,
-                name = data.FirstOrDefault().pstoName,
-                sumQty = data.Sum(x => x.baseQty),
-                unit = data.FirstOrDefault().baseUnitType
-            }).ToList();
-
             var strBody = new StringBuilder();
 
             if(notifySend == NotifyPlatform.Line)
             {
                 int i = 1;
                 strBody.Append("").AppendLine();
-                groupDailyData.ForEach(x =>
+                dailyDatas.ForEach(x =>
                 {
-                    strBody.Append(i + ") " + x.code + " : " + x.name + " = " + x.sumQty + " " + x.unit).AppendLine();
+                    strBody.Append(i + ") สินค้า" + x.Code + " จำนวนในคลัง" + x.TotalQuantity + " " + x.UnitType + " จำนวนขั้นต่ำ : " + x.MinQuantity).AppendLine();
                     strBody.Append("------------------------------").AppendLine();
                     i++;
                 });
@@ -109,18 +100,18 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
                 strBody.Append("<tr>");
                 strBody.Append("<th style=\"border:1px solid black; \">Row</th>");
                 strBody.Append("<th style=\"border:1px solid black; \">Code</th>");
-                strBody.Append("<th style=\"border:1px solid black\">Name</th>");
-                strBody.Append("<th style=\"border:1px solid black\">Quantity</th>");
+                strBody.Append("<th style=\"border:1px solid black\">TotalQuantity</th>");
+                strBody.Append("<th style=\"border:1px solid black\">MinQuantity</th>");
                 strBody.Append("<th style=\"border:1px solid black\">Unit</th>");
                 strBody.Append("</tr>");
-                groupDailyData.ForEach(x =>
+                dailyDatas.ForEach(x =>
                 {
                     strBody.Append("<tr>");
                     strBody.Append("<td style=\"border:1px solid black\">" + i + "</td>");
-                    strBody.Append("<td style=\"border:1px solid black\">" + x.code +"</td>");
-                    strBody.Append("<td style=\"border:1px solid black\">" + x.name + "</td>");
-                    strBody.Append("<td style=\"border:1px solid black\">" + x.sumQty + "</td>");
-                    strBody.Append("<td style=\"border:1px solid black\">" + x.unit + "</td>");
+                    strBody.Append("<td style=\"border:1px solid black\">" + x.Code +"</td>");
+                    strBody.Append("<td style=\"border:1px solid black\">" + x.TotalQuantity + "</td>");
+                    strBody.Append("<td style=\"border:1px solid black\">" + x.MinQuantity + "</td>");
+                    strBody.Append("<td style=\"border:1px solid black\">" + x.UnitType + "</td>");
                     strBody.Append("</tr>");
                     i++;
                 });

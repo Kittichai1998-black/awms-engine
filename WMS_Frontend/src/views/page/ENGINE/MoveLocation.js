@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 import AmDropdown from "../../../components/AmDropdown";
+import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 const Axios = new apicall();
 
 //======================================================================
@@ -17,7 +18,7 @@ const FormInline = styled.div`
   flex-flow: row wrap;
   align-items: center;
   margin-right: 20px;
-  padding-bottom: 10px;
+  // padding-bottom: 10px;
   label {
     margin: 5px 0 5px 0;
   }
@@ -61,34 +62,33 @@ const MoveLocation = props => {
     }]
   const iniCols = [
 
+    // {
+    //   Header: "Moving Jobs",
+    //   accessor: "Code",
+    //   width: 100
+    // },
     {
-      Header: "Moving Jobs",
-      accessor: "Code",
-      width: 100
-    },
-    {
-      Header: "Base",
+      Header: "Pallet",
       accessor: "Pallet",
       width: 100
     },
     {
       Header: "Status",
       accessor: "PackStatus",
-      width: 100,
+      width: 150,
       sortable: false,
       filterType: "dropdown",
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: StorageObjectEvenstatusTxt,
         typeDropDown: "normal",
-        widthDD: 105,
-      }
-
+      },
+      Cell: e => getStatus(e.original.PackStatus)
     },
     {
       Header: "Current Area",
       accessor: "Area",
-      width: 100
+      width: 150
     },
     {
       Header: "Location",
@@ -97,8 +97,8 @@ const MoveLocation = props => {
     },
     {
       Header: "Sou Area",
-      accessor: "Sou_Area_Code",
-      width: 100
+      accessor: "Sou_Area_Name",
+      width: 150
     },
     {
       Header: "Location",
@@ -107,8 +107,8 @@ const MoveLocation = props => {
     },
     {
       Header: "Des Area",
-      accessor: "Des_Area_Code",
-      width: 100
+      accessor: "Des_Area_Name",
+      width: 150
     },
     {
       Header: "Location",
@@ -116,37 +116,60 @@ const MoveLocation = props => {
       width: 100
     }
   ];
+  const getStatus = Status => {
+    return Status.split("\\n").map(y => (
+      <div style={{ marginBottom: "3px", textAlign: "center" }}>
+        {getStatus1(y)}
+      </div>
+    ));
+  };
+  const getStatus1 = Status => {
+    console.log(Status)
+    if (Status === "RECEIVED") {
+      return <AmStorageObjectStatus key={"RECEIVED"} statusCode={12} />;
+    } else if (Status === "AUDITED") {
+      return <AmStorageObjectStatus key={"AUDITED"} statusCode={14} />;
+    } else if (Status === "COUNTED") {
+      return <AmStorageObjectStatus key={"COUNTED"} statusCode={16} />;
+    } else if (Status === "CONSOLIDATED") {
+      return <AmStorageObjectStatus key={"CONSOLIDATED"} statusCode={36} />;
+    } else {
+      return null;
+    }
+  };
   return (
     <div>
-      <FormInline>
-        {" "}
-        <label style={LabelDD}>
-          {t("Warehouse")} :{" "}
-        </label>
-        <AmDropdown
-          id={"WH"}
-          placeholder={"Select Warehouse..."}
-          fieldDataKey={"ID"}
-          fieldLabel={["Code", "Name"]}
-          labelPattern=" : "
-          width={250}
-          ddlMinWidth={200}
-          zIndex={1000}
-          defaultValue={1}
-          queryApi={WarehouseQuery}
-          onChange={(value, dataObject, inputID, fieldDataKey) =>
-            setWarehouse(value)
-          }
-          ddlType={"normal"}
-        />{" "}
-      </FormInline>
+
+
       <br />
       <AmMoveLocation
         columns={iniCols}
         dataAdd={columns}
         syncWC={false}
+        height={470}
         warehouse={warehouse}
-
+        customTopLeftControl={<FormInline>
+          {" "}
+          <label style={LabelDD}>
+            {t("Warehouse")} :{" "}
+          </label>
+          <AmDropdown
+            id={"WH"}
+            placeholder={"Select Warehouse..."}
+            fieldDataKey={"ID"}
+            fieldLabel={["Code", "Name"]}
+            labelPattern=" : "
+            width={250}
+            ddlMinWidth={200}
+            zIndex={1000}
+            defaultValue={1}
+            queryApi={WarehouseQuery}
+            onChange={(value, dataObject, inputID, fieldDataKey) =>
+              setWarehouse(value)
+            }
+            ddlType={"normal"}
+          />{" "}
+        </FormInline>}
       ></AmMoveLocation>
 
     </div>

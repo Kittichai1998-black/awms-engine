@@ -67,8 +67,8 @@ const AreaLocationMaster = Loadable({
 });
 
 const AreaLocationCondition = Loadable({
-    loader: () => import("../../views/page/Master/AreaLocationCondition"),
-    loading: Loading
+  loader: () => import("../../views/page/Master/AreaLocationCondition"),
+  loading: Loading
 });
 const AreaRoute = Loadable({
   loader: () => import("../../views/page/Master/AreaRoute"),
@@ -112,9 +112,9 @@ const CurrentInventory = Loadable({
   loading: Loading
 });
 
-const StockLocationUsed =  Loadable({
-    loader: () => import("../../views/page/NewReport/StockLocationUsed"),
-    loading: Loading
+const StockLocationUsed = Loadable({
+  loader: () => import("../../views/page/NewReport/StockLocationUsed"),
+  loading: Loading
 });
 
 const DeadStock = Loadable({
@@ -198,6 +198,7 @@ const MonitorIO = Loadable({
   loader: () => import("../../views/page/Monitor/MonitorIO"),
   loading: Loading
 });
+
 const MonitorPicking = Loadable({
   loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
   loading: Loading
@@ -285,7 +286,7 @@ const SearchLog = Loadable({
   loading: Loading
 });
 const Dash = Loadable({
-  loader: () => import("../../views/page/Dashboard/ExDashboard"),
+  loader: () => import("../../views/page/Dashboard/DashboardSummary"),
   loading: Loading
 });
 const WebPage = Loadable({
@@ -405,8 +406,18 @@ const ManageMaintenancePlan = Loadable({
   loader: () => import("../../views/page/ENGINE/ManageMaintenancePlan"),
   loading: Loading
 });
-
-
+const Car = Loadable({
+  loader: () => import("../../views/page/Master/TransportCar"),
+  loading: Loading
+});
+const CarType = Loadable({
+  loader: () => import("../../views/page/Master/TransportCarType"),
+  loading: Loading
+});
+const MoveLocation = Loadable({
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -419,6 +430,7 @@ let routes = [
   // {path: "/dashboard/picking",name: "Pickiing Progress",compoment: Picking,exact: true},
   // {path: "/dashboard/pickingjobs",name: "Dashboard Gate Picking Return by GR",compoment: dashboardReturnPicking,exact: true},
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
+  { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
     { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
     { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
@@ -446,8 +458,8 @@ let routes = [
   { path: "/setting/branch", name: "base5", compoment: BranchMaster, exact: true },
   { path: "/setting/warehouse", name: "base5", compoment: WarehouseMaster, exact: true },
   { path: "/setting/area", name: "base5", compoment: AreaMaster, exact: true },
-    { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
-    { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
+  { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
+  { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
   { path: "/setting/arearoute", name: "base5", compoment: AreaRoute, exact: true },
   { path: "/setting/customer", name: "base5", compoment: Customer, exact: true },
   { path: "/setting/supplier", name: "base5", compoment: Supplier, exact: true },
@@ -456,6 +468,8 @@ let routes = [
   { path: "/setting/skuvolume", name: "base5", compoment: ObjectSize, exact: true },
   { path: "/setting/ObjectSizeMap", name: "base5", compoment: ObjectSizeMap, exact: true },
   { path: "/setting/APIKey", name: "base5", compoment: APIKey, exact: true },
+  { path: "/setting/car", name: "base5", compoment: Car, exact: true },
+  { path: "/setting/carType", name: "base5", compoment: CarType, exact: true },
   { path: "/exbutton", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/exdropdown", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/sto/picking", name: "base5", compoment: FindpopupDDL, exact: true },
@@ -477,7 +491,7 @@ let routes = [
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
-  { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
+  { path: "/dashboard/dashboardsummary", name: "Dash1", compoment: Dash, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },

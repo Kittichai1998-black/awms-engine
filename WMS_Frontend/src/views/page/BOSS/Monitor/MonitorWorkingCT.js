@@ -6,7 +6,7 @@ import queryString from 'query-string'
 import React, { useState, useEffect } from 'react'
 // import { useTranslation } from 'react-i18next'
 
-import AmPageDashboard from '../../../components/AmPageDashboard';
+import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../components/function/CoreFunction'
 
 export default props => {
@@ -15,23 +15,13 @@ export default props => {
     useEffect(() => {
         // var location = window.location;
         // const search = queryString.parse(location.search)
-        let UrlSplit = window.location.pathname.split('/')[2]
-        if (UrlSplit === "receiving") {
-            // if (location.pathname === "/monitor/inbound") {
-            dashboard = 'DASHBOARD_IN';
-            document.title = "Receiving Progress : AMW";
-            // } else {
-            //     window.location.replace("/404");
-            // }
-        }
-        if (UrlSplit === "issuing") {
-            // if (location.pathname === "/monitor/outbound") {
-            dashboard = 'DASHBOARD_OUT';
-            document.title = "Issuing Progress : AMW";
-            // } else {
-            //     window.location.replace("/404");
-            // }
-        }
+        // if (location.pathname === "/monitor/inbound") {
+        dashboard = 'DASHBOARD_WORKING_OUT_CT';
+        document.title = "Counting Progress : AMW";
+        // } else {
+        //     window.location.replace("/404");
+        // }
+
 
     }, [props.location, localStorage.getItem('Lang')]);
 

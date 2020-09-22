@@ -102,16 +102,18 @@ const EditorData = ({config, editorColumns, editData, response}) => {
             let chkRequire = []
 
             if(rowdata !== undefined){
-                if(rowdata["ID"] !== null)
+                if(rowdata["ID"] !== null){
                     updateData["ID"] = rowdata["ID"]
-                    chkRequire = editorColumns.map(x => {
-                    if(rowdata[x.field] !== undefined){
-                        updateData[x.field] = rowdata[x.field]
-                    }
-                    if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
-                        return false;
-                    else 
-                        return true;
+                }
+                
+                chkRequire = editorColumns.map(x => {
+                if(rowdata[x.field] !== undefined){
+                    updateData[x.field] = rowdata[x.field]
+                }
+                if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
+                    return false;
+                else 
+                    return true;
                 });
             }
             
