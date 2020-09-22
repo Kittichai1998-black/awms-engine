@@ -318,17 +318,28 @@ const ChartJS = () => {
   const chartConfigs = [
     [
       {
+        type: 'bar',
+        title: "สถิติการรับเข้า-เบิกออก รายชั่วโมง",
+        spname: 'DASHBOARD_CHART_RECEIVEISSUE_HOUR',
+      },
+      {
+        type: 'bar',
+        title: "สถิติการรับเข้า-เบิกออก รายวัน",
+        spname: 'DASHBOARD_CHART_RECEIVEISSUE_DAY',
+      },
+    ],
+    [
+      {
         type: 'pie',
         title: "สถิติการรับเข้าสินค้า",
-        spname: 'DASHBOARD_CHART_RECEIVE',
+        spname: 'DASHBOARD_CHART_PIE_RECEIVE',
       },
       {
         type: 'pie',
         title: "สถิติการเบิกออกสินค้า",
-        spname: 'DASHBOARD_CHART_ISSUE',
+        spname: 'DASHBOARD_CHART_PIE_ISSUE',
       },
     ],
-    
     [
       {
         type: 'bar',
