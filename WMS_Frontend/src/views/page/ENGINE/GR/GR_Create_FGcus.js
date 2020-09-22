@@ -52,11 +52,14 @@ const RD_Create_FGCustomer = props => {
             var headerCreate = [
                 [
                     { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                 ],
                 [
                     { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
-                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
+                ],
+                [
+                    { label: "PO NO.", type: "input", key: "ref1", codeTranslate: "PO", width: '300px' }
                 ],
                 [
                     DataprocessTypeID,
@@ -64,7 +67,7 @@ const RD_Create_FGCustomer = props => {
                 ],
                 [
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" ,width:200}
+                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark", width: '300px' }
                 ],
 
 
@@ -124,41 +127,54 @@ const RD_Create_FGCustomer = props => {
         if (skuType === 5 && CodeprocessType === 3) {
             Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true }
         } else {
-            Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts: "-" }
+            Headers = { Header: "Lot", accessor: "lot", type: "input" }
         }
 
 
         if (skuType === 5 && CodeprocessType === 1) {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled : true }
+            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
         } else {
             AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
 
         var columnEdit = [
-            { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
+            // { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
             {
                 // search: false,
-                Header: "Item",
+                Header: "Item Code",
                 accessor: "skuCode",
                 type: "findPopUp",
                 queryApi: skuquery,
-                fieldLabel: ["skuCode", "skuName"],
+                fieldLabel: ["skuCode"],
                 columsddl: columsFindPopupSKU,
                 related: ["skuName", "SKUItems"],
                 fieldDataKey: "Code", // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
                 required: true
             },
+            {
+                // search: false,
+                Header: "Item Name",
+                accessor: "skuName",
+                type: "findPopUp",
+                queryApi: skuquery,
+                fieldLabel: ["skuName"],
+                columsddl: columsFindPopupSKU,
+                related: ["skuName", "SKUItems"],
+                fieldDataKey: "Name", // ref กับ accessor
+                //defaultValue: "PJAAN04-0024",
+                required: true
+            },
             { Header: "Order No.", accessor: "orderNo", type: "input" },
             { Header: "Batch", accessor: "batch", type: "input" },
-            { Header: "Lot", accessor: "lot", type: "input" },
+            Headers,
             { Header: "Qty", accessor: "quantity", type: "inputNum", required: true },
             { Header: "Unit", accessor: "unitType", type: "unitConvert" },
             AuditStatusDDL,
-            Headers,
-            { Header: "Ref2", accessor: "ref2", type: "input" },
-            { Header: "Ref3", accessor: "ref3", type: "input" },
-            { Header: "Ref4", accessor: "ref4", type: "input" },
+
+            //{ Header: "Ref2", accessor: "ref2", type: "input" },
+            //{ Header: "Ref3", accessor: "ref3", type: "input" },
+            { Header: "ReMark", accessor: "remark", type: "input" },
             { Header: "Carton No.", accessor: "cartonNo", type: "input" },
             { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum" },
             { Header: "Product Date", accessor: "productionDate", type: "date" },
@@ -250,19 +266,20 @@ const RD_Create_FGCustomer = props => {
 
 
     const columns = [
-        // { id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Item No.", accessor: "itemNo" },
-        { Header: "Item", accessor: "SKUItems" },
+        { id: "row", Cell: row => row.index + 1, width: 35 },
+        //{ Header: "Item No.", accessor: "itemNo" },
+        { Header: "Item Code", accessor: "skuCode" },
+        { Header: "Item Name", accessor: "skuName", width: 200 },
         { Header: "Order No.", accessor: "orderNo" },
         { Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
+        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Qty", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
-        { Header: "Audit Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Ref2", accessor: "ref2" },
-        { Header: "Ref3", accessor: "ref3" },
-        { Header: "Ref4", accessor: "ref4" },
+        { Header: "Audit Status", accessor: "auditStatus" },        
+        { Header: "Remark", accessor: "remark" },
+        //{ Header: "Ref3", accessor: "ref3" },
+        //{ Header: "Ref4", accessor: "ref4" },
         { Header: "Carton No.", accessor: "cartonNo" },
         { Header: "Incubation Day", accessor: "incubationDay" },
         { Header: "Product Date", accessor: "productionDate" },
@@ -287,7 +304,7 @@ const RD_Create_FGCustomer = props => {
             </Grid>
         </Grid>
         <div>
-        {table}</div></div>;
+            {table}</div></div>;
 };
 
 export default RD_Create_FGCustomer;
