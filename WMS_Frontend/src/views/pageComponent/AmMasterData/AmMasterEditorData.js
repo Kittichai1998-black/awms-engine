@@ -98,7 +98,7 @@ const EditorData = ({config, editorColumns, editData, response}) => {
         open={popupState} 
         onAccept={(status, rowdata) => {
             console.log(rowdata)
-            var updateData = {...editData}
+            var updateData = { ID: null, Status: 1, Revision: 1 }
             let chkRequire = []
 
             if(rowdata !== undefined){
