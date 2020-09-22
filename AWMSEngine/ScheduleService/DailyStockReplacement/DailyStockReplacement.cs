@@ -18,8 +18,8 @@ namespace AWMSEngine.ScheduleService.DailyStockReplacement
         {
             public string Code;
             public string UnitType;
-            public decimal MinQuantity;
-            public decimal MaxQuantity;
+            public decimal? MinQuantity;
+            public decimal? MaxQuantity;
             public string TotalQuantity;
             public bool MinQtyStatus;
             public bool MaxQtyStatus;

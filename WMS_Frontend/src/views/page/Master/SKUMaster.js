@@ -252,6 +252,7 @@ const SKUMaster = props => {
       return null;
     } 
   };
+  console.log(props.height)
 
   return (
     <div>
@@ -265,7 +266,7 @@ const SKUMaster = props => {
         columns={iniCols}
         dataEdit={columnsEdit}
         tableType="view"
-        height={500}
+        height={props.height}
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />

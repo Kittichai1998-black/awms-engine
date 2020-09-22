@@ -335,7 +335,7 @@ const AmMasterData = (props) => {
             rowNumber={true}
             totalSize={count}
             pageSize={props.pageSize}
-            height={500}
+            height={props.height-45}
             pagination={true}
             onPageChange={p => {
                 if (page !== p)

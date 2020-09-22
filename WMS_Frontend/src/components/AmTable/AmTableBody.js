@@ -171,18 +171,20 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
   }, [Columns, selection.selectAllState, dataSource]);
 
   useEffect(() => {
-    selection.selectionValue.forEach(x => {
-      if (document.getElementById("selection_" + x[dataKey]) !== null)
-        document.getElementById("selection_" + x[dataKey]).checked = true;
-    });
-    if (!selection.selectAllState && selection.selectionValue.length === 0) {
-      let getDataKey = dataSource.map(res => { return res[dataKey] });
-      getDataKey.forEach(dk => {
-        if (document.getElementById("selection_" + dk) !== null)
-          document.getElementById("selection_" + dk).checked = false;
+    if(selectionState){
+      selection.selectionValue.forEach(x => {
+        if (document.getElementById("selection_" + x[dataKey]) !== null)
+          document.getElementById("selection_" + x[dataKey]).checked = true;
       });
+      if (!selection.selectAllState && selection.selectionValue.length === 0) {
+        let getDataKey = dataSource.map(res => { return res[dataKey] });
+        getDataKey.forEach(dk => {
+          if (document.getElementById("selection_" + dk) !== null)
+            document.getElementById("selection_" + dk).checked = false;
+        });
+      }
     }
-  }, [selection.selectionValue, selection.selectAllState, dataSource])
+  }, [selectionState, selection.selectionValue, selection.selectAllState, dataSource])
 
   return columns
 }

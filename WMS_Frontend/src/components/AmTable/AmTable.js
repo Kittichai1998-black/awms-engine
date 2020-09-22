@@ -86,12 +86,13 @@ const customSettingBTN = React.forwardRef(({ children, onClick }, ref) => (
 
 const AmTable = (props) => {
     const [selection, setSelection] = useState([])
-    const [pgSize, setPgSize] = useState(props.pageSize ? 20 : props.pageSize);
+    const [pgSize, setPgSize] = useState(props.onPageSizeChange ? 20 : props.pageSize ? props.pageSize : 20 );
     const [exportExcel, setExportExcel] = useState(false);
 
-    useEffect(() => {
-        if(props.onPageSizeChange)
-            props.onPageSizeChange(props.pageSize)
+    useEffect((old) => {
+        if(props.onPageSizeChange){
+            props.onPageSizeChange(pgSize)
+        }
     }, [pgSize])
 
     const customPageSizeBtn = React.forwardRef(({ children, onClick }, ref) => (

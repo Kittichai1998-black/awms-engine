@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    apicall,
-    createQueryString
+    apicall
 } from "../../../components/function/CoreFunction";
+import {
+    isValidJson
+} from "../../../components/function/UtilFunction";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { LayoutContext } from "../../../reducers/context";
@@ -13,6 +15,7 @@ import AmButton from '../../../components/AmButton';
 import moment from "moment";
 import styled from "styled-components";
 import ErrorIcon from '@material-ui/icons/Error';
+import AmTable from '../../../components/AmTable/AmTableComponent';
 
 const Axios = new apicall();
 
@@ -49,19 +52,19 @@ const useStyles = makeStyles({
       marginBottom:"5px"
     },
     success:{
-        background:'rgba(197, 225, 160, 0.5)',
+        //background:'rgba(197, 225, 160, 0.5)',
         border:'2px solid rgb(197, 225, 160)',
     },
     info:{
-        background:'rgba(55, 71, 255, 0.5)',
+        //background:'rgba(55, 71, 255, 0.5)',
         border:'2px solid rgb(55, 71, 255)',
     },
     error:{
-        background:'rgba(239, 154, 154, 0.5)',
+        //background:'rgba(239, 154, 154, 0.5)',
         border:'2px solid rgb(239, 154, 154)',
     },
     warning:{
-        background:'rgba(255, 245, 157, 0.5) ',
+        //background:'rgba(255, 245, 157, 0.5) ',
         border:'2px solid rgb(255, 245, 157)',
     },
     normal:{
@@ -117,6 +120,30 @@ const useNotifyData = (props) => {
     return data;
 }
 
+const JsonTable = React.memo(({datas}) => {
+    if(isValidJson(datas)){
+        let getCol = [];
+        const jsonData = JSON.parse(datas)
+        if(datas.length > 0){
+            for(let data in jsonData[0]){
+                getCol.push({accessor:data, Header:data})
+            }
+            return <AmTable
+                dataSource={jsonData}
+                columns={getCol}
+                filterable={false}
+                sortable={false}
+            />
+        }
+        else{
+            return datas;
+        }
+    }
+    else{
+        return datas;
+    }
+})
+
 
 export default () => {
     const [limit, setLimit] = useState(5)
@@ -149,7 +176,7 @@ export default () => {
                     {noti.NotifyType === 2 ? <ErrorIcon title="Critical"variant='Critical' aria-label="Critical"  style={{marginLeft:5,color:"red", float:"left", fontSize:20}}/> : null}
                     <Typography className={classes.timestamp} color="textSecondary" gutterBottom>{moment(noti.PostTime).format("HH:mm DD/MM/YYYY")}</Typography>
                     <div style={{clear:"both"}}></div>
-                    <Typography variant="body2" component="p">{noti.Message}</Typography>
+                    <Typography variant="body2" component="p"><JsonTable datas={noti.Message}/></Typography>
                 </CardContent>
             </Card>
         })}
