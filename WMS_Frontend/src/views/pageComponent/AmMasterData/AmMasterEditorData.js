@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
-import {InputComponent, DropDownComponent, FindPopupComponent,PasswordComponent} from "./AmMasterComponentType";
+import { InputComponent, DropDownComponent, FindPopupComponent, PasswordComponent, DateTimeComponent} from "./AmMasterComponentType";
 
 const EditorData = ({config, editorColumns, editData, response}) => {
     const [popupState, setPopState] = useState(false);
@@ -68,6 +68,18 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     defaultData={data !== undefined ? data[field] : ""}
                 />
             }
+            else if (config.type === "date") {
+                return <DateTimeComponent key={key}
+                    config={config}
+                    defaultData={data !== undefined ? data[field] : ""}
+                    response={(e) => {
+                        if (!IsEmptyObject(e)) {
+                            data[e.field] = e.value.fieldDataObject
+                        }
+                    }
+                    }
+                />
+            }
         }
         return editColumns.map(y=>{
             return { 
@@ -84,7 +96,8 @@ const EditorData = ({config, editorColumns, editData, response}) => {
     return <AmEditorTable 
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
-        onAccept={(status, rowdata)=> {
+        onAccept={(status, rowdata) => {
+            console.log(rowdata)
             var updateData = {...editData}
             let chkRequire = []
 
