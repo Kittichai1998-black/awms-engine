@@ -68,7 +68,7 @@ const CurrentInventory = (props) => {
     const columns = [
         { Header: 'SKU Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'SKU Name', accessor: 'Name', width: 150, sortable: false, filterable: false, },
-        { Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
+        //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
         { Header: 'Order No.', accessor: 'OrderNo', width: 100, sortable: false },
         {
@@ -79,6 +79,28 @@ const CurrentInventory = (props) => {
         },
         { Header: 'Unit', accessor: 'baseUnitType', filterable: false, width: 70, sortable: false },
         {
+            Header: 'Quarantine', accessor: 'baseQty_avt0', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        },
+        {
+            Header: 'Passed', accessor: 'baseQty_avt1', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        },
+        {
+            Header: 'Rejected', accessor: 'baseQty_avt2', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        }, {
+            Header: 'Hold', accessor: 'baseQty_avt9', width: 85, sortable: false,
+            Footer: true,
+            filterable: false,
+            "Cell": (e) => comma(e.value.toString()),
+        }, {
             Header: 'New', accessor: 'baseQty_evt10', width: 85, sortable: false,
             Footer: true,
             filterable: false,

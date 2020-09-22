@@ -65,6 +65,10 @@ const MonitorWorking_LD = Loadable({
     loader: () => import("../../views/page/BOSS/Monitor/MonitorWorkingLD"),
     loading: Loading
 });
+const MonitorWorking_CT = Loadable({
+    loader: () => import("../../views/page/BOSS/Monitor/MonitorWorkingCT"),
+    loading: Loading
+});
 const routes = [
     { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
     { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
@@ -83,6 +87,7 @@ const routes = [
 
     { path: "/monitor/workingPD", name: "Monitor Working Zone Production", compoment: MonitorWorking_PD, exact: true },
     { path: "/monitor/workingLD", name: "Monitor Working Zone Loading", compoment: MonitorWorking_LD, exact: true },
+    { path: "/monitor/workingCT", name: "Monitor Counting", compoment: MonitorWorking_CT, exact: true },
 ]
 
 export default routes;

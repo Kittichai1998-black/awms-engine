@@ -39,7 +39,7 @@ const headercol2 = [
 
 export default props => {
 
-    const [Hub, setHub] = useState(["DASHBOARD_WORKING_OUT_ALL", "DASHBOARD_WORKING_IN_ALL"])
+    const [Hub, setHub] = useState(["DASHBOARD_WORKING_OUT_LD", "DASHBOARD_WORKING_IN_LD"])
     const [data, setData] = useState([
         [ //row
             { //col 

@@ -203,21 +203,21 @@ const AreaLocationCondition = props => {
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKU_Code",
+            field: "SKUMaster_ID",
             type: "input",
             name: "SKU Code",
             placeholder: "SKU Code",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKU_Name",
+            field: "SKUMaster_ID",
             type: "input",
             name: "SKU Name",
             placeholder: "SKU Name",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKUType_Name",
+            field: "SKUMasterType_ID",
             type: "dropdown",
             typeDropDown: "search",
             name: "SKU Type",
@@ -228,7 +228,7 @@ const AreaLocationCondition = props => {
             fieldValue: "ID",
         },
         {
-            field: "UnitType_Code",
+            field: "UnitType_ID",
             type: "dropdown",
             typeDropDown: "search",
             name: "Unit Type",

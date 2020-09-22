@@ -10,6 +10,7 @@ import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
+import queryString from "query-string";
 
 import AmMasterEditorData from "./AmMasterEditorData";
 
@@ -35,6 +36,13 @@ const FormInline = styled.div`
 const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
     const [count, setCount] = useState(0)
+
+    useEffect(()=> {
+        let objQueryStr = queryString.parse(window.location.search)
+        for(let str in objQueryStr){
+            QueryGenerate(queryObj, str, objQueryStr[str], '', '')
+        }
+    }, [])
 
     useEffect(() => {
         if (typeof queryObj === "object") {
@@ -254,14 +262,16 @@ const AmMasterData = (props) => {
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined) {
                 if (IsEmptyObject(fdata.customFilter)) {
-                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
                 } else {
-                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField, window.location.search)
                 }
             }
             else {
-                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
             }
+            props.history.push(window.location.pathname + "?" + res.querySearch.toString());
+
         });
         setQueryObj(res)
     }

@@ -102,6 +102,11 @@ const ScanPalletInfo = Loadable({
   loader: () => import("../../views/page/Warehouse/ScanPalletInfo"),
   loading: Loading
 });
+
+const StockReplenishment = Loadable({
+    loader: () => import("../../views/page/Warehouse/StockReplenishment"),
+    loading: Loading
+});
 const CurrentInventory = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
   loading: Loading
@@ -110,6 +115,11 @@ const CurrentInventory = Loadable({
 const StockLocationUsed = Loadable({
   loader: () => import("../../views/page/NewReport/StockLocationUsed"),
   loading: Loading
+});
+
+const DeadStock = Loadable({
+    loader: () => import("../../views/page/NewReport/DeadStock"),
+    loading: Loading
 });
 
 const StockCardV2 = Loadable({
@@ -166,6 +176,12 @@ const DailySTOSumAudit = Loadable({
   loader: () => import("../../views/page/NewReport/DailySTOSumAudit"),
   loading: Loading
 });
+
+const Throughput = Loadable({
+    loader: () => import("../../views/page/NewReport/Throughput"),
+    loading: Loading
+});
+
 const ScanPalletMove = Loadable({
   loader: () => import("../../views/page/Warehouse/ScanPalletMoveLocation.js"),
   loading: Loading
@@ -303,7 +319,6 @@ const GR_Search = Loadable({
   loading: Loading
 });
 
-
 const PA_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/PA/PA_Create"),
   loading: Loading
@@ -417,13 +432,16 @@ let routes = [
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
-  { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
+    { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
+    { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
-  { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
+    { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+    { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
+    { path: "/report/deadstock", name: "DeadStock Report", compoment: DeadStock, exact: true },
+    { path: "/report/throughput", name: "Throughput Report", compoment: Throughput, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },
