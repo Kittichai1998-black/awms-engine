@@ -290,7 +290,7 @@ const AmPrintBarCodeV2 = props => {
 
               <Grid item xs={4}>
                 <LabelH style={{ paddingRight: "2px", width: "100px" }}>
-                  {"Pallet No.:"}{indexName + "/" + (type === "add" ? numCount : i)}
+                  {"Tag No.:"}{indexName + "/" + (type === "add" ? numCount : i)}
                 </LabelH>
               </Grid>
               <Grid item xs={6}>

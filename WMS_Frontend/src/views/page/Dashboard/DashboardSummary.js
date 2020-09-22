@@ -319,45 +319,46 @@ const ChartJS = () => {
     [
       {
         type: 'bar',
-        title: "Receive & Issue Day Summary",
-        spname: 'DASHBOARD_CHART_RECEIVEISSUE',
+        title: "สถิติการรับเข้า-เบิกออก รายชั่วโมง",
+        spname: 'DASHBOARD_CHART_RECEIVEISSUE_HOUR',
       },
-      // {
-      //   type: 'doughnut',
-      //   title: "ex.pie",
-      //   spname: 'DASHBOARD_CHART2',
-      // }
+      {
+        type: 'bar',
+        title: "สถิติการรับเข้า-เบิกออก รายวัน",
+        spname: 'DASHBOARD_CHART_RECEIVEISSUE_DAY',
+      },
     ],
-    // [
-    //   {
-    //     type: 'horizontalBar',
-    //     title: "ex.horizontalBar",
-    //     spname: 'DASHBOARD_CHART',
-    //   },
-
-    // ], 
-    // [
-    //   {
-    //     type: 'line',
-    //     title: "ex.line",
-    //     spname: 'DASHBOARD_CHART4',
-    //   },
-    //   {
-    //     type: 'table',
-    //     title: "ex.table",
-    //     spname: 'DASHBOARD_CHART3',
-    //   }
-    // ]
+    [
+      {
+        type: 'pie',
+        title: "สถิติการรับเข้าสินค้า",
+        spname: 'DASHBOARD_CHART_PIE_RECEIVE',
+      },
+      {
+        type: 'pie',
+        title: "สถิติการเบิกออกสินค้า",
+        spname: 'DASHBOARD_CHART_PIE_ISSUE',
+      },
+    ],
+    [
+      {
+        type: 'bar',
+        title: "สถิติปริมาณงาน รายชั่วโมง",
+        spname: 'DASHBOARD_CHART_THROUGHPUT_HOUR',
+      },
+      {
+        type: 'bar',
+        title: "สถิติปริมาณงาน รายวัน",
+        spname: 'DASHBOARD_CHART_THROUGHPUT_DAY',
+      }
+    ]
   ];
 
   return (
-    <div>
       <AmDashboardChart
         chartConfigs={chartConfigs}
         showTime={true}
       />
-
-    </div>
   );
 };
 

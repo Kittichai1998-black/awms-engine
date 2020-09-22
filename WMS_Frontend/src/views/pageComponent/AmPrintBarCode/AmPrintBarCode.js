@@ -339,7 +339,7 @@ const AmPrintBarCode = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={t("Generate BarCode Detail")}
+        titleText={t("Generate QRCode Detail")}
         data={props.data}
         columns={RanderEle()}
       />

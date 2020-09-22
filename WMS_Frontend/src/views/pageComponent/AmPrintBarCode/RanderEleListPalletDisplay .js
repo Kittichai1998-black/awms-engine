@@ -61,7 +61,7 @@ const DataGenerateElePalletListDisplay = (data) => {
         <Grid container spacing={3} >
           <Grid item xs style={{ padding: 2 }} >
             <FormInline style={{ width: "150px" }}>
-              <label style={LabelPallet}>{"Pallet No. : "}</label>
+              <label style={LabelPallet}>{"Tag No. : "}</label>
               <label style={LabelPalletNo}>{qryStr.palletNo}</label>
             </FormInline>
           </Grid>
