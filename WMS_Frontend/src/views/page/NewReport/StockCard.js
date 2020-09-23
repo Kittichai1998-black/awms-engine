@@ -81,40 +81,47 @@ const StockCard = (props) => {
 
     const columns = [
         {
-            Header: 'Date', accessor: 'CreateTime', width: 120, type: "datetime",
+            Header: 'Date', accessor: 'ModifyTime', width: 120, type: "datetime",
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",
             }
-            , customFilter: { field: "CreateTime" },
+            , customFilter: { field: "ModifyTime" },
             dateFormat: "DD/MM/YYYY HH:mm"
         },
-        { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false, filterable: false, },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
-        { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
-        { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrder', width: 100, sortable: false },
+        { Header: 'Doc No.', accessor: 'DocCode', width: 120, sortable: false, filterable: false, },
+        { Header: 'SKU Code', accessor: 'SkuCode', width: 120, sortable: false },
+        { Header: 'SKU Name', accessor: 'SkuName', width: 150, sortable: false, filterable: false, },
+        { Header: 'SKU Type', accessor: 'SkuTypeName', width: 140, sortable: false },
+        //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
+        { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
+        { Header: 'Control No.', accessor: 'Order', width: 100, sortable: false },
         {
-            Header: 'Issue', accessor: 'creditBaseQuantity', width: 70, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Header: 'Issue', accessor: 'CreditQuantity', width: 70, sortable: false,
+            Footer: true, filterable: false,
+            //"Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         {
-            Header: 'Receive', accessor: 'debitBaseQuantity', width: 70, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Header: 'Receive', accessor: 'DebitQuantity', width: 70, sortable: false,
+            Footer: true, filterable: false,
+            //"Cell": (e) => comma(e.value.toString()), filterable: false,
         },
-        { Header: 'Unit', accessor: 'BaseUnitType', width: 70, sortable: false, filterable: false, },
         {
-            Header: 'Description', accessor: 'Description', width: 220, sortable: false, filterType: "dropdown",
-            filterConfig: {
-                filterType: "dropdown",
-                fieldLabel: ["Code", "Name"],
-                dataDropDown: MVTQuery,
-                typeDropDown: "normal",
-                widthDD: 220,
-            },
+            Header: 'Total', accessor: 'TotalQuantity', width: 70, sortable: false,
+            Footer: true, filterable: false,
+            //"Cell": (e) => comma(e.value.toString()), filterable: false,
+        },
+        { Header: 'Unit', accessor: 'UnitTypeCode', width: 70, sortable: false, filterable: false, },
+        {
+            Header: 'Process No.', accessor: 'DocProcessTypeName', width: 220, sortable: false, filterable: false
+            //filterType: "DocProcessTypeName",
+            // filterConfig: {
+            //     filterType: "dropdown",
+            //     fieldLabel: ["Code", "Name"],
+            //     dataDropDown: MVTQuery,
+            //     typeDropDown: "normal",
+            //     widthDD: 220,
+            // },
         },
 
     ];

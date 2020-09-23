@@ -178,6 +178,15 @@ const AmReport = props => {
     return { columns };
   }
   const { columns } = useColumns(props.columnTable);
+
+  const checkStatusColor = (rowInfo) => {
+    if (rowInfo.isHead) {
+      return { backgroundColor: "#E0E0E0" }
+    } else {
+      return { backgroundColor: "white" }
+    }
+
+  }
   //===========================================================
   return (
     <div>
@@ -190,9 +199,10 @@ const AmReport = props => {
         totalSize={count}
         tableConfig={true}
         pageSize={100}
+        cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
         onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
-        filterData={res => { console.log(res); onChangeFilterData(res) }}
+        filterData={res => { onChangeFilterData(res) }}
         pagination={true}
         onPageChange={p => {
           if (page !== p)
