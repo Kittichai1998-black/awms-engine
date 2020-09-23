@@ -12,7 +12,7 @@ import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import AmInput from "../../../components/AmInput";
@@ -134,7 +134,7 @@ const AmSearchDocumentV2 = props => {
 
             }
           } else if (filterConfig.filterType === "datetime") {
-            col.width = 350;
+            col.width = 420;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
@@ -160,7 +160,7 @@ const AmSearchDocumentV2 = props => {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
         } else {
 
-          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? (fdata.value === "" ? null : fdata.value + "T23:59:59") : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
       } else {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)

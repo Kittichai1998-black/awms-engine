@@ -47,7 +47,7 @@ const AmReport = props => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0)
   const [iniQuery, setIniQuery] = useState(true);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(20);
 
   useEffect(() => {
     if (!iniQuery)
@@ -200,12 +200,12 @@ const AmReport = props => {
           else
             setIniQuery(false)
         }}
-        groupBy={{
+        groupBy={props.groupBy === true ? {
           "field": ["Code", "Lot", "baseUnitType"],
           "sumField": ["baseQty", "baseQty_avt0", "baseQty_avt1", "baseQty_avt2", "baseQty_avt9",
             "baseQty_evt10", "baseQty_evt11", "baseQty_evt12", "baseQty_evt13", "baseQty_evt14",
             "baseQty_evt15", "baseQty_evt16", "baseQty_evt33", "baseQty_evt34",]
-        }}
+        } : null}
       />
 
     </div>

@@ -168,6 +168,7 @@ const CurrentInventory = (props) => {
                 excelFooter={true}
                 fileNameTable={"CURINV"}
                 tableKey={"Code"}
+                groupBy={true}
             ></AmReport>
         </div>
     )
