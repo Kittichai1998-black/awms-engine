@@ -36,7 +36,7 @@ const MaintenanceCalendar = (props) => {
 
     useEffect(() => {
         Axios.get(createQueryString(query)).then(res => {
-            if (res.data.datas) { 
+            if (res.data.datas) {
                 let _dataevents = []
                 res.data.datas.map(x => {
                     let backgroundColor = "";
@@ -65,7 +65,7 @@ const MaintenanceCalendar = (props) => {
                         textColor: textColor,
                         ...x
                     });
-                }); 
+                });
                 setDataEvents(_dataevents)
             } else {
                 setDataEvents([])
@@ -84,24 +84,22 @@ const MaintenanceCalendar = (props) => {
             </div>
         )
     }
-console.log(props.height)
+     
     return (
-        // <div style={{minHeight: props.height}}>
-            <FullCalendar
-                // className={classes.container}
-                plugins={[dayGridPlugin, interactionPlugin]}
-                // headerToolbar={{
-                //     left: 'prev,next today',
-                //     center: 'title',
-                //     right: 'dayGridMonth' //timeGridWeek,timeGridDay
-                // }}
-                initialView="dayGridMonth"
-                selectable={true}
-                events={dataEvents}
-                eventClick={handleEventClick}
-                eventContent={renderEventContent} // custom render function
-            />
-        // </div>
+        <FullCalendar
+            style={{maxHeight: props.height}}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            // headerToolbar={{
+            //     left: 'prev,next today',
+            //     center: 'title',
+            //     right: 'dayGridMonth,timeGridWeek' //,timeGridDay
+            // }}
+            initialView="dayGridMonth"
+            selectable={true}
+            events={dataEvents}
+            eventClick={handleEventClick}
+            eventContent={renderEventContent} // custom render function
+        />
     );
 };
 
