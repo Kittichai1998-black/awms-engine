@@ -311,9 +311,10 @@ const DocumentView = props => {
                         qtyrandom: qryStr.qtyrandom ? qryStr.qtyrandom
                             :
                             '-',
-
+                        remark: qryStr.remark ? qryStr.remark : null,
                         ExpireDate: row.ExpireDate ? moment(row.ExpireDate).format("DD/MM/YYYY") : null,
                         ProductionDate: row.ProductionDate ? moment(row.ProductionDate).format("DD/MM/YYYY") : null,
+                       
                     });
 
 
@@ -331,6 +332,8 @@ const DocumentView = props => {
                         //var qryStr = queryString.parse(rowDetail.options)
                         //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
                         var qryStr = queryString.parse(rowDetail.Options);
+                        var qryStrDI = queryString.parse(rowDetail.diOptions);
+                        console.log(qryStr)
                         if (optionSouBstos) {
                             optionSouBstos.forEach(x => {
                                 rowDetail[x.optionName] =
@@ -342,6 +345,7 @@ const DocumentView = props => {
 
                         dataTableDetailSOU.push({
                             ...rowDetail,
+                            remark: qryStrDI.remark ? qryStrDI.remark : null,
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -383,6 +387,7 @@ const DocumentView = props => {
                         }
                         dataTableDetailDES.push({
                             ...rowDetail,
+                            remark: qryStr.remark ? qryStr.remark : null,
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -401,6 +406,7 @@ const DocumentView = props => {
                 setData(dataTable);
                 setDataDetailSOU(dataTableDetailSOU);
                 setDataDetailDES(dataTableDetailDES);
+                console.log(dataTableDetailSOU)
             }
         });
     };
@@ -879,8 +885,6 @@ const DocumentView = props => {
                     //   ]
                     // }
                 };
-
-                // console.log(reqjson)
 
                 await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + dataHeader.Code + ".pdf").then();
 
