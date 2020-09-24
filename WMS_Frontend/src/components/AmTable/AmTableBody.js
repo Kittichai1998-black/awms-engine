@@ -240,12 +240,18 @@ function useWindowSize(ref) {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     function updateSize() {
-      if (ref !== undefined)
+      if (ref.current !== undefined){
         setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
+      }
+    }if(size[0] === 0&& size[1] === 0){
+      updateSize()
     }
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    return () => {
+      window.removeEventListener('resize', updateSize);
+    }
   }, []);
+  
   return size;
 }
 
@@ -497,7 +503,6 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
 
   const RenderTableHeader = () => {
     let getWidth = 0;
-    const freeWidth = calculateWidth(columns);
     return columns.map((col, idx) => {
       if (col.fixed) {
         let fixedStyle = {};
@@ -541,7 +546,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
           key={idx}
           rowData={col}
           ref={cellRef.current[idx]}
-          width={col.width === undefined ? freeWidth : col.width}
+          width={col.width === undefined ? 'auto' : col.width}
           fixWidth={col.fixWidth}
         >
           {col.Header === undefined ? (
