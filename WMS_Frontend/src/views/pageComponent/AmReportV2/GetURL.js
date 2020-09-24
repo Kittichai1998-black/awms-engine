@@ -64,9 +64,9 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&toDate=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
       + "&skuTypeName=" + (valueText.SkuTypeName === undefined || valueText.SkuTypeName === null ? '' : encodeURIComponent(valueText.SkuTypeName.trim()))
       + "&SkuCode=" + (valueText.SkuCode === undefined || valueText.SkuCode === null ? '' : encodeURIComponent(valueText.SkuCode.trim()))
-      + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-      + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-      + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
+      + "&orderNo=" + (valueText.OrderNo === undefined || valueText.OrderNo === null ? '' : encodeURIComponent(valueText.OrderNo.trim()))
+      + "&batch=" + (valueText.Batch === undefined || valueText.Batch === null ? '' : encodeURIComponent(valueText.Batch.trim()))
+      + "&lot=" + (valueText.Lot === undefined || valueText.Lot === null ? '' : encodeURIComponent(valueText.Lot.trim()))
       + "&processType=" + (valueText.DocProcessTypeName === undefined || valueText.DocProcessTypeName === null ? '' : encodeURIComponent(valueText.DocProcessTypeName))
       + "&spname=DAILY_STOCKCARD_V2";
 
@@ -81,7 +81,7 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
       + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
       + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
-      + "&docProcessTypeID=" + (valueText.documentProcessType === undefined || valueText.documentProcessType === null ? '' : encodeURIComponent(valueText.documentProcessType))
+      + "&docProcessTypeID=" + (valueText.DocProcessName === undefined || valueText.DocProcessName === null ? '' : encodeURIComponent(valueText.DocProcessName))
       + "&docType=" + typeDoc
       + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
       + "&orderNo=" + (valueText.pstoOrderNo === undefined || valueText.pstoOrderNo === null ? '' : encodeURIComponent(valueText.pstoOrderNo.trim()))

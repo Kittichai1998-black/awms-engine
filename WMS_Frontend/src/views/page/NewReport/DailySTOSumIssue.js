@@ -67,10 +67,10 @@ const DailySTOSumIssue = (props) => {
     const [totalSize, setTotalSize] = useState(0);
     const [valueText, setValueText] = useState({});
     const MVTQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "*",
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": "1002"},{ "f": "ReProcessType_Name", "c":"!=", "v": ""}]',
+        f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -93,10 +93,10 @@ const DailySTOSumIssue = (props) => {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
-                fieldLabel: ["Name"],
+                fieldLabel: ["Code", "Name"],
                 dataDropDown: MVTQuery,
                 typeDropDown: "normal",
-                widthDD: 220,
+                widthDD: 320,
             },
         },
         { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, },
