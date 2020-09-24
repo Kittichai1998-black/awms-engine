@@ -104,7 +104,7 @@ const DailySTOSumAudit = (props) => {
         { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false, },
+        { Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false, },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
             Footer: true,
