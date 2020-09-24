@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBOSS.Engine.Notification
 {
-    public class SendNotify : IProjectEngine<List<long>, SendNotify.TRes>
+    public class SendNotify : IProjectEngine<List<long>, List<long>>
     {
         public class TRes
         {
@@ -33,13 +33,13 @@ namespace ProjectBOSS.Engine.Notification
         }
 
 
-        public TRes ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
+        public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
 
-            var countingAutoDocs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
+            var countingAutoDocs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("ID", string.Join(",", reqVO), SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("DocumentProcessType_UD", "5181,4181", SQLOperatorType.IN),
+                new SQLConditionCriteria("DocumentProcessType_ID", "5181,4181", SQLOperatorType.IN),
             }, buVO).Select(x=> x.ID).ToArray();
 
             var docs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{

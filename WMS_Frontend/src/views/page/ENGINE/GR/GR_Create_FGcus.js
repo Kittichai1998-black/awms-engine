@@ -33,6 +33,7 @@ const RD_Create_FGCustomer = props => {
     const [columSKU, setcolumSKU] = useState();
     const [skuquery, setskuquery] = useState(SKUMaster);
     const [Type, setType] = useState(true);
+    const [ProcessTypeCode, setProcessTypeCode] = useState();
 
 
     useEffect(() => {
@@ -48,7 +49,6 @@ const RD_Create_FGCustomer = props => {
             } else {
                 DataprocessTypeID = { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
-            console.log(DataprocessTypeID)
             var headerCreate = [
                 [
                     { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
@@ -91,6 +91,7 @@ const RD_Create_FGCustomer = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
+                    onChangeProcessTypeCode={((e) => { setProcessTypeCode(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
@@ -108,6 +109,7 @@ const RD_Create_FGCustomer = props => {
 
 
     useEffect(() => {
+        console.log(skuType)
         let itemNos = '0001'
         if (SKUMaster) {
             let objQuery = SKUMaster;
@@ -116,25 +118,32 @@ const RD_Create_FGCustomer = props => {
                 skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
-
             setskuquery(objQuery)
-
         }
 
         let Headers;
+        let Horder;
         let AuditStatusDDL;
 
-        if (skuType === 5 && CodeprocessType === 3) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true }
+        if (skuType === 5) {
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true, width: '300px' }
         } else {
-            Headers = { Header: "Lot", accessor: "lot", type: "input" }
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true}
         }
-
-
-        if (skuType === 5 && CodeprocessType === 1) {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
-        } else {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
+        //if (skuType === 5) {
+        //    Horder = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
+        //} else {
+        //    Horder = { Header: "Order No.", accessor: "orderNo", type: "input", width: '300px' }
+        //}
+    
+        if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' ) {
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
+        } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991' ) {
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
+        } else if (ProcessTypeCode === '5013') {
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
+        }else {
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
 
         var columnEdit = [
@@ -165,28 +174,28 @@ const RD_Create_FGCustomer = props => {
                 //defaultValue: "PJAAN04-0024",
                 required: true
             },
-            { Header: "Order No.", accessor: "orderNo", type: "input" },
-            { Header: "Batch", accessor: "batch", type: "input" },
-            Headers,
-            { Header: "Qty", accessor: "quantity", type: "inputNum", required: true },
-            { Header: "Unit", accessor: "unitType", type: "unitConvert" },
-            AuditStatusDDL,
+            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
+            //{ Header: "Batch", accessor: "batch", type: "input", width: '300px' },
+               Headers,
+            { Header: "Qty", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
+            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true},
+              AuditStatusDDL,
 
             //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref3", accessor: "ref3", type: "input" },
-            { Header: "ReMark", accessor: "remark", type: "input" },
-            { Header: "Carton No.", accessor: "cartonNo", type: "input" },
-            { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum" },
-            { Header: "Product Date", accessor: "productionDate", type: "date" },
-            { Header: "Expire Date", accessor: "expireDate", type: "date" },
-            { Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
+            { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
+            { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
+           // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
+            { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
+            { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
+            //{ Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
         ];
 
         setcolumSKU(columnEdit)
         //setType(false)
 
         //setskuquery()
-    }, [skuType])
+    }, [skuType, ProcessTypeCode])
 
     const AuditStatus = [
         { label: 'QUARANTINE', value: '0' },
@@ -266,25 +275,25 @@ const RD_Create_FGCustomer = props => {
 
 
     const columns = [
-        { id: "row", Cell: row => row.index + 1, width: 35 },
+       // { id: "row", Cell: row => row.index + 1, width: 35 },
         //{ Header: "Item No.", accessor: "itemNo" },
         { Header: "Item Code", accessor: "skuCode" },
         { Header: "Item Name", accessor: "skuName", width: 200 },
-        { Header: "Order No.", accessor: "orderNo" },
-        { Header: "Batch", accessor: "batch" },
+        { Header: "Control No.", accessor: "orderNo" },
+        //{ Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Qty", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
-        { Header: "Audit Status", accessor: "auditStatus" },        
+        { Header: "Quality Status", accessor: "auditStatus" },        
         { Header: "Remark", accessor: "remark" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
         { Header: "Carton No.", accessor: "cartonNo" },
-        { Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "Product Date", accessor: "productionDate" },
+        //{ Header: "Incubation Day", accessor: "incubationDay" },
+        { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife Day", accessor: "shelfLifeDay" }
+        //{ Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
