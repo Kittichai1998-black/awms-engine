@@ -62,12 +62,13 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
     return window.apipath + "/v2/GetSPReportAPI?"
       + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
       + "&toDate=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
-      + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
-      + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo === null ? '' : encodeURIComponent(valueText.orderNo.trim()))
-      + "&batch=" + (valueText.batch === undefined || valueText.batch === null ? '' : encodeURIComponent(valueText.batch.trim()))
-      + "&lot=" + (valueText.lot === undefined || valueText.lot === null ? '' : encodeURIComponent(valueText.lot.trim()))
-      + "&docProcessTypeID=" + (valueText.Description === undefined || valueText.Description === null ? '' : encodeURIComponent(valueText.Description))
-      + "&spname=DAILY_STOCKCARD";
+      + "&skuTypeName=" + (valueText.SkuTypeName === undefined || valueText.SkuTypeName === null ? '' : encodeURIComponent(valueText.SkuTypeName.trim()))
+      + "&SkuCode=" + (valueText.SkuCode === undefined || valueText.SkuCode === null ? '' : encodeURIComponent(valueText.SkuCode.trim()))
+      + "&orderNo=" + (valueText.OrderNo === undefined || valueText.OrderNo === null ? '' : encodeURIComponent(valueText.OrderNo.trim()))
+      + "&batch=" + (valueText.Batch === undefined || valueText.Batch === null ? '' : encodeURIComponent(valueText.Batch.trim()))
+      + "&lot=" + (valueText.Lot === undefined || valueText.Lot === null ? '' : encodeURIComponent(valueText.Lot.trim()))
+      + "&processType=" + (valueText.DocProcessTypeName === undefined || valueText.DocProcessTypeName === null ? '' : encodeURIComponent(valueText.DocProcessTypeName))
+      + "&spname=DAILY_STOCKCARD_V2";
 
   } else if (fileNameTable === "DAILYSTO_SUM_RECEIVE" || fileNameTable === "DAILYSTO_SUM_ISSUE" || fileNameTable === "DAILYSTO_SUM_COUNTING" || fileNameTable === "DAILYSTO_SUM_AUDIT") {
 
@@ -80,7 +81,7 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
       + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
       + "&docCode=" + (valueText.docCode === undefined || valueText.docCode === null ? '' : encodeURIComponent(valueText.docCode.trim()))
-      + "&docProcessTypeID=" + (valueText.documentProcessType === undefined || valueText.documentProcessType === null ? '' : encodeURIComponent(valueText.documentProcessType))
+      + "&docProcessTypeID=" + (valueText.DocProcessName === undefined || valueText.DocProcessName === null ? '' : encodeURIComponent(valueText.DocProcessName))
       + "&docType=" + typeDoc
       + "&packCode=" + (valueText.pstoCode === undefined || valueText.pstoCode === null ? '' : encodeURIComponent(valueText.pstoCode.trim()))
       + "&orderNo=" + (valueText.pstoOrderNo === undefined || valueText.pstoOrderNo === null ? '' : encodeURIComponent(valueText.pstoOrderNo.trim()))
@@ -111,30 +112,30 @@ const DataGenerateURL = (valueText, fileNameTable, typeDoc) => {
       + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
       + "&spname=LOG_SEARCH";
   } else if (fileNameTable === "STOCKUSE") {
-      return window.apipath + "/v2/GetSPReportAPI?"
-          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
-          + "&bank=" + (valueText.bank === undefined || valueText.bank === null ? '' : encodeURIComponent(valueText.bank.trim()))
-          + "&bay=" + (valueText.bay === undefined || valueText.bay === null ? '' : encodeURIComponent(valueText.bay.trim()))
-          + "&level=" + (valueText.level === undefined || valueText.level === null ? '' : encodeURIComponent(valueText.level.trim()))
-          + "&spname=STOCKLOCATIONUSE";
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+      + "&bank=" + (valueText.bank === undefined || valueText.bank === null ? '' : encodeURIComponent(valueText.bank.trim()))
+      + "&bay=" + (valueText.bay === undefined || valueText.bay === null ? '' : encodeURIComponent(valueText.bay.trim()))
+      + "&level=" + (valueText.level === undefined || valueText.level === null ? '' : encodeURIComponent(valueText.level.trim()))
+      + "&spname=STOCKLOCATIONUSE";
   } else if (fileNameTable === "DEADSTOCK") {
-      return window.apipath + "/v2/GetSPReportAPI?"
-          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
-          + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
-          + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
-          + "&Code=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
-          + "&Name=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
-          + "&spname=STO_DEADSTOCK";
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+      + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+      + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+      + "&Code=" + (valueText.Code === undefined || valueText.Code === null ? '' : encodeURIComponent(valueText.Code.trim()))
+      + "&Name=" + (valueText.Name === undefined || valueText.Name === null ? '' : encodeURIComponent(valueText.Name.trim()))
+      + "&spname=STO_DEADSTOCK";
   } else if (fileNameTable === "THROUGHPUT") {
-      return window.apipath + "/v2/GetSPReportAPI?"
-          + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
-          + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
-          + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
-          + "&byHour=" + (valueText.byHour === undefined || valueText.byHour === null ? '' : encodeURIComponent(valueText.byHour.trim()))
-          + "&byDate=" + (valueText.byDate === undefined || valueText.byDate === null ? '' : encodeURIComponent(valueText.byDate.trim()))
-          + "&byMonth=" + (valueText.byMonth === undefined || valueText.byMonth === null ? '' : encodeURIComponent(valueText.byMonth.trim()))
-          + "&byYear=" + (valueText.byYear === undefined || valueText.byYear === null ? '' : encodeURIComponent(valueText.byYear.trim()))
-          + "&spname=THROUGHPUT";
+    return window.apipath + "/v2/GetSPReportAPI?"
+      + "&LogRefID=" + (valueText.LogRefID === undefined || valueText.LogRefID === null ? '' : encodeURIComponent(valueText.LogRefID.trim()))
+      + "&dateFrom=" + (valueText.fromDate === undefined || valueText.fromDate === null ? '' : encodeURIComponent(valueText.fromDate))
+      + "&dateTo=" + (valueText.toDate === undefined || valueText.toDate === null ? '' : encodeURIComponent(valueText.toDate))
+      + "&byHour=" + (valueText.byHour === undefined || valueText.byHour === null ? '' : encodeURIComponent(valueText.byHour.trim()))
+      + "&byDate=" + (valueText.byDate === undefined || valueText.byDate === null ? '' : encodeURIComponent(valueText.byDate.trim()))
+      + "&byMonth=" + (valueText.byMonth === undefined || valueText.byMonth === null ? '' : encodeURIComponent(valueText.byMonth.trim()))
+      + "&byYear=" + (valueText.byYear === undefined || valueText.byYear === null ? '' : encodeURIComponent(valueText.byYear.trim()))
+      + "&spname=THROUGHPUT";
   }
 
 }

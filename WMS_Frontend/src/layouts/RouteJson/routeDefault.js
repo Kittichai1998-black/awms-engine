@@ -289,6 +289,10 @@ const Dash = Loadable({
   loader: () => import("../../views/page/Dashboard/DashboardSummary"),
   loading: Loading
 });
+const MaintenanceCalendar = Loadable({
+  loader: () => import("../../views/page/Dashboard/MaintenanceCalendar"),
+  loading: Loading
+});
 const WebPage = Loadable({
   loader: () => import("../../views/page/Master/WebPage"),
   loading: Loading
@@ -427,8 +431,6 @@ let routes = [
   { path: "/monitor/receiving", name: "Inbound Progress", compoment: MonitorIO, exact: true },
   { path: "/monitor/issuing", name: "Outbound Progress", compoment: MonitorIO, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
-  // {path: "/dashboard/picking",name: "Pickiing Progress",compoment: Picking,exact: true},
-  // {path: "/dashboard/pickingjobs",name: "Dashboard Gate Picking Return by GR",compoment: dashboardReturnPicking,exact: true},
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
@@ -492,6 +494,7 @@ let routes = [
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
   { path: "/dashboard/dashboardsummary", name: "Dash1", compoment: Dash, exact: true },
+  { path: "/dashboard/maintenancecalendar", name: "Dash1", compoment: MaintenanceCalendar, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },

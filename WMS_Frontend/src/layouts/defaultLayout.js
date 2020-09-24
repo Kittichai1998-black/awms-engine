@@ -253,7 +253,7 @@ const MenuListMoblie = React.memo(({ classes, theme, sidebar }) => {
     </Drawer>
 });
 
-const MainContainer = React.memo(({ route, path }) => {
+const MainContainer = React.memo(({ route, path, height }) => {
     return <Switch>
         {route.map((x, idx) => (
             <Route
@@ -262,7 +262,7 @@ const MainContainer = React.memo(({ route, path }) => {
                 exact={x.exact}
                 name={x.name}
                 render={rprops => {
-                    return <x.compoment {...rprops} />;
+                    return <x.compoment {...rprops} height={height} />;
                 }}
             />
         ))}
@@ -459,8 +459,8 @@ const Default = props => {
                             {NavicateBarN()}
                         </Breadcrumbs>
                     </Paper>
-                    <div ref={refContainer} style={{ width: "100%", overflowY: 'auto', height: size[1] }}>
-                        <MainContainer route={routeLink} path={window.location.pathname} />
+                    <div ref={refContainer} style={{ width: "100%", overflowY: 'auto', overflowX:'hidden', height: size[1] }}>
+                        <MainContainer route={routeLink} path={window.location.pathname} height={size[1]}/>
                     </div>
                 </main>
 

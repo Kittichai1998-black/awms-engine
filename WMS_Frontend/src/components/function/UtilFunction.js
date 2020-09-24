@@ -1,4 +1,4 @@
-import moment from "moment";
+//import moment from "moment";
 import queryString from "query-string";
 
 const QueryGenerate = (queryStr, field, searchValue, dataType, dateField, searchString) => {
@@ -119,4 +119,13 @@ const customDateTime = (dateField, field, searchValue) => {
     }
 }
 
-export { QueryGenerate }
+const isValidJson = (json) => {
+    try {
+        JSON.parse(json);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+export { QueryGenerate, isValidJson }

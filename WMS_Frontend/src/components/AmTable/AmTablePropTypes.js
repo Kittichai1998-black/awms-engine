@@ -62,6 +62,11 @@ const propTypes = {
     */
     footerStyle: PropTypes.func,
     /**
+     * style object group footer
+     ** value? : {color:"red"}
+    */
+    groupFooterStyle: PropTypes.object,
+    /**
      * return Array [Field]
      ** value? : ["ID", "Code"]
     */

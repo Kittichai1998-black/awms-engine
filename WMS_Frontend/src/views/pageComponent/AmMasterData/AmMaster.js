@@ -177,9 +177,9 @@ const useColumns = (cols) => {
 const AmMasterData = (props) => {
     const [queryObj, setQueryObj] = useState(() => {
         if (props.tableType === "master")
-            return mstQuery(props.tableQuery, props.codeInclude, props.pageSize)
+            return mstQuery(props.tableQuery, props.codeInclude, 20)
         else if (props.tableType === "view")
-            return viewQuery(props.tableQuery, props.codeInclude, props.pageSize)
+            return viewQuery(props.tableQuery, props.codeInclude, 20)
         else
             return;
     });
@@ -193,7 +193,7 @@ const AmMasterData = (props) => {
     const { dataSource, count } = useQueryData(queryObj);
     const [popupTitle, setPopupTitle] = useState();
     const [sort, setSort] = useState({});
-    const [pageSize, setPageSize] = useState(props.pageSize ? props.pageSize : 20);
+    const [pageSize, setPageSize] = useState(20);
 
     useEffect(() => {
         if(queryObj.l !== pageSize){
@@ -335,7 +335,7 @@ const AmMasterData = (props) => {
             rowNumber={true}
             totalSize={count}
             pageSize={props.pageSize}
-            height={500}
+            height={props.height-45}
             pagination={true}
             onPageChange={p => {
                 if (page !== p)

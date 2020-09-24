@@ -395,7 +395,7 @@ function Test6(props) {
         <>
             <AmDatePicker
                 defaultValue={true}
-                style={{ display: "inline-block" }}
+                // style={{ display: "inline-block" }}
                 // onChange={(ele) => { console.log(ele) }}
                 TypeDate={"datetime-local"}
                 fieldID="fromDate"
