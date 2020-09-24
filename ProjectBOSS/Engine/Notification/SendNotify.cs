@@ -35,8 +35,15 @@ namespace ProjectBOSS.Engine.Notification
 
         public TRes ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
+
+            var countingAutoDocs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
+                new SQLConditionCriteria("ID", string.Join(",", reqVO), SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("DocumentProcessType_UD", "5181,4181", SQLOperatorType.IN),
+            }, buVO).Select(x=> x.ID).ToArray();
+
             var docs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
-                new SQLConditionCriteria("Document_ID", string.Join(",", reqVO), SQLOperatorType.EQUALS)
+                new SQLConditionCriteria("Document_ID", string.Join(",", countingAutoDocs), SQLOperatorType.EQUALS),
             }, buVO).GroupBy(x=> x.Document_ID).Select(x=> new { docID=x.Key, docItems=x.ToList() }).ToList();
 
             var noti = new CountingNotify();
