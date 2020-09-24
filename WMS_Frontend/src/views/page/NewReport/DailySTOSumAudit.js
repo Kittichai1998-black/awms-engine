@@ -28,6 +28,7 @@ const styles = theme => ({
             '"Segoe UI Symbol"',
         ].join(','),
     },
+    textNowrap: { overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' },
 });
 
 const FormInline = styled.div`

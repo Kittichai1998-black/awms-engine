@@ -100,21 +100,22 @@ const DailySTOReceive = (props) => {
         { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Footer: true
         },
         { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false, filterable: false, },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Footer: true
+
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
 
     ];
 
     const comma = (value) => {
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        console.log(value)
+        return null
+        //return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return (
         <div className={classes.root}>
