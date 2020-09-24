@@ -25,7 +25,7 @@ namespace AWMSEngine.WorkerService.DocumentClosed
             var docs = DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("EventStatus", DocumentEventStatus.WORKED, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("DocumentType_ID", options["DocumentTypeID"], SQLOperatorType.EQUALS)
+                new SQLConditionCriteria("DocumentType_ID", string.Join(",", options["DocumentTypeID"]), SQLOperatorType.IN)
             }, buVO);
 
             try
