@@ -30,6 +30,8 @@ namespace AWMSEngine.Engine.V2.Notification
         protected abstract string GetMessageFacebook(dynamic reqVO, dynamic data);
         protected abstract string GetMessageAMS(dynamic reqVO, dynamic data);
 
+        public dynamic reqVO;
+
         protected override dynamic ExecuteEngine(dynamic reqVO)
         {
             NotifyData data = LoadData(reqVO);

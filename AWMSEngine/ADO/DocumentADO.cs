@@ -835,6 +835,17 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<SPOutSTOByDocItem> GetSTOByDocItem(long docItem, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docItemID", docItem);
+
+            var res = this.Query<SPOutSTOByDocItem>("SP_STO_GET_BY_DOCITEM",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
 
         public void PutSAPResponse(string log, string options, VOCriteria buVO)
         {
