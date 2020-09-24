@@ -149,7 +149,7 @@ const AmCreateDocument = (props) => {
                 onClick={() => {
                     setEditData(Clone(e.original));
                     setDialog(true);
-                    setTitle("Edit")
+                    setTitle("Edit Item")
                     setAddData(false);
                 }}
             >
@@ -264,6 +264,7 @@ const AmCreateDocument = (props) => {
             setBtnAddLists(< BtnAddList
                 primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
                 headerCreate={props.headerCreate}
+                history={props.history}
                 queryApi={addlistAPI}
                 columns={props.addList.columns}
                 search={props.addList.search}
@@ -324,9 +325,7 @@ const AmCreateDocument = (props) => {
             } else {
 
             }
-
         })
-
     }
 
     const onHandleDelete = (v, o, rowdata) => {
@@ -634,6 +633,7 @@ const AmCreateDocument = (props) => {
 
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate,
         placeholder, TextInputnum, texts, key, datas, defaultValue, disabled, index, rowError, required) => {
+
         if (type === "input") {
             return (
                 <FormInline>
@@ -756,9 +756,10 @@ const AmCreateDocument = (props) => {
                     <InputDiv>
                         <AmDropdown id="ddlTest" styleType="default"
                             placeholder="Select Test"
-                            width={200}
+                            width={width ? width :'300px'}
                             zIndex={2000}
                             data={datas}
+                              style={{ width: width ? width : '300px' }}
                             fieldDataKey={key}
                             //autoDefaultValue={false}
                             returnDefaultValue={true}
@@ -793,7 +794,7 @@ const AmCreateDocument = (props) => {
                             queryApi={queryApi} //object query string
                             defaultValue={editData[accessor] ? editData[accessor] : row.defaultValue ? row.defaultValue : ""}
                             columns={columsddl} //array column สำหรับแสดง table
-                            width={width ? width : 300}
+                            style={{ width: width ? width : '300px' }}
                             ddlMinWidth={width ? width : 100}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                         />
@@ -817,6 +818,7 @@ const AmCreateDocument = (props) => {
                         <AmDatepicker
                             required={required}
                             error={rowError}
+                            style={{ width: width ? width : '300px' }}
                             // helperText={inputError.length ? "required field" : false}
                             TypeDate={"datetime-local"}
                             defaultValue={true}
@@ -833,6 +835,7 @@ const AmCreateDocument = (props) => {
                         <AmDatepicker
                             required={required}
                             error={rowError}
+                            style={{ width: width ? width : '300px' }}
                             // helperText={inputError.length ? "required field" : false}
                             TypeDate={"date"}
                             defaultValue={true}
@@ -876,7 +879,7 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDatepicker
                     TypeDate={"datetime-local"}
-                    defaultValue
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     value={createDocumentData[key]}
                     style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
@@ -895,6 +898,7 @@ const AmCreateDocument = (props) => {
                         <AmDatepicker
                             TypeDate={"datetime-local"}
                             defaultValue={false}
+                            style={{ width: width ? width : '300px' }}
                             value={createDocumentData[key]}
                             onChange={(e) => {
                                 if (e.fieldDataObject !== null) {
@@ -958,7 +962,9 @@ const AmCreateDocument = (props) => {
             return (
                 <AmDatepicker
                     value={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     TypeDate={"datetime-local"}
+                    defaultValue={defaultValueDate ? defaultValueDate : true}
                     onChange={(e) => {
                         let docData = createDocumentData
                         docData[key] = e
@@ -1141,7 +1147,7 @@ const AmCreateDocument = (props) => {
             doc.receivedOrderItem = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.options = remark.concat(x.remark)
+                x.options = x.remark ?  remark.concat(x.remark) : null
                 return x
             })
         }
@@ -1153,9 +1159,8 @@ const AmCreateDocument = (props) => {
                 setStateDialogErr(true);
             } else {
                 if (props.createDocType === "counting") {
-                    console.log(doc.actionTime)
                     if (doc.actionTime) {
-                        CreateDocuments(doc)
+                        //CreateDocuments(doc)
                     } else {
                         setMsgDialog('Actiomtime Not Found');
                         setStateDialogErr(true);
@@ -1236,7 +1241,7 @@ const AmCreateDocument = (props) => {
                             } else {
                                 setDialog(true);
                                 setAddData(true);
-                                setTitle("Add");
+                                setTitle("Add Item");
                             }
                         }} >Add Item</AmButton>}
 
@@ -1256,9 +1261,10 @@ const AmCreateDocument = (props) => {
                 dataKey="ID"
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 pageSize={200}
+                tableConfig={false}
                 dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
                 //   height={200}
-                rowNumber={false}
+                rowNumber={true}
             />
 
             {/* Btn CREATE */}

@@ -10,6 +10,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from '@material-ui/core/Grid';
 import LabelT from '../../../components/AmLabelMultiLanguage'
+import queryString from "query-string";
 import styled from 'styled-components'
 
 const FormInline = styled.div`
@@ -231,7 +232,7 @@ const AmTBputAndpick = (props) => {
             </Grid>
             <Grid item>
                 <div style={{ marginTop: "20px" }}>
-                    {doc.dataSet > 0 ? <AmButton
+                    {doc.dataSourceItemTB.length > 0 ? <AmButton
                         styleType="add"
                         onClick={() => {
                             onSubmitSetItem();

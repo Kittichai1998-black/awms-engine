@@ -99,6 +99,7 @@ namespace AWMSModel.Criteria.SP.Response
         public int? diIncubationDay;
         public int? diShelfLifeDay;
         public string diOrderNo;
+        public string diOptions;
         public string diRef1;
         public string diRef2;
         public string diRef3;

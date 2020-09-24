@@ -72,7 +72,7 @@ const DocumentSearch = props => {
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
             Header: "Process No.",
-            accessor: "DocumentProcessTypeName",
+            accessor: "ReDocumentProcessTypeName",
             width: 200,
             sortable: false,
             filterType: "dropdown",

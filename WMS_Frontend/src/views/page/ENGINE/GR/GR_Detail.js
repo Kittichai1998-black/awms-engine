@@ -70,6 +70,9 @@ const GR_Detail = props => {
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
+                { label: "PO NO.", values: "Ref1" }
+            ],
+            [
                 DataprocessType,
                 { label: "Des. Warehouse", values: "DesWarehouseName" }
             ],
@@ -83,11 +86,16 @@ const GR_Detail = props => {
 
 
     const columns = [
-        { width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item",
-            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name },
-            CellPDF: e => { return e.SKUMaster_Code + " : " + e.SKUMaster_Name }, widthPDF: 40
+            Header: "Item Code",
+            Cell: e => { return e.original.SKUMaster_Code},
+            CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
+        },
+        {
+            Header: "Item Name",
+            Cell: e => { return e.original.SKUMaster_Name },
+            CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         },
         { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
         { Header: "Batch", accessor: "Batch", widthPDF: 20 },
@@ -102,14 +110,14 @@ const GR_Detail = props => {
             widthPDF: 30
         },
         { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
-        { Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
-        { Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
+        { Header: "Remark", accessor: "remark", widthPDF: 20 },
+        //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
+        //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
         { Header: "Product Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
+        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
 
@@ -143,9 +151,9 @@ const GR_Detail = props => {
             widthPDF: 10
         },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
-        { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        { Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
+        { Header: "Remark", accessor: "remark", widthPDF: 10 },
+        //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
+        //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         { Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
@@ -158,7 +166,7 @@ const GR_Detail = props => {
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
             CellPDF: e => getFormatDateExp(e)
         },
-        { Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
+        //{ Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const getFormatDatePro = (e) => {
