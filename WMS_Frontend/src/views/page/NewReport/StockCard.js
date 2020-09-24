@@ -67,17 +67,17 @@ const StockCard = (props) => {
     const [valueText, setValueText] = useState({});
 
 
-    const MVTQuery = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"in", "v": "1001,1002,2004"},{ "f": "ReProcessType_Name", "c":"!=", "v": ""}]',
-        f: "ID,Code,ReProcessType_Name as Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
+    // const MVTQuery = {
+    //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    //     t: "DocumentProcessTypeMap",
+    //     q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"in", "v": "1001,1002,2004"},{ "f": "ReProcessType_Name", "c":"!=", "v": ""}]',
+    //     f: "ID,Code,ReProcessType_Name as Name",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'asc'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: "",
+    // }
 
     const columns = [
         {
@@ -95,7 +95,7 @@ const StockCard = (props) => {
         { Header: 'SKU Type', accessor: 'SkuTypeName', width: 140, sortable: false },
         //{ Header: 'Batch', accessor: 'Batch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'Lot', width: 100, sortable: false },
-        { Header: 'Control No.', accessor: 'Order', width: 100, sortable: false },
+        { Header: 'Control No.', accessor: 'OrderNo', width: 100, sortable: false },
         {
             Header: 'Issue', accessor: 'CreditQuantity', width: 70, sortable: false,
             Footer: true, filterable: false,
