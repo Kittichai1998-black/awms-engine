@@ -3,8 +3,8 @@ import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
-    { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
-    { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
+    { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
+    { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
     { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
 ];
