@@ -86,12 +86,12 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
             if (listDocs.Count > 0)
             {
-                var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_PHYSICAL_COUNT_WM || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_PHYSICAL_COUNT_WM).ToList();
-                if (newDocs.Count == 0)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถตรวจนับเอกสารแบบ Auto ได้");
+                //var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_PHYSICAL_COUNT_WM || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_PHYSICAL_COUNT_WM).ToList();
+                //if (newDocs.Count == 0)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถตรวจนับเอกสารแบบ Auto ได้");
 
                 res.stoItems = new List<TRes.STOItems>();
-                newDocs.ForEach(doc => {
+                listDocs.ForEach(doc => {
                     //var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
                     var docItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
                     var distoList = new List<amt_DocumentItemStorageObject>();
