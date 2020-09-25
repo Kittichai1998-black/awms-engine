@@ -112,7 +112,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: "Create", accessor: "Created", width: 200,
+            Header: "Create Time", accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",

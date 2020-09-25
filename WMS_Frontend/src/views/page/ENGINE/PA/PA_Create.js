@@ -21,7 +21,7 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [

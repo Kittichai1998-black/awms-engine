@@ -129,7 +129,7 @@ const GR_Detail = props => {
 
     const columnsDetailSOU = [
        // { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
-        { Header: "Doc Code", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
+        { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         {
             width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original),
             widthPDF: 5,
