@@ -87,6 +87,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 foreach (var docItem in docItems)
                 {
+                    if (newBaseQty == 0)
+                        break;
+
                     var doc = docs.Find(x => x.ID == docItem.Document_ID);
                     var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
