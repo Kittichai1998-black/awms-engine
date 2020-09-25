@@ -119,7 +119,7 @@ const AD_Detail = props => {
         //{ Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
         //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
         //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
+        //{ Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         //{ Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
@@ -160,7 +160,7 @@ const AD_Detail = props => {
         //{ Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
         //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
         //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
+        //{ Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
