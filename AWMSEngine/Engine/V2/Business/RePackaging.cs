@@ -99,8 +99,8 @@ namespace AWMSEngine.Engine.Business
 
             var oldDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                  new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("Sou_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Des_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
+                    //new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
                  }, this.BuVO).FirstOrDefault();
 
             var cloneBsto = bsto.ToTreeList().Find(x=>x.type== StorageObjectType.BASE).Clone();
