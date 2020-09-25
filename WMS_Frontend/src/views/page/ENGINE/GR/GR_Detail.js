@@ -114,7 +114,7 @@ const GR_Detail = props => {
         //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
         //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
+       // { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
         //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
