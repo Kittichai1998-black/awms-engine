@@ -183,7 +183,7 @@ const RD_Create_FGCustomer = props => {
 
             //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref3", accessor: "ref3", type: "input" },
-            { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
+            { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
             { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
            // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
