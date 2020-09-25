@@ -59,12 +59,6 @@ const AmputAndpickManage = (props) => {
                 docs[key] = value
         }
 
-
-        doc.dataSourceItemTB.forEach((x, i) => {
-            console.log(x)
-
-        })
-
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
@@ -127,7 +121,6 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-            //console.log(docs)
             CreateDocuments(docs)
         }
 

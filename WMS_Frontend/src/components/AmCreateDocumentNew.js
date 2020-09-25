@@ -668,7 +668,7 @@ const AmCreateDocument = (props) => {
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
                                     defaultValue={editData !== null && editData !== {} && editData["quantity"] !== undefined ? editData[accessor].replace("%", "") : ""}
-                                    style={width ? width : TextInputnum ? { width: "100px" } : { width: "300px" }}
+                                    style={width ? width : TextInputnum ? { width: "280px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
@@ -1124,7 +1124,7 @@ const AmCreateDocument = (props) => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
-                x.options = qtyrandom.concat(x.quantitys)
+                x.options = x.remark ? remark.concat(x.remark) : null
                 return x
 
             })
@@ -1133,14 +1133,14 @@ const AmCreateDocument = (props) => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
-                x.options = qtyrandom.concat(x.quantitys)
+                x.options = x.remark ? remark.concat(x.remark) : null
                 return x
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map(x => {
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.options = remark.concat(x.remark)
+                x.options = x.remark ? remark.concat(x.remark) : null
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -1160,7 +1160,7 @@ const AmCreateDocument = (props) => {
             } else {
                 if (props.createDocType === "counting") {
                     if (doc.actionTime) {
-                        //CreateDocuments(doc)
+                        CreateDocuments(doc)
                     } else {
                         setMsgDialog('Actiomtime Not Found');
                         setStateDialogErr(true);

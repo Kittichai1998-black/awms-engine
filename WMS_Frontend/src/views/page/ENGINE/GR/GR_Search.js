@@ -86,7 +86,7 @@ const DocumentSearch = props => {
         widthDD: 220,
       },
     },
-    { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
+    { Header: "Sou.Warehouse", accessor: "SouWarehouseName", width: 150 },
     { Header: "Sou. Customer", accessor: "SouCustomerName", width: 150 },
     { Header: "Sou. Supplier", accessor: "SouSupplierName", width: 150 },
     { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },

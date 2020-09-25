@@ -713,7 +713,7 @@ const AmHeaderputandpick = (props) => {
                     columns={cols} //array column สำหรับแสดง table
                     width={width ? width : 300}
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
-                    disabled={doc.docID ? true : false}
+                    disabled={doc.dataSourceItemTB.length > 0 ? true : false}
                     defaultValue={doc.docID ? doc.docID : null}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopupDoc(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
@@ -757,6 +757,7 @@ const AmHeaderputandpick = (props) => {
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
+                        tableConfig={false}
                         dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
                         selectionDefault={doc.datadocItem}
                         selection="checkbox"
@@ -796,6 +797,7 @@ const AmHeaderputandpick = (props) => {
                         dataKey={"ID"}
                         dataSource={doc.dataSet}
                         selectionDefault={doc.dataSourceItemTB}
+                        tableConfig={false}
                         selection="checkbox"
                         selectionData={(data) => { setDataSelectSet(data) }}
                         selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}

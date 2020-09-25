@@ -332,9 +332,9 @@ const GI_Create_FGCustomer = props => {
         //{ Header: "Ref4", accessor: "ref4" },
         { Header: "Carton No.", accessor: "cartonNo" },
         //{ Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "MFG.Date Date", accessor: "productionDate" },
+        { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife", accessor: "ShelfLifePercent" }
+        //{ Header: "ShelfLife", accessor: "ShelfLifePercent" }
     
     ];
 
@@ -358,7 +358,7 @@ const GI_Create_FGCustomer = props => {
        // { Header: "Incubation Day", accessor: "incubationDay" },
         { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
+        //{ Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
     ];
 
     const apicreate = "/v2/CreateDIDocAPI/"; //API สร้าง Doc
