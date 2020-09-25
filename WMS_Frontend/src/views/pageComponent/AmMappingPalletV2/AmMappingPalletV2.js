@@ -564,10 +564,13 @@ const AmMappingPalletV2 = props => {
                 labelPattern=" : "
                 ddlMinWidth={300}
                 //valueData={valueInput[x.field]}
+                returnDefaultValue={true}
                 defaultValue={localStorage.getItem("processTypes") === null || localStorage.getItem("processTypes") === "null" ? null : (parseInt(localStorage.getItem("processTypes")))}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
-                  onHandleChangeInput(value, fieldDataKey)}
+                  //localStorage.getItem("processTypes") = value
+                  onHandleChangeInput(value, fieldDataKey)
+                }
                 ddlType={"search"}
               />
             </FormInline>
@@ -580,6 +583,7 @@ const AmMappingPalletV2 = props => {
                 fieldLabel={["Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
+                returnDefaultValue={true}
                 queryApi={AreaMasterQuery()}
                 defaultValue={localStorage.getItem("areaIDs") === null || localStorage.getItem("areaIDs") === "null" ? null : (parseInt(localStorage.getItem("areaIDs")))}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>

@@ -8,7 +8,7 @@ import {
     apicall,
     createQueryString
 } from "../../../../components/function/CoreFunction";
-
+import moment from "moment";
 const Axios = new apicall();
 
 const SKUMaster = {
@@ -204,7 +204,7 @@ const GI_Create_FGCustomer = props => {
             //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
-            { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
+            //{ Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
             { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
@@ -330,7 +330,7 @@ const GI_Create_FGCustomer = props => {
         { Header: "Remark", accessor: "remark" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No.", accessor: "cartonNo" },
+        //{ Header: "Carton No.", accessor: "cartonNo" },
         //{ Header: "Incubation Day", accessor: "incubationDay" },
         { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
@@ -354,12 +354,28 @@ const GI_Create_FGCustomer = props => {
         //{ Header: "Ref2", accessor: "ref2" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No.", accessor: "cartonNo" },
+        //{ Header: "Carton No.", accessor: "cartonNo" },
        // { Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "MFG.Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
-        //{ Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
+        {
+            Header: "MFG.Date", accessor: "diProductionDate",
+            Cell: e => getFormatDatePro(e.original), widthPDF: 15,
+            CellPDF: e => getFormatDatePro(e)
+        },
+        {
+            Header: "Expire Date", accessor: "diExpireDate",
+            Cell: e => getFormatDateExp(e.original), widthPDF: 15,
+            CellPDF: e => getFormatDateExp(e)
+        }
+        //{ Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     ];
+
+    const getFormatDatePro = (e) => {
+        return moment(e.diProductionDate).format("DD/MM/YYYY");
+    }
+
+    const getFormatDateExp = (e) => {
+        return moment(e.diExpireDate).format("DD/MM/YYYY");
+    }
 
     const apicreate = "/v2/CreateDIDocAPI/"; //API สร้าง Doc
     const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
