@@ -72,7 +72,7 @@ const DocumentSearch = props => {
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
             Header: "Process No.",
-            accessor: "DocumentProcessTypeName",
+            accessor: "ReDocumentProcessTypeName",
             width: 200,
             sortable: false,
             filterType: "dropdown",
@@ -112,7 +112,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: "Create", accessor: "Created", width: 200,
+            Header: "Create Time", accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",

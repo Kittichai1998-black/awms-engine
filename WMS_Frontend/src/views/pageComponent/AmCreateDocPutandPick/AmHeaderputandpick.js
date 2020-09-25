@@ -5,8 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { PutandPickContext } from './PutandPickContext';
 import Grid from '@material-ui/core/Grid';
 import LabelT from '../../../components/AmLabelMultiLanguage'
-import AmDate from '../../../components/AmDate'
-import AmDatepicker from '../../../components/AmDate'
+import AmDatepicker from '../../../components/AmDatePicker'
 import AmDropdown from '../../../components/AmDropdown'
 import AmFindPopup from '../../../components/AmFindPopup'
 import AmInput from '../../../components/AmInput'
@@ -20,6 +19,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
 import AmButton from '../../../components/AmButton'
+import queryString from "query-string";
 import { apicall, createQueryString } from "../../../components/function/CoreFunction";
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -287,19 +287,20 @@ const AmHeaderputandpick = (props) => {
 
 
     const setDataformStonandView = (res) => {
-        console.log("ttttt")
         let datasCheck = [];
         res.forEach((x, i) => {
-
+            var QryOp = queryString.parse(x.Options)
             var datas = {
-                ...x,
+                ...x,           
                 ExpireDates: x.ExpireDate ? x.ExpireDate : null,
                 ProductionDates: x.ProductionDate ? x.ProductionDate : null,
                 ExpireDate: x.ExpireDate ? moment(x.ExpireDate).format("DD/MM/YYYY") : null,
                 ProductionDate: x.ProductionDate ? moment(x.ProductionDate).format("DD/MM/YYYY") : null,
                 AuditStatus: getAuditStatus(x.AuditStatus),
-                AuditStatuss: x.AuditStatus
+                AuditStatuss: x.AuditStatus,
+                Remark: QryOp.remark ? QryOp.remark : null
             }
+
             if (datas.Qty) {
                 if ((datas.Quantity - datas.Qty ) > 0) {
                     datasCheck.push(datas)
@@ -307,6 +308,7 @@ const AmHeaderputandpick = (props) => {
                 }
 
             } else if (!datas.Qty) {
+
                 datasCheck.push(datas)
             }
         })
@@ -319,11 +321,12 @@ const AmHeaderputandpick = (props) => {
             if (!ChkCol) {
                 setColums();
             }
+            console.log(datasCheck)
             doc.setdatadocItem(datasCheck);
             doc.setdataSet(datasCheck)
             doc.setdialogItem(true)
         }
-
+   
     }
 
     const getAuditStatus = (status) => {
@@ -592,9 +595,10 @@ const AmHeaderputandpick = (props) => {
     const getDataHead = ({ type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, cols }, obj) => {
         if (type === "date") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"date"}
                     defaultValue
+                    style={{ width: width ? width : '300px'}}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -607,10 +611,11 @@ const AmHeaderputandpick = (props) => {
             )
         } else if (type === "dateTime") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"datetime-local"}
                     defaultValue
                     value={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
                         if (e !== null) {
                             let docData = createDocumentData
@@ -627,8 +632,7 @@ const AmHeaderputandpick = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    //style={style ? style : { width: "300px" }}
-
+                    style={{ width: width? width: "300px" }}
                     onChange={(e) => {
                         if (obj.search)
                             props.addList.search.find(x => x.accessor === key).defaultValue = e
@@ -668,6 +672,7 @@ const AmHeaderputandpick = (props) => {
             return (
                 <AmDatepicker
                     value={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     TypeDate={"datetime-local"}
                     onChange={(e) => {
                         let docData = createDocumentData
@@ -708,7 +713,7 @@ const AmHeaderputandpick = (props) => {
                     columns={cols} //array column สำหรับแสดง table
                     width={width ? width : 300}
                     ddlMinWidth={width ? width : 300}//กำหนดความกว้างของช่อง input
-                    disabled={doc.docID ? true : false}
+                    disabled={doc.dataSourceItemTB.length > 0 ? true : false}
                     defaultValue={doc.docID ? doc.docID : null}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeFindpopupDoc(value, dataObject, inputID, fieldDataKey, pair, key)}
                 />
@@ -732,7 +737,7 @@ const AmHeaderputandpick = (props) => {
             return true
     }
 
-
+    console.log(doc.datadocItem)
 
     return <div>
         {getHeaderCreate()}
@@ -752,6 +757,7 @@ const AmHeaderputandpick = (props) => {
                     <AmTable
                         columns={columns}
                         dataKey={"ID"}
+                        tableConfig={false}
                         dataSource={doc.datadocItem.length != 0 ? doc.datadocItem : []}
                         selectionDefault={doc.datadocItem}
                         selection="checkbox"
@@ -791,6 +797,7 @@ const AmHeaderputandpick = (props) => {
                         dataKey={"ID"}
                         dataSource={doc.dataSet}
                         selectionDefault={doc.dataSourceItemTB}
+                        tableConfig={false}
                         selection="checkbox"
                         selectionData={(data) => { setDataSelectSet(data) }}
                         selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}

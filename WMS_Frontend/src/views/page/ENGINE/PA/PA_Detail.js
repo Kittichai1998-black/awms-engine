@@ -69,8 +69,11 @@ const PA_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", values: "DocumentProcessTypeName" },
+                { label: "Process No.", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
+            ],
+            [
+                { label: "PO NO.", values: "Ref1" }
             ],
             [
                 DataprocessType,
@@ -88,38 +91,44 @@ const PA_Detail = props => {
 
 
     const columns = [
-        { width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item",
-            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name },
-            CellPDF: e => { return e.SKUMaster_Code + " : " + e.SKUMaster_Name },
+            Header: "Item Code",
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code },
             widthPDF: 40
         },
-        { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
-        { Header: "Batch", accessor: "Batch", widthPDF: 20 },
+        {
+            Header: "Item Name",
+            Cell: e => { return  e.original.SKUMaster_Name },
+            CellPDF: e => { return e.SKUMaster_Name },
+            widthPDF: 40
+        },
+        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
+        //{ Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
-            Header: "Audit Status", accessor: "AuditStatus",
+            Header: "Quality Status", accessor: "AuditStatus",
             Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
         { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
-        { Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
-        { Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
-        { Header: "Product Date", accessor: "ProductionDate", widthPDF: 35 },
+        { Header: "Remark", accessor: "remark", widthPDF: 20 },
+        //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
+        //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
+        //{ Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
+        //{ Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
+        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
+        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
     const columnsDetailSOU = [
-        { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
+       // { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
         {
             width: 40, accessor: "status", Header: "Task",
             Cell: e => getStatusGR(e.original), widthPDF: 5,
@@ -133,33 +142,33 @@ const PA_Detail = props => {
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
         { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
-        { Header: "Order No.", accessor: "diOrderNo", widthPDF: 10 },
-        { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
+        { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
+        //{ Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
         { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
         { width: 70, accessor: "packUnitCode", Header: "Unit", widthPDF: 10 },
         {
-            Header: "Audit Status",
+            Header: "Quality Status",
             accessor: "diAuditStatus", 
             Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
-        { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        { Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        { Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
+        { Header: "Remark", accessor: "remark", widthPDF: 10 },
+        //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
+        //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
+        //{ Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
+        //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
-            Header: "Product Date", accessor: "diProductionDate",
+            Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
         },
         {
             Header: "Expire Date", accessor: "diExpireDate",
             Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
         },
-        { Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
+       // { Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

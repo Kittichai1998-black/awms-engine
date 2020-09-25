@@ -251,6 +251,7 @@ const PackMaster = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
+      colStyle:{textAlign:"center"},
       filterType:"dropdown",
       filterConfig:{
         filterType:"dropdown",

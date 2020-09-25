@@ -35,6 +35,7 @@ const AreaMaster = props => {
       fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
+      colStyle:{textAlign:"center"},
       filterConfig:{
         filterType:"dropdown",
         dataDropDown:EntityEventStatus,

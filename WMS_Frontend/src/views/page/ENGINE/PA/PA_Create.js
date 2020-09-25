@@ -21,12 +21,15 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                ],
+                [
+                    { label: "PO NO.", type: "labeltext", key: "Ref1", valueTexts: "", codeTranslate: "PO NO." },
                 ],
                 [
                     { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
@@ -35,7 +38,7 @@ const Create_GR_DR = props => {
                 [
                   
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
+                    { label: "Remark", type: "input", key: "Remark", codeTranslate: "Remark" }
                 ]
 
             ];
@@ -52,6 +55,7 @@ const Create_GR_DR = props => {
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
             let ForCustomerName = dataDocument.ForCustomerName
+            let Ref1 = dataDocument.Ref1
             let For_Customer_ID = dataDocument.For_Customer_ID
             console.log(SouWarehouseName)
             let Source;
@@ -77,12 +81,15 @@ const Create_GR_DR = props => {
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
+                    { label: "PO NO.", type: "labeltext", texts: Ref1, valueTexts: Ref1, codeTranslate: "PO NO.", key: "ref1", }
+                ],
+                [
                     Source,
                     { label: "Des. Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
                 ],
                 [ 
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark" }
+                    { label: "Remark", type: "input", key: "Remark", codeTranslate: "Remark" }
                 ],
 
                
@@ -168,51 +175,53 @@ const Create_GR_DR = props => {
 
 
     const columnEdit = [
-        { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
-        { Header: "Item", accessor: "SKUItems", type: "text"},
-        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
-        { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
+        //{ Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code", type: "text" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name", type: "text" },
+        { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
+        //{ Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot",accessor: "Lot", type: "text", codeTranslate: "Lot" },
         { Header: "Qty", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
+        { Header: "Quality Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1"},
-        { Header: "Ref2", accessor: "Ref2", type: "text", codeTranslate: "Ref2"},
-        { Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
-        { Header: "CartonNo", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
-        { Header: "Product Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
+        { Header: "Remark", accessor: "Remark", type: "text", codeTranslate: "Remark"},
+        //{ Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
+        //{ Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
+        //{ Header: "CartonNo", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
+        //{ Header: "Incubation Day", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
+        { Header: "MFG.Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
         { Header: "Expire Date", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate"},
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay"}
+        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay"}
     ];
 
     const columnEditItem = [
-        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
-        { Header: "Item", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
-        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
+        { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
+       // { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot",  accessor: "Lot",  codeTranslate: "Lot" },
         { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
+        { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay", codeTranslate: "IncubationDay"},
-        { Header: "Product Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
+        { Header: "Remark", accessor: "Remark", codeTranslate: "Remark" },
+        //{ Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
+        //{ Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
+        //{ Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
+        //{ Header: "Incubation Day", accessor: "IncubationDay", codeTranslate: "IncubationDay"},
+        { Header: "MFG.Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
         { Header: "Expire Date", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
+       // { Header: "ShelfLife Day", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
 
     ];
 
 
     const columnEditItemSet = [
-        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
+       // { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
@@ -222,23 +231,24 @@ const Create_GR_DR = props => {
 
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "", accessor: "row", width: 35 },
-        { Header: "Item", accessor: "SKUItems" },
-        { Header: "Order No.", accessor: "OrderNo" },
-        { Header: "Batch", accessor: "Batch" },
+        //{ Header: "", accessor: "row", width: 35 },
+        { Header: "Item Code", accessor: "SKUMaster_Code" },
+        { Header: "Item Name", accessor: "SKUMaster_Name" },
+        { Header: "Control No.", accessor: "OrderNo" },
+        //{ Header: "Batch", accessor: "Batch" },
         { width: 130, accessor: "Lot", Header: "Lot" },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus" },
+        { Header: "Quality Status", accessor: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4" },
-        { Header: "Carton No.", accessor: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay" },
-        { Header: "Product Date", accessor: "ProductionDate" },
+        { Header: "Remark", accessor: "Remark" },
+        //{ Header: "Ref3", accessor: "Ref3" },
+        //{ Header: "Ref4", accessor: "Ref4" },
+        //{ Header: "Carton No.", accessor: "CartonNo" },
+        //{ Header: "Incubation Day", accessor: "IncubationDay" },
+        { Header: "MFG.Date", accessor: "ProductionDate" },
         { Header: "Expire Date", accessor: "ExpireDate" },
-        { Header: "ShelfLife  Day", accessor: "ShelfLifeDay" }
+        //{ Header: "ShelfLife  Day", accessor: "ShelfLifeDay" }
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc

@@ -30,9 +30,14 @@ namespace AWMSEngine.WorkerService.DocumentClosed
 
             try
             {
-                var docIDs = docs.Select(doc => doc.ID.Value).ToList();
-                var docClosing = new ClosingDocument().Execute(buVO.Logger, buVO, docIDs);
-                var docClosed = new ClosedDocument().Execute(buVO.Logger, buVO, docClosing);
+                if(docs.Count > 0)
+                {
+                    var docIDs = docs.Select(doc => doc.ID.Value).ToList();
+
+                    var docClosing = new ClosingDocument().Execute(buVO.Logger, buVO, docIDs);
+                    if(docClosing.Count > 0)
+                        new ClosedDocument().Execute(buVO.Logger, buVO, docClosing);
+                }                
             }
             catch (AMWException e)
             {

@@ -305,8 +305,8 @@ const AmMappingPalletV2 = props => {
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
-    console.log(value)
-    console.log(fieldDataKey)
+    // console.log(value)
+    // console.log(fieldDataKey)
     if (fieldDataKey === "areaID")
       localStorage.setItem("areaIDs", value);
     if (fieldDataKey === "processType")
@@ -329,7 +329,18 @@ const AmMappingPalletV2 = props => {
       // console.log(localStorage.getItem("areaIDs"))
       // console.log(valueInput.areaID)
       // console.log(valueInput.processType)
-      if (valueInput.areaID !== null && valueInput.processType !== null) {
+      if (localStorage.getItem("processTypes") !== null && localStorage.getItem("processTypes") !== "null")
+        valueInput["processType"] = localStorage.getItem("processTypes")
+      if (localStorage.getItem("areaIDs") !== null && localStorage.getItem("areaIDs") !== "null")
+        valueInput["areaID"] = localStorage.getItem("areaIDs")
+
+      // if (valueInput.areaID === undefined && localStorage.getItem("areaIDs") !== null) {
+      //   valueInput.areaID = localStorage.getItem("areaIDs")
+      // }
+      // if (valueInput.processType === undefined && localStorage.getItem("processTypes") !== null) {
+      //   valueInput.processType = localStorage.getItem("processTypes")
+      // }
+      if ((valueInput.areaID !== null && valueInput.areaID !== undefined) && (valueInput.processType !== null && valueInput.processType !== undefined)) {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
 
       } else {
@@ -524,7 +535,7 @@ const AmMappingPalletV2 = props => {
     }
   }
   function getStepContent(step) {
-    console.log(localStorage.getItem("processTypes"))
+    //console.log(localStorage.getItem("processTypes"))
     switch (step) {
       case 0:
         return (
@@ -553,7 +564,7 @@ const AmMappingPalletV2 = props => {
                 labelPattern=" : "
                 ddlMinWidth={300}
                 //valueData={valueInput[x.field]}
-                defaultValue={localStorage.getItem("processTypes") === null ? null : (parseInt(localStorage.getItem("processTypes")))}
+                defaultValue={localStorage.getItem("processTypes") === null || localStorage.getItem("processTypes") === "null" ? null : (parseInt(localStorage.getItem("processTypes")))}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)}
@@ -570,7 +581,7 @@ const AmMappingPalletV2 = props => {
                 labelPattern=" : "
                 ddlMinWidth={300}
                 queryApi={AreaMasterQuery()}
-                defaultValue={localStorage.getItem("areaIDs") === null ? null : (parseInt(localStorage.getItem("areaIDs")))}
+                defaultValue={localStorage.getItem("areaIDs") === null || localStorage.getItem("areaIDs") === "null" ? null : (parseInt(localStorage.getItem("areaIDs")))}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)
 

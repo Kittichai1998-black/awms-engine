@@ -30,6 +30,7 @@ export default props => {
         // { accessor: "Cur_AreaLocation_Code", Header: "Gate", width: 60, sortable: false, style: { textAlign: "center" } },
         { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
         { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Control No.", Header: "OrderNo", width: 100, sortable: false, style: { textAlign: "center" } },
         { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
         { accessor: "PalletCode", Header: "Pallet", width: 100, sortable: false, style: { textAlign: "center" } },
         { accessor: "PackName", Header: "Item Code", width: 100, sortable: false },
