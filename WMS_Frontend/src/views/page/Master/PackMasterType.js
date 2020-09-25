@@ -38,6 +38,7 @@ const PackMasterType = props => {
       fixed: "left",
       fixWidth: 162,
       filterType:"dropdown",
+      colStyle:{textAlign:"center"},
       filterConfig:{
         filterType:"dropdown",
         dataDropDown:EntityEventStatus,

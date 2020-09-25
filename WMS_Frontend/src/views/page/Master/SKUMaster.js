@@ -44,6 +44,7 @@ const SKUMaster = props => {
                 dataDropDown: EntityEventStatus,
                 typeDropDown: "normal"
             },
+            colStyle:{textAlign:"center"},
             Cell: e => getStatus(e.original)
         },
         {
