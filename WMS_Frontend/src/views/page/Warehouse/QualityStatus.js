@@ -91,12 +91,12 @@ const QualityStatus = props => {
     { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Qty",
-      accessor: "Qty",
+      accessor: "SaleQty",
       width: 70,
       type: "number"
       // Cell: e => getNumberQty(e.original)
     },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+    { Header: "Unit", accessor: "Unit", width: 100 },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
       Header: "Received Date",
