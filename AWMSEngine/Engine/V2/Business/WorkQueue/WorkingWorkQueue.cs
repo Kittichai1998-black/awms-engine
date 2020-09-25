@@ -167,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 void UpdateDistoFull(StorageObjectCriteria sto, amt_DocumentItemStorageObject disto)
                 {
                     //disto.BaseQuantity = sto.baseQty;
-                    var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, disto.BaseQuantity.Value, sto.baseUnitID);
+                    var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, disto.BaseQuantity.Value, sto.unitID);
                     disto.Quantity = qtyConvert.newQty;
 
                     ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);

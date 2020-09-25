@@ -396,10 +396,10 @@ const AmCreateDocument = (props) => {
 
 
         if (field === "productionDate") {
-            editData['productionDate'] = moment(data.value).format('MM-DD-YYYY')
+            editData['productionDate'] = moment(data.value).format('DD-MM-YYYY')
         }
         if (field === "expireDate") {
-            editData['expireDate'] = moment(data.value).format('MM-DD-YYYY')
+            editData['expireDate'] = moment(data.value).format('DD-MM-YYYY')
         }
         if (field === "auditStatus" && data != null) {
             editData["auditStatus"] = data.label
@@ -1192,9 +1192,9 @@ const AmCreateDocument = (props) => {
             let obj = {
                 ...x,
                 ID: _addDataID,
-                packID_map_skuID: x.packID + "-" + x.skuID
-                //expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
-                //productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+                packID_map_skuID: x.packID + "-" + x.skuID,
+                expireDate: moment(x.expireDate).format('DD-MM-YYYY'),
+                productionDate: moment(x.productionDate).format('DD-MM-YYYY')
 
             }
             _addDataID--

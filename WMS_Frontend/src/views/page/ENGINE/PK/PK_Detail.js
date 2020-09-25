@@ -69,7 +69,7 @@ const PK_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process Type", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
 
