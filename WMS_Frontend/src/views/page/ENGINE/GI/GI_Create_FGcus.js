@@ -189,7 +189,7 @@ const GI_Create_FGCustomer = props => {
                 queryApi: skuquery,
                 fieldLabel: ["skuName"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuName", "SKUItems"],
+                related: ["skuCode", "SKUItems"],
                 fieldDataKey: "Name", // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
                 required: true
@@ -204,7 +204,7 @@ const GI_Create_FGCustomer = props => {
             //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
-            { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
+            //{ Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
             { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
@@ -330,11 +330,11 @@ const GI_Create_FGCustomer = props => {
         { Header: "Remark", accessor: "remark" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No.", accessor: "cartonNo" },
+        //{ Header: "Carton No.", accessor: "cartonNo" },
         //{ Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "MFG.Date Date", accessor: "productionDate" },
+        { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife", accessor: "ShelfLifePercent" }
+        //{ Header: "ShelfLife", accessor: "ShelfLifePercent" }
     
     ];
 
@@ -354,11 +354,11 @@ const GI_Create_FGCustomer = props => {
         //{ Header: "Ref2", accessor: "ref2" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No.", accessor: "cartonNo" },
+        //{ Header: "Carton No.", accessor: "cartonNo" },
        // { Header: "Incubation Day", accessor: "incubationDay" },
         { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
+        //{ Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
     ];
 
     const apicreate = "/v2/CreateDIDocAPI/"; //API สร้าง Doc
