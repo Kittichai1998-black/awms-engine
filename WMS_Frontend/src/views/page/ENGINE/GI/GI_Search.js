@@ -86,7 +86,7 @@ const DocumentSearch = props => {
                 widthDD: 250,
             },
         },
-        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
+        { Header: "Sou.Warehouse", accessor: "SouWarehouseName",  width: 150 },
         { Header: "Sou. Customer", accessor: "SouCustomerName", width: 150 },
         { Header: "Sou. Supplier", accessor: "SouSupplierName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
@@ -114,7 +114,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: "Create", accessor: "Created", width: 200,
+            Header: "Create Time", accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",

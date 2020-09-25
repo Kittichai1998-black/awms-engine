@@ -311,7 +311,7 @@ const DocumentView = props => {
                         qtyrandom: qryStr.qtyrandom ? qryStr.qtyrandom
                             :
                             '-',
-                        remark: qryStr.remark ? qryStr.remark : null,
+                        remark: qryStr.remark != null ? qryStr.remark : '',
                         ExpireDate: row.ExpireDate ? moment(row.ExpireDate).format("DD/MM/YYYY") : null,
                         ProductionDate: row.ProductionDate ? moment(row.ProductionDate).format("DD/MM/YYYY") : null,
                        
@@ -345,7 +345,7 @@ const DocumentView = props => {
 
                         dataTableDetailSOU.push({
                             ...rowDetail,
-                            remark: qryStrDI.remark ? qryStrDI.remark : null,
+                            remark: qryStrDI.remark != null ? qryStrDI.remark : '',
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -387,7 +387,7 @@ const DocumentView = props => {
                         }
                         dataTableDetailDES.push({
                             ...rowDetail,
-                            remark: qryStr.remark ? qryStr.remark : null,
+                            remark: qryStr.remark  != null? qryStr.remark : '',
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -997,6 +997,7 @@ const DocumentView = props => {
                         columns={columns}
                         pageSize={100}
                         dataSource={data}
+                        tableConfig={false}
                         height={200}
                     ></AmTable> :
                     null}
@@ -1097,7 +1098,8 @@ const DocumentView = props => {
                     <AmTable dataKey="id"
                         columns={columnsDetailSOU}
                         pageSize={100}
-                        dataSource={dataDetailSOU}
+                            dataSource={dataDetailSOU}
+                            tableConfig={false}
                         height={200}
                         rowNumber={false} />
                 ) : null
@@ -1112,7 +1114,8 @@ const DocumentView = props => {
                     // />
                     <AmTable dataKey="id"
                         columns={columnsDetailDES}
-                        pageSize={100}
+                                pageSize={100}
+                                tableConfig={false}
                         dataSource={dataDetailDES}
                         height={200}
                         rowNumber={false} />

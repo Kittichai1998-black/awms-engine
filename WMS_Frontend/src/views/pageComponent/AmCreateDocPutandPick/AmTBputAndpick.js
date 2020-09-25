@@ -243,6 +243,7 @@ const AmTBputAndpick = (props) => {
             </Grid>
         </Grid>
         <AmTable
+            tableConfig={false}
             columns={columns}
             dataSource={doc.dataSourceItemTB.length != 0 ? [...doc.dataSourceItemTB] : []}
         ></AmTable>
