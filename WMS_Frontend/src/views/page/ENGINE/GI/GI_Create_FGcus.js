@@ -189,7 +189,7 @@ const GI_Create_FGCustomer = props => {
                 queryApi: skuquery,
                 fieldLabel: ["skuName"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuName", "SKUItems"],
+                related: ["skuCode", "SKUItems"],
                 fieldDataKey: "Name", // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
                 required: true
