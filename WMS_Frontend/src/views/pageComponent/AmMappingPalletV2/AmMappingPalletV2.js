@@ -48,6 +48,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";
 import IconButton from "@material-ui/core/IconButton";
+import AmTreeView from '../../pageComponent/AmTreeView'
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -598,7 +599,7 @@ const AmMappingPalletV2 = props => {
       case 1:
 
         return (<div>
-
+          {/* <AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /> */}
           {/* =================================== TreeView ===================================== */}
           <TreeView
             className={classes.root}
@@ -617,12 +618,22 @@ const AmMappingPalletV2 = props => {
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <StyledTreeItem
                         nodeId={x.id}
-                        label={
-                          x.code + " | " +
-                          x.qty + " " +
-                          x.unitCode + " | " +
-                          (x.lot === null ? "" : x.lot)}
+                        // label={
+                        //   x.code + " | " +
+                        //   x.qty + " " +
+                        //   x.unitCode + " | " +
+                        //   (x.lot === null ? "" : x.lot)}
+                        label={<div className={classes.textNowrap}>
+                          <Typography variant="body2" className={classes.labelText} noWrap>
+                            <span className={classes.labelHead}>{x.code}</span>
+                            &nbsp;{"- " + x.name}
+                          </Typography>
+                          <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity:" + x.qty + " " + x.unitCode}</Typography>
+                          <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography>
+
+                        </div>}
                       />
+
                     </div>
                   );
                 })}
