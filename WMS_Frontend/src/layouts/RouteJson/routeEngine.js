@@ -202,16 +202,16 @@ const AD_Search = Loadable({
 });
 
 const PI_Create = Loadable({
-    loader: () => import("../../views/page/ENGINE/PI/PI_Create"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PI/PI_Create"),
+  loading: Loading
 });
 const PI_Detail = Loadable({
-    loader: () => import("../../views/page/ENGINE/PI/PI_Detail"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PI/PI_Detail"),
+  loading: Loading
 });
 const PI_Search = Loadable({
-    loader: () => import("../../views/page/ENGINE/PI/PI_Search"),
-    loading: Loading
+  loader: () => import("../../views/page/ENGINE/PI/PI_Search"),
+  loading: Loading
 });
 const DoneWorkQueue = Loadable({
   loader: () => import("../../views/page/ENGINE/WorkQueue/DoneWorkQueue"),
@@ -224,6 +224,10 @@ const MoveLocation = Loadable({
 });
 const GR_PalletByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletByHH"),
+  loading: Loading
+});
+const GR_PalletEmpByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletEmpByHH"),
   loading: Loading
 });
 const ReceivePalletByBarcode = Loadable({
@@ -242,6 +246,7 @@ const routes = [
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
   { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
+  { path: "/receive/emp", name: "GR EMP", compoment: GR_PalletEmpByHH, exact: true },
   { path: "/receive/hhtest", name: "GR HH", compoment: ReceivePalletByBarcode, exact: true },
 
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
@@ -261,13 +266,13 @@ const routes = [
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
   { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
 
-    { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
-    { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
-    { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
+  { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
+  { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
+  { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
 
-    { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
-    { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
-    { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
+  { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
+  { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
+  { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
 
 
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },

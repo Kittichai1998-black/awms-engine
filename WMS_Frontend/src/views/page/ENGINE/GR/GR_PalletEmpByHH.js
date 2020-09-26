@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import AmMappingHH from '../../../pageComponent/AmMappingPalletV2/AmMappingPalletV2'
-const GR_PalletByHH = (props) => {
+import AmMappingHH from '../../../pageComponent/AmMappingPalletEmp/AmMappingPalletEmp'
+const GR_PalletEmpByHH = (props) => {
     const UnitTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "UnitType",
@@ -72,7 +72,8 @@ const GR_PalletByHH = (props) => {
         //     name: "ItemNo",
         //     disabled: true,
         //     placeholder: "ItemNo"
-        // }, {
+        // }, 
+        // {
         //     field: "refID",
         //     type: "input",
         //     name: "RefID",
@@ -102,14 +103,13 @@ const GR_PalletByHH = (props) => {
         //     name: "Ref4",
         //     disabled: true,
         //     placeholder: "Ref4"
-        // }, 
-        {
-            field: "cartonNo",
-            type: "input",
-            name: "CartonNo",
-            disabled: true,
-            placeholder: "CartonNo"
-        },
+        // }, {
+        //     field: "cartonNo",
+        //     type: "input",
+        //     name: "CartonNo",
+        //     disabled: true,
+        //     placeholder: "CartonNo"
+        // },
         {
             field: "addQty",
             type: "input",
@@ -166,4 +166,4 @@ const GR_PalletByHH = (props) => {
     );
 
 }
-export default GR_PalletByHH;
+export default GR_PalletEmpByHH;
