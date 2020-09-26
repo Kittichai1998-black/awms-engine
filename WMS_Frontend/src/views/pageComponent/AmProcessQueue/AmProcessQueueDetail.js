@@ -34,7 +34,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 var Axios = new apicall();
 
-const orderObj = [{ label: "Least", value: "0" }, { label: "Most", value: "1" }];
+const orderObj = [{ label: "Ascending", value: "0" }, { label: "Descending", value: "1" }];
 
 const FormInline = styled.div`
 display: flex;
@@ -505,9 +505,9 @@ const ProcessQueueDetail = (props) => {
                                             fieldDataKey={"value"}
                                             fieldLabel={["label"]}
                                             labelPattern=" : "
-                                            width={200}
+                                            width={250}
                                             value={findOrb.orderByType}
-                                            ddlMinWidth={200}
+                                            ddlMinWidth={250}
                                             data={orderObj}
                                             zIndex={9999}
                                             onChange={(value, dataObject, inputID, fieldDataKey) => {
