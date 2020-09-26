@@ -10,9 +10,10 @@ const colDocumentItem = [
 ];
 const columnsConfirm = [
     //{"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
-    { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
+    // { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
     { "accessor": "pstoLot", "Header": "Lot", "sortable": false, "width": 100 },
-    { "accessor": "pstoOrderNo", "Header": "Order No", "sortable": false, "width": 100 },
+    { "accessor": "pstoRef1", "Header": "Vendor Lot", "sortable": false, "width": 100 },
+    { "accessor": "pstoOrderNo", "Header": "Control No.", "sortable": false, "width": 100 },
     { "accessor": "pickQty", "Header": "Pick Qty", "sortable": false, "width": 100 },
 ];
 
