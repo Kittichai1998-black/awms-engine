@@ -307,7 +307,8 @@ const AmMasterData = (props) => {
                 } else {
                     updateRow(props.table, data, props.updateURL);
                 }
-            }} />
+            }}
+        />
         <AmDialogs
             typePopup={dialogState.type}
             onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}

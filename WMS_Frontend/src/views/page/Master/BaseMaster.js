@@ -324,15 +324,14 @@ const BaseMaster = props => {
   const customActions = [
     {
       label: <label style={{ marginBottom: 0 }}><PrintIcon fontSize="small" style={{ marginRight: 5 }} />{"Print Barcode"}</label>,
-      action: (data) => onPrintBarcode(data)
+      action: (data, custom) => {onPrintBarcode(data); custom(true)}
     },
   ];
   const onPrintBarcode = async (dataSel) => {
     try {
-      console.log(dataSel)
       let listCode = [];
       if (dataSel && dataSel.length > 0) {
-        dataSel.map(x => {
+        dataSel.forEach(x => {
           listCode.push({ "code": x.Code });
         });
         let reqjson = {

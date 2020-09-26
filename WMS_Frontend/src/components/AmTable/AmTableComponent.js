@@ -124,6 +124,7 @@ const AmTableComponent = (props) => {
             sortData={props.sortData}
             selectionDisabledCustom={props.selectionDisabledCustom}
             clearSelectionChangeData={props.clearSelectionChangeData}
+            clearSelectionAction={props.clearSelectionAction}
         />
     </AmTableProvider>
 }
@@ -180,7 +181,7 @@ const AmTableSetup = (props) => {
     useEffect(() => {
         if (props.selectionDefault !== undefined) {
             if (props.selectionDefault.length > 0 && dataSource.length > 0) {
-                if (page > 1 && props.clearSelectionChangeData) {
+                if (page > 1 && props.clearSelectionChangeData === true) {
                     selection.removeAll();
                 } else {
                     selection.addAll(props.selectionDefault)
@@ -197,7 +198,20 @@ const AmTableSetup = (props) => {
     }, [selection.selectionValue, selectionData, selection.selectedValue])
 
     useEffect(() => {
-        if (props.clearSelectionChangeData) {
+        if (props.resetSelection) {
+            selectionData(selection.selectionValue)
+        }
+    }, [props.resetSelection])
+
+    useEffect(() => {
+        if (props.clearSelectionAction === true) {
+            selection.removeAll();
+        }
+    }, [props.clearSelectionAction])
+    
+
+    useEffect(() => {
+        if (props.clearSelectionChangeData === true) {
             selection.removeAll();
         }
         if (props.onPageChange === undefined) {

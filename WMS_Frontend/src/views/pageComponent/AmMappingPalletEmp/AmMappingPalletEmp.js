@@ -41,14 +41,13 @@ import { useSpring, animated } from 'react-spring/web.cjs';
 import EditIcon from '@material-ui/icons/Edit';
 import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
-import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
-import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPalletV2/RanderEleDocDisplay";
+import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryStringEmp";
+import { DataGenerateEleDocDisplay, DataGenerateEleManaulDisplay } from "../AmMappingPalletEmp/RanderEleDocDisplay";
 import { PlusSquare, MinusSquare } from "../../../constant/IconTreeview";
 import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";
 import IconButton from "@material-ui/core/IconButton";
-import AmTreeView from '../../pageComponent/AmTreeView'
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -200,7 +199,7 @@ const CheckboxCustom = withStyles({
 
 })(Checkbox);
 
-const AmMappingPalletV2 = props => {
+const AmMappingPalletEmp = props => {
   const { t } = useTranslation();
   const { classes } = props;
 
@@ -310,11 +309,7 @@ const AmMappingPalletV2 = props => {
     // console.log(fieldDataKey)
     if (fieldDataKey === "areaID")
       localStorage.setItem("areaIDs", value);
-    if (fieldDataKey === "processType")
-      localStorage.setItem("processTypes", value);
 
-
-    valueInput["processType"] = localStorage.getItem("processTypes")
     valueInput["areaID"] = localStorage.getItem("areaIDs")
     valueInput[fieldDataKey] = value;
   };
@@ -330,8 +325,6 @@ const AmMappingPalletV2 = props => {
       // console.log(localStorage.getItem("areaIDs"))
       // console.log(valueInput.areaID)
       // console.log(valueInput.processType)
-      if (localStorage.getItem("processTypes") !== null && localStorage.getItem("processTypes") !== "null")
-        valueInput["processType"] = localStorage.getItem("processTypes")
       if (localStorage.getItem("areaIDs") !== null && localStorage.getItem("areaIDs") !== "null")
         valueInput["areaID"] = localStorage.getItem("areaIDs")
 
@@ -566,7 +559,7 @@ const AmMappingPalletV2 = props => {
                 ddlMinWidth={300}
                 //valueData={valueInput[x.field]}
                 returnDefaultValue={true}
-                defaultValue={localStorage.getItem("processTypes") === null || localStorage.getItem("processTypes") === "null" ? null : (parseInt(localStorage.getItem("processTypes")))}
+                defaultValue={8011}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   //localStorage.getItem("processTypes") = value
@@ -599,7 +592,7 @@ const AmMappingPalletV2 = props => {
       case 1:
 
         return (<div>
-          {/* <AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /> */}
+
           {/* =================================== TreeView ===================================== */}
           <TreeView
             className={classes.root}
@@ -623,17 +616,17 @@ const AmMappingPalletV2 = props => {
                         //   x.qty + " " +
                         //   x.unitCode + " | " +
                         //   (x.lot === null ? "" : x.lot)}
+
                         label={<div className={classes.textNowrap}>
                           <Typography variant="body2" className={classes.labelText} noWrap>
                             <span className={classes.labelHead}>{x.code}</span>
-                            &nbsp;{"- " + x.name}
+                          &nbsp;{"- " + x.name}
                           </Typography>
                           <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity:" + x.qty + " " + x.unitCode}</Typography>
-                          <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography>
+                          {/* <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography> */}
 
                         </div>}
                       />
-
                     </div>
                   );
                 })}
@@ -674,18 +667,18 @@ const AmMappingPalletV2 = props => {
                 >
                   <SearchIcon
                     fontSize="small"
-                    onClick={() => { scanMappingSto(palletCode, null) }}
+                    onClick={() => { scanMappingSto(palletCode, null); getDocByQRCode("E|"); }}
                   />
                 </IconButton>
               </FormInline>
               {/* =================================== Auto  ===================================== */}
-              <FormInline style={{ display: "block" }}>
+              {/* <FormInline style={{ display: "block" }}>
                 <CheckboxCustom onClick={event => {
                   setCheckedAuto(event.target.checked)
                 }}
                   defaultChecked={checkedAuto} />
                 <LabelH1 style={{ width: "120px" }}>{t("Scan QRcode")}</LabelH1>
-              </FormInline>
+              </FormInline> */}
               {/* =================================== CheckedAuto ===================================== */}
               {
                 checkedAuto === true ?
@@ -697,7 +690,8 @@ const AmMappingPalletV2 = props => {
                         placeholder={t("QRcode Product")}
                         type="input"
                         style={{ width: "200px" }}
-                        disabled={disPlayQr}
+                        disabled={true}
+                        value={"E|"}
                         onChange={(value, obj, element, event) =>
                           onHandleChangeInputBarcode("barcode", value)
                         }
@@ -910,7 +904,7 @@ const AmMappingPalletV2 = props => {
                 {getStepContent(index)}
                 <div>
 
-                  {activeStep == 0 ? null : (
+                  {/* {activeStep == 0 ? null : (
                     <AmButton
                       styleType="add"
                       className="float-left"
@@ -918,8 +912,8 @@ const AmMappingPalletV2 = props => {
                       style={{ margin: '5px 0px 5px 0px' }}>
                       {t("Received")}
                     </AmButton>
-                  )}
-                  {activeStep === steps.length - 1 ? ((disPlayButton === false ? null :
+                  )} */}
+                  {activeStep === steps.length - 1 ? (
                     <AmButton
                       styleType="confirm"
                       onClick={() => {
@@ -930,7 +924,7 @@ const AmMappingPalletV2 = props => {
                     >
                       {t("Confirm")}
                     </AmButton>
-                  )) : (
+                  ) : (
                       <AmButton
                         className="float-right"
                         style={{ margin: '5px 0px 5px 0px' }}
@@ -963,4 +957,4 @@ const AmMappingPalletV2 = props => {
   );
 };
 
-export default withStyles(styles)(AmMappingPalletV2);
+export default withStyles(styles)(AmMappingPalletEmp);
