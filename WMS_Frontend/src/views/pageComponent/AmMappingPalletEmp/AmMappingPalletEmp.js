@@ -611,11 +611,21 @@ const AmMappingPalletEmp = props => {
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <StyledTreeItem
                         nodeId={x.id}
-                        label={
-                          x.code + " | " +
-                          x.qty + " " +
-                          x.unitCode + " | " +
-                          (x.lot === null ? "" : x.lot)}
+                        // label={
+                        //   x.code + " | " +
+                        //   x.qty + " " +
+                        //   x.unitCode + " | " +
+                        //   (x.lot === null ? "" : x.lot)}
+
+                        label={<div className={classes.textNowrap}>
+                          <Typography variant="body2" className={classes.labelText} noWrap>
+                            <span className={classes.labelHead}>{x.code}</span>
+                          &nbsp;{"- " + x.name}
+                          </Typography>
+                          <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity:" + x.qty + " " + x.unitCode}</Typography>
+                          {/* <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography> */}
+
+                        </div>}
                       />
                     </div>
                   );
