@@ -309,11 +309,7 @@ const AmMappingPalletEmp = props => {
     // console.log(fieldDataKey)
     if (fieldDataKey === "areaID")
       localStorage.setItem("areaIDs", value);
-    if (fieldDataKey === "processType")
-      localStorage.setItem("processTypes", value);
 
-
-    valueInput["processType"] = localStorage.getItem("processTypes")
     valueInput["areaID"] = localStorage.getItem("areaIDs")
     valueInput[fieldDataKey] = value;
   };
@@ -329,8 +325,6 @@ const AmMappingPalletEmp = props => {
       // console.log(localStorage.getItem("areaIDs"))
       // console.log(valueInput.areaID)
       // console.log(valueInput.processType)
-      if (localStorage.getItem("processTypes") !== null && localStorage.getItem("processTypes") !== "null")
-        valueInput["processType"] = localStorage.getItem("processTypes")
       if (localStorage.getItem("areaIDs") !== null && localStorage.getItem("areaIDs") !== "null")
         valueInput["areaID"] = localStorage.getItem("areaIDs")
 
@@ -663,7 +657,7 @@ const AmMappingPalletEmp = props => {
                 >
                   <SearchIcon
                     fontSize="small"
-                    onClick={() => { scanMappingSto(palletCode, null) }}
+                    onClick={() => { scanMappingSto(palletCode, null); getDocByQRCode("E|"); }}
                   />
                 </IconButton>
               </FormInline>
@@ -900,7 +894,7 @@ const AmMappingPalletEmp = props => {
                 {getStepContent(index)}
                 <div>
 
-                  {activeStep == 0 ? null : (
+                  {/* {activeStep == 0 ? null : (
                     <AmButton
                       styleType="add"
                       className="float-left"
@@ -908,7 +902,7 @@ const AmMappingPalletEmp = props => {
                       style={{ margin: '5px 0px 5px 0px' }}>
                       {t("Received")}
                     </AmButton>
-                  )}
+                  )} */}
                   {activeStep === steps.length - 1 ? (
                     <AmButton
                       styleType="confirm"
