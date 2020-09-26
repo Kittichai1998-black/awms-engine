@@ -20,6 +20,7 @@ const Permission = props => {
   const updateRolePermission = useRef([]);
   const [open, setOpen] = useState(false);
   const [dialogState, setDialogState] = useState({});
+  const [clearSelection, setClearSelection] = useState({});
 
   const iniCols = [
     {
