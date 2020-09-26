@@ -21,9 +21,9 @@ import React, { useEffect, useState } from 'react'
 import { apicall, createQueryString } from "../../components/function/CoreFunction"
 import Aux from '../../components/AmAux'
 import { getUnique, groupBy } from '../../components/function/ObjectFunction'
-
+import AmAuditStatus from '../../components/AmAuditStatus'
 import "../../assets/css/AmLocationSummary.css";
-
+import moment from "moment";
 const Axios = new apicall()
 
 const AmLocationSummary = props => {
@@ -326,17 +326,34 @@ const AmLocationSummary = props => {
         }
         let dataD = mergeDatas.map((x, xi) => {
             if (x.length)
-                return (
-                    // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
-                    <Card key={xi} style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
-                            <div style={{ textAlign: "center" }}>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Location : {x[0].Code} </b></p>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Pallet : {x[0].bsto_Code}</b></p>
-                            </div>
-                            {
-                                x.map((y, yi) => {
+                console.log(x)
+            return (
+                // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
+                <Card key={xi} style={{ margin: "5px" }}>
+                    <CardContent style={{ padding: "5px" }}>
+                        <div style={{ textAlign: "center" }}>
+                            <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Location : {x[0].Code} </b></p>
+                            <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Pallet : {x[0].bsto_Code}</b></p>
+                        </div>
+                        {
+                            x.map((y, yi) => {
+                                // if (y.skut_Code === "EMP") {
+                                //     return (
+                                //         <Aux key={yi}>
+                                //             {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
+                                //             {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
+                                //             <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
+                                //             <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
+                                //             <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
+                                //             <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
+                                //         </Aux>
+                                //     )
+                                // } else {
+                                    let lot = y.Lot ? <p style={{ margin: "0px" }}><b>Lot :</b> {y.Lot}</p> :
+                                        y.Ref1 ? <p style={{ margin: "0px" }}><b>Vendor Lot :</b> {y.Ref1}</p> : null;
+
                                     return (
+
                                         <Aux key={yi}>
                                             {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
                                             {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
@@ -344,16 +361,23 @@ const AmLocationSummary = props => {
                                             <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
                                             <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
-                                            {/* <p style={{ margin: "0px" }}>Unit : {y.ut_Code}</p> */}
-
+                                            <p style={{ margin: "0px" }}><b>Weight (kg) :</b> {y.pstoWeigthKG}</p>
+                                            <p style={{ margin: "0px" }}><b>MFG.Date :</b> {y.ProductDate ? moment(y.ProductDate).format("DD-MM-YYYY") : ""}</p>
+                                            <p style={{ margin: "0px" }}><b>Expire Date :</b> {y.ExpiryDate ? moment(y.ExpiryDate).format("DD-MM-YYYY") : ""}</p>
+                                            {/* {lot} */}
+                                            <p style={{ margin: "0px" }}><b>Lot :</b> {y.Lot}</p>
+                                            <p style={{ margin: "0px" }}><b>Vendor Lot :</b> {y.Ref1}</p>
+                                            <p style={{ margin: "0px" }}><b>Audit Status :</b> <AmAuditStatus statusCode={y.AuditStatus} /> </p>
                                         </Aux>
                                     )
-                                })
-                            }
-                        </CardContent>
-                    </Card>
-                    // </Grid>
-                )
+                                // }
+
+                            })
+                        }
+                    </CardContent>
+                </Card>
+                // </Grid>
+            )
         })
 
         if (dataD.length) {
