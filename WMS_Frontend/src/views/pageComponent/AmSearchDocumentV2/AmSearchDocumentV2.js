@@ -55,6 +55,8 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
+  
+  const [reset, setReset] = useState(false)
 
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -74,6 +76,10 @@ const AmSearchDocumentV2 = props => {
       getData(queryViewData)
 
   }, [queryViewData])
+
+  useEffect(()=> {
+    return () => {setReset(false)}
+  },[reset]);
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -238,6 +244,7 @@ const AmSearchDocumentV2 = props => {
   const onHandleEditConfirm = (status) => {
     if (status) {
       onUpdateStatus("reject")
+      setReset(false)
     }
 
     setDialog(false);
@@ -300,6 +307,7 @@ const AmSearchDocumentV2 = props => {
         totalSize={count}
         pageSize={pageSize}
         filterable={true}
+        clearSelectionAction={reset}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
         selection={"checkbox"}

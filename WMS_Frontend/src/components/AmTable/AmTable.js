@@ -106,13 +106,15 @@ const AmTable = (props) => {
             props.onPageSizeChange(pgSize)
         }
     }, [pgSize])
-
+    
     useEffect(() => {
-        console.log(resetSelection)
-        if(resetSelection === true){
+        if(props.clearSelectionAction === true){
+            setResetSelection(true)
+        }
+        return () => {
             setResetSelection(false)
         }
-    }, [pgSize])
+    }, [props.clearSelectionAction, resetSelection])
 
     const customPageSizeBtn = React.forwardRef(({ children, onClick }, ref) => (
         <Button disableRipple

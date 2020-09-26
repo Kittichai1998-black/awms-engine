@@ -57,7 +57,7 @@ namespace ProjectBOSS.Engine.WorkQueue
                     try
                     {
                         this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0, Logger, BuVO);
-                        
+                        this.UpdatePIDocument(sto, Logger, BuVO);
                     }
                     catch (AMWException ex)
                     {
@@ -69,7 +69,6 @@ namespace ProjectBOSS.Engine.WorkQueue
 
                     }
                     finally {
-                        this.UpdatePIDocument(sto, Logger, BuVO);
                         var DISTOs = GetDISTO(sto, reqVO, Logger, BuVO);
                         var desLocation = this.GetDesLocations(sto, reqVO, Logger, BuVO);
                         var queueTrx = this.CreateWorkQueue(sto, desLocation, reqVO, BuVO);
@@ -80,7 +79,7 @@ namespace ProjectBOSS.Engine.WorkQueue
                         });
                         var register = new RegisterWorkQueue();
 
-                        res = register.GenerateResponse(sto, queueTrx);
+                        res = register.GenerateResponse(sto, queueTrx, BuVO, StaticValue);
                         var LocationCondition = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
                         res.locationBankNumRange = LocationCondition.LocationBankNumRange;
                         res.locationBayNumRange = LocationCondition.LocationBayNumRange;
@@ -104,26 +103,30 @@ namespace ProjectBOSS.Engine.WorkQueue
 
         private void UpdatePIDocument(StorageObjectCriteria sto, AMWLogger Logger, VOCriteria BuVO)
         {
-            var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+            var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.COUNTING);
 
+            var docItemIDs = new List<long>();
             packs.ForEach(pack => {
                 var getDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                     {
-                            new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT, SQLOperatorType.EQUALS),
-                    }, BuVO).Find(c => c.DocumentItem_ID == null);
+                    }, BuVO).First();
                 getDisto.Status = EntityStatus.DONE;
                 getDisto.Des_StorageObject_ID = pack.id.Value;
                 getDisto.Quantity = pack.qty;
                 getDisto.BaseQuantity = pack.baseQty;
 
                 AWMSEngine.ADO.DistoADO.GetInstant().Update(getDisto, BuVO);
+                docItemIDs.Add(getDisto.DocumentItem_ID.Value);
             });
 
-            var getPIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(packs.Select(x => x.id.Value).ToList(), DocumentTypeID.PHYSICAL_COUNT, BuVO).Select(y=>y.ID.Value).ToList();
+            //var getPIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(packs.Select(x => x.id.Value).ToList(), DocumentTypeID.PHYSICAL_COUNT, BuVO).Select(y=>y.ID.Value).ToList();
+            var documents = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                new SQLConditionCriteria("ID", string.Join(",", docItemIDs.Distinct()), SQLOperatorType.EQUALS), BuVO);
             var resWorked = new WorkedDocument().Execute(Logger, BuVO,
-               new WorkedDocument.TReq() { docIDs = getPIDoc });
+               new WorkedDocument.TReq() { docIDs = documents.Select(x=> x.Document_ID).ToList() });
 
         }
 
