@@ -111,6 +111,13 @@ const processCondition = {
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
+            "field": "Expiry Date", "enable": true, "sortField": "psto.expirydate",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
+            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+        },
+        {
             "field": "Batch", "enable": true, "sortField": "psto.batch",
             "defaultSortBy": "0",
             "editable": true,

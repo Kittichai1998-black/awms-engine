@@ -372,7 +372,7 @@ const GenerateFooter = ({ columns, props, dataSource }) => {
 const GenerateFooterCell = (column, props, dataSource, idx) => {
   const dataByField = [];
   let totalField = 0;
-  dataSource.forEach((data, rowIndex) => {
+  dataSource.filter(x => x["_footer"]===true).forEach((data, rowIndex) => {
     if (typeof data[column.accessor] === "number")
       totalField += data[column.accessor]
 

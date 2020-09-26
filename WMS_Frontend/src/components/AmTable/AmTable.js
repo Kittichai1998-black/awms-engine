@@ -174,6 +174,7 @@ const AmTable = (props) => {
                 selectionData={(sel) => {if(props.selectionData !== undefined)setSelection(sel)}}
                 selectionDefault={props.selectionDefault}
                 clearSelectionChangePage={props.clearSelectionChangePage}
+                clearSelectionAction={props.clearSelectionAction}
                 customTopControl={props.customTopControl}
                 customTopLeftControl={
                     props.customTopLeftControl || props.customAction ? 
