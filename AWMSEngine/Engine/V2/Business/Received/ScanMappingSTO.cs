@@ -365,7 +365,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         }
                     }
                 }
-                if(reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM)
+                if (reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM)
                 {
                     return null;
                 }
@@ -376,7 +376,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         packID = resStopack.Value,
                         docProcessType = reqVO.processType
                     };
-                    return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc); ;
+                    return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc);
                 }
 
             } //end void createSTO
