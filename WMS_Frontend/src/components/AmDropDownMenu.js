@@ -14,16 +14,16 @@ const AmDropdownMenu = (props) => {
                         return <Dropdown.Divider/>
                     if(item.action === undefined){
                         if(item.selectable)
-                        return <Dropdown.ItemText disabled={props.disabled} style={{cursor:"pointer"}}>{item.label}</Dropdown.ItemText>
+                            return <Dropdown.ItemText disabled={props.disabled} style={{cursor:"pointer"}}>{item.label}</Dropdown.ItemText>
                         else
-                        return <Dropdown.Item disabled={props.disabled} style={{cursor:"pointer"}}>{item.label}</Dropdown.Item>
+                            return <Dropdown.Item disabled={props.disabled} style={{cursor:"pointer"}}>{item.label}</Dropdown.Item>
                     }
                     else{
                         
                         if(item.selectable)
-                        return <Dropdown.ItemText disabled={props.disabled} onClick={() => item.action(props.datas)}>{item.label}</Dropdown.ItemText>
+                            return <Dropdown.ItemText disabled={props.disabled} onClick={() => item.action(props.datas, props.customAction)}>{item.label}</Dropdown.ItemText>
                         else
-                        return <Dropdown.Item disabled={props.disabled} style={{cursor:"pointer"}} onClick={() => item.action(props.datas)}>{item.label}</Dropdown.Item>
+                            return <Dropdown.Item disabled={props.disabled} style={{cursor:"pointer"}} onClick={() => item.action(props.datas, props.customAction)}>{item.label}</Dropdown.Item>
 
                     }
                 })}

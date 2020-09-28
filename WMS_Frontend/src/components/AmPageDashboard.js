@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 
 // import Typography from '@material-ui/core/Typography';
 
@@ -91,29 +91,46 @@ const AmMonitor = props => {
     const [calHeight, setCalHeight] = useState(0.35);
     const clock = useClock(props.time, t)
 
-    const [width_height, set_width_height] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight
-    })
-    // const [height,setHeight] = useState(window.innerHeight)
-    // const { width, height } = useWindowWidth();
-    const time = props.time ? clock : null
+    const width_height = useWindowSize(isFullScreen);
+
+    function useWindowSize(full) {
+        const [size, setSize] = useState({width:0, height:0});
+        useLayoutEffect(() => {
+            function updateSize() {
+                setSize({width:window.innerWidth, height:window.innerHeight}); 
+            }
+            window.addEventListener('resize', updateSize);
+            updateSize();
+            return () => window.removeEventListener('resize', updateSize)
+        }, []);
+
+        useEffect(() => {
+            
+            function updateSize() {
+                setSize({width:window.innerWidth, height:window.innerHeight}); 
+            }
+            updateSize();
+        }, [full]);
+        return size;
+    }
 
     useEffect(() => {
-        setTimeout(() => {
-            set_width_height({
-                width: window.innerWidth,
-                height: window.innerHeight
-            })
-        }, 20);
-    }, [isFullScreen])
+        if (document.fullscreenElement === null && isFullScreen){
+            setIsFullScreen(false)
+        }
+    }, [document.fullscreenElement])
+    
+
+    const time = props.time ? clock : null
 
     const goFull = () => {
         setIsFullScreen(true);
+        openFullscreen();
         setCalHeight(0.4);
     }
     const goMin = () => {
         setIsFullScreen(false);
+        closeFullscreen();
         setCalHeight(0.35);
     }
 
@@ -180,7 +197,6 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        //console.log(rowInfo)
         if (rowInfo.StyleStatus === "normal") {
             return { backgroundColor: "white", lineHeight: "35px" }
         } else if (rowInfo.StyleStatus === "working") {
@@ -190,6 +206,30 @@ const AmMonitor = props => {
         }
 
     }
+    
+    function openFullscreen() {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+            document.documentElement.msRequestFullscreen();
+        }
+      }
+
+      function closeFullscreen() {
+        if (window.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+      }
 
     const table = props.coltable.map((x, xi) => {
         if (x.length === 1) {
@@ -320,7 +360,7 @@ const AmMonitor = props => {
     ) : null
 
     return (
-        <Fullscreen enabled={isFullScreen} onChange={isFull => setIsFullScreen(isFull)}>
+        <div style={isFullScreen ? { width:"100%", height:"100%", position:"absolute", top:0, left:0, zIndex:999999 } : {}}>
             <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <Grid container direction="row" justify="flex-start" alignItems="stretch" >
                     <Grid item xs={12} sm={6} md={6} xl={6}>
@@ -344,7 +384,7 @@ const AmMonitor = props => {
                 </Grid>
                 {table}
             </div>
-        </Fullscreen>
+        </div>
     );
 }
 

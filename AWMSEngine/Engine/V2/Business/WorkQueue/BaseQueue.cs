@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -21,6 +22,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 mapsto;
 
             new Engine.V2.Validation.ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, validMapsto);
+        }
+        public WorkQueueCriteria GenerateResponse(StorageObjectCriteria sto, SPworkQueue queueTrx, VOCriteria buVO, StaticValueManager staticValue)
+        {
+            this.BuVO = buVO;
+            this.StaticValue = staticValue;
+            return this.GenerateResponse(sto, queueTrx);
         }
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria sto, SPworkQueue queueTrx)

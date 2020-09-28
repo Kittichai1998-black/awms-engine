@@ -104,8 +104,8 @@ const ScanPalletInfo = Loadable({
 });
 
 const StockReplenishment = Loadable({
-    loader: () => import("../../views/page/Warehouse/StockReplenishment"),
-    loading: Loading
+  loader: () => import("../../views/page/Warehouse/StockReplenishment"),
+  loading: Loading
 });
 const CurrentInventory = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
@@ -118,8 +118,8 @@ const StockLocationUsed = Loadable({
 });
 
 const DeadStock = Loadable({
-    loader: () => import("../../views/page/NewReport/DeadStock"),
-    loading: Loading
+  loader: () => import("../../views/page/NewReport/DeadStock"),
+  loading: Loading
 });
 
 const StockCardV2 = Loadable({
@@ -178,8 +178,8 @@ const DailySTOSumAudit = Loadable({
 });
 
 const Throughput = Loadable({
-    loader: () => import("../../views/page/NewReport/Throughput"),
-    loading: Loading
+  loader: () => import("../../views/page/NewReport/Throughput"),
+  loading: Loading
 });
 
 const ScanPalletMove = Loadable({
@@ -422,6 +422,10 @@ const MoveLocation = Loadable({
   loader: () => import("../../views/page/ENGINE/MoveLocation"),
   loading: Loading
 });
+const GR_PalletEmpByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletEmpByHH"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -434,16 +438,16 @@ let routes = [
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
-    { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
-    { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
+  { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
+  { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
-    { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
-    { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
-    { path: "/report/deadstock", name: "DeadStock Report", compoment: DeadStock, exact: true },
-    { path: "/report/throughput", name: "Throughput Report", compoment: Throughput, exact: true },
+  { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
+  { path: "/report/deadstock", name: "DeadStock Report", compoment: DeadStock, exact: true },
+  { path: "/report/throughput", name: "Throughput Report", compoment: Throughput, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },
@@ -503,7 +507,7 @@ let routes = [
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
   { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
-
+  { path: "/receive/emp", name: "GR EMP", compoment: GR_PalletEmpByHH, exact: true },
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },

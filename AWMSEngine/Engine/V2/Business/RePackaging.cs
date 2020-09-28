@@ -44,7 +44,14 @@ namespace AWMSEngine.Engine.Business
 
             var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.BASE, true, true, this.BuVO);
 
-            mapsto = bsto.mapstos.FindAll(x => x.id == reqVO.psto).FirstOrDefault();
+            var ckLoc = StaticValueManager.GetInstant().AreaMasters.Find(y => y.ID == bsto.areaID).AreaMasterType_ID == AreaMasterTypeID.STA_PICK;
+
+            if(ckLoc == false)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถ DePackaging นี้ได้เนื่องจากอยู่บนคลังสินค้า");
+
+
+            mapsto = bsto.ToTreeList().FindAll(x => x.id == reqVO.psto).FirstOrDefault();
+
 
             var newBaseQty = StaticValue.ConvertToBaseUnitBySKU(mapsto.skuID.Value, reqVO.newQty, reqVO.newUnitID);
             if (bsto != null)
@@ -92,11 +99,11 @@ namespace AWMSEngine.Engine.Business
 
             var oldDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                  new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("Sou_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Des_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
+                    //new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
                  }, this.BuVO).FirstOrDefault();
 
-            var cloneBsto = bsto.Clone();
+            var cloneBsto = bsto.ToTreeList().Find(x=>x.type== StorageObjectType.BASE).Clone();
             cloneBsto.id = null;
             cloneBsto.code = reqVO.newbstoCode;
             cloneBsto.mstID = newbstoBaseMaster.ID;

@@ -63,6 +63,9 @@ const AmStorageObjectMulti = props => {
   const [mode, setMode] = useState("");
   const [aditStatus, setAditStatus] = useState("");
 
+
+  const [reset, setReset] = useState(false)
+
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
@@ -211,11 +214,16 @@ const AmStorageObjectMulti = props => {
     //console.log(remark)
     if (status) {
       onUpdateHold()
+      setReset(true);
     }
 
     setDialog(false);
     setSelection([]);
   };
+
+  useEffect(()=> {
+    return () => {setReset(false)}
+  },[reset]);
 
 
   const DataGenerateRemark = () => {
@@ -387,6 +395,7 @@ const AmStorageObjectMulti = props => {
         // onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
+        clearSelectionAction={reset}
         pagination={true}
         selection={props.action === true ? "checkbox" : ""}
         selectionData={(data) => {

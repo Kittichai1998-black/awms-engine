@@ -544,98 +544,170 @@ const AmMappingPallet = props => {
             />
           </FormInline></div>
       case 4:
-        return (<div>
-          {dataPallet !== undefined && dataPallet !== null ? (<TreeView
-            className={classes.root}
-            defaultExpanded={['1']}
-            defaultCollapseIcon={<MinusSquare />}
-            defaultExpandIcon={<PlusSquare />}
-            defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
-            // selected={selected}
-            onNodeSelect={handleSelect}
-          >
+        let treeItems = [];
+        {
+          data.stoItems.map((sto, idx) => {
+            let pstoCode = sto.pstoCode != null ? sto.pstoCode : "";
+            let pstoName = sto.pstoName != null ? sto.pstoName : "";
+            let lot = sto.lot != null && sto.lot.length > 0 ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + sto.lot}</Typography>
+              : sto.ref1 != null && sto.ref1.length > 0 ?
+                <Typography variant="body2" className={classes.labelText} noWrap>{"Lot Vendor:" + sto.ref1}</Typography>
+                : null;
+            let batch = sto.batch != null && sto.batch.length > 0 ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Batch:" + sto.batch}</Typography>
+              : null;
+            let orderNo = sto.orderNo != null && sto.orderNo.length > 0 ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Order No." + sto.orderNo}</Typography>
+              : null;
+            let cartonNo = sto.cartonNo != null && sto.cartonNo.length > 0 ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Carton No." + sto.cartonNo}</Typography>
+              : null;
 
-            <StyledTreeItem nodeId="1" label={dataPallet.bsto.code}>
-              {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
-                return (
-                  <div key={index} syle={{ marginLeft: "30px" }} >
-                    <StyledTreeItem
-                      nodeId={x.id}
-                      label={
-                        x.code + " | " +
-                        x.baseQty + " " +
-                        x.unitCode + " | " +
-                        (x.lot === null ? "" : x.lot)}
-                    />
-                  </div>
-                );
-              })}
+            let pk_docCode = sto.pk_docCode != null ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Document Code: " + sto.pk_docCode}</Typography>
+              : null;
+            let processTypeName = sto.processTypeName != null ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Process No." + sto.processTypeName}</Typography>
+              : null;
+            let pickQty = sto.pickQty != null ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity: " + sto.pickQty + " " + sto.unitCode}</Typography>
+              : null;
+            let destination = sto.destination != null ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Des:" + sto.destination}</Typography>
+              : null;
+            let remark = sto.remark != null ?
+              <Typography variant="body2" className={classes.labelText} noWrap>{"Remark:" + sto.remark}</Typography>
+              : null;
 
-            </StyledTreeItem>
-          </TreeView>) :
-            (valueInput.palletCode !== undefined ? <TreeView
-              className={classes.root}
-              defaultExpanded={['1']}
-              defaultCollapseIcon={<MinusSquare />}
-              defaultExpandIcon={<PlusSquare />}
-              defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
-              // selected={selected}
-              onNodeSelect={handleSelect}
-            >
-              <StyledTreeItem nodeId="1" label={valueInput.palletCode}>
-              </StyledTreeItem>
-            </TreeView> : null)}
+            let treeItem = {
+              nodeId: sto.distoID.toString(),
+              labelText:
+                <div className={classes.textNowrap}>
+                  <Typography variant="body2" className={classes.labelText} noWrap>
+                    <span className={classes.labelHead}>{pstoCode}</span>
+                            &nbsp;{"- " + pstoName}
+                  </Typography>
+                  {pickQty}
+                  {lot}{batch}{orderNo}{cartonNo}{pk_docCode}{processTypeName}{destination}{remark}{auditstatus}
+                </div>,
+              labelIcon: ShoppingCartIcon,
+              // labelInfo: pickQty,
+              bgColor: "#e8f0fe",
+              color: "#1a73e8",
+              dataItem: sto,
+              onIconClick: (dataItem) => onClick(dataItem),
+              onLabelClick: (dataItem) => onClick(dataItem)
+            };
 
-          <FormInline>
-            <Switch
-              checked={checkedAuto}
-              onChange={handleChange}
-              color="primary"
-              name="checkedAuto"
-              inputProps={{ 'aria-label': 'primary checkbox' }}
-            />
-            <LabelH1>{"Scan barcode"}</LabelH1>
-          </FormInline>
+            treeItems.push(treeItem);
+          })
 
-          {checkedAuto === true ? <Card>
-            <CardContent>
-              <div>
-                <AmInput
-                  id={"barcode"}
-                  placeholder="barcode"
-                  type="input"
-                  style={{ width: "100%" }}
-                  onChange={(value, obj, element, event) =>
-                    onHandleChangeInput(value, null, "barcode", null, event)
-                  }
-                  onBlur={(e) => {
-                    if (e !== undefined && e !== null)
-                      onHandleChangeInputPalletCode("barcode", e, null, null, null)
-                  }}
-                  onKeyPress={(value, obj, element, event) => {
-                    if (event.key === "Enter") {
-                      onHandleChangeInputPalletCode("barcode", value, obj, element, event)
-                    }
 
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card> : <Card>
+        }
+        let dataTreeItems = [{
+          nodeId: 'root',
+          labelText: data.bstoCode,
+          // labelIcon: Pallet,
+          treeItems: treeItems
+        }];
+        return (
+          <div>
+            { dataPallet !== undefined && dataPallet !== null ? (
+              <AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} />
+              // <TreeView
+              //   className={classes.root}
+              //   defaultExpanded={['1']}
+              //   defaultCollapseIcon={<MinusSquare />}
+              //   defaultExpandIcon={<PlusSquare />}
+              //   defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
+              //   // selected={selected}
+              //   onNodeSelect={handleSelect}
+              // >
+
+              //   <StyledTreeItem nodeId="1" label={dataPallet.bsto.code}>
+              //     {dataPallet.bsto.mapstos === null ? null : dataPallet.bsto.mapstos.map((x, index) => {
+              //       return (
+              //         <div key={index} syle={{ marginLeft: "30px" }} >
+              //           <StyledTreeItem
+              //             nodeId={x.id}
+              //             label={
+              //               x.code + " | " +
+              //               x.baseQty + " " +
+              //               x.unitCode + " | " +
+              //               (x.lot === null ? "" : x.lot)}
+              //           />
+              //         </div>
+              //       );
+              //     })}
+
+              //   </StyledTreeItem>
+              // </TreeView>
+
+            ) :
+              (valueInput.palletCode !== undefined ? <TreeView
+                className={classes.root}
+                defaultExpanded={['1']}
+                defaultCollapseIcon={<MinusSquare />}
+                defaultExpandIcon={<PlusSquare />}
+                defaultEndIcon={dataPallet.bsto.mapstos === null ? <MinusSquare /> : <EditIcon />}
+                // selected={selected}
+                onNodeSelect={handleSelect}
+              >
+                <StyledTreeItem nodeId="1" label={valueInput.palletCode}>
+                </StyledTreeItem>
+              </TreeView> : null)}
+
+            <FormInline>
+              <Switch
+                checked={checkedAuto}
+                onChange={handleChange}
+                color="primary"
+                name="checkedAuto"
+                inputProps={{ 'aria-label': 'primary checkbox' }}
+              />
+              <LabelH1>{"Scan barcode"}</LabelH1>
+            </FormInline>
+
+            {checkedAuto === true ? <Card>
               <CardContent>
                 <div>
-                  {props.columnsManual === null ? null : props.columnsManual.map((x, index) => {
-                    return (
-                      <div key={index} syle={{ marginLeft: "30px" }} >
-                        {FuncSetEleManual(x)}
-                      </div>
-                    );
-                  })}
+                  <AmInput
+                    id={"barcode"}
+                    placeholder="barcode"
+                    type="input"
+                    style={{ width: "100%" }}
+                    onChange={(value, obj, element, event) =>
+                      onHandleChangeInput(value, null, "barcode", null, event)
+                    }
+                    onBlur={(e) => {
+                      if (e !== undefined && e !== null)
+                        onHandleChangeInputPalletCode("barcode", e, null, null, null)
+                    }}
+                    onKeyPress={(value, obj, element, event) => {
+                      if (event.key === "Enter") {
+                        onHandleChangeInputPalletCode("barcode", value, obj, element, event)
+                      }
+
+                    }}
+                  />
                 </div>
               </CardContent>
-            </Card>}
+            </Card> : <Card>
+                <CardContent>
+                  <div>
+                    {props.columnsManual === null ? null : props.columnsManual.map((x, index) => {
+                      return (
+                        <div key={index} syle={{ marginLeft: "30px" }} >
+                          {FuncSetEleManual(x)}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>}
 
-        </div>)
+          </div>)
 
 
       case 5:

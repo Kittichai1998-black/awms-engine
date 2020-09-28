@@ -29,7 +29,7 @@ const headercol2 = [
     { accessor: "TaskName", Header: "Task", width: 100, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
     // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
-    { accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
+    //{ accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
     { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
     { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Item Code", width: 120, sortable: false },

@@ -58,7 +58,7 @@ namespace ProjectBOSS.Engine.Notification
                     var errSto = stoList.Select(sto=>
                     {
                         var auditStatus = AMWUtil.Common.ObjectUtil.QryStrGetValue(sto.Options, OptionVOConst.OPT_ERROR_COUNTING);
-                        var oldWeight = AMWUtil.Common.ObjectUtil.QryStrGetValue(sto.Options, OptionVOConst.OPT_OLD_WEIGHT);
+                        var oldWeight = AMWUtil.Common.ObjectUtil.QryStrGetValue(sto.BaseOptions, OptionVOConst.OPT_OLD_WEIGHT);
                         return new STOResponse()
                         {
                             BaseCode = sto.BaseCode,
@@ -66,7 +66,7 @@ namespace ProjectBOSS.Engine.Notification
                             Name = sto.Name,
                             Quantity = sto.Quantity,
                             UnitType = StaticValueManager.GetInstant().UnitTypes.Find(x => sto.UnitType_ID == x.ID).Code,
-                            Weight = sto.WeigthKG,
+                            Weight = sto.BaseWeight,
                             OldWeight = oldWeight,
                             AuditStatus = string.IsNullOrEmpty(auditStatus) ? "PASS" : auditStatus
                         };

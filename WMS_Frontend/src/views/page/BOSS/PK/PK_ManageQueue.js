@@ -10,9 +10,10 @@ const colDocumentItem = [
 ];
 const columnsConfirm = [
     //{"accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200},
-    { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
+    // { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
     { "accessor": "pstoLot", "Header": "Lot", "sortable": false, "width": 100 },
-    { "accessor": "pstoOrderNo", "Header": "Order No", "sortable": false, "width": 100 },
+    { "accessor": "pstoRef1", "Header": "Vendor Lot", "sortable": false, "width": 100 },
+    { "accessor": "pstoOrderNo", "Header": "Control No.", "sortable": false, "width": 100 },
     { "accessor": "pickQty", "Header": "Pick Qty", "sortable": false, "width": 100 },
 ];
 
@@ -97,6 +98,13 @@ const processCondition = {
     "orderBys": [
         {
             "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
+            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+        },
+        {
+            "field": "Expiry Date", "enable": true, "sortField": "psto.expirydate",
             "defaultSortBy": "0",
             "editable": true,
             "order": 1,

@@ -91,12 +91,12 @@ const StorageObject = props => {
     { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Qty",
-      accessor: "Qty",
+      accessor: "SaleQty",
       width: 70,
       type: "number"
       // Cell: e => getNumberQty(e.original)
     },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+    { Header: "Unit", accessor: "Unit", width: 100 },
     { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
     { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
     { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },

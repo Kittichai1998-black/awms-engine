@@ -99,6 +99,7 @@ namespace ProjectBOSS.Engine.Notification
                 strBody.Append("<th style=\"border:1px solid black\">Unit</th>");
                 strBody.Append("<th style=\"border:1px solid black\">Old Weight</th>");
                 strBody.Append("<th style=\"border:1px solid black\">Weight</th>");
+                strBody.Append("<th style=\"border:1px solid black\">Counting Status</th>");
                 strBody.Append("</tr>");
                 stoList.ForEach(x =>
                 {
@@ -111,6 +112,7 @@ namespace ProjectBOSS.Engine.Notification
                     strBody.Append("<td style=\"border:1px solid black\">" + x.UnitType + "</td>");
                     strBody.Append("<td style=\"border:1px solid black\">" + x.OldWeight + "</td>");
                     strBody.Append("<td style=\"border:1px solid black\">" + x.Weight + "</td>");
+                    strBody.Append("<td style=\"border:1px solid black\">" + x.AuditStatus + "</td>");
                     strBody.Append("</tr>");
                     i++;
                 });

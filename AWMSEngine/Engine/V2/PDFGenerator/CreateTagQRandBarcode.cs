@@ -437,7 +437,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.NO_BORDER;
-                pCell.PaddingTop = 17f;
+                pCell.PaddingTop = 14f;
                 return pCell;
             }
             PdfPCell SetInfoCol(PdfPCell pCell)
@@ -445,8 +445,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.BOTTOM_BORDER;
-                pCell.PaddingTop = 17f;
-                pCell.PaddingBottom = 5f;
+                pCell.PaddingTop = 14f;
+                pCell.PaddingBottom = 3f;
                 return pCell;
             }
             return table;
