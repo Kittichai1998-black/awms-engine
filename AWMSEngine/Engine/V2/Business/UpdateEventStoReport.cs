@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
-                        if(sto.eventStatus != StorageObjectEventStatus.NEW)
+                        if(sto.eventStatus == StorageObjectEventStatus.RECEIVED )
                         {
                             this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
                             var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.Business
                         }
                         else
                         {
-                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถ Hold Status ที่เป็น New ได้");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถ Hold Status ที่เป็น "+ sto.eventStatus + " ได้");
                         }
                         
 
