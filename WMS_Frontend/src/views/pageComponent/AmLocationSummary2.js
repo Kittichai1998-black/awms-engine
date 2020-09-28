@@ -17,6 +17,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import React, { useEffect, useState } from 'react'
 // import SendIcon from '@material-ui/icons/Send';
 // import StarBorder from '@material-ui/icons/StarBorder';
+
 import { apicall, createQueryString } from "../../components/function/CoreFunction"
 import Aux from '../../components/AmAux'
 import { getUnique, groupBy } from '../../components/function/ObjectFunction'
@@ -117,6 +118,7 @@ const AmLocationSummary = props => {
     useEffect(() => {
         if (dataAll) {
             dataAll.map(x => {
+
                 let chkBank = bank.find(y => y.Bank === x.Bank),
                     chkBay = bay.find(y => y.Bay === x.Bay),
                     chkLevel = level.find(y => y.Level === x.Level)
@@ -124,26 +126,18 @@ const AmLocationSummary = props => {
                     bank.push(x)
                 }
                 if (!chkBay) {
-                    bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
+                    bay.push(x) 
                 }
                 if (!chkLevel) {
                     level.push(x)
                 }
-            })
-            // bank.push({})
-            // bay.push({})
-            // level.push({})
+            }) 
             console.log(bank);
-
             let bayPercen_10 = (bay.length - 1) * 0.1,
                 padding = "5px",
                 palletLen = (bank.length - 1) * (bay.length - 1),
-                dataT = bank.sort((a, b) => (a.Bank > b.Bank) ? -1 : ((b.Bank > a.Bank) ? 1 : 0)).map((x, xi) => {
+
+                dataT = bank.sort((a, b) => (a.Bank < b.Bank) ? -1 : ((b.Bank < a.Bank) ? 1 : 0)).map((x, xi) => {
                     let countPalletBank = 0
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
@@ -336,7 +330,7 @@ const AmLocationSummary = props => {
                         </div>
                         {
                             x.map((y, yi) => {
-                                if (y.skut_Code === "EMP") {
+                                if (y.skut_Code === "ESP") {
                                     return (
                                         <Aux key={yi}>
                                             {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
