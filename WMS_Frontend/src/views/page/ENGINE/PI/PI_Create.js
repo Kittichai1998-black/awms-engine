@@ -184,9 +184,9 @@ const PI_Create = props => {
                 fieldLabel: ["skuCode"],
                 columsddl: columsFindPopupSKU,
                 related: ["skuName", "SKUItems"],
-                fieldDataKey: "Code", // ref กับ accessor
+                fieldDataKey: "Code" // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
-                required: true
+                //required: true
             },
             {
                 // search: false,
@@ -197,25 +197,25 @@ const PI_Create = props => {
                 fieldLabel: ["skuName"],
                 columsddl: columsFindPopupSKU,
                 related: ["skuCode", "SKUItems"],
-                fieldDataKey: "Name", // ref กับ accessor
+                fieldDataKey: "Name" // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
-                required: true
+                //required: true
             },
             { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
-            //{ Header: "Batch", accessor: "batch", type: "input" },
-            //{ Header: "Lot", accessor: "lot", type: "input", width: '300px' },
-            { Header: "Qty", accessor: "quantity", type: "inputNum", TextInputnum: "%", required: true},
-            { Header: "Unit", accessor: "unitType", type: "unitConvert", required: true, width: '300px'},
+            //{ Header: "Batch", accessor: "batch", type: "input" },        
+            { Header: "Qty", accessor: "qtyrandom", type: "inputNum", TextInputnum: "%", required: true},
+            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px'},
             AuditStatusDDL,
-            Headers,
+             { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
+            //Headers,
               //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref2", accessor: "ref2", type: "input" },
             //{ Header: "Ref3", accessor: "ref3", type: "input" },
             //{ Header: "Ref4", accessor: "ref4", type: "input" },
             //{ Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             //{ Header: "Incubation Day", accessor: "incubationDay", type: "inputNum" },
-            { Header: "MFG.DateDate", accessor: "productionDate", type: "date", required: true, width: '300px'},
-            { Header: "Expire Date", accessor: "expireDate", type: "date", required: true},
+            //{ Header: "MFG.DateDate", accessor: "productionDate", type: "date", required: true, width: '300px'},
+            //{ Header: "Expire Date", accessor: "expireDate", type: "date", required: true},
             //{ Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
         ];
         setcolumSKU(columnEdit)
@@ -327,21 +327,22 @@ const PI_Create = props => {
     ];
 
     const columsFindPopupSto = [
-        { Header: "Control No.", accessor: "orderNo", width: 100, style: { textAlign: "center" } },
+       
         { Header: "Pallet", accessor: "palletcode", width: 110, style: { textAlign: "center" } },
         { Header: "Item Code", accessor: "SKUItems", width: 350 },
-        { Header: "Location", accessor: "locationCode", width: 90, style: { textAlign: "center" } },
+        //{ Header: "Location", accessor: "locationCode", width: 90, style: { textAlign: "center" } },
         { Header: "Qty", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType", width: 70 },
+        { Header: "Control No.", accessor: "orderNo", width: 100, style: { textAlign: "center" } },
         { Header: "Quality Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Remark", accessor: "remark" },
+        { Header: "Lot", accessor: "lot" },
+        //{ Header: "Remark", accessor: "remark" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
         //{ Header: "Carton No.", accessor: "cartonNo" },
         //{ Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "MFG.Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
+        //{ Header: "MFG.Date", accessor: "productionDate" },
+        //{ Header: "Expire Date", accessor: "expireDate" },
         //{ Header: "ShelfLife", accessor: "ShelfLifePercent" }
     
     ];
@@ -354,18 +355,18 @@ const PI_Create = props => {
         { Header: "Control No.", accessor: "orderNo" },
         //{ Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
-        { Header: "Qty", accessor: "quantity" },
+        { Header: "Qty", accessor: "qtyrandom" },
         { Header: "Unit", accessor: "unitType" },
         { Header: "Quality Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Remark", accessor: "remark" },
+       // { Header: "Vendor Lot", accessor: "ref1" },
+       // { Header: "Remark", accessor: "remark" },
         //{ Header: "Ref2", accessor: "ref2" },
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
         //{ Header: "Carton No.", accessor: "cartonNo" },
         // { Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "MFG.Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
+        //{ Header: "MFG.Date", accessor: "productionDate" },
+        //{ Header: "Expire Date", accessor: "expireDate" },
         //{ Header: "ShelfLife (%)", accessor: "ShelfLifePercent" }
     ];
 

@@ -88,6 +88,14 @@ const GR_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
+            Header: "Quality Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 30
+        },
+        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        {
             Header: "Item Code",
             Cell: e => { return e.original.SKUMaster_Code},
             CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
@@ -98,36 +106,30 @@ const GR_Detail = props => {
             CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         },
         { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
-        //{ Header: "Batch", accessor: "Batch", widthPDF: 20 },
-        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
-        //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
-       // { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-       // { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
+        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
-        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
 
 
 
     const columnsDetailSOU = [
-        //{ width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
+        {
+            Header: "Quality Status", accessor: "diAuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
+        { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         {
-            width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original),
+            Header: "Task", accessor: "status", width: 40, Cell: e => getStatusGR(e.original),
             widthPDF: 5,
             CellPDF: value => {
                 if (value.status === 1 || value.status === 3) return "Y";
@@ -136,26 +138,15 @@ const GR_Detail = props => {
                 else return null;
             } 
         },
-        { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
-        { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
-        { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
+        { Header: "Pack Code", accessor: "packCode",  widthPDF: 10, width: 150,  },
+        { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
+        { Header: "Pallet",width: 100, accessor: "rootCode", widthPDF: 10 },
         { Header: "Control NO.", accessor: "diOrderNo", widthPDF: 10 },
-       // { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
-        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
-        {
-            Header: "Quality Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70,  },
         { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
-        //{ Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
+        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
@@ -166,7 +157,6 @@ const GR_Detail = props => {
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
             CellPDF: e => getFormatDateExp(e)
         },
-        //{ Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const getFormatDatePro = (e) => {

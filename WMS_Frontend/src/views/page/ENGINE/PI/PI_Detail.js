@@ -8,6 +8,7 @@ import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import AmAuditStatus from '../../../../components/AmAuditStatus';
+
 import moment from "moment";
 
 const PI_Detail = props => {
@@ -106,7 +107,7 @@ const PI_Detail = props => {
         //{ Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Actual Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Quantity", widthPDF: 20, Cell: e => getFormatPrscen(e.original), widthPDF: 15,},
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Quality Status", accessor: "AuditStatus",
@@ -119,7 +120,7 @@ const PI_Detail = props => {
         //{ Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
         //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
         //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
-        //{ Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
+        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         //{ Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
@@ -147,7 +148,7 @@ const PI_Detail = props => {
         //{ Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
         { Header: "Vender Lot", width: 130, accessor: "diRef1", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10 },
+        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10, Cell: e => getFormatPrscen(e.original) },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
         {
             Header: "Quality Status", accessor: "diAuditStatus",
@@ -160,7 +161,7 @@ const PI_Detail = props => {
         //{ Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
         //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
         //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
-        //{ Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
+        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
@@ -183,6 +184,12 @@ const PI_Detail = props => {
         return moment(e.diExpireDate).format("DD/MM/YYYY");
     }
 
+    const getFormatPrscen = (e) => {
+        var query = queryString.parse(e.Options) 
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
 
     const getDoccode = (e) => {
         if (e.ID != 0) {
@@ -219,7 +226,10 @@ const PI_Detail = props => {
 
 
     const getFormatQty = (e) => {
-        return e.qtyrandom + '%'
+        let query = queryString.parse(e.Options)
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
     }
 
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

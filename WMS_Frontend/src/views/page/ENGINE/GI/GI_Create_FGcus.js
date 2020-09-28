@@ -49,10 +49,11 @@ const GI_Create_FGCustomer = props => {
     const [addlist, setaddlist] = useState({})
 
 
+
     useEffect(() => {
-        
-        
-        if (CodeprocessType !== "" && CodeprocessType !== null) {    
+
+
+        if (CodeprocessType !== "" && CodeprocessType !== null) {
             var DataprocessTypeID;
             var defaulProcessType = 1010
             if (CodeprocessType === 1) {
@@ -61,16 +62,16 @@ const GI_Create_FGCustomer = props => {
                     { label: "Des. Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
                 ]
             } else if (CodeprocessType === 2) {
-                
-                 DataprocessTypeID =[ { label: "Sou. Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
-                     { label: "Des. Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
-                   ]
+
+                DataprocessTypeID = [{ label: "Sou. Customer", type: "dropdown", key: "souCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Customer" },
+                { label: "Des. Customer", type: "dropdown", key: "desCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Customer" }
+                ]
             } else if (CodeprocessType === 3) {
                 DataprocessTypeID = [
                     { label: "Sou. Supplier", type: "dropdown", key: "souSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Source Supplier" },
                     { label: "Des. Supplier", type: "dropdown", key: "desSupplierID", queryApi: SupplierQuery, fieldLabel: ["Code", "Name"], defaultValue: 1311, codeTranslate: "Des Supplier" }]
             } else {
-               // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
+                // DataprocessTypeID = { label: "Source Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" }
             }
 
 
@@ -80,11 +81,11 @@ const GI_Create_FGCustomer = props => {
                     { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code" ,"ReProcessType_Name"], defaultValue: 4061, codeTranslate: "Process Type" },
+                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4061, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
-                
-                    DataprocessTypeID,
+
+                DataprocessTypeID,
 
                 [
                     // { label: "For Customer", type: "dropdown", key: "forCustomerID", queryApi: CustomerQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "For Customer" },
@@ -98,7 +99,7 @@ const GI_Create_FGCustomer = props => {
             setskuquery();
             setaddlistquery();
             setType(true)
-         
+
         } else {
 
         }
@@ -113,7 +114,7 @@ const GI_Create_FGCustomer = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
-                    onChangeProcessTypeCode={((e)=> { setProcessTypeCode(e) })}
+                    onChangeProcessTypeCode={((e) => { setProcessTypeCode(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
@@ -125,7 +126,7 @@ const GI_Create_FGCustomer = props => {
                 />
             );
         }
-     
+
 
     }, [HeaderDoc, CodeprocessType, columSKU, addlist])
 
@@ -151,21 +152,17 @@ const GI_Create_FGCustomer = props => {
             Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
         }
 
-        if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132') {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
-        } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991') {
+        if (ProcessTypeCode === '4081' ||
+            ProcessTypeCode === '4041' ||
+            ProcessTypeCode === '4151' ||
+            ProcessTypeCode === '5011' ||
+            ProcessTypeCode === '5141' ||
+            ProcessTypeCode === '5151' 
+            ) {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
-        } else if (ProcessTypeCode === '5013') {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
         } else {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
-        //if (ProcessTypeCode === '4081' || ProcessTypeCode === '4141' || ProcessTypeCode === '4151' ||
-        //    ProcessTypeCode === '5011' || ProcessTypeCode === '5141' || ProcessTypeCode === '5151') {
-        //    AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
-        //} else {
-        //    AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
-        //}
         var columnEdit = [
             // { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
             {
@@ -215,12 +212,31 @@ const GI_Create_FGCustomer = props => {
 
 
     useEffect(() => {
+        let Querys;
+        if (ProcessTypeCode === '4081' ||
+            ProcessTypeCode === '4041' ||
+            ProcessTypeCode === '4151' ||
+            ProcessTypeCode === '5011' ||
+            ProcessTypeCode === '5141' ||
+            ProcessTypeCode === '5151' ) {
+            Querys = [
+                { "f": "Status", "c": "<", "v": 2 },
+                { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType },
+                { 'f': 'IsStock', 'c': '=', 'v': 1 },
+                { 'f': 'AuditStatus', 'c': '=', 'v': 1 }]
+        } else {
+            Querys = [{ "f": "Status", "c": "<", "v": 2 },
+                { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType },
+                { 'f': 'IsStock', 'c': '=', 'v': 1}
+            ]
+        }
+
         if (view_sto !== undefined) {
             let objQueryaddlist = view_sto;
             if (objQueryaddlist !== null && Type === true && skuType !== undefined) {
                 let addqrys = JSON.parse(objQueryaddlist.q);
-             addqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
-              objQueryaddlist.q = JSON.stringify(addqrys);
+                addqrys = Querys
+                objQueryaddlist.q = JSON.stringify(addqrys);
             }
 
             setaddlistquery(objQueryaddlist)
@@ -241,7 +257,7 @@ const GI_Create_FGCustomer = props => {
 
         setaddlist(addLists)
 
-    }, [skuType])
+    }, [skuType, ProcessTypeCode])
 
     const AuditStatus = [
         { label: 'QUARANTINE', value: '0' },
@@ -326,6 +342,7 @@ const GI_Create_FGCustomer = props => {
         { Header: "Qty", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType", width: 70 },
         { Header: "Quality Status", accessor: "auditStatus" },
+        { Header: "Lot", accessor: "Lot" },
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Remark", accessor: "remark" },
         //{ Header: "Ref3", accessor: "ref3" },
@@ -335,10 +352,10 @@ const GI_Create_FGCustomer = props => {
         { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
         //{ Header: "ShelfLife", accessor: "ShelfLifePercent" }
-    
+
     ];
 
-  
+
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
         { Header: "Item Code", accessor: "skuCode" },
@@ -355,7 +372,7 @@ const GI_Create_FGCustomer = props => {
         //{ Header: "Ref3", accessor: "ref3" },
         //{ Header: "Ref4", accessor: "ref4" },
         //{ Header: "Carton No.", accessor: "cartonNo" },
-       // { Header: "Incubation Day", accessor: "incubationDay" },
+        // { Header: "Incubation Day", accessor: "incubationDay" },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,

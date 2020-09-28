@@ -964,6 +964,7 @@ const DocumentView = props => {
                     pageSize={100}
                     dataSource={data}
                     height={200}
+                    tableConfig={false}
                     rowNumber={false}
                     customAction={
                         [{
