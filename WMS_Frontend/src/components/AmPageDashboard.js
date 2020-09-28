@@ -94,10 +94,10 @@ const AmMonitor = props => {
     const width_height = useWindowSize(isFullScreen);
 
     function useWindowSize(full) {
-        const [size, setSize] = useState({width:0, height:0});
+        const [size, setSize] = useState({ width: 0, height: 0 });
         useLayoutEffect(() => {
             function updateSize() {
-                setSize({width:window.innerWidth, height:window.innerHeight}); 
+                setSize({ width: window.innerWidth, height: window.innerHeight });
             }
             window.addEventListener('resize', updateSize);
             updateSize();
@@ -105,9 +105,9 @@ const AmMonitor = props => {
         }, []);
 
         useEffect(() => {
-            
+
             function updateSize() {
-                setSize({width:window.innerWidth, height:window.innerHeight}); 
+                setSize({ width: window.innerWidth, height: window.innerHeight });
             }
             updateSize();
         }, [full]);
@@ -115,11 +115,11 @@ const AmMonitor = props => {
     }
 
     useEffect(() => {
-        if (document.fullscreenElement === null && isFullScreen){
+        if (document.fullscreenElement === null && isFullScreen) {
             setIsFullScreen(false)
         }
     }, [document.fullscreenElement])
-    
+
 
     const time = props.time ? clock : null
 
@@ -197,16 +197,41 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        if (rowInfo.StyleStatus === "normal") {
-            return { backgroundColor: "white", lineHeight: "35px" }
-        } else if (rowInfo.StyleStatus === "working") {
-            return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+        if (rowInfo.StyleStatus !== undefined) {
+            if (rowInfo.StyleStatus === "normal") {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            } else if (rowInfo.StyleStatus === "working") {
+                return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+            } else {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            }
         } else {
-            return { backgroundColor: "white", lineHeight: "35px" }
+            if (rowInfo.AuditStatus === 0) {
+                return {
+                    background: '#ffc107',
+                    color: '#2f353a', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 1) {
+                return {
+                    background: '#357a38',
+                    color: '#ffffff', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 2) {
+                return {
+                    background: '#f86c6b',
+                    color: '#fff', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 9) {
+                return {
+                    background: '#212121',
+                    color: '#fff', lineHeight: "35px"
+                }
+            } else {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            }
         }
-
     }
-    
+
     function openFullscreen() {
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen();
@@ -217,9 +242,9 @@ const AmMonitor = props => {
         } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
             document.documentElement.msRequestFullscreen();
         }
-      }
+    }
 
-      function closeFullscreen() {
+    function closeFullscreen() {
         if (window.exitFullscreen) {
             document.exitFullscreen();
         } else if (document.mozCancelFullScreen) { /* Firefox */
@@ -229,7 +254,7 @@ const AmMonitor = props => {
         } else if (document.msExitFullscreen) { /* IE/Edge */
             document.msExitFullscreen();
         }
-      }
+    }
 
     const table = props.coltable.map((x, xi) => {
         if (x.length === 1) {
@@ -360,7 +385,7 @@ const AmMonitor = props => {
     ) : null
 
     return (
-        <div style={isFullScreen ? { width:"100%", height:"100%", position:"absolute", top:0, left:0, zIndex:999999 } : {}}>
+        <div style={isFullScreen ? { width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 999999 } : {}}>
             <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <Grid container direction="row" justify="flex-start" alignItems="stretch" >
                     <Grid item xs={12} sm={6} md={6} xl={6}>
