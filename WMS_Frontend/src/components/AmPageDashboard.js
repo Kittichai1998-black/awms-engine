@@ -101,7 +101,7 @@ const AmMonitor = props => {
             }
             window.addEventListener('resize', updateSize);
             updateSize();
-            return () => window.removeEventListener('resize', updateSize);
+            return () => window.removeEventListener('resize', updateSize)
         }, []);
 
         useEffect(() => {
@@ -114,16 +114,23 @@ const AmMonitor = props => {
         return size;
     }
 
-    // const [height,setHeight] = useState(window.innerHeight)
-    // const { width, height } = useWindowWidth();
+    useEffect(() => {
+        if (document.fullscreenElement === null && isFullScreen){
+            setIsFullScreen(false)
+        }
+    }, [document.fullscreenElement])
+    
+
     const time = props.time ? clock : null
 
     const goFull = () => {
         setIsFullScreen(true);
+        openFullscreen();
         setCalHeight(0.4);
     }
     const goMin = () => {
         setIsFullScreen(false);
+        closeFullscreen();
         setCalHeight(0.35);
     }
 
@@ -199,6 +206,30 @@ const AmMonitor = props => {
         }
 
     }
+    
+    function openFullscreen() {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+            document.documentElement.msRequestFullscreen();
+        }
+      }
+
+      function closeFullscreen() {
+        if (window.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+      }
 
     const table = props.coltable.map((x, xi) => {
         if (x.length === 1) {
