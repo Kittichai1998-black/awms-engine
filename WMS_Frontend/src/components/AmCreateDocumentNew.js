@@ -22,6 +22,7 @@ import { getUnique } from './function/ObjectFunction'
 import AmDialogconfirm from './AmDialogConfirm'
 import LabelT from './AmLabelMultiLanguage'
 import AmTable from './AmTable/AmTable'
+
 import moment from "moment";
 import "moment/locale/pt-br";
 
@@ -178,7 +179,9 @@ const AmCreateDocument = (props) => {
 
     const columns = props.columns.concat(rem)
 
-
+    useEffect(() => {
+        console.log(props.addList)
+    }, [props.addList])
 
     useEffect(() => {
         getTypeEditor()
@@ -198,7 +201,6 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (createDocumentData != {}) {
-            console.log(props.defaulact)
             if (createDocumentData.actionTime !== null && props.defaulact === false) {
                 createDocumentData.actionTime = null
                 setcreateDocumentData(createDocumentData)
@@ -252,27 +254,29 @@ const AmCreateDocument = (props) => {
 
 
 
-    useEffect(() => {
-        if (props.addList) {
-            setaddlistAPI(props.addList.queryApi)
-        }
-    }, [processType])
+    //useEffect(() => {
+    //    console.log(props.addList)
+    //    if (props.addList) {
+    //        console.log(props.addList.queryApi)
+    //        setaddlistAPI(props.addList.queryApi)
+    //    }
+    //}, [props.addList])
 
 
     useEffect(() => {
-        if (addlistAPI !== undefined) {
+        if (props.addList !== undefined) {
             setBtnAddLists(< BtnAddList
                 primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
                 headerCreate={props.headerCreate}
                 history={props.history}
-                queryApi={addlistAPI}
+                queryApi={props.addList.queryApi}
                 columns={props.addList.columns}
                 search={props.addList.search}
                 textBtn="Add Item List"
                 onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
                 dataCheck={dataSource} />)
         }
-    }, [addlistAPI])
+    },[props.addList])
 
 
 
@@ -404,8 +408,8 @@ const AmCreateDocument = (props) => {
         if (field === "auditStatus" && data != null) {
             editData["auditStatus"] = data.label
         }
-        if (field === "skuCode") {
-            setskuID(data.skuID);
+        if (field === "Code") {
+            setskuID(data.ID);
         }
 
 
@@ -880,6 +884,7 @@ const AmCreateDocument = (props) => {
                 <AmDatepicker
                     TypeDate={"datetime-local"}
                     defaultValue={defaultValueDate ? defaultValueDate : true}
+                    fieldID={key}
                     value={createDocumentData[key]}
                     style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
@@ -1125,6 +1130,7 @@ const AmCreateDocument = (props) => {
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
+                x.options = x.qtyrandom ? qtyrandom.concat(x.qtyrandom) : null
                 return x
 
             })
@@ -1134,6 +1140,7 @@ const AmCreateDocument = (props) => {
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
+                x.options = x.qtyrandom ? qtyrandom.concat(x.qtyrandom) : null
                 return x
             })
         } else if (props.createDocType === "issue") {
