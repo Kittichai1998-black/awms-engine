@@ -56,19 +56,19 @@ const desAreaQuery = {
 };
 
 const processCondition = {
-    // "conditions": [
-    //     {
-    //         "field": "Full Pallet", "key": "useFullPick", "enable": false, "defaultValue": true, "editable": true,
-    //     },
-    //     {
-    //         "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
-    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-    //     },
-    //     {
-    //         "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true,
-    //         // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
-    //     }
-    // ],
+    "conditions": [
+        {
+            "field": "Shelf Life", "key": "useShelfLifeDate", "enable": false, "defaultValue": true, "editable": true,
+        },
+        // {
+        //     "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
+        //     // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
+        // },
+        // {
+        //     "field": "Expire Date", "key": "useExpireDate", "enable": false, "defaultValue": true, "editable": true,
+        //     // custom: (c) => { return { "enable": false, "defaultValue": true, "editable": true } } 
+        // }
+    ],
     "eventStatuses": [
         {
             "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": true,

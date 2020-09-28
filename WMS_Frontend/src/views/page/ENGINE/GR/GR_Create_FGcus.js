@@ -3,9 +3,8 @@
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
 import Grid from '@material-ui/core/Grid';
-import queryString from "query-string";
+//import queryString from "query-string";
 import moment from "moment";
-
 import {
     apicall,
     createQueryString
@@ -17,7 +16,7 @@ const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
+    f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -132,15 +131,9 @@ const RD_Create_FGCustomer = props => {
         } else {
             Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true}
         }
-        //if (skuType === 5) {
-        //    Horder = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
-        //} else {
-        //    Horder = { Header: "Order No.", accessor: "orderNo", type: "input", width: '300px' }
-        //}
-    
-        if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' ) {
+        if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' || ProcessTypeCode === '4192'  ) {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
-        } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991' ) {
+        } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991' || ProcessTypeCode === '4092') {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
         } else if (ProcessTypeCode === '5013') {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
@@ -149,60 +142,47 @@ const RD_Create_FGCustomer = props => {
         }
 
         var columnEdit = [
-            // { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
+            AuditStatusDDL,
+            Headers,
             {
-                // search: false,
                 Header: "Item Code",
-                accessor: "skuCode",
+                accessor: "Code",
                 type: "findPopUp",
+                search: "Code",
                 queryApi: skuquery,
-                fieldLabel: ["skuCode"],
+                fieldLabel: ["Code"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuName", "SKUItems"],
+                related: ["Name"],
                 fieldDataKey: "Code", // ref กับ accessor
-                //defaultValue: "PJAAN04-0024",
                 required: true
             },
             {
-                // search: false,
                 Header: "Item Name",
-                accessor: "skuName",
+                accessor: "Name",
                 type: "findPopUp",
                 queryApi: skuquery,
-                fieldLabel: ["skuName"],
+                fieldLabel: ["Name"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuCode", "SKUItems"],
-                fieldDataKey: "Name", // ref กับ accessor
-                //defaultValue: "PJAAN04-0024",
+                related: ["Code",],
+                fieldDataKey: "Name",
                 required: true
             },
-            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
-            //{ Header: "Batch", accessor: "batch", type: "input", width: '300px' },
-               Headers,
-            { Header: "Qty", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
+            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }, 
+            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true},
-              AuditStatusDDL,
-
-            //{ Header: "Ref2", accessor: "ref2", type: "input" },
-            //{ Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
-            //{ Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
-           // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
+            { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
             { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
-            //{ Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
         ];
 
         setcolumSKU(columnEdit)
-        //setType(false)
-
-        //setskuquery()
     }, [skuType, ProcessTypeCode])
 
     const AuditStatus = [
         { label: 'QUARANTINE', value: '0' },
         { label: 'PASSED', value: '1' },
-        { label: 'REJECTED', value: '2' },
+        //{ label: 'REJECTED', value: '2' },
         { label: 'HOLD', value: '9' },
     ];
 
@@ -271,28 +251,22 @@ const RD_Create_FGCustomer = props => {
     };
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
 
     const columns = [
-       // { id: "row", Cell: row => row.index + 1, width: 35 },
-        //{ Header: "Item No.", accessor: "itemNo" },
-        { Header: "Item Code", accessor: "skuCode" },
-        { Header: "Item Name", accessor: "skuName", width: 200 },
-        { Header: "Control No.", accessor: "orderNo" },
-        //{ Header: "Batch", accessor: "batch" },
+        { Header: "Quality Status", accessor: "auditStatus" }, 
         { Header: "Lot", accessor: "lot" },
         { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Qty", accessor: "quantity" },
-        { Header: "Unit", accessor: "unitType" },
-        { Header: "Quality Status", accessor: "auditStatus" },        
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name", width: 200 },
+        { Header: "Control No.", accessor: "orderNo" },
+        { Header: "Quantity", accessor: "quantity" },
+        { Header: "Unit", accessor: "unitType" },   
         { Header: "Remark", accessor: "remark" },
-        //{ Header: "Ref3", accessor: "ref3" },
-        //{ Header: "Ref4", accessor: "ref4" },
-        //{ Header: "Carton No.", accessor: "cartonNo" },
-        //{ Header: "Incubation Day", accessor: "incubationDay" },
+        { Header: "Carton No.", accessor: "cartonNo" },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
@@ -303,7 +277,6 @@ const RD_Create_FGCustomer = props => {
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
             CellPDF: e => getFormatDateExp(e)
         }
-        //{ Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     ];
 
     const getFormatDatePro = (e) => {

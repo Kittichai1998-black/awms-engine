@@ -22,6 +22,7 @@ import AmInput from "./AmInput";
 import AmTable from "./AmTable/AmTable";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
+import queryString from "query-string";
 import moment from "moment";
 
 // import MaterialTable from './AmCreateDocument_TableNew'
@@ -148,62 +149,65 @@ const StyledSearch = styled.div`
 `;
 const BtnAddList = props => {
     const [open, setOpen] = useState(false);
-    const [query, setQuery] = useState(props.queryApi);
+    const [pageSize, setPageSize] = useState(20);
+    const [page, setPage] = useState(1);
+    const [query, setQuery] = useState();
     const [data, setData] = useState([]);
     const [sort, setSort] = useState();
+    const [iniQuery, setIniQuery] = useState(true);
     const [dataSelect, setDataSelect] = useState([]);
-    const [page, setPage] = useState();
     const [keySearch, setKeySearch] = useState({});
     const [searchAction, setSearchAction] = useState(false);
     const [defaultSelect, setDefaultSelect] = useState();
     const [totalSize, setTotalSize] = useState(0);
 
+    useEffect(() => {
+        console.log(props.queryApi)
+        setQuery(props.queryApi)
+    }, open, props.queryApi)
+
+
+    //useEffect(() => {
+    //    setDataSelect([])
+    //    if (open) {
+    //        const dataHeader = props.headerCreate
+    //            .reduce((arr, el) => arr.concat(el), [])
+    //            .filter(x => x.search);
+    //        if (dataHeader.length) {
+    //            dataHeader.map(x => {
+    //                props.search.map(y => {
+    //                    if (x.key === y.accessor) {
+    //                        if (y.defaultValue) {
+    //                            let queryQ = JSON.parse(query.q),
+    //                                ind = queryQ.findIndex(z => z.f === x.key);
+    //                            if (ind !== -1) queryQ.splice(ind, 1);
+    //                            queryQ.push({
+    //                                f: x.key,
+    //                                c: "like",
+    //                                v: y.defaultValue
+    //                            });
+    //                            query.q = JSON.stringify(queryQ);
+    //                        } else {
+    //                            let queryQ = JSON.parse(query.q),
+    //                                ind = queryQ.findIndex(z => z.f === x.key);
+
+    //                            if (ind !== -1) queryQ.splice(ind, 1);
+    //                            query.q = JSON.stringify(queryQ);
+    //                        }
+    //                    }
+    //                });
+    //            });
+    //        }
+    //    } else {
+    //        setQuery({ ...props.queryApi })
+    //        setKeySearch({})
+    //    }
+    //}, [open]);
 
     useEffect(() => {
-        console.log(query)
-    }, [props.queryApi])
-
-
-    useEffect(() => {
-        setDataSelect([])
-        if (open) {
-            const dataHeader = props.headerCreate
-                .reduce((arr, el) => arr.concat(el), [])
-                .filter(x => x.search);
-            if (dataHeader.length) {
-                dataHeader.map(x => {
-                    props.search.map(y => {
-                        if (x.key === y.accessor) {
-                            if (y.defaultValue) {
-                                let queryQ = JSON.parse(query.q),
-                                    ind = queryQ.findIndex(z => z.f === x.key);
-                                if (ind !== -1) queryQ.splice(ind, 1);
-                                queryQ.push({
-                                    f: x.key,
-                                    c: "like",
-                                    v: y.defaultValue
-                                });
-                                query.q = JSON.stringify(queryQ);
-                            } else {
-                                let queryQ = JSON.parse(query.q),
-                                    ind = queryQ.findIndex(z => z.f === x.key);
-
-                                if (ind !== -1) queryQ.splice(ind, 1);
-                                query.q = JSON.stringify(queryQ);
-                            }
-                        }
-                    });
-                });
-            }
-        } else {
-            setQuery({ ...props.queryApi })
-            setKeySearch({})
-        }
-    }, [open]);
-
-    useEffect(() => {
-        if (open) {
-            Axios.get(createQueryString(query)).then(res => {
+        if (props.queryApi) {
+            console.log(props.queryApi)
+            Axios.get(createQueryString(props.queryApi)).then(res => {
                 // console.log(res.data.datas);
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
@@ -217,18 +221,20 @@ const BtnAddList = props => {
                 }
             });
         }
-    }, [query, open]);
+    }, [props.queryApi, open]);
 
 
     const SetFormaatdata = (datas) => {
         let dataSet = datas.map(x => {
+            let query = queryString.parse(x.Options)
             let obj = {
                 ...x,
                 quantity: x.Quantity,
                 expireDate: x.expireDate ? moment(x.expireDate).format('MM-DD-YYYY') : null,
                 productionDate: x.productionDate ? moment(x.productionDate).format('MM-DD-YYYY') : null,
-                auditStatus: GetAuditStatus(x.auditStatus),
-                ShelfLifePercent: x.ShelfLifePercent ? x.ShelfLifePercent + '%' : null
+                auditStatus: GetAuditStatus(x.AuditStatus),
+                ShelfLifePercent: x.ShelfLifePercent ? x.ShelfLifePercent + '%' : null,
+                remark: query.remark != null ? query.remark : ''
             }
             return obj
         })
@@ -237,11 +243,10 @@ const BtnAddList = props => {
     }
 
     const GetAuditStatus = (value) => {
-        console.log(value)
         if (value === 0) {
             return "QUARANTINE"
         } else if (value === 1) {
-            return "PASS"
+            return "PASSED"
         } else if (value === 2) {
             return "NOTPASS"
         } else if (value === 9) {
@@ -249,13 +254,13 @@ const BtnAddList = props => {
         }
     };
 
-    useEffect(() => {
-        if (typeof page === "number") {
-            // const queryEdit = JSON.parse(JSON.stringify(query));
-            query.sk = page === 0 ? 0 : page * parseInt(query.l, 10);
-            setQuery({ ...query });
-        }
-    }, [page]);
+    //useEffect(() => {
+    //    if (typeof page === "number") {
+    //        // const queryEdit = JSON.parse(JSON.stringify(query));
+    //        query.sk = page === 0 ? 0 : page * parseInt(query.l, 10);
+    //        setQuery({ ...query });
+    //    }
+    //}, [page]);
 
     useEffect(() => {
         if (sort) {
@@ -373,19 +378,22 @@ const BtnAddList = props => {
                         columns={props.columns}
                         filterable={true}
                         filterData={res => { onChangeFilterData(res) }}
-                        // pageSize={200}
+                        pageSize={20}
+                        pagination={true}
+                        onPageSizeChange={(pg) => { setPageSize(pg) }}
+                        onPageChange={p => {
+                            if (page !== p)
+                                setPage(p)
+                            else
+                                setIniQuery(false)
+                        }}
                         dataSource={data}
-                        //   height={200}
                         rowNumber={true}
-                        tableConfig={false}
-                        height="390px"
-                        pageSize={props.queryApi.l || 20}
+                        tableConfig={true}                                        
                         sortable
                         sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
                         selectionDefault={defaultSelect}
-                        currentPage={page}
                         selection={true}
-                        // selectionType="checkbox"
                         selectionData={data => setDataSelect(data)}
                     />
 
@@ -412,14 +420,14 @@ const BtnAddList = props => {
           /> */}
                 </DialogContent>
                 <DialogActions>
-                    <Pagination
+                    {/*<Pagination
                         //จำนวนข้อมูลทั้งหมด
                         totalSize={totalSize}
                         //จำนวนข้อมูลต่อหน้า
                         pageSize={props.queryApi.l || 20}
                         //return หน้าที่ถูกกด : function
                         onPageChange={page => setPage(page)}
-                    />
+                    />*/ }
                     <AmButton
                         styleType="add"
                         onClick={() => {
