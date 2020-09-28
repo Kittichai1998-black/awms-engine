@@ -24,7 +24,7 @@ const DocumentSearch = props => {
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1001}]',
         f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",

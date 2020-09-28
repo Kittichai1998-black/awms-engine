@@ -55,7 +55,7 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
-  
+
   const [reset, setReset] = useState(false)
 
   const Query = {
@@ -77,9 +77,9 @@ const AmSearchDocumentV2 = props => {
 
   }, [queryViewData])
 
-  useEffect(()=> {
-    return () => {setReset(false)}
-  },[reset]);
+  useEffect(() => {
+    return () => { setReset(false) }
+  }, [reset]);
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -244,7 +244,7 @@ const AmSearchDocumentV2 = props => {
   const onHandleEditConfirm = (status) => {
     if (status) {
       onUpdateStatus("reject")
-      setReset(false)
+      setReset(true)
     }
 
     setDialog(false);

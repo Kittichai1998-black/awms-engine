@@ -105,7 +105,7 @@ const AmPrintBarCode = props => {
 
   }
   const genDataPalletList = () => {
-    console.log("ghjk")
+
     var itemList = [];
     var item = {};
     if (props.data !== undefined) {
@@ -202,7 +202,7 @@ const AmPrintBarCode = props => {
       </div>
       <FormInline>
         <label style={{ fontWeight: "bold", width: "50px" }}>{t("Min") + " : "}</label>
-        <AmInput id={"field"} style={{ width: "60px" }} type="number"
+        <AmInput id={"field"} style={{ width: "60px" }} type="number" disabled={true}
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
           onKeyPress={(value, obj, element, event) => {
             if (event.key === "Enter") {
@@ -245,7 +245,7 @@ const AmPrintBarCode = props => {
     </div>
   };
   const onHandleChangeGeneratePallet = (value, mode) => {
-    console.log(value)
+    // console.log(value)
     setValueQty({ min: value.min, max: value.max })
     setGenData(true)
     var itemList = [];
@@ -270,7 +270,7 @@ const AmPrintBarCode = props => {
       itemList.push(item)
     });
 
-    console.log(valueQty)
+    // console.log(valueQty)
     const dataSend = {
       mode: mode,
       docID: props.docID,
@@ -280,7 +280,7 @@ const AmPrintBarCode = props => {
       supplierCode: props.SouSupplierCode,
       Item: itemList
     }
-    console.log(dataSend)
+    // console.log(dataSend)
     Axios.post(window.apipath + "/v2/gen_pallet", dataSend).then((res) => {
       // console.log(res.data)
       setDataSourceGenPallet(res.data)
@@ -330,7 +330,7 @@ const AmPrintBarCode = props => {
 
   return (
     <div>
-      {console.log(props.data)}
+      {/* {console.log(props.data)} */}
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}

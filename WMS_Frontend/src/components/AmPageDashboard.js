@@ -180,17 +180,40 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        //console.log(rowInfo)
-        if (rowInfo.StyleStatus === "normal") {
-            return { backgroundColor: "white", lineHeight: "35px" }
-        } else if (rowInfo.StyleStatus === "working") {
-            return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+        if (rowInfo.StyleStatus !== undefined) {
+            if (rowInfo.StyleStatus === "normal") {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            } else if (rowInfo.StyleStatus === "working") {
+                return { backgroundColor: "rgb(255, 207, 61)", lineHeight: "35px" }
+            } else {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            }
         } else {
-            return { backgroundColor: "white", lineHeight: "35px" }
+            if (rowInfo.AuditStatus === 0) {
+                return {
+                    background: '#ffc107',
+                    color: '#2f353a', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 1) {
+                return {
+                    background: '#357a38',
+                    color: '#ffffff', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 2) {
+                return {
+                    background: '#f86c6b',
+                    color: '#fff', lineHeight: "35px"
+                }
+            } else if (rowInfo.AuditStatus === 9) {
+                return {
+                    background: '#212121',
+                    color: '#fff', lineHeight: "35px"
+                }
+            } else {
+                return { backgroundColor: "white", lineHeight: "35px" }
+            }
         }
-
     }
-
     const table = props.coltable.map((x, xi) => {
         if (x.length === 1) {
             return (

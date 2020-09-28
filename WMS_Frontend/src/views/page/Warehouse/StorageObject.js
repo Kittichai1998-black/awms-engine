@@ -67,12 +67,7 @@ const StorageObject = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    {
-      Header: "Pallet",
-      accessor: "Pallet",
-      width: 130,
-      //Cell: e => getImgPallet(e.original.Pallet)
-    },
+    { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -84,11 +79,18 @@ const StorageObject = props => {
       fixWidth: 200,
 
     },
+    {
+      Header: "Pallet",
+      accessor: "Pallet",
+      width: 130,
+      //Cell: e => getImgPallet(e.original.Pallet)
+    },
+
     // { Header: "Project", accessor: "Project", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+
     {
       Header: "Qty",
       accessor: "SaleQty",
@@ -100,7 +102,34 @@ const StorageObject = props => {
     { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
     { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
     { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    { Header: "MDT Shelf life", accessor: "ExpiryDay", width: 100, type: "number" },
+    { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
+    {
+      Header: "Product Date",
+      accessor: "Product_Date",
+      width: 150,
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      }
+      , customFilter: { field: "Product_Date" },
+      dateFormat: "DD/MM/YYYY"
+    },
+    {
+      Header: "Expiry Date",
+      accessor: "Expiry_Date",
+      width: 150,
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      }
+      , customFilter: { field: "Expiry_Date" },
+      dateFormat: "DD/MM/YYYY"
+    },
     {
       Header: "Received Date",
       accessor: "Receive_Time",

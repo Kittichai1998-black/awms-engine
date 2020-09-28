@@ -48,15 +48,23 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
-                        this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
-                        var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
-
-                        var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
-                        if (ckHold)
+                        if(sto.eventStatus != StorageObjectEventStatus.NEW)
                         {
-                            bsto.IsHold = reqVO.IsHold;
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                            this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                            var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
+
+                            var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
+                            if (ckHold)
+                            {
+                                bsto.IsHold = reqVO.IsHold;
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                            }
                         }
+                        else
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถ Hold Status ที่เป็น New ได้");
+                        }
+                        
 
                     }
                 }
