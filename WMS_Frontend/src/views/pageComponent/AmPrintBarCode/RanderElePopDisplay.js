@@ -34,7 +34,7 @@ const LabelDQty = {
 const DataGenerateElePopDisplay = (data) => {
 
   return data.map((pack, index) => {
-    console.log(pack)
+    // console.log(pack)
     return (<div key={index}>
       <FormInline>
         <label style={LabelH}>{"Code : "}</label>

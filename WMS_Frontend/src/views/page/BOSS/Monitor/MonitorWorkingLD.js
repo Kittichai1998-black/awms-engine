@@ -2,7 +2,7 @@ import * as signalR from '@aspnet/signalr';
 
 // import Axios from 'axios'
 import React, { useState, useEffect } from 'react'
-
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import AmDropdown from '../../../../components/AmDropdown';
 import AmIconStatus from "../../../../components/AmIconStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
@@ -13,7 +13,7 @@ const headercol1 = [
     { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
     { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
-    //{ accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
     { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
     { accessor: "Pallet_Code", Header: "Pallet", width: 100, sortable: false, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Item Code", width: 100, sortable: false },
@@ -27,9 +27,13 @@ const headercol1 = [
 
 const headercol2 = [
     { accessor: "TIME", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "TaskName", Header: "Task", width: 100, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
+    {
+        accessor: "TaskName", Header: "Task", width: 100, sortable: false, style: { textAlign: "center" },
+        Cell: row => getIconStatus(row.original.EventStatus)
+    },
     // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
+    { accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
     { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
     { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
     { accessor: "Product", Header: "Item Code", sortable: false },
@@ -37,6 +41,11 @@ const headercol2 = [
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
     { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
 ]
+const getIconStatus = Status => {
+    return <AmStorageObjectStatus statusCode={Status} />;
+    //return <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
+
+};
 
 export default props => {
 
@@ -81,18 +90,18 @@ export default props => {
         connection.start()
             .then(() => {
                 connection.on(Hub[0], res => {
-                    console.log(JSON.parse(res));
+                    //console.log(JSON.parse(res));
                     data[0][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
                 connection.on(Hub[1], res => {
-                    console.log(JSON.parse(res));
+                    //console.log(JSON.parse(res));
                     data[1][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
             })
             .catch((err) => {
-                console.log(err);
+                //console.log(err);
                 setTimeout(() => signalrStart(), 5000);
             })
     };

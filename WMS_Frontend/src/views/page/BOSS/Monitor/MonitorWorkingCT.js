@@ -5,7 +5,7 @@ import queryString from 'query-string'
 // import Moment from 'moment'
 import React, { useState, useEffect } from 'react'
 // import { useTranslation } from 'react-i18next'
-
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../components/function/CoreFunction'
 
@@ -27,19 +27,18 @@ export default props => {
 
     const headercol1 = [
         { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-        // { accessor: "Cur_AreaLocation_Code", Header: "Gate", width: 60, sortable: false, style: { textAlign: "center" } },
-        { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
         { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
-        // { accessor: "Control No.", Header: "OrderNo", width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
         { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
-        { accessor: "PalletCode", Header: "Pallet", width: 100, sortable: false, style: { textAlign: "center" } },
-        { accessor: "PackName", Header: "Item Code", width: 100, sortable: false },
+        { accessor: "Pallet_Code", Header: "Pallet", width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Product", Header: "Item Code", width: 100, sortable: false },
         // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
         // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
         // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
 
 
-        { accessor: "DocumentCode", Header: "Doc No.", width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Document_Code", Header: "Doc No.", width: 120, sortable: false, style: { textAlign: "center" } },
     ]
 
     const [data, setData] = useState([
@@ -88,7 +87,7 @@ export default props => {
                     })
                 })
                 .catch((err) => {
-                    console.log(err);
+                    //console.log(err);
                     setTimeout(() => signalrStart(), 5000);
                 })
         };

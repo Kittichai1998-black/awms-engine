@@ -69,7 +69,7 @@ const AmStorageObjectMulti = props => {
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"=", "v": "QUARANTINE"}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"in", "v": "QUARANTINE,HOLD"}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -221,9 +221,9 @@ const AmStorageObjectMulti = props => {
     setSelection([]);
   };
 
-  useEffect(()=> {
-    return () => {setReset(false)}
-  },[reset]);
+  useEffect(() => {
+    return () => { setReset(false) }
+  }, [reset]);
 
 
   const DataGenerateRemark = () => {

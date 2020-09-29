@@ -67,12 +67,8 @@ const QualityStatus = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    {
-      Header: "Pallet",
-      accessor: "Pallet",
-      width: 130,
-      //Cell: e => getImgPallet(e.original.Pallet)
-    },
+    { Header: "Lot", accessor: "Lot", width: 80 },
+
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -83,12 +79,16 @@ const QualityStatus = props => {
       accessor: "SKU_Name",
       fixWidth: 200,
 
+    }, {
+      Header: "Pallet",
+      accessor: "Pallet",
+      width: 130,
+      //Cell: e => getImgPallet(e.original.Pallet)
     },
     // { Header: "Project", accessor: "Project", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Qty",
       accessor: "SaleQty",
