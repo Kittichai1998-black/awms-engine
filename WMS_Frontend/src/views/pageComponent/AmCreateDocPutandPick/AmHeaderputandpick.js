@@ -312,16 +312,17 @@ const AmHeaderputandpick = (props) => {
                 datasCheck.push(datas)
             }
         })
-
+        console.log(datasCheck)
         if (datasCheck.length === 0) {
             dia.setdailogMsg('Quantity document is Empty')
             dia.setdailogErr(true)
+            doc.setdialogItem(false)
+            doc.setdialogItemSet(false)
 
         } else if (datasCheck.length > 0) {
             if (!ChkCol) {
                 setColums();
             }
-            console.log(datasCheck)
             doc.setdatadocItem(datasCheck);
             doc.setdataSet(datasCheck)
             doc.setdialogItem(true)
@@ -737,7 +738,6 @@ const AmHeaderputandpick = (props) => {
             return true
     }
 
-    console.log(doc.datadocItem)
 
     return <div>
         {getHeaderCreate()}
