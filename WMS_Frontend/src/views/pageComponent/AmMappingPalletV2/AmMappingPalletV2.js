@@ -385,7 +385,7 @@ const AmMappingPalletV2 = props => {
     setQrCode("")
     setPalletCode("")
     setCheckedAuto(true)
-
+    setFlaggetDataDoc(false)
     setDataPallet(null)
     setDataDoc(null)
     setActiveStep(activeStep - 1);
@@ -469,6 +469,7 @@ const AmMappingPalletV2 = props => {
       };
 
       if (type === "confirm") {
+        setFlaggetDataDoc(false)
         if (checkedAuto) {
           if (dataDoc !== undefined && dataDoc !== null) {
             dataDoc.datas.forEach(element => {
@@ -670,7 +671,7 @@ const AmMappingPalletV2 = props => {
                 <IconButton
                   size="small"
                   aria-label="info"
-                  style={{ paddingTop: "10px" }}
+                  style={{ marginTop: "5px" }}
                 >
                   <SearchIcon
                     fontSize="small"
@@ -712,7 +713,7 @@ const AmMappingPalletV2 = props => {
                       <IconButton
                         size="small"
                         aria-label="info"
-                        style={{ paddingTop: "10px" }}
+                        style={{ marginTop: "5px" }}
                       >
                         <SearchIcon
                           fontSize="small"
@@ -910,7 +911,7 @@ const AmMappingPalletV2 = props => {
                 {getStepContent(index)}
                 <div>
 
-                  {activeStep == 0 ? null : (
+                  {flaggetDataDoc === true ? null : (activeStep == 0 ? null : (
                     <AmButton
                       styleType="add"
                       className="float-left"
@@ -918,7 +919,7 @@ const AmMappingPalletV2 = props => {
                       style={{ margin: '5px 0px 5px 0px' }}>
                       {t("Received")}
                     </AmButton>
-                  )}
+                  ))}
                   {activeStep === steps.length - 1 ? ((disPlayButton === false ? null :
                     <AmButton
                       styleType="confirm"
