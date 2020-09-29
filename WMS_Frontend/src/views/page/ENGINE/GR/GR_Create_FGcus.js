@@ -110,7 +110,6 @@ const RD_Create_FGCustomer = props => {
 
 
     useEffect(() => {
-        console.log(skuType)
         let itemNos = '0001'
         if (SKUMaster) {
             let objQuery = SKUMaster;
@@ -142,8 +141,6 @@ const RD_Create_FGCustomer = props => {
         }
 
         var columnEdit = [
-            AuditStatusDDL,
-            Headers,
             {
                 Header: "Item Code",
                 accessor: "Code",
@@ -168,8 +165,10 @@ const RD_Create_FGCustomer = props => {
                 required: true
             },
             { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }, 
+            Headers, 
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
-            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true},
+            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
+            AuditStatusDDL,         
             { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
             { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
@@ -257,14 +256,14 @@ const RD_Create_FGCustomer = props => {
 
 
     const columns = [
-        { Header: "Quality Status", accessor: "auditStatus" }, 
-        { Header: "Lot", accessor: "lot" },
-        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Item Code", accessor: "Code" },
         { Header: "Item Name", accessor: "Name", width: 200 },
         { Header: "Control No.", accessor: "orderNo" },
+        { Header: "Lot", accessor: "lot" },
+        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Quantity", accessor: "quantity" },
-        { Header: "Unit", accessor: "unitType" },   
+        { Header: "Unit", accessor: "unitType" },  
+        { Header: "Quality Status", accessor: "auditStatus" },
         { Header: "Remark", accessor: "remark" },
         { Header: "Carton No.", accessor: "cartonNo" },
         {

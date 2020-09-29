@@ -175,14 +175,14 @@ const Create_GR_DR = props => {
 
 
     const columnEdit = [
-        { Header: "Quality Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
-        { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
-        { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1" },
         { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code", type: "text" },
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name", type: "text" },
-        { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo"},
+        { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
+        { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1" },
         { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
+        { Header: "Quality Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
         { Header: "Remark", accessor: "Remark", type: "text", codeTranslate: "Remark"},
         { Header: "Carton No.", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
         { Header: "MFG.Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
@@ -191,14 +191,14 @@ const Create_GR_DR = props => {
     ];
 
     const columnEditItem = [
-        { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
-        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
+        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Quantity", accessor: "Quantity", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
+        { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
         { Header: "Remark", accessor: "Remark", codeTranslate: "Remark" },
         { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
         { Header: "MFG.Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
@@ -216,11 +216,11 @@ const Create_GR_DR = props => {
 
     const columns = [
         { Header: "Quality Status", accessor: "AuditStatus" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { Header: "Vendor Lot", accessor: "Ref1" },
         { Header: "Item Code", accessor: "SKUMaster_Code" },
         { Header: "Item Name", accessor: "SKUMaster_Name" },
         { Header: "Control No.", accessor: "OrderNo" },
+        { Header: "Lot", accessor: "Lot",width: 130,},
+        { Header: "Vendor Lot", accessor: "Ref1" },
         { Header: "Qty", accessor: "_qty", width: 120,},
         { Header: "Unit", accessor: "UnitType_Code", width: 70,},
         { Header: "Remark", accessor: "Remark" },

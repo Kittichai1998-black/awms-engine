@@ -176,9 +176,11 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             }
                             else if (disto.BaseQuantity + newBaseQty > 0)
                             {
+                                disto.Quantity += newQty;
                                 disto.BaseQuantity += newBaseQty;
                                 DistoADO.GetInstant().Update(disto, this.BuVO);
                                 newBaseQty = 0;
+                                newQty = 0;
                             }
                         }
                         else if (remainRecv == 0)
