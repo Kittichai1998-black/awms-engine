@@ -58,7 +58,10 @@ const desAreaQuery = {
 const processCondition = {
     "conditions": [
         {
-            "field": "Shelf Life", "key": "useShelfLifeDate", "enable": false, "defaultValue": true, "editable": true,
+            "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": true,
+        },
+        {
+            "field": "Shelf Life", "key": "useShelfLifeDate", "enable": true, "defaultValue": true, "editable": true,
         },
         // {
         //     "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
@@ -98,9 +101,8 @@ const processCondition = {
     "orderBys": [
         {
             "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
-            "defaultSortBy": "0",
             "editable": true,
-            "order": 1,
+            "order": 2,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
@@ -112,9 +114,8 @@ const processCondition = {
         },
         {
             "field": "Batch", "enable": true, "sortField": "psto.batch",
-            "defaultSortBy": "0",
             "editable": true,
-            "order": 2,
+            "order": 3,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {

@@ -96,6 +96,7 @@ const DefaultProcessCondition = (doc, con) => {
                 x.useFullPick = false;
                 x.useIncubateDate = false;
                 x.useExpireDate = false;
+                x.useShelfLifeDate = false;
             }
 
             if (con.eventStatuses !== undefined) {
@@ -280,12 +281,18 @@ const ProcessQueueDetail = (props) => {
         setDialog({ ...dialog });
     }
 
+    const conditionDisplayItem = (event) => {
+        let findCondition = processCondition.conditions.filter(x=> x.enable);
+        return findCondition.filter(x => event.docItems[0][x.key] === true).map(x=> <SelectionItem>{x.field}</SelectionItem>);
+    }
+
     const createCustomDialog = (event) => {
         var btnObj = [];
         if (processCondition.conditions !== undefined)
             btnObj.push(
-                <FormInline>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Conditions : </label>
+                    {conditionDisplayItem(event)}
                     <AmToolTip title={"Conditions"} placement={"top"}>
                         <IconButtonCustom><EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
@@ -814,7 +821,6 @@ const ProcessQueueDetail = (props) => {
             flagAuto={flagAuto}
             columnsConfirm={props.columnsConfirm}
             onClose={(confirmState, dialogState) => {
-                console.log(confirmState)
                 if (confirmState !== null && confirmState !== undefined) {
                     if (confirmState._result.status === 0) {
                         setDialogState(!dialogState)
@@ -838,8 +844,15 @@ const ProcessQueueDetail = (props) => {
                 onAccept={(status, rowdata) => {
                     if (rowdata !== undefined && status) {
                         const doc = documents.documentListValue.find(x => x.document.ID === rowdata.Document_ID)
-                        doc.docItems.forEach(x => {
-                            x[dialog.key] = rowdata[dialog.key]
+                        doc.docItems.forEach(item => {
+                            if(dialog.key === "conditions"){
+                                let findCondition = processCondition.conditions.filter(x=> x.enable);
+                                findCondition.forEach(x => {
+                                    item[x.key] = rowdata[x.key]
+                                });
+                            }
+                            else
+                            item[dialog.key] = rowdata[dialog.key]
                         })
                     }
                     setDialog({ "state": false, data: {} });
@@ -985,7 +998,6 @@ const ConfirmDialog = (props) => {
                                 itemHeader["bstoCode"] = processRes[obj]
                             else if (obj === "baseQty") {
                                 let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
-                                console.log(findQty)
                                 itemHeader["pickQty"] = findQty.Quantity
                             }
                             else
@@ -1199,7 +1211,6 @@ const OrderbyCustom = (props) => {
     }, [data]);
 
     const onClickAddItem = () => {
-        console.log(select)
         if (select.fieldName !== undefined && select.fieldName !== null) {
             data.push({ ...select, order: data.length + 1 })
             setData([...data])
