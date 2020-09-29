@@ -106,7 +106,6 @@ const PI_Detail = props => {
         { Header: " Control No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
         { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Counting Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20, Cell: e => getFormatPrscen(e.original), widthPDF: 15,},
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
@@ -141,8 +140,9 @@ const PI_Detail = props => {
         { Header: "Control No.", accessor: "diOrder No.", widthPDF: 10 },
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
         { Header: "Vender Lot", width: 130, accessor: "diRef1", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Quantity", widthPDF: 10, Cell: e => getFormatPrscen(e.original) },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
         {
             Header: "Quality Status", accessor: "diAuditStatus",
             Cell: e => GetAuditStatusIcon(e.original),
@@ -151,11 +151,7 @@ const PI_Detail = props => {
         },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        //{ Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
-        //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
@@ -166,7 +162,6 @@ const PI_Detail = props => {
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
             CellPDF: e => getFormatDateExp(e)
         },
-        //{ Header: "ShelfLife (%)", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const getFormatDatePro = (e) => {
@@ -198,19 +193,21 @@ const PI_Detail = props => {
             } else if (e.dcDocType_ID === 1002) {
                 links = "/issue/pickingdetail?docID="
             } 
-            return (
-                <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
-                    {e.dcCode}
-                    <AmRediRectInfo
-                        api={links + e.dcID}
-                        history={props.history}
-                        docID={""}
-                    >
-                        {" "}
-                    </AmRediRectInfo>
-                </div>
+            if (e.dcID) {
+                return (
+                    <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                        {e.dcCode}
+                        <AmRediRectInfo
+                            api={links + e.dcID}
+                            history={props.history}
+                            docID={""}
+                        >
+                            {" "}
+                        </AmRediRectInfo>
+                    </div>
 
-            );
+                );
+            }
         }
     };
 
