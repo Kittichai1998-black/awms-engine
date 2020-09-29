@@ -125,6 +125,8 @@ const AmTableComponent = (props) => {
             selectionDisabledCustom={props.selectionDisabledCustom}
             clearSelectionChangeData={props.clearSelectionChangeData}
             clearSelectionAction={props.clearSelectionAction}
+            groupFooterStyle={props.groupFooterStyle}
+            rowStyle={props.rowStyle}
         />
     </AmTableProvider>
 }
@@ -264,6 +266,8 @@ const AmTableSetup = (props) => {
                 selectionDisabledCustom={props.selectionDisabledCustom}
                 clearSelectionChangeData={props.clearSelectionChangeData}
                 style={props.style}
+                groupFooterStyle={props.groupFooterStyle}
+                rowStyle={props.rowStyle}
             />
         </div>
         <Bottombar

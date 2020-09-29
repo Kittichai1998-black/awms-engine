@@ -22,6 +22,11 @@ const propTypes = {
     */
     cellStyle: PropTypes.func,
     /**
+     * return style object ตามเงื่อนไขข้อมูล
+     ** value? : (rowdata)=> {return {color:"red"}}
+    */
+    rowStyle: PropTypes.func,
+    /**
      * เลือกรูปแบบ selection
      ** value? : "radio" | "checkbox"
     */

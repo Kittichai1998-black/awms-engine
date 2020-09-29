@@ -182,8 +182,6 @@ const AmReport = props => {
   const checkStatusColor = (rowInfo) => {
     if (rowInfo.isHead) {
       return { backgroundColor: "#E0E0E0" }
-    } else {
-      return { backgroundColor: "white" }
     }
 
   }
