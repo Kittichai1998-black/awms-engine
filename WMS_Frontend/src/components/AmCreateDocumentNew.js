@@ -14,7 +14,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import AmCheckBox from '../components/AmCheckBox'
-// import AmTable from '../components/table/AmTable'
 import { Clone } from '../components/function/CoreFunction'
 import { apicall, createQueryString } from "../components/function/CoreFunction2";
 import BtnAddList from './AmCreateDocument_BtnAddList'
@@ -112,6 +111,7 @@ const AmCreateDocument = (props) => {
     const [addDataID, setAddDataID] = useState(-1);
     const [title, setTitle] = useState("");
     const [dataSource, setDataSource] = useState([]);
+    const [dataSourceAddlist, setdataSourceAddlist] = useState([]);
     // const [reload, setReload] = useState();
     const [inputError, setInputError] = useState([])
     const [dataHeaders, setdataHeaders] = useState({})
@@ -156,7 +156,7 @@ const AmCreateDocument = (props) => {
             >
                 <EditIcon
                     fontSize="small"
-                    style={{ color: "#f39c12",position: 'relative' }}
+                    style={{ color: "#f39c12", position: 'relative' }}
                 />
             </IconButton>
         },
@@ -180,10 +180,6 @@ const AmCreateDocument = (props) => {
     const columns = props.columns.concat(rem)
 
     useEffect(() => {
-        console.log(props.addList)
-    }, [props.addList])
-
-    useEffect(() => {
         getTypeEditor()
     }, [props.columnEdit])
 
@@ -191,13 +187,27 @@ const AmCreateDocument = (props) => {
         if (skuID !== undefined && UnitQurys !== undefined) {
             setunitCon(UnitTypeConverts)
             getUnitTypeConvertQuery(skuID, UnitQurys)
-            
+
         }
     }, [skuID])
 
     useEffect(() => {
         setdataUnit(dataUnit)
     }, [dataUnit])
+
+    useEffect(() => {
+        if (dataSourceAddlist) {
+            dataSourceAddlist.forEach((x, i) => {
+                dataSource.push(x)
+            })
+        }
+        setDataSource(dataSource)
+    }, [dataSourceAddlist])
+
+    useEffect(() => {
+        console.log(dataSource)
+    }, [props.addList])
+
 
     useEffect(() => {
         if (createDocumentData != {}) {
@@ -217,8 +227,8 @@ const AmCreateDocument = (props) => {
             } else {
                 if (el.key !== "documentProcessTypeID") {
                     createDocumentData[el.key] = el.valueTexts || el.defaultValue
-                  
-                } 
+
+                }
 
             }
             return arr
@@ -229,7 +239,6 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (processType !== undefined) {
-            console.log(processType)
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
                 createDocumentData["souCustomerID"] = null
@@ -273,10 +282,11 @@ const AmCreateDocument = (props) => {
                 columns={props.addList.columns}
                 search={props.addList.search}
                 textBtn="Add Item List"
-                onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
-                dataCheck={dataSource} />)
+                onSubmit={(data) => { (FormatDataSource(data)) }}
+                dataCheck={dataSourceAddlist}
+            />)
         }
-    },[props.addList])
+    }, [props.addList])
 
 
 
@@ -390,7 +400,7 @@ const AmCreateDocument = (props) => {
     const onChangeEditor = (field, data, required, row) => {
 
         if (data === "") {
-            editData[field]  = null
+            editData[field] = null
         }
 
         if (addData && Object.keys(editData).length === 0) {
@@ -475,7 +485,7 @@ const AmCreateDocument = (props) => {
                     if (data) {
                         ref.current[index].current.value = data[key]
                     } else {
-                        ref.current[index].current.value = ""
+                        //ref.current[index].current.value = ""
                     }
                 }
             }
@@ -524,27 +534,23 @@ const AmCreateDocument = (props) => {
             if (!inputError.length) {
                 let chkSkuEdit
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
-                //let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
+                let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
+                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
                     setMsgDialog("มีข้อมูล Item Code นี้แล้ว")
                     return
                 }
-                //if (chkPallet) {
-                //    setStateDialogErr(true)
-                //    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
-                //    return
-                //}
-                //if (chkSkuNotPallet) {
-                //    setStateDialogErr(true)
-                //    setMsgDialog("มีข้อมูล SKU นี้แล้ว")
-                //    return
-                //}
 
-                //Edit
+
+                if (chkPallet) {
+                    setStateDialogErr(true)
+                    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+                    return
+                }
+
                 if (chkEdit) {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
@@ -556,11 +562,15 @@ const AmCreateDocument = (props) => {
                     dataSource.push(rowdata)
                     setAddDataID(addDataID - 1);
                 }
+
+                console.log(rowdata)
+                //dataSource.push(rowdata)
+
+                setDataSource(dataSource)
                 setEditData({})
                 setInputError([])
                 setDialog(false)
                 setDialogItem(false)
-                setDataSource([...dataSource])
             } else {
                 setInputError(inputError.map(x => x.accessor))
             }
@@ -644,7 +654,7 @@ const AmCreateDocument = (props) => {
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
 
                     <InputDiv>
-                        <AmInput style={style ? style : { width: width}}
+                        <AmInput style={style ? style : { width: width }}
                             required={required}
                             error={rowError}
                             // helperText={inputError.length ? "required field" : false}
@@ -760,10 +770,10 @@ const AmCreateDocument = (props) => {
                     <InputDiv>
                         <AmDropdown id="ddlTest" styleType="default"
                             placeholder="Select Test"
-                            width={width ? width :'300px'}
+                            width={width ? width : '300px'}
                             zIndex={2000}
                             data={datas}
-                              style={{ width: width ? width : '300px' }}
+                            style={{ width: width ? width : '300px' }}
                             fieldDataKey={key}
                             //autoDefaultValue={false}
                             returnDefaultValue={true}
@@ -868,7 +878,7 @@ const AmCreateDocument = (props) => {
                 <AmDatepicker
                     TypeDate={"date"}
                     defaultValue={defaultValueDate ? defaultValueDate : true}
-                    style={{ width: width ? width : '300px'}}
+                    style={{ width: width ? width : '300px' }}
                     value={createDocumentData[key]}
                     onChange={(e) => {
                         if (e !== null) {
@@ -927,7 +937,7 @@ const AmCreateDocument = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    style={{ width: width? width: "300px" }}
+                    style={{ width: width ? width : "300px" }}
 
                     onChange={(e) => {
                         if (obj.search)
@@ -1107,7 +1117,7 @@ const AmCreateDocument = (props) => {
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
-                doc[key] = value
+                doc[key] = value ? value : null
         }
         var qtyrandom = 'qtyrandom='
         var remark = 'remark='
@@ -1125,17 +1135,21 @@ const AmCreateDocument = (props) => {
         }
         else if (props.createDocType === "counting") {
             doc.countingItems = dataSource.map(x => {
-
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
+                x.auditStatus = x.auditStatus ? x.auditStatus : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
                 x.options = x.qtyrandom ? qtyrandom.concat(x.qtyrandom) : null
+                x.expireDate = x.expireDate ? moment(x.expireDate).format('YYYY-MM-DD'):null
+                x.productionDate = x.productionDate ?  moment(x.productionDate).format('YYYY-MM-DD'):null
                 return x
 
             })
         } else if (props.createDocType === "audit") {
             doc.auditItems = dataSource.map(x => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
@@ -1144,24 +1158,28 @@ const AmCreateDocument = (props) => {
                 return x
             })
         } else if (props.createDocType === "issue") {
+            
             doc.issuedOrderItem = dataSource.map(x => {
+                x.skuCode = x.Code ? x.Code : null
+                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
+                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.options = x.remark ? remark.concat(x.remark) : null
+                x.expireDate = x.expireDates ? x.expireDates : null
+                x.productionDate = x.productionDates ? x.productionDates : null
+                return x
+            })
+        } else if (props.createDocType === "receive") {
+            doc.receivedOrderItem = dataSource.map(x => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.options = x.remark ? remark.concat(x.remark) : null
                 return x
             })
-        } else if (props.createDocType === "receive") {
-            doc.receivedOrderItem = dataSource.map(x => {
-                x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
-                x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
-                x.options = x.remark ?  remark.concat(x.remark) : null
-                return x
-            })
         }
 
         if (Object.keys(doc).length > countDoc) {
-            console.log(doc)
-            if (doc.documentProcessTypeID === null ) {
+            if (doc.documentProcessTypeID === null) {
                 setMsgDialog("Process No not found");
                 setStateDialogErr(true);
             } else {
@@ -1173,7 +1191,7 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                   CreateDocuments(doc)
+                    CreateDocuments(doc)
                 }
             }
         }
@@ -1194,21 +1212,29 @@ const AmCreateDocument = (props) => {
     }
 
     const FormatDataSource = (data) => {
-        let _addDataID = addDataID
-        let arr = data.map(x => {
-            let obj = {
-                ...x,
-                ID: _addDataID,
-                packID_map_skuID: x.packID + "-" + x.skuID,
-                expireDate: moment(x.expireDate).format('DD-MM-YYYY'),
-                productionDate: moment(x.productionDate).format('DD-MM-YYYY')
+        let arr
+        if (data) {
+            let _addDataID = addDataID
+            arr = data.map((x, i) => {
+                let obj = {
+                    ID: i,
+                    ...x,
+                    packID_map_skuID: x.packID + "-" + x.skuID,
+                    expireDate: moment(x.expireDate).format('DD-MM-YYYY'),
+                    productionDate: moment(x.productionDate).format('DD-MM-YYYY')
 
-            }
-            _addDataID--
-            return obj
-        })
-        setAddDataID(_addDataID)
-        return arr
+                }
+                _addDataID--
+                onHandleEditConfirm(true, obj, [])
+                return obj
+            })
+
+            return arr
+            setAddDataID(_addDataID)
+            //return dataSourceAddlist
+            //setdataSourceAddlist(dataSourceAddlist)
+        }
+
     }
 
     return (
@@ -1269,7 +1295,7 @@ const AmCreateDocument = (props) => {
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 pageSize={200}
                 tableConfig={false}
-                dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
+                dataSource={dataSource.length > 0 ? [...dataSource] : []}
                 //   height={200}
                 rowNumber={true}
             />
