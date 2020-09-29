@@ -223,6 +223,10 @@ const AmTable = (props) => {
                 sortData={props.sortData}
                 selectionDisabledCustom={props.selectionDisabledCustom}
                 clearSelectionChangeData={props.clearSelectionChangeData}
+                rowStyle={(data) => {
+                    if(data._groupFooter)
+                        return {background: "#DFDFDF"}
+                }}
             />
             {
                 props.tableConfig ? 

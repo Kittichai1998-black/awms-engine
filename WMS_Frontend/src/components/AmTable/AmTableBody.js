@@ -74,14 +74,14 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
         Cell: ele => {
           let numrow = 0;
           if (page !== undefined) {
-            if (!ele.data._footer) {
+            if (!ele.data._footer && ele.original["_groupFooter"] === undefined ) {
               if (page > 0) {
                 numrow = ele.viewIndex + 1 + parseInt(page - 1) * pagination.pageSize;
               } else {
                 numrow = ele.viewIndex + 1;
               }
-              if (ele.original[dataKey] !== undefined)
-                return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
+              
+              return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
           }
         }
@@ -218,7 +218,7 @@ const useDataSource = (props, groupBy) => {
             return groupData
           }
           else {
-            groupData.push({ ...sumBy, "_footer": true })
+            groupData.push({ ...sumBy, "_footer": true, "_groupFooter":true })
             return groupData
           }
         });
@@ -290,8 +290,8 @@ const GenerateRow = ({ columns, props, dataSource }) => {
   }
   return <>
     {customDataSource.map((data, idx) => {
-      return <TableRow key={idx}>
-        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle} />
+      return <TableRow key={idx} style={props.rowStyle ? props.rowStyle(data) : null}>
+        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle}/>
       </TableRow>
     })}
   </>
