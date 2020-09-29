@@ -68,6 +68,7 @@ const QualityStatus = props => {
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     { Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
 
     {
       Header: "Item Code",
@@ -99,7 +100,7 @@ const QualityStatus = props => {
     { Header: "Unit", accessor: "Unit", width: 100 },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Received Date",
+      Header: "Received Time",
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",

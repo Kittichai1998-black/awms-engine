@@ -314,7 +314,7 @@ const DocumentView = props => {
                         remark: qryStr.remark != null ? qryStr.remark : '',
                         ExpireDate: row.ExpireDate ? moment(row.ExpireDate).format("DD/MM/YYYY") : null,
                         ProductionDate: row.ProductionDate ? moment(row.ProductionDate).format("DD/MM/YYYY") : null,
-                       
+
                     });
 
 
@@ -387,7 +387,7 @@ const DocumentView = props => {
                         }
                         dataTableDetailDES.push({
                             ...rowDetail,
-                            remark: qryStr.remark  != null? qryStr.remark : '',
+                            remark: qryStr.remark != null ? qryStr.remark : '',
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -457,7 +457,7 @@ const DocumentView = props => {
 
     const renderDocumentStatusIcon = () => {
         return <div><Amdocumentstatus key={1} statusCode={dataHeader.EventStatus} /></div>;
-     
+
     };
 
     const buttonBack = () => {
@@ -966,7 +966,7 @@ const DocumentView = props => {
                     height={200}
                     tableConfig={false}
                     rowNumber={false}
-                    customAction={
+                    customAction={dataHeader.EventStatus === 32 ? null :
                         [{
                             label: <div style={{ fontSize: "12px" }}>
                                 {"QRCODE MANUAL"}</div>,
@@ -1099,8 +1099,8 @@ const DocumentView = props => {
                     <AmTable dataKey="id"
                         columns={columnsDetailSOU}
                         pageSize={100}
-                            dataSource={dataDetailSOU}
-                            tableConfig={false}
+                        dataSource={dataDetailSOU}
+                        tableConfig={false}
                         height={200}
                         rowNumber={false} />
                 ) : null
@@ -1115,8 +1115,8 @@ const DocumentView = props => {
                     // />
                     <AmTable dataKey="id"
                         columns={columnsDetailDES}
-                                pageSize={100}
-                                tableConfig={false}
+                        pageSize={100}
+                        tableConfig={false}
                         dataSource={dataDetailDES}
                         height={200}
                         rowNumber={false} />
