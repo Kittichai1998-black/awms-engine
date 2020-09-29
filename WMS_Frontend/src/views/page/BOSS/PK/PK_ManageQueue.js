@@ -58,7 +58,10 @@ const desAreaQuery = {
 const processCondition = {
     "conditions": [
         {
-            "field": "Shelf Life", "key": "useShelfLifeDate", "enable": false, "defaultValue": true, "editable": true,
+            "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": true,
+        },
+        {
+            "field": "Shelf Life", "key": "useShelfLifeDate", "enable": true, "defaultValue": true, "editable": true,
         },
         // {
         //     "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
