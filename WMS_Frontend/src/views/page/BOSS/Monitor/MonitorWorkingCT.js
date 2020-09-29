@@ -5,7 +5,7 @@ import queryString from 'query-string'
 // import Moment from 'moment'
 import React, { useState, useEffect } from 'react'
 // import { useTranslation } from 'react-i18next'
-
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../components/function/CoreFunction'
 

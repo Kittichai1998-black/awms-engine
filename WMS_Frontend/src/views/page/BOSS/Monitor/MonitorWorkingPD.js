@@ -2,7 +2,7 @@ import * as signalR from '@aspnet/signalr';
 
 // import Axios from 'axios'
 import React, { useState, useEffect } from 'react'
-
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import AmDropdown from '../../../../components/AmDropdown';
 import AmIconStatus from "../../../../components/AmIconStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
@@ -27,7 +27,10 @@ const headercol1 = [
 
 const headercol2 = [
     { accessor: "TIME", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "TaskName", Header: "Task", width: 100, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
+    {
+        accessor: "TaskName", Header: "Task", width: 100, sortable: false, style: { textAlign: "center" },
+        Cell: row => getIconStatus(row.original.EventStatus)
+    },
     // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
     { accessor: "Lot", Header: "Lot", width: 100, sortable: false, style: { textAlign: "center" } },
     { accessor: "OrderNo", Header: "Control No.", width: 100, sortable: false, style: { textAlign: "center" } },
@@ -38,7 +41,11 @@ const headercol2 = [
     // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
     { accessor: "Document_Code", Header: "Doc No.", width: 100, sortable: false, style: { textAlign: "center" } },
 ]
+const getIconStatus = Status => {
+    return <AmStorageObjectStatus statusCode={Status} />;
+    //return <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus>
 
+};
 export default props => {
 
     const [Hub, setHub] = useState(["DASHBOARD_WORKING_OUT_PD", "DASHBOARD_WORKING_IN_PD"])
