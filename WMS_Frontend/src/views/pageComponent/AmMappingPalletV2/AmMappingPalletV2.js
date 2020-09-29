@@ -671,7 +671,7 @@ const AmMappingPalletV2 = props => {
                 <IconButton
                   size="small"
                   aria-label="info"
-                  style={{ paddingTop: "10px" }}
+                  style={{ marginTop: "5px" }}
                 >
                   <SearchIcon
                     fontSize="small"
@@ -713,7 +713,7 @@ const AmMappingPalletV2 = props => {
                       <IconButton
                         size="small"
                         aria-label="info"
-                        style={{ paddingTop: "10px" }}
+                        style={{ marginTop: "5px" }}
                       >
                         <SearchIcon
                           fontSize="small"
