@@ -86,15 +86,7 @@ const GR_Detail = props => {
 
 
     const columns = [
-        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
         {
             Header: "Item Code",
             Cell: e => { return e.original.SKUMaster_Code},
@@ -106,9 +98,17 @@ const GR_Detail = props => {
             CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         },
         { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
+        { Header: "Lot", accessor: "Lot",width: 130, widthPDF: 25 },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
+        {
+            Header: "Quality Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 30
+        },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
@@ -120,15 +120,6 @@ const GR_Detail = props => {
 
     const columnsDetailSOU = [
         {
-            Header: "Quality Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
-        { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
-        {
             Header: "Task", accessor: "status", width: 40, Cell: e => getStatusGR(e.original),
             widthPDF: 5,
             CellPDF: value => {
@@ -136,15 +127,24 @@ const GR_Detail = props => {
                 else if (value.status === 0)
                     return "";
                 else return null;
-            } 
+            }
         },
+        { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         { Header: "Pack Code", accessor: "packCode",  widthPDF: 10, width: 150,  },
         { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
         { Header: "Pallet",width: 100, accessor: "rootCode", widthPDF: 10 },
         { Header: "Control NO.", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
-        { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70,  },
+        { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
+        {
+            Header: "Quality Status", accessor: "diAuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
         { Header: "Remark", accessor: "remark", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         {
@@ -160,13 +160,17 @@ const GR_Detail = props => {
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.diProductionDate) {
+            return moment(e.diProductionDate).format("DD/MM/YYYY");
+        }
+
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.diExpireDate) {
+            return moment(e.diExpireDate).format("DD/MM/YYYY");
+        }
     }
-
     const getDoccode = (e) => {
         let links;
         if (e.dcDocType_ID === 1001) {

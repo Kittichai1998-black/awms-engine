@@ -160,53 +160,58 @@ const BtnAddList = props => {
     const [searchAction, setSearchAction] = useState(false);
     const [defaultSelect, setDefaultSelect] = useState();
     const [totalSize, setTotalSize] = useState(0);
+    const [status, setstatus] = useState(true);
+    const [inputErr, setinputErr] = useState([]);
 
     useEffect(() => {
-        console.log(props.queryApi)
         setQuery(props.queryApi)
     }, open, props.queryApi)
 
-
     //useEffect(() => {
-    //    setDataSelect([])
-    //    if (open) {
-    //        const dataHeader = props.headerCreate
-    //            .reduce((arr, el) => arr.concat(el), [])
-    //            .filter(x => x.search);
-    //        if (dataHeader.length) {
-    //            dataHeader.map(x => {
-    //                props.search.map(y => {
-    //                    if (x.key === y.accessor) {
-    //                        if (y.defaultValue) {
-    //                            let queryQ = JSON.parse(query.q),
-    //                                ind = queryQ.findIndex(z => z.f === x.key);
-    //                            if (ind !== -1) queryQ.splice(ind, 1);
-    //                            queryQ.push({
-    //                                f: x.key,
-    //                                c: "like",
-    //                                v: y.defaultValue
-    //                            });
-    //                            query.q = JSON.stringify(queryQ);
-    //                        } else {
-    //                            let queryQ = JSON.parse(query.q),
-    //                                ind = queryQ.findIndex(z => z.f === x.key);
+    //    console.log(dataSelect)
 
-    //                            if (ind !== -1) queryQ.splice(ind, 1);
-    //                            query.q = JSON.stringify(queryQ);
-    //                        }
-    //                    }
-    //                });
-    //            });
-    //        }
-    //    } else {
-    //        setQuery({ ...props.queryApi })
-    //        setKeySearch({})
-    //    }
-    //}, [open]);
+    //}, [open,dataSelect])
+
+
+    useEffect(() => {
+        setDataSelect([])
+        if (open) {
+            const dataHeader = props.headerCreate
+                .reduce((arr, el) => arr.concat(el), [])
+                .filter(x => x.search);
+            if (dataHeader.length) {
+                dataHeader.map(x => {
+                    props.search.map(y => {
+                        if (x.key === y.accessor) {
+                            if (y.defaultValue) {
+                                let queryQ = JSON.parse(query.q),
+                                    ind = queryQ.findIndex(z => z.f === x.key);
+                                if (ind !== -1) queryQ.splice(ind, 1);
+                                queryQ.push({
+                                    f: x.key,
+                                    c: "like",
+                                    v: y.defaultValue
+                                });
+                                query.q = JSON.stringify(queryQ);
+                            } else {
+                                let queryQ = JSON.parse(query.q),
+                                    ind = queryQ.findIndex(z => z.f === x.key);
+
+                                if (ind !== -1) queryQ.splice(ind, 1);
+                                query.q = JSON.stringify(queryQ);
+                            }
+                        }
+                    });
+                });
+            }
+        } else {
+            setQuery({ ...props.queryApi })
+            setKeySearch({})
+        }
+    }, [open]);
 
     useEffect(() => {
         if (props.queryApi) {
-            console.log(props.queryApi)
             Axios.get(createQueryString(props.queryApi)).then(res => {
                 // console.log(res.data.datas);
                 if (res.data.datas) {
@@ -230,10 +235,12 @@ const BtnAddList = props => {
             let obj = {
                 ...x,
                 quantity: x.Quantity,
+                expireDates: x.expireDate ? x.expireDate   : null,
+                productionDates: x.productionDate ? x.productionDate  : null,
                 expireDate: x.expireDate ? moment(x.expireDate).format('MM-DD-YYYY') : null,
                 productionDate: x.productionDate ? moment(x.productionDate).format('MM-DD-YYYY') : null,
                 auditStatus: GetAuditStatus(x.AuditStatus),
-                ShelfLifePercent: x.ShelfLifePercent ? x.ShelfLifePercent + '%' : null,
+                //ShelfLifePercent: x.ShelfLifePercent ? x.ShelfLifePercent + '%' : null,
                 remark: query.remark != null ? query.remark : ''
             }
             return obj
@@ -332,18 +339,19 @@ const BtnAddList = props => {
             return false;
     }
 
-    const search = props.search.map((x, xi) => {
-        return (
-            <SearchInput
-                key={xi}
-                placeholder={x.placeholder}
-                defaultValue={x.defaultValue ? x.defaultValue : null}
-                // labelInput={"Pallet Code"}
-                onHandleKeyUp={val => setKeySearch({ ...keySearch, [x.accessor]: val })}
-                onClickSearch={() => setSearchAction(true)}
-            />
-        );
-    });
+    //const search = props.search.map((x, xi) => {
+    //    return (
+    //        { /* <SearchInput
+    //            key={xi}
+    //            placeholder={x.placeholder}
+    //            defaultValue={x.defaultValue ? x.defaultValue : null}
+    //            // labelInput={"Pallet Code"}
+    //            onHandleKeyUp={val => setKeySearch({ ...keySearch, [x.accessor]: val })}
+    //            onClickSearch={() => setSearchAction(true)}
+    //        />*/
+    //        }
+    //    );
+    //});
 
     return (
         <AmAux>

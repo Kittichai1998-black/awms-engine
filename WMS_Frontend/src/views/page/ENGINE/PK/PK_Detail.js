@@ -102,10 +102,10 @@ const PK_Detail = props => {
             widthPDF: 40
         },
         { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
-        //{ Header: "Batch", accessor: "Batch", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
             Header: "Quality Status", accessor: "AuditStatus",
@@ -113,16 +113,10 @@ const PK_Detail = props => {
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        //{ Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
-        //{ Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
-        //{ Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-       // { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
-        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
 
@@ -142,10 +136,11 @@ const PK_Detail = props => {
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
         { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
         { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
-        //{ Header: "Batch", accessor: "diBatch", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
         {
             Header: "Quality Status",
             accessor: "diAuditStatus",
@@ -153,13 +148,8 @@ const PK_Detail = props => {
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        //{ Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
-        //{ Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        //{ Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        //{ Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
@@ -168,15 +158,19 @@ const PK_Detail = props => {
             Header: "Expire Date", accessor: "diExpireDate",
             Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
         },
-        //{ Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.diProductionDate) {
+            return moment(e.diProductionDate).format("DD/MM/YYYY");
+        }
+
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.diExpireDate) {
+            return moment(e.diExpireDate).format("DD/MM/YYYY");
+        }
     }
     const columnsDetailDES = [
         //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},

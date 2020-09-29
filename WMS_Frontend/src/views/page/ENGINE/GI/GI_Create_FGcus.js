@@ -15,7 +15,7 @@ const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
+    f: "*,ID as skuID",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -164,48 +164,36 @@ const GI_Create_FGCustomer = props => {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
         var columnEdit = [
-            // { Header: "Item No.", accessor: "itemNo", type: "itemNo", texts: itemNos },
             {
-                // search: false,
                 Header: "Item Code",
-                accessor: "skuCode",
+                accessor: "Code",
                 type: "findPopUp",
                 queryApi: skuquery,
-                fieldLabel: ["skuCode"],
+                fieldLabel: ["Code"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuName", "SKUItems"],
-                fieldDataKey: "Code", // ref กับ accessor
-                //defaultValue: "PJAAN04-0024",
+                related: ["Name"],
+                fieldDataKey: "Code", 
                 required: true
             },
             {
-                // search: false,
                 Header: "Item Name",
-                accessor: "skuName",
+                accessor: "Name",
                 type: "findPopUp",
                 queryApi: skuquery,
-                fieldLabel: ["skuName"],
+                fieldLabel: ["Name"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuCode", "SKUItems"],
-                fieldDataKey: "Name", // ref กับ accessor
-                //defaultValue: "PJAAN04-0024",
+                related: ["Code"],
+                fieldDataKey: "Name", 
                 required: true
             },
             { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
-            //{ Header: "Batch", accessor: "batch", type: "input", width: '300px' },
             Headers,
-            { Header: "Qty", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
+            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
             AuditStatusDDL,
-
-            //{ Header: "Ref2", accessor: "ref2", type: "input" },
-            //{ Header: "Ref3", accessor: "ref3", type: "input" },
             { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
-            //{ Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
-            // { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum", width: '300px'},
             { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
             { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
-            //{ Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
         ];
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
@@ -242,17 +230,10 @@ const GI_Create_FGCustomer = props => {
             setaddlistquery(objQueryaddlist)
         }
 
-
         var addLists = {
             queryApi: addlistquery,
             columns: columsFindPopupSto,
             primaryKeyTable: "packID",
-            search: [
-                { accessor: "palletcode", placeholder: "Pallet" },
-                { accessor: "Code", placeholder: "Reorder (Item Code)" },
-                { accessor: "LocationCode", placeholder: "Location" }
-                // { accessor: "remark", placeholder: "Remark" }
-            ]
         };
 
         setaddlist(addLists)
@@ -330,49 +311,38 @@ const GI_Create_FGCustomer = props => {
 
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
     const columsFindPopupSto = [
-        { Header: "Control No.", accessor: "orderNo", width: 100, style: { textAlign: "center" } },
-        { Header: "Pallet", accessor: "palletcode", width: 110, style: { textAlign: "center" } },
-        { Header: "Item Code", accessor: "SKUItems", width: 350 },
-        { Header: "Location", accessor: "locationCode", width: 90, style: { textAlign: "center" } },
+        { Header: "Pallet", accessor: "palletcode", width: 110,  },
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name"},
+        { Header: "Control No.", accessor: "orderNo", width: 100,  },
+        { Header: "Lot", accessor: "Lot" },
+        { Header: "Vendor Lot", accessor: "ref1" },
+        { Header: "Location", accessor: "locationCode", width: 9},
         { Header: "Qty", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType", width: 70 },
         { Header: "Quality Status", accessor: "auditStatus" },
-        { Header: "Lot", accessor: "Lot" },
-        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Remark", accessor: "remark" },
-        //{ Header: "Ref3", accessor: "ref3" },
-        //{ Header: "Ref4", accessor: "ref4" },
-        //{ Header: "Carton No.", accessor: "cartonNo" },
-        //{ Header: "Incubation Day", accessor: "incubationDay" },
         { Header: "MFG.Date", accessor: "productionDate" },
         { Header: "Expire Date", accessor: "expireDate" },
-        //{ Header: "ShelfLife", accessor: "ShelfLifePercent" }
 
     ];
 
 
     const columns = [
-        //{ id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Item Code", accessor: "skuCode" },
-        { Header: "Item Name", accessor: "skuName" },
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name" },
         { Header: "Control No.", accessor: "orderNo" },
-        //{ Header: "Batch", accessor: "batch" },
         { Header: "Lot", accessor: "lot" },
+        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Qty", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
         { Header: "Quality Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Remark", accessor: "remark" },
-        //{ Header: "Ref2", accessor: "ref2" },
-        //{ Header: "Ref3", accessor: "ref3" },
-        //{ Header: "Ref4", accessor: "ref4" },
-        //{ Header: "Carton No.", accessor: "cartonNo" },
-        // { Header: "Incubation Day", accessor: "incubationDay" },
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
@@ -383,7 +353,6 @@ const GI_Create_FGCustomer = props => {
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
             CellPDF: e => getFormatDateExp(e)
         }
-        //{ Header: "ShelfLife Day", accessor: "shelfLifeDay" }
     ];
 
     const getFormatDatePro = (e) => {

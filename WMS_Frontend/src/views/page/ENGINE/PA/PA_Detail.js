@@ -92,14 +92,6 @@ const PA_Detail = props => {
 
     const columns = [
         {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        {
             Header: "Item Code",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code },
@@ -112,25 +104,24 @@ const PA_Detail = props => {
             widthPDF: 40
         },
         { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
+        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
         { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
         { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
+        {
+            Header: "Quality Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 30
+        },
         { Header: "Remark", accessor: "remark", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
         { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 }
     ];
 
-    const columnsDetailSOU = [
-        {
-            Header: "Quality Status",
-            accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
-        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+    const columnsDetailSOU = [  
         {
             width: 40, accessor: "status", Header: "Task",
             Cell: e => getStatusGR(e.original), widthPDF: 5,
@@ -145,9 +136,18 @@ const PA_Detail = props => {
         { Header: "Pack Code", accessor: "packCode", widthPDF: 10, width: 150},
         { Header: "Pack Name",accessor: "packName", widthPDF: 20 },
         { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
+        { Header: "Lot", accessor: "diLot", width: 130, widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
         { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
-        { Header: "Unit", accessor: "packUnitCode", widthPDF: 10, width: 70},
+        { Header: "Unit", accessor: "packUnitCode", widthPDF: 10, width: 70 },
+        {
+            Header: "Quality Status",
+            accessor: "diAuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
+            CellPDF: e => GetAuditStatus(e),
+            widthPDF: 10
+        },
         { Header: "Remark", accessor: "remark", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
         {
@@ -170,13 +170,17 @@ const PA_Detail = props => {
     };
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.diProductionDate) {
+            return moment(e.diProductionDate).format("DD/MM/YYYY");
+        }
+
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.diExpireDate) {
+            return moment(e.diExpireDate).format("DD/MM/YYYY");
+        }
     }
-
     const GetAuditStatus = (value) => {
         if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
             return "QUARANTINE"
