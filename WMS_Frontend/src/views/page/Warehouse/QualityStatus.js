@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
+import AmButton from "../../../components/AmButton";
 
 
 const Axios = new apicall();
@@ -246,6 +247,11 @@ const QualityStatus = props => {
       <AmDialogUploadImage titleDialog={"Upload Image of Pallet : " + Pallet} fileName={Pallet} />
     </div>
   }
+
+  const SendEmail = <AmButton onClick={() => {
+    Axios.post()
+  }}>Send Notify</AmButton>
+
   return (
     <div>
       <AmStorageObjectMulti
@@ -256,6 +262,7 @@ const QualityStatus = props => {
         multi={true}
         action={true}
         actionAuditStatus={true}
+        customTopLeftControl={null}
       />
     </div>
   );

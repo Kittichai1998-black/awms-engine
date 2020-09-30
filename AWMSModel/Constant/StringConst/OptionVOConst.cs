@@ -74,5 +74,6 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_INVENTORY_UNIT = "inventory_unit";
         public const string OPT_ERROR_COUNTING = "err";
         public const string OPT_OLD_WEIGHT = "old_weight";
+        public const string OPT_OLD_AUDIT_STATUS = "old_audit";
     }
 }
