@@ -83,6 +83,7 @@ namespace AWMSEngine.Engine.Business
 
             sto.AuditStatus = AdStatus;
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
+            sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_OLD_AUDIT_STATUS, aditStatus);
 
             var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
             if (!checkStatus)
