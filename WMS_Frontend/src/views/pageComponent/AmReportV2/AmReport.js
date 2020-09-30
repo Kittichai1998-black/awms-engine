@@ -209,10 +209,10 @@ const AmReport = props => {
             setIniQuery(false)
         }}
         groupBy={props.groupBy === true ? {
-          "field": ["Code", "Lot", "baseUnitType"],
-          "sumField": ["baseQty", "baseQty_avt0", "baseQty_avt1", "baseQty_avt2", "baseQty_avt9",
-            "baseQty_evt10", "baseQty_evt11", "baseQty_evt12", "baseQty_evt13", "baseQty_evt14",
-            "baseQty_evt15", "baseQty_evt16", "baseQty_evt33", "baseQty_evt34",]
+          "field": ["Code", "Lot", "unitType"],
+          "sumField": ["qty", "qty_avt0", "qty_avt1", "qty_avt2", "qty_avt9",
+            "qty_evt10", "qty_evt11", "qty_evt12", "qty_evt13", "qty_evt14",
+            "qty_evt15", "qty_evt16", "qty_evt33", "qty_evt34",]
         } : null}
       />
 

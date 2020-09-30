@@ -469,6 +469,7 @@ const AmMappingPalletV2 = props => {
       };
 
       if (type === "confirm") {
+        setDisPlayButton(false)
         setFlaggetDataDoc(false)
         if (checkedAuto) {
           if (dataDoc !== undefined && dataDoc !== null) {
