@@ -129,9 +129,11 @@ const processCondition = {
 const documentDetail = {
     columns: 2,
     field: [
-        { "accessor": "Code", "label": "Code" }, { "accessor": "DocumentProcessType_ID", "label": "DocumentProcessType_ID" },
+        { "accessor": "Code", "label": "Code" },
+        { "accessor": "DocumentProcessType_ID", "label": "DocumentProcessType_ID" },
     ],
-    fieldHeader: [{ "accessor": "Code", "label": "Code" }, { "accessor": "RefID", "label": "RefID" }]
+    fieldHeader: [{ "accessor": "Code", "label": "Code" },
+    { "accessor": "RefID", "label": "RefID" }]
 }
 
 const ProcessQueue = () => {

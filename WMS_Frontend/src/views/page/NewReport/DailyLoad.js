@@ -75,11 +75,11 @@ const DailyLoad = (props) => {
         { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
         { Header: 'Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
 
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false, filterable: false, },
-        { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
+        { Header: 'Item Code', accessor: 'pstoCode', width: 120, sortable: false, filterable: false, },
+        { Header: 'Item Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
         { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false, filterable: false, },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false, filterable: false, },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false, filterable: false, },
+        { Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false, filterable: false, },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
             Footer: true,
