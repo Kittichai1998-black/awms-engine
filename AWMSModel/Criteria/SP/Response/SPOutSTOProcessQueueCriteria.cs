@@ -51,6 +51,11 @@ namespace AWMSModel.Criteria.SP.Response
         public DateTime? pstoProductDate;
         public DateTime pstoCreateTime;
 
+        public string pstoRefID;
+        public string pstoRef1;
+        public string pstoRef2;
+        public string pstoRef3;
+        public string pstoRef4;
 
         public bool isWCSReady = true;
     }

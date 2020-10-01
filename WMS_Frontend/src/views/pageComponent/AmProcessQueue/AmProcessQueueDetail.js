@@ -79,7 +79,7 @@ const DefaultProcessCondition = (doc, con) => {
             if (con.conditions !== undefined) {
                 con.conditions.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable)
                             x[y.key] = getCustom.defaultValue;
                     }
@@ -103,7 +103,7 @@ const DefaultProcessCondition = (doc, con) => {
                 let arrEvenstatus = [];
                 con.eventStatuses.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable && getCustom.defaultValue)
                             arrEvenstatus.push(y.value);
                     }
@@ -124,7 +124,7 @@ const DefaultProcessCondition = (doc, con) => {
                 let arrAuditstatus = [];
                 con.auditStatuses.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable && getCustom.defaultValue)
                             arrAuditstatus.push(y.value);
                     }
@@ -145,7 +145,7 @@ const DefaultProcessCondition = (doc, con) => {
                 let arrOrderBys = [];
                 con.orderBys.sort((a, b) => a - b).forEach((y, idx) => {
                     if (y.custom !== undefined && y.defaultSortBy !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable)
                             if (getCustom.defaultSortBy !== undefined)
                                 arrOrderBys.push({
@@ -458,7 +458,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -499,7 +499,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     var orb = [...data.orderBys]
                                     var findOrb = { ...orb.find(y => y.fieldName === x.sortField) }
@@ -577,7 +577,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -631,7 +631,8 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
+                                console.log(condition)
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
