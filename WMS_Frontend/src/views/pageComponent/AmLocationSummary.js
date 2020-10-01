@@ -210,11 +210,10 @@ const AmLocationSummary = props => {
     }, [dataAll])
 
     const clickDesCription = (row) => {
-        console.log(row)
         if (row == 25) {
             return " (Low Density)"
         } else if (row == 50) {
-            return " (medium Density)"
+            return " (Medium Density)"
         } else if (row == 75) {
             return " (High Density)"
         } else if (row == 100) {
