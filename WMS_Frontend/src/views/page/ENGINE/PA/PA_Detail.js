@@ -139,7 +139,7 @@ const PA_Detail = props => {
         { Header: "Lot", accessor: "diLot", width: 130, widthPDF: 10 },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
+        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
         { Header: "Unit", accessor: "packUnitCode", widthPDF: 10, width: 70 },
         {
             Header: "Quality Status",

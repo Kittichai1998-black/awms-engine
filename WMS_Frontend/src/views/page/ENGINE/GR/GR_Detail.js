@@ -137,7 +137,7 @@ const GR_Detail = props => {
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
         {
             Header: "Quality Status", accessor: "diAuditStatus",
