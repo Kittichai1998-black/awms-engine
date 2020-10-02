@@ -68,6 +68,7 @@ const StorageObject = props => {
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     { Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -86,7 +87,7 @@ const StorageObject = props => {
       //Cell: e => getImgPallet(e.original.Pallet)
     },
 
-    // { Header: "Project", accessor: "Project", width: 100 },
+    { Header: "Control No.", accessor: "OrderNo", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
@@ -107,7 +108,7 @@ const StorageObject = props => {
     { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Product Date",
+      Header: "MFG.Date",
       accessor: "Product_Date",
       width: 150,
       type: "datetime",
@@ -131,7 +132,7 @@ const StorageObject = props => {
       dateFormat: "DD/MM/YYYY"
     },
     {
-      Header: "Received Date",
+      Header: "Received Time",
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",

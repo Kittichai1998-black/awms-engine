@@ -197,6 +197,7 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
+        //console.log(rowInfo)
         if (rowInfo.StyleStatus !== undefined) {
             if (rowInfo.StyleStatus === "normal") {
                 return { backgroundColor: "white", lineHeight: "35px" }
@@ -206,25 +207,20 @@ const AmMonitor = props => {
                 return { backgroundColor: "white", lineHeight: "35px" }
             }
         } else {
-            if (rowInfo.AuditStatus === 0) {
+            if (rowInfo.EventStatus === 10) {
+                return {
+                    background: 'white',
+                    lineHeight: "35px"
+                }
+            } else if (rowInfo.EventStatus === 16) {
+                return {
+                    background: '#08c249',
+                    lineHeight: "35px"
+                }
+            } else if (rowInfo.EventStatus === 12) {
                 return {
                     background: '#ffc107',
-                    color: '#2f353a', lineHeight: "35px"
-                }
-            } else if (rowInfo.AuditStatus === 1) {
-                return {
-                    background: '#357a38',
-                    color: '#ffffff', lineHeight: "35px"
-                }
-            } else if (rowInfo.AuditStatus === 2) {
-                return {
-                    background: '#f86c6b',
-                    color: '#fff', lineHeight: "35px"
-                }
-            } else if (rowInfo.AuditStatus === 9) {
-                return {
-                    background: '#212121',
-                    color: '#fff', lineHeight: "35px"
+                    lineHeight: "35px"
                 }
             } else {
                 return { backgroundColor: "white", lineHeight: "35px" }

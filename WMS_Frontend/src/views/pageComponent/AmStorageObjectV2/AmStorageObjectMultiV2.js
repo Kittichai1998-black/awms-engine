@@ -409,6 +409,7 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
+        customTopLeftControl={props.customTopLeftControl}
         customAction={
           props.action === true ? (props.actionAuditStatus === true ? auditAction :
             [{

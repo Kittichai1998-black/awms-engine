@@ -142,7 +142,7 @@ const AmPrintBarCodeV2 = props => {
     var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark, props.docID)
     try {
 
-      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf").then();
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf", "preview").then();
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()

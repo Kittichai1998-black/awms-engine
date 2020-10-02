@@ -78,29 +78,29 @@ const BaseMaster = props => {
     },
   ];
   const columns = [
-    {
-      field: "Checkbox",
-      type: "checkbox",
-      name: "Checkbox",
-      placeholder: "",
-    },
-    {
-      field: "CodeStart",
-      type: "input",
-      name: "Code Start",
-      placeholder: "Code",
-      disableCustom: true,
+    // {
+    //   field: "Checkbox",
+    //   type: "checkbox",
+    //   name: "Checkbox",
+    //   placeholder: "",
+    // },
+    // {
+    //   field: "CodeStart",
+    //   type: "input",
+    //   name: "Code Start",
+    //   placeholder: "Code",
+    //   disableCustom: true,
 
-    },
+    // },
+    // {
+    //   field: "CodeEnd",
+    //   type: "input",
+    //   name: "Code End",
+    //   placeholder: "Code",
+    //   disableCustom: true,
+    // },
     {
-      field: "CodeEnd",
-      type: "input",
-      name: "Code End",
-      placeholder: "Code",
-      disableCustom: true,
-    },
-    {
-      field: "Code2",
+      field: "Code",
       type: "input",
       name: "Code",
       placeholder: "Code",

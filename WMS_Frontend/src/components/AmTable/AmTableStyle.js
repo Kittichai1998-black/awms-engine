@@ -40,7 +40,7 @@ const TableHeaderRow = styled.div`
 `
 const TableCell = styled.div`
     display:table-cell;
-    //background:#ffffff;
+    background:#ffffff;
     box-sizing:border-box;
     align-items:center;
     white-space:nowrap;
