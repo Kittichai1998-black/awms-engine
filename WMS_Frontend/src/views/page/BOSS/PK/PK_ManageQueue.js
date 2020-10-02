@@ -1,8 +1,13 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
+import queryString from "query-string";
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
+    { "accessor": "BaseCode", "Header": "Base Code", "sortable": false, "width": 200, Cell:(e) => {
+        const getOptions = queryString.parse(e.data.Options)
+        return getOptions.palletCode
+    } },
     { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
     { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
