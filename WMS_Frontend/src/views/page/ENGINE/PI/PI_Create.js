@@ -311,7 +311,7 @@ const PI_Create = props => {
     ];
 
     const columsFindPopupSto = [
-        { Header: "Pallet", accessor: "palletcode", width: 110, },
+        { Header: "Pallet", accessor: "basecode", width: 110, },
         { Header: "Item Code", accessor: "Code" },
         { Header: "Item Name", accessor: "Name" },
         { Header: "Control No.", accessor: "orderNo", width: 100, },
@@ -330,7 +330,7 @@ const PI_Create = props => {
   
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Pallet", accessor: "palletcode", width: 110, },
+        { Header: "Pallet", accessor: "basecode", width: 110, },
         { Header: "Item Code", accessor: "Code" },
         { Header: "Item Name", accessor: "Name" },
         { Header: "Control No.", accessor: "orderNo" },
