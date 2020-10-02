@@ -47,8 +47,10 @@ export default function DateAndTimePickers(props) {
         ...other
     } = props;
     const [value, setValue] = useState("");
-    useEffect(() => {
 
+    useEffect(() => {
+        console.log(defaultValue)
+        console.log(props)
         if (defaultValue) {
             let datetime = "";
             if (typeof defaultValue === "string") {

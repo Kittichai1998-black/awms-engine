@@ -50,17 +50,17 @@ const PI_Detail = props => {
         if (OwnerGroupType !== undefined) {
             var DataprocessType;
             if (OwnerGroupType === 1) {
-                DataprocessType = [{ label: "Sou. Warehouse", values: "SouWarehouseName" },
-                { label: "Des. Warehouse", values: "DesWarehouseName" }]
+                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse",  values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
-                DataprocessType = [{ label: "Source Customer", values: "SouCustomerName" },
-                    { label: "Des. Customer", values: "DesCustomerName" }]
+                DataprocessType = [{ label: "Source Customer", value: "SouCustomer", values: "SouCustomerName" },
+                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
-                DataprocessType = [{ label: "Source Supplier", values: "SouSupplierName" },
-                    { label: "Des. Supplier", values: "DesSupplierName" }]
+                DataprocessType = [{ label: "Source Supplier", value: "SouSupplier" , values: "SouSupplierName" },
+                    { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
             } else {
-                DataprocessType = [{ label: "Source Warehouse", values: "SouWarehouseName" },
-                { label: "Des. Warehouse", values: "DesWarehouseName" }]
+                DataprocessType = [{ label: "Source Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             }
 
         }

@@ -185,20 +185,15 @@ const Create_GR_DR = props => {
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
         //{ Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
-        //{ Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
         { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
-        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Remark", accessor: "Remark", codeTranslate: "Remark"},
-        //{ Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
-        //{ Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
-        //{ Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
         { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
-        //{ Header: "Incubation Day", accessor: "IncubationDay", codeTranslate: "IncubationDay" },
         { Header: "MFG.Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
         { Header: "Expire Date", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
-        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
 
     ];
 
@@ -218,21 +213,15 @@ const Create_GR_DR = props => {
         { Header: "Item Code", accessor: "SKUMaster_Code" },
         { Header: "Item Nane", accessor: "SKUMaster_Name" },
         { Header: "Control No.", accessor: "OrderNo" },
-        //{ Header: "Batch", accessor: "Batch" },
         { width: 130, accessor: "Lot", Header: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
         { Header: "Quality Status", accessor: "AuditStatus" },
-        { Header: "Vendor Lot", accessor: "Ref1" },
         { Header: "Remark", accessor: "Remark"},
-        //{ Header: "Ref2", accessor: "Ref2" },
-        //{ Header: "Ref3", accessor: "Ref3" },
-        //{ Header: "Ref4", accessor: "Ref4" },
         { Header: "Carton No.", accessor: "CartonNo" },
-        //{ Header: "Incubation Day", accessor: "IncubationDay" },
         { Header: "MFG.Date", accessor: "ProductionDate" },
-        { Header: "Expire Date", accessor: "ExpireDate" },
-        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay" }
+        { Header: "Expire Date", accessor: "ExpireDate" }
     ];
 
     const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc

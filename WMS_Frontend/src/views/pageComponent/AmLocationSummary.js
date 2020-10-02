@@ -126,12 +126,12 @@ const AmLocationSummary = props => {
                     bank.push(x)
                 }
                 if (!chkBay) {
-                    bay.push(x) 
+                    bay.push(x)
                 }
                 if (!chkLevel) {
                     level.push(x)
                 }
-            }) 
+            })
             console.log(bank);
             let bayPercen_10 = (bay.length - 1) * 0.1,
                 padding = "5px",
@@ -182,7 +182,7 @@ const AmLocationSummary = props => {
 
                                             row = 0; break
                                     }
-
+                                    console.log(row)
                                     return (
                                         <Aux key={yi}>
                                             <td style={{
@@ -196,7 +196,8 @@ const AmLocationSummary = props => {
                                                     backgroundColor: bgColor(row),
                                                     // border: row?"1px solid black":null
                                                 }}
-                                            >{row ? row : null}</td> : null}
+                                            >{row ? row + clickDesCription(row) : null}</td> : null}
+
                                         </Aux>
                                     )
                                 }
@@ -208,6 +209,19 @@ const AmLocationSummary = props => {
         }
     }, [dataAll])
 
+    const clickDesCription = (row) => {
+        if (row == 25) {
+            return " (Low Density)"
+        } else if (row == 50) {
+            return " (Medium Density)"
+        } else if (row == 75) {
+            return " (High Density)"
+        } else if (row == 100) {
+            return " (Full)"
+        } else {
+            return null
+        }
+    }
     const clickRow = (rowBank, e) => {
         if (rowBank) {
             if (topTr) {
@@ -471,8 +485,8 @@ const AmLocationSummary = props => {
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <b style={{ fontSize: "20px" }}>Top View</b>
-                        <div id={"divTableTopView"} style={{ height:  '50%'}}>
-                        {/* (window.innerHeight - 200) / 2 */}
+                        <div id={"divTableTopView"} style={{ height: '50%' }}>
+                            {/* (window.innerHeight - 200) / 2 */}
                             <table>
                                 <tbody>
                                     {dataTop}
@@ -480,7 +494,7 @@ const AmLocationSummary = props => {
                             </table>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{marginTop: '5px'}}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ marginTop: '5px' }}>
                         <b style={{ fontSize: "20px" }}>Side View {titleBank}</b>
                         {btnClear}
                         <div id={"divTableSideView"} style={{ height: '50%' }}>

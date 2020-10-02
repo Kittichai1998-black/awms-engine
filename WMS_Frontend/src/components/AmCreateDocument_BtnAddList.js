@@ -167,10 +167,6 @@ const BtnAddList = props => {
         setQuery(props.queryApi)
     }, open, props.queryApi)
 
-    //useEffect(() => {
-    //    console.log(dataSelect)
-
-    //}, [open,dataSelect])
 
 
     useEffect(() => {
@@ -235,12 +231,13 @@ const BtnAddList = props => {
             let obj = {
                 ...x,
                 quantity: x.Quantity,
+                lot: x.Lot,
                 expireDates: x.expireDate ? x.expireDate   : null,
                 productionDates: x.productionDate ? x.productionDate  : null,
-                expireDate: x.expireDate ? moment(x.expireDate).format('MM-DD-YYYY') : null,
-                productionDate: x.productionDate ? moment(x.productionDate).format('MM-DD-YYYY') : null,
-                auditStatus: GetAuditStatus(x.AuditStatus),
-                //ShelfLifePercent: x.ShelfLifePercent ? x.ShelfLifePercent + '%' : null,
+                //expireDate: x.expireDate ? moment(x.expireDate).format('DD/MM/YYYY') : null,
+                //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
+                auditStatus: x.AuditStatus.toString(),
+                ShelfLifePercent: x.ShelfLifeRemainPercent ? x.ShelfLifeRemainPercent + '%' : null,
                 remark: query.remark != null ? query.remark : ''
             }
             return obj
@@ -249,17 +246,17 @@ const BtnAddList = props => {
 
     }
 
-    const GetAuditStatus = (value) => {
-        if (value === 0) {
-            return "QUARANTINE"
-        } else if (value === 1) {
-            return "PASSED"
-        } else if (value === 2) {
-            return "NOTPASS"
-        } else if (value === 9) {
-            return "HOLD"
-        }
-    };
+    //const GetAuditStatus = (value) => {
+    //    if (value === 0) {
+    //        return "QUARANTINE"
+    //    } else if (value === 1) {
+    //        return "PASSED"
+    //    } else if (value === 2) {
+    //        return "NOTPASS"
+    //    } else if (value === 9) {
+    //        return "HOLD"
+    //    }
+    //};
 
     //useEffect(() => {
     //    if (typeof page === "number") {

@@ -51,6 +51,12 @@ const GR_PalletByHH = (props) => {
             name: "Lot",
             disabled: true,
             placeholder: "Lot"
+        }, {
+            field: "ref1",
+            type: "input",
+            name: "Vendor Lot",
+            disabled: true,
+            placeholder: "Ref1"
         },
         {
             field: "batch",
@@ -103,13 +109,13 @@ const GR_PalletByHH = (props) => {
         //     disabled: true,
         //     placeholder: "Ref4"
         // }, 
-        {
-            field: "cartonNo",
-            type: "input",
-            name: "CartonNo",
-            disabled: true,
-            placeholder: "CartonNo"
-        },
+        // {
+        //     field: "cartonNo",
+        //     type: "input",
+        //     name: "CartonNo",
+        //     disabled: true,
+        //     placeholder: "CartonNo"
+        // },
         {
             field: "addQty",
             type: "input",
@@ -156,9 +162,9 @@ const GR_PalletByHH = (props) => {
         {
             field: "productDate",
             type: "datetime",
-            name: "Product Date",
+            name: "MFG.Date",
             disabled: false,
-            placeholder: "Product Date"
+            placeholder: "MFG.Date"
         }
     ]
     return (
