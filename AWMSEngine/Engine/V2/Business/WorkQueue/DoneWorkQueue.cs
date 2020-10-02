@@ -295,16 +295,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var updSto = new StorageObjectCriteria();
                 updSto = sto;
                 updSto.baseQty -= disto.BaseQuantity.Value;
-                var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.unitID);
+                var qtyConvert = StaticValue.ConvertToNewUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.baseUnitID, updSto.unitID);
                 updSto.qty = qtyConvert.newQty;
-
 
                 //update new sto pick
                 var issuedSto = new StorageObjectCriteria();
                 issuedSto = sto.Clone();
                 issuedSto.id = null;
                 issuedSto.baseQty = disto.BaseQuantity.Value;
-                var qtyConvert_issued = StaticValue.ConvertToBaseUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.unitID);
+                var qtyConvert_issued = StaticValue.ConvertToNewUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.baseUnitID, issuedSto.unitID);
                 issuedSto.qty = qtyConvert_issued.newQty;
                 issuedSto.parentID = null;
                 issuedSto.mapstos = null;
