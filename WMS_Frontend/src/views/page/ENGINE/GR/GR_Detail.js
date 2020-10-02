@@ -173,12 +173,13 @@ const GR_Detail = props => {
     }
     const getDoccode = (e) => {
         let links;
-        if (e.dcDocType_ID === 1001) {
-            links =  "/receive/putawaydetail?docID="
-          
-        } else if (e.dcDocType_ID === 1002) {
-            links = "/issue/pickingdetail?docID="
-        }
+        if (e.dcDocType_ID) {
+            if (e.dcDocType_ID === 1001) {
+                links = "/receive/putawaydetail?docID="
+
+            } else if (e.dcDocType_ID === 1002) {
+                links = "/issue/pickingdetail?docID="
+            }
             return (
                 <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                     {e.dcCode}
@@ -191,7 +192,8 @@ const GR_Detail = props => {
                     </AmRediRectInfo>
                 </div>
 
-            );        
+            );
+        }
     };
 
 

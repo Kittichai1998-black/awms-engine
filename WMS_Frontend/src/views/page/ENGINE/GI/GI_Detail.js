@@ -164,33 +164,41 @@ const GR_Detail = props => {
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.diProductionDate) {
+            return moment(e.diProductionDate).format("DD/MM/YYYY");
+        }
+
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.diExpireDate) {
+            return moment(e.diExpireDate).format("DD/MM/YYYY");
+        }
     }
+
     const getDoccode = (e) => {
         let links;
-        if (e.dcDocType_ID === 1001) {
-            links = "/receive/putawaydetail?docID="
+        if (e.dcDocType_ID) {
+            if (e.dcDocType_ID === 1001) {
+                links = "/receive/putawaydetail?docID="
 
-        } else if (e.dcDocType_ID === 1002) {
-            links = "/issue/pickingdetail?docID="
+            } else if (e.dcDocType_ID === 1002) {
+                links = "/issue/pickingdetail?docID="
+            }
+            return (
+                <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                    {e.dcCode}
+                    <AmRediRectInfo
+                        api={links + e.dcID}
+                        history={props.history}
+                        docID={""}
+                    >
+                        {" "}
+                    </AmRediRectInfo>
+                </div>
+
+            );
         }
-        return (
-            <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
-                {e.dcCode}
-                <AmRediRectInfo
-                    api={links + e.dcID}
-                    history={props.history}
-                    docID={""}
-                >
-                    {" "}
-                </AmRediRectInfo>
-            </div>
-
-        );
     };
 
 
