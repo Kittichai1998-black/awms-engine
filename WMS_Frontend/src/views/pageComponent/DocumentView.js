@@ -448,6 +448,7 @@ const DocumentView = props => {
             setColumnsDetailSOU(props.columnsDetailSOU)
         }
     }, [props.columnsDetailSOU, dataHeader])
+
     const renderDocumentStatus = () => {
         var _statustxt = _.result(_.find(DocumentEventStatus, function (obj) {
             return obj.code === dataHeader.EventStatus;
@@ -491,7 +492,7 @@ const DocumentView = props => {
         } else if (value) {
             return dataHeader[value] + ':' + dataHeader[values];
         } else {
-            return dataHeader[values];
+            return dataHeader[value];
         }
     };
 

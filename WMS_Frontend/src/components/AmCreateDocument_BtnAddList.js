@@ -222,7 +222,7 @@ const BtnAddList = props => {
                 }
             });
         }
-    }, [props.queryApi, open]);
+    }, [props.queryApi, open, query]);
 
 
     const SetFormaatdata = (datas) => {

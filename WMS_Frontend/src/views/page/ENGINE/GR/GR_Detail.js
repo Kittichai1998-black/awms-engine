@@ -77,8 +77,8 @@ const GR_Detail = props => {
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
-                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
-                { label: "Remark", values: "Remark" }
+                { label: "Doc Status", value: "renderDocumentStatusIcon()", type: "function" },
+                { label: "Remark", value: "Remark" }
             ]
         ];
         setheader(TextHeader)

@@ -1039,6 +1039,7 @@ const AmCreateDocument = (props) => {
             if (key in doc)
                 doc[key] = value ? value : null
         }
+
         var qtyrandom = 'qtyrandom='
         var remark = 'remark='
         var pallet = 'palletcode='
@@ -1122,7 +1123,7 @@ const AmCreateDocument = (props) => {
                     }
                 } else {
                     console.log(doc)
-                   // CreateDocuments(doc)
+                   CreateDocuments(doc)
                 }
             }
         }
