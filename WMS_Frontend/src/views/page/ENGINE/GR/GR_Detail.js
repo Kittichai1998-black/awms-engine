@@ -200,7 +200,8 @@ const GR_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
+        if (value.status === 1 || value.status === 3)
+            return <CheckCircle style={{ color: "green" }} />;
         else if (value.status === 0)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else return null;

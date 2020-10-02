@@ -194,7 +194,6 @@ const PA_Detail = props => {
     };
 
     const GetAuditStatusIcon = (value) => {
-        console.log(value.diAuditStatus)
         if (value.diAuditStatus != undefined) {
             return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
         } else if (value.AuditStatus != undefined) {

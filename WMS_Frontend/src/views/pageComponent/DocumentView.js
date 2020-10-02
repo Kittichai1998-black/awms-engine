@@ -250,16 +250,31 @@ const DocumentView = props => {
 
                     var sumQty = 0;
                     var sumBaseQty = 0;
+
                     if (res.data.sou_bstos !== null) {
-                        res.data.sou_bstos.filter(y => y.docItemID == row.ID).forEach(y => {
-                            sumQty += y.distoQty;
-                            sumBaseQty += y.distoBaseQty;
+                        res.data.sou_bstos.forEach(y => {
+                            if (props.typeDocNo === 1011) {
+                                if (y.dcDocType_ID === 1001) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
+                            } else if (props.typeDocNo === 1012) {
+                                if (y.dcDocType_ID === 1002) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
+
+                            }else if (props.typeDocNo === y.dcDocType_ID) {
+                                sumQty += y.distoQty;
+                                sumBaseQty += y.distoBaseQty;
+                            }
                         });
                     }
-                    row._sumQtyDisto = sumQty;
-                    row._sumQtyBaseDisto = sumBaseQty;
-
-                    row._balanceQty = row.Quantity - sumQty;
+                
+                        row._sumQtyDisto = sumQty;
+                        row._sumQtyBaseDisto = sumBaseQty;
+                        row._balanceQty = row.Quantity - sumQty;
+                  
 
                     // === getOption === DocItem
 
@@ -333,7 +348,6 @@ const DocumentView = props => {
                         //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
                         var qryStr = queryString.parse(rowDetail.Options);
                         var qryStrDI = queryString.parse(rowDetail.diOptions);
-                        console.log(qryStr)
                         if (optionSouBstos) {
                             optionSouBstos.forEach(x => {
                                 rowDetail[x.optionName] =
@@ -342,22 +356,49 @@ const DocumentView = props => {
                                         : qryStr[x.optionName];
                             });
                         }
+                        if (props.typeDocNo === 1001 || props.typeDocNo === 1002) {
+                            if (rowDetail.dcDocType_ID === props.typeDocNo) {
+                                dataTableDetailSOU.push({
+                                    ...rowDetail
+                                });
+                            }
+                        } else {
+                            if (props.typeDocNo === 1011) {
+                                if (rowDetail.dcDocType_ID === 1001) {
+                                    dataTableDetailSOU.push({
+                                        ...rowDetail
+                                    });
+                                }
+                            } else if (props.typeDocNo === 1012) {
+                                if (rowDetail.dcDocType_ID === 1002) {
+                                    dataTableDetailSOU.push({
+                                        ...rowDetail
+                                    });
+                                }
+                            } else {
+                                dataTableDetailSOU.push({
+                                    ...rowDetail,
+                                    remark: qryStrDI.remark != null ? qryStrDI.remark : '',
+                                    _packQty:
+                                        typeDoc === "issued"
+                                            ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                            : typeDoc === "shipment"
+                                                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                                : typeDoc === "received"
+                                                    ? rowDetail.packQty
+                                                    : typeDoc === "audit"
+                                                        ? rowDetail.distoQty
+                                                        : null
+                                });
 
-                        dataTableDetailSOU.push({
-                            ...rowDetail,
-                            remark: qryStrDI.remark != null ? qryStrDI.remark : '',
-                            _packQty:
-                                typeDoc === "issued"
-                                    ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                    : typeDoc === "shipment"
-                                        ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                        : typeDoc === "received"
-                                            ? rowDetail.packQty
-                                            : typeDoc === "audit"
-                                                ? rowDetail.distoQty
-                                                : null
-                        });
+
+                            }
+
+                        }
+
                     });
+                    console.log(dataTableDetailSOU)
+                
                 }
                 if (res.data.des_bstos) {
                     res.data.des_bstos.forEach(rowDetail => {
