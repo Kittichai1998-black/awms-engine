@@ -29,7 +29,7 @@ const view_sto = {
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
     f: "*",
     g: "",
-    s: "[{'f':'packID','od':'ASC'}]",
+    s: "[{'f':'expireDate','od':'ASC'}]",
     sk: 0,
     l: 100,
     all: ""
@@ -147,9 +147,9 @@ const GI_Create_FGCustomer = props => {
         let AuditStatusDDL;
 
         if (skuType === 5) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true, width: '300px' }
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input",  width: '300px' }
         } else {
-            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px' }
         }
 
         if (ProcessTypeCode === '4081' ||
@@ -178,22 +178,22 @@ const GI_Create_FGCustomer = props => {
             {
                 Header: "Item Name",
                 accessor: "Name",
-                type: "findPopUp",
-                queryApi: skuquery,
-                fieldLabel: ["Name"],
-                columsddl: columsFindPopupSKU,
-                related: ["Code"],
-                fieldDataKey: "Name", 
-                required: true
+                type: "text",
+                //queryApi: skuquery,
+                //fieldLabel: ["Name"],
+                //columsddl: columsFindPopupSKU,
+                //related: ["Code"],
+                //fieldDataKey: "Name", 
+                //required: true
             },
             { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
             Headers,
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
             AuditStatusDDL,
-            { Header: "ReMark", accessor: "remark", type: "input", width: '300px' },
-            { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
-            { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
+            { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
+            //{ Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
+            //{ Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
         ];
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
@@ -320,20 +320,22 @@ const GI_Create_FGCustomer = props => {
         { Header: "Item Code", accessor: "Code" },
         { Header: "Item Name", accessor: "Name"},
         { Header: "Control No.", accessor: "orderNo", width: 100,  },
-        { Header: "Lot", accessor: "Lot" },
+        { Header: "Lot", accessor: "lot" },
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Location", accessor: "locationCode", width: 9},
         { Header: "Qty", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType", width: 70 },
-        { Header: "Quality Status", accessor: "auditStatus" },
+        { Header: "Quality Status", accessor: "auditStatus", Cell: e => getAuditStatus(e.original)},
         { Header: "Remark", accessor: "remark" },
-        { Header: "MFG.Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
+        //{ Header: "Shelf life (%)", accessor: "ShelfLifePercent" },
+        { Header: "MFG.Date", accessor: "productionDate", Cell: e => getFormatDatePro(e.original)},
+        { Header: "Expire Date", accessor: "expireDate", Cell: e => getFormatDateExp(e.original)},
 
     ];
 
 
     const columns = [
+        { Header: "Pallet", accessor: "palletcode", width: 110, },
         { Header: "Item Code", accessor: "Code" },
         { Header: "Item Name", accessor: "Name" },
         { Header: "Control No.", accessor: "orderNo" },
@@ -341,8 +343,15 @@ const GI_Create_FGCustomer = props => {
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Qty", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },
-        { Header: "Quality Status", accessor: "auditStatus" },
+        {
+            Header: "Quality Status", accessor: "auditStatus",
+            Cell: e => getAuditStatus(e.original)
+        },
         { Header: "Remark", accessor: "remark" },
+        //{
+        //    Header: "Shelf life (%)", accessor: "ShelfLifePercent"
+        //    //Cell: e => getShelfLifePercent(e.original), widthPDF: 15,
+        //},
         {
             Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
@@ -356,13 +365,33 @@ const GI_Create_FGCustomer = props => {
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.productionDates) {
+            return moment(e.productionDates).format("DD/MM/YYYY");
+        }
+       
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.expireDates) {
+            return moment(e.expireDates).format("DD/MM/YYYY");
+        }
+      
     }
 
+    const getAuditStatus = (e) => {
+        console.log(e)
+        if (e.auditStatus ) {
+            if (e.auditStatus === '0' ) {
+                return "QUARANTINE"
+            } else if (e.auditStatus === '1' ) {
+                return "PASSED"
+            } else if (e.auditStatus === '2' ) {
+                return "REJECTED"
+            } else if (e.auditStatus === '9' ) {
+                return "HOLD"
+            }
+        }
+    }
     const apicreate = "/v2/CreateDIDocAPI/"; //API สร้าง Doc
     const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
