@@ -1041,6 +1041,7 @@ const AmCreateDocument = (props) => {
         }
         var qtyrandom = 'qtyrandom='
         var remark = 'remark='
+        var pallet = 'palletcode='
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
                 let _docItem = { ...docItem }
@@ -1061,7 +1062,11 @@ const AmCreateDocument = (props) => {
                 x.quantity = x.quantity ? 0 : 0
                 x.auditStatus = x.auditStatus ? x.auditStatus : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
-                x.options = x.qtyrandom ? qtyrandom.concat(x.qtyrandom) : null
+                x.options = x.palletcode && x.remark
+                    ? pallet.concat(x.palletcode) + '&' + remark.concat(x.remark) :
+                    x.palleCode ? pallet.concat(x.palletcode) :
+                        x.remark ? remark.concat(x.remark) :
+                            null     
                 x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate : null
                 x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
                 return x
@@ -1084,7 +1089,11 @@ const AmCreateDocument = (props) => {
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate :null
                 x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
-                x.options = x.remark ? remark.concat(x.remark) : null
+                x.options = x.palletcode && x.remark
+                    ? pallet.concat(x.palletcode) + '&' + remark.concat(x.remark) :
+                    x.palleCode ? pallet.concat(x.palletcode) :
+                        x.remark ? remark.concat(x.remark) :
+                    null         
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -1112,7 +1121,8 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    CreateDocuments(doc)
+                    console.log(doc)
+                   // CreateDocuments(doc)
                 }
             }
         }
