@@ -108,7 +108,7 @@ const StorageObject = props => {
     { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Product Date",
+      Header: "MFG.Date",
       accessor: "Product_Date",
       width: 150,
       type: "datetime",
@@ -116,7 +116,7 @@ const StorageObject = props => {
       filterConfig: {
         filterType: "datetime",
       }
-      , customFilter: { field: "MFG.Date" },
+      , customFilter: { field: "Product_Date" },
       dateFormat: "DD/MM/YYYY"
     },
     {
