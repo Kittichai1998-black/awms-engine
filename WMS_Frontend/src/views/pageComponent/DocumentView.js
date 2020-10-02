@@ -470,7 +470,7 @@ const DocumentView = props => {
 
     //======================================================================================================
 
-    const getDataHeader = (type, value) => {
+    const getDataHeader = (type, value,values) => {
         if (type === "date") {
             if (dataHeader[value] === null || dataHeader[value] === "") {
                 return "-";
@@ -488,8 +488,10 @@ const DocumentView = props => {
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
             return qryStr[value] === "undefined" ? null : qryStr[value];
+        } else if (value) {
+            return dataHeader[value] + ':' + dataHeader[values];
         } else {
-            return dataHeader[value];
+            return dataHeader[values];
         }
     };
 
@@ -499,7 +501,7 @@ const DocumentView = props => {
                 <Grid key={idx} container spacing={24}>
                     {x.map((y, i) => {
                         let syn = y.label ? " :" : "";
-                        let showval = getDataHeader(y.type, y.values);
+                        let showval = getDataHeader(y.type, y.value,y.values);
                         return (
                             <Grid
                                 key={i}

@@ -51,13 +51,13 @@ const GR_Detail = props => {
         if (OwnerGroupType !== undefined) {
             var DataprocessType;
             if (OwnerGroupType === 1) {
-                DataprocessType = { label: "Sou. Warehouse", values: "SouWarehouseName" }
+                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse" , values: "SouWarehouseName" }
             } else if (OwnerGroupType === 2) {
-                DataprocessType = { label: "Sou. Customer", values: "SouCustomerName" }
+                DataprocessType = { label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" }
             } else if (OwnerGroupType === 3) {
-                DataprocessType = { label: "Sou. Supplier", values: "SouSupplierName" }
+                DataprocessType = { label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" }
             } else {
-                DataprocessType = { label: "Sou. Warehouse", values: "SouWarehouseName" }
+                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" }
             }
         }
         var TextHeader = [
@@ -66,7 +66,7 @@ const GR_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", values: "ReDocumentProcessTypeName" },
+                { label: "Process No.", value:  "DocumentProcessTypeCode",values : "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
@@ -74,7 +74,7 @@ const GR_Detail = props => {
             ],
             [
                 DataprocessType,
-                { label: "Des. Warehouse", values: "DesWarehouseName" }
+                { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
                 { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },

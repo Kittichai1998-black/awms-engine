@@ -50,17 +50,17 @@ const GR_Detail = props => {
         if (OwnerGroupType !== undefined) {
             var DataprocessType;
             if (OwnerGroupType === 1) {
-                DataprocessType = [{ label: "Sou. Warehouse", values: "SouWarehouseName" },
+                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
                 { label: "Des. Warehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
-                DataprocessType = [{ label: "Sou. Customer", values: "SouCustomerName" },
-                    { label: "Des. Customer", values: "DesCustomerName" }]
+                DataprocessType = [{ label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" },
+                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
-                DataprocessType = [{ label: "Sou. Supplier", values: "SouSupplierName" },
-                    { label: "Des. Supplier", values: "DesSupplierName" }]
+                DataprocessType = [{ label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" },
+                    { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
             } else {
-                DataprocessType = [{ label: "Sou. Warehouse", values: "SouWarehouseName" },
-                { label: "Des. Warehouse", values: "DesWarehouseName" }]
+                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             }
 
         }
@@ -71,7 +71,7 @@ const GR_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", values: "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             

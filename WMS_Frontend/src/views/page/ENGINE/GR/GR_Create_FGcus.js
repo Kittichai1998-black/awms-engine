@@ -77,8 +77,6 @@ const RD_Create_FGCustomer = props => {
             setHeaderDoc(headerCreate)
             setskuquery();
             setType(true)
-
-
         } else {
 
         }
@@ -124,11 +122,20 @@ const RD_Create_FGCustomer = props => {
         let Headers;
         let Horder;
         let AuditStatusDDL;
-
+        let Control;
+        let ProDate;
+        let Expire;
         if (skuType === 5) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true, width: '300px' }
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", width: '300px' }
+            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px', required: true }
+            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "dateFalse", width: '300px', defaultValue:false}
+            Expire = { Header: "Expire Date", accessor: "expireDate", type: "dateFalse", width: '300px', defaultValue:false}
+
         } else {
-            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true}
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
+            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
+            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true }
+            Expire = { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true }
         }
         if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' || ProcessTypeCode === '4192'  ) {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
@@ -156,29 +163,31 @@ const RD_Create_FGCustomer = props => {
             {
                 Header: "Item Name",
                 accessor: "Name",
-                type: "findPopUp",
-                queryApi: skuquery,
-                fieldLabel: ["Name"],
-                columsddl: columsFindPopupSKU,
-                related: ["Code",],
-                fieldDataKey: "Name",
-                required: true
+                type: "text",
+                //queryApi: skuquery,
+                //fieldLabel: ["Name"],
+                //columsddl: columsFindPopupSKU,
+                //related: ["Code",],
+                //fieldDataKey: "Name",
+                //required: true
             },
-            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }, 
+            Control,
             Headers, 
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
             AuditStatusDDL,         
             { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
             { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
-            { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
-            { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
+            ProDate,
+            Expire
+            
         ];
 
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
 
     const AuditStatus = [
+        { label: 'QQQ', value: '5' },
         { label: 'QUARANTINE', value: '0' },
         { label: 'PASSED', value: '1' },
         //{ label: 'REJECTED', value: '2' },
@@ -263,29 +272,48 @@ const RD_Create_FGCustomer = props => {
         { Header: "Vendor Lot", accessor: "ref1" },
         { Header: "Quantity", accessor: "quantity" },
         { Header: "Unit", accessor: "unitType" },  
-        { Header: "Quality Status", accessor: "auditStatus" },
+        {
+            Header: "Quality Status", accessor: "auditStatus",
+            Cell: e => getAuditStatus(e.original)
+        },
         { Header: "Remark", accessor: "remark" },
         { Header: "Carton No.", accessor: "cartonNo" },
         {
-            Header: "MFG.Date", accessor: "diProductionDate",
+            Header: "MFG.Date", accessor: "productionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDatePro(e)
+            CellPDF: e => getFormatDatePro(e.original)
         },
         {
-            Header: "Expire Date", accessor: "diExpireDate",
+            Header: "Expire Date", accessor: "expireDate",
             Cell: e => getFormatDateExp(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDateExp(e)
+            CellPDF: e => getFormatDateExp(e.original)
         }
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.productionDate)
+        return moment(e.productionDate).format("DD/MM/YYYY");
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.expireDate)
+        return moment(e.expireDate).format("DD/MM/YYYY");
     }
 
+    const getAuditStatus = (e) => {
+        console.log(e)
+        if (e.auditStatus) {
+            if (e.auditStatus === '0' ) {
+                return "QUARANTINE"
+            } else if (e.auditStatus === '1' ) {
+                return "PASSED"
+            } else if (e.auditStatus=== '2' ) {
+                return "REJECTED"
+            } else if (e.auditStatus === '9') {
+                return "HOLD"
+            }
+        }
+    }
 
     const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
     const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด

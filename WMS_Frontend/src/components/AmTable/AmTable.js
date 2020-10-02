@@ -225,7 +225,7 @@ const AmTable = (props) => {
                 clearSelectionChangeData={props.clearSelectionChangeData}
                 rowStyle={(data) => {
                     if(data._groupFooter)
-                        return {background: "#DFDFDF"}
+                        return {background: "#FEFEFE"}
                 }}
             />
             {

@@ -62,6 +62,13 @@ const processCondition = {
         },
         {
             "field": "Shelf Life > 85%", "key": "useShelfLifeDate", "enable": true, "defaultValue": true, "editable": true,
+            custom: (c) => {
+                let objCon = { "enable": true, "defaultValue": true, "editable": true} 
+                if(c.docItem.SKUMasterTypeID === 5){
+                    objCon.defaultValue = false;
+                }
+                return objCon;
+            }
         },
         // {
         //     "field": "Incubated", "key": "useIncubateDate", "enable": false, "defaultValue": true, "editable": true,
@@ -89,8 +96,6 @@ const processCondition = {
             "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": false, "editable": true,
             custom:(e)=>{
                 let customObj = {"enable": true, "defaultValue": false, "editable": true};
-                console.log(e)
-                console.log(e.docItem)
                 if(e.docItem.AuditStatus === 0)
                     customObj.defaultValue = true;
                 else
@@ -149,9 +154,11 @@ const processCondition = {
             "editable": true,
             "order": 1,
             custom: (c) => {
-                let objSorting = { "value": true, "editable": true, "enable": true, "sortField": "psto.expirydate", "order": 1, "defaultSortBy":"0"} 
-                if(c.docItem.SKUMasterTypeID === 4)
-                    objSorting.defaultSortBy = "1"
+                let objSorting = { "value": true, "editable": true, "enable": true, "sortField": "psto.expirydate"} 
+                if(c.docItem.SKUMasterTypeID === 4){
+                    objSorting.defaultSortBy = "0"
+                    objSorting.order = 1
+                }
 
                 return objSorting;
             }
@@ -172,9 +179,11 @@ const processCondition = {
             "editable": true,
             "order": 2,
             custom: (c) => {
-                let objSorting = { "value": true, "editable": true, "enable": true, "sortField": "psto.orderNo", "order": 1, "defaultSortBy":"0"} 
+                console.log("xx")
+                let objSorting = { "editable": true, "enable": true, "sortField": "psto.orderNo"} 
                 if(c.docItem.SKUMasterTypeID === 5){
-                    objSorting.defaultSortBy = "1"
+                    objSorting.defaultSortBy = "0";
+                    objSorting.order = 1
                 }
                 return objSorting;
             }
