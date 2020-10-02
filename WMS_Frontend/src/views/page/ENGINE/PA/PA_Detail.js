@@ -69,7 +69,7 @@ const PA_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", values: "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
@@ -80,7 +80,7 @@ const PA_Detail = props => {
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
-                { label: "Doc Status", value: "renderDocumentStatusIcon()", type: "function" },
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
