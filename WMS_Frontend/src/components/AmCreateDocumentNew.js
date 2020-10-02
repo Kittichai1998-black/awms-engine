@@ -1122,7 +1122,6 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    console.log(doc)
                    CreateDocuments(doc)
                 }
             }

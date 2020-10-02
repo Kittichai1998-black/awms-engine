@@ -485,14 +485,14 @@ const DocumentView = props => {
                 return moment(dataHeader[value]).format("DD/MM/YYYY HH:mm:ss");
             }
         } else if (type === "function") {
-            return eval(value);
+            return eval(values);
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
             return qryStr[value] === "undefined" ? null : qryStr[value];
         } else if (value) {
             return dataHeader[value] + ':' + dataHeader[values];
         } else {
-            return dataHeader[value];
+            return dataHeader[values];
         }
     };
 
