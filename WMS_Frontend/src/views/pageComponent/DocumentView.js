@@ -250,9 +250,9 @@ const DocumentView = props => {
 
                     var sumQty = 0;
                     var sumBaseQty = 0;
+                    if (res.data.sou_bstos !== null) {               
+                        res.data.sou_bstos.filter(y => y.packID === row.PackMaster_ID).forEach(y => {
 
-                    if (res.data.sou_bstos !== null) {
-                        res.data.sou_bstos.forEach(y => {
                             if (props.typeDocNo === 1011) {
                                 if (y.dcDocType_ID === 1001) {
                                     sumQty += y.distoQty;
@@ -263,14 +263,13 @@ const DocumentView = props => {
                                     sumQty += y.distoQty;
                                     sumBaseQty += y.distoBaseQty;
                                 }
-
-                            }else if (props.typeDocNo === y.dcDocType_ID) {
+                            } else if (props.typeDocNo === y.dcDocType_ID) {                           
                                 sumQty += y.distoQty;
                                 sumBaseQty += y.distoBaseQty;
                             }
                         });
                     }
-                
+                          
                         row._sumQtyDisto = sumQty;
                         row._sumQtyBaseDisto = sumBaseQty;
                         row._balanceQty = row.Quantity - sumQty;
@@ -356,7 +355,7 @@ const DocumentView = props => {
                                         : qryStr[x.optionName];
                             });
                         }
-                        if (props.typeDocNo === 1001 || props.typeDocNo === 1002) {
+                        if (props.typeDocNo === 1001 || props.typeDocNo === 1002 || props.typeDocNo === 2004) {
                             if (rowDetail.dcDocType_ID === props.typeDocNo) {
                                 dataTableDetailSOU.push({
                                     ...rowDetail
@@ -397,7 +396,6 @@ const DocumentView = props => {
                         }
 
                     });
-                    console.log(dataTableDetailSOU)
                 
                 }
                 if (res.data.des_bstos) {
@@ -447,7 +445,6 @@ const DocumentView = props => {
                 setData(dataTable);
                 setDataDetailSOU(dataTableDetailSOU);
                 setDataDetailDES(dataTableDetailDES);
-                console.log(dataTableDetailSOU)
             }
         });
     };

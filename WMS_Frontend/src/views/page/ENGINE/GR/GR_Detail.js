@@ -137,7 +137,7 @@ const GR_Detail = props => {
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
         { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
         {
             Header: "Quality Status", accessor: "diAuditStatus",
@@ -200,10 +200,12 @@ const GR_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1 || value.status === 3)
-            return <CheckCircle style={{ color: "green" }} />;
-        else if (value.status === 0)
+        if (value.status === 0 )
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
         else return null;
     };
 

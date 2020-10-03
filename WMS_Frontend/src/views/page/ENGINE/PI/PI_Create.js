@@ -152,7 +152,7 @@ const PI_Create = props => {
             let objQuery = SKUMaster;
             if (objQuery !== null && Type === true && skuType !== undefined) {
                 let skuqrys = JSON.parse(objQuery.q);
-                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }]
+                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
 
