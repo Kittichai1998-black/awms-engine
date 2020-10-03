@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
