@@ -194,9 +194,12 @@ const PK_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
-        else if (value.status === 0)
-            return <HighlightOff style={{ color: "red" }} />;
+        if (value.status === 0)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
         else return null;
     };
 
