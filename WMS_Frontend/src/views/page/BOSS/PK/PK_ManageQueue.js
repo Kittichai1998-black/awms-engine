@@ -208,11 +208,26 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        return areaList.filter(x => x.ID === 9 || x.ID === 10)
-    }
-
+        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
+        //pm 9 Production Gate  Floor2
+        //fg 10 Loading Gate  Floor1
+        if (sku === '4') {
+            return areaList.filter(x => x.ID === 10)
+        }
+        else if (sku === '5') {
+            return areaList.filter(x => x.ID === 9)
+        }
+    } 
     const customDesAreaDefault = (doc) => {
-        return "9"
+        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
+        //pm 9 Production Gate  Floor2
+        //fg 10 Loading Gate  Floor1
+        if (sku === '4') {
+            return '10'
+        }
+        else if (sku === '5') {
+            return '9'
+        }
     }
 
     return <AmProcessQueue
