@@ -128,15 +128,23 @@ const RD_Create_FGCustomer = props => {
         if (skuType === 5) {
             Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", width: '300px' }
             Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px', required: true }
-            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "dateFalse", width: '300px', defaultValue:false}
-            Expire = { Header: "Expire Date", accessor: "expireDate", type: "dateFalse", width: '300px', defaultValue:false}
+            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "dateFalse", width: '300px', defaultValue: false }
+            Expire = { Header: "Expire Date", accessor: "expireDate", type: "dateFalse", width: '300px', defaultValue: false }
 
-        } else {
+        } else if (skuType === 9) {
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px'}
+            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
+            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px' }
+            Expire = { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px' }
+
+        }else{
             Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
             Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
             ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true }
             Expire = { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true }
         }
+
+
         if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' || ProcessTypeCode === '4192'  ) {
             AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
         } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991' || ProcessTypeCode === '4092') {
