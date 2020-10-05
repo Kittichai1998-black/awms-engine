@@ -207,9 +207,9 @@ const AmHeaderputandpick = (props) => {
         let datas
         setChkCol(true)
         props.doccolumnEditItem.forEach((x, i) => {
-            if (x.Header === "Qty") {
+            if (x.Header === "Quantity") {
                datas = {
-                    width: 160, Header: "Qty", accessor: "Quantity", Cell: e =>
+                   width: 160, Header: "Quantity", accessor: "Quantity", Cell: e =>
                    genInputQty(e.original)
                 }
 
@@ -312,7 +312,7 @@ const AmHeaderputandpick = (props) => {
                 datasCheck.push(datas)
             }
         })
-        console.log(datasCheck)
+
         if (datasCheck.length === 0) {
             dia.setdailogMsg('Quantity document is Empty')
             dia.setdailogErr(true)
@@ -552,16 +552,16 @@ const AmHeaderputandpick = (props) => {
     const genInputQty = (datarow) => {
         let defaultQty;
 
-        if (datarow.Qty != undefined && doc.dataSourceItemTB.length == 0 && datarow.Quantity - datarow.Qty > 0) {
-            defaultQty = datarow.Quantity - datarow.Qty
+        if (datarow.Qty != undefined && doc.dataSourceItemTB.length == 0 && (datarow.Quantity - datarow.Qty) > 0) {
+            defaultQty = (datarow.Quantity - datarow.Qty)
         } else if (datarow.Quantity - datarow.Qty > 0) {
-            defaultQty = datarow.Quantity - datarow.Qty
-        } else if (datarow.Quantity - datarow.Qty === 0) {
+            defaultQty = (datarow.Quantity - datarow.Qty)
+        } else if ((datarow.Quantity - datarow.Qty) === 0) {
             defaultQty = 0
         } else {
             defaultQty = datarow.Quantity
         }
-
+        
         return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
             type="input"

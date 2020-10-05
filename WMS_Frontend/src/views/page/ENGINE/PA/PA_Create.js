@@ -57,7 +57,6 @@ const Create_GR_DR = props => {
             let ForCustomerName = dataDocument.ForCustomerName
             let Ref1 = dataDocument.Ref1
             let For_Customer_ID = dataDocument.For_Customer_ID
-            console.log(SouWarehouseName)
             let Source;
             if (SouWarehouseName != null) {
                 Source = { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }

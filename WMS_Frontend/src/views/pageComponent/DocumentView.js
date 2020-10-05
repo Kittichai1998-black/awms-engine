@@ -509,24 +509,25 @@ const DocumentView = props => {
 
     //======================================================================================================
 
-    const getDataHeader = (type, value,values) => {
+    const getDataHeader = (type, value, values) => {
+        console.log()
         if (type === "date") {
-            if (dataHeader[value] === null || dataHeader[value] === "") {
+            if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
             } else {
-                return moment(dataHeader[value]).format("DD/MM/YYYY");
+                return moment(dataHeader[values]).format("DD/MM/YYYY");
             }
         } else if (type === "dateTime") {
-            if (dataHeader[value] === null || dataHeader[value] === "") {
+            if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
             } else {
-                return moment(dataHeader[value]).format("DD/MM/YYYY HH:mm:ss");
+                return moment(dataHeader[values]).format("DD/MM/YYYY HH:mm:ss");
             }
         } else if (type === "function") {
             return eval(values);
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
-            return qryStr[value] === "undefined" ? null : qryStr[value];
+            return qryStr[values] === "undefined" ? null : qryStr[values];
         } else if (value) {
             return dataHeader[value] + ':' + dataHeader[values];
         } else {
