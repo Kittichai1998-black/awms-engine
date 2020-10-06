@@ -68,7 +68,7 @@ const QualityStatus = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+    //{ Header: "Lot", accessor: "Lot", width: 80 },
     { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
 
     {
@@ -249,7 +249,7 @@ const QualityStatus = props => {
   }
 
   const SendEmail = <AmButton styleType="add_clear" onClick={() => {
-    Axios.post(window.apipath + "/v2/audit_send_notify",{})
+    Axios.post(window.apipath + "/v2/audit_send_notify", {})
   }}>Send Notify</AmButton>
 
   return (
@@ -263,6 +263,7 @@ const QualityStatus = props => {
         action={true}
         actionAuditStatus={true}
         customTopLeftControl={SendEmail}
+        typeSKU={"PM"}
       />
     </div>
   );

@@ -9,19 +9,20 @@ import { StorageObjectEvenstatusTxt } from "../../../components/Models/StorageOb
 import { Hold, Lock } from "../../../components/Models/Hold";
 import { AuditStatus } from "../../../components/Models/AuditStatus";
 import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+import AuditStatusIcon from "../../../components/AmAuditStatus";
 import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
-import AuditStatusIcon from "../../../components/AmAuditStatus";
+import AmButton from "../../../components/AmButton";
 
 
 const Axios = new apicall();
 
 //======================================================================
-const StorageObjectFG = props => {
+const QualityStatusFG = props => {
 
   const iniCols = [
 
@@ -68,6 +69,8 @@ const StorageObjectFG = props => {
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
     { Header: "Lot", accessor: "Lot", width: 80 },
+    //{ Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -78,17 +81,16 @@ const StorageObjectFG = props => {
       accessor: "SKU_Name",
       fixWidth: 200,
 
-    },
-    {
+    }, {
       Header: "Pallet",
       accessor: "Pallet",
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
+    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-
     {
       Header: "Qty",
       accessor: "SaleQty",
@@ -97,37 +99,7 @@ const StorageObjectFG = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Unit", accessor: "Unit", width: 100 },
-    { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
-    { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-    { Header: "MDT Shelf life", accessor: "ExpiryDay", width: 100, type: "number" },
-    { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
-    {
-      Header: "MFG.Date",
-      accessor: "Product_Date",
-      width: 150,
-      type: "datetime",
-      filterType: "datetime",
-      filterConfig: {
-        filterType: "datetime",
-      }
-      , customFilter: { field: "Product_Date" },
-      dateFormat: "DD/MM/YYYY"
-    },
-    {
-      Header: "Expiry Date",
-      accessor: "Expiry_Date",
-      width: 150,
-      type: "datetime",
-      filterType: "datetime",
-      filterConfig: {
-        filterType: "datetime",
-      }
-      , customFilter: { field: "Expiry_Date" },
-      dateFormat: "DD/MM/YYYY"
-    },
     {
       Header: "Received Time",
       accessor: "Receive_Time",
@@ -149,33 +121,11 @@ const StorageObjectFG = props => {
     }
   ];
 
-  const getAuditStatus = Status => {
-    //return null
-    return <div style={{ marginBottom: "3px", textAlign: "center" }}>
-      {getAuditStatusValue(Status)}
-    </div>
-
-  };
-  const getAuditStatusValue = Status => {
-    if (Status === "QUARANTINE") {
-      return <AuditStatusIcon key={0} statusCode={0} />;
-    } else if (Status === "PASSED") {
-      return <AuditStatusIcon key={1} statusCode={1} />;
-    } else if (Status === "REJECTED") {
-      return <AuditStatusIcon key={2} statusCode={2} />;
-    } else if (Status === "HOLD") {
-      return <AuditStatusIcon key={9} statusCode={9} />;
-    } else {
-      return null;
-    }
-  }
-
   const getOptions = value => {
     var qryStr = queryString.parse(value);
     return qryStr["remark"]
   }
   const getIsHold = value => {
-
     if (value === "UNLOCK") {
       return <div style={{ textAlign: "center" }}>
         <Tooltip title="UNLOCK" >
@@ -196,7 +146,6 @@ const StorageObjectFG = props => {
       </div>
     }
   }
-
   const getRedirectLog = data => {
     return (
       <div
@@ -209,7 +158,7 @@ const StorageObjectFG = props => {
         {data.Code}
         <AmRedirectLog
           api={
-            "/log/storageobjectlog?id=" +
+            "/log/docitemstolog?id=" +
             data.ID +
             "&ParentStorageObject_ID=" +
             data.ID
@@ -233,18 +182,38 @@ const StorageObjectFG = props => {
       required: true
     }
   ];
+  //AuditStatus
+  const getAuditStatus = Status => {
+    //return null
+    return <div style={{ marginBottom: "3px", textAlign: "center" }}>
+      {getAuditStatusValue(Status)}
+    </div>
 
+  };
+  const getAuditStatusValue = Status => {
+    if (Status === "QUARANTINE") {
+      return <AuditStatusIcon key={0} statusCode={0} />;
+    } else if (Status === "PASSED") {
+      return <AuditStatusIcon key={1} statusCode={1} />;
+    } else if (Status === "REJECTED") {
+      return <AuditStatusIcon key={2} statusCode={2} />;
+    } else if (Status === "HOLD") {
+      return <AuditStatusIcon key={9} statusCode={9} />;
+    } else {
+      return null;
+    }
+  }
 
 
   const getStatus = Status => {
     return Status.split("\\n").map(y => (
       <div style={{ marginBottom: "3px", textAlign: "center" }}>
-        {getStatus1(y)}
+        {getStatusValue(y)}
       </div>
     ));
   };
 
-  const getStatus1 = Status => {
+  const getStatusValue = Status => {
     if (Status === "RECEIVING") {
       return <AmStorageObjectStatus key={Status} statusCode={11} />;
     } else if (Status === "RECEIVED") {
@@ -278,6 +247,11 @@ const StorageObjectFG = props => {
       <AmDialogUploadImage titleDialog={"Upload Image of Pallet : " + Pallet} fileName={Pallet} />
     </div>
   }
+
+  const SendEmail = <AmButton styleType="add_clear" onClick={() => {
+    Axios.post(window.apipath + "/v2/audit_send_notify", {})
+  }}>Send Notify</AmButton>
+
   return (
     <div>
       <AmStorageObjectMulti
@@ -287,9 +261,12 @@ const StorageObjectFG = props => {
         export={false}
         multi={true}
         action={true}
+        actionAuditStatus={true}
+        customTopLeftControl={SendEmail}
+        typeSKU={"FG"}
       />
     </div>
   );
 };
 
-export default StorageObjectFG;
+export default QualityStatusFG;
