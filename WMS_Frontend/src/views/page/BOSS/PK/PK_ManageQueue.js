@@ -1,8 +1,13 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
+import queryString from "query-string";
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
+    { "accessor": "BaseCode", "Header": "Base Code", "sortable": false, "width": 200, Cell:(e) => {
+        const getOptions = queryString.parse(e.data.Options)
+        return getOptions.palletCode
+    } },
     { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
     { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
@@ -203,11 +208,26 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        return areaList.filter(x => x.ID === 9 || x.ID === 10)
-    }
-
+        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
+        //pm 9 Production Gate  Floor2
+        //fg 10 Loading Gate  Floor1
+        if (sku === '4') {
+            return areaList.filter(x => x.ID === 10)
+        }
+        else if (sku === '5') {
+            return areaList.filter(x => x.ID === 9)
+        }
+    } 
     const customDesAreaDefault = (doc) => {
-        return "9"
+        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
+        //pm 9 Production Gate  Floor2
+        //fg 10 Loading Gate  Floor1
+        if (sku === '4') {
+            return '10'
+        }
+        else if (sku === '5') {
+            return '9'
+        }
     }
 
     return <AmProcessQueue

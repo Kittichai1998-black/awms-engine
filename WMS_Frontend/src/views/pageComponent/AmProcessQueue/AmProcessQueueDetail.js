@@ -632,7 +632,6 @@ const ProcessQueueDetail = (props) => {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
                                 const condition = x.custom({docItem:data});
-                                console.log(condition)
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>

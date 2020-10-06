@@ -248,8 +248,8 @@ const QualityStatus = props => {
     </div>
   }
 
-  const SendEmail = <AmButton onClick={() => {
-    Axios.post()
+  const SendEmail = <AmButton styleType="add_clear" onClick={() => {
+    Axios.post(window.apipath + "/v2/audit_send_notify",{})
   }}>Send Notify</AmButton>
 
   return (
@@ -262,7 +262,7 @@ const QualityStatus = props => {
         multi={true}
         action={true}
         actionAuditStatus={true}
-        customTopLeftControl={null}
+        customTopLeftControl={SendEmail}
       />
     </div>
   );
