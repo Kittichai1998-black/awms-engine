@@ -199,11 +199,20 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     var remainItem = itemData.quantity - realQty;
 
-                    pallet.realQuantity = remainItem;
+                    if(remainItem * itemData.volsku > palletVol)
+                    {
+                        pallet.vol = palletVol;
+                        decimal qty = palletVol / itemData.volsku;
+                        pallet.realQuantity = Math.Floor(qty);
+                        itemData.vol = (remainItem * itemData.volsku) - palletVol;
+                    }
+                    else
+                    {
+                        pallet.realQuantity = remainItem;
 
-                    pallet.vol = remainItem + itemData.volsku;
-                    palletVolRemail -= (remainItem + itemData.volsku);
-                    itemData.vol = 0;
+                        palletVolRemail -= ((remainItem * itemData.volsku));
+                        itemData.vol = 0;
+                    }
                 }
 
                 pallet.bcode = bcode;
