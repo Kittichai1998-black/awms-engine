@@ -88,7 +88,7 @@ const useClock = (propsTime, t) => {
 const AmMonitor = props => {
     const { t } = useTranslation()
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [calHeight, setCalHeight] = useState(0.35);
+    const [calHeight, setCalHeight] = useState(0.38);
     const clock = useClock(props.time, t)
 
     const width_height = useWindowSize(isFullScreen);
@@ -126,7 +126,7 @@ const AmMonitor = props => {
     const goFull = () => {
         setIsFullScreen(true);
         openFullscreen();
-        setCalHeight(0.4);
+        setCalHeight(0.57);
     }
     const goMin = () => {
         setIsFullScreen(false);
@@ -258,6 +258,8 @@ const AmMonitor = props => {
                 <Grid container key={xi}>
                     <b>{x[0].table[0].title ? x[0].table[0].title : null}</b>
                     <Grid item md={12}>
+                        {console.log(width_height.height)}
+                        {console.log(width_height.height)}
                         <AmTable
                             // primaryKey="ID"
                             dataSource={x[0].table[0].data}
@@ -381,7 +383,7 @@ const AmMonitor = props => {
     ) : null
 
     return (
-        <div style={isFullScreen ? { width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 999999 } : {}}>
+        <div style={isFullScreen ? {overflow:"hidden", width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 999999 } : {}}>
             <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <Grid container direction="row" justify="flex-start" alignItems="stretch" >
                     <Grid item xs={12} sm={6} md={6} xl={6}>
