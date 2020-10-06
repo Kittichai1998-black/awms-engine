@@ -111,7 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var pcode = string.Join(',', pts.palletsDetail.Select(x=>x.pcode));
                 var pname = string.Join(',', pts.palletsDetail.Select(x => x.pname));
                 var pID = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
-                var vol = string.Join(',', pts.palletsDetail.Select(x => x.vol));
+                var vol = string.Join(',', pts.palletsDetail.Select(x => x.realQuantity));
                 var unit = string.Join(',', pts.palletsDetail.Select(x => x.unit));               
                 var lot = string.Join(',', pts.palletsDetail.FindAll(x=> !string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
                 var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
@@ -123,7 +123,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var pcodeDisplay = string.Join(',', pts.palletsDetail.GroupBy(x => x.pcode).Select(x => x.Key).ToList());
                 var pnameDisplay = string.Join(',', pts.palletsDetail.GroupBy(x => x.pname).Select(x => x.Key).ToList());
                 var pIDDisplay = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
-                var volDisplay = string.Join(',', pts.palletsDetail.Select(x => x.vol));
+                var volDisplay = string.Join(',', pts.palletsDetail.Select(x => x.realQuantity));
                 var unitDisplay = string.Join(',', pts.palletsDetail.Select(x => x.unit));
                 var lotDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.lot)).GroupBy(x => x.lot).Select(x => x.Key).ToList());
                 var orderNoDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).GroupBy(x => x.orderNo).Select(x => x.Key).ToList());
@@ -186,7 +186,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     pallet.vol = palletVol;
                     decimal qty = palletVol / itemData.volsku;
-                    pallet.realQuantity = Math.Round(qty);
+                    pallet.realQuantity = Math.Floor(qty);
                     itemData.vol = itemData.vol - palletVol;
                 }
                 else
@@ -194,7 +194,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     var realQty = palletList.FindAll(x => x.docItemID == itemData.docItemID).Select(x => x.vol).Sum(x =>
                     {
                         decimal qty = x / itemData.volsku;
-                        return Math.Round(qty);
+                        return Math.Floor(qty);
                     });
 
                     var remainItem = itemData.quantity - realQty;
