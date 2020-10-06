@@ -10,8 +10,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
         public class TReq
         {
             public long mode;
-            public int minVolume;
-            public int maxVolume;
+            public decimal minVolume;
+            public decimal maxVolume;
             public string supplierName;
             public string supplierCode;
             public string remark;
@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public int bcode;
             public string pcode;
             public string pname;
-            public int vol;
+            public decimal vol;
             public string unit;
             public string lot;
             public string orderNo;
@@ -52,15 +52,16 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
-            public int quantity;
-            public int volsku;
+            public decimal quantity;
+            public decimal realQuantity;
+            public decimal volsku;
         }
         public class Item
         {
             public string docItemID;
             public string code;
             public string name;
-            public int vol;
+            public decimal vol;
             public string unit;
             public string lot;
             public string orderNo;
@@ -68,8 +69,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
-            public int quantity;
-            public int volsku;
+            public decimal quantity;
+            public decimal volsku;
 
 
         }
@@ -172,9 +173,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             return res;
         }
-        private List<Pallet> findPallet(List<Item> item, int palletVol, int bcode, List<Pallet> palletList, int defaultVol, int mode)
+        private List<Pallet> findPallet(List<Item> item, decimal palletVol, int bcode, List<Pallet> palletList, decimal defaultVol, int mode)
         {
-            int palletVolRemail = palletVol;
+            decimal palletVolRemail = palletVol;
             var pallet = new Pallet();
             Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             if (item.FirstOrDefault() != null)
@@ -184,12 +185,24 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 if (palletVol < itemData.vol)
                 {
                     pallet.vol = palletVol;
+                    decimal qty = palletVol / itemData.volsku;
+                    pallet.realQuantity = Math.Round(qty);
                     itemData.vol = itemData.vol - palletVol;
                 }
                 else
                 {
-                    pallet.vol = itemData.vol;
-                    palletVolRemail -= itemData.vol;
+                    var realQty = palletList.FindAll(x => x.docItemID == itemData.docItemID).Select(x => x.vol).Sum(x =>
+                    {
+                        decimal qty = x / itemData.volsku;
+                        return Math.Round(qty);
+                    });
+
+                    var remainItem = itemData.quantity - realQty;
+
+                    pallet.realQuantity = remainItem;
+
+                    pallet.vol = remainItem + itemData.volsku;
+                    palletVolRemail -= (remainItem + itemData.volsku);
                     itemData.vol = 0;
                 }
 
