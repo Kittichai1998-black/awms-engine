@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
@@ -133,7 +134,6 @@ const PI_Detail = props => {
                 else return null;
             }
         },
-        { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
         { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
@@ -230,11 +230,15 @@ const PI_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
-        else if (value.status === 0)
-            return <HighlightOff style={{ color: "red" }} />;
+        if (value.status === 0)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
         else return null;
     };
+
 
     const getDocID = () => {
         const values = queryString.parse(props.location.search);

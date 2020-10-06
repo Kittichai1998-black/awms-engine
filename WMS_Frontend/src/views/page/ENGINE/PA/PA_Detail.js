@@ -53,13 +53,13 @@ const PA_Detail = props => {
             console.log(OwnerGroupType)
             var DataprocessType;
             if (OwnerGroupType === 1) {
-                DataprocessType = { label: "Sou. Warehouse", values: "SouWarehouseName" }
+                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse" , values: "SouWarehouseName" }
             } else if (OwnerGroupType === 2) {
-                DataprocessType = { label: "Sou. Customer", values: "SouCustomerName" }
+                DataprocessType = { label: "Sou. Customer", value: "SouCustomer" ,values: "SouCustomerName" }
             } else if (OwnerGroupType === 3) {
-                DataprocessType = { label: "Sou. Supplier", values: "SouSupplierName" }
+                DataprocessType = { label: "Sou. Supplier", value: "SouSupplier" , values: "SouSupplierName" }
             } else {
-                DataprocessType = { label: "Sou. Warehouse", values: "SouWarehouseName" }
+                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" }
             }
 
         }
@@ -69,7 +69,7 @@ const PA_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", values: "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
@@ -77,7 +77,7 @@ const PA_Detail = props => {
             ],
             [
                 DataprocessType,
-                { label: "Des. Warehouse", values: "DesWarehouseName" }
+                { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
                 { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
@@ -139,7 +139,7 @@ const PA_Detail = props => {
         { Header: "Lot", accessor: "diLot", width: 130, widthPDF: 10 },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
         { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
+        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120 },
         { Header: "Unit", accessor: "packUnitCode", widthPDF: 10, width: 70 },
         {
             Header: "Quality Status",
@@ -163,11 +163,15 @@ const PA_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1 || value.status === 3) return <CheckCircle style={{ color: "green" }} />;
-        else if (value.status === 0)
+        if (value.status === 0)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
         else return null;
     };
+
 
     const getFormatDatePro = (e) => {
         if (e.diProductionDate) {
@@ -194,7 +198,6 @@ const PA_Detail = props => {
     };
 
     const GetAuditStatusIcon = (value) => {
-        console.log(value.diAuditStatus)
         if (value.diAuditStatus != undefined) {
             return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
         } else if (value.AuditStatus != undefined) {

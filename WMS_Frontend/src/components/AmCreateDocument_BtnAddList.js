@@ -163,10 +163,9 @@ const BtnAddList = props => {
     const [status, setstatus] = useState(true);
     const [inputErr, setinputErr] = useState([]);
 
-    useEffect(() => {
-        setQuery(props.queryApi)
-    }, open, props.queryApi)
-
+    //useEffect(() => {
+    //    setQuery(props.queryApi)
+    //}, open, props.queryApi)
 
 
     useEffect(() => {
@@ -209,20 +208,28 @@ const BtnAddList = props => {
     useEffect(() => {
         if (props.queryApi) {
             Axios.get(createQueryString(props.queryApi)).then(res => {
-                // console.log(res.data.datas);
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
-                    //ExpireDate = moment(x.expireDate).format('MM-DD-YYYY'),
-                    //    ProductionDate = moment(x.productionDate).format('MM-DD-YYYY')
-
-
                     setTotalSize(res.data.counts);
-                    // let data = props.dataCheck || [];
                     setDefaultSelect([...props.dataCheck]);
                 }
             });
         }
+        setQuery(props.queryApi)
     }, [props.queryApi, open]);
+
+
+    useEffect(() => {
+        if (query) {
+            Axios.get(createQueryString(query)).then(res => {
+                if (res.data.datas) {
+                    SetFormaatdata(res.data.datas)
+                    setTotalSize(res.data.counts);
+                    setDefaultSelect([...props.dataCheck]);
+                }
+            });
+        }
+    }, [open, query]);
 
 
     const SetFormaatdata = (datas) => {

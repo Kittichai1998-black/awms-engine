@@ -275,7 +275,7 @@ const AmCreateDocument = (props) => {
                 queryApi={props.addList.queryApi}
                 columns={props.addList.columns}
                 search={props.addList.search}
-                textBtn="Add Item List"
+                textBtn="Add Pallet List"
                 onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
                 dataCheck={dataSource}
             />)
@@ -799,9 +799,9 @@ const AmCreateDocument = (props) => {
                     TypeDate={"date"}
                     defaultValue={defaultValue ? defaultValue : true}
                     style={{ width: width ? width : '300px' }}
-                    value={createDocumentData[key]}
+                    returndefaultValue={createDocumentData[key]}
                     onChange={(e) => {
-                        if (e !== null) {
+                        if (e.fieldDataObject !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -815,10 +815,10 @@ const AmCreateDocument = (props) => {
                     TypeDate={"datetime-local"}
                     defaultValue={defaultValue ? defaultValue : true}
                     fieldID={key}
-                    value={createDocumentData[key]}
+                    returndefaultValue={createDocumentData[key]}
                     style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
-                        if (e !== null) {
+                        if (e.fieldDataObject !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -834,7 +834,7 @@ const AmCreateDocument = (props) => {
                             TypeDate={"datetime-local"}
                             defaultValue={false}
                             style={{ width: width ? width : '300px' }}
-                            value={createDocumentData[key]}
+                            //value={createDocumentData[key]}
                             onChange={(e) => {
                                 if (e.fieldDataObject !== null) {
                                     let docData = createDocumentData
@@ -860,9 +860,6 @@ const AmCreateDocument = (props) => {
                     style={{ width: width ? width : "300px" }}
 
                     onChange={(e) => {
-                        if (obj.search)
-                            props.addList.search.find(x => x.accessor === key).defaultValue = e
-
                         let docData = createDocumentData
                         docData[key] = e
                         setcreateDocumentData(docData)
@@ -896,7 +893,7 @@ const AmCreateDocument = (props) => {
         } else if (type === "datepicker") {
             return (
                 <AmDatepicker
-                    value={createDocumentData[key]}
+                    returndefaultValue={createDocumentData[key]}
                     style={{ width: width ? width : '300px' }}
                     TypeDate={"datetime-local"}
                     defaultValue={defaultValue ? defaultValue : true}
@@ -1039,6 +1036,7 @@ const AmCreateDocument = (props) => {
             if (key in doc)
                 doc[key] = value ? value : null
         }
+
         var qtyrandom = 'qtyrandom='
         var remark = 'remark='
         var pallet = 'palletcode='
@@ -1121,8 +1119,8 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    console.log(doc)
-                   // CreateDocuments(doc)
+                    //console.log(doc)
+                   CreateDocuments(doc)
                 }
             }
         }

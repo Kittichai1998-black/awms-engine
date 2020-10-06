@@ -191,8 +191,8 @@ const styles = theme => ({
 
     },
     QUARANTINE: {
-        background: '#ffc107',
-        border: '2px solid #ffc107',
+        background: '#faf60f',
+        border: '2px solid #faf60f',
         color: '#2f353a',
     },
     NOTPASS: {
