@@ -50,6 +50,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string docItemID;
             public string skuType;
             public string expdate;
+            public string prodDate;
+            public string tag_qr;
             public int quantity;
             public int volsku;
         }
