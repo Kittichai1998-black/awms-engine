@@ -224,6 +224,7 @@ const AmCreateDocument = (props) => {
 
 
     useEffect(() => {
+        setDataSource([])
         if (processType !== undefined) {
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
@@ -242,9 +243,8 @@ const AmCreateDocument = (props) => {
                 createDocumentData["desCustomerID"] = null
             }
         }
-        setDataSource([])
+    
         setcreateDocumentData(createDocumentData)
-
     }, [processType])
 
 
