@@ -1,6 +1,12 @@
 // import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
 // import ListSubheader from '@material-ui/core/ListSubheader';
 import Card from '@material-ui/core/Card';
 import Collapse from '@material-ui/core/Collapse';
@@ -17,17 +23,78 @@ import ListItemText from '@material-ui/core/ListItemText';
 import React, { useEffect, useState } from 'react'
 // import SendIcon from '@material-ui/icons/Send';
 // import StarBorder from '@material-ui/icons/StarBorder';
-
+import Box from '@material-ui/core/Box';
 import { apicall, createQueryString } from "../../components/function/CoreFunction"
 import Aux from '../../components/AmAux'
 import { getUnique, groupBy } from '../../components/function/ObjectFunction'
 import AmAuditStatus from '../../components/AmAuditStatus'
 import "../../assets/css/AmLocationSummary.css";
 import moment from "moment";
+import _ from 'lodash'
 const Axios = new apicall()
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+        width: '100%',
+        padding: {
+            padding: theme.spacing(3),
+        },
+        backgroundColor: theme.palette.background.paper,
+    },
+    fontIndi_0: {
+        fontWeight: 'bold',
+        '&:hover': {
+            opacity: 1,
+        },
+        '&$selected': {
+            color: '#1890ff',
+            fontWeight: 'bold',
+        },
+        '&:focus': {
+        },
+    },
+}));
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`scrollable-auto-tabpanel-${index}`}
+            aria-labelledby={`scrollable-auto-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
+function a11yProps(index) {
+    return {
+        id: `scrollable-auto-tab-${index}`,
+        'aria-controls': `scrollable-auto-tabpanel-${index}`,
+    };
+}
 
 const AmLocationSummary = props => {
+    const classes = useStyles();
+    const [valueTab, setValueTab] = useState(0);
+
+    const [selArea, setSelArea] = useState(null);
+    const [valSearch, setValSearch] = useState({})
+
     const [dataTop, setDataTop] = useState()
+    const [dataFrontView, setDataFrontView] = useState()
     const [dataSide, setDataSide] = useState()
     const [dataDetail, setDataDetail] = useState([])
     const [dataFull, setDataFull] = useState()
@@ -52,6 +119,11 @@ const AmLocationSummary = props => {
         l: "",
         all: ""
     }
+    const sp_locationSummary = window.apipath + "/v2/GetSPReportAPI?"
+        // + "&areaCode=" + (valueText.Lot === undefined || valueText.Lot === null ? '' : encodeURIComponent(valueText.Lot.trim()))
+
+        + "&spname=LOCATIONSUMMARY";
+
 
     let bank = [{}],
         bay = [{}],
@@ -71,8 +143,6 @@ const AmLocationSummary = props => {
                     palletPer = (palletLen / palletAll * 100).toFixed(3),
                     groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
                     groupBankP = groupBy(row.data.datas.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
-                    // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
-                    // groupLevelP = groupBy(pack.sort((a, b) => (a.Level > b.Level) ? 1 : ((b.Level > a.Level) ? -1 : 0)), "Level"),
                     setFull = (
                         <Card style={{ margin: "5px" }}>
                             <CardContent style={{ padding: "5px" }}>
@@ -97,13 +167,6 @@ const AmLocationSummary = props => {
                                         <p style={{ margin: "0px" }}><b>Bank</b></p>
                                         {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
 
-                                        {/* <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Bay</b></p>
-                                        {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
-    
-                                        <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Level</b></p>
-                                        {groupLevelP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Level)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
                                     </Aux>
                                 ) : null}
                             </CardContent>
@@ -117,8 +180,9 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         if (dataAll) {
-            dataAll.map(x => {
 
+            dataAll.map(x => {
+                
                 let chkBank = bank.find(y => y.Bank === x.Bank),
                     chkBay = bay.find(y => y.Bay === x.Bay),
                     chkLevel = level.find(y => y.Level === x.Level)
@@ -126,19 +190,93 @@ const AmLocationSummary = props => {
                     bank.push(x)
                 }
                 if (!chkBay) {
-                    bay.push(x) 
+                    bay.push(x)
                 }
                 if (!chkLevel) {
                     level.push(x)
                 }
-            }) 
-            console.log(bank);
-            let bayPercen_10 = (bay.length - 1) * 0.1,
-                padding = "5px",
-                palletLen = (bank.length - 1) * (bay.length - 1),
+            })
+            if (valueTab === 0) {
 
-                dataT = bank.sort((a, b) => (a.Bank < b.Bank) ? -1 : ((b.Bank < a.Bank) ? 1 : 0)).map((x, xi) => {
-                    let countPalletBank = 0
+                let bayPercen_10 = (bay.length - 1) * 0.1;
+                let padding = "5px";
+                let palletLen = (bank.length - 1) * (bay.length - 1);
+
+                let dataT = bank.sort((a, b) => (a.Bank < b.Bank) ? -1 : ((b.Bank < a.Bank) ? 1 : 0)).map((x, xi) => {
+                    let countPalletBank = 0;
+                    return (
+                        <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
+                            bay.map((y, yi) => {
+                                let dataFil = groupBy(dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code }), "bsto_Code")
+                                let dataFin = dataAll.find(z => { return z.Bank === x.Bank && z.Bay === y.Bay })
+
+                                if (xi === 0 && yi && yi % bayPercen_10 === 0 && bayPercen_10 % 1 === 0) { // header แกน x
+                                    return <td colSpan={bayPercen_10} key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
+                                } else if (xi === 0 && yi && yi % bayPercen_10 !== 0 && bayPercen_10 % 1 !== 0) { // header แกน y
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
+                                } else if (yi === 0 && xi) { // header แกน y
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{parseInt(x.Bank)}</td>
+                                } else if (yi === 0 && xi === 0) {
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
+                                } else if (yi && xi) {
+                                    let percen = groupBy(dataFil, "Code").length / (level.length - 1) * 100,
+                                        row
+                                    // cssBg = `rgba(210, 105, 30, ${color})`
+                                    countPalletBank += dataFil.length
+                                    // console.log(dataFin);
+
+                                    // console.log(bgColor(percen));
+                                    // if (xi >= 1 && xi <= 4) {
+
+                                    // } else {
+
+                                    // }
+                                    switch (xi) {
+                                        case 1:
+                                            row = 25; break
+                                        case 2:
+
+                                            row = 50; break
+                                        case 3:
+
+                                            row = 75; break
+                                        case 4:
+
+                                            row = 100; break
+                                        default:
+
+                                            row = 0; break
+                                    }
+
+                                    return (
+                                        <Aux key={yi}> 
+                                            <td style={{
+                                                padding: padding,
+                                                backgroundColor: dataFin ? bgColor(percen) : "black",
+                                                border: "1px solid black"
+                                            }}></td>
+                                            {yi === bay.length - 1 ? <td>{countPalletBank ? (countPalletBank / palletLen * 100).toFixed(3) + "%" : null}</td> : null}
+                                            {yi === bay.length - 1 ? <td
+                                                style={{
+                                                    backgroundColor: bgColor(row),
+                                                    // border: row?"1px solid black":null
+                                                }}
+                                            >{row ? row : null}</td> : null}
+                                        </Aux>
+                                    )
+                                }
+                            })
+                        }</tr>
+                    )
+                })
+                setDataTop(dataT)
+            } else if (valueTab === 1) {
+                let bayPercen_10 = (bay.length - 1) * 0.1;
+                let padding = "5px";
+                let palletLen = (bank.length - 1) * (bay.length - 1);
+
+                let dataT = bank.sort((a, b) => (a.Bank > b.Bank) ? -1 : ((b.Bank > a.Bank) ? 1 : 0)).map((x, xi) => {
+                    let countPalletBank = 0;
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
                             bay.map((y, yi) => {
@@ -204,9 +342,12 @@ const AmLocationSummary = props => {
                         }</tr>
                     )
                 })
-            setDataTop(dataT)
+                setDataFrontView(dataT)
+            } else if (valueTab === 2) {
+
+            }
         }
-    }, [dataAll])
+    }, [dataAll, valueTab])
 
     const clickRow = (rowBank, e) => {
         if (rowBank) {
@@ -374,7 +515,7 @@ const AmLocationSummary = props => {
         })
 
         if (dataD.length) {
-            setBtnClear(<button className="btn btn-danger" style={{ padding: "1px", marginLeft: "10px" }} onClick={clickClear}>Clear</button>)
+            setBtnClear(<button className="btn btn-danger" style={{ padding: "0px 3px", marginLeft: "10px" }} onClick={clickClear}>Clear</button>)
             setOpen({ bank: false, full: false, cell: true })
         } else {
             setBtnClear()
@@ -399,6 +540,8 @@ const AmLocationSummary = props => {
         }
     }
 
+
+   
     const clickClear = () => {
         sideTd.forEach(x => {
             x.style.border = "1px solid black"
@@ -418,20 +561,10 @@ const AmLocationSummary = props => {
                 direction="row"
                 justify="center"
                 alignItems="flex-start">
-                <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                    {/* <div style={{ textAlign: "center" }}>
-                        <b style={{ fontSize: "20px" }}>Detail</b>
-                    </div> */}
-
-                    {/* {dataDetail} */}
+                <Grid item xs={4} sm={4} md={3} lg={3} xl={3}>
                     <List
                         component="nav"
                         aria-labelledby="nested-list-subheader"
-                        //                     subheader={
-                        //                         <ListSubheader component="div" id="nested-list-subheader">
-                        //                             Nested List Items
-                        // </ListSubheader>
-                        //                     }
                         className="list"
                     >
                         <ListItem className="listitem" button onClick={() => setOpen({ bank: false, full: !open.full, cell: false })} >
@@ -455,9 +588,6 @@ const AmLocationSummary = props => {
                         </Collapse>
 
                         <ListItem className="listitem" button onClick={() => setOpen({ bank: false, full: false, cell: !open.cell })}>
-                            {/* <ListItemIcon>
-                                    <InboxIcon />
-                                </ListItemIcon>*/}
                             <ListItemText className="listitemtext" primary="Cell" />
                             {open.cell ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -468,29 +598,82 @@ const AmLocationSummary = props => {
                         </Collapse>
                     </List>
                 </Grid>
-                <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <b style={{ fontSize: "20px" }}>Top View</b>
-                        <div id={"divTableTopView"} style={{ height:  '50%'}}>
-                        {/* (window.innerHeight - 200) / 2 */}
-                            <table>
-                                <tbody>
-                                    {dataTop}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{marginTop: '5px'}}>
-                        <b style={{ fontSize: "20px" }}>Side View {titleBank}</b>
-                        {btnClear}
-                        <div id={"divTableSideView"} style={{ height: '50%' }}>
-                            <table>
-                                <tbody>
-                                    {dataSide}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Grid>
+                <Grid item xs={8} sm={8} md={9} lg={9} xl={9}>
+                    <div className={classes.root}>
+                        <AppBar position="static" color="default">
+                            <Tabs
+
+                                value={valueTab}
+                                onChange={(event, newValue) => {
+                                    setValueTab(newValue);
+                                }}
+                                indicatorColor="primary"
+                                textColor="primary"
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                aria-label="scrollable auto tabs example"
+                            >
+                                <Tab label="Top View" {...a11yProps(0)} className={classes.fontIndi_0} />
+                                <Tab label="Front View" {...a11yProps(1)} className={classes.fontIndi_0} />
+                                <Tab label="Side View" {...a11yProps(2)} className={classes.fontIndi_0} />
+                            </Tabs>
+                        </AppBar>
+                        <TabPanel value={valueTab} index={0}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                {/* <b style={{ fontSize: "20px" }}>Top View</b> */}
+                                <div id={"divTableTopView"} style={{ height: '50%' }}>
+                                    {/* (window.innerHeight - 200) / 2 */}
+                                    <table>
+                                        <tbody>
+                                            {dataTop}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Grid>
+                            {dataSide ?
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
+                                    <div style={{ display: 'inline-flex', margin: '5px 0px 6px 0px' }}><b style={{ fontSize: "20px" }}>Side of {titleBank}</b>
+                                        {btnClear}</div>
+                                    <div id={"divTableSideView"} style={{ height: '50%' }}>
+                                        <table>
+                                            <tbody>
+                                                {dataSide}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </Grid>
+                                : null}
+                        </TabPanel>
+                        <TabPanel value={valueTab} index={1}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                {/* <b style={{ fontSize: "20px" }}>Top View</b> */}
+                                <div id={"divTableTopView"} style={{ height: '50%' }}>
+                                    {/* (window.innerHeight - 200) / 2 */}
+                                    <table>
+                                        <tbody>
+                                            {dataFrontView}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Grid>
+                            {dataSide ?
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
+                                    <div style={{ display: 'inline-flex', margin: '5px 0px 6px 0px' }}><b style={{ fontSize: "20px" }}>Side of {titleBank}</b>
+                                        {btnClear}</div>
+                                    <div id={"divTableSideView"} style={{ height: '50%' }}>
+                                        <table>
+                                            <tbody>
+                                                {/* {dataSide_FrontView} */}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </Grid>
+                                : null}
+                        </TabPanel>
+                        <TabPanel value={valueTab} index={2}>
+                            Item Three
+                        </TabPanel>
+                    </div>
                 </Grid>
             </Grid>
         </Aux>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 // import AmIconStatus from "../../../../components/AmIconStatus";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
-import CheckCircle from "@material-ui/icons/CheckCircle";
+import Circle from "@material-ui/icons/RadioButtonUnchecked";
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
 import Grid from '@material-ui/core/Grid';
@@ -201,7 +201,7 @@ const GR_Detail = props => {
 
     const getStatusGR = value => {
         if (value.status === 0 )
-            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+            return <Circle style={{ color: "gray" }} />;
         else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
         else if (value.status === 3)
