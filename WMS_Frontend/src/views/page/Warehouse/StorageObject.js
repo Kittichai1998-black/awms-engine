@@ -67,7 +67,7 @@ const StorageObject = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+    //{ Header: "Lot", accessor: "Lot", width: 80 },
     { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
     {
       Header: "Item Code",

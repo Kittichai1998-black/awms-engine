@@ -52,6 +52,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
+            public int quantity;
+            public int volsku;
         }
         public class Item
         {
@@ -66,6 +68,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
+            public int quantity;
+            public int volsku;
 
 
         }

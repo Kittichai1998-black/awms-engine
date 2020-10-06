@@ -121,7 +121,9 @@ const AmPrintBarCode = props => {
           vol: ele.Volume * ele.Quantity,
           skuType: ele.SKUMasterTypeName,
           expdate: ele.ExpireDate,
-          prodDate: ele.ProductionDate
+          prodDate: ele.ProductionDate,
+          quantity: ele.Quantity,
+          volsku: ele.Volume
         }
         itemList.push(item)
       });
@@ -263,7 +265,9 @@ const AmPrintBarCode = props => {
         vol: ele.Volume * ele.Quantity,
         skuType: ele.SKUMasterTypeName,
         expdate: ele.ExpireDate,
-        prodDate: ele.ProductionDate
+        prodDate: ele.ProductionDate,
+        quantity: ele.Quantity,
+        volsku: ele.Volume
 
 
       }
@@ -330,7 +334,7 @@ const AmPrintBarCode = props => {
 
   return (
     <div>
-      {/* {console.log(props.data)} */}
+      {console.log(props.data)}
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
