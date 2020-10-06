@@ -70,8 +70,8 @@ const MonitorWorking_CT = Loadable({
     loading: Loading
 });
 
-const StorageObjectFG = Loadable({
-    loader: () => import("../../views/page/Warehouse/StorageObjectFG"),
+const QualityStatusFG = Loadable({
+    loader: () => import("../../views/page/Warehouse/QualityStatusFG"),
     loading: Loading
 });
 const routes = [
@@ -94,7 +94,7 @@ const routes = [
     { path: "/monitor/workingLD", name: "Monitor Working Zone Loading", compoment: MonitorWorking_LD, exact: true },
     { path: "/monitor/workingCT", name: "Monitor Counting", compoment: MonitorWorking_CT, exact: true },
 
-    { path: "/warehouse/storageobjectFG", name: "Storage Object", compoment: StorageObjectFG, exact: true },
+    { path: "/warehouse/qualitystatusFG", name: "Quality Status", compoment: QualityStatusFG, exact: true },
 ]
 
 export default routes;

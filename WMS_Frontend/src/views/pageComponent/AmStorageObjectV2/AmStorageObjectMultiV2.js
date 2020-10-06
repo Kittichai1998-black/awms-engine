@@ -69,7 +69,7 @@ const AmStorageObjectMulti = props => {
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"in", "v": "QUARANTINE,HOLD"}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"in", "v": "QUARANTINE,HOLD"},{ "f": "SkuTypeID", "c":"=", "v": ' + (props.typeSKU === "FG" ? 4 : 5) + '}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
