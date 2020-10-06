@@ -194,6 +194,7 @@ const AmLocationSummary = props => {
                                             {yi === bay.length - 1 ? <td
                                                 style={{
                                                     backgroundColor: bgColor(row),
+                                                    textAlign: 'left !important'
                                                     // border: row?"1px solid black":null
                                                 }}
                                             >{row ? row + clickDesCription(row) : null}</td> : null}
