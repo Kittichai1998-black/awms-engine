@@ -21,7 +21,7 @@ import AuditStatusIcon from "../../../components/AmAuditStatus";
 const Axios = new apicall();
 
 //======================================================================
-const StorageObject = props => {
+const StorageObjectFG = props => {
 
   const iniCols = [
 
@@ -67,8 +67,7 @@ const StorageObject = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
-    //{ Header: "Lot", accessor: "Lot", width: 80 },
-    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+    { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Item Code",
       accessor: "SKU_Code",
@@ -86,8 +85,6 @@ const StorageObject = props => {
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-
-    { Header: "Control No.", accessor: "OrderNo", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
@@ -295,4 +292,4 @@ const StorageObject = props => {
   );
 };
 
-export default StorageObject;
+export default StorageObjectFG;
