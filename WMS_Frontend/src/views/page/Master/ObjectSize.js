@@ -53,8 +53,38 @@ const ObjectSize = props => {
       type: "number"
     },
     {
-      Header: "WeightAccept",
+      Header: "WeigthAccept",
       accessor: "PercentWeightAccept",
+      width: 120,
+      type: "number"
+    },
+    {
+      Header: "Volume",
+      accessor: "Volume",
+      width: 120,
+      type: "number"
+    },
+    {
+      Header: "MinInnerWeightKG",
+      accessor: "MinInnerWeigthKG",
+      width: 120,
+      type: "number"
+    },
+    {
+      Header: "MaxInnerWeightKG",
+      accessor: "MaxInnerWeigthKG",
+      width: 120,
+      type: "number"
+    },
+    {
+      Header: "MinInnerVolume",
+      accessor: "MinInnerVolume",
+      width: 120,
+      type: "number"
+    },
+    {
+      Header: "MaxInnerVolume",
+      accessor: "MaxInnerVolume",
       width: 120,
       type: "number"
     },
@@ -104,11 +134,41 @@ const ObjectSize = props => {
       placeholder: "ObjectType"
     },
     {
+      field: "Volume",
+      type: "input",
+      name: "Volume",
+      placeholder: "Volume"
+    },
+    {
       field: "PercentWeightAccept",
       type: "input",
       name: "Weight Accept",
       placeholder: "PercentWeightAccept"
-    }
+    },
+    {
+      field: "MinInnerWeigthKG",
+      type: "input",
+      name: "MinInnerWeight",
+      placeholder: "KG"
+    },
+    {
+      field: "MaxInnerWeigthKG",
+      type: "input",
+      name: "MaxInnerWeight",
+      placeholder: "KG"
+    },
+    {
+      field: "MinInnerVolume",
+      type: "input",
+      name: "MinInnerVolume",
+      placeholder: "MinInnerVolume"
+    },
+    {
+      field: "MaxInnerVolume",
+      type: "input",
+      name: "MaxInnerVolume",
+      placeholder: "MaxInnerVolume"
+    },  
   ];
 
   const columnsEdit = [
@@ -143,6 +203,42 @@ const ObjectSize = props => {
       name: "Weight Accept",
       placeholder: "PercentWeightAccept"
     },
+    {
+      field: "Volume",
+      type: "input",
+      name: "Volume",
+      placeholder: "Volume"
+    },
+    {
+      field: "PercentWeightAccept",
+      type: "input",
+      name: "Weight Accept",
+      placeholder: "PercentWeightAccept"
+    },
+    {
+      field: "MinInnerWeigthKG",
+      type: "input",
+      name: "MinInnerWeight",
+      placeholder: "KG"
+    },
+    {
+      field: "MaxInnerWeigthKG",
+      type: "input",
+      name: "MaxInnerWeight",
+      placeholder: "KG"
+    },
+    {
+      field: "MinInnerVolume",
+      type: "input",
+      name: "MinInnerVolume",
+      placeholder: "MinInnerVolume"
+    },
+    {
+      field: "MaxInnerVolume",
+      type: "input",
+      name: "MaxInnerVolume",
+      placeholder: "MaxInnerVolume"
+    },  
     {
       field: "Status",
       type: "dropdown",
@@ -217,7 +313,6 @@ const ObjectSize = props => {
       Axios.get(
         window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSizeID
       ).then(res => {
-        console.log(res)
         setObjectSizeData(res.data.datas)})
     }
   }, [editObjectSizeID]);
@@ -231,7 +326,6 @@ const ObjectSize = props => {
 
       console.log(objSizeData)
       if(objSizeData !== undefined && objSizeData.length > 0){
-        console.log("xx")
         setOpen(true)
       }
 
