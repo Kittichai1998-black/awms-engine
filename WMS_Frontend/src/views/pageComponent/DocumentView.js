@@ -509,8 +509,7 @@ const DocumentView = props => {
 
     //======================================================================================================
 
-    const getDataHeader = (type, value, values) => {
-        console.log()
+    const getDataHeader = (type, value,values) => {
         if (type === "date") {
             if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
@@ -541,7 +540,7 @@ const DocumentView = props => {
                 <Grid key={idx} container spacing={24}>
                     {x.map((y, i) => {
                         let syn = y.label ? " :" : "";
-                        let showval = getDataHeader(y.type, y.value,y.values);
+                        let showval = getDataHeader(y.type, y.value, y.values);
                         return (
                             <Grid
                                 key={i}

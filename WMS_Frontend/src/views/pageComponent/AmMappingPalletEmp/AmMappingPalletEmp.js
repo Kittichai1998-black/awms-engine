@@ -352,9 +352,15 @@ const AmMappingPalletEmp = props => {
     }
   };
   const onHandleChangeInputPalletCode = (keydata, value, event) => {
-    setPalletCode(value);
-    if (event === "Enter")
-      scanMappingSto(value, null)
+    // console.log("fghj")
+    // console.log(value)
+    if (value != "") {
+      setPalletCode(value);
+      if (event === "Enter") {
+        setAutoFocus(false)
+        scanMappingSto(value, null); getDocByQRCode("E|");
+      }
+    }
   };
   const onHandleChangeInputBarcode = (keydata, value, event) => {
     valueManual[keydata] = value;
@@ -397,6 +403,7 @@ const AmMappingPalletEmp = props => {
         setDataDoc(res.data)
         setFlaggetDataDoc(true)
         setDisPlayButton(true)
+
       } else {
         setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
@@ -499,6 +506,8 @@ const AmMappingPalletEmp = props => {
                 setDataDoc(null)
 
                 if (checkedAuto === false && type === "confirm") {
+                  setDisPlayButton(false)
+                  setDataDoc(null)
                   props.columnsManual.forEach(x => {
                     valueManual[x.field] = null
                   })
@@ -652,6 +661,7 @@ const AmMappingPalletEmp = props => {
                   autoFocus={autoFocus}
                   style={{ width: "200px" }}
                   onChange={(value, obj, element, event) =>
+                    // console.log("ghjk");
                     onHandleChangeInputPalletCode("palletCode", value)
                   }
                   onKeyPress={(value, obj, element, event) => {
@@ -695,7 +705,7 @@ const AmMappingPalletEmp = props => {
                         onChange={(value, obj, element, event) =>
                           onHandleChangeInputBarcode("barcode", value)
                         }
-                        autoFocus={autoFocusBarcode}
+                        // autoFocus={autoFocusBarcode}
                         onKeyPress={(value, obj, element, event) => {
                           if (event.key === "Enter") {
                             onHandleChangeInputBarcode("barcode", value, event.key)
@@ -913,7 +923,7 @@ const AmMappingPalletEmp = props => {
                       {t("Received")}
                     </AmButton>
                   )} */}
-                  {activeStep === steps.length - 1 ? (
+                  {activeStep === steps.length - 1 ? ((disPlayButton === false ? null :
                     <AmButton
                       styleType="confirm"
                       onClick={() => {
@@ -924,7 +934,7 @@ const AmMappingPalletEmp = props => {
                     >
                       {t("Confirm")}
                     </AmButton>
-                  ) : (
+                  )) : (
                       <AmButton
                         className="float-right"
                         style={{ margin: '5px 0px 5px 0px' }}

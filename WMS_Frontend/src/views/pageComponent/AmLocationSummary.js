@@ -351,14 +351,14 @@ const AmLocationSummary = props => {
                                             {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
                                             <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
                                             <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
-                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                         </Aux>
                                     )
                                 } else {
                                     let lot = y.Lot ? <p style={{ margin: "0px" }}><b>Lot :</b> {y.Lot}</p> :
                                         y.Ref1 ? <p style={{ margin: "0px" }}><b>Vendor Lot :</b> {y.Ref1}</p> : null;
-
+                                        let ControlNo = y.OrderNo ? <p style={{ margin: "0px" }}><b>Control No. :</b> {y.OrderNo}</p> : null;
                                     return (
 
                                         <Aux key={yi}>
@@ -366,14 +366,13 @@ const AmLocationSummary = props => {
                                             {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
                                             <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
                                             <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
-                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>Weight (kg) :</b> {y.pstoWeigthKG}</p>
+                                            {ControlNo}
+                                            {lot}
+                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>MFG.Date :</b> {y.ProductDate ? moment(y.ProductDate).format("DD/MM/YYYY") : ""}</p>
                                             <p style={{ margin: "0px" }}><b>Expire Date :</b> {y.ExpiryDate ? moment(y.ExpiryDate).format("DD/MM/YYYY") : ""}</p>
-                                            {lot}
-                                            {/* <p style={{ margin: "0px" }}><b>Lot :</b> {y.Lot}</p>
-                                            <p style={{ margin: "0px" }}><b>Vendor Lot :</b> {y.Ref1}</p> */}
                                             <p style={{ margin: "0px" }}><b>Quality Status :</b> <AmAuditStatus statusCode={y.AuditStatus} /> </p>
                                         </Aux>
                                     )
