@@ -122,22 +122,19 @@ const AmCreateDocument = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
     // const [dataUnit, setDataUnit] = useState()
-    // const [dataCheck, setDataCheck] = useState()
+     const [dataCheck, setdataCheck] = useState([])
     const [docIds, setdocIds] = useState();
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const [dataDocItem, setdataDocItem] = useState();
     const [dialogItem, setDialogItem] = useState(false);
     const [processType, setprocessType] = useState();
     // const [ItemBody, setItemBody] = useState();
-    const [relationComponent, setRelationComponent] = useState([]);
-    const [headerBody, setheaderBody] = useState();
-    const [addlistAPI, setaddlistAPI] = useState();
     const [BtnAddLists, setBtnAddLists] = useState();
     const [skuID, setskuID] = useState(0);
     const [dataUnit, setdataUnit] = useState();
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
     const [unitCon, setunitCon] = useState();
-    const [defaulact, setdefaulact] = useState()
+
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -277,7 +274,7 @@ const AmCreateDocument = (props) => {
                 search={props.addList.search}
                 textBtn="Add Pallet List"
                 onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
-                dataCheck={dataSource}
+                dataCheck={dataCheck}
             />)
         }
     }
@@ -491,11 +488,7 @@ const AmCreateDocument = (props) => {
                     return
                 }
 
-                if (chkPallet) {
-                    setStateDialogErr(true)
-                    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
-                    return
-                }
+            
                 if (chkEdit) {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
@@ -1040,6 +1033,34 @@ const AmCreateDocument = (props) => {
         var qtyrandom = 'qtyrandom='
         var remark = 'remark='
         var pallet = 'palletcode='
+        var optn;
+        dataSource.map((x,i) => {
+            if (x.palletcode != null && x.remark != null && x.Options != null) {
+                optn = x.Options + '&' +
+                    pallet.concat(x.palletcode) + '&' +
+                    remark.concat(x.remark)
+            } else if (x.palletcode && x.remark && x.Options === null) {
+                optn = pallet.concat(x.palletcode) + '&' +
+                    remark.concat(x.remark)
+            } else if (x.remark === null && x.palletcode && x.Options) {
+                optn = x.Options + '&' +
+                    pallet.concat(x.palletcode)
+            } else if (x.palletcode === null && x.remark && x.Options) {
+                optn = x.Options + '&' +
+                    remark.concat(x.remark)
+            } else if (x.palletcode && x.remark === null && x.Options === null) {
+                optn = pallet.concat(x.palletcode)
+            } else if (x.palletcode === null && x.remark && x.Options === null) {
+                optn = remark.concat(x.remark)
+            } else if (x.palletcode === null && x.remark === null && x.Options) {
+                optn = x.Options
+            } else {
+                optn = null
+            }
+        })
+        console.log(optn)
+
+
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
                 let _docItem = { ...docItem }
@@ -1060,13 +1081,7 @@ const AmCreateDocument = (props) => {
                 x.quantity = x.quantity ? 0 : 0
                 x.auditStatus = x.auditStatus ? x.auditStatus : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
-                x.options = x.palletcode && x.remark
-                    ? pallet.concat(x.palletcode) + '&' + remark.concat(x.remark) :
-                    x.palleCode ? pallet.concat(x.palletcode) :
-                        x.remark ? remark.concat(x.remark) :
-                            null     
-                x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate : null
-                x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
+                x.options = optn ? optn : null   
                 return x
 
             })
@@ -1087,11 +1102,7 @@ const AmCreateDocument = (props) => {
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate :null
                 x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
-                x.options = x.palletcode && x.remark
-                    ? pallet.concat(x.palletcode) + '&' + remark.concat(x.remark) :
-                    x.palleCode ? pallet.concat(x.palletcode) :
-                        x.remark ? remark.concat(x.remark) :
-                    null         
+                x.options = optn ? optn : null         
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -1119,8 +1130,8 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    //console.log(doc)
-                   CreateDocuments(doc)
+                    console.log(doc)
+                   //CreateDocuments(doc)
                 }
             }
         }
@@ -1141,16 +1152,16 @@ const AmCreateDocument = (props) => {
     }
 
     const FormatDataSource = (data) => {
-        let datas = [...dataSource]
+        let datasou = [...dataSource]
+        let datasCheck = [...dataCheck]
         let chkPallet;
-        if (datas) {
-            chkPallet = data.find(x => x.packID === datas.packID)
-        }
-
-        if (chkPallet) {
-            setStateDialogErr(true)
-            setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
-        } else {
+        //if (datasou) {
+        //    chkPallet = datasou.find(x => x.packID === data.packID)
+        //}
+        //if (chkPallet) {
+        //    setStateDialogErr(true)
+        //    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+        //} else {
 
             if (data) {
                 let _addDataID = addDataID - 1
@@ -1165,12 +1176,15 @@ const AmCreateDocument = (props) => {
                     }
                     _addDataID--
                     setAddDataID(_addDataID)
-                    datas.push(obj)
+                    datasCheck.push(obj)
+                   
+                    datasou.push(obj)
                 })
             }
             
-        }
-        return datas
+        //}
+        setdataCheck(datasCheck)
+        return datasou
     }
 
     return (
@@ -1230,7 +1244,7 @@ const AmCreateDocument = (props) => {
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 pageSize={200}
                 tableConfig={false}
-                dataSource={dataSource.length > 0 ? [...dataSource] : []}
+                dataSource={dataSource.length > 0 ? dataSource : []}
                 //   height={200}
                 rowNumber={true}
             />

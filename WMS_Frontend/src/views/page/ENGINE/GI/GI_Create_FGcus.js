@@ -379,7 +379,6 @@ const GI_Create_FGCustomer = props => {
     }
 
     const getAuditStatus = (e) => {
-        console.log(e)
         if (e.auditStatus ) {
             if (e.auditStatus === '0' ) {
                 return "QUARANTINE"

@@ -163,11 +163,6 @@ const BtnAddList = props => {
     const [status, setstatus] = useState(true);
     const [inputErr, setinputErr] = useState([]);
 
-    //useEffect(() => {
-    //    setQuery(props.queryApi)
-    //}, open, props.queryApi)
-
-
     useEffect(() => {
         setDataSelect([])
         if (open) {
@@ -239,13 +234,13 @@ const BtnAddList = props => {
                 ...x,
                 quantity: x.Quantity,
                 lot: x.Lot,
-                expireDates: x.expireDate ? x.expireDate   : null,
-                productionDates: x.productionDate ? x.productionDate  : null,
+                expireDates: x.expireDate ? x.expireDate : null,
+                productionDates: x.productionDate ? x.productionDate : null,
                 //expireDate: x.expireDate ? moment(x.expireDate).format('DD/MM/YYYY') : null,
                 //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
                 auditStatus: x.AuditStatus.toString(),
                 ShelfLifePercent: x.ShelfLifeRemainPercent ? x.ShelfLifeRemainPercent + '%' : null,
-                remark: query.remark != null ? query.remark : ''
+                remark: query.remark != null ? query.remark : null
             }
             return obj
         })
@@ -343,6 +338,22 @@ const BtnAddList = props => {
             return false;
     }
 
+    const onSubmit = () => {
+        console.log(dataSelect)
+        props.onSubmit(dataSelect);
+        setOpen(false);
+
+    }
+
+    const selectionDisabledCustoms = (data) => {
+        let check = defaultSelect.find(x => x.packID === data.packID);
+        if (check === undefined)
+            return false
+        else
+            return true
+    }
+
+
     //const search = props.search.map((x, xi) => {
     //    return (
     //        { /* <SearchInput
@@ -404,6 +415,7 @@ const BtnAddList = props => {
                         tableConfig={true}                                        
                         sortable
                         sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
+                        selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}
                         selectionDefault={defaultSelect}
                         selection={true}
                         selectionData={data => setDataSelect(data)}
@@ -443,8 +455,8 @@ const BtnAddList = props => {
                     <AmButton
                         styleType="add"
                         onClick={() => {
-                            props.onSubmit(dataSelect);
-                            setOpen(false);
+                            onSubmit()
+                          
                         }}
                     >Add</AmButton>
                 </DialogActions>
