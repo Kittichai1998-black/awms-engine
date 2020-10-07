@@ -133,7 +133,7 @@ const AmPrintBarCode = props => {
         mode: valueDataRadio,
         docID: props.docID,
         minVolume: 1,
-        maxVolume: 999,
+        maxVolume: 10000,
         supplierName: props.SouSupplierName,
         supplierCode: props.SouSupplierCode,
         remark: props.Remark,
@@ -202,7 +202,7 @@ const AmPrintBarCode = props => {
           onChange={(checked) => handleRadioChange(checked, 0)} />
         <br />
       </div>
-      <FormInline>
+      {/* <FormInline>
         <label style={{ fontWeight: "bold", width: "50px" }}>{t("Min") + " : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="number" disabled={true}
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
@@ -242,13 +242,13 @@ const AmPrintBarCode = props => {
           }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
-      </FormInline>
+      </FormInline> */}
       <br />
     </div>
   };
   const onHandleChangeGeneratePallet = (value, mode) => {
     // console.log(value)
-    setValueQty({ min: value.min, max: value.max })
+    setValueQty({ min: 1, max: 10000 })
     setGenData(true)
     var itemList = [];
     var item = {};
@@ -278,8 +278,10 @@ const AmPrintBarCode = props => {
     const dataSend = {
       mode: mode,
       docID: props.docID,
-      minVolume: valueQty === undefined ? 1 : (valueQty.min === undefined ? 1 : (value.min !== undefined ? parseInt(value.min) : 1)),
-      maxVolume: valueQty === undefined ? 999 : (valueQty.max === undefined ? 999 : (value.max !== undefined ? parseInt(value.max) : 999)),
+      minVolume: 1,
+      maxVolume: 10000,
+      // minVolume: valueQty === undefined ? 1 : (valueQty.min === undefined ? 1 : (value.min !== undefined ? parseInt(value.min) : 1)),
+      // maxVolume: valueQty === undefined ? 10000 : (valueQty.max === undefined ? 10000 : (value.max !== undefined ? parseInt(value.max) : 999)),
       supplierName: props.SouSupplierName,
       supplierCode: props.SouSupplierCode,
       Item: itemList
