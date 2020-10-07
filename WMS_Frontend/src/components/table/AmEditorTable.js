@@ -20,7 +20,6 @@ const AmEditiorTable = (props) => {
     }, [props.reload])
 
     const checkStr = () => {
-
         if (props.titleText === "Edit") {
             return 'Save';
         } else {

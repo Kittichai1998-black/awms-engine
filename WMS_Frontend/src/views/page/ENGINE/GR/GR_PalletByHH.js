@@ -33,7 +33,7 @@ const GR_PalletByHH = (props) => {
             field: "qty",
             type: "input",
             name: "Qty",
-            disabled: false,
+            disabled: true,
             placeholder: "Name"
         }]
     const columnsManual = [
