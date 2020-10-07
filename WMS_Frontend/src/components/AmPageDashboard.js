@@ -124,14 +124,31 @@ const AmMonitor = props => {
     const time = props.time ? clock : null
 
     const goFull = () => {
+        console.log(width_height)
         setIsFullScreen(true);
         openFullscreen();
-        setCalHeight(0.57);
+        if(width_height.width < 1000){
+            setCalHeight(0.4);
+        }
+        else if(width_height.width < 1300){
+            setCalHeight(0.4);
+        }
+        else if(width_height.width > 1300){
+            setCalHeight(0.55);
+        }
     }
     const goMin = () => {
         setIsFullScreen(false);
         closeFullscreen();
-        setCalHeight(0.35);
+        if(width_height.width < 1000){
+            setCalHeight(0.35);
+        }
+        else if(width_height.width < 1300){
+            setCalHeight(0.37);
+        }
+        else if(width_height.width > 1300){
+            setCalHeight(0.4);
+        }
     }
 
     const formatDatas = (headerCol) => {

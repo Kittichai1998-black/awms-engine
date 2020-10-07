@@ -226,17 +226,19 @@ const useDocumentData = (doc, conditions) => {
 }
 
 const useArea = (areaQuery, doc, customArea, warehouse) => {
+    const [allArea, setAllArea] = useState([])
     const [area, setArea] = useState([])
 
     useEffect(() => {
         Axios.get(createQueryString(areaQuery)).then(res => {
             setArea(res.data.datas);
+            setAllArea(res.data.datas);
         });
     }, [areaQuery])
 
     useEffect(() => {
         if (customArea !== undefined && doc !== null && doc.length > 0) {
-            var areaRes = customArea(area, doc[0], warehouse);
+            var areaRes = customArea(allArea, doc[0], warehouse);
             setArea(areaRes);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -998,7 +1000,8 @@ const ConfirmDialog = (props) => {
                                 itemHeader["bstoCode"] = processRes[obj]
                             else if (obj === "baseQty") {
                                 let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
-                                itemHeader["pickQty"] = findQty.Quantity
+                                let sumPicking = processRes["pickStos"].map(psto => psto.pickQty).reduce((s, v) => s + v);
+                                itemHeader["pickQty"] = sumPicking + '/' + findQty.Quantity
                             }
                             else
                                 itemHeader[obj] = processRes[obj]
