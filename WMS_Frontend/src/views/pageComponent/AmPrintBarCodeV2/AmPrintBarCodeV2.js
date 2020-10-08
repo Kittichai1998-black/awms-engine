@@ -175,43 +175,46 @@ const AmPrintBarCodeV2 = props => {
     var Quantity_s = 0
     var Quantity_t = 0
     let selecx = selection.filter(y => y.Quantity !== 0)
-    if (selection.length !== 0) {
-      var ck = selecx.find(x => x.Quantity - x.Quantity_Genarate < 0 || parseInt(x.Quantity_Genarate) === 0)
-      if (ck === undefined) {
-        selecx.forEach(selec => {
+    if (selecx.length !== 0) {
+      if (selection.length !== 0) {
+        var ck = selecx.find(x => x.Quantity - x.Quantity_Genarate < 0 || parseInt(x.Quantity_Genarate) === 0)
+        if (ck === undefined) {
+          selecx.forEach(selec => {
 
-          var selectionData = iniData.find(x => x.ID === selec.ID)
-          if (selectionData !== undefined) {
-            Quantity_s = selectionData.Quantity % parseInt(selectionData.Quantity_Genarate)
-            Quantity_t = selectionData.Quantity / parseInt(selectionData.Quantity_Genarate)
-            let num_r = Quantity_s === 0 ? Math.floor(Quantity_t) : (Math.floor(Quantity_t) + 1)
-            selectionData.Quantity = 0
+            var selectionData = iniData.find(x => x.ID === selec.ID)
+            if (selectionData !== undefined) {
+              Quantity_s = selectionData.Quantity % parseInt(selectionData.Quantity_Genarate)
+              Quantity_t = selectionData.Quantity / parseInt(selectionData.Quantity_Genarate)
+              let num_r = Quantity_s === 0 ? Math.floor(Quantity_t) : (Math.floor(Quantity_t) + 1)
+              selectionData.Quantity = 0
 
-            for (var i = 0; i < num_r; i++) {
-              datax.push([selectionData])
+              for (var i = 0; i < num_r; i++) {
+                datax.push([selectionData])
+              }
             }
-          }
-          let temp = Clone(datax)
-          if (Quantity_s !== 0
-          ) temp[temp.length - 1][0].Quantity_Genarate = Quantity_s
+            let temp = Clone(datax)
+            if (Quantity_s !== 0
+            ) temp[temp.length - 1][0].Quantity_Genarate = Quantity_s
 
-          datax = temp
-        });
-        datax.forEach(x => {
-          itemList[n + 1] = x
-          n++
-        })
+            datax = temp
+          });
+          datax.forEach(x => {
+            itemList[n + 1] = x
+            n++
+          })
 
-        setElePallet(RanderEleListPallet(itemList, "addList", null, n))
+          setElePallet(RanderEleListPallet(itemList, "addList", null, n))
 
-        setIniData([...iniData])
+          setIniData([...iniData])
+        } else {
+          setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
+          setIniData([...iniData])
+        }
       } else {
-        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
-        setIniData([...iniData])
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
       }
-
     } else {
-      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
     }
     return null
   }
@@ -220,26 +223,30 @@ const AmPrintBarCodeV2 = props => {
   const onGenBarcode = () => {
     if (selection.length !== 0) {
       let selecx = selection.filter(y => y.Quantity !== 0)
-
-      var ck = selecx.find(x => (x.Quantity - x.Quantity_Genarate) < 0 || parseInt(x.Quantity_Genarate) === 0)
-      if (ck === undefined) {
-        setElePallet(RanderEleListPallet(selecx, "add"))
-        selecx.forEach(selec => {
-          var selectionData = iniData.find(x => x.ID === selec.ID)
-          if (selectionData !== undefined) {
-            let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
-            selectionData.Quantity = selectionData.Quantity - genQty
-          }
-        });
-        setIniData([...iniData])
+      //console.log(selecxCheck)
+      if (selecx.length !== 0) {
+        var ck = selecx.find(x => (x.Quantity - x.Quantity_Genarate) < 0 || parseInt(x.Quantity_Genarate) === 0)
+        if (ck === undefined) {
+          setElePallet(RanderEleListPallet(selecx, "add"))
+          selecx.forEach(selec => {
+            var selectionData = iniData.find(x => x.ID === selec.ID)
+            if (selectionData !== undefined) {
+              let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
+              selectionData.Quantity = selectionData.Quantity - genQty
+            }
+          });
+          setIniData([...iniData])
+        } else {
+          setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
+          setIniData([...iniData])
+        }
       } else {
-        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ", state: true })
-        setIniData([...iniData])
+        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
       }
-
     } else {
       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
     }
+
   }
 
   const getQtyItem = (e) => {
@@ -447,7 +454,7 @@ const AmPrintBarCodeV2 = props => {
     Array.from(document.getElementsByClassName("barcodeCheckbox")).forEach(x => x.checked = false);
     props.data.forEach(x => {
       if (document.getElementById(x.ID + "_qty") !== null)
-        document.getElementById(x.ID + "_qty").value = x.PackMaster_Volume
+        document.getElementById(x.ID + "_qty").value = parseInt(x.PackMaster_Volume)
     })
     setIniData(Clone(props.data))
     setSelection([])
