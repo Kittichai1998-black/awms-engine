@@ -39,6 +39,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import Collapse from '@material-ui/core/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
 import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryStringEmp";
@@ -487,54 +488,51 @@ const AmMappingPalletEmp = props => {
 
         if (mapstosSelected !== undefined && mapstosSelected !== null) {
           postdata.bstoCode = dataPallet.code
-          mapstosSelected[0].addQty = valueInput.editQty
+          // mapstosSelected[0].addQty = valueInput.editQty
+          mapstosSelected[0].addQty = 0
           postdata = GenMapstosSelected(postdata, mapstosSelected)
         }
       }
-      if (type === "edit" && valueInput.editQty === undefined) {
-        setDialog(false)
-      } else {
-        Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-          if (res.data._result.status === 1) {
-            if (res.data.bsto === null) {
-              handleBack()
-              setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
-            } else {
-              if (res.data.bsto !== undefined && res.data.bsto !== null) {
-                setDisPlayQr(false)
-                setDataPallet(res.data.bsto)
-                setDataDoc(null)
+      Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+        if (res.data._result.status === 1) {
+          if (res.data.bsto === null) {
+            handleBack()
+            setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
+          } else {
+            if (res.data.bsto !== undefined && res.data.bsto !== null) {
+              setDisPlayQr(false)
+              setDataPallet(res.data.bsto)
+              setDataDoc(null)
 
-                if (checkedAuto === false && type === "confirm") {
-                  setDisPlayButton(false)
-                  setDataDoc(null)
-                  props.columnsManual.forEach(x => {
-                    valueManual[x.field] = null
-                  })
-                  setCheckedAuto(true)
-                }
-                if (checkedAutoClear && type === "confirm") {
-                  var el = document.getElementById('palletcode');
-                  var elbarcode = document.getElementById('barcode');
-                  if (elbarcode !== null)
-                    elbarcode.value = null
-                  if (el !== null)
-                    el.value = null
-                  el.focus()
-                } else if (checkedAutoClear === false && type === "confirm") {
-                  var el = document.getElementById('barcode');
-                  if (el !== null)
-                    el.value = null
-                  el.focus()
-                }
+              if (checkedAuto === false && type === "confirm") {
+                setDisPlayButton(false)
+                setDataDoc(null)
+                props.columnsManual.forEach(x => {
+                  valueManual[x.field] = null
+                })
+                setCheckedAuto(true)
+              }
+              if (checkedAutoClear && type === "confirm") {
+                var el = document.getElementById('palletcode');
+                var elbarcode = document.getElementById('barcode');
+                if (elbarcode !== null)
+                  elbarcode.value = null
+                if (el !== null)
+                  el.value = null
+                el.focus()
+              } else if (checkedAutoClear === false && type === "confirm") {
+                var el = document.getElementById('barcode');
+                if (el !== null)
+                  el.value = null
+                el.focus()
               }
             }
-            setDialog(false)
-          } else {
-            setDialogState({ type: "error", content: res.data._result.message, state: true })
           }
-        })
-      }
+          setDialog(false)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
+      })
     }
   }
   function getStepContent(step) {
@@ -609,7 +607,7 @@ const AmMappingPalletEmp = props => {
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
             defaultEndIcon={dataPallet !== undefined && dataPallet !== null ? (
-              dataPallet.mapstos === null ? <MinusSquare /> : <EditIcon />) : null}
+              dataPallet.mapstos === null ? <MinusSquare /> : <DeleteIcon />) : null}
 
             onNodeSelect={handleSelect}
           >
@@ -877,7 +875,8 @@ const AmMappingPalletEmp = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={t("Edit")}
+        titleText={t("Confirm Delete")}
+        textConfirm={t("delete")}
         data={dataPallet !== undefined && dataPallet !== null ? dataPallet : []}
         columns={RanderEle()}
       />
