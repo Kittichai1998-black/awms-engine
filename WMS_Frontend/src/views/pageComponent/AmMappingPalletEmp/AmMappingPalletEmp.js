@@ -359,7 +359,8 @@ const AmMappingPalletEmp = props => {
       setPalletCode(value);
       if (event === "Enter") {
         setAutoFocus(false)
-        scanMappingSto(value, null); getDocByQRCode("E|");
+        scanMappingSto(value, null);
+        //getDocByQRCode("E|");
       }
     }
   };
@@ -500,13 +501,18 @@ const AmMappingPalletEmp = props => {
             setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
           } else {
             if (res.data.bsto !== undefined && res.data.bsto !== null) {
+              //console.log(res.data.bsto)
               setDisPlayQr(false)
               setDataPallet(res.data.bsto)
-              setDataDoc(null)
+              if (res.data.bsto.mapstos !== null) {
+                setDataDoc(null)
+              } else {
+                getDocByQRCode("E|")
+              }
 
               if (checkedAuto === false && type === "confirm") {
                 setDisPlayButton(false)
-                setDataDoc(null)
+                //setDataDoc(null)
                 props.columnsManual.forEach(x => {
                   valueManual[x.field] = null
                 })
@@ -675,7 +681,11 @@ const AmMappingPalletEmp = props => {
                 >
                   <SearchIcon
                     fontSize="small"
-                    onClick={() => { scanMappingSto(palletCode, null); getDocByQRCode("E|"); }}
+                    onClick={() => {
+                      scanMappingSto(palletCode, null);
+                      //getDocByQRCode("E|"); 
+                    }
+                    }
                   />
                 </IconButton>
               </FormInline>
@@ -744,6 +754,7 @@ const AmMappingPalletEmp = props => {
               {checkedAuto && flaggetDataDoc ? (dataDoc !== undefined && dataDoc !== null ?
                 <div>
                   <LabelH1>{t("Detail")}</LabelH1>
+                  {console.log(dataDoc)}
                   {DataGenerateEleDocDisplay(dataDoc)}
                 </div> :
                 // <div>
