@@ -250,7 +250,7 @@ const DocumentView = props => {
 
                     var sumQty = 0;
                     var sumBaseQty = 0;
-                    if (res.data.sou_bstos !== null) {               
+                    if (res.data.sou_bstos !== null) {
                         res.data.sou_bstos.filter(y => y.packID === row.PackMaster_ID).forEach(y => {
 
                             if (props.typeDocNo === 1011) {
@@ -263,17 +263,17 @@ const DocumentView = props => {
                                     sumQty += y.distoQty;
                                     sumBaseQty += y.distoBaseQty;
                                 }
-                            } else if (props.typeDocNo === y.dcDocType_ID) {                           
+                            } else if (props.typeDocNo === y.dcDocType_ID) {
                                 sumQty += y.distoQty;
                                 sumBaseQty += y.distoBaseQty;
                             }
                         });
                     }
-                          
-                        row._sumQtyDisto = sumQty;
-                        row._sumQtyBaseDisto = sumBaseQty;
-                        row._balanceQty = row.Quantity - sumQty;
-                  
+
+                    row._sumQtyDisto = sumQty;
+                    row._sumQtyBaseDisto = sumBaseQty;
+                    row._balanceQty = row.Quantity - sumQty;
+
 
                     // === getOption === DocItem
 
@@ -396,7 +396,7 @@ const DocumentView = props => {
                         }
 
                     });
-                
+
                 }
                 if (res.data.des_bstos) {
                     res.data.des_bstos.forEach(rowDetail => {
@@ -509,7 +509,7 @@ const DocumentView = props => {
 
     //======================================================================================================
 
-    const getDataHeader = (type, value,values) => {
+    const getDataHeader = (type, value, values) => {
         if (type === "date") {
             if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
@@ -994,7 +994,9 @@ const DocumentView = props => {
 
                     : null}
             </FormInline>
+            {console.log(dataHeader)}
             {typeDoc && props.QrCodemanuak ? (
+
                 // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
                 <AmTable
                     selection={"checkbox"}
@@ -1007,7 +1009,7 @@ const DocumentView = props => {
                     height={200}
                     tableConfig={false}
                     rowNumber={false}
-                    customAction={dataHeader.EventStatus === 32 ? null :
+                    customAction={dataHeader.EventStatus === 32 || dataHeader.DocumentProcessTypeCode === "8011" ? null :
                         [{
                             label: <div style={{ fontSize: "12px" }}>
                                 {"QRCODE MANUAL"}</div>,

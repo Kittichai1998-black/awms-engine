@@ -754,7 +754,7 @@ const AmMappingPalletEmp = props => {
               {checkedAuto && flaggetDataDoc ? (dataDoc !== undefined && dataDoc !== null ?
                 <div>
                   <LabelH1>{t("Detail")}</LabelH1>
-                  {console.log(dataDoc)}
+                  {/* {console.log(dataDoc)} */}
                   {DataGenerateEleDocDisplay(dataDoc)}
                 </div> :
                 // <div>
