@@ -878,7 +878,7 @@ const AmMappingPalletV2 = props => {
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
         titleText={t("Confirm Delete")}
-        textConfirm={t("delete")}
+        textConfirm={t("Delete")}
         data={dataPallet !== undefined && dataPallet !== null ? dataPallet : []}
         columns={RanderEle()}
       />
