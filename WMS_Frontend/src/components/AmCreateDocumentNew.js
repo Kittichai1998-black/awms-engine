@@ -1034,32 +1034,37 @@ const AmCreateDocument = (props) => {
         var remark = 'remark='
         var pallet = 'palletcode='
         var optn;
-        dataSource.map((x,i) => {
-            if (x.palletcode != null && x.remark != null && x.Options != null) {
-                optn = x.Options + '&' +
-                    pallet.concat(x.palletcode) + '&' +
-                    remark.concat(x.remark)
-            } else if (x.palletcode && x.remark && x.Options === null) {
-                optn = pallet.concat(x.palletcode) + '&' +
-                    remark.concat(x.remark)
-            } else if (x.remark === null && x.palletcode && x.Options) {
-                optn = x.Options + '&' +
-                    pallet.concat(x.palletcode)
-            } else if (x.palletcode === null && x.remark && x.Options) {
-                optn = x.Options + '&' +
-                    remark.concat(x.remark)
-            } else if (x.palletcode && x.remark === null && x.Options === null) {
-                optn = pallet.concat(x.palletcode)
-            } else if (x.palletcode === null && x.remark && x.Options === null) {
-                optn = remark.concat(x.remark)
-            } else if (x.palletcode === null && x.remark === null && x.Options) {
-                optn = x.Options
-            } else {
-                optn = null
-            }
-        })
-        console.log(optn)
+            
+        let dataOptions = dataSource.map(x => {
+            let Options = x.options ? x.options : x.Options ? x.Options : null
+            let palletcode = x.palletcode ? x.palletcode : null
+            let remarks = x.remark ? x.remark : null
 
+                if (palletcode != null && x.remarks != null && Options != null) {
+                    optn = Options + '&' +
+                        pallet.concat(palletcode) + '&' +
+                        remark.concat(remarks)
+                } else if (palletcode && remarks && Options === null) {
+                    optn = pallet.concat(palletcode) + '&' +
+                        remark.concat(remarks)
+                } else if (remarks === null && palletcode && Options) {
+                    optn = Options + '&' +
+                        pallet.concat(palletcode)
+                } else if (palletcode === null && remarks && Options) {
+                    optn = Options + '&' + remarks.concat(remark)
+                } else if (palletcode && remarks === null && Options === null) {
+                    optn = pallet.concat(palletcode)
+                } else if (palletcode === null && remarks && Options === null) {
+                    optn = remark.concat(remarks)
+                } else if (palletcode === null && remarks === null && Options) {
+                    optn = Options
+                } else {
+                    optn = null
+             }
+             return optn           
+         })
+
+        console.log(dataOptions)
 
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
@@ -1074,35 +1079,34 @@ const AmCreateDocument = (props) => {
             })
         }
         else if (props.createDocType === "counting") {
-            doc.countingItems = dataSource.map(x => {
+            doc.countingItems = dataSource.map((x,i) => {
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
                 x.auditStatus = x.auditStatus ? x.auditStatus : 0
                 x.options = x.remark ? remark.concat(x.remark) : null
-                x.options = optn ? optn : null   
+                x.options = dataOptions[i]   
                 return x
 
             })
         } else if (props.createDocType === "audit") {
-            doc.auditItems = dataSource.map(x => {
+            doc.auditItems = dataSource.map((x,i) => {
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
-                x.options = x.remark ? remark.concat(x.remark) : null
-                x.options = x.qtyrandom ? qtyrandom.concat(x.qtyrandom) : null
+                x.options = dataOptions[i] 
                 return x
             })
         } else if (props.createDocType === "issue") {           
-            doc.issuedOrderItem = dataSource.map(x => {
+            doc.issuedOrderItem = dataSource.map((x, i) => {
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate :null
                 x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
-                x.options = optn ? optn : null         
+                x.options = dataOptions[i]      
                 return x
             })
         } else if (props.createDocType === "receive") {
@@ -1130,8 +1134,7 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    console.log(doc)
-                   //CreateDocuments(doc)
+                   CreateDocuments(doc)
                 }
             }
         }
