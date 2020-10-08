@@ -163,6 +163,7 @@ const BtnAddList = props => {
     const [status, setstatus] = useState(true);
     const [inputErr, setinputErr] = useState([]);
 
+
     useEffect(() => {
         setDataSelect([])
         if (open) {
@@ -206,7 +207,7 @@ const BtnAddList = props => {
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
                     setTotalSize(res.data.counts);
-                    setDefaultSelect([...props.dataCheck]);
+                    //setDefaultSelect([...props.dataCheck]);
                 }
             });
         }
@@ -220,7 +221,7 @@ const BtnAddList = props => {
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
                     setTotalSize(res.data.counts);
-                    setDefaultSelect([...props.dataCheck]);
+                   // setDefaultSelect([...props.dataCheck]);
                 }
             });
         }
@@ -339,14 +340,35 @@ const BtnAddList = props => {
     }
 
     const onSubmit = () => {
-        console.log(dataSelect)
-        props.onSubmit(dataSelect);
-        setOpen(false);
+        if (dataSelect.length > 0 && props.dataCheck.length > 0) {
+            dataSelect.forEach((x, i) => {
+                    let check = props.dataCheck.find(x => x.packID === dataSelect[i].packID);
+                    console.log(check)
+                    console.log(dataSelect)
+                if (!check) {
+                    let datasOnsub = []
+                    let datas = dataSelect.find(x => x.ID === undefined)
+                    console.log(datas)
+                    if (datas) {
+                        datasOnsub.push(datas)
+                        props.onSubmit(datasOnsub);
+                        setOpen(false);
+                    }
+                    } else {
+                        setOpen(false);
+                    }
+                })
+
+           
+        } else {
+            props.onSubmit(dataSelect);
+            setOpen(false);
+        }
 
     }
 
     const selectionDisabledCustoms = (data) => {
-        let check = defaultSelect.find(x => x.packID === data.packID);
+        let check = props.dataCheck.find(x => x.packID === data.packID);
         if (check === undefined)
             return false
         else
@@ -416,9 +438,9 @@ const BtnAddList = props => {
                         sortable
                         sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
                         selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}
-                        selectionDefault={defaultSelect}
-                        selection={true}
-                        selectionData={data => setDataSelect(data)}
+                        selectionDefault={props.dataCheck}
+                        selection="checkbox"
+                        selectionData={(data) => setDataSelect(data)}
                     />
 
                     {/* <AmTable
@@ -456,7 +478,6 @@ const BtnAddList = props => {
                         styleType="add"
                         onClick={() => {
                             onSubmit()
-                          
                         }}
                     >Add</AmButton>
                 </DialogActions>

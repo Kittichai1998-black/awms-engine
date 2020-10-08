@@ -931,7 +931,7 @@ const DocumentView = props => {
 
             }
         } catch (err) {
-            console.log(err)
+            // console.log(err)
         }
     }
     return (
@@ -994,7 +994,7 @@ const DocumentView = props => {
 
                     : null}
             </FormInline>
-            {console.log(dataHeader)}
+            {/* {console.log(dataHeader)} */}
             {typeDoc && props.QrCodemanuak ? (
 
                 // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />

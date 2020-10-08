@@ -77,7 +77,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string lot;
                 public string orderNo;
                 public string cartonNo;
-                public bool isUnitTypeForPack = false;
+                public bool isUnitTypeForPack = true;
                 public string itemNo;
                 public AuditStatus auditStatus;
                 public string refID;

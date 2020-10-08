@@ -209,11 +209,13 @@ const GI_Create_FGCustomer = props => {
             ProcessTypeCode === '5151' ) {
             Querys = [
                 { "f": "Status", "c": "<", "v": 2 },
+                { "f": "EventStatus", "c": "=", "v": 12 },
                 { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType },
                 { 'f': 'IsStock', 'c': '=', 'v': 1 },
                 { 'f': 'AuditStatus', 'c': '=', 'v': 1 }]
         } else {
             Querys = [{ "f": "Status", "c": "<", "v": 2 },
+                { "f": "EventStatus", "c": "=", "v": 12 },
                 { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType },
                 { 'f': 'IsStock', 'c': '=', 'v': 1}
             ]
