@@ -1000,7 +1000,7 @@ const ConfirmDialog = (props) => {
                                 itemHeader["bstoCode"] = processRes[obj]
                             else if (obj === "baseQty") {
                                 let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
-                                let sumPicking = processRes["pickStos"].map(psto => psto.pickQty).reduce((s, v) => s + v);
+                                let sumPicking = processRes["pickStos"].map(psto => psto.pickQty).reduce((s, v) => s + v, []);
                                 itemHeader["pickQty"] = sumPicking + '/' + findQty.Quantity
                             }
                             else

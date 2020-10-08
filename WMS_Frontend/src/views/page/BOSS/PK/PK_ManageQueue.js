@@ -6,7 +6,7 @@ const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": tru
 const colDocumentItem = [
     { "accessor": "BaseCode", "Header": "Base Code", "sortable": false, "width": 200, Cell:(e) => {
         const getOptions = queryString.parse(e.data.Options)
-        return getOptions.palletCode
+        return getOptions.palletcode
     } },
     { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
     { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },

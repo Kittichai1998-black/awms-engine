@@ -90,7 +90,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {
@@ -160,7 +160,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {
@@ -228,7 +228,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {
