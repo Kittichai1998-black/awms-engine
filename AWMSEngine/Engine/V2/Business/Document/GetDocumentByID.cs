@@ -169,7 +169,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
            foreach(var dicitem in docItems)
             {
-                dicitem.Quantity_Genarate = dicitem.SKUMaster_Info1;
+                dicitem.Quantity_Genarate = dicitem.PackMaster_Volume;
             }
 
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
