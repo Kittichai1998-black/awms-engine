@@ -6,7 +6,7 @@ const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": tru
 const colDocumentItem = [
     { "accessor": "BaseCode", "Header": "Base Code", "sortable": false, "width": 200, Cell:(e) => {
         const getOptions = queryString.parse(e.data.Options)
-        return getOptions.palletCode
+        return getOptions.palletcode
     } },
     { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
     { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
@@ -208,15 +208,7 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
-        //pm 9 Production Gate  Floor2
-        //fg 10 Loading Gate  Floor1
-        if (sku === '4') {
-            return areaList.filter(x => x.ID === 10)
-        }
-        else if (sku === '5') {
-            return areaList.filter(x => x.ID === 9)
-        }
+        return areaList.filter(x => x.ID === 9 || x.ID === 10)
     } 
     const customDesAreaDefault = (doc) => {
         let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)

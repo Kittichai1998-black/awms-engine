@@ -90,7 +90,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {
@@ -150,7 +150,7 @@ const PackMaster = props => {
       placeholder: "Name"
     },
     {
-      field: "WeightPercent",
+      field: "PercentWeightAccept",
       type: "input",
       inputType: "number",
       name: "Weight Percent",
@@ -160,7 +160,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {
@@ -218,7 +218,7 @@ const PackMaster = props => {
       fieldDataKey: "Code"
     },
     {
-      field: "WeightPercent",
+      field: "PercentWeightAccept",
       type: "input",
       inputType: "number",
       name: "Weight Percent",
@@ -228,7 +228,7 @@ const PackMaster = props => {
       field: "Volume",
       type: "input",
       inputType: "number",
-      name: "Volume",
+      name: "Qty/Pallet",
       placeholder: "Volume"
     },
     {

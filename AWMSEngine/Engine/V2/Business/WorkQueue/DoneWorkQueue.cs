@@ -227,14 +227,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
 
                 }
-                if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
-                {
-                    sto.IsStock = true;
-                    AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
-                       new KeyValuePair<string, object>[] {
-                            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
-                       });
-                }
+                //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
+                //{
+                //    sto.IsStock = true;
+                //    AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
+                //       new KeyValuePair<string, object>[] {
+                //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
+                //       });
+                //}
                 ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
             }
         }
