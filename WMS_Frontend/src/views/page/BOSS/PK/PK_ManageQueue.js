@@ -150,12 +150,10 @@ const processCondition = {
         {
             "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
             "editable": true,
-            "order": 2,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
             "field": "Expiry Date", "enable": true, "sortField": "psto.expirydate",
-            "defaultSortBy": "0",
             "editable": true,
             "order": 1,
             custom: (c) => {
@@ -171,7 +169,6 @@ const processCondition = {
         {
             "field": "Batch", "enable": true, "sortField": "psto.batch",
             "editable": true,
-            "order": 3,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {
@@ -184,7 +181,6 @@ const processCondition = {
             "editable": true,
             "order": 2,
             custom: (c) => {
-                console.log("xx")
                 let objSorting = { "editable": true, "enable": true, "sortField": "psto.orderNo"} 
                 if(c.docItem.SKUMasterTypeID === 5){
                     objSorting.defaultSortBy = "0";

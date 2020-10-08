@@ -144,7 +144,7 @@ const DefaultProcessCondition = (doc, con) => {
             if (con.orderBys !== undefined) {
                 let arrOrderBys = [];
                 con.orderBys.sort((a, b) => a - b).forEach((y, idx) => {
-                    if (y.custom !== undefined && y.defaultSortBy !== undefined) {
+                    if (y.custom !== undefined) {
                         let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable)
                             if (getCustom.defaultSortBy !== undefined)
