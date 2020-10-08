@@ -289,6 +289,7 @@ const AmHeaderputandpick = (props) => {
     const setDataformStonandView = (res) => {
         let datasCheck = [];
         res.forEach((x, i) => {
+            console.log(x)
             var QryOp = queryString.parse(x.Options)
             var datas = {
                 ...x,           
@@ -298,7 +299,8 @@ const AmHeaderputandpick = (props) => {
                 ProductionDate: x.ProductionDate ? moment(x.ProductionDate).format("DD/MM/YYYY") : null,
                 AuditStatus: getAuditStatus(x.AuditStatus),
                 AuditStatuss: x.AuditStatus,
-                Remark: QryOp.remark ? QryOp.remark : null
+                Remark: QryOp.remark ? QryOp.remark : null,
+                PalletCode: QryOp.palletcode ? QryOp.palletcode : null
             }
 
             if (datas.Qty) {
@@ -312,20 +314,21 @@ const AmHeaderputandpick = (props) => {
                 datasCheck.push(datas)
             }
         })
-
-        if (datasCheck.length === 0) {
-            dia.setdailogMsg('Quantity document is Empty')
-            dia.setdailogErr(true)
-            doc.setdialogItem(false)
-            doc.setdialogItemSet(false)
-
-        } else if (datasCheck.length > 0) {
+        console.log(datasCheck)
+        if (datasCheck.length > 0) {
             if (!ChkCol) {
                 setColums();
             }
             doc.setdatadocItem(datasCheck);
             doc.setdataSet(datasCheck)
             doc.setdialogItem(true)
+   
+        } else{
+            dia.setdailogMsg('Quantity document is Empty')
+            dia.setdailogErr(true)
+            doc.setdialogItem(false)
+            doc.setdialogItemSet(false)
+
         }
    
     }
