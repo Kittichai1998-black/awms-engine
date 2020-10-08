@@ -87,6 +87,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if (getSto == null)
                 return null;
 
+            var area = this.StaticValue.AreaMasters.FirstOrDefault(y => y.ID == getSto.areaID.Value);
+            if(area.AreaMasterType_ID != AreaMasterTypeID.STA_PICK)
+                throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถหยิบจ่ายสินค้า เนื่องจากพาเลทนี้ไม่ได้อยู่บนคลังพื้น");
+
             var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
             if (packsList !=null && packsList.Count > 0)
             {
