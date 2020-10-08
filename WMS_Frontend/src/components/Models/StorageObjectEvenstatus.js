@@ -11,6 +11,7 @@ const StorageObjectEvenstatusTxt = [
   { label: "AUDITING", value: "AUDITING" },
   { label: "AUDITED", value: "AUDITED" },
   { label: "PICKING", value: "PICKING" },
+  { label: "NEW", value: "NEW" },
 ];
 const StorageObjectEvenStatusAll = [
   { label: "INACTIVE", value: 0 },
