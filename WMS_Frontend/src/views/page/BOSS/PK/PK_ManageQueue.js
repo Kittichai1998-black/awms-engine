@@ -208,15 +208,7 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
-        //pm 9 Production Gate  Floor2
-        //fg 10 Loading Gate  Floor1
-        if (sku === '4') {
-            return areaList.filter(x => x.ID === 10)
-        }
-        else if (sku === '5') {
-            return areaList.filter(x => x.ID === 9)
-        }
+        return areaList.filter(x => x.ID === 9 || x.ID === 10)
     } 
     const customDesAreaDefault = (doc) => {
         let sku = doc.document.DocumentProcessType_ID.toString().charAt(0)
