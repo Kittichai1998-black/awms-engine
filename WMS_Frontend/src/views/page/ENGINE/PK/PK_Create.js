@@ -136,7 +136,7 @@ const Create_GR_DR = props => {
         q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
         l: 100,
         all: ""
@@ -158,6 +158,7 @@ const Create_GR_DR = props => {
 
     const columnEdit = [
         //{ Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Pallet Code", type: "text" },
         { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code", type: "text" },
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name", type: "text" },
         { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
@@ -181,6 +182,7 @@ const Create_GR_DR = props => {
 
     const columnEditItem = [
         //{ Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Pallet Code" },
         { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
@@ -198,6 +200,7 @@ const Create_GR_DR = props => {
     ];
 
     const columnEditItemSet = [
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Item Code" },
         { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
         { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
@@ -210,6 +213,7 @@ const Create_GR_DR = props => {
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
         //{ Header: "", accessor: "row", width: 35 },
+        { Header: "Pallet Code", accessor: "PalletCode" },
         { Header: "Item Code", accessor: "SKUMaster_Code" },
         { Header: "Item Nane", accessor: "SKUMaster_Name" },
         { Header: "Control No.", accessor: "OrderNo" },
