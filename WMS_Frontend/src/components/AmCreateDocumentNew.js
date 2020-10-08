@@ -1131,7 +1131,7 @@ const AmCreateDocument = (props) => {
                     }
                 } else {
                     console.log(doc)
-                   //CreateDocuments(doc)
+                    CreateDocuments(doc)
                 }
             }
         }
