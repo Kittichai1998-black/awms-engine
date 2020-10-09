@@ -28,7 +28,7 @@ namespace AWMSEngine.APIService.V2.Business
             string ObjID = this.RequestVO.ID;
             var param = new Dapper.DynamicParameters();
             param.Add("roleID", ObjID);
-            var res = ADO.WMSDB.DataADO.GetInstant().QuerySP<TRes>(
+            var res = ADO.DataADO.GetInstant().QuerySP<TRes>(
                 "SP_GET_ROLE_PERMISSION",
                 param,
                 this.BuVO);

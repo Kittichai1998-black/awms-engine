@@ -29,10 +29,10 @@ namespace AWMSEngine.Engine.V2.Business
         {
             TDocRes res = new TDocRes();
 
-            var locArea = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.LocationID, this.BuVO);
+            var locArea = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.LocationID, this.BuVO);
             if(ADO.StaticValue.StaticValueManager.GetInstant().GetAreaMaster(locArea.AreaMaster_ID,null).Code == "SA")
             {
-                var checkAreaLoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                var checkAreaLoc = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaLocationMaster_ID",reqVO.LocationID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
@@ -40,9 +40,9 @@ namespace AWMSEngine.Engine.V2.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Location : "+ locArea.Code + " ในระบบ");
             }
             
-            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
+            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
-            var data = ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.LocationID, this.BuVO);
+            var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.LocationID, this.BuVO);
             res.data = data;
             /*if (sto.eventStatus == StorageObjectEventStatus.RECEIVING || sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {

@@ -26,7 +26,7 @@ namespace AWMSEngine.WorkerService
                 if (!x.Key.StartsWith("_"))
                     parameter.Add(x.Key, x.Value);
             });
-            var res = ADO.WMSDB.DataADO.GetInstant().QuerySP(options["_spname"], parameter, null);
+            var res = ADO.DataADO.GetInstant().QuerySP(options["_spname"], parameter, null);
             this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res.Json());
         }
 

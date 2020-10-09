@@ -6,7 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace AWMSEngine.ADO
 {
     public class PermissionADO : BaseMSSQLAccess<PermissionADO>
     {

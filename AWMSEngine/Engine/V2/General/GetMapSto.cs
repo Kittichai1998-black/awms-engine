@@ -35,13 +35,13 @@ namespace AWMSEngine.Engine.V2.General
             {
                 if (!string.IsNullOrWhiteSpace(reqVO.code))
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง เลือกส่งระหว่าง ID กับ Code");
-                res = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.id.Value, reqVO.type, reqVO.isToRoot, reqVO.isToChild, this.BuVO);
+                res = ADO.StorageObjectADO.GetInstant().Get(reqVO.id.Value, reqVO.type, reqVO.isToRoot, reqVO.isToChild, this.BuVO);
                 if (res.warehouseID != (reqVO.warehouseID ?? res.warehouseID) || res.areaID != (reqVO.areaID ?? res.areaID))
                     res = null;
             }
             else if(!string.IsNullOrWhiteSpace(reqVO.code))
             {
-                res = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.code, reqVO.warehouseID, reqVO.areaID, reqVO.isToRoot, reqVO.isToChild, this.BuVO);
+                res = ADO.StorageObjectADO.GetInstant().Get(reqVO.code, reqVO.warehouseID, reqVO.areaID, reqVO.isToRoot, reqVO.isToChild, this.BuVO);
             }
             else
             {

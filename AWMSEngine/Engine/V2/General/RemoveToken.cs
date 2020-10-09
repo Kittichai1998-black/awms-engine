@@ -19,7 +19,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override amt_Token_status ExecuteEngine(RemoveToken.TReqModel reqVO)
         {
-            var tokenModel = ADO.WMSDB.TokenADO.GetInstant().Remove(
+            var tokenModel = ADO.TokenADO.GetInstant().Remove(
                 reqVO.Token,
                 reqVO.SecretKey,
                 0,

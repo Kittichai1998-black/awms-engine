@@ -21,18 +21,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            var wq = ADO.WMSDB.WorkQueueADO.GetInstant().Get(reqVO.wqID, this.BuVO);
+            var wq = ADO.WorkQueueADO.GetInstant().Get(reqVO.wqID, this.BuVO);
             if(wq != null)
             {
                 if(wq.IOType == IOType.INPUT && (wq.Status == EntityStatus.ACTIVE || wq.Status == EntityStatus.INACTIVE))
                 {
-                    var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDistoByWorkQueue(reqVO.wqID, this.BuVO);
+                    var distos = ADO.DocumentADO.GetInstant().ListDistoByWorkQueue(reqVO.wqID, this.BuVO);
                     var sto = RejectStorageObject(wq, distos);
                     RejectDocument(sto, distos);
 
                     wq.Status = EntityStatus.REMOVE;
                     wq.EventStatus = WorkQueueEventStatus.REMOVED;
-                    ADO.WMSDB.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
+                    ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
 
                     return this.GenerateResponse(sto, wq);
                 }
@@ -56,31 +56,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     docItemIDs.Add(disto.DocumentItem_ID.Value);
 
                 disto.Status = EntityStatus.REMOVE;
-                ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
+                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, this.BuVO);
             });
 
             var getAutoDoc = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_AUTO_DOC);
 
             if (docItemIDs.Count > 0)
             {
-                var getDocIDs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
+                var getDocIDs = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", docItemIDs.Distinct().JoinString(','), SQLOperatorType.IN),
                 }, this.BuVO).Select(x=> x.Document_ID).Distinct().ToList();
 
                 getDocIDs.ForEach(docID =>
                 {
-                    var distosByDoc = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(docID, this.BuVO);
+                    var distosByDoc = ADO.DocumentADO.GetInstant().ListDISTOByDoc(docID, this.BuVO);
 
                     if(distosByDoc.TrueForAll(disto => disto.Status == EntityStatus.REMOVE))
                     {
                         if (getAutoDoc == "true")
                         {
-                            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.REJECTED, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.REJECTED, this.BuVO);
                         }
                         else
                         {
-                            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.NEW, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.NEW, this.BuVO);
                         }
                     }
                 });
@@ -89,7 +89,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private StorageObjectCriteria RejectStorageObject(SPworkQueue wq, List<amt_DocumentItemStorageObject> distos)
         {
-            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(wq.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+            var sto = ADO.StorageObjectADO.GetInstant().Get(wq.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             var stoPacks = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
 
             stoPacks.ForEach(stoPack =>
@@ -107,20 +107,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         stoPack.eventStatus = AMWUtil.Common.EnumUtil.GetValueEnum<StorageObjectEventStatus>(getOldEvent);
                     }
 
-                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().PutV2(stoPack, this.BuVO);
                 }
             });
 
             if (stoPacks.TrueForAll(stoPack => stoPack.eventStatus == StorageObjectEventStatus.REMOVED))
             {
-                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
             }
             else
             {
                 sto.eventStatus = StorageObjectEventStatus.NEW;
                 sto.areaID = wq.Sou_AreaMaster_ID;
                 sto.parentID = wq.Sou_AreaLocationMaster_ID;
-                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
             }
 
             return sto;

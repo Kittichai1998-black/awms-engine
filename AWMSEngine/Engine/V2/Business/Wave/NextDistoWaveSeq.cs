@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
         protected override List<amt_DocumentItemStorageObject> ExecuteEngine(TReq reqVO)
         {
-            List<amt_DocumentItemStorageObject> currentDistos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            List<amt_DocumentItemStorageObject> currentDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria("ID", string.Join(',', reqVO.CurrentDistoIDs.ToArray()), SQLOperatorType.IN), this.BuVO);
 
             if (currentDistos.Any(x => x.Status == EntityStatus.INACTIVE))
@@ -49,11 +49,11 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             {
                 var firstDisto = gDisto.distos.FirstOrDefault();
 
-                amt_Wave wave = ADO.WMSDB.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
+                amt_Wave wave = ADO.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
                 amt_WaveSeq currentWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == firstDisto.Sou_WaveSeq_ID);
                 amt_WaveSeq nextWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == firstDisto.Des_WaveSeq_ID);
-                var bsto = ADO.WMSDB.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
-                var psto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(gDisto.sou_sto, StorageObjectType.PACK, false, false, this.BuVO);
+                var bsto = ADO.StorageObjectADO.GetInstant().GetParent(gDisto.sou_sto, this.BuVO);
+                var psto = ADO.StorageObjectADO.GetInstant().Get(gDisto.sou_sto, StorageObjectType.PACK, false, false, this.BuVO);
                 var stoArea = this.StaticValue.AreaMasters.First(x => x.ID == bsto.AreaMaster_ID);
                 var desArea = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.DesAreaID);
 
@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     if (nextWaveSeq.EventStatus == WaveEventStatus.NEW)
                     {
                         nextWaveSeq.EventStatus = WaveEventStatus.WORKING;
-                        ADO.WMSDB.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
+                        ADO.WaveADO.GetInstant().PutSeq(nextWaveSeq, this.BuVO);
                     }
 
                     amt_WorkQueue wq = new amt_WorkQueue();
@@ -82,7 +82,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         wq = findOldWQ;
                     }
 
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, currentWaveSeq.End_StorageObject_EventStatus, null, nextWaveSeq.Start_StorageObject_EventStatus, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, currentWaveSeq.End_StorageObject_EventStatus, null, nextWaveSeq.Start_StorageObject_EventStatus, this.BuVO);
                     psto.eventStatus = nextWaveSeq.Start_StorageObject_EventStatus;
 
                     if (psto.eventStatus != nextWaveSeq.Start_StorageObject_EventStatus)
@@ -93,13 +93,13 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
                 gDisto.distos.ForEach(disto =>
                 {
-                    ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
                     gDisto.distos.First().Status = EntityStatus.DONE;
                 });
 
-                var curWaveDisto = ADO.WMSDB.DistoADO.GetInstant().ListBySouWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
+                var curWaveDisto = ADO.DistoADO.GetInstant().ListBySouWaveSeq(firstDisto.Sou_WaveSeq_ID.Value, this.BuVO);
 
-                var prevWaveSeq = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
+                var prevWaveSeq = ADO.DataADO.GetInstant().SelectBy<amt_WaveSeq>(new SQLConditionCriteria[]{
                         new SQLConditionCriteria("Seq", currentWaveSeq.Seq - 1, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Wave_ID", currentWaveSeq.Wave_ID, SQLOperatorType.EQUALS),
                     }, this.BuVO).FirstOrDefault();
@@ -110,7 +110,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     {
                         currentWaveSeq.EventStatus = WaveEventStatus.WORKED;
                         currentWaveSeq.Status = EntityStatus.ACTIVE;
-                        ADO.WMSDB.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
+                        ADO.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
                     }
                 }
                 else
@@ -119,8 +119,8 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     {
                         currentWaveSeq.EventStatus = WaveEventStatus.WORKED;
                         currentWaveSeq.Status = EntityStatus.ACTIVE;
-                        ADO.WMSDB.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
-                        var docItem = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(firstDisto.DocumentItem_ID, this.BuVO);
+                        ADO.WaveADO.GetInstant().PutSeq(currentWaveSeq, this.BuVO);
+                        var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(firstDisto.DocumentItem_ID, this.BuVO);
                         new WorkedDocByWave().Execute(this.Logger, this.BuVO, new WorkedDocByWave.TReq() { docIDs = new List<long>() { docItem.Document_ID } });
                     }
                 }
@@ -128,22 +128,22 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 if (wave.WaveSeqs.TrueForAll(x => x.EventStatus == WaveEventStatus.WORKED))
                 {
                     wave.EventStatus = WaveEventStatus.WORKED;
-                    ADO.WMSDB.WaveADO.GetInstant().Put(wave, this.BuVO);
+                    ADO.WaveADO.GetInstant().Put(wave, this.BuVO);
                 }
                 if (wave.EventStatus == WaveEventStatus.WORKED)
                 {
-                    ADO.WMSDB.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.WORKED, null, WaveEventStatus.CLOSING, this.BuVO);
+                    ADO.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.WORKED, null, WaveEventStatus.CLOSING, this.BuVO);
                 }
-                var waveClosing = ADO.WMSDB.WaveADO.GetInstant().Get(wave.ID.Value, this.BuVO);
+                var waveClosing = ADO.WaveADO.GetInstant().Get(wave.ID.Value, this.BuVO);
                 if (waveClosing.EventStatus == WaveEventStatus.CLOSING)
                 {
-                    ADO.WMSDB.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.CLOSING, null, WaveEventStatus.CLOSED, this.BuVO);
+                    ADO.WaveADO.GetInstant().UpdateStatusToChild(wave.ID.Value, WaveEventStatus.CLOSING, null, WaveEventStatus.CLOSED, this.BuVO);
                 }
             });
 
             nextDistos.ForEach(disto =>
             {
-                amt_Wave wave = ADO.WMSDB.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(disto.Sou_WaveSeq_ID.Value, this.BuVO);
+                amt_Wave wave = ADO.WaveADO.GetInstant().GetWaveAndSeq_byWaveSeq(disto.Sou_WaveSeq_ID.Value, this.BuVO);
                 amt_WaveSeq curWaveSeq = wave.WaveSeqs.FirstOrDefault(x => x.ID == disto.Sou_WaveSeq_ID);
                 if (curWaveSeq.AutoDoneSeq)
                 {
@@ -213,7 +213,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 DocumentType_ID = currentDisto.DocumentType_ID
             };
 
-            var res = ADO.WMSDB.DistoADO.GetInstant().Insert(newNextDisto, this.BuVO);
+            var res = ADO.DistoADO.GetInstant().Insert(newNextDisto, this.BuVO);
 
             return res;
         }
@@ -250,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 StartTime = null,
                 EndTime = null,
             };
-            var wq = ADO.WMSDB.WorkQueueADO.GetInstant().PUT(newWQ, this.BuVO);
+            var wq = ADO.WorkQueueADO.GetInstant().PUT(newWQ, this.BuVO);
 
             return wq;
         }

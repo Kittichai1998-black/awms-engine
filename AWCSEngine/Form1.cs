@@ -18,32 +18,19 @@ namespace AWCSEngine
             InitializeComponent();
         }
 
-        //public List<RouteLineCriteria> RouteLines;
+        public List<RouteLineCriteria> RouteLines;
 
         public void InitData()
         {
-            /*this.RouteLines = new List<RouteLineCriteria>();
+            this.RouteLines = new List<RouteLineCriteria>();
             this.RouteLines.Add(new RouteLineCriteria() { ID = 1, AreaCode = "Z", LocationCode = "L01", MaxMchineBuffer = -1, Machines = new List<BaseMachineObjectCriteria>(), NextRouteLines = new List<RouteLineCriteria>() });
             this.RouteLines.Add(new RouteLineCriteria() { ID = 2, AreaCode = "Z", LocationCode = "L02", MaxMchineBuffer = -1, Machines = new List<BaseMachineObjectCriteria>(), NextRouteLines = new List<RouteLineCriteria>() });
             this.RouteLines.Add(new RouteLineCriteria() { ID = 3, AreaCode = "Z", LocationCode = "L03", MaxMchineBuffer = -1, Machines = new List<BaseMachineObjectCriteria>(), NextRouteLines = new List<RouteLineCriteria>() });
             this.RouteLines.Add(new RouteLineCriteria() { ID = 4, AreaCode = "Z", LocationCode = "L04", MaxMchineBuffer = -1, Machines = new List<BaseMachineObjectCriteria>(), NextRouteLines = new List<RouteLineCriteria>() });
-            this.RouteLines[0].NextRouteLineIDs.Add(2);
-            this.RouteLines[1].NextRouteLineIDs.Add(3);
-            this.RouteLines[2].NextRouteLineIDs.Add(4);
-            this.RouteLines[3].NextRouteLineIDs.Add(1);*/
-        }
-
-        public void DrawData()
-        {
-            //this.RouteLines.ForEach(x =>
-            //{
-            //    this.Controls.Add(new Label() { Name = "ID" + x.ID, Text = x.AreaCode + ":" + x.LocationCode });
-            //});
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
+            this.RouteLines[0].NextRouteLines.Add(this.RouteLines[1]);
+            this.RouteLines[1].NextRouteLines.Add(this.RouteLines[2]);
+            this.RouteLines[2].NextRouteLines.Add(this.RouteLines[3]);
+            this.RouteLines[3].NextRouteLines.Add(this.RouteLines[0]);
         }
     }
 }

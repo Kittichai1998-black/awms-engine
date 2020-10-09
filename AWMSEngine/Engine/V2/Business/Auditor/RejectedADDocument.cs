@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             List<amt_Document> docs = new List<amt_Document>();
             foreach(var docID in reqVO.docIDs)
             {
-                var getDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(docID, this.BuVO);
+                var getDoc = ADO.DocumentADO.GetInstant().Get(docID, this.BuVO);
                 if (getDoc.EventStatus == DocumentEventStatus.REJECTED)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารอยู่ในสถานะ " + getDoc.EventStatus);
                 else if (getDoc.EventStatus == DocumentEventStatus.WORKED || getDoc.EventStatus == DocumentEventStatus.WORKED)
@@ -30,12 +30,12 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 else if (getDoc.EventStatus == DocumentEventStatus.CLOSED || getDoc.EventStatus == DocumentEventStatus.CLOSING)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "เอกสารนี่ทำเสร็จแล้ว ไม่สามารถยกเลิกได้");
                 else if (getDoc.EventStatus == DocumentEventStatus.NEW)
-                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.REJECTED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.REJECTED, this.BuVO);
 
                 getDoc.EventStatus = DocumentEventStatus.REJECTED;
                 getDoc.Status = EntityStatus.REMOVE;
 
-                ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, this.BuVO,
+                ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, this.BuVO,
                 new KeyValuePair<string, object>[]
                 {
                     new KeyValuePair<string, object>("remark",reqVO.remark)

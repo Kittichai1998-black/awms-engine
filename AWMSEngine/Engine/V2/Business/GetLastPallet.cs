@@ -50,7 +50,7 @@ namespace AWMSEngine.Engine.V2.Business
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var stos = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().GetLastPallet(reqVO.baseCode, reqVO.warehouseCode, reqVO.areaCode, reqVO.locationCode, this.BuVO);
+            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetLastPallet(reqVO.baseCode, reqVO.warehouseCode, reqVO.areaCode, reqVO.locationCode, this.BuVO);
             var res = new TRes();
             if (stos == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base " + reqVO + " Data Not Found");

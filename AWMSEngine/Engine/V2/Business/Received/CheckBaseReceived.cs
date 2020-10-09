@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             List<TRes> stoRes = new List<TRes>();
             var areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
-            var areaLocationMastersItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            var areaLocationMastersItems = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaMaster_ID",reqVO.areaID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND)
@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     res.areaLocationID = location.ID.Value;
                     res.areaLocationCode = location.Code;
 
-                    var stoLocationItems = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    var stoLocationItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("AreaLocationMaster_ID",location.ID.Value, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     if(stoLocationItems != null)
                     {
-                        res.bsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(stoLocationItems.ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                        res.bsto = ADO.StorageObjectADO.GetInstant().Get(stoLocationItems.ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                     }
                     else
                     {

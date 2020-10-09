@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.V2.Business.LogFile
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var APIServiceEvent = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<aml_APIServiceEvent>(
+            var APIServiceEvent = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<aml_APIServiceEvent>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("LogRefID",reqVO.LogRefID),
                 }, this.BuVO).FirstOrDefault();

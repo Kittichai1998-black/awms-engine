@@ -26,7 +26,7 @@ namespace AWMSEngine.Controllers.V2
         [HttpGet("time")]
         public dynamic GetTime()
         {
-            var val = ADO.WMSDB.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
+            var val = ADO.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
             DateTime dt = val.dt;
             return new { serverTime = DateTime.Now, dbTime = dt };
         }

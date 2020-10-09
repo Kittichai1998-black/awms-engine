@@ -20,13 +20,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override amt_DocumentItemStorageObject ExecuteEngine(TReq reqVO)
         {
-            amt_StorageObject psto = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_StorageObject>(reqVO.PackStoID, this.BuVO);
+            amt_StorageObject psto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(reqVO.PackStoID, this.BuVO);
             var qtyConvert = StaticValue.ConvertToNewUnitByPack(psto.PackMaster_ID, reqVO.PackStoBaseQty, psto.BaseUnitType_ID, psto.UnitType_ID);
-            var wave = ADO.WMSDB.WaveADO.GetInstant().GetWaveAndSeq(reqVO.WaveID, this.BuVO);
+            var wave = ADO.WaveADO.GetInstant().GetWaveAndSeq(reqVO.WaveID, this.BuVO);
             if (wave.WaveSeqs.First().End_StorageObject_EventStatus != StorageObjectEventStatus.ALLOCATED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Wave Seq(1) จะต้องมี end status 'Allocated' เท่านั้น");
 
-            var disto = ADO.WMSDB.DistoADO.GetInstant().Insert(new AWMSModel.Entity.amt_DocumentItemStorageObject
+            var disto = ADO.DistoADO.GetInstant().Insert(new AWMSModel.Entity.amt_DocumentItemStorageObject
             {
                 ID =null,
                 WorkQueue_ID = null,
@@ -43,15 +43,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 Status = EntityStatus.INACTIVE
             }, this.BuVO);
 
-            //ADO.WMSDB.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+            //ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
             
-            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(psto.ParentStorageObject_ID.Value, 
+            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(psto.ParentStorageObject_ID.Value, 
                 null, EntityStatus.ACTIVE, 
                 wave.WaveSeqs.First(x => x.Seq == 1).Start_StorageObject_EventStatus, this.BuVO);
 
 
-            var docItem = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.DocItemID, this.BuVO);
-            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+            var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.DocItemID, this.BuVO);
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
 
 
             return disto;

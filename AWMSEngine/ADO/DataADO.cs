@@ -13,7 +13,7 @@ using AWMSModel.Criteria.Attribute;
 using AWMSModel.Constant.EnumConst;
 using System.Text.RegularExpressions;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace AWMSEngine.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {

@@ -34,8 +34,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     foreach (var queue in reqVO.queueID)
                     {
-                        var queueTrx = ADO.WMSDB.WorkQueueADO.GetInstant().Get(queue, this.BuVO);
-                        var location = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(queueTrx.Des_AreaLocationMaster_ID, this.BuVO);
+                        var queueTrx = ADO.WorkQueueADO.GetInstant().Get(queue, this.BuVO);
+                        var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(queueTrx.Des_AreaLocationMaster_ID, this.BuVO);
 
                         var doneWorkQueuedata = new DoneWorkQueue();
                         doneWorkQueues = doneWorkQueuedata.Execute(this.Logger, this.BuVO, new DoneWorkQueue.TReq()

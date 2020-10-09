@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 ////DF Code
 
-                var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+                var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                     null, null, false, true, BuVO);
 
                  
@@ -88,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                         if (stopacks == null || stopacks.Count == 0)
                         {
-                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                             sto = this.CreateSto(reqVO);
                         }
@@ -172,7 +172,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
             
 
-            //newSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(newMapSto.bsto.id.Value, StorageObjectType.BASE, false, true, BuVO);
+            //newSto = ADO.StorageObjectADO.GetInstant().Get(newMapSto.bsto.id.Value, StorageObjectType.BASE, false, true, BuVO);
 
             return newSto;
         }
@@ -191,7 +191,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     //สร้างเอกสารเบิกpallet เปล่า
                     //get Document
-                    var docItemLists = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
+                    var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
                         DocumentTypeID.PICKING, BuVO);
                     if (docItemLists == null || docItemLists.Count == 0)
                     {
@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         docItemLists.ForEach(di =>
                         {
-                            docItems.Add(ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
+                            docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
                         });
                     }
 
@@ -213,7 +213,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
                     {
                         //get Document
-                        var docItemLists = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
+                        var docItemLists = ADO.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),
                             DocumentTypeID.PUTAWAY, BuVO);
                         if (docItemLists == null || docItemLists.Count == 0)
                         {
@@ -223,7 +223,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             docItemLists.ForEach(di =>
                             {
-                                docItems.Add(ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
+                                docItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(di.ID.Value, BuVO));
                             });
                         }
 
@@ -250,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 Status = EntityStatus.INACTIVE
                             };
 
-                            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Insert(disto, BuVO);
+                            AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
                         });
                     }
                     else
@@ -271,15 +271,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
                 {
-                    var desLocations = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
+                    var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
                     res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
                 }
                 else
                 {
                     var area = _areaASRS; //this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
                     var desArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-                    var location = _locationASRS; // ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
-                    var desLocation = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
+                    var location = _locationASRS; // ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+                    var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
                         Sou_AreaMasterType_ID = area.AreaMasterType_ID,
@@ -321,7 +321,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 if (queueTrx.IOType == IOType.OUTPUT)
                 {
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
                     StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
                     StorageObjectEventStatus.PICKING, this.BuVO);
                 }
@@ -333,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         pack.eventStatus == StorageObjectEventStatus.AUDITED ||
                         pack.eventStatus == StorageObjectEventStatus.COUNTED)
                         {
-                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                            ADO.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
                         }
                     });
                     
@@ -349,12 +349,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             disto.WorkQueue_ID = queueTrx.ID.Value;
                             if (disto.Status == EntityStatus.INACTIVE)
-                                AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                                AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                             else
-                                AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                                AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         });
                         x.EventStatus = DocumentEventStatus.WORKING;
-                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                          
                     });
 
@@ -362,23 +362,23 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
                     docIDs.ForEach(x =>
                     {
-                        var docPA = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(x, BuVO);
+                        var docPA = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(x, BuVO);
                         if(docPA.DocumentItems.Any(item => item.EventStatus == DocumentEventStatus.WORKING))
                         {
-                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKING, this.BuVO);
 
-                            var getGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docPA.ParentDocument_ID.Value, this.BuVO);
+                            var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPA.ParentDocument_ID.Value, this.BuVO);
 
                             docPA.DocumentItems.ForEach(item => {
                                 if(item.EventStatus == DocumentEventStatus.WORKING)
                                 {
                                     var grItem = getGR.DocumentItems.Find(y => y.ID == item.ParentDocumentItem_ID);
                                     grItem.EventStatus = DocumentEventStatus.WORKING;
-                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                                 }
                             });
 
-                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getGR.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateEventStatus(getGR.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                         }
                     });
                 }
@@ -386,19 +386,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                     packs.ForEach(pack => {
-                        var getDisto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                             {
                             new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
                             //new SQLConditionCriteria("DocumentItem_ID", null, SQLOperatorType.EQUALS),
                             }, this.BuVO).Find(c=>c.DocumentItem_ID == null);
 
-                        ADO.WMSDB.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                        ADO.DistoADO.GetInstant().Update(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                     });
                     
                 }
                 var res = this.GenerateResponse(sto, queueTrx);
-                var LocationCondition = ADO.WMSDB.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
+                var LocationCondition = ADO.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
                 if (LocationCondition == null)
                 {
                     throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่พบ location ที่สามารถจัดเก็บในคลังสินค้าได้");
@@ -421,13 +421,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public void SetWeiChildAndUpdateInfoToChild(StorageObjectCriteria sto, decimal totalWeiKG)
         {
             var stoTreeList = sto.ToTreeList();
-            var packMasters = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+            var packMasters = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
                 new SQLConditionCriteria(
                     "ID",
                     string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
                     SQLOperatorType.IN),
                 this.BuVO);
-            var baseMasters = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().mstID.Value, this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().mstID.Value, this.BuVO);
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
@@ -450,7 +450,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             stoTreeList.ForEach(x =>
             {
                 x.areaID = areaID;
-                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(x, BuVO);
+                ADO.StorageObjectADO.GetInstant().PutV2(x, BuVO);
             });
 
         }
@@ -489,7 +489,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, sto)
             };
-            workQ = ADO.WMSDB.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
+            workQ = ADO.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
             return workQ;
         }
 
@@ -505,7 +505,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this._areaASRS = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == _warehouseASRS.ID);
             if (_areaASRS == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
-            this._locationASRS = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            this._locationASRS = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",_areaASRS.ID.Value),
@@ -526,7 +526,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desArea = new ams_AreaMaster();
 
             var psto = mapsto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
-            ams_SKUMaster skuMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
+            ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
             if (skuMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
 
@@ -536,7 +536,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if(skutype.GroupType != SKUGroupType.ESP)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "สินค้าประเภท " + skutype.GroupType + "ไม่สามารถเบิกได้");
 
-            ams_PackMaster packMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
+            ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
             if (packMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
 
@@ -596,8 +596,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             };
 
-            var docGRID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
-            var _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
+            var docGRID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+            var _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
 
             amt_DocumentItem docItemPA = new amt_DocumentItem()
             { 
@@ -636,8 +636,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             };
 
-            var docPAID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
-            docItems.AddRange(AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(docPAID.Value, BuVO));
+            var docPAID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+            docItems.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docPAID.Value, BuVO));
             return docItems;
         }
     }

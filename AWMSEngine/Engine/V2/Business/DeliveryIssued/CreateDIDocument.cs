@@ -158,7 +158,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                                                     reqVO.desAreaMasterCode);
 
 
-            var DocumentProcessTypeCodes = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
+            var DocumentProcessTypeCodes = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
         new SQLConditionCriteria[] {
                 new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
     }, this.BuVO).FirstOrDefault();
@@ -167,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
             if (DocumentProcessTypeCodes != null)
             {
 
-                var ProceesTypedoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
+                var ProceesTypedoc = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
                new SQLConditionCriteria[] {
                 new SQLConditionCriteria("DocumentProcessType_ID",DocumentProcessTypeCodes.ID, SQLOperatorType.EQUALS),
            }, this.BuVO).FirstOrDefault();
@@ -236,12 +236,12 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                     {
                         if (Item.palletCode != null)
                         {
-                            var Sto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                            var Sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                                  new SQLConditionCriteria[] {
                              new SQLConditionCriteria("Code",Item.palletCode, SQLOperatorType.EQUALS),
                               }, this.BuVO).FirstOrDefault();
 
-                            var SKUCode = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
+                            var SKUCode = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
                              new SQLConditionCriteria[] {
                              new SQLConditionCriteria("Code",Item.skuCode, SQLOperatorType.EQUALS),
                           }, this.BuVO).FirstOrDefault();

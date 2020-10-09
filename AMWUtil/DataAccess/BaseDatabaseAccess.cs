@@ -13,12 +13,11 @@ namespace AMWUtil.DataAccess
     public abstract class BaseDatabaseAccess
     {
 
-        public string ConnectionString { get; set; }
-        public string DBName { get; set; }
-        public BaseDatabaseAccess(string connectionString, string dbname = null)
+        private string _ConnectionString;// = "Server=191.20.2.29;Uid=sa;PASSWORD=abc123;database=smartsale_dev;Max Pool Size=400;Connect Timeout=600;";
+        public string ConnectionString { get => _ConnectionString; set => _ConnectionString = value; }
+        public BaseDatabaseAccess(string connectionString)
         {
-            this.ConnectionString = connectionString;
-            this.DBName = dbname;
+            this._ConnectionString = connectionString;
         }
 
         public static string DynamicParametersToString(DynamicParameters parameter)
@@ -54,11 +53,9 @@ namespace AMWUtil.DataAccess
             }
             else
             {
-                using (SqlConnection Connection = new SqlConnection(this.ConnectionString+ ";Initial Catalog = "+this.DBName))
+                using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     Connection.Open();
-                    //if (!string.IsNullOrWhiteSpace(this.DBName))
-                    //    Connection.ChangeDatabase(this.DBName);
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
                     res = Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
                     transaction.Commit();
@@ -90,8 +87,6 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    if (!string.IsNullOrWhiteSpace(this.DBName))
-                        Connection.ChangeDatabase(this.DBName);
                     Connection.Open();
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
                     res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
@@ -125,8 +120,6 @@ namespace AMWUtil.DataAccess
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
-                    if (!string.IsNullOrWhiteSpace(this.DBName))
-                        Connection.ChangeDatabase(this.DBName);
                     Connection.Open();
                     transaction = Connection.BeginTransaction(IsolationLevel.Snapshot);
                     res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
@@ -155,16 +148,13 @@ namespace AMWUtil.DataAccess
         public SqlConnection CreateConnection()
         {
             SqlConnection conn = new SqlConnection(ConnectionString);
-            if (!string.IsNullOrWhiteSpace(this.DBName))
-                conn.ChangeDatabase(this.DBName);
             conn.Open();
             return conn;
         }
         public SqlTransaction CreateTransaction(string transName = null, IsolationLevel isolationLevel = IsolationLevel.Snapshot)
         {
             var conn = CreateConnection();
-            //conn.ChangeDatabase(this.DBName);
-            //conn.Open();
+            conn.Open();
             var trans =  conn.BeginTransaction(isolationLevel, transName);
             return trans;
         }

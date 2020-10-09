@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace AWMSEngine.ADO
 {
     public class UserInterfaceADO : BaseMSSQLAccess<UserInterfaceADO>
     {

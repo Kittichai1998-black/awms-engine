@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace AWMSEngine.ADO
 {
     public class LogingADO : BaseMSSQLAccess<LogingADO>
     {
@@ -53,14 +53,14 @@ namespace AWMSEngine.ADO.WMSDB
             var d = AMWUtil.Common.ObjectUtil.Json(docMsg);
             buVO.Logger.LogInfo("PutDocumentAlertMessage : " + d);
             //return 0;
-            var doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(docMsg.docID, buVO);
+            var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docMsg.docID, buVO);
             var options = doc.Options;
             options = AMWUtil.Common.ObjectUtil.QryStrSetValue(options,
                 new KeyValuePair<string, object>("_error", docMsg.msgError),
                 new KeyValuePair<string, object>("_warning", docMsg.msgWarning),
                 new KeyValuePair<string, object>("_info", docMsg.msgInfo));
 
-            ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_Document>(
+            ADO.DataADO.GetInstant().UpdateBy<amt_Document>(
                 new SQLConditionCriteria[]{
                     new SQLConditionCriteria("id",doc.ID.Value, SQLOperatorType.EQUALS)
                 },
@@ -74,7 +74,7 @@ namespace AWMSEngine.ADO.WMSDB
             var d = AMWUtil.Common.ObjectUtil.Json(apiEvt);
             buVO.Logger.LogInfo("PutAPIPostBackEvent : " + d);
             //return 0;
-            var id = ADO.WMSDB.DataADO.GetInstant().Insert<aml_APIPostEvent>(
+            var id = ADO.DataADO.GetInstant().Insert<aml_APIPostEvent>(
                 buVO,
                 new aml_APIPostEvent()
                 {

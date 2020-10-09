@@ -26,11 +26,11 @@ namespace AWMSEngine.Engine.V2.Business.Counting
         }
         protected override GetSTOCouting.TRes ExecuteEngine(TReq reqVO)
         {
-            var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(reqVO.pi_docID, this.BuVO);
+            var doc = ADO.DocumentADO.GetInstant().Get(reqVO.pi_docID, this.BuVO);
             
-            doc.DocumentItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pi_docID, this.BuVO);
+            doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pi_docID, this.BuVO);
 
-            var pstos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
+            var pstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
             if(pstos == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจสอบ");
 
@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             if (disto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ DocItemStos");
 
-            var qID = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
+            var qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
             if (qID != null && qID.EventStatus != WorkQueueEventStatus.CLOSED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
             
@@ -56,14 +56,14 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                            new KeyValuePair<string, object>(OptionVOConst.OPT_REMARK, reqVO.remark)
                       });
             updSto.eventStatus = StorageObjectEventStatus.COUNTED;
-            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+            ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
 
             disto.Des_StorageObject_ID = updSto.id;
             disto.Quantity = reqVO.coutingQty - pstos.qty;
             var distoqtyConvert = StaticValue.ConvertToNewUnitBySKU(pstos.skuID.Value, disto.Quantity.Value, pstos.unitID, pstos.baseUnitID);
             disto.BaseQuantity = distoqtyConvert.newQty;
             disto.Status = EntityStatus.DONE;
-            ADO.WMSDB.DistoADO.GetInstant().Update(disto, this.BuVO);
+            ADO.DistoADO.GetInstant().Update(disto, this.BuVO);
 
 
 

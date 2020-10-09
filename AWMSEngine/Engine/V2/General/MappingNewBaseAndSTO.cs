@@ -34,7 +34,7 @@ namespace AWMSEngine.Engine.V2.General
         protected override TRes ExecuteEngine(TReq reqVO)
         {
 
-            var _base = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.baseCode, BuVO);
+            var _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.baseCode, BuVO);
 
             if (_base == null)
             {
@@ -60,14 +60,14 @@ namespace AWMSEngine.Engine.V2.General
                     Status = EntityStatus.ACTIVE
                 };
 
-                var idbase = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(BuVO, newBase);
-                _base = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_BaseMaster>(idbase, BuVO);
+                var idbase = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(BuVO, newBase);
+                _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(idbase, BuVO);
                 if (_base == null)
                 {
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "Pallet : " + reqVO.baseCode + " Not Found.");
                 }
             }
-            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, reqVO.areaID, false, true, this.BuVO);
+            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, reqVO.areaID, false, true, this.BuVO);
             if (sto == null)
             {
 
@@ -111,7 +111,7 @@ namespace AWMSEngine.Engine.V2.General
 
                 baseSto.options = optionsSto;
 
-                var baseStoID = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
+                var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, BuVO);
                 return new TRes()
                 {
                     id = baseStoID

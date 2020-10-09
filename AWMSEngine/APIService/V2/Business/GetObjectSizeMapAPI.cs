@@ -30,7 +30,7 @@ namespace AWMSEngine.APIService.V2.Business
             string ObjID = this.RequestVO.ID;
             var param = new Dapper.DynamicParameters();
             param.Add("ID", ObjID);
-            var res = ADO.WMSDB.DataADO.GetInstant().QuerySP<TRes>(
+            var res = ADO.DataADO.GetInstant().QuerySP<TRes>(
                 "SP_GET_MAP_OBJECTSIZE",
                 param,
                 this.BuVO);

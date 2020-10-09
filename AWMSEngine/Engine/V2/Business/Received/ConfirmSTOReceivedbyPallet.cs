@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Exception;
-using AWMSEngine.ADO.WMSDB;
+using AWMSEngine.ADO;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<dynamic> updates = new List<dynamic>();
             if (reqVO.type == StorageObjectType.LOCATION)
             {
-                var sto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                var sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                     new SQLConditionCriteria[]
                     {
                         new SQLConditionCriteria("AreaLocationMaster_ID",reqVO.rootStoID, SQLOperatorType.EQUALS),
@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             {
                 if (reqVO.isConfirm)
                 {
-                    ADO.WMSDB.StorageObjectADO.GetInstant()
+                    ADO.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
                             StorageObjectEventStatus.NEW,
@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
                 else
                 {
-                    ADO.WMSDB.StorageObjectADO.GetInstant()
+                    ADO.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
                             StorageObjectEventStatus.NEW,
@@ -64,7 +64,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 }
             }
             
-            StorageObjectCriteria res = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
+            StorageObjectCriteria res = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
             //if (res == null) res = new StorageObjectCriteria();
 
             return res;

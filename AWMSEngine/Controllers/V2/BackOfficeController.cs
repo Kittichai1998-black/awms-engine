@@ -39,14 +39,14 @@ namespace AWMSEngine.Controllers.V2
                 dllInfos.Add(new { file = infoName, modify = infoTime });
             }
 
-            string dbServer = ADO.WMSDB.DataADO.GetInstant().ConnectionString
+            string dbServer = ADO.DataADO.GetInstant().ConnectionString
                 .Split(';')
                 .First(x => x.ToUpper().StartsWith("SERVER"))
                 .Split('=')[1];
             string dbStatus = string.Empty;
             try
             {
-                var conn = ADO.WMSDB.DataADO.GetInstant().CreateConnection();
+                var conn = ADO.DataADO.GetInstant().CreateConnection();
                 conn.Open();
                 conn.Close();
                 conn.Dispose();

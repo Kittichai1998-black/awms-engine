@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             {
                 if (reqVO.bstoID != null)
                 {
-                    getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             }
             else
             {
-                getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             }
             if (getSto == null)
                 return null;
@@ -83,7 +83,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             if (packsList.Count == 0)
                 return null;
 
-            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
+            var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
             if (listDocs.Count > 0)
             {
                 var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_PHYSICAL_COUNT_WM || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_PHYSICAL_COUNT_WM).ToList();
@@ -92,8 +92,8 @@ namespace AWMSEngine.Engine.V2.Business.Counting
 
                 res.stoItems = new List<TRes.STOItems>();
                 newDocs.ForEach(doc => {
-                    //var distos = ADO.WMSDB.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
-                    var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
+                    //var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
+                    var docItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
                     var distoList = new List<amt_DocumentItemStorageObject>();
                     docItems.ForEach(x => { distoList.AddRange(x.DocItemStos); });
 
@@ -102,7 +102,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                         var pack = packsList.Find(pack => pack.id.Value == disto.Sou_StorageObject_ID);
                         if (pack != null)
                         {
-                            var processType = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
+                            var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)

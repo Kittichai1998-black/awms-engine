@@ -34,16 +34,16 @@ namespace AWMSEngine.APIService.V2.ASRS
             var wh = ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.First(x => x.Code == req.souWarehouseCode);
             var am = ADO.StaticValue.StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == req.souAreaCode && x.Warehouse_ID == wh.ID.Value);
             //var alm = ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.First(x => x.Code == req.souWarehouseCode);
-            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(req.baseCode, wh.ID.Value, am.ID.Value, false, true, this.BuVO);
+            var sto = ADO.StorageObjectADO.GetInstant().Get(req.baseCode, wh.ID.Value, am.ID.Value, false, true, this.BuVO);
 
 
             var desWH = ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.First(x => x.Code == req.desWarehouseCode);
             var desAM = ADO.StaticValue.StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == req.desAreaCode && x.Warehouse_ID == desWH.ID.Value);
-            var desALM = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new SQLConditionCriteria[] {
+            var desALM = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new SQLConditionCriteria[] {
                 new SQLConditionCriteria("AreaMaster_ID",desAM.ID.Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("Code",req.desLocationCode, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
             }, this.BuVO).FirstOrDefault();
-            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, desALM.ID.Value, this.BuVO);
+            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, desALM.ID.Value, this.BuVO);
 
             return new TReq()
             {

@@ -35,9 +35,9 @@ namespace MyTest2
         [Fact]
         public void TestGUID()
         {
-            AWMSEngine.ADO.WMSDB.DataADO data = new AWMSEngine.ADO.WMSDB.DataADO();
-            AWMSEngine.ADO.WMSDB.DataADO data2 = new AWMSEngine.ADO.WMSDB.DataADO();
-            AWMSEngine.ADO.WMSDB.DataADO data3 = new AWMSEngine.ADO.WMSDB.DataADO();
+            AWMSEngine.ADO.DataADO data = new AWMSEngine.ADO.DataADO();
+            AWMSEngine.ADO.DataADO data2 = new AWMSEngine.ADO.DataADO();
+            AWMSEngine.ADO.DataADO data3 = new AWMSEngine.ADO.DataADO();
 
         }
        

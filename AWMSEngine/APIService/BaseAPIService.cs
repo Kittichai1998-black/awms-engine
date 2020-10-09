@@ -2,7 +2,7 @@
 using AMWUtil.DataAccess.Http;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-using AWMSEngine.ADO.WMSDB;
+using AWMSEngine.ADO;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -129,7 +129,7 @@ namespace AWMSEngine.APIService
                 }
                 else if (getKey != null && !string.IsNullOrWhiteSpace(getKey.apikey))
                 {
-                    apiKeyInfo = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_APIKey>(
+                    apiKeyInfo = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>(
                             new SQLConditionCriteria[]{
                                 new SQLConditionCriteria("APIKey", getKey.apikey, SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
@@ -145,7 +145,7 @@ namespace AWMSEngine.APIService
                     if(this.IsAuthenAuthorize)
                         throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
-                this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.BaseMSSQLAccess<DataADO>.GetInstant().CreateConnection());
+                this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.BaseMSSQLAccess<DataADO>.GetInstant().CreateConnection());
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
 
@@ -181,7 +181,7 @@ namespace AWMSEngine.APIService
 
                 if (apiKeyInfo == null || apiKeyInfo.IsLogging)
                 {
-                    dbLogID = ADO.WMSDB.LogingADO.GetInstant().BeginAPIService(
+                    dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                         this.APIServiceID,
                         this.GetType().Name,
                         this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
@@ -261,14 +261,14 @@ namespace AWMSEngine.APIService
                         Logger.LogInfo("[BEGIN] ----Insert FinalDBLog----");
                         this.FinalDBLog.sendAPIEvents.ForEach(x =>
                         {
-                            ADO.WMSDB.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
+                            ADO.LogingADO.GetInstant().PutAPIPostBackEvent(x, this.BuVO);
                         });
                         this.FinalDBLog.documentOptionMessages.ForEach(x =>
                         {
-                            ADO.WMSDB.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
+                            ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
                         });
                         if(dbLogID != 0)
-                            ADO.WMSDB.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+                            ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
 
                         Logger.LogInfo("[END] ----Insert FinalDBLog----");
                     }
@@ -307,7 +307,7 @@ namespace AWMSEngine.APIService
 
         protected void VerifyPermission(TokenCriteria tokenInfo,ams_APIKey apiKeyInfo)
         {
-            //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
+            //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
 
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
@@ -316,11 +316,11 @@ namespace AWMSEngine.APIService
                 return;
             this.Logger.LogInfo("AuthenAuthorize!");
 
-            //ADO.WMSDB.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
+            //ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
 
 
 
-            var userInfo = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo != null ? tokenInfo.BodyDecode.uid : apiKeyInfo.User_ID, this.BuVO);
+            var userInfo = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo != null ? tokenInfo.BodyDecode.uid : apiKeyInfo.User_ID, this.BuVO);
             if (userInfo != null)
                 this.Logger.LogInfo("username=" + userInfo.Code);
 

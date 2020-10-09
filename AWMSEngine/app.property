@@ -1,5 +1,4 @@
-﻿database.mssql.connection.wms = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE_V2;Max Pool Size=400;Connect Timeout=600;
-database.mssql.connection.wcs = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE_V2;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection = Server=awms.automotionworks.com,3002;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE_V2;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {LogName}.{Date}.log

@@ -50,18 +50,10 @@ namespace AMWUtil.PropertyFile
             }
         }
 
-        public Dictionary<string, string> GetProperty(string group)
-        {
-            if (this.PropertyFiles.ContainsKey(group))
-                return this.PropertyFiles[group];
-            return null;
-        }
-        public string GetProperty(string group, string key)
+        public Dictionary<string, string> GetPropertyDictionary(string key)
         {
             if (this.PropertyFiles.ContainsKey(key))
-                return !this.PropertyFiles.ContainsKey(key) ? null : 
-                            !this.PropertyFiles[group].ContainsKey(key) ? null :
-                                this.PropertyFiles[group][key];
+                return this.PropertyFiles[key];
             return null;
         }
     }

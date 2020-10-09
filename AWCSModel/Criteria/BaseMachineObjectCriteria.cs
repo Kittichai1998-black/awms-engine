@@ -7,6 +7,6 @@ namespace AWCSModel.Criteria
     public abstract class BaseMachineObjectCriteria
     {
         public int ID;
-        public List<int> NextMcIDs;
+        public List<StorageObjectCriteria> StorageObjects;
     }
 }
