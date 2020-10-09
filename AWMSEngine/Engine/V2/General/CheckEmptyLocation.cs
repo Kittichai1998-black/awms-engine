@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
                 amId = area.ID;
             }
-            var locations = ADO.AreaADO.GetInstant()
+            var locations = ADO.WMSDB.AreaADO.GetInstant()
                 .CountItemInLocation(wmId, amId, reqVO.locationCode, reqVO.gate, reqVO.bank, reqVO.bay, reqVO.level, this.BuVO)
                 .Select(x => {
                     var v = ObjectUtil.JsonCast<TRes.EmptyLocation>(x);

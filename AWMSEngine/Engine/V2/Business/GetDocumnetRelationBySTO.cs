@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business
             
 
             TRes res = new TRes();
-            res.documents = ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, this.BuVO);
+            res.documents = ADO.WMSDB.DocumentADO.GetInstant().ListBySTO(stoIDs, this.BuVO);
 
             return res;
         }

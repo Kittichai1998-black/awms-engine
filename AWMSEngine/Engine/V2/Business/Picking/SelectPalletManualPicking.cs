@@ -78,13 +78,13 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if (reqVO.docID != null)
             {
                 docItemList = docItemList.Where(x => x.docID == reqVO.docID.Value).ToList();
-                var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
+                var selectPallet = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
                 palletID = selectPallet.id.Value;
                 var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
 
                 foreach (var row in selectPack)
                 {
-                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMapV2(row.code, DocumentTypeID.PICKING, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
+                    var itemCanMap = ADO.WMSDB.DocumentADO.GetInstant().ListItemCanMapV2(row.code, DocumentTypeID.PICKING, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
                         .Where(x => x.Sou_StorageObject_ID == row.id && x.Status == EntityStatus.INACTIVE).ToList();
                     var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.unitID).Name;
 
@@ -113,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "No Product to PICK");
                     }
 
-                    var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new KeyValuePair<string, object>[] {
+                    var docItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new KeyValuePair<string, object>[] {
                             new KeyValuePair<string,object>("Document_ID",reqVO.docID),
                             new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                         }, this.BuVO);
@@ -133,17 +133,17 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         private List<docItem> getDocumentPickingList(TReq reqVO)
         {
             List<docItem> docItemList = new List<docItem>();
-            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMapV2(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
+            var docCanMap = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanMapV2(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
             if (docCanMap.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีเอกสารสำหรับ Picking");
 
             var pickItemList = new List<docItem.pickItem>();
             docCanMap.ForEach(x =>
             {
-                var listitem = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO);
+                var listitem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO);
                 pickItemList = listitem.Select(y =>
                 {
-                    var g = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                    var g = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                         {
                             new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
@@ -175,7 +175,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     docCode = x.Code,
                     destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
                     pickItems = pickItemList,
-                    movement = ADO.DataADO.GetInstant().SelectByID<ams_DocumentProcessType>(x.DocumentProcessType_ID, this.BuVO).Name,
+                    movement = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_DocumentProcessType>(x.DocumentProcessType_ID, this.BuVO).Name,
                     createtime = x.CreateTime
 
 

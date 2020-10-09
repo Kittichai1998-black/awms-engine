@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 reqVO.ForEach(x =>
                 {
-                    var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
+                    var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
                         try
@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             //update StorageObjects
                             if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
-                                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                                var distos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
                                 if (distos == null || distos.Count == 0)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -50,9 +50,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     {
                                         distos.ForEach(disto =>
                                         {
-                                            var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+                                            var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
                                             stosPack.IsStock = true;
-                                            ADO.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
+                                            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
                                             updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);
                                         });
                                     }
@@ -61,7 +61,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     {
                                         if (parent_type != StorageObjectType.LOCATION)
                                         {
-                                            var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
+                                            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
                                             var stoLists = new List<StorageObjectCriteria>();
                                             if (sto != null)
                                                 stoLists = sto.ToTreeList();
@@ -71,7 +71,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                             {
                                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
                                                 parentUpdate.IsStock = true;
-                                                ADO.StorageObjectADO.GetInstant().PutV2(parentUpdate, this.BuVO);
+                                                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(parentUpdate, this.BuVO);
                                                 if (parentUpdate.parentID.HasValue)
                                                     updatePallet(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
                                             }
@@ -79,16 +79,16 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         }
                                     }
                                     //update Closed Document
-                                    var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                    var listItem = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                     {
-                                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                        AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                                         if (docs.ParentDocument_ID != null)
                                         {
-                                            var getParentDoc = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                            var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
                                             if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
                                             {
-                                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                                             }
                                         }
 
@@ -149,7 +149,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

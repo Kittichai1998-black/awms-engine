@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -50,7 +50,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (am == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
 
-            lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            lm = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",am.ID.Value),
@@ -63,7 +63,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private SPworkQueue UpdateWorkQueueWork(TReq reqVO)
         {
-            var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
+            var queueTrx = ADO.WMSDB.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
 
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED ||
                 queueTrx.EventStatus == WorkQueueEventStatus.WORKING ||
@@ -99,16 +99,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private StorageObjectCriteria UpdateStorageObject(TReq reqVO, SPworkQueue queueTrx)
         {
-            var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+            var baseInfo = ADO.WMSDB.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
-            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(baseInfo, this.lm.ID.Value, this.BuVO);
+            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(baseInfo, this.lm.ID.Value, this.BuVO);
             return baseInfo;
         }
         private void UpdateDocumentItemStorageObject(TReq reqVO, SPworkQueue queueTrx)
         {
-            var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID.Value, null, false, true, this.BuVO);
-            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
-            var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
+            var stos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID.Value, null, false, true, this.BuVO);
+            var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).ToList();
+            var docs = ADO.WMSDB.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
             if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.PHYSICAL_COUNT)
             {
                 var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
@@ -170,7 +170,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, disto.BaseQuantity.Value, sto.baseUnitID);
                     disto.Quantity = qtyConvert.newQty;
 
-                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
+                    ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, EntityStatus.INACTIVE, this.BuVO);
 
                 }
             }

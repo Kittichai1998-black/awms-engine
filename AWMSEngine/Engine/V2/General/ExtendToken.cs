@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.V2.General
             tokenInfo.BodyDecode = EncryptUtil.Base64Decode(tk[1]).Json<TokenCriteria.TokenBody>();
 
 
-            ams_User userInfo = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo.BodyDecode.uid, this.BuVO);
+            ams_User userInfo = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo.BodyDecode.uid, this.BuVO);
             if (tokenInfo != null)
             {
                 if (DateTime.Now > tokenInfo.BodyDecode.extend)

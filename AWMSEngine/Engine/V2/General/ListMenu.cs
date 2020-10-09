@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override TResModel ExecuteEngine(TReqModel reqVO)
         {
-            var tokenModel = ADO.UserInterfaceADO.GetInstant().ListMenu(reqVO.userID, this.BuVO);
+            var tokenModel = ADO.WMSDB.UserInterfaceADO.GetInstant().ListMenu(reqVO.userID, this.BuVO);
             List<MenuPage> pagelist;
             List<MenuGroup> menugroup = new List<MenuGroup>();
 

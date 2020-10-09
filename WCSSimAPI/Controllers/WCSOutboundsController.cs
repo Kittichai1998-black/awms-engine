@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WCSSimAPI.ADO;
 
 namespace WCSSimAPI.Controllers
 {
@@ -75,7 +76,7 @@ namespace WCSSimAPI.Controllers
             dynamic resJson = null;
             foreach (var p in putQueueCheckList)
             {
-                var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
+                var resExec = DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
                 string resJsonStr = resExec._retjson;
                 resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
                 if (resJson._result.resultcheck != 1)
@@ -86,7 +87,7 @@ namespace WCSSimAPI.Controllers
             {
                 if (p.queueOut.Count > 0)
                 {
-                    var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
+                    var resExec = DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
                     string resJsonStr = resExec._retjson;
                     resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
                 }

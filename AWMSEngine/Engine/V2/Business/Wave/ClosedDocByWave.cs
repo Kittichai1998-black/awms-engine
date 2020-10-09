@@ -17,10 +17,10 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             var res = new List<long>();
             reqVO.docIDs.ForEach(docID =>
             {
-                var doc = ADO.DocumentADO.GetInstant().Get(docID, this.BuVO);
+                var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(docID, this.BuVO);
                 if (doc.EventStatus == DocumentEventStatus.WORKED)
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                     res.Add(docID);
                 }
             });

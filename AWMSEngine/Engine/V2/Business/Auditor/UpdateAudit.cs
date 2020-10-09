@@ -41,7 +41,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             if (reqVO.itemLists.Count > 0)
             {
-                var getDisto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
+                var getDisto = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
 
                 var Disto = new List<amt_DocumentItemStorageObject>();
                 getDisto.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto.AddRange(x); });
@@ -49,31 +49,31 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var qID = new amt_WorkQueue();
                 foreach (var disto in Disto)
                 {
-                    qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
+                    qID = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
                     if (qID.EventStatus != WorkQueueEventStatus.CLOSED)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
                 }
 
                 reqVO.itemLists.ForEach(x =>
                 {
-                    var getPack = ADO.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
+                    var getPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
                     var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
-                    ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.newQty, x.option, getPack.parentID.Value, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.newQty, x.option, getPack.parentID.Value, this.BuVO);
 
                     getPack.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(getPack.options,
                        new KeyValuePair<string, object>[] {
                            new KeyValuePair<string, object>("remark",x.remark)
                        });
 
-                    ADO.StorageObjectADO.GetInstant().PutV2(getPack, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(getPack, this.BuVO);
 
-                    //AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.stoID, this.BuVO,
+                    //AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.stoID, this.BuVO,
                     //    new KeyValuePair<string, object>[] {
                     //        new KeyValuePair<string, object>("Options","remark=" +x.remark)
                     //    });
 
                 });
-                var getDisto1 = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
+                var getDisto1 = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, this.BuVO);
 
                 var Disto1 = new List<amt_DocumentItemStorageObject>();
                 getDisto1.Select(x => x.DocItemStos).ToList().ForEach(x => { Disto1.AddRange(x); });
@@ -86,10 +86,10 @@ namespace AWMSEngine.Engine.Business.Auditor
                     var ClosingDoc = new ClosingDocument().Execute(this.Logger, this.BuVO, WorkedDoc);
                     var ClosedDoc = new ClosedDocument().Execute(this.Logger, this.BuVO, ClosingDoc);
 
-                    // ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
+                    // ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED,this.BuVO);
                 }
 
-                var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
+                var res = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);
                 return res;
             }
             else

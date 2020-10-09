@@ -147,7 +147,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             TRes res = new TRes();
             List<bsto> sou_sto = new List<bsto>();
             List<bsto> des_sto = new List<bsto>();
-            var doc = ADO.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
+            var doc = ADO.WMSDB.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
@@ -158,7 +158,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 this.BuVO).FirstOrDefault();
             if (doc == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสารในระบบ");
-            var docItems = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
+            var docItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
@@ -181,7 +181,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             else
             {
 
-                var docRefIDs = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                var docRefIDs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
                 {
                 new SQLConditionCriteria("ParentDocument_ID",doc.ID.Value, SQLOperatorType.EQUALS),
                 }, this.BuVO);
@@ -200,21 +200,21 @@ namespace AWMSEngine.Engine.V2.Business.Document
             void set_sou_des(long docID)
             {
 
-                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(docID, null, null, this.BuVO);
+                var bstos = ADO.WMSDB.StorageObjectADO.GetInstant().ListBaseInDoc(docID, null, null, this.BuVO);
 
 
                 bstos.ForEach(bs =>
                 {
-                    var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
-                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
+                    var pack = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
+                    var sku = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
 
                     //    var docSouID = docID;
-                    //    var docSouCode = ADO.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
+                    //    var docSouCode = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_Document>(new SQLConditionCriteria[]
                     //        {
                     //new SQLConditionCriteria("ParentDocument_ID",docSouID, SQLOperatorType.EQUALS),
                     //        }, this.BuVO).FirstOrDefault();
 
-                    //var docDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    //var docDisto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                     //new SQLConditionCriteria[]
                     //    {
                     //        new SQLConditionCriteria("DocumentItem_ID",bs.docItemID, SQLOperatorType.EQUALS),
@@ -223,7 +223,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     //    },
                     //this.BuVO).FirstOrDefault();
 
-                    //var workQueueDesArea = ADO.WorkQueueADO.GetInstant().Get(docDisto.WorkQueue_ID.Value, this.BuVO);
+                    //var workQueueDesArea = ADO.WMSDB.WorkQueueADO.GetInstant().Get(docDisto.WorkQueue_ID.Value, this.BuVO);
 
 
                     sou_sto.Add(new bsto

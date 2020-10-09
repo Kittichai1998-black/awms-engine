@@ -29,7 +29,7 @@ namespace AWMSEngine.Engine.V2.Notification
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var noti = ADO.NotificationADO.GetInstant().GetNotifyPostByUserID(reqVO.userId, reqVO.l, reqVO.sk, reqVO.filter, this.BuVO);
+            var noti = ADO.WMSDB.NotificationADO.GetInstant().GetNotifyPostByUserID(reqVO.userId, reqVO.l, reqVO.sk, reqVO.filter, this.BuVO);
             var res = new TRes();
             res.userId = reqVO.userId;
             res.messageDetails = noti;

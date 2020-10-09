@@ -19,7 +19,7 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
         }
         protected override amt_MaintenanceResult ExecuteEngine(TReq reqVO)
         {
-            ADO.DataADO.GetInstant().Insert<amt_MaintenanceResultItem>(BuVO, new amt_MaintenanceResultItem()
+            ADO.WMSDB.DataADO.GetInstant().Insert<amt_MaintenanceResultItem>(BuVO, new amt_MaintenanceResultItem()
             {
                 MaintenanceResult_ID = reqVO.MaintenanceResult_ID,
                 ServiceResult = reqVO.ServiceResult,
@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
 
         private void UpdateStatus(int id, MaintenancePlanEventStatus eventStatus, EntityStatus status)
         {
-            ADO.DataADO.GetInstant().UpdateBy<amt_MaintenanceResult>(new SQLConditionCriteria[]{
+            ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_MaintenanceResult>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria(){field = "ID", operatorType = SQLOperatorType.EQUALS, value = id},
                     new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
                 }, new KeyValuePair<string, object>[] {
@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
                     new KeyValuePair<string, object>("Status", status)
                 }, this.BuVO);
 
-            //ADO.DataADO.GetInstant().UpdateBy<amt_MaintenanceResultItem>(new SQLConditionCriteria[]{
+            //ADO.WMSDB.DataADO.GetInstant().UpdateBy<amt_MaintenanceResultItem>(new SQLConditionCriteria[]{
             //        new SQLConditionCriteria(){field = "MaintenanceResult_ID", operatorType = SQLOperatorType.EQUALS, value = id},
             //        new SQLConditionCriteria(){field = "Status", operatorType = SQLOperatorType.NOTEQUALS, value = EntityStatus.REMOVE}
             //    }, new KeyValuePair<string, object>[] {

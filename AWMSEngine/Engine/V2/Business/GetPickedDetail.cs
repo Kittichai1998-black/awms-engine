@@ -73,12 +73,12 @@ namespace AWMSEngine.Engine.V2.Business
                 int i = 0;
                 dociID.ForEach(docitemID => {
 
-                    var docitemPutaway = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docitemID, this.BuVO);
+                    var docitemPutaway = ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(docitemID, this.BuVO);
                     if (docitemPutaway == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Document Item Putaway Not Found");
                     var optTag = AMWUtil.Common.ObjectUtil.QryStrSetValue(
                                           null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, tag[i]));
-                    var packpicked = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                    var packpicked = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("RefID", docitemPutaway.RefID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE)
@@ -88,13 +88,13 @@ namespace AWMSEngine.Engine.V2.Business
                     },5,null, this.BuVO).FirstOrDefault();
                     if (packpicked != null)
                     {
-                        var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                        var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("Des_StorageObject_ID", packpicked.ID.Value, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PICKING, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.DONE, SQLOperatorType.EQUALS),
                         }, this.BuVO).FirstOrDefault();
-                        var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(disto.DocumentItem_ID.Value, this.BuVO);
-                        var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO);
+                        var docitem = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(disto.DocumentItem_ID.Value, this.BuVO);
+                        var doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO);
 
                         string des_warehouse = "", des_customer = "", des_suplier = "";
                         if (doc.Des_Warehouse_ID != null)
@@ -105,7 +105,7 @@ namespace AWMSEngine.Engine.V2.Business
                             des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == doc.Des_Supplier_ID).Name;
                         string forCustomerName = "";
                         if (packpicked.For_Customer_ID != null)
-                            forCustomerName = ADO.DataADO.GetInstant().SelectByID<ams_Customer>(packpicked.For_Customer_ID, this.BuVO).Name;
+                            forCustomerName = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_Customer>(packpicked.For_Customer_ID, this.BuVO).Name;
 
                         getpstos.Add(new PackSto()
                         {
@@ -141,7 +141,7 @@ namespace AWMSEngine.Engine.V2.Business
                 /*tag.ForEach(x => {
                     var optTag = AMWUtil.Common.ObjectUtil.QryStrSetValue(
                        null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, x));
-                    var packpicked = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                    var packpicked = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE),
                     }, this.BuVO).FirstOrDefault();

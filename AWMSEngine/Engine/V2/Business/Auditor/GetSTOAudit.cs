@@ -66,7 +66,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             {
                 if (reqVO.bstoID != null)
                 {
-                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                 }
                 else
                 {
@@ -75,7 +75,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             }
             else
             {
-                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+                getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             }
             if (getSto == null)
                 return null;

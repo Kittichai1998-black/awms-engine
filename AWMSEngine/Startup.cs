@@ -44,7 +44,7 @@ namespace AWMSEngine
         public void ConfigureServices(IServiceCollection services)
         {
             PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, PropertyConst.APP_FILENAME);
-            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
+            var appProperty = PropertyFileManager.GetInstant().GetProperty(PropertyConst.APP_KEY);
             
             AMWUtil.Logger.AMWLoggerManager.InitInstant(
                 appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH],

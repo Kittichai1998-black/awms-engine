@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -16,7 +16,7 @@ namespace AWMSEngine.Engine.Business
 {
     public class GetInfoPallet : BaseEngine<GetInfoPallet.TReq, GetInfoPallet.TRes>
     {
-        //private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
+        //private StorageObjectADO ADOSto = ADO.WMSDB.StorageObjectADO.GetInstant();
         public class TReq
         {
             public string bstoCode;
@@ -32,15 +32,15 @@ namespace AWMSEngine.Engine.Business
             StorageObjectCriteria mapsto = new StorageObjectCriteria();
 
 
-            var checkBaseMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+            var checkBaseMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
             if (checkBaseMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
 
 
-            mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+            mapsto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             if (mapsto != null)
             {
-                res.bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
+                res.bsto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO); ;
             }
             else
             {

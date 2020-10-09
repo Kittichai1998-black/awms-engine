@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;

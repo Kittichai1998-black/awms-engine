@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
@@ -88,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 foreach (var docItem in docItems)
                 {
                     var doc = docs.Find(x => x.ID == docItem.Document_ID);
-                    var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
+                    var qtyDistos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
 
                     //if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
@@ -212,7 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         }
                         if (packSto.incubationDate != null || packSto.ShelfLifeDate != null)
                         {
-                            var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                            var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
                         }
                         disto = new amt_DocumentItemStorageObject()
                         {
@@ -247,7 +247,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 if (chkCreatePA == "true")
                 {
                     /*newBaseQty = 0;
-                    var packSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.packID, StorageObjectType.PACK, false, false, this.BuVO);
+                    var packSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.packID, StorageObjectType.PACK, false, false, this.BuVO);
                     var area = StaticValue.AreaMasters.Find(x => x.ID == psto.AreaMaster_ID);
                     var warehouse = StaticValue.Warehouses.Find(x => x.ID == area.Warehouse_ID);
                     var checkdocPA = DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]
@@ -304,8 +304,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             EventStatus = DocumentEventStatus.NEW,
                             Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                     };
-                        var docGRID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
-                        _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
+                        var docGRID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+                        _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
 
                     }
                     else
@@ -321,7 +321,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         {
                             throw new AMWException(this.Logger, AMWExceptionCode.V0_DOC_NOT_FOUND);
                         }
-                        _docGR = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docItemsGR.Document_ID, BuVO);
+                        _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docItemsGR.Document_ID, BuVO);
 
                     }
 
@@ -367,8 +367,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             EventStatus = DocumentEventStatus.NEW,
                             Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                         };
-                        var docPAID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
-                        var docPAItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
+                        var docPAID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+                        var docPAItem = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
 
                         res.documents.Add(new TRes.Documents()
                         {

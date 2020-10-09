@@ -73,7 +73,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             {
                 if(reqVO.bstoID != null)
                 {
-                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             }
             else
             {
-                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+                getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             }
             if (getSto == null)
                 return null;
@@ -90,14 +90,14 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
             if (packsList !=null && packsList.Count > 0)
             {
-                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PICKING, BuVO);
+                var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PICKING, BuVO);
                 
                 if (docItems == null || docItems.Count() == 0)
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบรายการเอกสารเบิก");
                 docItems = docItems.Where(y => y.EventStatus == DocumentEventStatus.WORKING).ToList();
                 docItems.ForEach(x =>
                 {
-                    var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                    var distos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("DocumentItem_ID", x.ID,SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE,SQLOperatorType.EQUALS)
                         }, this.BuVO);
@@ -204,8 +204,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 {
                     var docitem = docItems.Find(i => i.ID == disto.DocumentItem_ID);
                 
-                    var doc = ADO.DocumentADO.GetInstant().Get(docitem.Document_ID, BuVO);
-                    var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
+                    var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(docitem.Document_ID, BuVO);
+                    var processType = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUE,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)

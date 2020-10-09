@@ -34,7 +34,7 @@ namespace AWMSEngine.Engine.V2.Business
         {
 
 
-            var getDoc = ADO.DocumentADO.GetInstant().Get(reqVO.docID.Value, BuVO);
+            var getDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(reqVO.docID.Value, BuVO);
 
             if (getDoc == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล GR Document");
@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.V2.Business
             //หน้าfont ช่อง pallet code เเสดงว่าของในพาเลทผูกกับ PD อะไรบ้าง
             StorageObjectCriteria newSto = new StorageObjectCriteria();
             long? idBaseSto = null;
-            var getOldBase = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, reqVO.warehouseID, reqVO.areaID, false, true, BuVO);
+            var getOldBase = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, reqVO.warehouseID, reqVO.areaID, false, true, BuVO);
             if (getOldBase != null)
             {
                 var baseSto = getOldBase.ToTreeList().Find(x => x.type == StorageObjectType.BASE);
@@ -67,7 +67,7 @@ namespace AWMSEngine.Engine.V2.Business
             }
 
             reqVO.docItems.ForEach((x) => {
-                var getDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID, BuVO);
+                var getDocItem = ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID, BuVO);
                 if (getDocItem == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Items");
 
@@ -82,8 +82,8 @@ namespace AWMSEngine.Engine.V2.Business
                     var getdisto = getDocItem.DocItemStos.FindAll(disto =>
                     {
 
-                        //var getSou_STO_PACK = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, true, BuVO);
-                        var getBase = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
+                        //var getSou_STO_PACK = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, true, BuVO);
+                        var getBase = ADO.WMSDB.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
                         if (getBase != null)
                         {
@@ -122,7 +122,7 @@ namespace AWMSEngine.Engine.V2.Business
                     });
                     if (getdisto.Count() > 0)
                     {
-                        var getSTO_PACK = ADO.StorageObjectADO.GetInstant().Get(getdisto[0].Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+                        var getSTO_PACK = ADO.WMSDB.StorageObjectADO.GetInstant().Get(getdisto[0].Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
 
                         var baseUnitTypeConvt = StaticValue.ConvertToBaseUnitBySKU(getDocItem.SKUMaster_ID.Value, x.Quantity, getDocItem.UnitType_ID.Value);
                         decimal? baseQuantity = baseUnitTypeConvt.newQty;
@@ -130,8 +130,8 @@ namespace AWMSEngine.Engine.V2.Business
                         getSTO_PACK.qty += x.Quantity;
                         getSTO_PACK.baseQty += baseQuantity.Value;
 
-                        var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(getSTO_PACK, BuVO);
-                        ADO.DistoADO.GetInstant().Update(getdisto[0].ID.Value, null, getSTO_PACK.qty, getSTO_PACK.baseQty, EntityStatus.INACTIVE, BuVO);
+                        var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(getSTO_PACK, BuVO);
+                        ADO.WMSDB.DistoADO.GetInstant().Update(getdisto[0].ID.Value, null, getSTO_PACK.qty, getSTO_PACK.baseQty, EntityStatus.INACTIVE, BuVO);
                     }
                     else
                     {
@@ -146,8 +146,8 @@ namespace AWMSEngine.Engine.V2.Business
                 void gen_new_packSto()
                 {
                     StaticValueManager.GetInstant().LoadUnitType(BuVO);
-                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(getDocItem.SKUMaster_ID, BuVO);
-                    var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(getDocItem.PackMaster_ID, BuVO);
+                    var sku = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(getDocItem.SKUMaster_ID, BuVO);
+                    var pack = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(getDocItem.PackMaster_ID, BuVO);
                     var unit = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == getDocItem.UnitType_ID);
                     var objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == pack.ObjectSize_ID);
 
@@ -199,7 +199,7 @@ namespace AWMSEngine.Engine.V2.Business
                     var newPackCheckSum = packSto.GetCheckSum();
                     packSto.refID = newPackCheckSum;
 
-                    var resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                    var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 
                     var new_disto = new amt_DocumentItemStorageObject()
                     {
@@ -213,13 +213,13 @@ namespace AWMSEngine.Engine.V2.Business
                         Des_StorageObject_ID = resStopack,
                         Status = EntityStatus.INACTIVE
                     };
-                    var disto = ADO.DistoADO.GetInstant().Insert(new_disto, BuVO);
+                    var disto = ADO.WMSDB.DistoADO.GetInstant().Insert(new_disto, BuVO);
                 }
 
             });
 
 
-            newSto = ADO.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
+            newSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(idBaseSto.Value, StorageObjectType.BASE, false, true, BuVO);
 
             return newSto;
         }

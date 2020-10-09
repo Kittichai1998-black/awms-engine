@@ -23,8 +23,8 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.stoID.Value, reqVO.stoType.Value, false, true, this.BuVO);
-            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, mapsto.areaID.Value, this.BuVO);
+            var mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.stoID.Value, reqVO.stoType.Value, false, true, this.BuVO);
+            var desAreas = ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, mapsto.areaID.Value, this.BuVO);
 
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
 
@@ -42,9 +42,9 @@ namespace AWMSEngine.Engine.V2.General
                 mapsto.ToTreeList().ForEach(x =>
                 {
                     x.areaID = nextArea.Des_AreaMaster_ID.Value;
-                    ADO.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
                 });
-                //ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, nextArea.Des_AreaLocationMaster_ID.Value, this.BuVO);
+                //ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, nextArea.Des_AreaLocationMaster_ID.Value, this.BuVO);
             }
 
 

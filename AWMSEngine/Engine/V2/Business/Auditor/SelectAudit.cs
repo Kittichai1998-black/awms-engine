@@ -39,22 +39,22 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override TRes ExecuteEngine(string reqVO)
         {
-            var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT ,this.BuVO);
+            var listItem = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT ,this.BuVO);
 
             
             if (listItem.Count > 0)
             {
                 var doc = listItem.First();
-                var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
+                var disto = ADO.WMSDB.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
 
-                var getPalletID = ADO.StorageObjectADO.GetInstant().Get(reqVO, (long?)null, (long?)null, false, false, this.BuVO);
+                var getPalletID = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO, (long?)null, (long?)null, false, false, this.BuVO);
                 List<TRes.ItemList> itemLists = new List<TRes.ItemList>();
 
-                var stoList = ADO.StorageObjectADO.GetInstant().Get(getPalletID.id.Value, StorageObjectType.PACK, false, true, this.BuVO);
+                var stoList = ADO.WMSDB.StorageObjectADO.GetInstant().Get(getPalletID.id.Value, StorageObjectType.PACK, false, true, this.BuVO);
 
                 disto.ForEach(x =>
                 {
-                    var sto = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                    var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
                     
                     if (sto.parentID == getPalletID.id)
                     {

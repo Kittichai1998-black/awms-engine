@@ -27,7 +27,7 @@ namespace MyTest2
             VOCriteria buVO = new VOCriteria();
             AMWLoggerManager.InitInstant("D:/logs/test/", "{Date}.log");
             AMWLogger logger = AMWLoggerManager.GetLogger("test");
-            var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
+            var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
 
             new AWMSEngine.Engine.V2.Validation.ValidateObjectSizeLimit().Execute(logger, buVO, sto);
 
