@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ScheduleService.DailyStockTransaction
 {
-    public class DailyStockTransactionReport : BaseScheduleService
+    public class DailyStockReplacementReport : BaseScheduleService
     {
         public override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
@@ -23,7 +23,7 @@ namespace AWMSEngine.ScheduleService.DailyStockTransaction
             param.Add("docType", options["DocumentType"]);
 
             var res = DailyData.QuerySP("RP_DAILY_STO", param, buVO);
-            new DailyNotify().Execute(buVO.Logger, buVO, new
+            new DailyStockReplacement().Execute(buVO.Logger, buVO, new
             {
                 Title = options["Title"], 
                 Message = res,

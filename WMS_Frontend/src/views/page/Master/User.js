@@ -45,6 +45,7 @@ const User = props => {
   const [openPassword, setOpenPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [dialogState, setDialogState] = useState({});
+  const saltPass = guid.raw().toUpperCase().replaceAll('-', '');
 
   const iniCols = [
     {
@@ -53,6 +54,7 @@ const User = props => {
       fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
+      colStyle:{textAlign:"center"},
       filterConfig:{
         filterType:"dropdown",
         dataDropDown:EntityEventStatus,
@@ -118,6 +120,9 @@ const User = props => {
       type: "password",
       name: "Password",
       placeholder: "Password",
+      custom:(data) => {
+        return "API.INSERT.SQLCUSTOM.@@sql_gen_password," + data + "," + saltPass;
+      },
       required: true
     },
     {
@@ -394,12 +399,12 @@ const User = props => {
     for (i; i < strLength; i++) {
       guidstr = guidstr.replace('-', '');
     }
-    var pass = "@@sql_gen_password," + password + "," + guidstr;
+    var pass = "API.INSERT.SQLCUSTOM.@@sql_gen_password," + password + "," + guidstr;
 
     let updjson = {
       t: "ams_User",
       pk: "ID",
-      datas: [{"ID":userPassID, password:pass}],
+      datas: [{"ID":userPassID, password:pass, SaltPassword:guidstr}],
       nr: false,
       _token: localStorage.getItem("Token")
     };
@@ -443,6 +448,7 @@ const User = props => {
         tableQuery={"User"}
         table={"ams_User"}
         dataAdd={columns}
+        customAddData={{"saltPassword":saltPass}}
         history={props.history}
         columns={iniCols}
         dataEdit={columnsEdit}

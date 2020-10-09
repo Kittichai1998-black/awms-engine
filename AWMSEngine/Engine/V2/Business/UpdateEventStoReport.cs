@@ -48,15 +48,23 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
-                        this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
-                        var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
-
-                        var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
-                        if (ckHold)
+                        if(sto.eventStatus == StorageObjectEventStatus.RECEIVED )
                         {
-                            bsto.IsHold = reqVO.IsHold;
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                            this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
+                            var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
+
+                            var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
+                            if (ckHold)
+                            {
+                                bsto.IsHold = reqVO.IsHold;
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                            }
                         }
+                        else
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถ Hold Status ที่เป็น "+ sto.eventStatus + " ได้");
+                        }
+                        
 
                     }
                 }
@@ -75,6 +83,7 @@ namespace AWMSEngine.Engine.Business
 
             sto.AuditStatus = AdStatus;
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
+            sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_OLD_AUDIT_STATUS, aditStatus);
 
             var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
             if (!checkStatus)

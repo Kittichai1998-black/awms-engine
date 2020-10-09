@@ -21,9 +21,9 @@ import React, { useEffect, useState } from 'react'
 import { apicall, createQueryString } from "../../components/function/CoreFunction"
 import Aux from '../../components/AmAux'
 import { getUnique, groupBy } from '../../components/function/ObjectFunction'
-
+import AmAuditStatus from '../../components/AmAuditStatus'
 import "../../assets/css/AmLocationSummary.css";
-
+import moment from "moment";
 const Axios = new apicall()
 
 const AmLocationSummary = props => {
@@ -118,6 +118,7 @@ const AmLocationSummary = props => {
     useEffect(() => {
         if (dataAll) {
             dataAll.map(x => {
+
                 let chkBank = bank.find(y => y.Bank === x.Bank),
                     chkBay = bay.find(y => y.Bay === x.Bay),
                     chkLevel = level.find(y => y.Level === x.Level)
@@ -126,25 +127,17 @@ const AmLocationSummary = props => {
                 }
                 if (!chkBay) {
                     bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
-                    // bay.push(x)
                 }
                 if (!chkLevel) {
                     level.push(x)
                 }
             })
-            // bank.push({})
-            // bay.push({})
-            // level.push({})
             console.log(bank);
-
             let bayPercen_10 = (bay.length - 1) * 0.1,
                 padding = "5px",
                 palletLen = (bank.length - 1) * (bay.length - 1),
-                dataT = bank.sort((a, b) => (a.Bank > b.Bank) ? -1 : ((b.Bank > a.Bank) ? 1 : 0)).map((x, xi) => {
+
+                dataT = bank.sort((a, b) => (a.Bank < b.Bank) ? -1 : ((b.Bank < a.Bank) ? 1 : 0)).map((x, xi) => {
                     let countPalletBank = 0
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
@@ -189,7 +182,7 @@ const AmLocationSummary = props => {
 
                                             row = 0; break
                                     }
-
+                                    console.log(row)
                                     return (
                                         <Aux key={yi}>
                                             <td style={{
@@ -201,9 +194,11 @@ const AmLocationSummary = props => {
                                             {yi === bay.length - 1 ? <td
                                                 style={{
                                                     backgroundColor: bgColor(row),
+                                                    textAlign: 'left !important'
                                                     // border: row?"1px solid black":null
                                                 }}
-                                            >{row ? row : null}</td> : null}
+                                            >{row ? row + clickDesCription(row) : null}</td> : null}
+
                                         </Aux>
                                     )
                                 }
@@ -215,6 +210,19 @@ const AmLocationSummary = props => {
         }
     }, [dataAll])
 
+    const clickDesCription = (row) => {
+        if (row == 25) {
+            return " (Low Density)"
+        } else if (row == 50) {
+            return " (Medium Density)"
+        } else if (row == 75) {
+            return " (High Density)"
+        } else if (row == 100) {
+            return " (Full)"
+        } else {
+            return null
+        }
+    }
     const clickRow = (rowBank, e) => {
         if (rowBank) {
             if (topTr) {
@@ -326,34 +334,57 @@ const AmLocationSummary = props => {
         }
         let dataD = mergeDatas.map((x, xi) => {
             if (x.length)
-                return (
-                    // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
-                    <Card key={xi} style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
-                            <div style={{ textAlign: "center" }}>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Location : {x[0].Code} </b></p>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Pallet : {x[0].bsto_Code}</b></p>
-                            </div>
-                            {
-                                x.map((y, yi) => {
+                console.log(x)
+            return (
+                // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
+                <Card key={xi} style={{ margin: "5px" }}>
+                    <CardContent style={{ padding: "5px" }}>
+                        <div style={{ textAlign: "center" }}>
+                            <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Location : {x[0].Code} </b></p>
+                            <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Pallet : {x[0].bsto_Code}</b></p>
+                        </div>
+                        {
+                            x.map((y, yi) => {
+                                if (y.skut_Code === "ESP") {
                                     return (
                                         <Aux key={yi}>
                                             {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
                                             {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
                                             <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
                                             <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
-                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                             <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
-                                            {/* <p style={{ margin: "0px" }}>Unit : {y.ut_Code}</p> */}
-
+                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
                                         </Aux>
                                     )
-                                })
-                            }
-                        </CardContent>
-                    </Card>
-                    // </Grid>
-                )
+                                } else {
+                                    let lot = y.Lot ? <p style={{ margin: "0px" }}><b>Lot :</b> {y.Lot}</p> :
+                                        y.Ref1 ? <p style={{ margin: "0px" }}><b>Vendor Lot :</b> {y.Ref1}</p> : null;
+                                        let ControlNo = y.OrderNo ? <p style={{ margin: "0px" }}><b>Control No. :</b> {y.OrderNo}</p> : null;
+                                    return (
+
+                                        <Aux key={yi}>
+                                            {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
+                                            {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
+                                            <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
+                                            <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>Weight (kg) :</b> {y.pstoWeigthKG}</p>
+                                            {ControlNo}
+                                            {lot}
+                                            <p style={{ margin: "0px" }}><b>Quantity :</b> {y.Quantity} {y.ut_Code}</p>
+                                            <p style={{ margin: "0px" }}><b>MFG.Date :</b> {y.ProductDate ? moment(y.ProductDate).format("DD/MM/YYYY") : ""}</p>
+                                            <p style={{ margin: "0px" }}><b>Expire Date :</b> {y.ExpiryDate ? moment(y.ExpiryDate).format("DD/MM/YYYY") : ""}</p>
+                                            <p style={{ margin: "0px" }}><b>Quality Status :</b> <AmAuditStatus statusCode={y.AuditStatus} /> </p>
+                                        </Aux>
+                                    )
+                                }
+
+                            })
+                        }
+                    </CardContent>
+                </Card>
+                // </Grid>
+            )
         })
 
         if (dataD.length) {
@@ -454,7 +485,8 @@ const AmLocationSummary = props => {
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <b style={{ fontSize: "20px" }}>Top View</b>
-                        <div id={"divTableTopView"} style={{ height: (window.innerHeight - 200) / 2 }}>
+                        <div id={"divTableTopView"} style={{ height: '50%' }}>
+                            {/* (window.innerHeight - 200) / 2 */}
                             <table>
                                 <tbody>
                                     {dataTop}
@@ -462,10 +494,10 @@ const AmLocationSummary = props => {
                             </table>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ marginTop: '5px' }}>
                         <b style={{ fontSize: "20px" }}>Side View {titleBank}</b>
                         {btnClear}
-                        <div id={"divTableSideView"} style={{ height: (window.innerHeight - 200) / 2 }}>
+                        <div id={"divTableSideView"} style={{ height: '50%' }}>
                             <table>
                                 <tbody>
                                     {dataSide}

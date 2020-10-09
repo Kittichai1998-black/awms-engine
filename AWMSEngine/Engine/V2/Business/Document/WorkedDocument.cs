@@ -68,12 +68,23 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         }
                                         else
                                         {
-                                            decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
-                                            decimal totalQty = y.BaseQuantity ?? 0;
-                                            if (sumQtyDisto == totalQty)
+                                            if(y.BaseQuantity == null)
                                             {
-                                                y.EventStatus = DocumentEventStatus.WORKED;
-                                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                if (y.DocItemStos.TrueForAll(z => z.Status == EntityStatus.DONE))
+                                                {
+                                                    y.EventStatus = DocumentEventStatus.WORKED;
+                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
+                                                decimal totalQty = y.BaseQuantity ?? 0;
+                                                if (sumQtyDisto == totalQty)
+                                                {
+                                                    y.EventStatus = DocumentEventStatus.WORKED;
+                                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                }
                                             }
                                         }
                                     }

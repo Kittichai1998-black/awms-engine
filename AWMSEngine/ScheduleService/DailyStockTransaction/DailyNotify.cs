@@ -12,7 +12,7 @@ using ThoughtWorks.QRCode.Codec.Ecc;
 
 namespace AWMSEngine.ScheduleService.DailyStockTransaction
 {
-    public class DailyNotify : BaseNotification
+    public class DailyStockReplacement : BaseNotification
     {
         public class DailyReport
         {

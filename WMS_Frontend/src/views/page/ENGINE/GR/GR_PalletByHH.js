@@ -33,7 +33,7 @@ const GR_PalletByHH = (props) => {
             field: "qty",
             type: "input",
             name: "Qty",
-            disabled: false,
+            disabled: true,
             placeholder: "Name"
         }]
     const columnsManual = [
@@ -51,6 +51,12 @@ const GR_PalletByHH = (props) => {
             name: "Lot",
             disabled: true,
             placeholder: "Lot"
+        }, {
+            field: "ref1",
+            type: "input",
+            name: "Vendor Lot",
+            disabled: true,
+            placeholder: "Ref1"
         },
         {
             field: "batch",
@@ -62,52 +68,54 @@ const GR_PalletByHH = (props) => {
         {
             field: "orderNo",
             type: "input",
-            name: "OrderNo",
+            name: "Control No.",
             disabled: true,
-            placeholder: "OrderNo"
-        }, {
-            field: "itemNo",
-            type: "input",
-            name: "ItemNo",
-            disabled: true,
-            placeholder: "ItemNo"
-        }, {
-            field: "refID",
-            type: "input",
-            name: "RefID",
-            disabled: true,
-            placeholder: "RefID"
-        }, {
-            field: "ref1",
-            type: "input",
-            name: "Ref1",
-            disabled: true,
-            placeholder: "Ref1"
-        }, {
-            field: "ref2",
-            type: "input",
-            name: "Ref2",
-            disabled: true,
-            placeholder: "Ref2"
-        }, {
-            field: "ref3",
-            type: "input",
-            name: "Ref3",
-            disabled: true,
-            placeholder: "Ref3"
-        }, {
-            field: "ref4",
-            type: "input",
-            name: "Ref4",
-            disabled: true,
-            placeholder: "Ref4"
-        }, {
-            field: "cartonNo",
-            type: "input",
-            name: "CartonNo",
-            disabled: true,
-            placeholder: "CartonNo"
+            placeholder: "Control No."
         },
+        // {
+        //     field: "itemNo",
+        //     type: "input",
+        //     name: "ItemNo",
+        //     disabled: true,
+        //     placeholder: "ItemNo"
+        // }, {
+        //     field: "refID",
+        //     type: "input",
+        //     name: "RefID",
+        //     disabled: true,
+        //     placeholder: "RefID"
+        // }, {
+        //     field: "ref1",
+        //     type: "input",
+        //     name: "Ref1",
+        //     disabled: true,
+        //     placeholder: "Ref1"
+        // }, {
+        //     field: "ref2",
+        //     type: "input",
+        //     name: "Ref2",
+        //     disabled: true,
+        //     placeholder: "Ref2"
+        // }, {
+        //     field: "ref3",
+        //     type: "input",
+        //     name: "Ref3",
+        //     disabled: true,
+        //     placeholder: "Ref3"
+        // }, {
+        //     field: "ref4",
+        //     type: "input",
+        //     name: "Ref4",
+        //     disabled: true,
+        //     placeholder: "Ref4"
+        // }, 
+        // {
+        //     field: "cartonNo",
+        //     type: "input",
+        //     name: "CartonNo",
+        //     disabled: true,
+        //     placeholder: "CartonNo"
+        // },
         {
             field: "addQty",
             type: "input",
@@ -154,9 +162,9 @@ const GR_PalletByHH = (props) => {
         {
             field: "productDate",
             type: "datetime",
-            name: "Product Date",
+            name: "MFG.Date",
             disabled: false,
-            placeholder: "Product Date"
+            placeholder: "MFG.Date"
         }
     ]
     return (

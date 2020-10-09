@@ -105,6 +105,7 @@ const AmPrintBarCode = props => {
 
   }
   const genDataPalletList = () => {
+
     var itemList = [];
     var item = {};
     if (props.data !== undefined) {
@@ -120,7 +121,9 @@ const AmPrintBarCode = props => {
           vol: ele.Volume * ele.Quantity,
           skuType: ele.SKUMasterTypeName,
           expdate: ele.ExpireDate,
-          prodDate: ele.ProductionDate
+          prodDate: ele.ProductionDate,
+          quantity: ele.Quantity,
+          volsku: ele.Volume
         }
         itemList.push(item)
       });
@@ -130,7 +133,7 @@ const AmPrintBarCode = props => {
         mode: valueDataRadio,
         docID: props.docID,
         minVolume: 1,
-        maxVolume: 999,
+        maxVolume: 10000,
         supplierName: props.SouSupplierName,
         supplierCode: props.SouSupplierCode,
         remark: props.Remark,
@@ -189,19 +192,19 @@ const AmPrintBarCode = props => {
               checked={valueDataRadio === 1}
               onChange={(checked) => handleRadioChange(checked, 1)}
             />}
-          label="Single"
+          label={t("Single")}
         /><FormControlLabel value="1"
           control={
             <Radio color="primary"
             />}
           checked={valueDataRadio === 0}
-          label="Multi"
+          label={t("Multi")}
           onChange={(checked) => handleRadioChange(checked, 0)} />
         <br />
       </div>
-      <FormInline>
-        <label style={{ fontWeight: "bold", width: "50px" }}>{"Min : "}</label>
-        <AmInput id={"field"} style={{ width: "60px" }} type="number"
+      {/* <FormInline>
+        <label style={{ fontWeight: "bold", width: "50px" }}>{t("Min") + " : "}</label>
+        <AmInput id={"field"} style={{ width: "60px" }} type="number" disabled={true}
           defaultValue={dataSource[0].MinInnerVolume === null ? 1 : dataSource[0].MinInnerVolume}
           onKeyPress={(value, obj, element, event) => {
             if (event.key === "Enter") {
@@ -217,10 +220,10 @@ const AmPrintBarCode = props => {
               onHandleChangeGeneratePallet({ min: e }, valueDataRadio)
           }}
         />
-        <label style={{ width: "60px" }}>{"Volume"}</label>
+        <label style={{ width: "60px" }}>{t("Volume")}</label>
       </FormInline>
       <FormInline>
-        <label style={{ fontWeight: "bold", width: "50px" }}>{"Max : "}</label>
+        <label style={{ fontWeight: "bold", width: "50px" }}>{t("Max") + " : "}</label>
         <AmInput id={"field"} style={{ width: "60px" }} type="number"
           defaultValue={dataSource[0].MaxInnerVolume === null ? 999 : dataSource[0].MaxInnerVolume}
           onKeyPress={(value, obj, element, event) => {
@@ -239,12 +242,13 @@ const AmPrintBarCode = props => {
           }}
         />
         <label style={{ width: "60px" }}>{"Volume"}</label>
-      </FormInline>
+      </FormInline> */}
       <br />
     </div>
   };
   const onHandleChangeGeneratePallet = (value, mode) => {
-    setValueQty({ min: value.min, max: value.max })
+    // console.log(value)
+    setValueQty({ min: 1, max: 10000 })
     setGenData(true)
     var itemList = [];
     var item = {};
@@ -261,19 +265,23 @@ const AmPrintBarCode = props => {
         vol: ele.Volume * ele.Quantity,
         skuType: ele.SKUMasterTypeName,
         expdate: ele.ExpireDate,
-        prodDate: ele.ProductionDate
+        prodDate: ele.ProductionDate,
+        quantity: ele.Quantity,
+        volsku: ele.Volume
 
 
       }
       itemList.push(item)
     });
 
-
+    // console.log(valueQty)
     const dataSend = {
       mode: mode,
       docID: props.docID,
-      minVolume: value === undefined ? 1 : (value.min === undefined ? 1 : parseInt(value.min)),
-      maxVolume: value === undefined ? 999 : (value.max === undefined ? 999 : parseInt(value.max)),
+      minVolume: 1,
+      maxVolume: 10000,
+      // minVolume: valueQty === undefined ? 1 : (valueQty.min === undefined ? 1 : (value.min !== undefined ? parseInt(value.min) : 1)),
+      // maxVolume: valueQty === undefined ? 10000 : (valueQty.max === undefined ? 10000 : (value.max !== undefined ? parseInt(value.max) : 999)),
       supplierName: props.SouSupplierName,
       supplierCode: props.SouSupplierCode,
       Item: itemList
@@ -328,7 +336,7 @@ const AmPrintBarCode = props => {
 
   return (
     <div>
-      {console.log(props.data)}
+      {/* {console.log(props.data)} */}
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -337,7 +345,7 @@ const AmPrintBarCode = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Generate BarCode Detail"}
+        titleText={t("Generate QRCode Detail")}
         data={props.data}
         columns={RanderEle()}
       />

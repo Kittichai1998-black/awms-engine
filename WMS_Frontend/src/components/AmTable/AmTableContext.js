@@ -3,10 +3,12 @@ import React, {createContext, useReducer} from 'react';
 const initialState = {
     selection:[],
     selectionAll:false,
+    selected:false,
     page:1,
     pageSize:20,
     sort:{},
-    filter:[]
+    filter:[],
+    filtered:false,
 }
 
 export const AmTableContext = createContext(initialState)
@@ -26,12 +28,14 @@ const selectionReducer = (state, action) => {
         case "selectall" : {
             return {
                 ...state,
+                "selected":true,
                 "selectionAll":!state.selectionAll
             }
         }
         case "set" : {
             return {
                 ...state,
+                "selected":true,
                 "selection":[action.payload.data]
             }
         }
@@ -40,6 +44,7 @@ const selectionReducer = (state, action) => {
             getUniq.push(action.payload.data);
             return {
                 ...state,
+                "selected":true,
                 "selection":getUniq
             }
         }
@@ -47,18 +52,21 @@ const selectionReducer = (state, action) => {
             let getUniq = state.selection.filter(x=> x[action.payload.uniq] !== action.payload.data);
             return {
                 ...state,
+                "selected":true,
                 "selection":getUniq
             }
         }
         case "addall":{
             return {
                 ...state,
+                "selected":true,
                 "selection":action.payload
             }
         }
         case "removeall":{
             return {
                 ...state,
+                "selected":true,
                 "selection":[]
             }
         }
@@ -87,17 +95,41 @@ const paginationReducer = (state, action) => {
 const filterReducer = (state, action) => {
     switch(action.type){
         case "add" : {
-            let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
-            if(action.payload.value !== undefined)
-                    filterData.push(action.payload)
-            return {
-                ...state,
-                "filter":filterData
+            let findData = [...state.filter].find(x=> x.field === action.payload.field)
+            if(findData === undefined){
+                if(action.payload.value !== undefined && action.payload.value !== ''){
+                    let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+                    if(action.payload.value !== undefined)
+                        filterData.push(action.payload)
+                    return {
+                        ...state,
+                        "filtered":true,
+                        "filter":filterData
+                    }
+                }else{
+                    return state
+                }
+            }
+            else{
+                if(findData.value !== action.payload.value){
+                    let filterData = [...state.filter].filter(x=> x.field !== action.payload.field);
+                    if(action.payload.value !== undefined)
+                        filterData.push(action.payload)
+                    return {
+                        ...state,
+                        "filtered":true,
+                        "filter":filterData
+                    }
+                }
+                else{
+                    return state
+                }
             }
         }
         case "removeall" : {
             return {
                 ...state,
+                "filtered":true,
                 "filter":[]
             }
         }
@@ -125,7 +157,7 @@ const SelectionAction = () => {
     const removeAll = (payload) => selectionDispatch({"type":"removeall", payload})
     const selectAll = (payload) => selectionDispatch({"type":"selectall", payload})
     const set = (payload) => selectionDispatch({"type":"set", payload})
-    return {selectionValue:selectionValue.selection,add,remove,addAll,removeAll, selectAll,set, selectAllState:selectionValue.selectionAll}
+    return {selectedValue:selectionValue.selected,selectionValue:selectionValue.selection,add,remove,addAll,removeAll, selectAll,set, selectAllState:selectionValue.selectionAll}
 }
 
 const PageAction = () => {
@@ -147,5 +179,5 @@ const FilterAction = () => {
     const [filterValue, filterDispatch] = useReducer(filterReducer, initialState)
     const setFilter = (payload) => filterDispatch({"type":"add", payload})
     const removeFilter = (payload) => filterDispatch({"type":"removeall", payload})
-    return {filterValue:filterValue.filter,setFilter,removeFilter}
+    return {filteredValue:filterValue.filtered,filterValue:filterValue.filter,setFilter,removeFilter}
 }

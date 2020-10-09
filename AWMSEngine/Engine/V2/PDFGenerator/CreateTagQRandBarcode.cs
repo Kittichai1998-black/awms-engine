@@ -173,11 +173,18 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
             amt_Document doc = ADO.DocumentADO.GetInstant().Get(reqVO.docID.Value, this.BuVO);
             if (doc == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบเอกสารรับเข้า");
-            int pdfno = String.IsNullOrEmpty(doc.Ref4) ? 1 : int.Parse(doc.Ref4) + 1;
-            
+
+            var PDF_NO = ObjectUtil.QryStrGetValue(doc.Options, OptionConst.OPT_PDF_NO);
+
+            int pdfno = String.IsNullOrEmpty(PDF_NO) ? 1 : int.Parse(PDF_NO) + 1;
+            var new_PDF_NO = ObjectUtil.QryStrSetValue(doc.Options, 
+                       new KeyValuePair<string, object>[] {
+                           new KeyValuePair<string, object>(OptionConst.OPT_PDF_NO, pdfno)
+                       });
+
             AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
                   new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string, object>("Ref4", pdfno)
+                        new KeyValuePair<string, object>("Options", new_PDF_NO)
                   });
 
             string date = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
@@ -353,9 +360,9 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 table.AddCell(SetInfoCol(tableCell_3));
 
             }
-            else {
+            else { //PM
                 //row 2
-                tableCell_0 = new PdfPCell(new Phrase("Lot Vendor ", h7));
+                tableCell_0 = new PdfPCell(new Phrase("Vendor Lot ", h7));
                 table.AddCell(SetHeaderCol(tableCell_0));
 
                 tableCell_1 = new PdfPCell(new Phrase(lotNo, p7));
@@ -376,7 +383,20 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 tableCell_1 = new PdfPCell(new Phrase(supplier, p7));
                 tableCell_1.Colspan = 5;
                 table.AddCell(SetInfoCol(tableCell_1));
+                //row4
+                tableCell_0 = new PdfPCell(new Phrase("Mfg. Date ", h7));
+                table.AddCell(SetHeaderCol(tableCell_0));
 
+                tableCell_1 = new PdfPCell(new Phrase(mfgDate, p7));
+                tableCell_1.Colspan = 2;
+                table.AddCell(SetInfoCol(tableCell_1));
+
+                tableCell_2 = new PdfPCell(new Phrase("Exp. Date ", h7));
+                table.AddCell(SetHeaderCol(tableCell_2));
+
+                tableCell_3 = new PdfPCell(new Phrase(expDate, p7));
+                tableCell_3.Colspan = 2;
+                table.AddCell(SetInfoCol(tableCell_3));
             }
 
             //row4
@@ -417,7 +437,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.NO_BORDER;
-                pCell.PaddingTop = 17f;
+                pCell.PaddingTop = 14f;
                 return pCell;
             }
             PdfPCell SetInfoCol(PdfPCell pCell)
@@ -425,8 +445,8 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                 pCell.HorizontalAlignment = Element.ALIGN_LEFT;
                 pCell.VerticalAlignment = Element.ALIGN_MIDDLE;
                 pCell.Border = Rectangle.BOTTOM_BORDER;
-                pCell.PaddingTop = 17f;
-                pCell.PaddingBottom = 5f;
+                pCell.PaddingTop = 14f;
+                pCell.PaddingBottom = 3f;
                 return pCell;
             }
             return table;

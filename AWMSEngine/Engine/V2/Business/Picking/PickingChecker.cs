@@ -134,6 +134,22 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                 if (parent_type != StorageObjectType.LOCATION)
                 {
+                    var getParent = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, false, BuVO);
+
+                    var stocheckpallet = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                                                    new SQLConditionCriteria("ParentStorageObject_ID", parent_id, SQLOperatorType.EQUALS),
+                                                    new SQLConditionCriteria("ObjectType", StorageObjectType.PACK, SQLOperatorType.EQUALS),
+                                                    new SQLConditionCriteria("Status", "0,1", SQLOperatorType.IN),
+                                                }, this.BuVO);
+                    if (stocheckpallet == null || stocheckpallet.Count == 0)
+                    {
+                        //ถ้าไม่มีให้ลบพาเลท
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(parent_id, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
+                        if (getParent.parentID.HasValue)
+                            updatePallet(getParent.parentID.Value, getParent.parentType.Value);
+                    }
+
+                    /*
                     var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
                     var stoLists = new List<StorageObjectCriteria>();
                     if (sto != null)
@@ -158,7 +174,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         }
 
                     }
-
+                    */
                 }
             }
 

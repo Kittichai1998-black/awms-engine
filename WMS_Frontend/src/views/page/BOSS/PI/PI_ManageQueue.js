@@ -4,8 +4,8 @@ import queryString from 'query-string'
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
-    { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
-    { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
+    { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
+    { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
     {
         "Header": "% Random", "sortable": false, "width": 80, 
@@ -90,7 +90,7 @@ const processCondition = {
     ],
     "auditStatuses": [
         {
-            "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": false, "editable": true,
+            "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": true, "editable": true,
         },
         {
             "field": "PASSED", "value": 1, "enable": true, "defaultValue": true, "editable": true,
@@ -105,6 +105,13 @@ const processCondition = {
     "orderBys": [
         {
             "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
+            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+        },
+        {
+            "field": "Expiry Date", "enable": true, "sortField": "psto.expirydate",
             "defaultSortBy": "0",
             "editable": true,
             "order": 1,

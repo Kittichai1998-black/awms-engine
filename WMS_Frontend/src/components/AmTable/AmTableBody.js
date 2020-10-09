@@ -74,14 +74,14 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
         Cell: ele => {
           let numrow = 0;
           if (page !== undefined) {
-            if (!ele.data._footer) {
+            if (!ele.data._footer && ele.original["_groupFooter"] === undefined ) {
               if (page > 0) {
                 numrow = ele.viewIndex + 1 + parseInt(page - 1) * pagination.pageSize;
               } else {
                 numrow = ele.viewIndex + 1;
               }
-              if (ele.original[dataKey] !== undefined)
-                return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
+              
+              return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
           }
         }
@@ -171,18 +171,20 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
   }, [Columns, selection.selectAllState, dataSource]);
 
   useEffect(() => {
-    selection.selectionValue.forEach(x => {
-      if (document.getElementById("selection_" + x[dataKey]) !== null)
-        document.getElementById("selection_" + x[dataKey]).checked = true;
-    });
-    if (!selection.selectAllState && selection.selectionValue.length === 0) {
-      let getDataKey = dataSource.map(res => { return res[dataKey] });
-      getDataKey.forEach(dk => {
-        if (document.getElementById("selection_" + dk) !== null)
-          document.getElementById("selection_" + dk).checked = false;
+    if(selectionState){
+      selection.selectionValue.forEach(x => {
+        if (document.getElementById("selection_" + x[dataKey]) !== null)
+          document.getElementById("selection_" + x[dataKey]).checked = true;
       });
+      if (!selection.selectAllState && selection.selectionValue.length === 0) {
+        let getDataKey = dataSource.map(res => { return res[dataKey] });
+        getDataKey.forEach(dk => {
+          if (document.getElementById("selection_" + dk) !== null)
+            document.getElementById("selection_" + dk).checked = false;
+        });
+      }
     }
-  }, [selection.selectionValue, selection.selectAllState, dataSource])
+  }, [selectionState, selection.selectionValue, selection.selectAllState, dataSource])
 
   return columns
 }
@@ -216,7 +218,7 @@ const useDataSource = (props, groupBy) => {
             return groupData
           }
           else {
-            groupData.push({ ...sumBy, "_footer": true })
+            groupData.push({ ...sumBy, "_footer": true, "_groupFooter":true })
             return groupData
           }
         });
@@ -238,12 +240,18 @@ function useWindowSize(ref) {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     function updateSize() {
-      if (ref !== undefined)
+      if (ref.current !== undefined){
         setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
+      }
+    }if(size[0] === 0&& size[1] === 0){
+      updateSize()
     }
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    return () => {
+      window.removeEventListener('resize', updateSize);
+    }
   }, []);
+  
   return size;
 }
 
@@ -283,13 +291,13 @@ const GenerateRow = ({ columns, props, dataSource }) => {
   return <>
     {customDataSource.map((data, idx) => {
       return <TableRow key={idx}>
-        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle} />
+        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle} rowStyle={props.rowStyle ? props.rowStyle(data) : null}/>
       </TableRow>
     })}
   </>
 }
 
-const GenerateCell = React.memo(({ columns, data, rowIndex, cellStyle }) => {
+const GenerateCell = React.memo(({ columns, data, rowIndex, cellStyle, rowStyle }) => {
   const renderCellText = (columnType, dataRow) => {
     if (columnType.type !== undefined) {
       if (columnType.type === "datetime") {
@@ -329,8 +337,14 @@ const GenerateCell = React.memo(({ columns, data, rowIndex, cellStyle }) => {
     };
 
     let style = {};
-    if (cellStyle !== undefined && column.colStyle === undefined) {
-      cellStyle(column.code, data[column.accessor], data)
+
+    if(rowStyle !== undefined && rowStyle !== null){
+      style = rowStyle;
+    }
+
+    if ((cellStyle !== undefined && cellStyle !== null) && column.colStyle === undefined) {
+      const customCellStyle = cellStyle(column.code, data[column.accessor], data);
+      style = {...style, ...customCellStyle}
     }
 
     if (column.fixed) {
@@ -364,7 +378,7 @@ const GenerateFooter = ({ columns, props, dataSource }) => {
 const GenerateFooterCell = (column, props, dataSource, idx) => {
   const dataByField = [];
   let totalField = 0;
-  dataSource.forEach((data, rowIndex) => {
+  dataSource.filter(x => x["_footer"]===true).forEach((data, rowIndex) => {
     if (typeof data[column.accessor] === "number")
       totalField += data[column.accessor]
 
@@ -495,7 +509,6 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
 
   const RenderTableHeader = () => {
     let getWidth = 0;
-    const freeWidth = calculateWidth(columns);
     return columns.map((col, idx) => {
       if (col.fixed) {
         let fixedStyle = {};
@@ -539,7 +552,7 @@ const GenerateHeader = React.memo(({ columns, props, tableSize }) => {
           key={idx}
           rowData={col}
           ref={cellRef.current[idx]}
-          width={col.width === undefined ? freeWidth : col.width}
+          width={col.width === undefined ? 'auto' : col.width}
           fixWidth={col.fixWidth}
         >
           {col.Header === undefined ? (

@@ -227,6 +227,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
 
                 }
+                //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
+                //{
+                //    sto.IsStock = true;
+                //    AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
+                //       new KeyValuePair<string, object>[] {
+                //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
+                //       });
+                //}
                 ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
             }
         }
@@ -287,16 +295,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var updSto = new StorageObjectCriteria();
                 updSto = sto;
                 updSto.baseQty -= disto.BaseQuantity.Value;
-                var qtyConvert = StaticValue.ConvertToBaseUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.unitID);
+                var qtyConvert = StaticValue.ConvertToNewUnitBySKU(sto.skuID.Value, updSto.baseQty, updSto.baseUnitID, updSto.unitID);
                 updSto.qty = qtyConvert.newQty;
-
 
                 //update new sto pick
                 var issuedSto = new StorageObjectCriteria();
                 issuedSto = sto.Clone();
                 issuedSto.id = null;
                 issuedSto.baseQty = disto.BaseQuantity.Value;
-                var qtyConvert_issued = StaticValue.ConvertToBaseUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.unitID);
+                var qtyConvert_issued = StaticValue.ConvertToNewUnitBySKU(issuedSto.skuID.Value, issuedSto.baseQty, issuedSto.baseUnitID, issuedSto.unitID);
                 issuedSto.qty = qtyConvert_issued.newQty;
                 issuedSto.parentID = null;
                 issuedSto.mapstos = null;
@@ -356,29 +363,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 if (parent_type != StorageObjectType.LOCATION)
                 {
-                    var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
-                    var stoLists = new List<StorageObjectCriteria>();
-                    if (sto != null)
-                        stoLists = sto.ToTreeList();
+                    var getParent = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, false, BuVO);
 
-                    var all_pack = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
-                    if (stoLists.Count() > 0 && all_pack.TrueForAll(x => {
-                        var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(x.eventStatus);
-                        return status != EntityStatus.ACTIVE;
-                    })) //ต้องไม่ใช่1ทั้งหมด
+                    var stocheckpallet = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                                                    new SQLConditionCriteria("ParentStorageObject_ID", parent_id, SQLOperatorType.EQUALS),
+                                                    new SQLConditionCriteria("ObjectType", StorageObjectType.PACK, SQLOperatorType.EQUALS),
+                                                    new SQLConditionCriteria("Status", "0,1", SQLOperatorType.IN),
+                                                }, this.BuVO);
+                    if (stocheckpallet == null || stocheckpallet.Count == 0)
                     {
-                        var parentUpdate = stoLists.Find(x => x.id == parent_id);
-
-                        if (all_pack.TrueForAll(x => {
-                            var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(x.eventStatus);
-                            return status == EntityStatus.DONE;
-                        }))
-                        {
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
-                            if (parentUpdate.parentID.HasValue)
-                                updatePallet(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
-                        }
-                         
+                        //ถ้าไม่มีให้ลบพาเลท
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(parent_id, null, null, StorageObjectEventStatus.REMOVE, this.BuVO);
+                        if (getParent.parentID.HasValue)
+                            updatePallet(getParent.parentID.Value, getParent.parentType.Value);
                     }
 
                 }

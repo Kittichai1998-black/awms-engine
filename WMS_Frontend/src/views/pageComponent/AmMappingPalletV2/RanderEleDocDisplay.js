@@ -42,11 +42,11 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
     <CardContent>
       <div>
         <FormInline style={{ display: "block" }}>
-          <LabelH2>GR Doc :</LabelH2>
+          <LabelH2>{"GR Doc"}</LabelH2>
           {dataDoc.grCode}
         </FormInline>
         <FormInline style={{ display: "block" }}>
-          <LabelH2>PA Doc :</LabelH2>
+          <LabelH2>{"PA Doc"}</LabelH2>
           {dataDoc.putawayCode}
         </FormInline>
         {dataDoc.datas === null ? null : dataDoc.datas.map((x, index) => {
@@ -60,15 +60,15 @@ const DataGenerateEleDocDisplay = (dataDoc) => {
               }}>
                 <div key={index}>
                   <FormInline style={{ display: "block" }}>
-                    <LabelH2>Item :</LabelH2>
+                    <LabelH2>{"Item"}</LabelH2>
                     {x.pstoCode}
                   </FormInline>
                   <FormInline style={{ display: "block" }}>
-                    <LabelH2>Lot :</LabelH2>
+                    <LabelH2>{"Lot"}</LabelH2>
                     {x.lot}
                   </FormInline>
                   <FormInline style={{ display: "block" }}>
-                    <LabelH2>Qty : </LabelH2>{x.addQty} {x.unitTypeCode}
+                    <LabelH2>{"Qty"}</LabelH2>{x.addQty} {x.unitTypeCode}
                   </FormInline>
                 </div>
 
@@ -90,7 +90,7 @@ const DataGenerateEleManaulDisplay = (valueManual, columnsManual) => {
           return (
             <div key={index}>
               <FormInline>
-                <LabelH1>{x.name + ":"}</LabelH1>
+                <LabelH1>{x.name}</LabelH1>
                 <InputDiv>  {valueManual[x.field]}</InputDiv>
               </FormInline>
             </div>

@@ -54,6 +54,7 @@ const BaseMaster = props => {
       fixWidth: 162,
       sortable: false,
       filterType: "dropdown",
+      colStyle:{textAlign:"center"},
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: EntityEventStatus,
@@ -77,29 +78,29 @@ const BaseMaster = props => {
     },
   ];
   const columns = [
-    {
-      field: "Checkbox",
-      type: "checkbox",
-      name: "Checkbox",
-      placeholder: "",
-    },
-    {
-      field: "CodeStart",
-      type: "input",
-      name: "Code Start",
-      placeholder: "Code",
-      disableCustom: true,
+    // {
+    //   field: "Checkbox",
+    //   type: "checkbox",
+    //   name: "Checkbox",
+    //   placeholder: "",
+    // },
+    // {
+    //   field: "CodeStart",
+    //   type: "input",
+    //   name: "Code Start",
+    //   placeholder: "Code",
+    //   disableCustom: true,
 
-    },
+    // },
+    // {
+    //   field: "CodeEnd",
+    //   type: "input",
+    //   name: "Code End",
+    //   placeholder: "Code",
+    //   disableCustom: true,
+    // },
     {
-      field: "CodeEnd",
-      type: "input",
-      name: "Code End",
-      placeholder: "Code",
-      disableCustom: true,
-    },
-    {
-      field: "Code2",
+      field: "Code",
       type: "input",
       name: "Code",
       placeholder: "Code",
@@ -323,15 +324,14 @@ const BaseMaster = props => {
   const customActions = [
     {
       label: <label style={{ marginBottom: 0 }}><PrintIcon fontSize="small" style={{ marginRight: 5 }} />{"Print Barcode"}</label>,
-      action: (data) => onPrintBarcode(data)
+      action: (data, custom) => {onPrintBarcode(data); custom(true)}
     },
   ];
   const onPrintBarcode = async (dataSel) => {
     try {
-      console.log(dataSel)
       let listCode = [];
       if (dataSel && dataSel.length > 0) {
-        dataSel.map(x => {
+        dataSel.forEach(x => {
           listCode.push({ "code": x.Code });
         });
         let reqjson = {

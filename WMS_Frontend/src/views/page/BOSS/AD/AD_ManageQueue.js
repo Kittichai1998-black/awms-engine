@@ -1,11 +1,19 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
+import queryString from 'query-string'
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
-    { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
-    { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
+    { "accessor": "Code", "Header": "Item Code", "sortable": false, "width": 200 },
+    { "accessor": "SKUMaster_Name", "Header": "Item Name", "sortable": false },
     { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
+    {
+        "Header": "% Random", "sortable": false, "width": 80, 
+        Cell: val => {
+                let qryStrOpt = queryString.parse(val.original.Options);
+                return qryStrOpt["qtyrandom"] + " %"
+        }
+    },
     { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
 ];
 const columnsConfirm = [
@@ -96,22 +104,29 @@ const processCondition = {
     ],
     "orderBys": [
         {
-            "field": "Receive Date", "enable": true, "sortField": "psto.createtime", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":1,
+            "field": "Receive Date", "enable": true, "sortField": "psto.createtime",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
         },
         {
-            "field": "Batch", "enable": true, "sortField": "psto.batch", 
-            "defaultSortBy": "0", 
-            "editable": true, 
-            "order":2,
+            "field": "Expiry Date", "enable": true, "sortField": "psto.expirydate",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 1,
+            //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.createtime", "sortBy": "1", } }
+        },
+        {
+            "field": "Batch", "enable": true, "sortField": "psto.batch",
+            "defaultSortBy": "0",
+            "editable": true,
+            "order": 2,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.batch", "sortBy": "1", } }
         },
         {
-            "field": "Lot", "enable": true, "sortField": "psto.lot", 
-            "editable": true, 
+            "field": "Lot", "enable": true, "sortField": "psto.lot",
+            "editable": true,
             //   custom: (c) => { return { "value": true, "editable": true, "enable": true, "sortField": "psto.lot", "sortBy": "1", } }
         }
     ]
@@ -127,19 +142,11 @@ const documentDetail = {
 
 const ProcessQueue = () => {
     const customDesArea = (areaList, doc, warehouse) => {
-        if (doc.document.DocumentProcessType_ID === 1013) {
-            return areaList.filter(x => x.ID === 9 || x.ID === 10 || x.ID === 11 || x.ID === 12)
-        }
-        else
-            return areaList
+        return areaList.filter(x => x.ID === 9 || x.ID === 10)
     }
 
     const customDesAreaDefault = (doc) => {
-        if (doc.document.DocumentProcessType_ID === 1013) {
-            return "10"
-        }
-        else
-            return "10"
+        return "10"
     }
 
     return <AmProcessQueue
@@ -151,7 +158,6 @@ const ProcessQueue = () => {
         documentDetail={documentDetail}
         processSingle={true}
         processCondition={processCondition}
-        percentRandom={true}
         customDesArea={customDesArea}
         areaDefault={customDesAreaDefault}
         columnsConfirm={columnsConfirm}

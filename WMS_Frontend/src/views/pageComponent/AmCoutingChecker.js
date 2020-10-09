@@ -506,7 +506,7 @@ const AmCoutingChecker = (props) => {
                                 : null;
 
                             let auditstatus = null;
-                            if (dataSelected.auditStatus) {
+                            if (dataSelected.auditStatus != null) {
                                 let audit = "Audit Status: ";
                                 auditstatus = <Typography variant="body2" className={classes.labelText} noWrap>{audit}
                                     <AmAuditStatus className={classes.statusLabel} statusCode={dataSelected.auditStatus} />

@@ -58,12 +58,11 @@ const DailySTOReceive = (props) => {
 
     const [datavalue, setdatavalue] = useState([]);
 
-
     const MVTQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "DocumentProcessType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "*",
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1001}]',
+        f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -82,39 +81,40 @@ const DailySTOReceive = (props) => {
             dateFormat: "DD/MM/YYYY HH:mm"
         },
         { Header: 'Pallet', accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
-        { Header: 'Doc No.', accessor: 'docCode', width: 120, sortable: false },
+        { Header: 'Doc No.', accessor: 'docCode', width: 130, sortable: false },
         {
             Header: 'Process No.', accessor: 'DocProcessName', width: 220, sortable: false, filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
-                fieldLabel: ["Name"],
+                fieldLabel: ["Code", "Name"],
                 dataDropDown: MVTQuery,
                 typeDropDown: "normal",
-                widthDD: 220,
+                widthDD: 320,
             },
         },
-        { Header: 'SKU Code', accessor: 'pstoCode', width: 120, sortable: false },
-        { Header: 'SKU Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false, },
+        { Header: 'Item Code', accessor: 'pstoCode', width: 120, sortable: false },
+        { Header: 'Item Name', accessor: 'pstoName', width: 150, sortable: false, filterable: false },
         { Header: 'Batch', accessor: 'pstoBatch', width: 100, sortable: false },
         { Header: 'Lot', accessor: 'pstoLot', width: 100, sortable: false },
-        { Header: 'Order No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
+        { Header: 'Control No.', accessor: 'pstoOrderNo', width: 100, sortable: false },
         {
             Header: 'Qty', accessor: 'qty', width: 100, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Footer: true, filterable: false
         },
         { Header: 'Unit', accessor: 'unitType', width: 100, sortable: false, filterable: false, },
         {
             Header: 'Base Qty', accessor: 'baseQty', width: 100, sortable: false,
-            Footer: true,
-            "Cell": (e) => comma(e.value.toString()), filterable: false,
+            Footer: true, filterable: false
+
         },
         { Header: 'Base Unit', accessor: 'baseUnitType', width: 100, sortable: false, filterable: false, },
 
     ];
 
     const comma = (value) => {
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        //console.log(value)
+        return null
+        //return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return (
         <div className={classes.root}>

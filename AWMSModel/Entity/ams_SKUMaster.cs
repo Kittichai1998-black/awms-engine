@@ -6,7 +6,6 @@ namespace AWMSModel.Entity
 {
     public class ams_SKUMaster : BaseEntitySTD
     {
-        public decimal? WeightKG;
         public decimal? WidthM;
         public decimal? LengthM;
         public decimal? HeightM;
@@ -14,5 +13,8 @@ namespace AWMSModel.Entity
         public long SKUMasterType_ID;
         public decimal? Cost;
         public decimal? Price;
+        public long? IncubationDay;
+        public long? ShelfLifeDay;
+        public long? ShelfLifePercent;
     }
 }

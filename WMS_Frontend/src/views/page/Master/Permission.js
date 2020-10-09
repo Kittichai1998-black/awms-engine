@@ -5,7 +5,7 @@ import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 import IconButton from "@material-ui/core/IconButton";
 import AmEditorTable from '../../../components/table/AmEditorTable';
-import AmTable from "../../../components/AmTable/AmTable";
+import AmTable from "../../../components/AmTable/AmTableComponent";
 import { apicall } from '../../../components/function/CoreFunction2';
 import GroupIcon from '@material-ui/icons/Group';
 import AmDialogs from "../../../components/AmDialogs";
@@ -20,6 +20,7 @@ const Permission = props => {
   const updateRolePermission = useRef([]);
   const [open, setOpen] = useState(false);
   const [dialogState, setDialogState] = useState({});
+  const [clearSelection, setClearSelection] = useState({});
 
   const iniCols = [
     {
@@ -29,6 +30,7 @@ const Permission = props => {
       fixWidth: 162,
       sortable: false,
       filterType:"dropdown",
+      colStyle:{textAlign:"center"},
       filterConfig:{
         filterType:"dropdown",
         dataDropDown:EntityEventStatus,
@@ -219,6 +221,7 @@ const Permission = props => {
                     updateRolePermission.current = objUpdate;
                   }}
                   selectionDefault={defaultValue()}
+                  pageSize={500}
                   height={400}
                 />{" "}
               </div>

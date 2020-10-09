@@ -59,11 +59,33 @@ const AmputAndpickManage = (props) => {
                 docs[key] = value
         }
 
-
-        doc.dataSourceItemTB.forEach((x, i) => {
-            console.log(x)
-
+        var qtyrandom = 'qtyrandom='
+        var remark = 'remark='
+        var pallet = 'palletcode='
+        var optn;
+        doc.dataSourceItemTB.map(x => {          
+            if (x.PalletCode != null && x.remark != null && x.Options != null) {
+                optn = x.Options + '&' +
+                    pallet.concat(x.PalletCode) + '&' +
+                    remark.concat(x.remark)
+            } else if (x.PalletCode && x.remark && x.Options === null) {
+                optn = pallet.concat(x.PalletCode) + '&' +
+                    remark.concat(x.remark)
+            } else if (x.remark === null && x.PalletCode && x.Options) {
+                optn = x.Options + '&' +
+                    pallet.concat(x.PalletCode)
+            } else if (x.PalletCode === null && x.remark && x.Options) {
+                optn = x.Options + '&' +
+                    remark.concat(x.remark)
+            } else if (x.PalletCode && x.remark === null && x.Options === null) {
+                optn = pallet.concat(x.PalletCode)
+            } else if (x.PalletCode === null && x.remark && x.Options === null) {
+                optn = remark.concat(x.remark)
+            } else if (x.PalletCode === null && x.remark === null && x.Options) {
+                optn = x.Options
+            }
         })
+
 
         if (props.doccreateDocType === "putAway") {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
@@ -83,7 +105,7 @@ const AmputAndpickManage = (props) => {
                 x.ref2 = x.Ref2
                 x.ref3 = x.Ref3
                 x.ref4 = x.Ref4
-                x.options = x.Options
+                x.options = optn
                 x.parentDocumentItem_ID = x.ID
                 x.incubationDay = x.IncubationDay
                 x.ExpireDate = x.ExpireDates
@@ -113,7 +135,7 @@ const AmputAndpickManage = (props) => {
                 x.ref2 = x.Ref2
                 x.ref3 = x.Ref3
                 x.ref4 = x.Ref4
-                x.options = x.Options
+                x.options = optn
                 x.parentDocumentItem_ID = x.ID
                 x.incubationDay = x.IncubationDay
                 x.ExpireDate = x.ExpireDates
@@ -127,7 +149,6 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-            //console.log(docs)
             CreateDocuments(docs)
         }
 

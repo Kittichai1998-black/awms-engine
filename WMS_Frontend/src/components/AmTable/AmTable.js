@@ -15,16 +15,27 @@ const pageSize = [{label:"20", value:20},{label:"50", value:50},{label:"100", va
 
 const AmTableComponent = lazy(() => import("./AmTableComponent"));
 
-const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items, selection}) => {
+const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items, selection, setReset}) => {
     if(items && customTopLeftControl){
         return <>
-            <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/>
+            <AmDropDownMenu customToggle={customToggleBTN} 
+                style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} 
+                items={items} 
+                datas={selection} customAction={setReset}
+                title="Action"
+            />
             <div style={{display:"inline-block", paddingLeft:"4px"}} >{customTopLeftControl}</div>
         </>;
     }
     else if(items){
         return <>
-            <AmDropDownMenu customToggle={customToggleBTN} style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} items={items} datas={selection} title="Action"/>
+            <AmDropDownMenu 
+                customToggle={customToggleBTN} 
+                style={{display:"inline-block", borderRight:customTopLeftControl ? "2px solid #ddd" : "", paddingRight:"4px"}} 
+                items={items} 
+                datas={selection} customAction={setReset}
+                title="Action"
+            />
         </>;
     }
     else if(customTopLeftControl){
@@ -34,20 +45,20 @@ const CustomTopLeft = React.memo(({customToggleBTN, customTopLeftControl, items,
     }
 });
 
-const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination}) => {
+const CustomTopRight = React.memo(({customSettingBTN, customSettingMenu, customTopRightControl, items, selection, tableConfig, pagination, setReset}) => {
     if(tableConfig && customTopRightControl){
         return <>
         <div style={{display:"inline-block", paddingLeft:"4px", marginRight:"4px"}} >{customTopRightControl}</div>
         <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
         style={{display:"inline-block", paddingLeft:"4px"}} 
-        items={items} datas={selection} title=""/>
+        items={items} datas={selection} customAction={setReset} title=""/>
     </>;
     }
     else if(tableConfig){
         return <>
             <AmDropDownMenu customToggle={customSettingBTN} customItems={customSettingMenu} 
             style={{display:"inline-block"}} 
-            items={items} datas={selection} title=""/>
+            items={items} datas={selection} customAction={setReset}  title=""/>
         </>;
     }
     else if(customTopRightControl){
@@ -88,11 +99,22 @@ const AmTable = (props) => {
     const [selection, setSelection] = useState([])
     const [pgSize, setPgSize] = useState(props.pageSize ? 20 : props.pageSize);
     const [exportExcel, setExportExcel] = useState(false);
+    const [resetSelection, setResetSelection] = useState(false);
 
     useEffect(() => {
-        if(props.onPageSizeChange)
-            props.onPageSizeChange(props.pageSize)
+        if(props.onPageSizeChange){
+            props.onPageSizeChange(pgSize)
+        }
     }, [pgSize])
+    
+    useEffect(() => {
+        if(props.clearSelectionAction === true){
+            setResetSelection(true)
+        }
+        return () => {
+            setResetSelection(false)
+        }
+    }, [props.clearSelectionAction, resetSelection])
 
     const customPageSizeBtn = React.forwardRef(({ children, onClick }, ref) => (
         <Button disableRipple
@@ -173,6 +195,7 @@ const AmTable = (props) => {
                 selectionData={(sel) => {if(props.selectionData !== undefined)setSelection(sel)}}
                 selectionDefault={props.selectionDefault}
                 clearSelectionChangePage={props.clearSelectionChangePage}
+                clearSelectionAction={resetSelection}
                 customTopControl={props.customTopControl}
                 customTopLeftControl={
                     props.customTopLeftControl || props.customAction ? 
@@ -180,6 +203,7 @@ const AmTable = (props) => {
                         customToggleBTN={customToggleBTN} 
                         customTopLeftControl={props.customTopLeftControl} 
                         items={props.customAction} 
+                        setReset={setResetSelection}
                         selection={selection}/> : null
                 }
                 customTopRightControl={
@@ -188,7 +212,8 @@ const AmTable = (props) => {
                         customSettingMenu={customSettingMenu} 
                         customTopRightControl={props.customTopRightControl} 
                         items={configItems} tableConfig={props.tableConfig} 
-                        selection={selection} 
+                        selection={selection}
+                        setReset={setResetSelection}
                         pagination={props.pagination}/> : null
                 }
                 customBtmControl={props.customBtmControl}
@@ -198,6 +223,10 @@ const AmTable = (props) => {
                 sortData={props.sortData}
                 selectionDisabledCustom={props.selectionDisabledCustom}
                 clearSelectionChangeData={props.clearSelectionChangeData}
+                rowStyle={(data) => {
+                    if(data._groupFooter)
+                        return {background: "#FEFEFE"}
+                }}
             />
             {
                 props.tableConfig ? 

@@ -175,15 +175,16 @@ const DashboardChartComponent = (props) => {
         }
     }, [chartConfigs]);
     return (
-        <Fullscreen enabled={isFullScreen} onChange={isFull => setIsFullScreen(isFull)}>
-            <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+        // <Fullscreen enabled={isFullScreen} onChange={isFull => setIsFullScreen(isFull)}>
+            // <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: 'inherit', width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+                <>
                 <Grid container direction="row" justify="flex-start" alignItems="stretch" >
                     <Grid item xs={12} sm={6} md={6} xl={6}>
                         <Grid container direction="row" justify="flex-start" alignItems="center">
                             <label style={{ marginTop: 7, marginBottom: 3, fontSize: 'calc(0.5em + 1.5vw)', fontWeight: 'bold' }}>{time_show}</label>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={6} xl={6}>
+                    {/* <Grid item xs={12} sm={6} md={6} xl={6}>
                         <Grid container direction="row" justify="flex-end" alignItems="center" >
                             <Grid item >
                                 <IconButton style={{ marginLeft: 5, padding: 4 }} onClick={isFullScreen ? goMin : goFull}>
@@ -194,11 +195,13 @@ const DashboardChartComponent = (props) => {
                                 </IconButton>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
+                <div style={{overflow: 'auto'}}>
                 {chartCreateShow}
             </div>
-        </Fullscreen>
+            </>
+        // </Fullscreen>
     );
 
 }

@@ -96,7 +96,7 @@ const MaintenancePlan = (props) => {
                     width={200}
                     ddlMinWidth={200}
                     zIndex={10000}
-                    defaultValue={10}
+                    defaultValue={11}
                     data={statusData}
                     onChange={(value) => {data.status = value}}
                 />
@@ -124,7 +124,7 @@ const MaintenancePlan = (props) => {
         
         <AmEditorTable open={open} onAccept={(status, rowdata)=>{if(status){onClickConfirm(rowdata)}else{onClickCancel()}}} 
             titleText={"Add"} 
-            data={{desc:"", by:"", status:10}} 
+            data={{desc:"", by:"", status:11}} 
             columns={editorCols}
         />
         <Grid container>
@@ -133,6 +133,7 @@ const MaintenancePlan = (props) => {
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Description : </Label>{data.Description}</Grid>
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Warehouse Name : </Label>{data.Warehouse_Name}</Grid>
             <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Maintenance Date : </Label>{data.MaintenanceDate}</Grid>
+            <Grid item xs={12} sm={6}style={{ paddingLeft: "20px", paddingTop: "10px" }}><Label>Status : </Label>{data.EventStatus}</Grid>
         </Grid>
         <AmTable
             columns={headerColumns}

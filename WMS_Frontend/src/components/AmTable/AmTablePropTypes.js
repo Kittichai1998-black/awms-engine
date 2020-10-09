@@ -22,6 +22,11 @@ const propTypes = {
     */
     cellStyle: PropTypes.func,
     /**
+     * return style object ตามเงื่อนไขข้อมูล
+     ** value? : (rowdata)=> {return {color:"red"}}
+    */
+    rowStyle: PropTypes.func,
+    /**
      * เลือกรูปแบบ selection
      ** value? : "radio" | "checkbox"
     */
@@ -61,6 +66,11 @@ const propTypes = {
      ** value? : (accessor, cellData, dataSource)=> {return {color:"red"}}
     */
     footerStyle: PropTypes.func,
+    /**
+     * style object group footer
+     ** value? : {color:"red"}
+    */
+    groupFooterStyle: PropTypes.object,
     /**
      * return Array [Field]
      ** value? : ["ID", "Code"]
@@ -107,10 +117,15 @@ const propTypes = {
     */
     clearSelectionChangePage: PropTypes.bool,
     /**
-     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูลที่เลือกเมื่อเปลี่ยน-hv,^]
+     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูลที่เลือกเมื่อเปลี่ยนหน้า
      ** value? : true | false
     */
     clearSelectionChangeData: PropTypes.bool,
+    /**
+     * ใช้เปิดปิดเงื่อนไขเคลียข้อมูลที่เลือกเมื่อต้องการ
+     ** value? : true | false
+    */
+    clearSelectionAction: PropTypes.bool,
     /**
      * ตั้งค่าความกว้างของตาราง
      ** value? : "100%" | 100
@@ -173,9 +188,14 @@ const propTypes = {
     onPageSizeChange:PropTypes.func,
     /**
      * ค่ารูปแบบตารางเบื้องต้น
-     ** {margin:10, padding:10}
+     ** value? : {margin:10, padding:10}
     */
     style:PropTypes.object,
+    /**
+     * reset กล่อง selection เมื่อมีการส่ง true เข้ามา
+     ** value? : true | false
+    */
+    resetSelection:PropTypes.bool,
 }
 
 export default propTypes;

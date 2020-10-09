@@ -3,15 +3,14 @@ import { apicall, createQueryString } from '../../../components/function/CoreFun
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmTable from "../../../components/AmTable/AmTable";
 import AmDialogs from "../../../components/AmDialogs";
-import AmButton from "../../../components/AmButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
 import AmDropdown from '../../../components/AmDropdown';
-import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
+import queryString from "query-string";
 
 import AmMasterEditorData from "./AmMasterEditorData";
 
@@ -37,6 +36,13 @@ const FormInline = styled.div`
 const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
     const [count, setCount] = useState(0)
+
+    useEffect(()=> {
+        let objQueryStr = queryString.parse(window.location.search)
+        for(let str in objQueryStr){
+            QueryGenerate(queryObj, str, objQueryStr[str], '', '')
+        }
+    }, [])
 
     useEffect(() => {
         if (typeof queryObj === "object") {
@@ -171,9 +177,9 @@ const useColumns = (cols) => {
 const AmMasterData = (props) => {
     const [queryObj, setQueryObj] = useState(() => {
         if (props.tableType === "master")
-            return mstQuery(props.tableQuery, props.codeInclude, props.pageSize)
+            return mstQuery(props.tableQuery, props.codeInclude, 20)
         else if (props.tableType === "view")
-            return viewQuery(props.tableQuery, props.codeInclude, props.pageSize)
+            return viewQuery(props.tableQuery, props.codeInclude, 20)
         else
             return;
     });
@@ -187,7 +193,7 @@ const AmMasterData = (props) => {
     const { dataSource, count } = useQueryData(queryObj);
     const [popupTitle, setPopupTitle] = useState();
     const [sort, setSort] = useState({});
-    const [pageSize, setPageSize] = useState(props.pageSize ? props.pageSize : 20);
+    const [pageSize, setPageSize] = useState(20);
 
     useEffect(() => {
         if(queryObj.l !== pageSize){
@@ -211,7 +217,7 @@ const AmMasterData = (props) => {
                     setDialogState({ type: "success", content: "Success", state: true })
                 }
                 else {
-                    setDialogState({ type: "error", content: data._result.message, state: true })
+                    setDialogState({ type: "error", content: res.data._result.message, state: true })
                 }
             });
         }
@@ -256,22 +262,39 @@ const AmMasterData = (props) => {
         filterValue.forEach(fdata => {
             if (fdata.customFilter !== undefined) {
                 if (IsEmptyObject(fdata.customFilter)) {
-                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                    res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
                 } else {
-                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField)
+                    res = QueryGenerate({ ...queryObj }, fdata.customFilter.field === undefined ? fdata.field : fdata.customFilter.field, fdata.value, fdata.customFilter.dataType, fdata.customFilter.dateField, window.location.search)
                 }
             }
             else {
-                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value)
+                res = QueryGenerate({ ...queryObj }, fdata.field, fdata.value, window.location.search)
             }
+            props.history.push(window.location.pathname + "?" + res.querySearch.toString());
+
         });
         setQueryObj(res)
     }
 
     const onClickAdd = () => {
+        let obj = {ID: null, status: 1, revision: 1}
+        if(props.customAddData !== undefined){
+            obj ={ ...obj, ...props.customAddData }
+        }
         setEditorColumns(props.dataAdd);
-        setUpdateData({ ID: null, status: 1, revision: 1 })
+        setUpdateData(obj)
         setPopupTitle("Add")
+    }
+
+    const genMenuAction = () => {
+        let obj = [];
+        if(props.customAction !== undefined){
+            props.customAction.forEach(x => obj.push(x))
+        }
+        if(props.dataAdd !== undefined){
+            obj.push({label:"Add", action:()=>{onClickAdd()}})
+        }
+        return obj;
     }
 
     return <>
@@ -284,19 +307,20 @@ const AmMasterData = (props) => {
                 } else {
                     updateRow(props.table, data, props.updateURL);
                 }
-            }} />
+            }}
+        />
         <AmDialogs
             typePopup={dialogState.type}
             onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
             open={dialogState.state}
             content={dialogState.content} />
-        <FormInline style={{ float: "right", marginBottom: "10px" }} >
+        {/* <FormInline style={{ float: "right", marginBottom: "10px" }} >
             <AmButton
                 style={{ marginRight: "5px", float: "right" }}
                 styleType="add"
                 onClick={onClickAdd}>{"Add"}
             </AmButton>
-        </FormInline>
+        </FormInline> */}
         <div style={{ clear: "both" }}></div>
         <AmTable
             sortable={props.sortable ? props.sortable : false}
@@ -312,7 +336,7 @@ const AmMasterData = (props) => {
             rowNumber={true}
             totalSize={count}
             pageSize={props.pageSize}
-            height={500}
+            height={props.height-45}
             pagination={true}
             onPageChange={p => {
                 if (page !== p)
@@ -323,10 +347,9 @@ const AmMasterData = (props) => {
             selection={props.selection}
             selectionData={props.selectionData}
             onPageSizeChange={(pg)=> {setPageSize(pg)}}
-            customAction={props.customAction}
+            customAction={genMenuAction()}
             tableConfig={true}
         />
     </>
 }
-
 export default AmMasterData;

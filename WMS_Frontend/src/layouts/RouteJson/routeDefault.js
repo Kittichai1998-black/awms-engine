@@ -67,8 +67,8 @@ const AreaLocationMaster = Loadable({
 });
 
 const AreaLocationCondition = Loadable({
-    loader: () => import("../../views/page/Master/AreaLocationCondition"),
-    loading: Loading
+  loader: () => import("../../views/page/Master/AreaLocationCondition"),
+  loading: Loading
 });
 const AreaRoute = Loadable({
   loader: () => import("../../views/page/Master/AreaRoute"),
@@ -102,8 +102,23 @@ const ScanPalletInfo = Loadable({
   loader: () => import("../../views/page/Warehouse/ScanPalletInfo"),
   loading: Loading
 });
+
+const StockReplenishment = Loadable({
+  loader: () => import("../../views/page/Warehouse/StockReplenishment"),
+  loading: Loading
+});
 const CurrentInventory = Loadable({
   loader: () => import("../../views/page/NewReport/CurrentInventory"),
+  loading: Loading
+});
+
+const StockLocationUsed = Loadable({
+  loader: () => import("../../views/page/NewReport/StockLocationUsed"),
+  loading: Loading
+});
+
+const DeadStock = Loadable({
+  loader: () => import("../../views/page/NewReport/DeadStock"),
   loading: Loading
 });
 
@@ -161,6 +176,12 @@ const DailySTOSumAudit = Loadable({
   loader: () => import("../../views/page/NewReport/DailySTOSumAudit"),
   loading: Loading
 });
+
+const Throughput = Loadable({
+  loader: () => import("../../views/page/NewReport/Throughput"),
+  loading: Loading
+});
+
 const ScanPalletMove = Loadable({
   loader: () => import("../../views/page/Warehouse/ScanPalletMoveLocation.js"),
   loading: Loading
@@ -177,6 +198,7 @@ const MonitorIO = Loadable({
   loader: () => import("../../views/page/Monitor/MonitorIO"),
   loading: Loading
 });
+
 const MonitorPicking = Loadable({
   loader: () => import("../../views/page/ENGINE/Monitor/MonitorPicking"),
   loading: Loading
@@ -264,7 +286,11 @@ const SearchLog = Loadable({
   loading: Loading
 });
 const Dash = Loadable({
-  loader: () => import("../../views/page/Dashboard/ExDashboard"),
+  loader: () => import("../../views/page/Dashboard/DashboardSummary"),
+  loading: Loading
+});
+const MaintenanceCalendar = Loadable({
+  loader: () => import("../../views/page/Dashboard/MaintenanceCalendar"),
   loading: Loading
 });
 const WebPage = Loadable({
@@ -297,7 +323,6 @@ const GR_Search = Loadable({
   loading: Loading
 });
 
-
 const PA_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/PA/PA_Create"),
   loading: Loading
@@ -327,10 +352,7 @@ const PK_Checker = Loadable({
   loader: () => import("../../views/page/ENGINE/PK/PK_Checker"),
   loading: Loading
 });
-const AD_Checker = Loadable({
-  loader: () => import("../../views/page/ENGINE/AD/AD_Checker"),
-  loading: Loading
-});
+
 
 const GI_Create = Loadable({
   loader: () => import("../../views/page/ENGINE/GI/GI_Create_FGcus"),
@@ -388,6 +410,22 @@ const ManageMaintenancePlan = Loadable({
   loader: () => import("../../views/page/ENGINE/ManageMaintenancePlan"),
   loading: Loading
 });
+const Car = Loadable({
+  loader: () => import("../../views/page/Master/TransportCar"),
+  loading: Loading
+});
+const CarType = Loadable({
+  loader: () => import("../../views/page/Master/TransportCarType"),
+  loading: Loading
+});
+const MoveLocation = Loadable({
+  loader: () => import("../../views/page/ENGINE/MoveLocation"),
+  loading: Loading
+});
+const GR_PalletEmpByHH = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_PalletEmpByHH"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
@@ -397,16 +435,19 @@ let routes = [
   { path: "/monitor/receiving", name: "Inbound Progress", compoment: MonitorIO, exact: true },
   { path: "/monitor/issuing", name: "Outbound Progress", compoment: MonitorIO, exact: true },
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
-  // {path: "/dashboard/picking",name: "Pickiing Progress",compoment: Picking,exact: true},
-  // {path: "/dashboard/pickingjobs",name: "Dashboard Gate Picking Return by GR",compoment: dashboardReturnPicking,exact: true},
   { path: "/warehouse/storageobject", name: "Storage Object", compoment: StorageObject, exact: true },
+  { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
   { path: "/warehouse/scanpalletmove", name: "Scan Pallet Move", compoment: ScanPalletMove, exact: true },
   { path: "/warehouse/checkpallet", name: "Scan Pallet Information", compoment: ScanPalletInfo, exact: true },
+  { path: "/warehouse/stockReplenishment", name: "Scan Pallet Information", compoment: StockReplenishment, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
   { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
   { path: "/report/counting", name: "Counting Report", compoment: DailySTOCounting, exact: true },
+  { path: "/report/stocklocationuse", name: "Location Report", compoment: StockLocationUsed, exact: true },
+  { path: "/report/deadstock", name: "DeadStock Report", compoment: DeadStock, exact: true },
+  { path: "/report/throughput", name: "Throughput Report", compoment: Throughput, exact: true },
   { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
   { path: "/report/load", name: "Load Report", compoment: DailyLoad, exact: true },
   { path: "/report/storageobject", name: "Storage Report", compoment: StorageObjectReport, exact: true },
@@ -423,8 +464,8 @@ let routes = [
   { path: "/setting/branch", name: "base5", compoment: BranchMaster, exact: true },
   { path: "/setting/warehouse", name: "base5", compoment: WarehouseMaster, exact: true },
   { path: "/setting/area", name: "base5", compoment: AreaMaster, exact: true },
-    { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
-    { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
+  { path: "/setting/arealocation", name: "base5", compoment: AreaLocationMaster, exact: true },
+  { path: "/setting/areacondition", name: "base5", compoment: AreaLocationCondition, exact: true },
   { path: "/setting/arearoute", name: "base5", compoment: AreaRoute, exact: true },
   { path: "/setting/customer", name: "base5", compoment: Customer, exact: true },
   { path: "/setting/supplier", name: "base5", compoment: Supplier, exact: true },
@@ -433,13 +474,15 @@ let routes = [
   { path: "/setting/skuvolume", name: "base5", compoment: ObjectSize, exact: true },
   { path: "/setting/ObjectSizeMap", name: "base5", compoment: ObjectSizeMap, exact: true },
   { path: "/setting/APIKey", name: "base5", compoment: APIKey, exact: true },
+  { path: "/setting/car", name: "base5", compoment: Car, exact: true },
+  { path: "/setting/carType", name: "base5", compoment: CarType, exact: true },
   { path: "/exbutton", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/exdropdown", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/sto/picking", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
-  { path: "/warehouse/location_view", name: "Location Summary", compoment: LocationSummary, exact: true },
+  { path: "/dashboard/locationview", name: "Location Summary", compoment: LocationSummary, exact: true },
   { path: "/log/apiservicelog", name: "API Service Log", compoment: APIServiceLog, exact: true },
   { path: "/log/apipostlog", name: "Send API Log", compoment: SendAPILog, exact: true },
   { path: "/log/storageobjectlog", name: "Storage Object Log", compoment: StorageObjectLog, exact: true },
@@ -454,7 +497,8 @@ let routes = [
   { path: "/warehouse/workqueue", name: "Work Queue", compoment: WorkQueue, exact: true },
   { path: "/log/downloadlog", name: "Download Log File", compoment: DownloadLog, exact: true },
   { path: "/log/searchlog", name: "Search Log", compoment: SearchLog, exact: true },
-  { path: "/dashboard/Dash", name: "Dash1", compoment: Dash, exact: true },
+  { path: "/dashboard/dashboardsummary", name: "Dash1", compoment: Dash, exact: true },
+  { path: "/dashboard/maintenancecalendar", name: "Dash1", compoment: MaintenanceCalendar, exact: true },
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
@@ -463,7 +507,7 @@ let routes = [
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
   { path: "/receive/hh", name: "GR HH", compoment: GR_PalletByHH, exact: true },
-
+  { path: "/receive/emp", name: "GR EMP", compoment: GR_PalletEmpByHH, exact: true },
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
@@ -485,7 +529,6 @@ let routes = [
   { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
   { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
-  { path: "/audit/auditchecker", name: "AD Checker", compoment: AD_Checker, exact: true },
 
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },

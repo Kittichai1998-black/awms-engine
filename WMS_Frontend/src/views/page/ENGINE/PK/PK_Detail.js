@@ -4,7 +4,9 @@ import React, { useState, useEffect } from "react";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
 import queryString from "query-string";
 import moment from "moment";
 
@@ -47,17 +49,17 @@ const PK_Detail = props => {
         if (OwnerGroupType !== undefined) {
             var DataprocessType;
             if (OwnerGroupType === 1) {
-                DataprocessType = [{ label: "Sou. Warehouse", values: "SouWarehouseName" },
-                { label: "Des. Warehouse", values: "DesWarehouseName" }]
+                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
-                DataprocessType = [{ label: "Sou. Customer", values: "SouCustomerName" },
-                { label: "Des. Customer", values: "DesCustomerName" }]
+                DataprocessType = [{ label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" },
+                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
-                DataprocessType = [{ label: "Sou. Supplier", values: "SouSupplierName" },
-                { label: "Des. Supplier", values: "DesSupplierName" }]
+                DataprocessType = [{ label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" },
+                { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
             } else {
-                DataprocessType = [{ label: "Sou. Warehouse", values: "SouWarehouseName" },
-                { label: "Des. Warehouse", values: "DesWarehouseName" }]
+                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse"  ,values: "DesWarehouseName" }]
             }
 
         }
@@ -68,12 +70,11 @@ const PK_Detail = props => {
                 { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", values: "DocumentProcessTypeName" },
+                { label: "Process Type", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
 
             DataprocessType,
-
 
             [
                 { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
@@ -87,39 +88,40 @@ const PK_Detail = props => {
 
 
     const columns = [
-        { width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
-            Header: "Item",
-            Cell: e => { return e.original.SKUMaster_Code + " : " + e.original.SKUMaster_Name },
-            CellPDF: e => { return e.SKUMaster_Code + " : " + e.SKUMaster_Name },
+            Header: "Item Code",
+            Cell: e => { return e.original.SKUMaster_Code},
+            CellPDF: e => { return e.SKUMaster_Code},
             widthPDF: 40
         },
-        { Header: "Order No.", accessor: "OrderNo", widthPDF: 20 },
-        { Header: "Batch", accessor: "Batch", widthPDF: 20 },
+        {
+            Header: "Item Name",
+            Cell: e => { return e.original.SKUMaster_Name },
+            CellPDF: e => { return  e.SKUMaster_Name },
+            widthPDF: 40
+        },
+        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
         { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Actual Qty", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Qty", widthPDF: 20 },
+        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
+        { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },
+        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
         { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
         {
-            Header: "Audit Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Header: "Quality Status", accessor: "AuditStatus",
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 30
         },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { Header: "Ref2", accessor: "Ref2", widthPDF: 20 },
-        { Header: "Ref3", accessor: "Ref3", widthPDF: 20 },
-        { Header: "Ref4", accessor: "Ref4", widthPDF: 20 },
+        { Header: "Remark", accessor: "remark", widthPDF: 20 },
         { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "Incubation Day", accessor: "IncubationDay", widthPDF: 20 },
-        { Header: "Product Date", accessor: "ProductionDate", widthPDF: 35 },
+        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
         { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", widthPDF: 20 }
     ];
 
 
     const columnsDetailSOU = [
-        { width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
+        //{ width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
         {
             width: 40, accessor: "status", Header: "Task",
             Cell: e => getStatusGR(e.original), widthPDF: 5,
@@ -133,41 +135,42 @@ const PK_Detail = props => {
         { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
         { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
         { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
-        { Header: "Order No.", accessor: "diOrderNo", widthPDF: 10 },
-        { Header: "Batch", accessor: "diBatch", widthPDF: 10 },
+        { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
         { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { width: 120, accessor: "_packQty", Header: "Qty", widthPDF: 10 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 10 },
+        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
+        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
         {
-            Header: "Audit Status",
+            Header: "Quality Status",
             accessor: "diAuditStatus",
-            Cell: e => GetAuditStatus(e.original),
+            Cell: e => GetAuditStatusIcon(e.original),
             CellPDF: e => GetAuditStatus(e),
             widthPDF: 10
         },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Ref2", accessor: "diRef2", widthPDF: 10 },
-        { Header: "Ref3", accessor: "diRef3", widthPDF: 10 },
-        { Header: "Ref4", accessor: "diRef4", widthPDF: 10 },
+        { Header: "Remark", accessor: "remark", widthPDF: 10 },
         { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        { Header: "Incubation Day", accessor: "diIncubationDay", widthPDF: 10 },
         {
-            Header: "Product Date", accessor: "diProductionDate",
+            Header: "MFG.Date", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
         },
         {
             Header: "Expire Date", accessor: "diExpireDate",
             Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
         },
-        { Header: "ShelfLife Day", accessor: "diShelfLifeDay", widthPDF: 10 }
     ];
 
     const getFormatDatePro = (e) => {
-        return moment(e.diProductionDate).format("DD/MM/YYYY");
+        if (e.diProductionDate) {
+            return moment(e.diProductionDate).format("DD/MM/YYYY");
+        }
+
     }
 
     const getFormatDateExp = (e) => {
-        return moment(e.diExpireDate).format("DD/MM/YYYY");
+        if (e.diExpireDate) {
+            return moment(e.diExpireDate).format("DD/MM/YYYY");
+        }
     }
     const columnsDetailDES = [
         //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
@@ -192,9 +195,12 @@ const PK_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
-        else if (value.status === 0)
-            return <HighlightOff style={{ color: "red" }} />;
+        if (value.status === 0)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
         else return null;
     };
 
@@ -217,7 +223,14 @@ const PK_Detail = props => {
     };
 
 
-
+    const GetAuditStatusIcon = (value) => {
+        console.log(value.diAuditStatus)
+        if (value.diAuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
+        } else if (value.AuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
+        }
+    };
     const colListDocItems = [
         { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
         { width: 130, accessor: "Lot", Header: "Lot" },

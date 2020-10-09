@@ -11,7 +11,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import {  Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import routeLink from './routeLink';
 import AmMenuBar from './asideLayout';
 import Paper from '@material-ui/core/Paper';
@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
         }),
-        position:"absolute",
+        position: "absolute",
         [theme.breakpoints.up('md')]: {
             marginLeft: -drawerWidth,
-            growFlex:1,
-            position:"static",
+            growFlex: 1,
+            position: "static",
         },
     },
     contentShift: {
@@ -106,14 +106,14 @@ const useStyles = makeStyles((theme) => ({
     },
     sectionDesktop: {
         display: 'none',
-        overflowX:'Hidden',
+        overflowX: 'Hidden',
         [theme.breakpoints.up('md')]: {
             display: 'flex'
         },
     },
     sectionMobile: {
         display: 'flex',
-        position:"relative",
+        position: "relative",
         [theme.breakpoints.up('md')]: {
             display: 'none',
         },
@@ -190,7 +190,7 @@ function useInterval(callback, delay) {
     }, [delay]);
 }
 
-const MenuListDesktop = React.memo(({classes, theme, sidebar}) => {
+const MenuListDesktop = React.memo(({ classes, theme, sidebar }) => {
     return <Drawer
         className={classes.drawer}
         variant='persistent'
@@ -201,7 +201,7 @@ const MenuListDesktop = React.memo(({classes, theme, sidebar}) => {
         }}
     >
         <div className={classes.drawerHeader}>
-            <IconButton onClick={() => sidebar.setSidebarToggle(false)} style={{ color: 'white', position:"relative" }}>
+            <IconButton onClick={() => sidebar.setSidebarToggle(false)} style={{ color: 'white', position: "relative" }}>
                 {theme.direction === 'ltr' ? (
                     <ChevronLeftIcon />
                 ) : (
@@ -221,7 +221,7 @@ const MenuListDesktop = React.memo(({classes, theme, sidebar}) => {
     </Drawer>
 });
 
-const MenuListMoblie = React.memo(({classes, theme, sidebar}) => {
+const MenuListMoblie = React.memo(({ classes, theme, sidebar }) => {
     return <Drawer
         className={classes.drawer}
         variant='persistent'
@@ -230,10 +230,10 @@ const MenuListMoblie = React.memo(({classes, theme, sidebar}) => {
         classes={{
             paper: classes.drawerPaper
         }}
-        style={{zIndex:100000}}
+        style={{ zIndex: 100000 }}
     >
         <div className={classes.drawerHeader}>
-            <IconButton onClick={() => sidebar.setMobileSidebarToggle(false)} style={{ color: 'white', position:"relative" }}>
+            <IconButton onClick={() => sidebar.setMobileSidebarToggle(false)} style={{ color: 'white', position: "relative" }}>
                 {theme.direction === 'ltr' ? (
                     <ChevronLeftIcon />
                 ) : (
@@ -253,7 +253,7 @@ const MenuListMoblie = React.memo(({classes, theme, sidebar}) => {
     </Drawer>
 });
 
-const MainContainer = React.memo(({route, path}) => {
+const MainContainer = React.memo(({ route, path, height }) => {
     return <Switch>
         {route.map((x, idx) => (
             <Route
@@ -262,7 +262,7 @@ const MainContainer = React.memo(({route, path}) => {
                 exact={x.exact}
                 name={x.name}
                 render={rprops => {
-                    return <x.compoment {...rprops} />;
+                    return <x.compoment {...rprops} height={height} />;
                 }}
             />
         ))}
@@ -280,7 +280,7 @@ const Default = props => {
     const matches = useMediaQuery(theme.breakpoints.up('md'));
     const refContainer = useRef();
 
-    const {sidebar} = useContext(LayoutContext);
+    const { sidebar } = useContext(LayoutContext);
 
     function useWindowSize(ref) {
         const [size, setSize] = useState([0, 0]);
@@ -314,7 +314,7 @@ const Default = props => {
                     var json_dec = JSON.parse(desc_token)
                     savetoSession("ExtendTime", json_dec.extend);
                     savetoSession("ExpireTime", json_dec.exp);
- 
+
                 } else if (res.data._result.status === 0) {
                     alert(res.data._result.message)
                 }
@@ -328,7 +328,7 @@ const Default = props => {
     };
 
     const size = useWindowSize(refContainer)
-    
+
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
@@ -351,7 +351,7 @@ const Default = props => {
             jsonresult.forEach(row => {
                 if (Path[1] === row.Name.replace(' ', '').replace(' ', '').toLowerCase() || Path[1] === "dashboard") {
                     row.WebPages.forEach((res) => {
-                        if (Path[1]===res.PathLV1 && res.PathLV2=== Path[2]) { 
+                        if (Path[1] === res.PathLV1 && res.PathLV2 === Path[2]) {
                             name = t(res.pageName.trim());
                             //name = res.pageName;
                         } else if (Path[2] === "inbound" && res.PathLV2.match("inbound")) {
@@ -428,40 +428,40 @@ const Default = props => {
             <div className={classes.root}>
                 {checkstatus()}
                 <CssBaseline />
-                <Header/>
+                <Header />
                 <div className={classes.sectionDesktop}>
-                    <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar}/>
+                    <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar} />
                 </div>
 
                 <div className={classes.sectionMobile}>
-                    <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar}/>
-                    {sidebar.mobileSidebarToggle ? 
-                    <div onClick={() => sidebar.setMobileSidebarToggle(false)} className={[classes.divfull]}></div> 
-                    : null}
+                    <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar} />
+                    {sidebar.mobileSidebarToggle ?
+                        <div onClick={() => sidebar.setMobileSidebarToggle(false)} className={[classes.divfull]}></div>
+                        : null}
                 </div>
 
                 <main className={classNames(classes.content, {
-                        [classes.contentShift]: (matches ? sidebar.sidebarToggle : matches)
-                    })}
+                    [classes.contentShift]: (matches ? sidebar.sidebarToggle : matches)
+                })}
                 >
                     <div className={classes.drawerHeader} />
-                        <Paper
-                            elevation={0}
-                            className={classes.paper}
-                            style={{ background: "none" }}
+                    <Paper
+                        elevation={0}
+                        className={classes.paper}
+                        style={{ background: "none" }}
+                    >
+                        <Breadcrumbs
+                            separator={<NavigateNextIcon fontSize="small" />}
+                            aria-label="Breadcrumb"
                         >
-                            <Breadcrumbs
-                                separator={<NavigateNextIcon fontSize="small" />}
-                                aria-label="Breadcrumb"
-                            >
-                                {Home_Link()}
-                                {Route_1()}
-                                {NavicateBarN()}
-                            </Breadcrumbs>
-                        </Paper>
-                        <div ref={refContainer} style={{width:"100%", height:size[1] }}>
-                            <MainContainer route={routeLink} path={window.location.pathname}/>
-                        </div> 
+                            {Home_Link()}
+                            {Route_1()}
+                            {NavicateBarN()}
+                        </Breadcrumbs>
+                    </Paper>
+                    <div ref={refContainer} style={{ width: "100%", overflowY: 'auto', overflowX:'hidden', height: size[1] }}>
+                        <MainContainer route={routeLink} path={window.location.pathname} height={size[1]}/>
+                    </div>
                 </main>
 
             </div>

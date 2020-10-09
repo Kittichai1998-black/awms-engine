@@ -34,7 +34,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 var Axios = new apicall();
 
-const orderObj = [{ label: "Least", value: "0" }, { label: "Most", value: "1" }];
+const orderObj = [{ label: "Ascending", value: "0" }, { label: "Descending", value: "1" }];
 
 const FormInline = styled.div`
 display: flex;
@@ -79,7 +79,7 @@ const DefaultProcessCondition = (doc, con) => {
             if (con.conditions !== undefined) {
                 con.conditions.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable)
                             x[y.key] = getCustom.defaultValue;
                     }
@@ -96,13 +96,14 @@ const DefaultProcessCondition = (doc, con) => {
                 x.useFullPick = false;
                 x.useIncubateDate = false;
                 x.useExpireDate = false;
+                x.useShelfLifeDate = false;
             }
 
             if (con.eventStatuses !== undefined) {
                 let arrEvenstatus = [];
                 con.eventStatuses.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable && getCustom.defaultValue)
                             arrEvenstatus.push(y.value);
                     }
@@ -123,7 +124,7 @@ const DefaultProcessCondition = (doc, con) => {
                 let arrAuditstatus = [];
                 con.auditStatuses.forEach(y => {
                     if (y.custom !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable && getCustom.defaultValue)
                             arrAuditstatus.push(y.value);
                     }
@@ -143,8 +144,8 @@ const DefaultProcessCondition = (doc, con) => {
             if (con.orderBys !== undefined) {
                 let arrOrderBys = [];
                 con.orderBys.sort((a, b) => a - b).forEach((y, idx) => {
-                    if (y.custom !== undefined && y.defaultSortBy !== undefined) {
-                        let getCustom = y.custom({ document: doc.document, docItem: x })
+                    if (y.custom !== undefined) {
+                        let getCustom = y.custom({ document: doc.document, docItem: doc.docItems[0] })
                         if (getCustom.enable)
                             if (getCustom.defaultSortBy !== undefined)
                                 arrOrderBys.push({
@@ -225,17 +226,19 @@ const useDocumentData = (doc, conditions) => {
 }
 
 const useArea = (areaQuery, doc, customArea, warehouse) => {
+    const [allArea, setAllArea] = useState([])
     const [area, setArea] = useState([])
 
     useEffect(() => {
         Axios.get(createQueryString(areaQuery)).then(res => {
             setArea(res.data.datas);
+            setAllArea(res.data.datas);
         });
     }, [areaQuery])
 
     useEffect(() => {
         if (customArea !== undefined && doc !== null && doc.length > 0) {
-            var areaRes = customArea(area, doc[0], warehouse);
+            var areaRes = customArea(allArea, doc[0], warehouse);
             setArea(areaRes);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -280,12 +283,18 @@ const ProcessQueueDetail = (props) => {
         setDialog({ ...dialog });
     }
 
+    const conditionDisplayItem = (event) => {
+        let findCondition = processCondition.conditions.filter(x=> x.enable);
+        return findCondition.filter(x => event.docItems[0][x.key] === true).map(x=> <SelectionItem>{x.field}</SelectionItem>);
+    }
+
     const createCustomDialog = (event) => {
         var btnObj = [];
         if (processCondition.conditions !== undefined)
             btnObj.push(
-                <FormInline>
+                <FormInline style={{ display: "inline" }}>
                     <label style={{ marginRight: "10px" }}>Conditions : </label>
+                    {conditionDisplayItem(event)}
                     <AmToolTip title={"Conditions"} placement={"top"}>
                         <IconButtonCustom><EditIcon onClick={() => { onClickDialog("conditions", event) }} fontSize="small" /></IconButtonCustom>
                     </AmToolTip>
@@ -451,7 +460,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -492,7 +501,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     var orb = [...data.orderBys]
                                     var findOrb = { ...orb.find(y => y.fieldName === x.sortField) }
@@ -505,9 +514,9 @@ const ProcessQueueDetail = (props) => {
                                             fieldDataKey={"value"}
                                             fieldLabel={["label"]}
                                             labelPattern=" : "
-                                            width={200}
+                                            width={250}
                                             value={findOrb.orderByType}
-                                            ddlMinWidth={200}
+                                            ddlMinWidth={250}
                                             data={orderObj}
                                             zIndex={9999}
                                             onChange={(value, dataObject, inputID, fieldDataKey) => {
@@ -570,7 +579,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -624,7 +633,7 @@ const ProcessQueueDetail = (props) => {
                     if (x.custom !== undefined) {
                         obj.push({
                             "field": x.field, "component": (data, cols, key) => {
-                                const condition = x.custom(data);
+                                const condition = x.custom({docItem:data});
                                 if (condition.enable) {
                                     return <FormInline>
                                         <LabelH>{x.field} : </LabelH>
@@ -814,7 +823,6 @@ const ProcessQueueDetail = (props) => {
             flagAuto={flagAuto}
             columnsConfirm={props.columnsConfirm}
             onClose={(confirmState, dialogState) => {
-                console.log(confirmState)
                 if (confirmState !== null && confirmState !== undefined) {
                     if (confirmState._result.status === 0) {
                         setDialogState(!dialogState)
@@ -838,8 +846,15 @@ const ProcessQueueDetail = (props) => {
                 onAccept={(status, rowdata) => {
                     if (rowdata !== undefined && status) {
                         const doc = documents.documentListValue.find(x => x.document.ID === rowdata.Document_ID)
-                        doc.docItems.forEach(x => {
-                            x[dialog.key] = rowdata[dialog.key]
+                        doc.docItems.forEach(item => {
+                            if(dialog.key === "conditions"){
+                                let findCondition = processCondition.conditions.filter(x=> x.enable);
+                                findCondition.forEach(x => {
+                                    item[x.key] = rowdata[x.key]
+                                });
+                            }
+                            else
+                            item[dialog.key] = rowdata[dialog.key]
                         })
                     }
                     setDialog({ "state": false, data: {} });
@@ -985,8 +1000,8 @@ const ConfirmDialog = (props) => {
                                 itemHeader["bstoCode"] = processRes[obj]
                             else if (obj === "baseQty") {
                                 let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
-                                console.log(findQty)
-                                itemHeader["pickQty"] = findQty.Quantity
+                                let sumPicking = processRes["pickStos"].map(psto => psto.pickQty).reduce((s, v) => s + v, []);
+                                itemHeader["pickQty"] = sumPicking + '/' + findQty.Quantity
                             }
                             else
                                 itemHeader[obj] = processRes[obj]
@@ -1199,7 +1214,6 @@ const OrderbyCustom = (props) => {
     }, [data]);
 
     const onClickAddItem = () => {
-        console.log(select)
         if (select.fieldName !== undefined && select.fieldName !== null) {
             data.push({ ...select, order: data.length + 1 })
             setData([...data])

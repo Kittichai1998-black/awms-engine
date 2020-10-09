@@ -49,17 +49,17 @@ const AmRedirectLog = props => {
           </AmToolTip>
         </div>
       ) : (
-        <AmToolTip title={title} placement={"top"}>
-          <IconButton
-            size="small"
-            aria-label="info"
-            onClick={PageDetail}
-            style={{ marginLeft: "3px" }}
-          >
-            <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
-          </IconButton>
-        </AmToolTip>
-      )}
+            <AmToolTip title={title} placement={"top"}>
+              <IconButton
+                size="small"
+                aria-label="info"
+                onClick={PageDetail}
+                style={{ marginLeft: "3px" }}
+              >
+                <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
+              </IconButton>
+            </AmToolTip>
+          )}
     </div>
   );
 };

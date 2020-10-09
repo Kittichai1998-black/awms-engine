@@ -269,7 +269,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     type = StorageObjectType.PACK,
                     mstID = pack.ID.Value,
                     areaID = reqVO.areaID,
-                    eventStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? StorageObjectEventStatus.NEW : StorageObjectEventStatus.NEW,
                     parentID = idBase,
                     parentType = StorageObjectType.BASE,
                     forCustomerID = psto.forCustomerID,
@@ -285,7 +285,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     productDate = psto.productDate,
                     expiryDate = psto.expiryDate,
                     incubationDate = psto.incubationDate,
-                    ShelfLifeDate = psto.shelfLifeDate,
+                    shelfLifeDate = psto.shelfLifeDate,
                     //refID = psto.refID,
                     ref1 = psto.ref1,
                     ref2 = psto.ref2,
@@ -365,19 +365,19 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         }
                     }
                 }
-                if(reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM)
-                {
-                    return null;
-                }
-                else
-                {
+                //if (reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM)
+                //{
+                //    return null;
+                //}
+                //else
+                //{
                     var reqMappingDoc = new MappingDistoAndDocumentItem.TReq()
                     {
                         packID = resStopack.Value,
                         docProcessType = reqVO.processType
                     };
-                    return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc); ;
-                }
+                    return new MappingDistoAndDocumentItem().Execute(this.Logger, this.BuVO, reqMappingDoc);
+                //}
 
             } //end void createSTO
 

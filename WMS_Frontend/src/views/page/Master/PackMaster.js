@@ -80,6 +80,20 @@ const PackMaster = props => {
       placeholder: "Name"
     },
     {
+      field: "PercentWeightAccept",
+      type: "input",
+      inputType: "number",
+      name: "% WeightAccept",
+      placeholder: "WeightPercent"
+    },
+    {
+      field: "Volume",
+      type: "input",
+      inputType: "number",
+      name: "Qty/Pallet",
+      placeholder: "Volume"
+    },
+    {
       field: "WeightKG",
       type: "input",
       inputType: "number",
@@ -136,6 +150,20 @@ const PackMaster = props => {
       placeholder: "Name"
     },
     {
+      field: "PercentWeightAccept",
+      type: "input",
+      inputType: "number",
+      name: "Weight Percent",
+      placeholder: "WeightPercent"
+    },
+    {
+      field: "Volume",
+      type: "input",
+      inputType: "number",
+      name: "Qty/Pallet",
+      placeholder: "Volume"
+    },
+    {
       field: "WeightKG",
       type: "input",
       inputType: "number",
@@ -189,7 +217,20 @@ const PackMaster = props => {
       fieldLabel: ["Code", "Name"],
       fieldDataKey: "Code"
     },
-
+    {
+      field: "PercentWeightAccept",
+      type: "input",
+      inputType: "number",
+      name: "Weight Percent",
+      placeholder: "WeightPercent"
+    },
+    {
+      field: "Volume",
+      type: "input",
+      inputType: "number",
+      name: "Qty/Pallet",
+      placeholder: "Volume"
+    },
     {
       field: "WeightKG",
       type: "input",
@@ -251,6 +292,7 @@ const PackMaster = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
+      colStyle:{textAlign:"center"},
       filterType:"dropdown",
       filterConfig:{
         filterType:"dropdown",
@@ -266,6 +308,16 @@ const PackMaster = props => {
     },
     { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
+    {
+      Header: "% Weight Accept",
+      accessor: "PercentWeightAccept",
+      width: 150
+    },
+    {
+      Header: "Volume",
+      accessor: "Volume",
+      width: 100
+    },
     {
       Header: "Gross Weight",
       accessor: "WeightKG",

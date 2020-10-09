@@ -77,7 +77,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string lot;
                 public string orderNo;
                 public string cartonNo;
-                public bool isUnitTypeForPack = false;
+                public bool isUnitTypeForPack = true;
                 public string itemNo;
                 public AuditStatus auditStatus;
                 public string refID;
@@ -235,7 +235,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
 
                 }
-                else if (!Item.options.Contains("basecode"))
+                else if (!Item.options.Contains("basecode") && reqVO.docTypeId != DocumentTypeID.PHYSICAL_COUNT)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
                 }

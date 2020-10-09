@@ -125,6 +125,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public int? diIncubationDay;
             public int? diShelfLifeDay;
             public string diOrderNo;
+            public string diOptions;
             public string diRef1;
             public string diRef2;
             public string diRef3;
@@ -168,7 +169,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
            foreach(var dicitem in docItems)
             {
-                dicitem.Quantity_Genarate = dicitem.SKUMaster_Info1;
+                dicitem.Quantity_Genarate = dicitem.PackMaster_Volume;
             }
 
             doc.documentItems = AMWUtil.Common.ObjectUtil.JsonCast<List<amv_DocumentItem>>(docItems);
@@ -297,6 +298,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         diIncubationDay = bs.diIncubationDay,
                         diShelfLifeDay = bs.diShelfLifeDay,
                         diOrderNo = bs.diOrderNo,
+                        diOptions = bs.diOptions,
                         diRef1 = bs.diRef1,
                         diRef2 = bs.diRef2,
                         diRef3 = bs.diRef3,

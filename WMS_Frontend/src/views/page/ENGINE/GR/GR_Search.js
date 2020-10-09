@@ -23,6 +23,17 @@ const DocumentSearch = props => {
 
   const [dialogState, setDialogState] = useState({});
 
+  const MVTQuery = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "DocumentProcessTypeMap",
+    q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+    f: "ID,Code,ReProcessType_Name as Name",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: "",
+  }
   const GeneratePopup = (data) => {
     var dataGenerate = DataGeneratePopup(data)
     var dataGenerateStatus = DataGenerateStatus(data)
@@ -61,11 +72,25 @@ const DocumentSearch = props => {
       Cell: dataRow => GeneratePopup(dataRow.original)
     },
     { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
-    { Header: "Process No.", accessor: "ReDocumentProcessTypeName", width: 200 },
+    {
+      Header: "Process No.",
+      accessor: "ReDocumentProcessTypeName",
+      width: 200,
+      sortable: false,
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        fieldLabel: ["Code", "Name"],
+        dataDropDown: MVTQuery,
+        typeDropDown: "normal",
+        widthDD: 220,
+      },
+      },
+      { Header: "PO NO.", accessor: "Ref1", width: 150 },
     { Header: "Sou.Warehouse", accessor: "SouWarehouseName", width: 150 },
     { Header: "Sou. Customer", accessor: "SouCustomerName", width: 150 },
     { Header: "Sou. Supplier", accessor: "SouSupplierName", width: 150 },
-    { Header: "Des. Warehouse", accessor: "DesWarehouseName", width: 150 },
+    { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
     {
       Header: "Doc. Date",
       accessor: "DocumentDate",
@@ -90,7 +115,7 @@ const DocumentSearch = props => {
       dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
     },
     {
-      Header: "Create", accessor: "Created", width: 200,
+      Header: "Create Time", accessor: "Created", width: 200,
       filterType: "datetime",
       filterConfig: {
         filterType: "datetime",
@@ -133,7 +158,7 @@ const DocumentSearch = props => {
         buttonClose={true}
         buttonReject={false}
         apiReject={"/v2/reject_document"}
-        apiClose={"/v2/ClosingDocumentAPI"}
+        apiClose={"/v2/closed_document_manual"}
       />
     </div>
   );

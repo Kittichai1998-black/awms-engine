@@ -38,6 +38,12 @@ namespace AWMSEngine.Engine.Business
 
 
             mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+
+            var ckEventStatus = mapsto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            
+            if(ckEventStatus == false)
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "สถานะของสินค้าต้องเป็น RECEIVED เท่านั้น");
+
             if (mapsto != null)
             {
                 res.bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, StorageObjectType.BASE, false, true, this.BuVO); ;

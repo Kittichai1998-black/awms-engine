@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
 import AmShowImage from '../../../components/AmShowImage'
 import AmDialogUploadImage from '../../../components/AmDialogUploadImage'
+import AmButton from "../../../components/AmButton";
 
 
 const Axios = new apicall();
@@ -67,39 +68,40 @@ const QualityStatus = props => {
       },
       Cell: e => getAuditStatus(e.original.AuditStatusName)
     },
+    //{ Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+
     {
+      Header: "Item Code",
+      accessor: "SKU_Code",
+      width: 100
+    },
+    {
+      Header: "Item Name",
+      accessor: "SKU_Name",
+      fixWidth: 200,
+
+    }, {
       Header: "Pallet",
       accessor: "Pallet",
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-    {
-      Header: "SKU Code",
-      accessor: "SKU_Code",
-      width: 100
-    },
-    {
-      Header: "SKU Name",
-      accessor: "SKU_Name",
-      fixWidth: 200,
-
-    },
-    // { Header: "Project", accessor: "Project", width: 100 },
+    { Header: "Control No.", accessor: "OrderNo", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
     {
       Header: "Qty",
-      accessor: "Qty",
+      accessor: "SaleQty",
       width: 70,
       type: "number"
       // Cell: e => getNumberQty(e.original)
     },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+    { Header: "Unit", accessor: "Unit", width: 100 },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Received Date",
+      Header: "Received Time",
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",
@@ -245,6 +247,11 @@ const QualityStatus = props => {
       <AmDialogUploadImage titleDialog={"Upload Image of Pallet : " + Pallet} fileName={Pallet} />
     </div>
   }
+
+  const SendEmail = <AmButton styleType="add_clear" onClick={() => {
+    Axios.post(window.apipath + "/v2/audit_send_notify", {})
+  }}>Send Notify</AmButton>
+
   return (
     <div>
       <AmStorageObjectMulti
@@ -255,6 +262,8 @@ const QualityStatus = props => {
         multi={true}
         action={true}
         actionAuditStatus={true}
+        customTopLeftControl={SendEmail}
+        typeSKU={"PM"}
       />
     </div>
   );

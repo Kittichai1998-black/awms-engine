@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import { IsEmptyObject } from "../../../components/function/CoreFunction2";
-import {InputComponent, DropDownComponent, FindPopupComponent,PasswordComponent} from "./AmMasterComponentType";
+import { InputComponent, DropDownComponent, FindPopupComponent, PasswordComponent, DateTimeComponent} from "./AmMasterComponentType";
 
 const EditorData = ({config, editorColumns, editData, response}) => {
     const [popupState, setPopState] = useState(false);
-    
+
     useEffect(() => {
         if(editData !== undefined && editData !== null){
             setPopState(!popupState)
@@ -29,7 +29,12 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     config={config} 
                     defaultData={data !== undefined ? data[field] : ""}
                     response={(e)=>{if(!IsEmptyObject(e)){
-                        data[e.field] =  e.value
+                        if(config.custom !== undefined){
+                            data[e.field] =  config.custom(e.value)
+                        }
+                        else{
+                            data[e.field] =  e.value
+                        }
                     }
                     }}
                 />
@@ -63,6 +68,18 @@ const EditorData = ({config, editorColumns, editData, response}) => {
                     defaultData={data !== undefined ? data[field] : ""}
                 />
             }
+            else if (config.type === "date") {
+                return <DateTimeComponent key={key}
+                    config={config}
+                    defaultData={data !== undefined ? data[field] : ""}
+                    response={(e) => {
+                        if (!IsEmptyObject(e)) {
+                            data[e.field] = e.value.fieldDataObject
+                        }
+                    }
+                    }
+                />
+            }
         }
         return editColumns.map(y=>{
             return { 
@@ -79,21 +96,24 @@ const EditorData = ({config, editorColumns, editData, response}) => {
     return <AmEditorTable 
         renderOptionalText={config.required === true ?<span style={{color:"red"}}>* required field  </span> : null}
         open={popupState} 
-        onAccept={(status, rowdata)=> {
-            var updateData = {ID:null, Status:1, Revision:1}
+        onAccept={(status, rowdata) => {
+            console.log(rowdata)
+            var updateData = { ID: null, Status: 1, Revision: 1 }
             let chkRequire = []
 
             if(rowdata !== undefined){
-                if(rowdata["ID"] !== null)
+                if(rowdata["ID"] !== null){
                     updateData["ID"] = rowdata["ID"]
-                    chkRequire = editorColumns.map(x => {
-                    if(rowdata[x.field] !== undefined){
-                        updateData[x.field] = rowdata[x.field]
-                    }
-                    if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
-                        return false;
-                    else 
-                        return true;
+                }
+                
+                chkRequire = editorColumns.map(x => {
+                if(rowdata[x.field] !== undefined){
+                    updateData[x.field] = rowdata[x.field]
+                }
+                if((rowdata[x.field] === undefined || rowdata[x.field] === '') && x.required)
+                    return false;
+                else 
+                    return true;
                 });
             }
             

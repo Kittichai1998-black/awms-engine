@@ -39,6 +39,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import Collapse from '@material-ui/core/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import AmDatePicker from '../../../components/AmDate';
 import { WarehouseQuery, AreaMasterQuery, DocumentProcessTypeQuery } from "./queryString";
@@ -48,6 +49,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import { GenMapstosSelected, genDataManual } from "./genDataManual";
 import IconButton from "@material-ui/core/IconButton";
+import AmTreeView from '../../pageComponent/AmTreeView'
 const Axios = new apicall();
 const styles = theme => ({
   root: {
@@ -305,23 +307,44 @@ const AmMappingPalletV2 = props => {
     ];
   }
   const onHandleChangeInput = (value, fieldDataKey) => {
+    // console.log(value)
+    // console.log(fieldDataKey)
     if (fieldDataKey === "areaID")
       localStorage.setItem("areaIDs", value);
     if (fieldDataKey === "processType")
       localStorage.setItem("processTypes", value);
 
+
+    valueInput["processType"] = localStorage.getItem("processTypes")
+    valueInput["areaID"] = localStorage.getItem("areaIDs")
     valueInput[fieldDataKey] = value;
   };
   const handleNext = index => {
 
-    if (localStorage.getItem("processTypes") !== null)
-      valueInput["processType"] = localStorage.getItem("processTypes")
-    if (localStorage.getItem("areaIDs") !== null)
-      valueInput["areaID"] = localStorage.getItem("areaIDs")
+    // if (localStorage.getItem("processTypes") !== null)
+    //   valueInput["processType"] = localStorage.getItem("processTypes")
+    // if (localStorage.getItem("areaIDs") !== null)
+    //   valueInput["areaID"] = localStorage.getItem("areaIDs")
     //==========================================================
     if (index === 0) {
-      if (valueInput.areaID && valueInput.processType) {
+      // console.log(localStorage.getItem("processTypes"))
+      // console.log(localStorage.getItem("areaIDs"))
+      // console.log(valueInput.areaID)
+      // console.log(valueInput.processType)
+      if (localStorage.getItem("processTypes") !== null && localStorage.getItem("processTypes") !== "null")
+        valueInput["processType"] = localStorage.getItem("processTypes")
+      if (localStorage.getItem("areaIDs") !== null && localStorage.getItem("areaIDs") !== "null")
+        valueInput["areaID"] = localStorage.getItem("areaIDs")
+
+      // if (valueInput.areaID === undefined && localStorage.getItem("areaIDs") !== null) {
+      //   valueInput.areaID = localStorage.getItem("areaIDs")
+      // }
+      // if (valueInput.processType === undefined && localStorage.getItem("processTypes") !== null) {
+      //   valueInput.processType = localStorage.getItem("processTypes")
+      // }
+      if ((valueInput.areaID !== null && valueInput.areaID !== undefined) && (valueInput.processType !== null && valueInput.processType !== undefined)) {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
+
       } else {
         setDialogState({ type: "warning", content: "กรุณากรอกข้อมูลให้ครบ", state: true })
       }
@@ -363,12 +386,13 @@ const AmMappingPalletV2 = props => {
     setQrCode("")
     setPalletCode("")
     setCheckedAuto(true)
-
+    setFlaggetDataDoc(false)
     setDataPallet(null)
     setDataDoc(null)
     setActiveStep(activeStep - 1);
   }
   const onHandledataConfirm = (status, rowdata) => {
+    console.log(status)
     if (status) {
       scanMappingSto(valueInput.palletCode, "edit")
     } else {
@@ -447,6 +471,8 @@ const AmMappingPalletV2 = props => {
       };
 
       if (type === "confirm") {
+        setDisPlayButton(false)
+        setFlaggetDataDoc(false)
         if (checkedAuto) {
           if (dataDoc !== undefined && dataDoc !== null) {
             dataDoc.datas.forEach(element => {
@@ -465,61 +491,62 @@ const AmMappingPalletV2 = props => {
 
         if (mapstosSelected !== undefined && mapstosSelected !== null) {
           postdata.bstoCode = dataPallet.code
-          mapstosSelected[0].addQty = valueInput.editQty
+          //mapstosSelected[0].addQty = valueInput.editQty
+          mapstosSelected[0].addQty = 0
           postdata = GenMapstosSelected(postdata, mapstosSelected)
         }
       }
-      if (type === "edit" && valueInput.editQty === undefined) {
-        setDialog(false)
-      } else {
-        Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
-          if (res.data._result.status === 1) {
-            if (res.data.bsto === null) {
-              handleBack()
-              setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
-            } else {
-              if (res.data.bsto !== undefined && res.data.bsto !== null) {
-                setDisPlayQr(false)
-                setDataPallet(res.data.bsto)
-                setDataDoc(null)
+      //if (type === "edit" && valueInput.editQty === undefined) {
 
-                if (checkedAuto === false && type === "confirm") {
-                  props.columnsManual.forEach(x => {
-                    valueManual[x.field] = null
-                  })
-                  setCheckedAuto(true)
-                }
-                if (checkedAutoClear && type === "confirm") {
-                  var el = document.getElementById('palletcode');
-                  var elbarcode = document.getElementById('barcode');
-                  if (elbarcode !== null)
-                    elbarcode.value = null
-                  if (el !== null)
-                    el.value = null
-                  el.focus()
-                } else if (checkedAutoClear === false && type === "confirm") {
-                  var el = document.getElementById('barcode');
-                  if (el !== null)
-                    el.value = null
-                  el.focus()
-                }
+      Axios.post(window.apipath + "/v2/scan_mapping_sto", postdata).then(res => {
+        if (res.data._result.status === 1) {
+          if (res.data.bsto === null) {
+            handleBack()
+            setDialogState({ type: "success", content: "Pallet ถูกลบสำเร็จ", state: true })
+          } else {
+            if (res.data.bsto !== undefined && res.data.bsto !== null) {
+              setDisPlayQr(false)
+              setDataPallet(res.data.bsto)
+              setDataDoc(null)
+
+              if (checkedAuto === false && type === "confirm") {
+                props.columnsManual.forEach(x => {
+                  valueManual[x.field] = null
+                })
+                setCheckedAuto(true)
+              }
+              if (checkedAutoClear && type === "confirm") {
+                var el = document.getElementById('palletcode');
+                var elbarcode = document.getElementById('barcode');
+                if (elbarcode !== null)
+                  elbarcode.value = null
+                if (el !== null)
+                  el.value = null
+                el.focus()
+              } else if (checkedAutoClear === false && type === "confirm") {
+                var el = document.getElementById('barcode');
+                if (el !== null)
+                  el.value = null
+                el.focus()
               }
             }
-            setDialog(false)
-          } else {
-            setDialogState({ type: "error", content: res.data._result.message, state: true })
           }
-        })
-      }
+          setDialog(false)
+        } else {
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+        }
+      })
+
     }
   }
   function getStepContent(step) {
+    //console.log(localStorage.getItem("processTypes"))
     switch (step) {
       case 0:
         return (
           <div>
             <FormInline>
-              <LabelH1>Warehouse :</LabelH1>
+              <LabelH1>  {t("Warehouse")}</LabelH1>
               <AmDropdown
                 placeholder="Select"
                 fieldDataKey="warehouseID"
@@ -534,32 +561,36 @@ const AmMappingPalletV2 = props => {
               />
             </FormInline>
             <FormInline>
-              <LabelH1>Process No.:</LabelH1>
+              <LabelH1>{t("Process No.")}</LabelH1>
               <AmDropdown
-                placeholder="Select"
+                placeholder={t("Select")}
                 fieldDataKey="processType"
                 fieldLabel={["Code", "Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
                 //valueData={valueInput[x.field]}
-                defaultValue={parseInt(localStorage.getItem("processTypes"))}
+                returnDefaultValue={true}
+                defaultValue={localStorage.getItem("processTypes") === null || localStorage.getItem("processTypes") === "null" ? null : (parseInt(localStorage.getItem("processTypes")))}
                 queryApi={DocumentProcessTypeQuery()}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
-                  onHandleChangeInput(value, fieldDataKey)}
+                  //localStorage.getItem("processTypes") = value
+                  onHandleChangeInput(value, fieldDataKey)
+                }
                 ddlType={"search"}
               />
             </FormInline>
 
             <FormInline>
-              <LabelH1>Area :</LabelH1>
+              <LabelH1>{t("Area")}</LabelH1>
               <AmDropdown
-                placeholder="Select"
+                placeholder={t("Select")}
                 fieldDataKey="areaID"
                 fieldLabel={["Name"]}
                 labelPattern=" : "
                 ddlMinWidth={300}
+                returnDefaultValue={true}
                 queryApi={AreaMasterQuery()}
-                defaultValue={parseInt(localStorage.getItem("areaIDs"))}
+                defaultValue={localStorage.getItem("areaIDs") === null || localStorage.getItem("areaIDs") === "null" ? null : (parseInt(localStorage.getItem("areaIDs")))}
                 onChange={(value, dataObject, inputID, fieldDataKey) =>
                   onHandleChangeInput(value, fieldDataKey)
 
@@ -572,7 +603,7 @@ const AmMappingPalletV2 = props => {
       case 1:
 
         return (<div>
-
+          {/* <AmTreeView dataTreeItems={dataTreeItems} defaultExpanded={["root"]} /> */}
           {/* =================================== TreeView ===================================== */}
           <TreeView
             className={classes.root}
@@ -580,7 +611,7 @@ const AmMappingPalletV2 = props => {
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
             defaultEndIcon={dataPallet !== undefined && dataPallet !== null ? (
-              dataPallet.mapstos === null ? <MinusSquare /> : <EditIcon />) : null}
+              dataPallet.mapstos === null ? <MinusSquare /> : <DeleteIcon />) : null}
 
             onNodeSelect={handleSelect}
           >
@@ -591,12 +622,22 @@ const AmMappingPalletV2 = props => {
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <StyledTreeItem
                         nodeId={x.id}
-                        label={
-                          x.code + " | " +
-                          x.qty + " " +
-                          x.unitCode + " | " +
-                          (x.lot === null ? "" : x.lot)}
+                        // label={
+                        //   x.code + " | " +
+                        //   x.qty + " " +
+                        //   x.unitCode + " | " +
+                        //   (x.lot === null ? "" : x.lot)}
+                        label={<div className={classes.textNowrap}>
+                          <Typography variant="body2" className={classes.labelText} noWrap>
+                            <span className={classes.labelHead}>{x.code}</span>
+                            &nbsp;{"- " + x.name}
+                          </Typography>
+                          <Typography variant="body2" className={classes.labelText} noWrap>{"Quantity:" + x.qty + " " + x.unitCode}</Typography>
+                          <Typography variant="body2" className={classes.labelText} noWrap>{"Lot:" + (x.lot === null ? "" : x.lot)}</Typography>
+
+                        </div>}
                       />
+
                     </div>
                   );
                 })}
@@ -610,14 +651,14 @@ const AmMappingPalletV2 = props => {
                   setCheckedAutoClear(event.target.checked)
                 }}
                   defaultChecked={checkedAutoClear} />
-                <LabelH1 style={{ width: "120px" }}>{"Clear pallet auto"}</LabelH1>
+                <LabelH1 style={{ width: "120px" }}>{t("Clear pallet auto")}</LabelH1>
               </FormInline>
               {/* =================================== Pallet ===================================== */}
               <FormInline style={{ display: "block" }}>
-                <LabelH1>Pallet Code :</LabelH1>
+                <LabelH1>{t("Pallet Code")}</LabelH1>
                 <AmInput
                   id={"palletcode"}
-                  placeholder="Pallet Code"
+                  placeholder={t("Pallet Code")}
                   type="input"
                   autoFocus={autoFocus}
                   style={{ width: "200px" }}
@@ -633,7 +674,7 @@ const AmMappingPalletV2 = props => {
                 <IconButton
                   size="small"
                   aria-label="info"
-                  style={{ paddingTop: "10px" }}
+                  style={{ marginTop: "5px" }}
                 >
                   <SearchIcon
                     fontSize="small"
@@ -647,17 +688,17 @@ const AmMappingPalletV2 = props => {
                   setCheckedAuto(event.target.checked)
                 }}
                   defaultChecked={checkedAuto} />
-                <LabelH1 style={{ width: "120px" }}>{"Scan barcode"}</LabelH1>
+                <LabelH1 style={{ width: "120px" }}>{t("Scan QRcode")}</LabelH1>
               </FormInline>
               {/* =================================== CheckedAuto ===================================== */}
               {
                 checkedAuto === true ?
                   <div>
                     <FormInline style={{ display: "block" }}>
-                      <LabelH1>QRcode :</LabelH1>
+                      <LabelH1>{t("QRcode")}</LabelH1>
                       <AmInput
                         id={"barcode"}
-                        placeholder="QRcode Product"
+                        placeholder={t("QRcode Product")}
                         type="input"
                         style={{ width: "200px" }}
                         disabled={disPlayQr}
@@ -675,7 +716,7 @@ const AmMappingPalletV2 = props => {
                       <IconButton
                         size="small"
                         aria-label="info"
-                        style={{ paddingTop: "10px" }}
+                        style={{ marginTop: "5px" }}
                       >
                         <SearchIcon
                           fontSize="small"
@@ -704,7 +745,7 @@ const AmMappingPalletV2 = props => {
               <br />
               {checkedAuto && flaggetDataDoc ? (dataDoc !== undefined && dataDoc !== null ?
                 <div>
-                  <LabelH1>{"Detail"}</LabelH1>
+                  <LabelH1>{t("Detail")}</LabelH1>
                   {DataGenerateEleDocDisplay(dataDoc)}
                 </div> :
                 // <div>
@@ -728,7 +769,7 @@ const AmMappingPalletV2 = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH1>{x.name} : </LabelH1>
+          <LabelH1>{t(x.name)} : </LabelH1>
           <InputDiv>
             <AmInput
               required={x.required}
@@ -736,7 +777,7 @@ const AmMappingPalletV2 = props => {
               required={x.required}
               validate={true}
               style={{ width: "200px", margin: "0px" }}
-              placeholder={x.placeholder}
+              placeholder={t(x.placeholder)}
               type={"input"}
               defaultValue={valueManual[x.field] ? valueManual[x.field] : ""}
               onChange={(value, dataObject, inputID, fieldDataKey) =>
@@ -749,12 +790,12 @@ const AmMappingPalletV2 = props => {
       return (
         <FormInline>
           {" "}
-          <LabelH1>{x.name} : </LabelH1>
+          <LabelH1>{t(x.name)} : </LabelH1>
           <AmDropdown
             required={x.required}
             id={x.field}
             disabled={x.disable}
-            placeholder={x.placeholder}
+            placeholder={t(x.placeholder)}
             fieldDataKey={"Code"}
             fieldLabel={x.fieldLabel}
             labelPattern=" : "
@@ -771,7 +812,7 @@ const AmMappingPalletV2 = props => {
     } else if (x.type === "datetime") {
       return <FormInline>
         {" "}
-        <LabelH1>{x.name} : </LabelH1>
+        <LabelH1>{t(x.name)} : </LabelH1>
         <AmDatePicker
           style={{ display: "inline-block" }}
           onBlur={(e) => {
@@ -798,7 +839,7 @@ const AmMappingPalletV2 = props => {
                   return (
                     <div key={index} syle={{ marginLeft: "30px" }} >
                       <FormInline style={{ display: "block" }}>
-                        <LabelH2>{y.name} :</LabelH2>
+                        <LabelH2>{t(y.name)} :</LabelH2>
                         <AmInput
                           id={y.field}
                           style={{ width: "150px", margin: "0px" }}
@@ -836,7 +877,8 @@ const AmMappingPalletV2 = props => {
       <AmEditorTable
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Edit"}
+        titleText={t("Confirm Delete")}
+        textConfirm={t("Delete")}
         data={dataPallet !== undefined && dataPallet !== null ? dataPallet : []}
         columns={RanderEle()}
       />
@@ -873,7 +915,7 @@ const AmMappingPalletV2 = props => {
                 {getStepContent(index)}
                 <div>
 
-                  {activeStep == 0 ? null : (
+                  {flaggetDataDoc === true ? null : (activeStep == 0 ? null : (
                     <AmButton
                       styleType="add"
                       className="float-left"
@@ -881,7 +923,7 @@ const AmMappingPalletV2 = props => {
                       style={{ margin: '5px 0px 5px 0px' }}>
                       {t("Received")}
                     </AmButton>
-                  )}
+                  ))}
                   {activeStep === steps.length - 1 ? ((disPlayButton === false ? null :
                     <AmButton
                       styleType="confirm"

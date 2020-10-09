@@ -11,7 +11,7 @@ import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import AmInput from "../../../components/AmInput";
@@ -59,13 +59,17 @@ const AmStorageObjectMulti = props => {
   const [hold, setHold] = useState(true);
   const [remark, setRemark] = useState("");
   const [dialogState, setDialogState] = useState({});
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(20);
   const [mode, setMode] = useState("");
   const [aditStatus, setAditStatus] = useState("");
+
+
+  const [reset, setReset] = useState(false)
+
   const QueryAudit = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"=", "v": "QUARANTINE"}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"in", "v": "QUARANTINE,HOLD"},{ "f": "SkuTypeID", "c":"=", "v": ' + (props.typeSKU === "FG" ? 4 : 5) + '}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -122,11 +126,12 @@ const AmStorageObjectMulti = props => {
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
+      console.log(fdata)
       if (fdata.customFilter !== undefined) {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
         } else {
-          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? (fdata.value === "" ? null : fdata.value + "T23:59:59") : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
       } else {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
@@ -160,6 +165,7 @@ const AmStorageObjectMulti = props => {
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
                   ddlMinWidth={200}
+
                   defaultValue={(props.actionAuditStatus === true ? (field !== "AuditStatusName" ? null : "QUARANTINE") : null)}
                   zIndex={1000}
                   data={filterConfig.dataDropDown}
@@ -182,10 +188,9 @@ const AmStorageObjectMulti = props => {
                   ddlType={filterConfig.typeDropDown}
                 />
               }
-
             }
           } else if (filterConfig.filterType === "datetime") {
-            col.width = 350;
+            col.width = 420;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
@@ -209,11 +214,16 @@ const AmStorageObjectMulti = props => {
     //console.log(remark)
     if (status) {
       onUpdateHold()
+      setReset(true);
     }
 
     setDialog(false);
     setSelection([]);
   };
+
+  useEffect(() => {
+    return () => { setReset(false) }
+  }, [reset]);
 
 
   const DataGenerateRemark = () => {
@@ -382,14 +392,16 @@ const AmStorageObjectMulti = props => {
         rowNumber={true}
         totalSize={count}
         pageSize={pageSize}
-        onPageSizeChange={(pg) => { setPageSize(pg) }}
+        // onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
+        clearSelectionAction={reset}
         pagination={true}
         selection={props.action === true ? "checkbox" : ""}
         selectionData={(data) => {
           setSelection(data);
         }}
+        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
         tableConfig={true}
         onPageChange={p => {
           if (page !== p)
@@ -397,6 +409,7 @@ const AmStorageObjectMulti = props => {
           else
             setIniQuery(false)
         }}
+        customTopLeftControl={props.customTopLeftControl}
         customAction={
           props.action === true ? (props.actionAuditStatus === true ? auditAction :
             [{

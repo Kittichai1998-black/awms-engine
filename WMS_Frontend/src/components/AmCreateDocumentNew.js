@@ -4,7 +4,7 @@ import React, { useState, useRef, createRef, useEffect } from "react";
 import styled from 'styled-components'
 import AmButton from '../components/AmButton'
 import AmDate from '../components/AmDate'
-import AmDatepicker from '../components/AmDate'
+import AmDatepicker from '../components/AmDatePicker'
 import AmDialogs from '../components/AmDialogs'
 import AmDropdown from '../components/AmDropdown'
 import AmEditorTable from '../components/table/AmEditorTable'
@@ -14,7 +14,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import AmCheckBox from '../components/AmCheckBox'
-// import AmTable from '../components/table/AmTable'
 import { Clone } from '../components/function/CoreFunction'
 import { apicall, createQueryString } from "../components/function/CoreFunction2";
 import BtnAddList from './AmCreateDocument_BtnAddList'
@@ -22,6 +21,7 @@ import { getUnique } from './function/ObjectFunction'
 import AmDialogconfirm from './AmDialogConfirm'
 import LabelT from './AmLabelMultiLanguage'
 import AmTable from './AmTable/AmTable'
+
 import moment from "moment";
 import "moment/locale/pt-br";
 
@@ -122,21 +122,19 @@ const AmCreateDocument = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
     // const [dataUnit, setDataUnit] = useState()
-    // const [dataCheck, setDataCheck] = useState()
+     const [dataCheck, setdataCheck] = useState([])
     const [docIds, setdocIds] = useState();
     const ref = useRef(props.columnEdit.map(() => createRef()))
     const [dataDocItem, setdataDocItem] = useState();
     const [dialogItem, setDialogItem] = useState(false);
     const [processType, setprocessType] = useState();
     // const [ItemBody, setItemBody] = useState();
-    const [relationComponent, setRelationComponent] = useState([]);
-    const [headerBody, setheaderBody] = useState();
-    const [addlistAPI, setaddlistAPI] = useState();
     const [BtnAddLists, setBtnAddLists] = useState();
     const [skuID, setskuID] = useState(0);
     const [dataUnit, setdataUnit] = useState();
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
-    const [unitCon, setunitCon] = useState()
+    const [unitCon, setunitCon] = useState();
+
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -148,13 +146,13 @@ const AmCreateDocument = (props) => {
                 onClick={() => {
                     setEditData(Clone(e.original));
                     setDialog(true);
-                    setTitle("Edit")
+                    setTitle("Edit Item")
                     setAddData(false);
                 }}
             >
                 <EditIcon
                     fontSize="small"
-                    style={{ color: "#f39c12",position: 'relative' }}
+                    style={{ color: "#f39c12", position: 'relative' }}
                 />
             </IconButton>
         },
@@ -178,18 +176,13 @@ const AmCreateDocument = (props) => {
     const columns = props.columns.concat(rem)
 
     useEffect(() => {
-        getHeaderCreate()
-    }, [props.headerCreate])
-
-    useEffect(() => {
-        getTypeEditor()
+        editorListcolunm();
     }, [props.columnEdit])
 
     useEffect(() => {
         if (skuID !== undefined && UnitQurys !== undefined) {
             setunitCon(UnitTypeConverts)
             getUnitTypeConvertQuery(skuID, UnitQurys)
-            
         }
     }, [skuID])
 
@@ -197,25 +190,39 @@ const AmCreateDocument = (props) => {
         setdataUnit(dataUnit)
     }, [dataUnit])
 
+
+
     useEffect(() => {
+        if (createDocumentData != {}) {
+            if (createDocumentData.actionTime !== null && props.defaulact === false) {
+                createDocumentData.actionTime = null
+                setcreateDocumentData(createDocumentData)
+            } else {
+                setcreateDocumentData(createDocumentData)
+            }
+        }
+        //setcreateDocumentData({})
+        getHeaderCreate()
         let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
-            //arr[el.key] = el.valueTexts || el.defaultValue    
+            //arr[el.key] = el.valueTexts || el.defaultValue   
             if (el.key === "documentProcessTypeID" && processType === undefined) {
                 createDocumentData["documentProcessTypeID"] = el.defaultValue
             } else {
                 if (el.key !== "documentProcessTypeID") {
                     createDocumentData[el.key] = el.valueTexts || el.defaultValue
+
                 }
 
             }
             return arr
         }, {})
-    }, [props.headerCreate])
+
+    }, [props.headerCreate, props.defaulact])
 
 
     useEffect(() => {
+        setDataSource([])
         if (processType !== undefined) {
-            console.log(processType)
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
                 createDocumentData["souCustomerID"] = null
@@ -233,34 +240,14 @@ const AmCreateDocument = (props) => {
                 createDocumentData["desCustomerID"] = null
             }
         }
-        setDataSource([])
+    
         setcreateDocumentData(createDocumentData)
-
-    }, [processType])
-
-
-
-    useEffect(() => {
-        if (props.addList) {
-            setaddlistAPI(props.addList.queryApi)
-        }
     }, [processType])
 
 
     useEffect(() => {
-        if (addlistAPI !== undefined) {
-            setBtnAddLists(< BtnAddList
-                primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
-                headerCreate={props.headerCreate}
-                queryApi={addlistAPI}
-                columns={props.addList.columns}
-                search={props.addList.search}
-                textBtn="Add Item List"
-                onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
-                dataCheck={dataSource} />)
-        }
-    }, [addlistAPI])
-
+        Addlist(dataSource)
+    }, [props.addList, dataSource])
 
 
     const UnitTypeConverts = {
@@ -276,17 +263,21 @@ const AmCreateDocument = (props) => {
     };
 
 
-
-    const PopupObjSize = React.memo(({ relationComponent, open }) => {
-        return <AmEditorTable
-            open={open}
-            onAccept={(status, rowdata, inputError) =>
-                onHandleEditConfirmItem(status, rowdata, inputError)}
-            titleText={""}
-            data={{}}
-            columns={relationComponent}
-        />
-    });
+    const Addlist = (dataSou) => {
+        if (props.addList !== undefined) {
+            setBtnAddLists(< BtnAddList
+                primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
+                headerCreate={props.headerCreate}
+                history={props.history}
+                queryApi={props.addList.queryApi}
+                columns={props.addList.columns}
+                search={props.addList.search}
+                textBtn="Add Pallet List"
+                onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
+                dataCheck={dataCheck}
+            />)
+        }
+    }
 
 
     const getUnitTypeConvertQuery = (skuID, unitTypeQuery) => {
@@ -312,9 +303,7 @@ const AmCreateDocument = (props) => {
             } else {
 
             }
-
         })
-
     }
 
     const onHandleDelete = (v, o, rowdata) => {
@@ -375,62 +364,41 @@ const AmCreateDocument = (props) => {
     const onChangeEditor = (field, data, required, row) => {
 
         if (data === "") {
-            editData[field]  = null
+            editData[field] = null
         }
 
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
 
-
-
-        if (field === "productionDate") {
-            editData['productionDate'] = moment(data.value).format('MM-DD-YYYY')
-        }
-        if (field === "expireDate") {
-            editData['expireDate'] = moment(data.value).format('MM-DD-YYYY')
-        }
-        if (field === "auditStatus" && data != null) {
-            editData["auditStatus"] = data.label
-        }
-        if (field === "skuCode") {
-            setskuID(data.skuID);
+        if (field === "Code") {
+            setskuID(data.ID);
         }
 
 
-        if (props.itemNo && addData) {
-            if (addDataID === -1) {
-                let itemNos = props.defualItemNo
-                let itemn = itemNos.toString();
-                editData["itemNo"] = itemn
-            } else {
-                let ItemNoInt = parseInt(props.defualItemNo)
-                let itemNos = (ItemNoInt + (dataSource.length))
-                let itemn;
-                if (itemNos < 10) {
-                    itemn = ("000" + itemNos);
-                } else if (itemNos >= 10 || itemNos < 100) {
-                    itemn = ("00" + itemNos);
-                } else if (itemNos >= 100) {
-                    itemn = ("0" + itemNos);
-                }
-                editData["itemNo"] = itemn
-            }
-        }
+        //if (props.itemNo && addData) {
+        //    if (addDataID === -1) {
+        //        let itemNos = props.defualItemNo
+        //        let itemn = itemNos.toString();
+        //        editData["itemNo"] = itemn
+        //    } else {
+        //        let ItemNoInt = parseInt(props.defualItemNo)
+        //        let itemNos = (ItemNoInt + (dataSource.length))
+        //        let itemn;
+        //        if (itemNos < 10) {
+        //            itemn = ("000" + itemNos);
+        //        } else if (itemNos >= 10 || itemNos < 100) {
+        //            itemn = ("00" + itemNos);
+        //        } else if (itemNos >= 100) {
+        //            itemn = ("0" + itemNos);
+        //        }
+        //        editData["itemNo"] = itemn
+        //    }
+        //}
 
 
         if (typeof data === "object" && data) {
-            if (field === "auditStatus" && data != null) {
-                editData["auditStatus"] = data.label
-            } else {
-                //if (field === "unitType") {
-                //    editData[field] = data[field] ? data[field] : data.Code
-                //} else {
-
-
                 editData[field] = data[field] ? data[field] : data.value
-                //}
-            }
         }
         else {
             if (data === "") {
@@ -458,9 +426,10 @@ const AmCreateDocument = (props) => {
 
                 if (index !== -1) {
                     if (data) {
-                        ref.current[index].current.value = data[key]
+                        if (ref.current[index].current.value)                           
+                            ref.current[index].current.value = data[key]
                     } else {
-                        ref.current[index].current.value = ""
+                        //ref.current[index].current.value = ""
                     }
                 }
             }
@@ -505,31 +474,21 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
-        if (status) {
+        if (status)  {
+            let xxx= [...dataSource];
             if (!inputError.length) {
-                let chkSkuEdit
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
-                //let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID)
+                let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.skuCode === rowdata.skuCode && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
+                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
                     setMsgDialog("มีข้อมูล Item Code นี้แล้ว")
                     return
                 }
-                //if (chkPallet) {
-                //    setStateDialogErr(true)
-                //    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
-                //    return
-                //}
-                //if (chkSkuNotPallet) {
-                //    setStateDialogErr(true)
-                //    setMsgDialog("มีข้อมูล SKU นี้แล้ว")
-                //    return
-                //}
 
-                //Edit
+            
                 if (chkEdit) {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
@@ -537,66 +496,32 @@ const AmCreateDocument = (props) => {
 
                         chkEdit[row] = rowdata[row]
                     }
-                } else {//Add
-                    dataSource.push(rowdata)
-                    setAddDataID(addDataID - 1);
-                }
+                } else {     
+                    
+                    setAddDataID(addDataID -1);
+                    xxx.push(rowdata)                    
+                   
+              
+                }         
                 setEditData({})
                 setInputError([])
                 setDialog(false)
                 setDialogItem(false)
-                setDataSource([...dataSource])
+                setDataSource([...xxx])
             } else {
+   
                 setInputError(inputError.map(x => x.accessor))
             }
         } else {
+ 
             setInputError([])
             setEditData({})
             setDialog(false)
             setDialogItem(false)
         }
-    }
-
-
-    const onHandleEditConfirmItem = (status, rowdata, inputError) => {
-        if (dataDocItem.length != 0) {
-            dataDocItem.forEach((rowI, i) => {
-                if (status) {
-                    if (dataDocItem[i]["Qty"]) {
-                        let qtySum = editData[i]["Qty"]
-                        let qtys = editData[i]["Quantity"]
-                        let ToatalQty = qtys - qtySum
-                        if (ToatalQty == 0) {
-                            setDialogItem(false)
-                            setStateDialogErr(true)
-                            setMsgDialog("เอกสารนี้ถูกสร้างครบจำนวนแล้ว")
-
-                        } else {
-                            dataDocItem[i]["Quantity"] = ToatalQty
-                            setDataSource(dataDocItem);
-                            setEditData({})
-                            setAddDataID(addDataID - 1);
-                            setDialogItem(false)
-                            setInputError([])
-                        }
-                    } else {
-                        setDataSource(editData);
-                        setEditData({})
-                        setAddDataID(addDataID - 1);
-                        setDialogItem(false)
-                        setInputError([])
-                    }
-
-                } else {
-                    setInputError([])
-                    setEditData({})
-                    setDialogItem(false)
-                }
-            })
-
-        }
 
     }
+
 
     const editorListcolunm = () => {
         if (props.columnEdit !== undefined) {
@@ -628,7 +553,7 @@ const AmCreateDocument = (props) => {
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
 
                     <InputDiv>
-                        <AmInput style={style ? style : { width: "300px" }}
+                        <AmInput style={style ? style : { width: width }}
                             required={required}
                             error={rowError}
                             // helperText={inputError.length ? "required field" : false}
@@ -656,7 +581,7 @@ const AmCreateDocument = (props) => {
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
                                     defaultValue={editData !== null && editData !== {} && editData["quantity"] !== undefined ? editData[accessor].replace("%", "") : ""}
-                                    style={TextInputnum ? { width: "100px" } : { width: "300px" }}
+                                    style={width ? width : TextInputnum ? { width: "280px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
                                 <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
@@ -744,13 +669,11 @@ const AmCreateDocument = (props) => {
                     <InputDiv>
                         <AmDropdown id="ddlTest" styleType="default"
                             placeholder="Select Test"
-                            width={200}
+                            width={width ? width : '300px'}
                             zIndex={2000}
                             data={datas}
+                            style={{ width: width ? width : '300px' }}
                             fieldDataKey={key}
-                            //autoDefaultValue={false}
-                            returnDefaultValue={true}
-                            //value={valueText.ddlTest.value}
                             disabled={disabled ? disabled : false}
                             returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
@@ -781,7 +704,7 @@ const AmCreateDocument = (props) => {
                             queryApi={queryApi} //object query string
                             defaultValue={editData[accessor] ? editData[accessor] : row.defaultValue ? row.defaultValue : ""}
                             columns={columsddl} //array column สำหรับแสดง table
-                            width={width ? width : 300}
+                            style={{ width: width ? width : '300px' }}
                             ddlMinWidth={width ? width : 100}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                         />
@@ -802,12 +725,13 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
-                        <AmDate
+                        <AmDatepicker
                             required={required}
                             error={rowError}
+                            style={{ width: width ? width : '300px' }}
                             // helperText={inputError.length ? "required field" : false}
+                            defaultValue={defaultValue ? defaultValue : true}
                             TypeDate={"datetime-local"}
-                            defaultValue={true}
                             onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
                         />
                     </InputDiv>
@@ -818,12 +742,30 @@ const AmCreateDocument = (props) => {
                 <FormInline>
                     <LabelT style={LabelTStyle}>{Header} :</LabelT>
                     <InputDiv>
-                        <AmDate
+                        <AmDatepicker
                             required={required}
+                            defaultValue={defaultValue ? defaultValue : true}
                             error={rowError}
+                            style={{ width: width ? width : '300px' }}
                             // helperText={inputError.length ? "required field" : false}
                             TypeDate={"date"}
-                            defaultValue={true}
+                            onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
+        } else if (type === "dateFalse") {
+            return (
+                <FormInline>
+                    <LabelT style={LabelTStyle}>{Header} :</LabelT>
+                    <InputDiv>
+                        <AmDatepicker
+                            required={required}
+                            defaultValue={false}
+                            error={rowError}
+                            style={{ width: width ? width : '300px' }}
+                            // helperText={inputError.length ? "required field" : false}
+                            TypeDate={"date"}
                             onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
                         />
                     </InputDiv>
@@ -843,15 +785,16 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, obj) => {
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
         if (type === "date") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"date"}
-                    defaultValue={defaultValueDate ? defaultValueDate : true}
-                    value={createDocumentData[key]}
+                    defaultValue={defaultValue ? defaultValue : true}
+                    style={{ width: width ? width : '300px' }}
+                    returndefaultValue={createDocumentData[key]}
                     onChange={(e) => {
-                        if (e !== null) {
+                        if (e.fieldDataObject !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -861,12 +804,14 @@ const AmCreateDocument = (props) => {
             )
         } else if (type === "dateTime") {
             return (
-                <AmDate
+                <AmDatepicker
                     TypeDate={"datetime-local"}
-                    defaultValue
-                    value={createDocumentData[key]}
+                    defaultValue={defaultValue ? defaultValue : true}
+                    fieldID={key}
+                    returndefaultValue={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     onChange={(e) => {
-                        if (e !== null) {
+                        if (e.fieldDataObject !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
                             setcreateDocumentData(docData)
@@ -878,19 +823,22 @@ const AmCreateDocument = (props) => {
             return (
                 <div>
                     <FormInline>
-                        <label style={{ color: 'red' }}> ***</label>
-                        <AmDate
+                        <AmDatepicker
                             TypeDate={"datetime-local"}
                             defaultValue={false}
-                            value={createDocumentData[key]}
+                            style={{ width: width ? width : '300px' }}
+                            //value={createDocumentData[key]}
                             onChange={(e) => {
-                                if (e !== null) {
+                                if (e.fieldDataObject !== null) {
                                     let docData = createDocumentData
                                     docData[key] = e.fieldDataObject
                                     setcreateDocumentData(docData)
-                                } else { }
+                                } else {
+
+                                }
                             }}
                         />
+                        <label style={{ color: 'red' }}> *</label>
                     </FormInline>
                 </div>
 
@@ -902,12 +850,9 @@ const AmCreateDocument = (props) => {
                     msgError="Error"
                     regExp={validate ? validate : ""}
                     //value={createDocumentData[key]}              
-                    //style={style ? style : { width: "300px" }}
+                    style={{ width: width ? width : "300px" }}
 
                     onChange={(e) => {
-                        if (obj.search)
-                            props.addList.search.find(x => x.accessor === key).defaultValue = e
-
                         let docData = createDocumentData
                         docData[key] = e
                         setcreateDocumentData(docData)
@@ -941,8 +886,10 @@ const AmCreateDocument = (props) => {
         } else if (type === "datepicker") {
             return (
                 <AmDatepicker
-                    value={createDocumentData[key]}
+                    returndefaultValue={createDocumentData[key]}
+                    style={{ width: width ? width : '300px' }}
                     TypeDate={"datetime-local"}
+                    defaultValue={defaultValue ? defaultValue : true}
                     onChange={(e) => {
                         let docData = createDocumentData
                         docData[key] = e
@@ -1080,9 +1027,45 @@ const AmCreateDocument = (props) => {
         const countDoc = Object.keys(doc).length
         for (let [key, value] of Object.entries(createDocumentData)) {
             if (key in doc)
-                doc[key] = value
+                doc[key] = value ? value : null
         }
+
         var qtyrandom = 'qtyrandom='
+        var remark = 'remark='
+        var pallet = 'palletcode='
+        var optn;
+            
+        let dataOptions = dataSource.map(x => {
+            let Options = x.options ? x.options : x.Options ? x.Options : null
+            let palletcode = x.palletcode ? x.palletcode : null
+            let remarks = x.remark ? x.remark : null
+
+                if (palletcode != null && x.remarks != null && Options != null) {
+                    optn = Options + '&' +
+                        pallet.concat(palletcode) + '&' +
+                        remark.concat(remarks)
+                } else if (palletcode && remarks && Options === null) {
+                    optn = pallet.concat(palletcode) + '&' +
+                        remark.concat(remarks)
+                } else if (remarks === null && palletcode && Options) {
+                    optn = Options + '&' +
+                        pallet.concat(palletcode)
+                } else if (palletcode === null && remarks && Options) {
+                    optn = Options + '&' + remarks.concat(remark)
+                } else if (palletcode && remarks === null && Options === null) {
+                    optn = pallet.concat(palletcode)
+                } else if (palletcode === null && remarks && Options === null) {
+                    optn = remark.concat(remarks)
+                } else if (palletcode === null && remarks === null && Options) {
+                    optn = Options
+                } else {
+                    optn = null
+             }
+             return optn           
+         })
+
+        console.log(dataOptions)
+
         if (props.createDocType === "shipment") {
             doc.shipmentItems = dataSource.map(x => {
                 let _docItem = { ...docItem }
@@ -1096,39 +1079,50 @@ const AmCreateDocument = (props) => {
             })
         }
         else if (props.createDocType === "counting") {
-            doc.countingItems = dataSource.map(x => {
-
+            doc.countingItems = dataSource.map((x,i) => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
-                x.options = qtyrandom.concat(x.quantitys)
+                x.auditStatus = x.auditStatus ? x.auditStatus : 0
+                x.options = x.remark ? remark.concat(x.remark) : null
+                x.options = dataOptions[i]   
                 return x
 
             })
         } else if (props.createDocType === "audit") {
-            doc.auditItems = dataSource.map(x => {
+            doc.auditItems = dataSource.map((x,i) => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.quantity = x.quantity ? 0 : 0
-                x.options = qtyrandom.concat(x.quantitys)
+                x.options = dataOptions[i] 
                 return x
             })
-        } else if (props.createDocType === "issue") {
-            doc.issuedOrderItem = dataSource.map(x => {
+        } else if (props.createDocType === "issue") {           
+            doc.issuedOrderItem = dataSource.map((x, i) => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate :null
+                x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
+                x.options = dataOptions[i]      
                 return x
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
+                x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
+                x.options = x.remark ? remark.concat(x.remark) : null
+                x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate : null
+                x.productionDate = x.productionDates ? x.productionDates : x.productionDate ? x.productionDate : null
                 return x
             })
         }
 
         if (Object.keys(doc).length > countDoc) {
-            if (doc.documentProcessTypeID === null || doc.documentProcessTypeID === null) {
+            if (doc.documentProcessTypeID === null) {
                 setMsgDialog("Process No not found");
                 setStateDialogErr(true);
             } else {
@@ -1161,21 +1155,39 @@ const AmCreateDocument = (props) => {
     }
 
     const FormatDataSource = (data) => {
-        let _addDataID = addDataID
-        let arr = data.map(x => {
-            let obj = {
-                ...x,
-                ID: _addDataID,
-                packID_map_skuID: x.packID + "-" + x.skuID
-                //expireDate: moment(x.expireDate).format('MM-DD-YYYY'),
-                //productionDate: moment(x.productionDate).format('MM-DD-YYYY')
+        let datasou = [...dataSource]
+        let datasCheck = [...dataCheck]
+        let chkPallet;
+        //if (datasou) {
+        //    chkPallet = datasou.find(x => x.packID === data.packID)
+        //}
+        //if (chkPallet) {
+        //    setStateDialogErr(true)
+        //    setMsgDialog("มีข้อมูล Pallet นี้แล้ว")
+        //} else {
 
+            if (data) {
+                let _addDataID = addDataID - 1
+                let arr = data.map((x, i) => {
+                    let obj = {
+                        ID: _addDataID,
+                        ...x,
+                        packID_map_skuID: x.packID + "-" + x.skuID,
+                        expireDate: moment(x.expireDate).format('DD-MM-YYYY'),
+                        productionDate: moment(x.productionDate).format('DD-MM-YYYY')
+
+                    }
+                    _addDataID--
+                    setAddDataID(_addDataID)
+                    datasCheck.push(obj)
+                   
+                    datasou.push(obj)
+                })
             }
-            _addDataID--
-            return obj
-        })
-        setAddDataID(_addDataID)
-        return arr
+            
+        //}
+        setdataCheck(datasCheck)
+        return datasou
     }
 
     return (
@@ -1194,8 +1206,7 @@ const AmCreateDocument = (props) => {
                 objColumnsAndFieldCheck={{ objColumn: props.columnEdit, fieldCheck: "accessor" }}
                 columns={editorListcolunm()}
             />
-
-            <PopupObjSize relationComponent={relationComponent} open={dialogItem} />
+  
             {/* Header */}
             {getHeaderCreate()}
 
@@ -1215,7 +1226,7 @@ const AmCreateDocument = (props) => {
                             } else {
                                 setDialog(true);
                                 setAddData(true);
-                                setTitle("Add");
+                                setTitle("Add Item");
                             }
                         }} >Add Item</AmButton>}
 
@@ -1235,9 +1246,10 @@ const AmCreateDocument = (props) => {
                 dataKey="ID"
                 columns={props.columnsModifi ? props.columnsModifi : columns}
                 pageSize={200}
-                dataSource={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
+                tableConfig={false}
+                dataSource={dataSource.length > 0 ? dataSource : []}
                 //   height={200}
-                rowNumber={false}
+                rowNumber={true}
             />
 
             {/* Btn CREATE */}

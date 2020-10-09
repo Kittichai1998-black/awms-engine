@@ -39,6 +39,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import AmDialogConfirm from '../../components/AmDialogConfirm';
 import AmPrintBarCodeV2 from '../pageComponent/AmPrintBarCodeV2/AmPrintBarCodeV2';
 import AmPrintBarCode from '../pageComponent/AmPrintBarCode/AmPrintBarCode';
+import Amdocumentstatus from '../../components/AmDocumentStatus';
 import CropFreeIcon from '@material-ui/icons/CropFree';
 import PrintIcon from '@material-ui/icons/Print';
 import _ from 'lodash';
@@ -216,6 +217,10 @@ const DocumentView = props => {
         //getHeader()
     }, [props.header]);
 
+    useEffect(() => {
+        renderDocumentStatusIcon();
+    })
+
     const getData = () => {
         //========================================================================================================
 
@@ -246,15 +251,29 @@ const DocumentView = props => {
                     var sumQty = 0;
                     var sumBaseQty = 0;
                     if (res.data.sou_bstos !== null) {
-                        res.data.sou_bstos.filter(y => y.docItemID == row.ID).forEach(y => {
-                            sumQty += y.distoQty;
-                            sumBaseQty += y.distoBaseQty;
+                        res.data.sou_bstos.filter(y => y.packID === row.PackMaster_ID).forEach(y => {
+
+                            if (props.typeDocNo === 1011) {
+                                if (y.dcDocType_ID === 1001) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
+                            } else if (props.typeDocNo === 1012) {
+                                if (y.dcDocType_ID === 1002) {
+                                    sumQty += y.distoQty;
+                                    sumBaseQty += y.distoBaseQty;
+                                }
+                            } else if (props.typeDocNo === y.dcDocType_ID) {
+                                sumQty += y.distoQty;
+                                sumBaseQty += y.distoBaseQty;
+                            }
                         });
                     }
+
                     row._sumQtyDisto = sumQty;
                     row._sumQtyBaseDisto = sumBaseQty;
-
                     row._balanceQty = row.Quantity - sumQty;
+
 
                     // === getOption === DocItem
 
@@ -306,9 +325,10 @@ const DocumentView = props => {
                         qtyrandom: qryStr.qtyrandom ? qryStr.qtyrandom
                             :
                             '-',
-
+                        remark: qryStr.remark != null ? qryStr.remark : '',
                         ExpireDate: row.ExpireDate ? moment(row.ExpireDate).format("DD/MM/YYYY") : null,
                         ProductionDate: row.ProductionDate ? moment(row.ProductionDate).format("DD/MM/YYYY") : null,
+
                     });
 
 
@@ -326,6 +346,7 @@ const DocumentView = props => {
                         //var qryStr = queryString.parse(rowDetail.options)
                         //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
                         var qryStr = queryString.parse(rowDetail.Options);
+                        var qryStrDI = queryString.parse(rowDetail.diOptions);
                         if (optionSouBstos) {
                             optionSouBstos.forEach(x => {
                                 rowDetail[x.optionName] =
@@ -334,21 +355,48 @@ const DocumentView = props => {
                                         : qryStr[x.optionName];
                             });
                         }
+                        if (props.typeDocNo === 1001 || props.typeDocNo === 1002 || props.typeDocNo === 2004) {
+                            if (rowDetail.dcDocType_ID === props.typeDocNo) {
+                                dataTableDetailSOU.push({
+                                    ...rowDetail
+                                });
+                            }
+                        } else {
+                            if (props.typeDocNo === 1011) {
+                                if (rowDetail.dcDocType_ID === 1001) {
+                                    dataTableDetailSOU.push({
+                                        ...rowDetail
+                                    });
+                                }
+                            } else if (props.typeDocNo === 1012) {
+                                if (rowDetail.dcDocType_ID === 1002) {
+                                    dataTableDetailSOU.push({
+                                        ...rowDetail
+                                    });
+                                }
+                            } else {
+                                dataTableDetailSOU.push({
+                                    ...rowDetail,
+                                    remark: qryStrDI.remark != null ? qryStrDI.remark : '',
+                                    _packQty:
+                                        typeDoc === "issued"
+                                            ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                            : typeDoc === "shipment"
+                                                ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
+                                                : typeDoc === "received"
+                                                    ? rowDetail.packQty
+                                                    : typeDoc === "audit"
+                                                        ? rowDetail.distoQty
+                                                        : null
+                                });
 
-                        dataTableDetailSOU.push({
-                            ...rowDetail,
-                            _packQty:
-                                typeDoc === "issued"
-                                    ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                    : typeDoc === "shipment"
-                                        ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
-                                        : typeDoc === "received"
-                                            ? rowDetail.packQty
-                                            : typeDoc === "audit"
-                                                ? rowDetail.distoQty
-                                                : null
-                        });
+
+                            }
+
+                        }
+
                     });
+
                 }
                 if (res.data.des_bstos) {
                     res.data.des_bstos.forEach(rowDetail => {
@@ -378,6 +426,7 @@ const DocumentView = props => {
                         }
                         dataTableDetailDES.push({
                             ...rowDetail,
+                            remark: qryStr.remark != null ? qryStr.remark : '',
                             _packQty:
                                 typeDoc === "issued"
                                     ? rowDetail.distoQty + " / " + rowDetail.distoQtyMax
@@ -437,11 +486,17 @@ const DocumentView = props => {
             setColumnsDetailSOU(props.columnsDetailSOU)
         }
     }, [props.columnsDetailSOU, dataHeader])
+
     const renderDocumentStatus = () => {
         var _statustxt = _.result(_.find(DocumentEventStatus, function (obj) {
             return obj.code === dataHeader.EventStatus;
         }), 'status');
         return _statustxt;
+    };
+
+    const renderDocumentStatusIcon = () => {
+        return <div><Amdocumentstatus key={1} statusCode={dataHeader.EventStatus} /></div>;
+
     };
 
     const buttonBack = () => {
@@ -454,26 +509,28 @@ const DocumentView = props => {
 
     //======================================================================================================
 
-    const getDataHeader = (type, value) => {
+    const getDataHeader = (type, value, values) => {
         if (type === "date") {
-            if (dataHeader[value] === null || dataHeader[value] === "") {
+            if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
             } else {
-                return moment(dataHeader[value]).format("DD/MM/YYYY");
+                return moment(dataHeader[values]).format("DD/MM/YYYY");
             }
         } else if (type === "dateTime") {
-            if (dataHeader[value] === null || dataHeader[value] === "") {
+            if (dataHeader[values] === null || dataHeader[values] === "") {
                 return "-";
             } else {
-                return moment(dataHeader[value]).format("DD/MM/YYYY HH:mm:ss");
+                return moment(dataHeader[values]).format("DD/MM/YYYY HH:mm:ss");
             }
         } else if (type === "function") {
-            return eval(value);
+            return eval(values);
         } else if (type === "option") {
             var qryStr = queryString.parse(dataHeader.Options);
-            return qryStr[value] === "undefined" ? null : qryStr[value];
+            return qryStr[values] === "undefined" ? null : qryStr[values];
+        } else if (value) {
+            return dataHeader[value] + ':' + dataHeader[values];
         } else {
-            return dataHeader[value];
+            return dataHeader[values];
         }
     };
 
@@ -483,7 +540,7 @@ const DocumentView = props => {
                 <Grid key={idx} container spacing={24}>
                     {x.map((y, i) => {
                         let syn = y.label ? " :" : "";
-                        let showval = getDataHeader(y.type, y.values);
+                        let showval = getDataHeader(y.type, y.value, y.values);
                         return (
                             <Grid
                                 key={i}
@@ -870,13 +927,11 @@ const DocumentView = props => {
                     // }
                 };
 
-                // console.log(reqjson)
-
                 await Axios.postload(window.apipath + "/v2/download/print_pdf", reqjson, "document_" + dataHeader.Code + ".pdf").then();
 
             }
         } catch (err) {
-            console.log(err)
+            // console.log(err)
         }
     }
     return (
@@ -939,7 +994,9 @@ const DocumentView = props => {
 
                     : null}
             </FormInline>
+            {/* {console.log(dataHeader)} */}
             {typeDoc && props.QrCodemanuak ? (
+
                 // <Table columns={columns} pageSize={100} data={data} sortable={false} currentPage={0} />
                 <AmTable
                     selection={"checkbox"}
@@ -950,8 +1007,9 @@ const DocumentView = props => {
                     pageSize={100}
                     dataSource={data}
                     height={200}
+                    tableConfig={false}
                     rowNumber={false}
-                    customAction={
+                    customAction={dataHeader.EventStatus === 32 || dataHeader.DocumentProcessTypeCode === "8011" ? null :
                         [{
                             label: <div style={{ fontSize: "12px" }}>
                                 {"QRCODE MANUAL"}</div>,
@@ -983,6 +1041,7 @@ const DocumentView = props => {
                         columns={columns}
                         pageSize={100}
                         dataSource={data}
+                        tableConfig={false}
                         height={200}
                     ></AmTable> :
                     null}
@@ -1084,6 +1143,7 @@ const DocumentView = props => {
                         columns={columnsDetailSOU}
                         pageSize={100}
                         dataSource={dataDetailSOU}
+                        tableConfig={false}
                         height={200}
                         rowNumber={false} />
                 ) : null
@@ -1099,6 +1159,7 @@ const DocumentView = props => {
                     <AmTable dataKey="id"
                         columns={columnsDetailDES}
                         pageSize={100}
+                        tableConfig={false}
                         dataSource={dataDetailDES}
                         height={200}
                         rowNumber={false} />

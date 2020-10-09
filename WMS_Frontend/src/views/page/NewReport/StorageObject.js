@@ -40,7 +40,7 @@ const StorageObject = props => {
     },
     {
       Header: "Warehouse Lock",
-      accessor: "IsHold",
+      accessor: "IsHoldName",
       width: 30,
       sortable: false,
       filterType: "dropdown",
@@ -50,11 +50,11 @@ const StorageObject = props => {
         typeDropDown: "normal",
         widthDD: 120,
       },
-      Cell: e => getIsHold(e.original.IsHold)
+      Cell: e => getIsHold(e.original.IsHoldName)
     },
     {
       Header: "Quality Status",
-      accessor: "AuditStatus",
+      accessor: "AuditStatusName",
       width: 50,
       sortable: false,
       filterType: "dropdown",
@@ -64,7 +64,20 @@ const StorageObject = props => {
         typeDropDown: "normal",
         widthDD: 120,
       },
-      Cell: e => getAuditStatus(e.original.AuditStatus)
+      Cell: e => getAuditStatus(e.original.AuditStatusName)
+    },
+    { Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "Vendor Lot", accessor: "Ref1", width: 80 },
+    {
+      Header: "Item Code",
+      accessor: "SKU_Code",
+      width: 100
+    },
+    {
+      Header: "Item Name",
+      accessor: "SKU_Name",
+      fixWidth: 200,
+
     },
     {
       Header: "Pallet",
@@ -72,33 +85,52 @@ const StorageObject = props => {
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
     },
-    {
-      Header: "SKU Code",
-      accessor: "SKU_Code",
-      width: 100
-    },
-    {
-      Header: "SKU Name",
-      accessor: "SKU_Name",
-      fixWidth: 200,
-
-    },
-    // { Header: "Project", accessor: "Project", width: 100 },
+    { Header: "Control No.", accessor: "OrderNo", width: 100 },
     { Header: "Customer", accessor: "For_Customer", width: 100 },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+
     {
       Header: "Qty",
-      accessor: "Qty",
+      accessor: "SaleQty",
       width: 70,
       type: "number"
       // Cell: e => getNumberQty(e.original)
     },
-    { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
+    { Header: "Unit", accessor: "Unit", width: 100 },
+    { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
+    { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
+    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    { Header: "MDT Shelf life", accessor: "ExpiryDay", width: 100, type: "number" },
+    { Header: "MDT Shelf life (%)", accessor: "ShelfLifeRemainPercent", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Received Date",
+      Header: "MFG.Date",
+      accessor: "Product_Date",
+      width: 150,
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      }
+      , customFilter: { field: "Product_Date" },
+      dateFormat: "DD/MM/YYYY"
+    },
+    {
+      Header: "Expiry Date",
+      accessor: "Expiry_Date",
+      width: 150,
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      }
+      , customFilter: { field: "Expiry_Date" },
+      dateFormat: "DD/MM/YYYY"
+    },
+    {
+      Header: "Received Time",
       accessor: "Receive_Time",
       width: 150,
       type: "datetime",
@@ -125,14 +157,14 @@ const StorageObject = props => {
 
   };
   const getAuditStatusValue = Status => {
-    if (Status === 0) {
-      return <AuditStatusIcon key={Status} statusCode={0} />;
-    } else if (Status === 1) {
-      return <AuditStatusIcon key={Status} statusCode={1} />;
-    } else if (Status === 2) {
-      return <AuditStatusIcon key={Status} statusCode={2} />;
-    } else if (Status === 9) {
-      return <AuditStatusIcon key={Status} statusCode={9} />;
+    if (Status === "QUARANTINE") {
+      return <AuditStatusIcon key={0} statusCode={0} />;
+    } else if (Status === "PASSED") {
+      return <AuditStatusIcon key={1} statusCode={1} />;
+    } else if (Status === "REJECTED") {
+      return <AuditStatusIcon key={2} statusCode={2} />;
+    } else if (Status === "HOLD") {
+      return <AuditStatusIcon key={9} statusCode={9} />;
     } else {
       return null;
     }
@@ -142,26 +174,27 @@ const StorageObject = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-    if (value !== undefined) {
-      return value === false ? <div style={{ textAlign: "center" }}>
+    if (value === "UNLOCK") {
+      return <div style={{ textAlign: "center" }}>
         <Tooltip title="UNLOCK" >
           <RemoveCircle
             fontSize="small"
             style={{ color: "#9E9E9E" }}
           />
         </Tooltip>
-      </div> : <div style={{ textAlign: "center" }}>
-          <Tooltip title="LOCK" >
-            <CheckCircle
-              fontSize="small"
-              style={{ color: "black" }}
-            />
-          </Tooltip>
-        </div>
+      </div>
     } else {
-      return null
+      return <div style={{ textAlign: "center" }}>
+        <Tooltip title="LOCK" >
+          <CheckCircle
+            fontSize="small"
+            style={{ color: "black" }}
+          />
+        </Tooltip>
+      </div>
     }
   }
+
   const getRedirectLog = data => {
     return (
       <div

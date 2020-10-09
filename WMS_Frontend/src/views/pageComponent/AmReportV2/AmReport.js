@@ -10,7 +10,7 @@ import {
 import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateURL } from "../AmReportV2/GetURL";
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 
 const Axios = new apicall();
@@ -47,7 +47,7 @@ const AmReport = props => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0)
   const [iniQuery, setIniQuery] = useState(true);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(20);
 
   useEffect(() => {
     if (!iniQuery)
@@ -87,6 +87,7 @@ const AmReport = props => {
   const getData = () => {
 
     var pathAPI = DataGenerateURL(valueText, props.fileNameTable, props.typeDoc)
+    console.log(valueText)
     let pathGetAPI = pathAPI +
       "&page=" + (page - 1)
       + "&limit=" + pageSize
@@ -146,8 +147,26 @@ const AmReport = props => {
             col.width = 200;
             col.Filter = (field, onChangeFilter) => {
               return <div>
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} TypeDate={"date"} fieldID="fromDate" onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" }) }} />
-                <AmDatePicker defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
+                <AmDatePicker
+                  defaultValue={true}
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }}
+                  style={{ display: "inline-block" }}
+                  onChange={(ele) => { }}
+                  TypeDate={"date"}
+                  fieldID="fromDate"
+                  onBlur={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }}
+                />
+                <AmDatePicker
+                  onDefaultSet={(e) => {
+                    if (e !== undefined && e !== null)
+                      onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "fromDate" })
+                  }} defaultValue={true} style={{ display: "inline-block" }} onChange={(ele) => { }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "toDate" }) }} TypeDate={"date"} fieldID="toDate" />
               </div>
             }
           }
@@ -159,6 +178,13 @@ const AmReport = props => {
     return { columns };
   }
   const { columns } = useColumns(props.columnTable);
+
+  const checkStatusColor = (rowInfo) => {
+    if (rowInfo.isHead) {
+      return { backgroundColor: "#E0E0E0" }
+    }
+
+  }
   //===========================================================
   return (
     <div>
@@ -171,6 +197,7 @@ const AmReport = props => {
         totalSize={count}
         tableConfig={true}
         pageSize={100}
+        cellStyle={(accessor, cellData, dataSource) => { return checkStatusColor(dataSource) }}
         onPageSizeChange={(pg) => { setPageSize(pg) }}
         filterable={true}
         filterData={res => { onChangeFilterData(res) }}
@@ -181,6 +208,12 @@ const AmReport = props => {
           else
             setIniQuery(false)
         }}
+        groupBy={props.groupBy === true ? {
+          "field": ["Code", "Lot", "unitType"],
+          "sumField": ["qty", "qty_avt0", "qty_avt1", "qty_avt2", "qty_avt9",
+            "qty_evt10", "qty_evt11", "qty_evt12", "qty_evt13", "qty_evt14",
+            "qty_evt15", "qty_evt16", "qty_evt33", "qty_evt34",]
+        } : null}
       />
 
     </div>

@@ -80,7 +80,7 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
@@ -136,7 +136,7 @@ const Create_GR_DR = props => {
         q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
         l: 100,
         all: ""
@@ -157,51 +157,54 @@ const Create_GR_DR = props => {
     }
 
     const columnEdit = [
-        { Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
-        { Header: "Item", accessor: "SKUItems", type: "text" },
-        { Header: "Order No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
-        { Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
+        //{ Header: "Item No.", accessor: "ItemNo", type: "text", codeTranslate: "ItemNo" },
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Pallet Code", type: "text" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code", type: "text" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name", type: "text" },
+        { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
+        //{ Header: "Batch", accessor: "Batch", type: "text", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
         { Header: "Qty", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
+        { Header: "Quality Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
         { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2", type: "text", codeTranslate: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
+        { Header: "Remark", accessor: "Remark", type: "text", codeTranslate: "Remark" },
+        //{ Header: "Ref2", accessor: "Ref2", type: "text", codeTranslate: "Ref2" },
+        //{ Header: "Ref3", accessor: "Ref3", type: "text", codeTranslate: "Ref3" },
+        //{ Header: "Ref4", accessor: "Ref4", type: "text", codeTranslate: "Ref4" },
         { Header: "Carton No.", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
-        { Header: "Product Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
+        //{ Header: "Incubation Day", accessor: "IncubationDay", type: "text", codeTranslate: "IncubationDay" },
+        { Header: "MFG.Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
         { Header: "Expire Date", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate" },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay" }
+        //{ Header: "ShelfLife Day", accessor: "ShelfLifeDay", type: "text", codeTranslate: "ShelfLifeDay" }
     ];
 
 
     const columnEditItem = [
-        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
-        { Header: "Item", accessor: "SKUItems", codeTranslate: "Item Code" },
-        { Header: "Order No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
-        { Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
+        //{ Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Pallet Code" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
+        { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
+        //{ Header: "Batch", accessor: "Batch", codeTranslate: "Batch" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "Qty", accessor: "Quantity", codeTranslate: "Qty" },
         { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
-        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2", codeTranslate: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3", codeTranslate: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4", codeTranslate: "Ref4" },
+        { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
+        { Header: "Remark", accessor: "Remark", codeTranslate: "Remark"},
         { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay", codeTranslate: "IncubationDay" },
-        { Header: "Product Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
+        { Header: "MFG.Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
         { Header: "Expire Date", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay", codeTranslate: "ShelfLifeDay" }
 
     ];
 
     const columnEditItemSet = [
-        { Header: "Item Code", accessor: "SKUItems", codeTranslate: "Item Code" },
+        { Header: "Pallet Code", accessor: "PalletCode", codeTranslate: "Item Code" },
+        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
+        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
+        //{ Header: "Item No.", accessor: "ItemNo", codeTranslate: "ItemNo" },
         //{ Header: "Quantity", accessor: "Quantity",codeTranslate: "Quantity" },
         //{ Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" }
     ];
@@ -209,23 +212,20 @@ const Create_GR_DR = props => {
 
     const columns = [
         //{ id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "", accessor: "row", width: 35 },
-        { Header: "Item", accessor: "SKUItems" },
-        { Header: "Order No.", accessor: "OrderNo" },
-        { Header: "Batch", accessor: "Batch" },
+        //{ Header: "", accessor: "row", width: 35 },
+        { Header: "Pallet Code", accessor: "PalletCode" },
+        { Header: "Item Code", accessor: "SKUMaster_Code" },
+        { Header: "Item Nane", accessor: "SKUMaster_Name" },
+        { Header: "Control No.", accessor: "OrderNo" },
         { width: 130, accessor: "Lot", Header: "Lot" },
+        { Header: "Vendor Lot", accessor: "Ref1" },
         { width: 120, accessor: "_qty", Header: "Qty" },
         { width: 70, accessor: "UnitType_Code", Header: "Unit" },
-        { Header: "Audit Status", accessor: "AuditStatus" },
-        { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Ref2", accessor: "Ref2" },
-        { Header: "Ref3", accessor: "Ref3" },
-        { Header: "Ref4", accessor: "Ref4" },
+        { Header: "Quality Status", accessor: "AuditStatus" },
+        { Header: "Remark", accessor: "Remark"},
         { Header: "Carton No.", accessor: "CartonNo" },
-        { Header: "Incubation Day", accessor: "IncubationDay" },
-        { Header: "Product Date", accessor: "ProductionDate" },
-        { Header: "Expire Date", accessor: "ExpireDate" },
-        { Header: "ShelfLife Day", accessor: "ShelfLifeDay" }
+        { Header: "MFG.Date", accessor: "ProductionDate" },
+        { Header: "Expire Date", accessor: "ExpireDate" }
     ];
 
     const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc

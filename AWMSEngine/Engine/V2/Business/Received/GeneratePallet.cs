@@ -10,8 +10,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
         public class TReq
         {
             public long mode;
-            public int minVolume;
-            public int maxVolume;
+            public decimal minVolume;
+            public decimal maxVolume;
             public string supplierName;
             public string supplierCode;
             public string remark;
@@ -23,6 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public int layoutType;
             public int docID;
             public List<pallet_list_item> listsCode;
+            public List<pallet_list_item> listsCodeDisplay;
         }
         public class pallet_list
         {
@@ -42,7 +43,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public int bcode;
             public string pcode;
             public string pname;
-            public int vol;
+            public decimal vol;
             public string unit;
             public string lot;
             public string orderNo;
@@ -51,13 +52,16 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
+            public decimal quantity;
+            public decimal realQuantity;
+            public decimal volsku;
         }
         public class Item
         {
             public string docItemID;
             public string code;
             public string name;
-            public int vol;
+            public decimal vol;
             public string unit;
             public string lot;
             public string orderNo;
@@ -65,6 +69,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string expdate;
             public string prodDate;
             public string tag_qr;
+            public decimal quantity;
+            public decimal volsku;
 
 
         }
@@ -98,13 +104,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             var pallet_list = findPalletX.GroupBy(x => x.bcode).Select(x => new { palletsNO = x.Key, palletsDetail = x.ToList() }).ToList();
             List<pallet_list_item> listItem = new List<pallet_list_item>();
+            List<pallet_list_item> listItemDisplay = new List<pallet_list_item>();
             foreach (var pts in pallet_list)
             {
 
-                var pcode = string.Join(',', pts.palletsDetail.Select(x => x.pcode));
+                var pcode = string.Join(',', pts.palletsDetail.Select(x=>x.pcode));
                 var pname = string.Join(',', pts.palletsDetail.Select(x => x.pname));
                 var pID = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
-                var vol = string.Join(',', pts.palletsDetail.Select(x => x.vol));
+                var vol = string.Join(',', pts.palletsDetail.Select(x => x.realQuantity));
                 var unit = string.Join(',', pts.palletsDetail.Select(x => x.unit));               
                 var lot = string.Join(',', pts.palletsDetail.FindAll(x=> !string.IsNullOrWhiteSpace(x.lot)).Select(x => x.lot));
                 var orderNo = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).Select(x => x.orderNo));
@@ -113,7 +120,19 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var prodDate = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.prodDate)).Select(x => x.prodDate));
                 var tag_qr = string.Join(',', pts.palletsDetail.Select(x => x.tag_qr));
 
-                listItem.Add(new pallet_list_item()
+                var pcodeDisplay = string.Join(',', pts.palletsDetail.GroupBy(x => x.pcode).Select(x => x.Key).ToList());
+                var pnameDisplay = string.Join(',', pts.palletsDetail.GroupBy(x => x.pname).Select(x => x.Key).ToList());
+                var pIDDisplay = string.Join(',', pts.palletsDetail.Select(x => x.docItemID));
+                var volDisplay = string.Join(',', pts.palletsDetail.Select(x => x.realQuantity));
+                var unitDisplay = string.Join(',', pts.palletsDetail.Select(x => x.unit));
+                var lotDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.lot)).GroupBy(x => x.lot).Select(x => x.Key).ToList());
+                var orderNoDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.orderNo)).GroupBy(x => x.orderNo).Select(x => x.Key).ToList());
+                var skutypeDisplay = pts.palletsDetail.Select(x => x.skuType).FirstOrDefault();
+                var expdateDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.expdate)).GroupBy(x => x.expdate).Select(x => x.Key).ToList());
+                var prodDateDisplay = string.Join(',', pts.palletsDetail.FindAll(x => !string.IsNullOrWhiteSpace(x.prodDate)).GroupBy(x => x.prodDate).Select(x => x.Key).ToList());
+                var tag_qrDisplay = string.Join(',', pts.palletsDetail.Select(x => x.tag_qr));
+
+                listItemDisplay.Add(new pallet_list_item()
                 {
                     code = "N|" + pts.palletsNO + "|" + pID + "|" + vol+"|"+ tag_qr,
                     skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Name == skutype).ID.Value,
@@ -126,20 +145,37 @@ namespace AWMSEngine.Engine.V2.Business.Received
                               "&palletNo=" + pts.palletsNO+"/"+ pallet_list.Count +
                               "&remark="+ reqVO.remark
                 });
+                listItem.Add(new pallet_list_item()
+                {
+                    code = "N|" + pts.palletsNO + "|" + pID + "|" + vol + "|" + tag_qr,
+                    skuType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.Name == skutype).ID.Value,
+                    title = skutype,
+                    options = "codeNo=" + (pcodeDisplay.Length < 15? pcodeDisplay : (pcodeDisplay.Substring(0, 15)+"...")) +
+                    "&itemName=" + (pnameDisplay.Length < 35 ? pnameDisplay : (pnameDisplay.Substring(0, 35) + "..."))  +
+                              "&lotNo=" + (lotDisplay.Length < 30 ? lotDisplay : (lotDisplay.Substring(0, 30) + "..."))  + 
+                              "&controlNo=" + (orderNoDisplay.Length < 15 ? orderNoDisplay : (orderNoDisplay.Substring(0, 12) + "..."))  +
+                              "&supplier=" + reqVO.supplierName +
+                              "&mfgdate=" + (prodDateDisplay.Length < 15 ? prodDateDisplay : (prodDateDisplay.Substring(0, 12) + "..."))  +
+                              "&expdate=" + (expdateDisplay.Length < 15 ? expdateDisplay : (expdateDisplay.Substring(0, 12) + "...")) +
+                              "&qty=" + vol + "&unit=" + unitDisplay +
+                              "&palletNo=" + pts.palletsNO + "/" + pallet_list.Count +
+                              "&remark=" + reqVO.remark
+                });
             }
 
             res = new TRes()
             {
                 layoutType = 91,
                 docID = reqVO.docID,
-                listsCode = listItem
+                listsCode = listItem,
+                listsCodeDisplay = listItemDisplay
             };
 
             return res;
         }
-        private List<Pallet> findPallet(List<Item> item, int palletVol, int bcode, List<Pallet> palletList, int defaultVol, int mode)
+        private List<Pallet> findPallet(List<Item> item, decimal palletVol, int bcode, List<Pallet> palletList, decimal defaultVol, int mode)
         {
-            int palletVolRemail = palletVol;
+            decimal palletVolRemail = palletVol;
             var pallet = new Pallet();
             Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             if (item.FirstOrDefault() != null)
@@ -149,13 +185,34 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 if (palletVol < itemData.vol)
                 {
                     pallet.vol = palletVol;
+                    decimal qty = palletVol / itemData.volsku;
+                    pallet.realQuantity = Math.Floor(qty);
                     itemData.vol = itemData.vol - palletVol;
                 }
                 else
                 {
-                    pallet.vol = itemData.vol;
-                    palletVolRemail -= itemData.vol;
-                    itemData.vol = 0;
+                    var realQty = palletList.FindAll(x => x.docItemID == itemData.docItemID).Select(x => x.vol).Sum(x =>
+                    {
+                        decimal qty = x / itemData.volsku;
+                        return Math.Floor(qty);
+                    });
+
+                    var remainItem = itemData.quantity - realQty;
+
+                    if(remainItem * itemData.volsku > palletVol)
+                    {
+                        pallet.vol = palletVol;
+                        decimal qty = palletVol / itemData.volsku;
+                        pallet.realQuantity = Math.Floor(qty);
+                        itemData.vol = (remainItem * itemData.volsku) - palletVol;
+                    }
+                    else
+                    {
+                        pallet.realQuantity = remainItem;
+
+                        palletVolRemail -= ((remainItem * itemData.volsku));
+                        itemData.vol = 0;
+                    }
                 }
 
                 pallet.bcode = bcode;

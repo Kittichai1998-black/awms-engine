@@ -12,6 +12,9 @@ import styled from 'styled-components'
 import { indigo, grey, red } from '@material-ui/core/colors';
 import AmInput from '../../components/AmInput';
 import AmValidate from '../../components/AmValidate';
+import AmDatePicker from '../../components/AmDatePicker';
+import moment from "moment";
+
 const Axios = new apicall()
 const styles = theme => ({
     root: {
@@ -248,7 +251,7 @@ function Test6(props) {
         const res = await Axios.get(qryString).then(res => res)
         setDataSrc(res.data.datas)
     }
-    useEffect(() => { console.log(valueText) }, [valueText])
+    // useEffect(() => { console.log(valueText) }, [valueText])
 
     //ค่าที่ส่งกลับมา ของcomponent AmDropdown, AmMultiDropdown, AmFindPopup,
     //value, dataObject, inputID=ไอดีของinput, fieldDataKey=ชื่อฟิล์ดที่ลิงค์กับtableในdb
@@ -271,10 +274,10 @@ function Test6(props) {
         });
         // }
     };
-   
+
     //ค่าที่ส่งกลับมา ของcomponent AmDropdown, AmMultiDropdown, AmFindPopup,
     const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey) => {
-        console.log(dataObject)
+        // console.log(dataObject)
         setValueText({
             ...valueText, [inputID]: {
                 value: value,
@@ -308,9 +311,9 @@ function Test6(props) {
     };
     //ค่าที่ส่งกลับมา ของ AmButton
     const onHandleSearch = (value, obj, event) => {
-        console.log(value)
-        console.log(obj)
-        console.log(event)
+        // console.log(value)
+        // console.log(obj)
+        // console.log(event)
         // alert("ID: " + valueText.txtCode.value +
         //     " :: " + valueText.txtCode.label +
         //     "<br >ID: " + valueText.txtUnitType.value +
@@ -390,6 +393,16 @@ function Test6(props) {
     }
     return (
         <>
+            <AmDatePicker
+                defaultValue={true}
+                // style={{ display: "inline-block" }}
+                // onChange={(ele) => { console.log(ele) }}
+                TypeDate={"datetime-local"}
+                fieldID="fromDate"
+                // setTimeZero={true}
+                onBlur={(e) => { console.log(e) }} required
+            />
+
             <AmButton id="btnSearch" styleType="add" className={classNames(classes.button)} onClick={onHandleSearch}>
                 {'Test Search'}
             </AmButton>
@@ -674,6 +687,8 @@ function Test6(props) {
             </FormInline>
 
             {convertData()}
+
+
         </>
     );
 }

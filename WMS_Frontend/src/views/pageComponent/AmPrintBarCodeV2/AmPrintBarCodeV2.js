@@ -142,7 +142,7 @@ const AmPrintBarCodeV2 = props => {
     var data = LoadDataPDF(itemList, props.SouSupplierName, props.SouSupplierCode, totalPallet, props.Remark, props.docID)
     try {
 
-      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf").then();
+      await Axios.postload(window.apipath + "/v2/download/print_tag_code", data, "printcode.pdf", "preview").then();
       setDialog(false)
       setDialogState({ type: "success", content: "Success", state: true })
       Clear()
@@ -175,43 +175,46 @@ const AmPrintBarCodeV2 = props => {
     var Quantity_s = 0
     var Quantity_t = 0
     let selecx = selection.filter(y => y.Quantity !== 0)
-    if (selection.length !== 0) {
-      var ck = selecx.find(x => x.Quantity - x.Quantity_Genarate < 0)
-      if (ck === undefined) {
-        selecx.forEach(selec => {
+    if (selecx.length !== 0) {
+      if (selection.length !== 0) {
+        var ck = selecx.find(x => x.Quantity - x.Quantity_Genarate < 0 || parseInt(x.Quantity_Genarate) === 0)
+        if (ck === undefined) {
+          selecx.forEach(selec => {
 
-          var selectionData = iniData.find(x => x.ID === selec.ID)
-          if (selectionData !== undefined) {
-            Quantity_s = selectionData.Quantity % parseInt(selectionData.Quantity_Genarate)
-            Quantity_t = selectionData.Quantity / parseInt(selectionData.Quantity_Genarate)
-            let num_r = Quantity_s === 0 ? Math.floor(Quantity_t) : (Math.floor(Quantity_t) + 1)
-            selectionData.Quantity = 0
+            var selectionData = iniData.find(x => x.ID === selec.ID)
+            if (selectionData !== undefined) {
+              Quantity_s = selectionData.Quantity % parseInt(selectionData.Quantity_Genarate)
+              Quantity_t = selectionData.Quantity / parseInt(selectionData.Quantity_Genarate)
+              let num_r = Quantity_s === 0 ? Math.floor(Quantity_t) : (Math.floor(Quantity_t) + 1)
+              selectionData.Quantity = 0
 
-            for (var i = 0; i < num_r; i++) {
-              datax.push([selectionData])
+              for (var i = 0; i < num_r; i++) {
+                datax.push([selectionData])
+              }
             }
-          }
-          let temp = Clone(datax)
-          if (Quantity_s !== 0
-          ) temp[temp.length - 1][0].Quantity_Genarate = Quantity_s
+            let temp = Clone(datax)
+            if (Quantity_s !== 0
+            ) temp[temp.length - 1][0].Quantity_Genarate = Quantity_s
 
-          datax = temp
-        });
-        datax.forEach(x => {
-          itemList[n + 1] = x
-          n++
-        })
+            datax = temp
+          });
+          datax.forEach(x => {
+            itemList[n + 1] = x
+            n++
+          })
 
-        setElePallet(RanderEleListPallet(itemList, "addList", null, n))
+          setElePallet(RanderEleListPallet(itemList, "addList", null, n))
 
-        setIniData([...iniData])
+          setIniData([...iniData])
+        } else {
+          setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
+          setIniData([...iniData])
+        }
       } else {
-        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
-        setIniData([...iniData])
+        setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
       }
-
     } else {
-      setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+      setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
     }
     return null
   }
@@ -220,34 +223,40 @@ const AmPrintBarCodeV2 = props => {
   const onGenBarcode = () => {
     if (selection.length !== 0) {
       let selecx = selection.filter(y => y.Quantity !== 0)
-      var ck = selecx.find(x => (x.Quantity - x.Quantity_Genarate) < 0)
-      if (ck === undefined) {
-        setElePallet(RanderEleListPallet(selecx, "add"))
-        selecx.forEach(selec => {
-          var selectionData = iniData.find(x => x.ID === selec.ID)
-          if (selectionData !== undefined) {
-            let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
-            selectionData.Quantity = selectionData.Quantity - genQty
-          }
-        });
-        setIniData([...iniData])
+      //console.log(selecxCheck)
+      if (selecx.length !== 0) {
+        var ck = selecx.find(x => (x.Quantity - x.Quantity_Genarate) < 0 || parseInt(x.Quantity_Genarate) === 0)
+        if (ck === undefined) {
+          setElePallet(RanderEleListPallet(selecx, "add"))
+          selecx.forEach(selec => {
+            var selectionData = iniData.find(x => x.ID === selec.ID)
+            if (selectionData !== undefined) {
+              let genQty = selectionData["Quantity_Genarate"] !== undefined ? selectionData["Quantity_Genarate"] : 0
+              selectionData.Quantity = selectionData.Quantity - genQty
+            }
+          });
+          setIniData([...iniData])
+        } else {
+          setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้าหรือจำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
+          setIniData([...iniData])
+        }
       } else {
-        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกมากกว่าจำนวนสินค้าที่จะรับเข้า", state: true })
-        setIniData([...iniData])
+        setDialogState({ type: "warning", content: "จำนวนสินค้าที่เลือกเท่ากับ 0", state: true })
       }
-
     } else {
       setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
     }
+
   }
 
   const getQtyItem = (e) => {
+
     return (<div><AmInput
       id={e.ID + "_qty"}
       style={{ width: "50px", margin: "0px", paddingLeft: "10px" }}
       disabled={e["Quantity"] === 0 ? true : false}
       type={"input"}
-      defaultValue={e["SKUMaster_Info1"] ? e["SKUMaster_Info1"] : ""}
+      defaultValue={parseInt(e["PackMaster_Volume"]) ? parseInt(e["PackMaster_Volume"]) : 0}
       onChange={(value, dataObject, inputID, fieldDataKey) =>
         e["Quantity_Genarate"] = parseInt(value)
       }
@@ -290,7 +299,7 @@ const AmPrintBarCodeV2 = props => {
 
               <Grid item xs={4}>
                 <LabelH style={{ paddingRight: "2px", width: "100px" }}>
-                  {"Pallet No.:"}{indexName + "/" + (type === "add" ? numCount : i)}
+                  {"Tag No.:"}{indexName + "/" + (type === "add" ? numCount : i)}
                 </LabelH>
               </Grid>
               <Grid item xs={6}>
@@ -300,7 +309,7 @@ const AmPrintBarCodeV2 = props => {
                     <FormInline >
                       {/* <LabelH style={{ paddingRight: "2px" }}>
                         {"Q : "}</LabelH> */}
-                      {<div style={{ paddingLeft: "5px" }}>{ele["Quantity_Genarate"]}</div>}
+                      {<div style={{ paddingLeft: "5px" }}>{parseInt(ele["Quantity_Genarate"])}</div>}
                     </FormInline>
                     {" "} {<div style={{ paddingLeft: "2px" }}>{ele.UnitType_Code}{" "}</div>}
 
@@ -373,7 +382,6 @@ const AmPrintBarCodeV2 = props => {
 
   const RanderEle = () => {
     if (iniData) {
-
       const columns = [{ field: "Code" }]
       return columns.map(y => {
         return {
@@ -446,7 +454,7 @@ const AmPrintBarCodeV2 = props => {
     Array.from(document.getElementsByClassName("barcodeCheckbox")).forEach(x => x.checked = false);
     props.data.forEach(x => {
       if (document.getElementById(x.ID + "_qty") !== null)
-        document.getElementById(x.ID + "_qty").value = x.SKUMaster_Info1
+        document.getElementById(x.ID + "_qty").value = parseInt(x.PackMaster_Volume)
     })
     setIniData(Clone(props.data))
     setSelection([])
@@ -469,7 +477,7 @@ const AmPrintBarCodeV2 = props => {
         style={{ width: "700px" }}
         open={dialog}
         onAccept={(status, rowdata) => onHandledataConfirm(status, rowdata)}
-        titleText={"Generate QRCode Detail"}
+        titleText={t("Generate QRCode Detail")}
         data={iniData}
         columns={RanderEle()}
       />

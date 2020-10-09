@@ -30,9 +30,10 @@ const TableContainer = styled.div`
 const TableRow = styled.div`
     display:table-row;
     :hover div.tableCell{
-        background:#cccccc;
+        background:#cccccc !important;
         ${props => props.hover}
     }
+    ${props => props.style}
 `
 const TableHeaderRow = styled.div`
     display:table-header-group;

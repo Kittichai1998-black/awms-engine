@@ -3,6 +3,7 @@
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
 import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
 import Grid from '@material-ui/core/Grid';
+import moment from "moment";
 import queryString from "query-string";
 import {
     apicall,
@@ -15,7 +16,7 @@ const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID as skuID,Code as skuCode,Name as skuName,UnitTypeCode as unitType,concat(Code, ' : ' ,Name) as SKUItems",
+    f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -36,7 +37,7 @@ const view_sto = {
 };
 
 
-const GI_Create_FGCustomer = props => {
+const PI_Create = props => {
     const [CodeprocessType, setCodeprocessType] = useState(1);
     const [table, setTable] = useState(null);
     const [HeaderDoc, setHeaderDoc] = useState([]);
@@ -47,6 +48,7 @@ const GI_Create_FGCustomer = props => {
     const [Type, setType] = useState(true);
     const [ProcessTypeCode, setProcessTypeCode] = useState();
     const [addlist, setaddlist] = useState({})
+    const [defaulacts, setdefaulacts] = useState();
 
 
     useEffect(() => {
@@ -57,10 +59,12 @@ const GI_Create_FGCustomer = props => {
             var defaulProcessType = 1010
             var actDate;
 
-            if (ProcessTypeCode === '4181') {
-                actDate = { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+            if (ProcessTypeCode === '4181' || ProcessTypeCode === '5181') {
+                setdefaulacts (false)
+                actDate = { label: "Action Time", type: "dateTimeFalse", key: "actionTime", codeTranslate: "Action Time" }
             } else {
-                actDate = { label: "Action Time", type: "dateTimeFalse", key: "actionTime",  codeTranslate: "Action Time" }
+                setdefaulacts(true)
+                actDate = { label: "Action Time", type: "dateTime", key: "actionTime",  codeTranslate: "Action Time" }
 
             }
             
@@ -130,6 +134,7 @@ const GI_Create_FGCustomer = props => {
                     apicreate={apicreate}
                     createDocType={"counting"}
                     history={props.history}
+                    defaulact={defaulacts}
                     //itemNo={true}
                     //defualItemNo={'0001'}
                     apiRes={apiRes}
@@ -147,7 +152,7 @@ const GI_Create_FGCustomer = props => {
             let objQuery = SKUMaster;
             if (objQuery !== null && Type === true && skuType !== undefined) {
                 let skuqrys = JSON.parse(objQuery.q);
-                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }]
+                skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
 
@@ -156,49 +161,46 @@ const GI_Create_FGCustomer = props => {
         let Headers;
         let AuditStatusDDL;
 
-        if (skuType === 5 && CodeprocessType === 3) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true }
+        if (skuType === 5) {
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", required: true, width: '300px' }
         } else {
-            Headers = { Header: "Vendor Lot", accessor: "", type: "text", texts: "-" }
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
         }
 
         if (ProcessTypeCode === '4081' || ProcessTypeCode === '4141' || ProcessTypeCode === '4151' ||
             ProcessTypeCode === '5011' || ProcessTypeCode === '5141' || ProcessTypeCode === '5151') {
-            AuditStatusDDL = { Header: "Audits Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
         } else {
-            AuditStatusDDL = { Header: "Audit Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
+            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         }
 
         var columnEdit = [
-            { Header: "Item No.", accessor: "itemNo", type: "input"},
+            //{ Header: "Item No.", accessor: "itemNo", type: "input"},
             {
                 // search: false,
-                Header: "Item",
-                accessor: "skuCode",
+                Header: "Item Code",
+                accessor: "Code",
                 type: "findPopUp",
                 queryApi: skuquery,
-                fieldLabel: ["skuCode", "skuName"],
+                fieldLabel: ["Code"],
                 columsddl: columsFindPopupSKU,
-                related: ["skuName", "SKUItems"],
-                fieldDataKey: "Code", // ref กับ accessor
+                related: ["Name"],
+                fieldDataKey: "Code" // ref กับ accessor
                 //defaultValue: "PJAAN04-0024",
-                required: true
+                //required: true
             },
-            { Header: "Order No.", accessor: "orderNo", type: "input" },
-            { Header: "Batch", accessor: "batch", type: "input" },
-            { Header: "Lot", accessor: "lot", type: "input" },
-            { Header: "Qty", accessor: "quantity", type: "inputNum", TextInputnum: "%" ,required: true },
-            { Header: "Unit", accessor: "unitType", type: "unitConvert" },
-            AuditStatusDDL,
-            Headers,
-            { Header: "Ref2", accessor: "ref2", type: "input" },
-            { Header: "Ref3", accessor: "ref3", type: "input" },
-            { Header: "Ref4", accessor: "ref4", type: "input" },
-            { Header: "Carton No.", accessor: "cartonNo", type: "input" },
-            { Header: "Incubation Day", accessor: "incubationDay", type: "inputNum" },
-            { Header: "Product Date", accessor: "productionDate", type: "date" },
-            { Header: "Expire Date", accessor: "expireDate", type: "date" },
-            { Header: "ShelfLife Day", accessor: "shelfLifeDay", type: "inputNum" }
+            {
+                // search: false,
+                Header: "Item Name",
+                accessor: "Name",
+                type: "text"
+            },
+            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
+            { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
+            //{ Header: "Batch", accessor: "batch", type: "input" },        
+            { Header: "Quantity (%)", accessor: "qtyrandom", type: "inputNum", TextInputnum: "%", required: true},
+            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px'},
+            { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
         ];
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
@@ -304,51 +306,85 @@ const GI_Create_FGCustomer = props => {
 
 
     const columsFindPopupSKU = [
-        { Header: "Code", accessor: "skuCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "skuName", width: 250, sortable: true },
+        { Header: "Code", accessor: "Code", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
     const columsFindPopupSto = [
-        { Header: "Order No.", accessor: "orderNo", width: 100, style: { textAlign: "center" } },
-        { Header: "Pallet", accessor: "palletcode", width: 110, style: { textAlign: "center" } },
-        { Header: "Item Code", accessor: "SKUItems", width: 350 },
-        { Header: "Location", accessor: "locationCode", width: 90, style: { textAlign: "center" } },
-        { Header: "Qty", accessor: "quantity", width: 90 },
-        { Header: "Unit", accessor: "unitType", width: 70 },
-        { Header: "Audit Status", accessor: "auditStatus" },
+        { Header: "Pallet", accessor: "basecode", width: 110, },
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name" },
+        { Header: "Control No.", accessor: "orderNo", width: 100, },
+        { Header: "Lot", accessor: "lot" },
         { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Ref2", accessor: "ref2" },
-        { Header: "Ref3", accessor: "ref3" },
-        { Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No", accessor: "cartonNo" },
-        { Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "Product Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife Day", accessor: "shelfLifeDay" }
-    
+        { Header: "Location", accessor: "locationCode", width: 9 },
+        { Header: "Quantity", accessor: "quantity", width: 90 },
+        { Header: "Unit", accessor: "unitType", width: 70 },
+        { Header: "Quality Status", accessor: "auditStatus",Cell: e => getAuditStatus(e.original) },
+        { Header: "Remark", accessor: "remark" },
+        { Header: "MFG.Date", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
+        { Header: "Expire Date", accessor: "expireDate", Cell: e => getFormatDateExp(e.original) },
+
     ];
 
   
     const columns = [
-        // { id: "row", Cell: row => row.index + 1, width: 35 },
-        { Header: "Item No.", accessor: "itemNo" },
-        { Header: "Item", accessor: "SKUItems" },
-        { Header: "Order No.", accessor: "orderNo" },
-        { Header: "Batch", accessor: "batch" },
+        //{ id: "row", Cell: row => row.index + 1, width: 35 },
+        { Header: "Pallet", accessor: "basecode", width: 110, },
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name" },
+        { Header: "Control No.", accessor: "orderNo" },
         { Header: "Lot", accessor: "lot" },
-        { Header: "Qty", accessor: "quantity" },
+        { Header: "Quantity (%)", accessor: "qtyrandom", Cell: e => getFormatPrscen(e.original) },
+        { Header: "Quantity", accessor: "quantity", width: 90 },
         { Header: "Unit", accessor: "unitType" },
-        { Header: "Audit Status", accessor: "auditStatus" },
-        { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Ref2", accessor: "ref2" },
-        { Header: "Ref3", accessor: "ref3" },
-        { Header: "Ref4", accessor: "ref4" },
-        { Header: "Carton No.", accessor: "cartonNo" },
-        { Header: "Incubation Day", accessor: "incubationDay" },
-        { Header: "Product Date", accessor: "productionDate" },
-        { Header: "Expire Date", accessor: "expireDate" },
-        { Header: "ShelfLife Day", accessor: "shelfLifeDay" }
+        { Header: "Quality Status", accessor: "auditStatus", Cell: e => getAuditStatus(e.original) },
+        {
+            Header: "MFG.Date", accessor: "productionDate",
+            Cell: e => getFormatDatePro(e.original), widthPDF: 15,
+            CellPDF: e => getFormatDatePro(e)
+        },
+        {
+            Header: "Expire Date", accessor: "expireDate",
+            Cell: e => getFormatDateExp(e.original), widthPDF: 15,
+            CellPDF: e => getFormatDateExp(e)
+        }
+
     ];
+
+    const getFormatDatePro = (e) => {
+        if (e.productionDates) {
+            return moment(e.productionDates).format("DD/MM/YYYY");
+        }
+
+    }
+
+    const getFormatDateExp = (e) => {
+        if (e.expireDates) {
+            return moment(e.expireDates).format("DD/MM/YYYY");
+        }
+
+    }
+
+    const getFormatPrscen = (e) => {
+        if (e.qtyrandom) {
+            return e.qtyrandom + '%'
+        }
+    }
+
+    const getAuditStatus = (e) => {
+        if (e.auditStatus) {
+            if (e.auditStatus === '0') {
+                return "QUARANTINE"
+            } else if (e.auditStatus === '1') {
+                return "PASSED"
+            } else if (e.auditStatus === '2') {
+                return "REJECTED"
+            } else if (e.auditStatus === '9') {
+                return "HOLD"
+            }
+        }
+    }
 
     const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc
     const apiRes = "/counting/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
@@ -357,4 +393,4 @@ const GI_Create_FGCustomer = props => {
         {table}</div>;
 };
 
-export default GI_Create_FGCustomer;
+export default PI_Create;

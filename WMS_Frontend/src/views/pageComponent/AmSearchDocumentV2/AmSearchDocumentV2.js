@@ -12,7 +12,7 @@ import AmTable from "../../../components/AmTable/AmTable";
 import { DataGenerateMulti } from "../AmStorageObjectV2/SetMulti";
 import { QueryGenerate } from '../../../components/function/UtilFunction';
 import AmDropdown from '../../../components/AmDropdown';
-import AmDatePicker from '../../../components/AmDate';
+import AmDatePicker from '../../../components/AmDatePicker';
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from "../../../components/table/AmEditorTable";
 import AmInput from "../../../components/AmInput";
@@ -56,6 +56,8 @@ const AmSearchDocumentV2 = props => {
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
 
+  const [reset, setReset] = useState(false)
+
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -74,6 +76,10 @@ const AmSearchDocumentV2 = props => {
       getData(queryViewData)
 
   }, [queryViewData])
+
+  useEffect(() => {
+    return () => { setReset(false) }
+  }, [reset]);
 
   useEffect(() => {
     if (typeof (page) === "number" && !iniQuery) {
@@ -120,7 +126,7 @@ const AmSearchDocumentV2 = props => {
                 return <AmDropdown
                   id={field}
                   placeholder={col.placeholder}
-                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                  fieldDataKey={filterConfig.fieldDataKey === undefined ? "Name" : filterConfig.fieldDataKey}
                   fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
                   labelPattern=" : "
                   width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
@@ -134,7 +140,7 @@ const AmSearchDocumentV2 = props => {
 
             }
           } else if (filterConfig.filterType === "datetime") {
-            col.width = 350;
+            col.width = 420;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
@@ -160,7 +166,7 @@ const AmSearchDocumentV2 = props => {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
         } else {
 
-          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? fdata.value + "T23:59:59" : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
+          res = QueryGenerate({ ...queryViewData }, fdata.customFilter.field, (fdata.customFilter.dateField === "dateTo" ? (fdata.value === "" ? null : fdata.value + "T23:59:59") : fdata.value), fdata.customFilter.dataType, fdata.customFilter.dateField)
         }
       } else {
         res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
@@ -238,6 +244,7 @@ const AmSearchDocumentV2 = props => {
   const onHandleEditConfirm = (status) => {
     if (status) {
       onUpdateStatus("reject")
+      setReset(true)
     }
 
     setDialog(false);
@@ -300,6 +307,7 @@ const AmSearchDocumentV2 = props => {
         totalSize={count}
         pageSize={pageSize}
         filterable={true}
+        clearSelectionAction={reset}
         filterData={res => { onChangeFilterData(res) }}
         pagination={true}
         selection={"checkbox"}
@@ -325,6 +333,17 @@ const AmSearchDocumentV2 = props => {
 
               setDialog(true)
 
+            }
+
+          }
+        }, {
+          label: <div style={{ fontSize: "12px" }}>
+            {"CLOSE"}</div>,
+          action: (data) => {
+            if (selection.length === 0) {
+              setDialogState({ type: "warning", content: "กรุณาเลือกข้อมูล", state: true })
+            } else {
+              onUpdateStatus()
             }
 
           }

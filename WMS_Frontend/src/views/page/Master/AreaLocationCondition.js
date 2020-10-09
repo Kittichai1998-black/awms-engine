@@ -79,7 +79,9 @@ const AreaLocationCondition = props => {
         { Header: "Priority", accessor: "Priority"},   
         { Header: "Bank", accessor: "LocationBankNumRange" },
         { Header: "Bay", accessor: "LocationBayNumRange" },
-        { Header: "Level", accessor: "LocationLvNumRange"},
+        { Header: "Level", accessor: "LocationLvNumRange" },
+        { Header: "MinQuantity", accessor: "MinQuantity" },
+        { Header: "MaxQuantity", accessor: "MaxQuantity" },
         { Header: "SKU Code", accessor: "SKU_Code" },
         { Header: "SKU Name", accessor: "SKU_Name" },
         { Header: "SKUType", accessor: "SKUType_Name" },
@@ -121,6 +123,20 @@ const AreaLocationCondition = props => {
             type: "input",
             name: "Level",
             placeholder: "Level",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "MinQuantity",
+            type: "input",
+            name: "MinQuantity",
+            placeholder: "MinQuantity",
+            validate: /^[0-9\.]+$/
+        },
+        {
+            field: "MaxQuantity",
+            type: "input",
+            name: "MaxQuantity",
+            placeholder: "MaxQuantity",
             validate: /^[0-9\.]+$/
         },
         {
@@ -187,21 +203,21 @@ const AreaLocationCondition = props => {
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKU_Code",
+            field: "SKUMaster_ID",
             type: "input",
             name: "SKU Code",
             placeholder: "SKU Code",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKU_Name",
+            field: "SKUMaster_ID",
             type: "input",
             name: "SKU Name",
             placeholder: "SKU Name",
             validate: /^[0-9\.]+$/
         },
         {
-            field: "SKUType_Name",
+            field: "SKUMasterType_ID",
             type: "dropdown",
             typeDropDown: "search",
             name: "SKU Type",
@@ -212,7 +228,7 @@ const AreaLocationCondition = props => {
             fieldValue: "ID",
         },
         {
-            field: "UnitType_Code",
+            field: "UnitType_ID",
             type: "dropdown",
             typeDropDown: "search",
             name: "Unit Type",
