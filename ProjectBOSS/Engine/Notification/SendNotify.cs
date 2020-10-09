@@ -36,13 +36,13 @@ namespace ProjectBOSS.Engine.Notification
         public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
 
-            var countingAutoDocs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]{
+            var countingAutoDocs = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("ID", string.Join(",", reqVO), SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PHYSICAL_COUNT, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("DocumentProcessType_ID", "5181,4181", SQLOperatorType.IN),
             }, buVO).Select(x=> x.ID).ToArray();
 
-            var docs = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
+            var docs = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("Document_ID", string.Join(",", countingAutoDocs), SQLOperatorType.EQUALS),
             }, buVO).GroupBy(x=> x.Document_ID).Select(x=> new { docID=x.Key, docItems=x.ToList() }).ToList();
 
@@ -54,7 +54,7 @@ namespace ProjectBOSS.Engine.Notification
                 var stoInDoc = new List<STOResponse>();
                 docItemIDs.ForEach(docItemID =>
                 {
-                    var stoList = AWMSEngine.ADO.DocumentADO.GetInstant().GetSTOByDocItem(docItemID.Value, buVO);
+                    var stoList = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetSTOByDocItem(docItemID.Value, buVO);
                     var errSto = stoList.Select(sto=>
                     {
                         var auditStatus = AMWUtil.Common.ObjectUtil.QryStrGetValue(sto.Options, OptionVOConst.OPT_ERROR_COUNTING);

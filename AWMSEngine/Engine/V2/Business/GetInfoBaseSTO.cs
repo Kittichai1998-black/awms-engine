@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
 
-            var getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, BuVO);
+            var getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, BuVO);
              
             //add ได้เฉพาะ Received receiving
             return getSto;

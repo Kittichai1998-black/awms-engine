@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace AWMSEngine.ADO.WMSDB
 {
     public class NotificationADO : BaseMSSQLAccess<NotificationADO>
     {

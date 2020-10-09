@@ -78,7 +78,7 @@ namespace AWMSEngine.Engine
                 this.Logger = logger;
                 this.Logger.LogInfo("--------- BEGIN_ENGINE:" + (this.GetType().Name) + " ---------");
                 this.Logger.LogInfo("INPUT=" + reqVO.Json());
-                //dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
+                //dbLogActionID = ADO.WMSDB.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 this.ValidateRequestParameter(reqVO);
@@ -102,7 +102,7 @@ namespace AWMSEngine.Engine
             }
             finally
             {
-                //ADO.LogingADO.GetInstant().EndAPIServiceAction(dbLogActionID,resultStatus.status,resultStatus.code,resultStatus.message,resultStatus.techmessage, this.BuVO);
+                //ADO.WMSDB.LogingADO.GetInstant().EndAPIServiceAction(dbLogActionID,resultStatus.status,resultStatus.code,resultStatus.message,resultStatus.techmessage, this.BuVO);
 
                 if (this.Logger != null)
                 {

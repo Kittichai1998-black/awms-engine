@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
+
+using AWMSEngine.ADO.WMSDB;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -13,7 +14,7 @@ namespace AWMSEngine.Engine.V2.Business
 {
     public class ScanMapStoNoDoc : BaseEngine<ScanMapStoNoDoc.TReq, StorageObjectCriteria>
     {
-        private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
+        private StorageObjectADO ADOSto = ADO.WMSDB.StorageObjectADO.GetInstant();
 
         public class TReq
         {
@@ -51,7 +52,7 @@ namespace AWMSEngine.Engine.V2.Business
         {
             if (reqVO.validateSKUTypeCodes != null && reqVO.validateSKUTypeCodes.Count > 0)
             {
-                ams_SKUMaster sm = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
+                ams_SKUMaster sm = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
                 if (sm == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี SKU ในระบบ");
 
@@ -79,7 +80,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             if (!String.IsNullOrEmpty(reqVO.locationCode) && parentMapsto == null)
             {
-                alm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                alm = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",reqVO.areaID),
@@ -103,11 +104,11 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ : " + reqVO.scanCode);
-                    ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+                    ams_PackMaster pm = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     //this.CheckSKUType(reqVO, pm);
 
-                    ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
-                    ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
+                    ams_BaseMaster bm = pm != null ? null : ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
+                    ams_AreaLocationMaster alm = bm != null ? null : ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                     if (bm != null)
                     {
                         mapsto = this.NewStorageObjectCriteria(bm, null, reqVO);
@@ -237,7 +238,7 @@ namespace AWMSEngine.Engine.V2.Business
         }
         private void CheckCartonNo(TReq reqVO, StorageObjectCriteria mapsto, ams_PackMaster pm)
         {
-            ams_SKUMaster sm = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
+            ams_SKUMaster sm = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pm.SKUMaster_ID, this.BuVO);
             if (sm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ SKU");
 
@@ -249,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var stopack = new List<amt_StorageObject>() { };
                 if (sto_pack != null)
                 {
-                    stopack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    stopack = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                                    new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("ID", sto_pack.id.Value, SQLOperatorType.NOTEQUALS),
                                             new SQLConditionCriteria("Code", reqVO.scanCode, SQLOperatorType.EQUALS),
@@ -259,7 +260,7 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else
                 {
-                    stopack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    stopack = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                                    new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Code", reqVO.scanCode, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("OrderNo", reqVO.orderNo, SQLOperatorType.EQUALS),
@@ -295,10 +296,10 @@ namespace AWMSEngine.Engine.V2.Business
             StorageObjectCriteria mapsto)
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
-            ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+            ams_PackMaster pm = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
 
-            ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
-            ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
+            ams_BaseMaster bm = pm != null ? null : ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
+            ams_AreaLocationMaster alm = bm != null ? null : ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
             if (alm != null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " ไม่สามารถเพิ่ม location บน " + firstMapSto.type);
@@ -332,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else if (bm != null)
                 {
-                    StorageObjectCriteria regisMap = ADO.StorageObjectADO.GetInstant()
+                    StorageObjectCriteria regisMap = ADO.WMSDB.StorageObjectADO.GetInstant()
                         .Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
 
                     if (regisMap == null)
@@ -359,7 +360,7 @@ namespace AWMSEngine.Engine.V2.Business
             else if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
                 //throw new Exception("ปิด Module Transfer");
-                var countStoFree = ADO.StorageObjectADO.GetInstant()
+                var countStoFree = ADO.WMSDB.StorageObjectADO.GetInstant()
                                     .GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, this.BuVO);
 
                 if (reqVO.amount > countStoFree)
@@ -367,7 +368,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                 for (int i = 0; i < reqVO.amount; i++)
                 {
-                    var transferMapSto = ADO.StorageObjectADO.GetInstant()
+                    var transferMapSto = ADO.WMSDB.StorageObjectADO.GetInstant()
                                     .GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, true, this.BuVO);
 
                     transferMapSto.parentID = firstMapSto.id;
@@ -404,7 +405,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (mapsto.eventStatus != StorageObjectEventStatus.NEW || !checkMapsto.Any(x => x.eventStatus == StorageObjectEventStatus.NEW))
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 // msf.eventStatus = StorageObjectEventStatus.REMOVED;
                 // msf.areaID = msf.areaID.Value;
@@ -435,7 +436,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (rmItem.mapstos.Count() > 0 && !rmItem.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                     /* rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
                      rmItem.areaID = msf.areaID.Value;
                      ADOSto.PutV2(rmItem, this.BuVO);

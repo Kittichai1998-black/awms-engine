@@ -18,7 +18,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             var validMapsto =
                 (mapsto.parentID.HasValue) ?
-                ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO) :
+                ADO.WMSDB.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO) :
                 mapsto;
 
             new Engine.V2.Validation.ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, validMapsto);
@@ -32,16 +32,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria sto, SPworkQueue queueTrx)
         {
-            var sou_lm = ADO.DataADO.GetInstant()
+            var sou_lm = ADO.WMSDB.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.Sou_AreaLocationMaster_ID, this.BuVO);
 
-            var des_lm = ADO.DataADO.GetInstant()
+            var des_lm = ADO.WMSDB.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.Des_AreaLocationMaster_ID, this.BuVO);
 
-            var pre_lm = ADO.DataADO.GetInstant()
+            var pre_lm = ADO.WMSDB.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.AreaLocationMaster_ID, this.BuVO);
 
-            //var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+            //var baseInfo = ADO.WMSDB.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
             var res = new WorkQueueCriteria()
             {

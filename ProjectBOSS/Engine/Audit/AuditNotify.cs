@@ -1,4 +1,5 @@
 ﻿using AWMSEngine.ADO;
+using AWMSEngine.ADO.WMSDB;
 using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;

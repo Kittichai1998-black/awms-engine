@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
+            var docs = ADO.WMSDB.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
 
@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         DocumentItemWorkQueues = null,
 
                     };
-                    wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
+                    wq = ADO.WMSDB.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
                     rsto.workQueueID = wq.ID;
                 }
 
@@ -105,7 +105,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Status = rsto.lockOnly ? EntityStatus.ACTIVE : EntityStatus.INACTIVE,
                     WorkQueue_ID = rsto.workQueueID,
                 }).ToList();
-                _distos = ADO.DistoADO.GetInstant().Insert(_distos, this.BuVO);
+                _distos = ADO.WMSDB.DistoADO.GetInstant().Insert(_distos, this.BuVO);
                 distos.AddRange(_distos);
 
             };
@@ -117,15 +117,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 });
                 if (rstos.Any(x => x.docItems.Any(y => y.docID == doc.ID)))
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                     if(doc.ParentDocument_ID != null)
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                 }
                 else
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
                     if(doc.ParentDocument_ID != null)
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
                 }
             });
 
@@ -138,7 +138,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
                     var packCodeLists = x.docItems.Select(docItem => docItem.pstoCode).Distinct().ToList();
-                    var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
+                    var listSTOLeft = ADO.WMSDB.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
 
                     var groupSTOLeft = listSTOLeft.GroupBy(sto => new { sto.BaseCode, sto.BaseUnit })
                     .Select(sto => new { sto.Key.BaseCode, sto.Key.BaseUnit, StorageObject = sto.ToList() }).ToList();
@@ -179,7 +179,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                         gsto.StorageObject.ForEach(sto =>
                         {
-                            var disto = ADO.DistoADO.GetInstant().Insert(new amt_DocumentItemStorageObject()
+                            var disto = ADO.WMSDB.DistoADO.GetInstant().Insert(new amt_DocumentItemStorageObject()
                             {
                                 DocumentItem_ID = res.DocumentItems.First().ID,
                                 DocumentType_ID = DocumentTypeID.PICKING,
@@ -197,7 +197,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 x.docItems.ForEach(doci =>
                 {
-                    ADO.StorageObjectADO.GetInstant().UpdateStatus(
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(
                         doci.pstoID,
                         null,
                         EntityStatus.ACTIVE,
@@ -222,7 +222,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             WCSQueueADO.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
             if (groupQueueWcs == null)
             {
-                var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                var getRsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                     new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
                 }, this.BuVO);
 
@@ -242,7 +242,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     var doc = docs.Find(x => x.ID == rstoByDoc.docID);
                     var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
-                    var groupSeq = ADO.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
+                    var groupSeq = ADO.WMSDB.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
                     int seq = 1;
                     docItemGroup.ForEach(rstoByDocID =>
                     {
@@ -256,7 +256,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
                                 desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID.Value),
                                 desLocationCode = rsto.desLocationID.HasValue ?
-                                               ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
+                                               ADO.WMSDB.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                                null,
 
                                 baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
@@ -302,7 +302,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //        desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),	
             //        desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),	
             //        desLocationCode = rsto.desLocationID.HasValue ?	
-            //                               ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :	
+            //                               ADO.WMSDB.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :	
             //                               null,	
             //        pickSeqGroup=0,	
             //        pickSeqIndex=0,	
@@ -336,13 +336,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
             var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
-            var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+            var desALM = ADO.WMSDB.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(x =>
             {
                 StorageObjectEventStatus? stoDoneSouEventStatus = null;
                 StorageObjectEventStatus? stoDoneDesEventStatus = null;
-                var doc = ADO.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
+                var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
                 ProcessQueueDoneStatus statusSTO = null;// Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
                 if (statusSTO != null)
                 {

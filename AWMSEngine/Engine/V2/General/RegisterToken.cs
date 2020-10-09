@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0014);
                 else
                 {
-                    amt_Token tokenModel = ADO.TokenADO.GetInstant().Register(
+                    amt_Token tokenModel = ADO.WMSDB.TokenADO.GetInstant().Register(
                         reqVO.Username,
                         null,
                         reqVO.SecretKey,
@@ -56,7 +56,7 @@ namespace AWMSEngine.Engine.V2.General
             }
             else
             {
-                var user = ADO.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
+                var user = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
                              {
                                 new SQLConditionCriteria("code",reqVO.Username, SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0010);
                 }
 
-                var permissions = ADO.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
+                var permissions = ADO.WMSDB.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
 
                 TokenCriteria token = new TokenCriteria()
                 {

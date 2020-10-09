@@ -32,7 +32,7 @@ namespace ProjectBOSS.Engine.WorkQueue
             this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             this._branchASRS = StaticValue.Branchs.FirstOrDefault(x => x.ID == _warehouseASRS.Branch_ID);
             this._areaASRS = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == _warehouseASRS.ID);
-            this._locationASRS = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            this._locationASRS = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",_areaASRS.ID.Value),
@@ -75,12 +75,12 @@ namespace ProjectBOSS.Engine.WorkQueue
 
                         DISTOs.ForEach(disto =>
                         {
-                            AWMSEngine.ADO.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, BuVO);
+                            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, BuVO);
                         });
                         var register = new RegisterWorkQueue();
 
                         res = register.GenerateResponse(sto, queueTrx, BuVO, StaticValue);
-                        var LocationCondition = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
+                        var LocationCondition = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().ListLocationCondition(new List<long> { sto.id.Value }, BuVO).FirstOrDefault();
                         res.locationBankNumRange = LocationCondition.LocationBankNumRange;
                         res.locationBayNumRange = LocationCondition.LocationBayNumRange;
                         res.locationLvNumRange = LocationCondition.LocationLvNumRange;
@@ -107,7 +107,7 @@ namespace ProjectBOSS.Engine.WorkQueue
 
             var docItemIDs = new List<long>();
             packs.ForEach(pack => {
-                var getDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                var getDisto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                     {
                         new SQLConditionCriteria("Sou_StorageObject_ID", pack.id, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
@@ -118,12 +118,12 @@ namespace ProjectBOSS.Engine.WorkQueue
                 getDisto.Quantity = pack.qty;
                 getDisto.BaseQuantity = pack.baseQty;
 
-                AWMSEngine.ADO.DistoADO.GetInstant().Update(getDisto, BuVO);
+                AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(getDisto, BuVO);
                 docItemIDs.Add(getDisto.DocumentItem_ID.Value);
             });
 
-            //var getPIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(packs.Select(x => x.id.Value).ToList(), DocumentTypeID.PHYSICAL_COUNT, BuVO).Select(y=>y.ID.Value).ToList();
-            var documents = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+            //var getPIDoc = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListBySTO(packs.Select(x => x.id.Value).ToList(), DocumentTypeID.PHYSICAL_COUNT, BuVO).Select(y=>y.ID.Value).ToList();
+            var documents = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                 new SQLConditionCriteria("ID", string.Join(",", docItemIDs.Distinct()), SQLOperatorType.EQUALS), BuVO);
             var resWorked = new WorkedDocument().Execute(Logger, BuVO,
                new WorkedDocument.TReq() { docIDs = documents.Select(x=> x.Document_ID).ToList() });
@@ -150,7 +150,7 @@ namespace ProjectBOSS.Engine.WorkQueue
                     Status = EntityStatus.INACTIVE
                 };
 
-                var distoID = AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, BuVO);
+                var distoID = AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Insert(disto, BuVO);
                 listDiSTO.Add(distoID);
             });
             return listDiSTO;
@@ -158,7 +158,7 @@ namespace ProjectBOSS.Engine.WorkQueue
 
         private StorageObjectCriteria GetSto(RegisterWorkQueue.TReq reqVO, AMWLogger Logger, VOCriteria BuVO)
         {
-            var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+            var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                          null, null, false, true, BuVO);
             if (sto != null)
             {
@@ -186,13 +186,13 @@ namespace ProjectBOSS.Engine.WorkQueue
         private void SetWeiChildAndUpdateInfoToChild(StorageObjectCriteria sto, decimal totalWeiKG, AMWLogger Logger, VOCriteria BuVO)
         {
             var stoTreeList = sto.ToTreeList();
-            var packMasters = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+            var packMasters = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(
                 new SQLConditionCriteria(
                     "ID",
                     string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
                     SQLOperatorType.IN),
                 BuVO);
-            var baseMasters = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().mstID.Value, BuVO);
+            var baseMasters = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().mstID.Value, BuVO);
             //*****SET WEI CODING
             var oldPallet_WeiKG = sto.weiKG;
             var percentWei = StaticValue.GetConfigValue<string>(ConfigCommon.PERCENT_WEIGHT_AUTO);
@@ -237,7 +237,7 @@ namespace ProjectBOSS.Engine.WorkQueue
             stoTreeList.ForEach(x =>
             {
                 x.areaID = areaID;
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(x, BuVO);
+                AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(x, BuVO);
             });
 
         }
@@ -248,15 +248,15 @@ namespace ProjectBOSS.Engine.WorkQueue
             {
                 if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
                 {
-                    var desLocations = AWMSEngine.ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, BuVO);
+                    var desLocations = AWMSEngine.ADO.WMSDB.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, BuVO);
                     res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
                 }
                 else
                 {
                     var area = _areaASRS; //this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
                     var desArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-                    var location = _locationASRS; // ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
-                    var desLocation = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, BuVO);
+                    var location = _locationASRS; // ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+                    var desLocation = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
                         Sou_AreaMasterType_ID = area.AreaMasterType_ID,
@@ -315,7 +315,7 @@ namespace ProjectBOSS.Engine.WorkQueue
                 Status = EntityStatus.ACTIVE,
                 StartTime = reqVO.actualTime 
             };
-            workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().PUT(workQ, BuVO);
+            workQ = AWMSEngine.ADO.WMSDB.WorkQueueADO.GetInstant().PUT(workQ, BuVO);
             return workQ;
         }
     }

@@ -20,21 +20,21 @@ namespace AWMSEngine.Engine.V2.Business.Wave
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var wave = ADO.WaveADO.GetInstant().Get(reqVO.waveID, this.BuVO);
+            var wave = ADO.WMSDB.WaveADO.GetInstant().Get(reqVO.waveID, this.BuVO);
             if (wave.EventStatus != WaveEventStatus.NEW)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Wave ต้องอยู่ในสถานะ NEW เท่านั้น");
 
             wave.EventStatus = WaveEventStatus.WORKING;
-            ADO.WaveADO.GetInstant().Put(wave, this.BuVO);
+            ADO.WMSDB.WaveADO.GetInstant().Put(wave, this.BuVO);
 
             var waveSeq = wave.WaveSeqs.Find(x => x.Start_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATING);
             if (waveSeq.EventStatus != WaveEventStatus.NEW)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Wave Sequence ต้องอยู่ในสถานะ NEW เท่านั้น");
 
             waveSeq.EventStatus = WaveEventStatus.WORKING;
-            ADO.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
+            ADO.WMSDB.WaveADO.GetInstant().PutSeq(waveSeq, this.BuVO);
 
-            var distoWaveSeq = ADO.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
+            var distoWaveSeq = ADO.WMSDB.DistoADO.GetInstant().ListBySouWaveSeq(waveSeq.ID.Value, this.BuVO);
             var distoList = new List<DoneDistoWaveSeq.TReq.DistoList>();
             distoWaveSeq.ForEach(disto =>
             {

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace AWMSEngine.ADO.WMSDB
 {
     public class AreaADO : BaseMSSQLAccess<AreaADO>
     {
@@ -55,7 +55,7 @@ namespace AWMSEngine.ADO
 
         public List<ams_AreaLocationMaster> ListAreaLocationMaster(long[] id, VOCriteria buVO)
         {
-           var res = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+           var res = DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                new SQLConditionCriteria("id", string.Join(",", id), SQLOperatorType.IN),
                buVO);
             return res;

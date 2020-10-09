@@ -22,23 +22,23 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 var docLists = new List<long>();
                 reqVO.ForEach(x =>
                 {
-                    var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
+                    var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
                         try
                         {
                             if (docs.EventStatus == DocumentEventStatus.WORKED)
                             {
-                                var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                var listItem = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
-                                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
                                     if (docs.ParentDocument_ID != null)
                                     {
-                                        var getParentDoc = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                                        var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
                                         if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.WORKED))
                                         {
-                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
                                         }
                                     }
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

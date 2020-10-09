@@ -81,12 +81,12 @@ namespace AWMSEngine.Engine.V2.General
             
             TResModel Query(string tb)
             {
-                var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
+                var datas = ADO.WMSDB.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
                 TResModel res = new TResModel();
                 res.datas = datas;
                 if(reqVO.isCounts.HasValue && reqVO.isCounts.Value)
                 {
-                    var dataCount = ADO.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, "count(1) c", reqVO.g, whares.ToArray(), null, null, null, this.BuVO).First();
+                    var dataCount = ADO.WMSDB.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, "count(1) c", reqVO.g, whares.ToArray(), null, null, null, this.BuVO).First();
                     res.counts = (int)dataCount.c;
                 }
 

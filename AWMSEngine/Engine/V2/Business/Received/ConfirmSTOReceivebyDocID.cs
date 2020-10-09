@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var docs = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(reqVO.docID.Value, BuVO);
+            var docs = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(reqVO.docID.Value, BuVO);
             if (docs == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document");
 
@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             {
                 if (docs.EventStatus == DocumentEventStatus.NEW || docs.EventStatus == DocumentEventStatus.WORKING)
                 {
-                    var docitemsto = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, BuVO);
+                    var docitemsto = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID.Value, BuVO);
                     docitemsto.ForEach(item =>
                     {
                         if (item.EventStatus == DocumentEventStatus.NEW)
@@ -42,26 +42,26 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                             item.DocItemStos.ForEach(disto =>
                             {
-                                var stosPack = ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+                                var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
 
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
                             //update Audit status, Hold status
 
                             //set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);
                             disto.Status = EntityStatus.ACTIVE;
-                                ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
+                                ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, BuVO);
                             //ถ้าไม่มี des_waveseq สุดท้ายเเล้ว ให้อัพเดท disto เป็น Done
                             if (disto.Des_WaveSeq_ID == null)
                                 {
                                     disto.Status = EntityStatus.DONE;
-                                    ADO.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
+                                    ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.DONE, this.BuVO);
                                 }
                             });
 
                             if (item.DocItemStos.Any(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE))
                             {
                                 item.EventStatus = DocumentEventStatus.WORKING;
-                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                                ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(item.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                             }
                         }
                     });
@@ -70,7 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     {
                         if (parent_type != StorageObjectType.LOCATION)
                         {
-                            var sto = ADO.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
+                            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(parent_id, StorageObjectType.BASE, false, true, BuVO);
                             var stoLists = new List<StorageObjectCriteria>();
                             if (sto != null)
                                 stoLists = sto.ToTreeList();
@@ -79,15 +79,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             {
                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
                                 parentUpdate.eventStatus = StorageObjectEventStatus.ACTIVE;
-                                ADO.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.ACTIVE, this.BuVO);
+                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentUpdate.id.Value, null, null, StorageObjectEventStatus.ACTIVE, this.BuVO);
                                 if (parentUpdate.parentID.HasValue)
                                     set_status_base(parentUpdate.parentID.Value, parentUpdate.parentType.Value);
                             }
                         }
                     }*/
-                    ADO.DocumentADO.GetInstant().UpdateEventStatus(reqVO.docID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(reqVO.docID.Value, DocumentEventStatus.WORKING, this.BuVO);
 
-                    var getGR = ADO.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
+                    var getGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
 
                     docitemsto.ForEach(item =>
                     {
@@ -95,11 +95,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         if (item.EventStatus == DocumentEventStatus.WORKING)
                         {
                             grItem.EventStatus = DocumentEventStatus.WORKING;
-                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                            ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                         }
                     });
 
-                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKING, this.BuVO);
                      
                 }
             }

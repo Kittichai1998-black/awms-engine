@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
+
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             var stopacks = this.ListPackSTOIDs(reqVO.stomap);
-            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.PUTAWAY, this.BuVO);
+            var stopackLockByDock = ADO.WMSDB.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.PUTAWAY, this.BuVO);
 
             stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.Sou_StorageObject_ID == x.id));
 
@@ -34,7 +34,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             long? sou_AreaMaster_ID = null;
             if (reqVO.stomap.type == StorageObjectType.LOCATION)
             {
-                var locationMst = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.stomap.id, BuVO);
+                var locationMst = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.stomap.id, BuVO);
                 var areaMst = this.StaticValue.AreaMasters.Where(x => x.ID == locationMst.AreaMaster_ID).FirstOrDefault();
                 var warehouseMst = areaMst == null ? null : this.StaticValue.Warehouses.Where(x => x.ID == areaMst.Warehouses_ID).FirstOrDefault();
                 var branchMst = warehouseMst == null ? null : this.StaticValue.Branchs.Where(x => x.ID == warehouseMst.Branch_ID).FirstOrDefault();
@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             long? des_AreaMaster_ID = reqVO.stomap.areaID;
             this.StaticValue.Warehouses.FindAll(x => x.ID == des_Warehouse_ID).ForEach(x => des_Branch_ID = x.Branch_ID);
 
-            //var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+            //var docItem = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(DocumentTypeID.GOODS_RECEIVED, this.BuVO);
             //string des_Supplier_ID = docItem.Options;
             
 
@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบสินค้ารอรับเข้า");
             foreach (var p in packs)
             {
-                var packmst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(p.key.mstID, this.BuVO);
+                var packmst = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(p.key.mstID, this.BuVO);
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     SKUMaster_ID = packmst.SKUMaster_ID,
@@ -108,11 +108,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
 
             if (packs.Count() > 0)
-                doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+                doc = ADO.WMSDB.DocumentADO.GetInstant().Create(doc, BuVO);
 
             /*foreach (var docItem in doc.DocumentItems)
             {
-                ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, docItem.StorageObjectIDs, this.BuVO);
+                ADO.WMSDB.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, docItem.StorageObjectIDs, this.BuVO);
             }*/
             return doc;
         }

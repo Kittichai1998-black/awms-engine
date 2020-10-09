@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             TDocRes res = new TDocRes();
             res.documents = new List<amt_Document>();
 
-            var checkWorking = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(
+            var checkWorking = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                 new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING),
                         new KeyValuePair<string,object>("DocumentType_ID",DocumentTypeID.PUTAWAY),
@@ -41,14 +41,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
             
             foreach (long id in reqVO.docIDs)
             {
-                amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(id, this.BuVO);
+                amt_Document doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(id, this.BuVO);
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumentID " + id);
                 if (doc.Status == EntityStatus.DONE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Document is Done");
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.NEW)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Document is " + doc.EventStatus);
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
+                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(id,
                     DocumentEventStatus.NEW, EntityStatus.ACTIVE,
                     DocumentEventStatus.WORKING,
                     this.BuVO);

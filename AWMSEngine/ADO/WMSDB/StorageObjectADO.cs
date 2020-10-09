@@ -13,7 +13,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace AWMSEngine.ADO.WMSDB
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
@@ -35,7 +35,7 @@ namespace AWMSEngine.ADO
         }
         public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo,StorageObjectEventStatus eventStatus, long locationID, VOCriteria buVO)
         {
-            var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
+            var location = DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
 
             baseInfo.parentID = location.ID;
             baseInfo.parentType = StorageObjectType.LOCATION;

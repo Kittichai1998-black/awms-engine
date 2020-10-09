@@ -8,18 +8,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace AWMSEngine.ADO.WMSDB
 {
     public class WorkQueueADO : BaseMSSQLAccess<WorkQueueADO>
     {
         public SPworkQueue Get(long queueID, VOCriteria buVO)
         {
-            var q = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, buVO);
+            var q = DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, buVO);
             return SPworkQueue.Generate(q);
         }
         public SPworkQueue GetByID(long baseID, VOCriteria buVO)
         {
-            var q = ADO.DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[]{
+            var q = DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("StorageObject_ID", baseID, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", "0,1", SQLOperatorType.IN)
                 }, buVO).FirstOrDefault();

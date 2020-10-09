@@ -33,16 +33,16 @@ namespace AWMSEngine.Engine.V2.Business.Received
             if(area == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area นี้ในระบบ");
 
-            var location = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+            var location = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
             if (location == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location นี้ในระบบ");
 
-            var stoLoc = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+            var stoLoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("AreaLocationMaster_ID", location.ID, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("Status", new int[]{ 0,1 }, SQLOperatorType.IN),
                  new SQLConditionCriteria("EventStatus",StorageObjectEventStatus.RECEIVING, SQLOperatorType.NOTEQUALS)
             }, this.BuVO);
-            var stoPallet = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+            var stoPallet = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("Code", reqVO.baseCode, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("Status", new int[]{ 0,1 }, SQLOperatorType.IN)
                

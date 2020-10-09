@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace AWMSEngine.ADO.WMSDB
 {
     public class TokenADO : BaseMSSQLAccess<TokenADO>
     {

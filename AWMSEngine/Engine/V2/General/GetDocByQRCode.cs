@@ -97,12 +97,12 @@ namespace AWMSEngine.Engine.V2.General
 
                 int i = 0;
 
-                var docitem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
+                var docitem = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(dociID.FirstOrDefault(), this.BuVO);
                 if (docitem == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ DocItem นี้ในระบบ");
 
-                var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
-                var parentDoc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
+                var doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(docitem.Document_ID, this.BuVO); //PA
+                var parentDoc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(doc.ParentDocument_ID, this.BuVO); //GR
                 if (parentDoc == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ DocItem นี้ในระบบ");
 
@@ -114,10 +114,10 @@ namespace AWMSEngine.Engine.V2.General
 
                 dociID.ForEach(ID =>
                 {
-                    //var qtyDistos = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
+                    //var qtyDistos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
                     //var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
-                    var docitemPutaway = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
-                    var skuPutaway = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);
+                    var docitemPutaway = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
+                    var skuPutaway = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);
 
                     //if ((qty[i] + distoQty) > docitemPutaway.Quantity)
                     //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "จำนวนที่กำลังรับเข้ามากว่าจำนวนตั้งรอรับ");

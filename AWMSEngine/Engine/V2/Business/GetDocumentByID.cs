@@ -115,7 +115,7 @@ namespace AWMSEngine.Engine.V2.Business
             TRes res = new TRes();
             List<bsto> sou_sto = new List<bsto>();
             List<bsto> des_sto = new List<bsto>();
-            var doc = ADO.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
+            var doc = ADO.WMSDB.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
@@ -125,7 +125,7 @@ namespace AWMSEngine.Engine.V2.Business
                 this.BuVO).FirstOrDefault();
             if (doc == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสารในระบบ");
-            var docItems = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
+            var docItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
@@ -148,11 +148,11 @@ namespace AWMSEngine.Engine.V2.Business
 
             if (reqVO.getMapSto && doc.documentItems.Count != 0)
             {
-                var bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+                var bstos = ADO.WMSDB.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
                 bstos.ForEach(bs =>
                 {
-                    var pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
-                    var sku = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
+                    var pack = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(bs.sou_packID, this.BuVO);
+                    var sku = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(pack.SKUMaster_ID, this.BuVO);
 
                     var x = StaticValue.ConvertToALlUnitBySKU(pack.SKUMaster_ID, bs.distoBaseQty, bs.distoBaseUnitID);
                     var Listpack = new List<TRes.QtyConvert>();

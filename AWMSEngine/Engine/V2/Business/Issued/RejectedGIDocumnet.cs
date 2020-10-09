@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
         {
 
          
-                var docIssues = ADO.DocumentADO.GetInstant().ListDocs(reqVO.docIDs, this.BuVO);
+                var docIssues = ADO.WMSDB.DocumentADO.GetInstant().ListDocs(reqVO.docIDs, this.BuVO);
                 var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.NEW);
                 if (docNotCloseds.Count() > 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารเบิก '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New เท่านั้น");
@@ -36,9 +36,9 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 docIssues.ForEach(doc =>
                 {
                     doc.EventStatus = DocumentEventStatus.REJECTED;
-                    doc.Status = ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    doc.Status = ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
 
-                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(doc.ID.Value, this.BuVO,
+                    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(doc.ID.Value, this.BuVO,
                         new KeyValuePair<string, object>[]
                         {
                             new KeyValuePair<string, object>("remark",reqVO.remark)

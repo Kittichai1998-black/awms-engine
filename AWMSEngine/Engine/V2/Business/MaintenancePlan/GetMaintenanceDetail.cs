@@ -22,11 +22,11 @@ namespace AWMSEngine.Engine.V2.Business.MaintenancePlan
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var maintenanceResult = ADO.DataADO.GetInstant().SelectBy<amt_MaintenanceResult>(
+            var maintenanceResult = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_MaintenanceResult>(
                 new SQLConditionCriteria() { field="ID", operatorType=SQLOperatorType.EQUALS, value=reqVO.maintenanceID }
             , this.BuVO).FirstOrDefault();
 
-            maintenanceResult.maintenanceItems = ADO.DataADO.GetInstant().SelectBy<amt_MaintenanceResultItem>(
+            maintenanceResult.maintenanceItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_MaintenanceResultItem>(
                 new SQLConditionCriteria() { field = "MaintenanceResult_ID", operatorType = SQLOperatorType.EQUALS, value = reqVO.maintenanceID }
             , this.BuVO);
 
