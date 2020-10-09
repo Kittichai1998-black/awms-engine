@@ -128,13 +128,13 @@ const DocumentSearch = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
-
+         
             <AmSearchDocument
                 iniCols={iniCols}
                 docTypeCode="2004"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/reject_document"}
+                apiReject={"/v2/RejectGRDocAPI"}
                 apiClose={"/v2/ClosingDocumentAPI"}
             />
         </div>
