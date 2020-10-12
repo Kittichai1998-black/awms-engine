@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -420,7 +420,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             {
                 
 
-                var _base = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseCode, this.BuVO);
+                var _base = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseCode, this.BuVO);
 
                 if (_base == null)
                 {
@@ -436,7 +436,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         Status = EntityStatus.ACTIVE
                     };
 
-                    var resID = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, newBase);
+                    var resID = ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, newBase);
                     newBase.ID = resID;
 
                     var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == _base.UnitType_ID);
@@ -461,7 +461,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         parentID = locationID
                     };
 
-                    var baseStoID = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+                    var baseStoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
                 }
                 else
                 {
@@ -493,7 +493,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                             parentID = locationID
                         };
 
-                        var baseStoID = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+                        var baseStoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
                     }
                 }
 
@@ -503,7 +503,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             }
             else
             {
-                var _base = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseCode, this.BuVO);
+                var _base = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseCode, this.BuVO);
 
                 if (_base == null)
                 {
@@ -539,7 +539,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                             parentID = locationID
                         };
 
-                        var baseStoID = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+                        var baseStoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
                     }
                 }
                 var res = ADO.WMSDB.StorageObjectADO.GetInstant().Get(baseCode, null, areaID, false, true, this.BuVO);

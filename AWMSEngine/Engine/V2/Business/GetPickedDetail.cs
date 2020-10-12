@@ -57,7 +57,7 @@ namespace AWMSEngine.Engine.V2.Business
             TRes res = new TRes();
 
 
-            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
             if (reqVO.qr == null || reqVO.qr == "undefined")
                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "QR Code invalid");
             if (reqVO.qr.StartsWith("N|"))

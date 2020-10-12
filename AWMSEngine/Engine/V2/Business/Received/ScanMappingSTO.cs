@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 
-using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSStaticValue;
+using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -113,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         if (mapsto == null)
                         {
                             //ไม่สร้างใหม่ เเต่ปั้น STO base return
-                            var checkBaseMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+                            var checkBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
                             if (checkBaseMaster == null)
                             {
                                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
@@ -190,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             StorageObjectCriteria createBaseSTO(string bastCode)
             {
-                var checkBaseMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+                var checkBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
                 if (checkBaseMaster == null)
                 {
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
@@ -307,7 +307,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     //new pack
                     newPackSto.qty = unitTypeConvt.oldQty;
                     newPackSto.baseQty = unitTypeConvt.newQty;
-                    resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                    resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                 }
                 else
                 {
@@ -325,7 +325,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             {
                                 oldPsto.eventStatus = StorageObjectEventStatus.REMOVED;
                             }
-                            resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
+                            resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
 
                             if (oldPsto.parentID.HasValue)
                                 remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
@@ -335,7 +335,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ////new pack
                             //newPackSto.qty = unitTypeConvt.oldQty;
                             //newPackSto.baseQty = unitTypeConvt.newQty;
-                            //resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                            //resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                             throw new AMWException(Logger, AMWExceptionCode.V1001, "ข้อมูล RefID ไม่ตรงกัน");
                         }
 
@@ -345,7 +345,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         //new pack
                         newPackSto.qty = unitTypeConvt.oldQty;
                         newPackSto.baseQty = unitTypeConvt.newQty;
-                        resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                        resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                     }
                 }
                 //call Mapping Disto And DocumentItem

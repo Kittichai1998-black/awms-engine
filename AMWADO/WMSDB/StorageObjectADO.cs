@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Logger;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -13,9 +13,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
+    public class StorageObjectADO : BaseWMSDB<StorageObjectADO>
     {
         public amt_StorageObject GetParent(long childStoID, VOCriteria buVO)
         {
@@ -340,7 +340,7 @@ namespace AWMSEngine.ADO.WMSDB
 
             res.ForEach(x =>
             {
-                var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
+                var unitConvertSale = WMSStaticValue.StaticValueManager.GetInstant()
                 .ConvertToNewUnitByPack(x.sou_packID, x.distoBaseQtyMax, x.sou_packBaseUnitID, x.distoUnitID);
 
                 x.distoQtyMax = unitConvertSale.newQty;

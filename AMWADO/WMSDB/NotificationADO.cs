@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class NotificationADO : BaseMSSQLAccess<NotificationADO>
+    public class NotificationADO : BaseWMSDB<NotificationADO>
     {
         public ams_Notify Get(int id, VOCriteria buVO)
         {

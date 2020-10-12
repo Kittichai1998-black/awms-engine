@@ -36,7 +36,7 @@ namespace AWMSEngine.Engine.Business
             List<amt_StorageObject> res = new List<amt_StorageObject>();
             foreach (var bstoid in reqVO.bstosID)
             {
-                var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.PACK,false, false, this.BuVO);
+                var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bstoid, StorageObjectType.PACK,false, false, this.BuVO);
                 if (reqVO.RemarkMode)
                 {
                     this.UpdateRemark(this.Logger, sto, reqVO.remark, this.BuVO);
@@ -51,13 +51,13 @@ namespace AWMSEngine.Engine.Business
                         if(sto.eventStatus == StorageObjectEventStatus.RECEIVED )
                         {
                             this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
-                            var bsto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
+                            var bsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
 
                             var ckHold = bsto.mapstos.TrueForAll(x => x.IsHold == reqVO.IsHold);
                             if (ckHold)
                             {
                                 bsto.IsHold = reqVO.IsHold;
-                                AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
+                                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(bsto, this.BuVO);
                             }
                         }
                         else
@@ -89,7 +89,7 @@ namespace AWMSEngine.Engine.Business
             if (!checkStatus)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
-            AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
 
 
@@ -106,15 +106,15 @@ namespace AWMSEngine.Engine.Business
             //foreach (var st in sto.mapstos)
             //{
             //    st.IsHold = IsHold;
-            //    AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
+            //    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(st, this.BuVO);
             //}
-            AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
         private void UpdateRemark(AMWLogger logger, StorageObjectCriteria sto, string remark, VOCriteria buVO)
         {
 
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
-            AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     res.areaLocationID = location.ID.Value;
                     res.areaLocationCode = location.Code;
 
-                    var stoLocationItems = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    var stoLocationItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("AreaLocationMaster_ID",location.ID.Value, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),

@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;

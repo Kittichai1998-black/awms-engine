@@ -1,5 +1,4 @@
-﻿using AWMSEngine.ADO;
-using AWMSEngine.ADO.WMSDB;
+﻿using ADO.WMSDB;
 using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -7,8 +6,6 @@ using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProjectBOSS.Engine.Audit
 {

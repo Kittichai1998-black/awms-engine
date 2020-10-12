@@ -131,7 +131,7 @@ namespace AWMSEngine.Controllers.V2
         {
            try
             {
-                var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
+                var getStatic = ADO.WMSStaticValue.StaticValueManager.GetInstant().APIServices;
                 var serviceMst = getStatic.FirstOrDefault(x => x.Code.ToUpper().Trim() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
 
                 if (serviceMst != null)

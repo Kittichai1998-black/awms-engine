@@ -3,7 +3,7 @@ using AMWUtil.DataAccess.Http;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSDB;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -146,7 +146,7 @@ namespace AWMSEngine.APIService
                     if(this.IsAuthenAuthorize)
                         throw new AMWException(this.Logger, AMWExceptionCode.A0013);
                 }
-                this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.BaseMSSQLAccess<DataADO>.GetInstant().CreateConnection());
+                this.BuVO.Set(BusinessVOConst.KEY_DB_CONNECTION, ADO.WMSDB.DataADO.GetInstant().CreateConnection());
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
 
@@ -168,10 +168,10 @@ namespace AWMSEngine.APIService
                     });
 
                 //-----------VALIDATE SERVICE
-                var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == this.APIServiceID);
+                var apiService = ADO.WMSStaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == this.APIServiceID);
                 if (apiService == null)
                 {
-                    apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
+                    apiService = ADO.WMSStaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
                     if (apiService == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
                 }

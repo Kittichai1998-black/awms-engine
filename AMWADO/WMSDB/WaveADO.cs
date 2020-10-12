@@ -1,5 +1,5 @@
 ﻿using AMWUtil.DataAccess;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -9,13 +9,13 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class WaveADO : BaseMSSQLAccess<WaveADO>
+    public class WaveADO : BaseWMSDB<WaveADO>
     {
         public long? Put(amt_Wave wave, VOCriteria buVO)
         {
-            var WaveStatus = StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
+            var WaveStatus = WMSStaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
             param.Add("@IoType", wave.IOType);
@@ -40,7 +40,7 @@ namespace AWMSEngine.ADO.WMSDB
         }
         public long? PutSeq(amt_WaveSeq wave, VOCriteria buVO)
         {
-            var WaveStatus = StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
+            var WaveStatus = WMSStaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WaveEventStatus>(wave.EventStatus);
             var param = new Dapper.DynamicParameters();
             param.Add("@ID", wave.ID);
             param.Add("@Wave_ID", wave.Wave_ID);

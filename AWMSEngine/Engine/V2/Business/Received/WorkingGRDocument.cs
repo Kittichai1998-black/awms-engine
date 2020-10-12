@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             TDocRes res = new TDocRes();
             res.documents = new List<amt_Document>();
 
-            var checkWorking = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+            var checkWorking = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                 new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING),
                         new KeyValuePair<string,object>("DocumentType_ID",DocumentTypeID.PUTAWAY),

@@ -1,29 +1,28 @@
-﻿using AMWUtil.Exception;
+﻿using ADO.WCSAPI;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class ManualDoneQueue : BaseEngine<ADO.QueueApi.WCSQueueADO.TReqCheckQueue, ManualDoneQueue.TRes>
+    public class ManualDoneQueue : BaseEngine<WCSQueueADO.TReqCheckQueue, ManualDoneQueue.TRes>
     {
 
         public class TRes
         {
             public List<WorkQueueCriteria> workQ;
         }
-        protected override TRes ExecuteEngine(ADO.QueueApi.WCSQueueADO.TReqCheckQueue reqVO)
+        protected override TRes ExecuteEngine(WCSQueueADO.TReqCheckQueue reqVO)
         {
             //เช็คสถานะ q จาก wc
 
             List<WorkQueueCriteria> doneWorkQueue = new List<WorkQueueCriteria>();
             WorkQueueCriteria doneWorkQueues = new WorkQueueCriteria();
 
-            var checkQueues = ADO.QueueApi.WCSQueueADO.GetInstant().SendCheckQueue(reqVO, this.BuVO);
+            var checkQueues = WCSQueueADO.GetInstant().SendCheckQueue(reqVO, this.BuVO);
 
             if (checkQueues.data.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Not respones from WCS");

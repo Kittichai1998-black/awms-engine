@@ -1,4 +1,4 @@
-﻿using AWMSEngine.ADO.StaticValue;
+﻿using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using Microsoft.AspNetCore.Mvc;

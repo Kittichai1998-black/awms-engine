@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -326,7 +326,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 var areaModel = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == baseSto.areaCode);
                 if (bm == null && baseSto.isRegisBaseCode.Value)
                 {
-                    AWMSEngine.ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                    ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
                     {
                         Code = baseSto.baseCode,
                         Name = baseSto.baseCode,

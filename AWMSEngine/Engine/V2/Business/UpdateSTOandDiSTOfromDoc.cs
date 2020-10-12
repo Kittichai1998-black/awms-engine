@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business
 
         protected override NullCriteria ExecuteEngine(TReq reqVO)
         {
-            var getDiSTO = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItemStorageObject>(reqVO.distoID.Value, this.BuVO);
+            var getDiSTO = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItemStorageObject>(reqVO.distoID.Value, this.BuVO);
 
             if (getDiSTO == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item Storage Object");

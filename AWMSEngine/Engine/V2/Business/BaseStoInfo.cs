@@ -21,14 +21,14 @@ namespace AWMSEngine.Engine.V2.Business
         }
         protected override TRes ExecuteEngine(string reqVO)
         {
-            var bSto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+            var bSto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("Code", reqVO, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
             }, this.BuVO).OrderByDescending(x => x.ID).FirstOrDefault();
 
             if (bSto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO + " Not Found");
 
-            var stos = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+            var stos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("ParentStorageObject_ID", bSto.ID, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
                 }, this.BuVO).OrderByDescending(x => x.ID).ToList();
 
@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             sto.BaseUnitTypeCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == sto.BaseUnitType_ID).Code;
             sto.UnitTypeCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == sto.UnitType_ID).Code;
-            sto.AreaLocationCode = sto.AreaLocationMaster_ID.HasValue ? AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(sto.AreaLocationMaster_ID, this.BuVO).Code : null;
+            sto.AreaLocationCode = sto.AreaLocationMaster_ID.HasValue ? ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(sto.AreaLocationMaster_ID, this.BuVO).Code : null;
             sto.AreaMasterCode = StaticValue.AreaMasters.FirstOrDefault(x => x.ID == sto.AreaMaster_ID).Code;
             sto.mapstos = mapStos;
 

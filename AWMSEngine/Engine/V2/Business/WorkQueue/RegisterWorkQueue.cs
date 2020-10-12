@@ -12,7 +12,7 @@ using AMWUtil.Common;
 using AWMSEngine.Common;
 using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Business.Received;
 
@@ -98,9 +98,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         disto.WorkQueue_ID = queueTrx.ID.Value;
                         if (disto.Status == EntityStatus.INACTIVE)
-                            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                            ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                         else
-                            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                            ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                     });
                     x.EventStatus = DocumentEventStatus.WORKING;
                     ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(x.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
@@ -344,7 +344,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 Status = EntityStatus.INACTIVE
                             };
 
-                            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Insert(disto, BuVO);
+                            ADO.WMSDB.DistoADO.GetInstant().Insert(disto, BuVO);
                         });
                     }
                     else
@@ -511,7 +511,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desArea = new ams_AreaMaster();
 
             var psto = mapsto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
-            ams_SKUMaster skuMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
+            ams_SKUMaster skuMaster = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
             if (skuMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
 
@@ -521,7 +521,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if(skutype.GroupType != SKUGroupType.ESP)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "สินค้าประเภท " + skutype.GroupType + "ไม่สามารถเบิกได้");
 
-            ams_PackMaster packMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
+            ams_PackMaster packMaster = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
             if (packMaster == null)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
 
@@ -581,8 +581,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             };
 
-            var docGRID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
-            var _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
+            var docGRID = ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+            var _docGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
 
             amt_DocumentItem docItemPA = new amt_DocumentItem()
             { 
@@ -621,8 +621,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             };
 
-            var docPAID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
-            docItems.AddRange(AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(docPAID.Value, BuVO));
+            var docPAID = ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+            docItems.AddRange(ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(docPAID.Value, BuVO));
             return docItems;
         }
     }

@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class DocumentADO : BaseMSSQLAccess<DocumentADO>
+    public class DocumentADO : BaseWMSDB<DocumentADO>
     {
 
 

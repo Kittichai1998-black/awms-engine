@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.V2.Business
             TDocRes res = new TDocRes();
 
             var locArea = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.LocationID, this.BuVO);
-            if(ADO.StaticValue.StaticValueManager.GetInstant().GetAreaMaster(locArea.AreaMaster_ID,null).Code == "SA")
+            if(ADO.WMSStaticValue.StaticValueManager.GetInstant().GetAreaMaster(locArea.AreaMaster_ID,null).Code == "SA")
             {
                 var checkAreaLoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaLocationMaster_ID",reqVO.LocationID, SQLOperatorType.EQUALS),

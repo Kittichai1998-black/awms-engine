@@ -2,7 +2,7 @@
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;

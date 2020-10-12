@@ -8,9 +8,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class TokenADO : BaseMSSQLAccess<TokenADO>
+    public class TokenADO : BaseWMSDB<TokenADO>
     {
         public amt_Token Register(string username, string password, string secretKey, int actionBy, bool requirePass,
             VOCriteria buVO)

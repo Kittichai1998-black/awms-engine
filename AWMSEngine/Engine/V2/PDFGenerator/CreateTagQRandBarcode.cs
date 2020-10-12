@@ -182,7 +182,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                            new KeyValuePair<string, object>(OptionConst.OPT_PDF_NO, pdfno)
                        });
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
                   new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", new_PDF_NO)
                   });

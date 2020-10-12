@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 
-using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSStaticValue;
+using ADO.WMSDB;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -210,7 +210,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

@@ -27,14 +27,14 @@ namespace AWMSEngine.Engine.V2.Business.Received
             var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, BuVO);
             var pack = stosPack.mapstos.FirstOrDefault().id;
 
-            var disto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("Sou_StorageObject_ID",pack),
                 }, this.BuVO).FirstOrDefault();
 
 
             var docID = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(disto.DocumentItem_ID, this.BuVO).Document_ID;
-            var docItemID = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+            var docItemID = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                       new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("Document_ID",docID),
                       }, this.BuVO);
@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             if (docs == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document");
 
-            var docItem = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+            var docItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                      new KeyValuePair<string, object>[] {
                         new KeyValuePair<string,object>("Document_ID",docs.ID.Value),
                      }, this.BuVO);

@@ -30,7 +30,7 @@ namespace AWMSEngine.APIService.V2.Business
             TReq reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             reqDoc.docIDs.ForEach(doc =>
             {
-                var docs = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
+                var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
                 if (docs != null)
                 {
 

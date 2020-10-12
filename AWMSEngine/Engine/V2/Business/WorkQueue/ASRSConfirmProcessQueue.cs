@@ -1,7 +1,5 @@
-﻿using AMWUtil.Common;
+﻿using ADO.WCSAPI;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.QueueApi;
-using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -11,7 +9,6 @@ using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -324,7 +321,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //});
             if (wcQueue.queueOut.Count > 0)
             {
-                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
+                var wcsRes = WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");

@@ -29,7 +29,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         {
                             if (docs.EventStatus == DocumentEventStatus.WORKED)
                             {
-                                var listItem = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                var listItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
                                     ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

@@ -56,7 +56,7 @@ namespace AWMSEngine
                 this.Logger.LogInfo("########### BEGIN START_SERVER ###########");
                 this.Logger.LogInfo("----------- BEGIN ConfigureServices -----------");
                 this.Logger.LogInfo("StaticValueManager.GetInstant().LoadAll()");
-                ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
+                ADO.WMSStaticValue.StaticValueManager.GetInstant().LoadAll();
                 this.Logger.LogInfo("services.AddCors()");
                 services.AddCors(options =>
                 {
@@ -181,7 +181,7 @@ namespace AWMSEngine
         }
         private void SetUpHub(IApplicationBuilder app)
         {
-            var hubs = ADO.StaticValue.StaticValueManager.GetInstant().HubService;
+            var hubs = ADO.WMSStaticValue.StaticValueManager.GetInstant().HubService;
 
             app.UseEndpoints(routes =>
             {
@@ -199,7 +199,7 @@ namespace AWMSEngine
         }
         private void SetUpScheduler()
         {
-            var jobs = ADO.StaticValue.StaticValueManager.GetInstant().ScheduleService;
+            var jobs = ADO.WMSStaticValue.StaticValueManager.GetInstant().ScheduleService;
             foreach (var jb in jobs)
             {
                 BaseScheduleService.AddScheduleServiceSetup(jb);

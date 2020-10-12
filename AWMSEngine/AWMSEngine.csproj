@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
@@ -9,22 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ADO\SAPApi\**" />
     <Compile Remove="APIService\Mst\Ers\**" />
     <Compile Remove="APIService\V1\**" />
     <Compile Remove="Controllers\V1\**" />
     <Compile Remove="Engine\V1\**" />
-    <Content Remove="ADO\SAPApi\**" />
     <Content Remove="APIService\Mst\Ers\**" />
     <Content Remove="APIService\V1\**" />
     <Content Remove="Controllers\V1\**" />
     <Content Remove="Engine\V1\**" />
-    <EmbeddedResource Remove="ADO\SAPApi\**" />
     <EmbeddedResource Remove="APIService\Mst\Ers\**" />
     <EmbeddedResource Remove="APIService\V1\**" />
     <EmbeddedResource Remove="Controllers\V1\**" />
     <EmbeddedResource Remove="Engine\V1\**" />
-    <None Remove="ADO\SAPApi\**" />
     <None Remove="APIService\Mst\Ers\**" />
     <None Remove="APIService\V1\**" />
     <None Remove="Controllers\V1\**" />
@@ -32,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="ADO\ApiADO.cs" />
     <Compile Remove="APIService\Mst\PutCustomerFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSKUMasterFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSKUMaster_UnitTypeAPI.cs" />
@@ -93,6 +88,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AMWADO\ADO.csproj" />
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
     <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
   </ItemGroup>

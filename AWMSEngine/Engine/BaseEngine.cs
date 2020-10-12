@@ -2,7 +2,7 @@
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AMWUtil.Validation;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Controllers.V2;
 using AWMSEngine.HubService;
 using AWMSModel.Constant.EnumConst;

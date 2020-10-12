@@ -19,7 +19,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
-            if (ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
+            if (ADO.WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
             {
                 var appProp = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("app");
 

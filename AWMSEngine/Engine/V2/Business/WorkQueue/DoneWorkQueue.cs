@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 
-using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSStaticValue;
+using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Wave;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -191,7 +191,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             else
             {
                 //Audit เคสที่ ไม่มีการผูกเอกสาร
-                var getDisto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                var getDisto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                 { 
                     new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
                 }, this.BuVO);
@@ -231,7 +231,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
                 //{
                 //    sto.IsStock = true;
-                //    AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
+                //    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
                 //       new KeyValuePair<string, object>[] {
                 //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
                 //       });
@@ -433,7 +433,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

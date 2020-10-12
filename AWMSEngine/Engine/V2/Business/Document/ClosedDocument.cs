@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             //update StorageObjects
                             if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
-                                var distos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                                var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
                                 if (distos == null || distos.Count == 0)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -79,10 +79,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         }
                                     }
                                     //update Closed Document
-                                    var listItem = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                                    var listItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                     {
-                                        AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                                         if (docs.ParentDocument_ID != null)
                                         {
                                             var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
@@ -149,7 +149,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

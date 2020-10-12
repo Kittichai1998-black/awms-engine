@@ -1,15 +1,14 @@
 ﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using Org.BouncyCastle.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class DistoADO : BaseMSSQLAccess<DistoADO>
+    public class DistoADO : BaseWMSDB<DistoADO>
     {
         public List<amt_DocumentItemStorageObject> List_bySouWaveSeq_bySouSto(long souWaveSeqID, long souStoID, VOCriteria buVO)
         {

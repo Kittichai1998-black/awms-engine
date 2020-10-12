@@ -1,7 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.QueueApi;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSModel.Constant.EnumConst;
@@ -224,7 +223,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 Status = EntityStatus.ACTIVE,
                 EventStatus = WaveEventStatus.NEW
             };
-            var WaveID = AWMSEngine.ADO.WMSDB.WaveADO.GetInstant().Put(Wave, this.BuVO);
+            var WaveID = ADO.WMSDB.WaveADO.GetInstant().Put(Wave, this.BuVO);
             if (WaveID == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถสร้าง wave ได้");
 
@@ -233,10 +232,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
 
                     doc.Wave_ID = WaveID.Value;
-                    AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Put(doc, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().Put(doc, this.BuVO);
 
 
-                    waveTemplate = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
+                    waveTemplate = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
                      new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",doc.DocumentProcessType_ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
@@ -261,7 +260,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     EventStatus = WaveEventStatus.NEW,
                     Status = EntityStatus.ACTIVE
                 };
-                var WaveResult = AWMSEngine.ADO.WMSDB.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
+                var WaveResult = ADO.WMSDB.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
             });
             var wave = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
             return wave;

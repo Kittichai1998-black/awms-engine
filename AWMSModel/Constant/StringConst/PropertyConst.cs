@@ -26,7 +26,8 @@ namespace AWMSModel.Constant.StringConst
         public const string APP_KEY_WORKER_DELAY = "worker.{0}.delay";
         public const string APP_KEY_WORKER_DATA = "worker.{0}.data";
 
-        public const string APP_KEY_DBMSSQL_CONSTR = "database.mssql.connection";
-        
+        public const string APP_KEY_MSSQL_CONSTR_WMS = "database.mssql.connection.wms";
+        public const string APP_KEY_MSSQL_CONSTR_WCS = "database.mssql.connection.wcs";
+
     }
 }

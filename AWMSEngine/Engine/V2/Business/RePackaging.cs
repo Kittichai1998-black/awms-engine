@@ -2,7 +2,7 @@
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.Business
             if(reqVO.newQty <= 0)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "New Qty เท่ากับ 0");
 
-            var bsto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.BASE, true, true, this.BuVO);
+            var bsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.BASE, true, true, this.BuVO);
 
             var ckLoc = StaticValueManager.GetInstant().AreaMasters.Find(y => y.ID == bsto.areaID).AreaMasterType_ID == AreaMasterTypeID.STA_PICK;
 
@@ -63,12 +63,12 @@ namespace AWMSEngine.Engine.Business
                 var dataMap = this.mapPallet(this.Logger, mapsto, newBaseQty, newbstoBaseMaster, reqVO, this.BuVO);
                 var ck = dataupdate.mapstos.FindAll(x => x.id == reqVO.psto).FirstOrDefault();
                 if (ck.qty == 0)
-                    AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 var ckQty = dataupdate.mapstos.TrueForAll(x => x.qty == 0);
                 if (ckQty)
                 {
-                    AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                     res.bsto = dataMap;
                 }
                 
@@ -87,17 +87,17 @@ namespace AWMSEngine.Engine.Business
             cloneSto.qty = cloneSto.qty - reqVO.oldqty;
             cloneSto.baseQty = cloneSto.baseQty - convertUnit.newQty;
 
-            var updateNewSto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
+            var updateNewSto = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneSto, this.BuVO);
 
-            var newPallet = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(updateNewSto, StorageObjectType.BASE, true, true, this.BuVO);
+            var newPallet = ADO.WMSDB.StorageObjectADO.GetInstant().Get(updateNewSto, StorageObjectType.BASE, true, true, this.BuVO);
             return newPallet;
         }
         private StorageObjectCriteria mapPallet(AMWLogger logger, StorageObjectCriteria psto, ConvertUnitCriteria convertUnit,ams_BaseMaster newbstoBaseMaster,TReq reqVO, VOCriteria buVO)
         {
             //Insert
-            var bsto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.PACK, true, false, this.BuVO);
+            var bsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.psto, StorageObjectType.PACK, true, false, this.BuVO);
 
-            var oldDisto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var oldDisto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                  new SQLConditionCriteria[] {
                     new SQLConditionCriteria("Des_StorageObject_ID",psto.id, SQLOperatorType.EQUALS),
                     //new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS),
@@ -108,7 +108,7 @@ namespace AWMSEngine.Engine.Business
             cloneBsto.code = reqVO.newbstoCode;
             cloneBsto.mstID = newbstoBaseMaster.ID;
             
-            var insertNewSto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneBsto, this.BuVO);
+            var insertNewSto = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneBsto, this.BuVO);
 
            
             var cloneStoInsert = psto.Clone();
@@ -119,9 +119,9 @@ namespace AWMSEngine.Engine.Business
             cloneStoInsert.unitID = reqVO.newUnitID;
             cloneStoInsert.unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == reqVO.newUnitID).Code;
 
-            var insertNewStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneStoInsert, this.BuVO);
+            var insertNewStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(cloneStoInsert, this.BuVO);
 
-            var newPallet = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(insertNewSto, StorageObjectType.BASE, true, true, this.BuVO);
+            var newPallet = ADO.WMSDB.StorageObjectADO.GetInstant().Get(insertNewSto, StorageObjectType.BASE, true, true, this.BuVO);
 
 
             amt_DocumentItemStorageObject dataNewDisto = new amt_DocumentItemStorageObject()
@@ -141,14 +141,14 @@ namespace AWMSEngine.Engine.Business
               Status = oldDisto.Status
             };
 
-            AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Insert(dataNewDisto, this.BuVO);
+            ADO.WMSDB.DistoADO.GetInstant().Insert(dataNewDisto, this.BuVO);
 
 
             return newPallet;
         }
         private ams_BaseMaster GetBaseSTO(TReq reqVO)
         {
-            var baseMasterData = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
+            var baseMasterData = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.newbstoCode),
                     new KeyValuePair<string,object>("Status",1),
@@ -156,7 +156,7 @@ namespace AWMSEngine.Engine.Business
 
             if (baseMasterData.Count <= 0)
             {
-                AWMSEngine.ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
                 {
                     Code = reqVO.newbstoCode,
                     Name = "Pallet",
@@ -169,7 +169,7 @@ namespace AWMSEngine.Engine.Business
 
                 });
             }
-            var newbstoBaseMaster = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.newbstoCode, BuVO);
+            var newbstoBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.newbstoCode, BuVO);
 
             return newbstoBaseMaster;
         }

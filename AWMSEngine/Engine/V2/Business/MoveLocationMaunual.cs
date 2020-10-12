@@ -39,7 +39,7 @@ namespace AWMSEngine.Engine.V2.Business
             var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
             new ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, sto);
 
-            var SouAreaLocation = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            var SouAreaLocation = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                                 new KeyValuePair<string,object>("Code",reqVO.SouLocationCode),
                                 new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business
         private amt_WorkQueue mapWorkQueue(AMWLogger logger, ams_AreaLocationMaster SouAreaLocation, TDocReq reqVO,StorageObjectCriteria sto, VOCriteria buVO)
         {
 
-            var area = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaMaster>(reqVO.DesLocationID, this.BuVO);
+            var area = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaMaster>(reqVO.DesLocationID, this.BuVO);
             var wq = new amt_WorkQueue() { 
                 IOType = IOType.OUTPUT,
                 StorageObject_ID = sto.id.Value,
@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.V2.Business
                 Status = EntityStatus.ACTIVE
             };
 
-            var distoData =  AWMSEngine.ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
+            var distoData =  ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
             return distoData;
         }
 

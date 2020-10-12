@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class WorkQueueADO : BaseMSSQLAccess<WorkQueueADO>
+    public class WorkQueueADO : BaseWMSDB<WorkQueueADO>
     {
         public SPworkQueue Get(long queueID, VOCriteria buVO)
         {
@@ -87,7 +87,7 @@ namespace AWMSEngine.ADO.WMSDB
             param.Add("StartTime", obj.StartTime);
             param.Add("EndTime ", obj.EndTime);
             param.Add("EventStatus", obj.EventStatus);
-            param.Add("Status", StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WorkQueueEventStatus>(obj.EventStatus));
+            param.Add("Status", WMSStaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WorkQueueEventStatus>(obj.EventStatus));
             param.Add("Priority", obj.Priority);
             param.Add("ActionBy", buVO.ActionBy);
 

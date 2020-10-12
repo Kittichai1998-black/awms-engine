@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Logger;
-using AWMSEngine.ADO.StaticValue;
+using ADO.StaticValue;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Notification;
 using AWMSModel.Constant.EnumConst;

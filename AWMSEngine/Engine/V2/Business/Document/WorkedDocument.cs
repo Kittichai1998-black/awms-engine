@@ -214,7 +214,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });

@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSDB;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -250,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var stopack = new List<amt_StorageObject>() { };
                 if (sto_pack != null)
                 {
-                    stopack = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    stopack = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                                    new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("ID", sto_pack.id.Value, SQLOperatorType.NOTEQUALS),
                                             new SQLConditionCriteria("Code", reqVO.scanCode, SQLOperatorType.EQUALS),
@@ -260,7 +260,7 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else
                 {
-                    stopack = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    stopack = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                                    new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Code", reqVO.scanCode, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("OrderNo", reqVO.orderNo, SQLOperatorType.EQUALS),
@@ -405,7 +405,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (mapsto.eventStatus != StorageObjectEventStatus.NEW || !checkMapsto.Any(x => x.eventStatus == StorageObjectEventStatus.NEW))
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 // msf.eventStatus = StorageObjectEventStatus.REMOVED;
                 // msf.areaID = msf.areaID.Value;
@@ -436,7 +436,7 @@ namespace AWMSEngine.Engine.V2.Business
                     if (rmItem.mapstos.Count() > 0 && !rmItem.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                    AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                     /* rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
                      rmItem.areaID = msf.areaID.Value;
                      ADOSto.PutV2(rmItem, this.BuVO);

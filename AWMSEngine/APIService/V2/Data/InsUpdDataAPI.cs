@@ -23,7 +23,7 @@ namespace AWMSEngine.APIService.V2.Data
             this.CommitTransaction();
 
             this.Logger.LogInfo("Clear Static_Value : " + req.t);
-            ADO.StaticValue.StaticValueManager.GetInstant().ClearStaticByTableName(req.t);
+            ADO.WMSStaticValue.StaticValueManager.GetInstant().ClearStaticByTableName(req.t);
             /*var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
             Type stManagerType = stManager.GetType();
             foreach(var mt in stManagerType.GetMethods())

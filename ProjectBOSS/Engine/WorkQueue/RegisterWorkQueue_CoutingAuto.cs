@@ -12,7 +12,7 @@ using AMWUtil.Exception;
 using AWMSEngine.Common;
 using AMWUtil.Common;
 using AWMSModel.Criteria.SP.Request;
-using AWMSEngine.ADO.StaticValue;
+using ADO.StaticValue;
 using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;

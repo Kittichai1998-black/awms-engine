@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using System;

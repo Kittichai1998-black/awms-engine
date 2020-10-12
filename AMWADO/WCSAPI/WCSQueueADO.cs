@@ -1,15 +1,11 @@
-﻿using AMWUtil.Common;
-using AMWUtil.DataAccess.Http;
-using AWMSModel.Constant.EnumConst;
+﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.QueueApi
+namespace ADO.WCSAPI
 {
-    public class WCSQueueADO : BaseAPIAccess<WCSQueueADO>
+    public class WCSQueueADO : BaseAPI<WCSQueueADO>
     {
         public class TReq
         {

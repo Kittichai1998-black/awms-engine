@@ -78,7 +78,7 @@ namespace AWMSEngine.Engine.V2.General
         {
             var res = new TRes();
             var packList = new List<PackSto>();
-            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
             //res.datas = new List<TRes.DocData>();
 
             if (reqVO.qr == null || reqVO.qr == "undefined")
@@ -114,7 +114,7 @@ namespace AWMSEngine.Engine.V2.General
 
                 dociID.ForEach(ID =>
                 {
-                    //var qtyDistos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
+                    //var qtyDistos = ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(ID, this.BuVO);
                     //var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
                     var docitemPutaway = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(ID, this.BuVO);
                     var skuPutaway = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docitemPutaway.SKUMaster_ID, this.BuVO);

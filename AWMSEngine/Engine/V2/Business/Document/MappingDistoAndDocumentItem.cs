@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 
-using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSStaticValue;
+using ADO.WMSDB;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -94,7 +94,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     var doc = docs.Find(x => x.ID == docItem.Document_ID);
                     if (doc == null)
                         continue;
-                    var qtyDistos = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
+                    var qtyDistos = ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, this.BuVO);
                     var distoQty = qtyDistos.DocItemStos.Sum(x => x.BaseQuantity.Value);
 
                     //if ((psto.BaseQuantity + distoQty) > docItem.BaseQuantity)
@@ -235,7 +235,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             }
                             if (packSto.incubationDate != null || packSto.shelfLifeDate != null)
                             {
-                                var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                                var resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
                             }
                             disto = new amt_DocumentItemStorageObject()
                             {
@@ -375,7 +375,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                         var listDocitemGA = new List<amt_DocumentItem>();
                         checkdocPA.ForEach(x =>
                         {
-                            x.DocumentItems = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().ListItem(x.ParentDocument_ID.Value, this.BuVO);
+                            x.DocumentItems = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x.ParentDocument_ID.Value, this.BuVO);
                             listDocitemGA.AddRange(x.DocumentItems);
                         });
                         var canmap_Item = listDocitemGA.Find(item => item.RefID == psto.RefID && (item.EventStatus == DocumentEventStatus.NEW || item.EventStatus == DocumentEventStatus.WORKING));
@@ -413,9 +413,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     DocItemStos = new List<amt_DocumentItemStorageObject>()
                                         { ConverterModel.ToDocumentItemStorageObject(packSto, null, null, null) }
                                         };
-                                var docPAID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().CreateItem(docItemPA, BuVO);
+                                var docPAID = ADO.WMSDB.DocumentADO.GetInstant().CreateItem(docItemPA, BuVO);
 
-                                var _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(get_docPA.ParentDocument_ID.Value, BuVO);
+                                var _docGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(get_docPA.ParentDocument_ID.Value, BuVO);
 
                                 res.documents.Add(new TRes.Documents()
                                 {
@@ -446,7 +446,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                               }, this.BuVO).FirstOrDefault();
                             if (checkdocGR != null)
                             {
-                                _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(checkdocGR.ID.Value, BuVO);
+                                _docGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(checkdocGR.ID.Value, BuVO);
                             }
                             else
                             {
@@ -491,8 +491,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     EventStatus = DocumentEventStatus.NEW,
                                     Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                                 };
-                                var docGRID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
-                                _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
+                                var docGRID = ADO.WMSDB.DocumentADO.GetInstant().Create(docGR, BuVO).ID;
+                                _docGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docGRID.Value, BuVO);
                             }
                         }
                         else
@@ -510,7 +510,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             }
                             else
                             {
-                                _docGR = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docItemsGR.Document_ID, BuVO);
+                                _docGR = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docItemsGR.Document_ID, BuVO);
                             }
                         }
 
@@ -561,8 +561,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 EventStatus = DocumentEventStatus.NEW,
                                 Options = AMWUtil.Common.ObjectUtil.QryStrSetValue("", OptionVOConst.OPT_AUTO_DOC, "true")
                             };
-                            var docPAID = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
-                            var new_docPA = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
+                            var docPAID = ADO.WMSDB.DocumentADO.GetInstant().Create(docPA, BuVO).ID;
+                            var new_docPA = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docPAID.Value, BuVO);
 
                             res.documents.Add(new TRes.Documents()
                             {

@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -130,7 +130,7 @@ namespace AWMSEngine.Engine.V2.Business
                         getSTO_PACK.qty += x.Quantity;
                         getSTO_PACK.baseQty += baseQuantity.Value;
 
-                        var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(getSTO_PACK, BuVO);
+                        var resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(getSTO_PACK, BuVO);
                         ADO.WMSDB.DistoADO.GetInstant().Update(getdisto[0].ID.Value, null, getSTO_PACK.qty, getSTO_PACK.baseQty, EntityStatus.INACTIVE, BuVO);
                     }
                     else
@@ -199,7 +199,7 @@ namespace AWMSEngine.Engine.V2.Business
                     var newPackCheckSum = packSto.GetCheckSum();
                     packSto.refID = newPackCheckSum;
 
-                    var resStopack = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
+                    var resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packSto, BuVO);
 
                     var new_disto = new amt_DocumentItemStorageObject()
                     {

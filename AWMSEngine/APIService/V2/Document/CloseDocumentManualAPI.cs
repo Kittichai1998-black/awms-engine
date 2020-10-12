@@ -11,7 +11,7 @@ using AMWUtil.Exception;
 using AWMSModel.Criteria;
 
 using AMWUtil.Logger;
-using AWMSEngine.ADO.WMSDB;
+using ADO.WMSDB;
 
 namespace AWMSEngine.APIService.V2.Document
 {
@@ -34,7 +34,7 @@ namespace AWMSEngine.APIService.V2.Document
             TReq reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             reqDoc.docIDs.ForEach(doc =>
             {
-                var docs = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
+                var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
                 if (docs != null)
                 {
 
@@ -55,8 +55,8 @@ namespace AWMSEngine.APIService.V2.Document
                         {
                             if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                             {
-                                //var docParent = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                                var listChilds = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                                //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                                var listChilds = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                                                     new SQLConditionCriteria[] {
                                                 new SQLConditionCriteria("ParentDocument_ID",docs.ID, SQLOperatorType.EQUALS),
                                                     }, this.BuVO);
@@ -98,8 +98,8 @@ namespace AWMSEngine.APIService.V2.Document
                     {
                         if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                         {
-                            //var docParent = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                            var listChilds = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                            //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                            var listChilds = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                                                 new SQLConditionCriteria[] {
                                                 new SQLConditionCriteria("ParentDocument_ID",docs.ID, SQLOperatorType.EQUALS),
                                                 }, this.BuVO);
@@ -142,8 +142,8 @@ namespace AWMSEngine.APIService.V2.Document
                     {
                         if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                         {
-                            //var docParent = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                            var listChilds = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                            //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                            var listChilds = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                                                 new SQLConditionCriteria[] {
                                                 new SQLConditionCriteria("ParentDocument_ID",docs.ID, SQLOperatorType.EQUALS),
                                                 }, this.BuVO);
@@ -175,13 +175,13 @@ namespace AWMSEngine.APIService.V2.Document
         private List<long> workedDoc(long doc)
         {
             List<long> docLists = new List<long>();
-            var docsData = AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
+            var docsData = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
             if (docsData != null)
             {
                 if (docsData.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || docsData.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                 {
-                    //var docParent = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                    var listDocChild = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                    //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                    var listDocChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                                         new SQLConditionCriteria[] {
                                                 new SQLConditionCriteria("ParentDocument_ID",docsData.ID, SQLOperatorType.EQUALS),
                                         }, this.BuVO);
@@ -190,8 +190,8 @@ namespace AWMSEngine.APIService.V2.Document
                     {
                         this.checkStoDocument(docChild, this.BuVO);
 
-                        AWMSEngine.ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docChild.ID.Value, null, null, DocumentEventStatus.WORKED, this.BuVO);
-                        var listChild = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docChild.ID.Value, null, null, DocumentEventStatus.WORKED, this.BuVO);
+                        var listChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                             new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("ParentDocument_ID",docsData.ID, SQLOperatorType.EQUALS),
                             }, this.BuVO);
@@ -244,11 +244,11 @@ namespace AWMSEngine.APIService.V2.Document
             List<amt_StorageObject> ItemsSto = new List<amt_StorageObject>();
             var grDocItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(dataDoc.ID.Value, this.BuVO);
 
-            var baseInDoc = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().ListBaseInDoc(dataDoc.ID.Value, null, dataDoc.DocumentType_ID, this.BuVO);
+            var baseInDoc = ADO.WMSDB.StorageObjectADO.GetInstant().ListBaseInDoc(dataDoc.ID.Value, null, dataDoc.DocumentType_ID, this.BuVO);
 
             baseInDoc.ForEach(x =>
             {
-                var pallet = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get(x.rootCode, null, null, false, true, this.BuVO);
+                var pallet = ADO.WMSDB.StorageObjectADO.GetInstant().Get(x.rootCode, null, null, false, true, this.BuVO);
 
                 var ckPallet = pallet.mapstos.TrueForAll(x =>
                     x.eventStatus == StorageObjectEventStatus.NEW
@@ -266,7 +266,7 @@ namespace AWMSEngine.APIService.V2.Document
 
             grDocItem.ForEach(item =>
             {
-                ItemsSto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                ItemsSto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                    new SQLConditionCriteria[] {
                                new SQLConditionCriteria("EventStatus",DocumentEventStatus.NEW,SQLOperatorType.EQUALS),
                                new SQLConditionCriteria("Options","%_docitem_id="+item.ID+"%", SQLOperatorType.LIKE),
@@ -278,7 +278,7 @@ namespace AWMSEngine.APIService.V2.Document
                     {
                         ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
-                        var disto = AWMSEngine.ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                        var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                          new SQLConditionCriteria[] {
                                 new SQLConditionCriteria("Sou_StorageObject_ID",x.ID, SQLOperatorType.EQUALS),
                                 new SQLConditionCriteria("Status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS),

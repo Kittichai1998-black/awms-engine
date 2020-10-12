@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class LogingADO : BaseMSSQLAccess<LogingADO>
+    public class LogingADO : BaseWMSDB<LogingADO>
     {
         public long BeginAPIService(long? serviceID,string serviceName,string url, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
         {
-            var service = StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
+            var service = WMSStaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@LogRefID", buVO.Logger.LogRefID);
             param.Add("@TrxRefID", buVO.TrxRefID);

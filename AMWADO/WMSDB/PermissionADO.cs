@@ -6,9 +6,9 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.WMSDB
+namespace ADO.WMSDB
 {
-    public class PermissionADO : BaseMSSQLAccess<PermissionADO>
+    public class PermissionADO : BaseWMSDB<PermissionADO>
     {
         public List<ams_Permission> ListByUser(long userID, VOCriteria buVO)
         {
