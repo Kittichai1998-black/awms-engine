@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO.WMSDB
 {
-    public class MasterADO : BaseMSSQLAccess<MasterADO>
+    public class MasterADO : BaseWMSDB<MasterADO>
     {
         public AWMSModel.Entity.ams_PackMaster GetAreaLocationMaster(long locationID, VOCriteria buVO)
         {

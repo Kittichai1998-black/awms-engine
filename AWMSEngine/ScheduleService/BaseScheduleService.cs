@@ -28,7 +28,7 @@ namespace AWMSEngine.ScheduleService
             var logger = AMWLoggerManager.GetLogger("schedule." + this.ScheduleServiceID, this.GetType().Name);
             logger.LogInfo("######BEGIN######");
             buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
-            var job = ADO.StaticValue.StaticValueManager.GetInstant().ScheduleService.FirstOrDefault(x => x.ID == this.ScheduleServiceID);
+            var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().ScheduleService.FirstOrDefault(x => x.ID == this.ScheduleServiceID);
 
             if (job == null) return Task.CompletedTask;
             try

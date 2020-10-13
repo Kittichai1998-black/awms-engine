@@ -158,7 +158,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
-            var DocumentProcessTypeCodes = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
+            var DocumentProcessTypeCodes = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
            new SQLConditionCriteria[] {
                 new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
        }, this.BuVO).FirstOrDefault();
@@ -166,7 +166,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
             if (DocumentProcessTypeCodes != null)
             {
-                var ProceesTypedoc = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
+                var ProceesTypedoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
              new SQLConditionCriteria[] {
                 new SQLConditionCriteria("DocumentProcessType_ID",DocumentProcessTypeCodes.ID, SQLOperatorType.EQUALS),
          }, this.BuVO).FirstOrDefault();
@@ -187,7 +187,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
 
                     var skuCode = reqVO.receivedOrderItem.Select(x => x.skuCode).ToArray();
 
-                    var skuLists = ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                    var skuLists = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
                    new SQLConditionCriteria("Code",string.Join(',', skuCode), SQLOperatorType.IN),
                       }, this.BuVO);
 

@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             List<Item> Items = reqVO.item;
             List<Pallet> pallets = new List<Pallet>();           
             List<Pallet> findPalletX = new List<Pallet>();
-            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
            
             var itemVol = reqVO.item.Sum(x=>x.vol);
             if (itemVol < reqVO.minVolume)

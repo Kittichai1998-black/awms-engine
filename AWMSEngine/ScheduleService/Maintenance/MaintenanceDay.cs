@@ -1,4 +1,4 @@
-﻿using AWMSEngine.ADO.StaticValue;
+﻿using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -19,7 +19,7 @@ namespace AWMSEngine.ScheduleService.Maintenance
         };
         public override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            var plans = ADO.DataADO.GetInstant().SelectBy<ams_MaintenancePlan>(new SQLConditionCriteria()
+            var plans = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_MaintenancePlan>(new SQLConditionCriteria()
             {
                 field = "Status",
                 value = EntityStatus.ACTIVE,
@@ -31,7 +31,7 @@ namespace AWMSEngine.ScheduleService.Maintenance
 
             plans.ForEach(plan =>
             {
-                var lastestPlan = ADO.DataADO.GetInstant().SelectBy<amt_MaintenanceResult>(new SQLConditionCriteria[]
+                var lastestPlan = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_MaintenanceResult>(new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("MaintenancePlan_ID", plan.ID, SQLOperatorType.EQUALS),
                 }, buVO).OrderByDescending(x => x.CreateTime).ToList();
@@ -110,7 +110,7 @@ namespace AWMSEngine.ScheduleService.Maintenance
                     Warehouse_ID = item.Warehouse_ID
                 };
 
-                ADO.DataADO.GetInstant().Insert(buVO, newJob);
+                ADO.WMSDB.DataADO.GetInstant().Insert(buVO, newJob);
 
                 res.Add(newJob);
             });

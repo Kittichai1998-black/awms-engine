@@ -1,7 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO;
-using AWMSEngine.ADO.StaticValue;
+
+using ADO.WMSStaticValue;
+using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.Engine.V2.General;
 using AWMSModel.Constant.EnumConst;
@@ -16,7 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 {
     public class ScanMappingSTO : BaseEngine<ScanMappingSTO.TReq, ScanMappingSTO.TRes>
     {
-        private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
+        private StorageObjectADO ADOSto = ADO.WMSDB.StorageObjectADO.GetInstant();
 
         public class TReq
         {
@@ -67,7 +68,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             var res = new TRes();
             StorageObjectCriteria mapsto = null;
-            var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(new SQLConditionCriteria[] {
+            var docprocessMaster = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID", reqVO.processType, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_RECEIVE, SQLOperatorType.EQUALS)
                     }, BuVO).FirstOrDefault();
@@ -112,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         if (mapsto == null)
                         {
                             //ไม่สร้างใหม่ เเต่ปั้น STO base return
-                            var checkBaseMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+                            var checkBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
                             if (checkBaseMaster == null)
                             {
                                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
@@ -189,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             StorageObjectCriteria createBaseSTO(string bastCode)
             {
-                var checkBaseMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
+                var checkBaseMaster = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.bstoCode, BuVO);
                 if (checkBaseMaster == null)
                 {
                     throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่มีข้อมูลพาเลท " + reqVO.bstoCode + " ในระบบ");
@@ -221,7 +222,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 if(psto.addQty == 0)
                     throw new AMWException(Logger, AMWExceptionCode.V1002, "กรุณาระบุจำนวนสินค้า");
 
-                var sku = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(psto.pstoCode, BuVO);
+                var sku = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(psto.pstoCode, BuVO);
                
                 var pack = new ams_PackMaster();
                 var skutype = new ams_SKUMasterType();
@@ -235,7 +236,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     skutype = StaticValueManager.GetInstant().SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
                     if (skutype == null)
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล SKU Master Type ในระบบ");
-                    var docprocessMaster = ADO.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
+                    var docprocessMaster = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(new SQLConditionCriteria[] {
                         new SQLConditionCriteria("ID", reqVO.processType, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("SKUGroupType", skutype.GroupType, SQLOperatorType.EQUALS)
                     }, BuVO).FirstOrDefault();
@@ -243,20 +244,20 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         throw new AMWException(Logger, AMWExceptionCode.V1001, "SKU นี้ไม่สามารถรับเข้าผ่าน Document Process Type : " + reqVO.processType + " นี้ได้");
 
 
-                    var pack_unitType = ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
+                    var pack_unitType = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.unitTypeCode, BuVO);
                     var base_UnitType = new ams_UnitType(); //base
                     if (String.IsNullOrEmpty(psto.packUnitTypeCode))
                     {
-                        //packUnitType = ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID.Value, BuVO);
+                        //packUnitType = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID.Value, BuVO);
                         unitTypeConvt = StaticValue.ConvertToNewUnitBySKU(sku.ID.Value, psto.addQty, pack_unitType.ID.Value, sku.UnitType_ID.Value);
                     }
                     else
                     {
-                        base_UnitType = ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.packUnitTypeCode, BuVO);
+                        base_UnitType = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(psto.packUnitTypeCode, BuVO);
                         unitTypeConvt = StaticValue.ConvertToNewUnitBySKU(sku.ID.Value, psto.addQty, pack_unitType.ID.Value, base_UnitType.ID.Value);
                     }
 
-                    pack = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(unitTypeConvt.newPackMaster_ID, BuVO);
+                    pack = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(unitTypeConvt.newPackMaster_ID, BuVO);
 
                 }
                
@@ -306,7 +307,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     //new pack
                     newPackSto.qty = unitTypeConvt.oldQty;
                     newPackSto.baseQty = unitTypeConvt.newQty;
-                    resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                    resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                 }
                 else
                 {
@@ -324,7 +325,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             {
                                 oldPsto.eventStatus = StorageObjectEventStatus.REMOVED;
                             }
-                            resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
+                            resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
 
                             if (oldPsto.parentID.HasValue)
                                 remove_parent_empty(oldPsto.parentID.Value, oldPsto.parentType.Value);
@@ -334,7 +335,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ////new pack
                             //newPackSto.qty = unitTypeConvt.oldQty;
                             //newPackSto.baseQty = unitTypeConvt.newQty;
-                            //resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                            //resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                             throw new AMWException(Logger, AMWExceptionCode.V1001, "ข้อมูล RefID ไม่ตรงกัน");
                         }
 
@@ -344,7 +345,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         //new pack
                         newPackSto.qty = unitTypeConvt.oldQty;
                         newPackSto.baseQty = unitTypeConvt.newQty;
-                        resStopack = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
+                        resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(newPackSto, BuVO);
                     }
                 }
                 //call Mapping Disto And DocumentItem
@@ -359,7 +360,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             var parentRemove = stoLists.Find(x => x.id == parent_id);
 
                             parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
-                            ADO.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                             if (parentRemove.parentID.HasValue)
                                 remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
                         }
@@ -390,7 +391,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             StorageObjectCriteria newSto = new StorageObjectCriteria();
             long idBaseSto;
-            var getOldBase = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, reqVO.warehouseID, reqVO.areaID, false, true, BuVO);
+            var getOldBase = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, reqVO.warehouseID, reqVO.areaID, false, true, BuVO);
             if (getOldBase != null)
             {
                 var baseSto = getOldBase.ToTreeList().Find(x => x.type == StorageObjectType.BASE);

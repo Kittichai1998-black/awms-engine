@@ -151,7 +151,7 @@ const DocumentSearch = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
-
+         
             <AmSearchDocument
                 iniCols={iniCols}
                 docTypeCode="1012"

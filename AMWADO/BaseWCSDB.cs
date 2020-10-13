@@ -7,10 +7,10 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO
 {
-    public abstract class BaseMSSQLAccess<TThis> : AMWUtil.DataAccess.BaseDatabaseAccess
-        where TThis : BaseMSSQLAccess<TThis>, new()
+    public abstract class BaseWCSDB<TThis> : AMWUtil.DataAccess.BaseDatabaseAccess
+        where TThis : BaseWCSDB<TThis>, new()
     {
         private static TThis instants;
         public static TThis GetInstant(string connectionString = null)
@@ -26,10 +26,10 @@ namespace AWMSEngine.ADO
             return instants;
         }
         private string _ConnectionStringDefault;
-        protected BaseMSSQLAccess() 
+        protected BaseWCSDB() 
             : base(PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY) == null ?
                   string.Empty:
-                  PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_DBMSSQL_CONSTR])
+                  PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_MSSQL_CONSTR_WCS])
         {
             _ConnectionStringDefault = this.ConnectionString;
         }

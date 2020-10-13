@@ -9,7 +9,7 @@ using AWMSModel.Criteria;
 using System.Text.RegularExpressions;
 using AMWUtil.Exception;
 
-namespace AWMSEngine.ADO.StaticValue
+namespace ADO.WMSStaticValue
 {
     public partial class StaticValueManager : IStaticValueManager
     {

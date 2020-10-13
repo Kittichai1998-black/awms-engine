@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Controllers.V2;
 
 namespace AWMSEngine.APIService.V2.ASRS

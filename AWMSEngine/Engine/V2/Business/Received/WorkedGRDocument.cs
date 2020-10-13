@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             foreach(long docID in reqVO.DocumentIDs)
             {
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
+                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
             }
             return null;
         }

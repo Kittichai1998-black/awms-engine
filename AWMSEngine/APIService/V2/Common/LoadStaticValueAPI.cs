@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.V2.Common
 
         protected override dynamic ExecuteEngineManual()
         {
-            ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
+            ADO.WMSStaticValue.StaticValueManager.GetInstant().LoadAll();
             return null;
         }
     }

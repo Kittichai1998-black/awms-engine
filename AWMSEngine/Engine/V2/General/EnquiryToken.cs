@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.General
 
         protected override amt_Token_status ExecuteEngine(EnquiryToken.TReqModle resVO)
         {
-            amt_Token_status tokenModel = ADO.TokenADO.GetInstant().Enquiry(
+            amt_Token_status tokenModel = ADO.WMSDB.TokenADO.GetInstant().Enquiry(
                 resVO.Token, this.BuVO);
             return tokenModel;
         }

@@ -16,7 +16,7 @@ namespace AWMSEngine.Common
         public static TExecRes ExectProject<TExecReq, TExecRes>(string featurePluginCode,  AMWLogger logger, VOCriteria buVO, TExecReq req)
             where TExecRes : class
         {
-            var staticVal = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var staticVal = ADO.WMSStaticValue.StaticValueManager.GetInstant();
             string className = string.Empty;
             try
             {

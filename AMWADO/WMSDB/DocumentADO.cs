@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO.WMSDB
 {
-    public class DocumentADO : ADO.BaseMSSQLAccess<DocumentADO>
+    public class DocumentADO : BaseWMSDB<DocumentADO>
     {
 
 
@@ -183,7 +183,7 @@ namespace AWMSEngine.ADO
             if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
                 docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; DistoADO.GetInstant().Insert(x, buVO); });
             
-            /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
+            /*docItem.StorageObjectIDs = DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
                 .Select(x=>x.StorageObject_ID)
                 .ToList();*/
@@ -266,7 +266,7 @@ namespace AWMSEngine.ADO
             whares.Add(new SQLConditionCriteria("ID", docID, SQLOperatorType.EQUALS));
             whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res.FirstOrDefault();
         }
         public List<amt_Document> List(List<long> docIDs, VOCriteria buVO)
@@ -276,7 +276,7 @@ namespace AWMSEngine.ADO
             whares.Add(new SQLConditionCriteria("ID", string.Join(',', docIDs), SQLOperatorType.IN));
             whares.Add(new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
         public List<amt_Document> ListAndItem(List<long> docIDs, VOCriteria buVO)
@@ -305,7 +305,7 @@ namespace AWMSEngine.ADO
             if (!string.IsNullOrWhiteSpace(batch))
                 whares.Add(new SQLConditionCriteria("Batch", batch, SQLOperatorType.EQUALS));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
         public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, DocumentProcessTypeID movementTypeID, VOCriteria buVO)
@@ -321,14 +321,14 @@ namespace AWMSEngine.ADO
             if (souAreaMasterID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_AreaMaster_ID", souAreaMasterID, SQLOperatorType.EQUALS));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
         public List<amt_Document> ListDocs(List<long> docIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("ID", string.Join(',', docIDs.ToArray()), SQLOperatorType.IN));
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
         public List<amt_DocumentItem> ListItem(DocumentTypeID docTypeID, long? packID,
@@ -363,7 +363,7 @@ namespace AWMSEngine.ADO
             if (!string.IsNullOrWhiteSpace(options))
                 whares.Add(new SQLConditionCriteria("Options", options, SQLOperatorType.EQUALS));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amv_DocumentItem", "*", null, whares.ToArray(), null, null, null, buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_DocumentItem>("amv_DocumentItem", "*", null, whares.ToArray(), null, null, null, buVO);
             return res;
         }
         public List<amt_DocumentItem> ListItem(long docID, VOCriteria buVO)
@@ -372,7 +372,7 @@ namespace AWMSEngine.ADO
             whares.Add(new SQLConditionCriteria("Document_ID", docID, SQLOperatorType.EQUALS));
             whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(whares.ToArray(), buVO);
+            var res = DataADO.GetInstant().SelectBy<amt_DocumentItem>(whares.ToArray(), buVO);
             return res;
         }
         public List<amt_DocumentItem> ListItemAndDisto(long docID, VOCriteria buVO)
@@ -387,8 +387,8 @@ namespace AWMSEngine.ADO
         }
         public amt_DocumentItem GetItemAndStoInDocItem(long docItemID, VOCriteria buVO)
         {
-            var res = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(docItemID, buVO);
-            var resSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var res = DataADO.GetInstant().SelectByID<amt_DocumentItem>(docItemID, buVO);
+            var resSto = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[] {
                     new SQLConditionCriteria("DocumentItem_ID",docItemID, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
@@ -407,7 +407,7 @@ namespace AWMSEngine.ADO
             whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs.ToArray()), SQLOperatorType.IN));
             whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(status)), SQLOperatorType.IN));
 
-            var res = ADO.DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
+            var res = DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
                 "amt_DocumentItemStorageObject",
                 "DocumentItem_ID,sum(BaseQuantity) BaseQuantity,BaseUnitType_ID",
                 "DocumentItem_ID,BaseUnitType_ID",
@@ -453,12 +453,12 @@ namespace AWMSEngine.ADO
             long? unitTypeID, long? baseUnitTypeID,
             string orderNo, string batch, string lot, string options, VOCriteria buVO)
         {
-            var docItems = ADO.DocumentADO.GetInstant()
+            var docItems = DocumentADO.GetInstant()
                        .ListItem(DocumentTypeID.PUTAWAY, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, options, buVO);
                        //.Where(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
 
             List<amt_DocumentItem> res = new List<amt_DocumentItem>();
-            var countStoInDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(docItems.Select(x => x.ID.Value).ToList(), buVO);
+            var countStoInDocItems = DocumentADO.GetInstant().CountStoInDocItems(docItems.Select(x => x.ID.Value).ToList(), buVO);
             foreach (var di in docItems)
             {
                 var countInDoc = countStoInDocItems.FirstOrDefault(x => x.DocumentItem_ID == di.ID);
@@ -500,12 +500,12 @@ namespace AWMSEngine.ADO
 
         public List<amt_DocumentItem> ListItemByWorkQueueDisto(long workQueueID, VOCriteria buVO)
         {
-            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+            var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("WorkQueue_ID", workQueueID, SQLOperatorType.EQUALS)
             }, buVO);
 
-            var docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
+            var docItems = DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("ID", string.Join(",", distos.Select(x=>x.DocumentItem_ID).ToArray()), SQLOperatorType.IN)
             }, buVO);
@@ -533,7 +533,7 @@ namespace AWMSEngine.ADO
 
         public List<amt_DocumentItemStorageObject> ListDistoByWorkQueue(long workQueueID, VOCriteria buVO)
         {
-            var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
+            var disto = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("WorkQueue_ID", workQueueID, SQLOperatorType.EQUALS),
             }, buVO);
 
@@ -695,7 +695,7 @@ namespace AWMSEngine.ADO
         {
             var baseDocs = new List<amt_Document>();
             childDocumentIDs.ToList().ForEach(docID => {
-                var doc = ADO.DocumentADO.GetInstant().ListParentLink(docID, buVO);
+                var doc = DocumentADO.GetInstant().ListParentLink(docID, buVO);
                 baseDocs.AddRange(doc);
             });
 
@@ -703,16 +703,16 @@ namespace AWMSEngine.ADO
             docHIDs.AddRange(childDocumentIDs);
             baseDocs.ForEach(x =>
             {
-                var ids = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, buVO).Select(y => y.LinkDocument_ID.Value).ToList();
+                var ids = DocumentADO.GetInstant().ListItem(x.ID.Value, buVO).Select(y => y.LinkDocument_ID.Value).ToList();
                 docHIDs.AddRange(ids);
             });
             docHIDs = docHIDs.Distinct().ToList();
 
-            List<amt_Document> docHs = ADO.DocumentADO.GetInstant().List(docHIDs, buVO);
+            List<amt_Document> docHs = DocumentADO.GetInstant().List(docHIDs, buVO);
             docHs.ForEach(docH =>
             {
                 docH.ParentDocument = baseDocs.FirstOrDefault(x => x.ID == docH.ParentDocument_ID);
-                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(docH.ID.Value, buVO);
+                docH.DocumentItems = DocumentADO.GetInstant().ListItemAndDisto(docH.ID.Value, buVO);
             });
 
             return docHs;
@@ -849,7 +849,7 @@ namespace AWMSEngine.ADO
 
         public void PutSAPResponse(string log, string options, VOCriteria buVO)
         {
-            ADO.DataADO.GetInstant().Insert<aml_SAPLog>(buVO, new KeyValuePair<string, object>[]
+            DataADO.GetInstant().Insert<aml_SAPLog>(buVO, new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("Description", log),
                 new KeyValuePair<string, object>("Options", options)
@@ -858,7 +858,7 @@ namespace AWMSEngine.ADO
 
         public List<aml_SAPLog> GetSAPResponse(string options ,VOCriteria buVO)
         {
-            return ADO.DataADO.GetInstant().SelectBy<aml_SAPLog>(new SQLConditionCriteria[]{
+            return DataADO.GetInstant().SelectBy<aml_SAPLog>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("Options", options, SQLOperatorType.LIKE)
             }, buVO);
         }

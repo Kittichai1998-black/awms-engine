@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO.StaticValue
+namespace ADO.WMSStaticValue
 {
     public partial class StaticValueManager
     {

@@ -1,6 +1,5 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -10,7 +9,7 @@ using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using ADO.WCSAPI;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -89,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     desASRSLocationCode = reqVO.desASRSLocationCode
                 };
                 var desASRSWm = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
-                List<amt_Document> docs = ADO.DocumentADO.GetInstant().ListAndItem(
+                List<amt_Document> docs = ADO.WMSDB.DocumentADO.GetInstant().ListAndItem(
                     reqVO.processQueues.GroupBy(x => x.docID).Select(x => x.Key).ToList()
                     , this.BuVO);
                 List<SPOutSTOProcessQueueCriteria> tmpStoProcs = new List<SPOutSTOProcessQueueCriteria>();
@@ -204,7 +203,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 desCustomerID = doc.Des_Customer_ID,
                                 packUnitID = docItem.UnitType_ID
                             };
-                            var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
+                            var _pickStos = ADO.WMSDB.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
                             this.ValidateWCS(_pickStos, reqVO);
 
                             if (proc.baseQty.HasValue)
@@ -261,7 +260,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, TReq reqVO)
         {
-            var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+            var getRsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
                 new SQLConditionCriteria("ID", string.Join(",", _pickStos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
             }, this.BuVO);
 
@@ -287,7 +286,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             };
             if (req.queueOut.Count > 0)
             {
-                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
+                var wcsRes = WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");

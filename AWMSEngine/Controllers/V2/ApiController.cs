@@ -26,7 +26,7 @@ namespace AWMSEngine.Controllers.V2
         [HttpGet("time")]
         public dynamic GetTime()
         {
-            var val = ADO.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
+            var val = ADO.WMSDB.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
             DateTime dt = val.dt;
             return new { serverTime = DateTime.Now, dbTime = dt };
         }
@@ -131,7 +131,7 @@ namespace AWMSEngine.Controllers.V2
         {
            try
             {
-                var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
+                var getStatic = ADO.WMSStaticValue.StaticValueManager.GetInstant().APIServices;
                 var serviceMst = getStatic.FirstOrDefault(x => x.Code.ToUpper().Trim() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
 
                 if (serviceMst != null)

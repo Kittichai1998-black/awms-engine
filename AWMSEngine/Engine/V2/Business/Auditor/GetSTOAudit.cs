@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             {
                 if (reqVO.bstoID != null)
                 {
-                    getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             }
             else
             {
-                getSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
+                getSto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
             }
             if (getSto == null)
                 return null;
@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             if (packsList.Count == 0)
                 return null;
 
-            var listDocs = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(getSto.code, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT, this.BuVO);
+            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(getSto.code, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT, this.BuVO);
             if (listDocs.Count > 0)
             {
                 var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_QUALITY_CONTROL_WM  || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_QUALITY_CONTROL_WM).ToList();
@@ -89,8 +89,8 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
                 res.stoItems = new List<TRes.STOItems>();
                 newDocs.ForEach(doc => {
-                    //var distos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
-                    var docItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
+                    //var distos = ADO.WMSDB.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
+                    var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
                     var distoList = new List<amt_DocumentItemStorageObject>();
                     docItems.ForEach(x => { 
                         distoList.AddRange(x.DocItemStos.FindAll(y=>y.Status == EntityStatus.INACTIVE)); 
@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                         var pack = packsList.Find(pack => pack.id.Value == disto.Sou_StorageObject_ID);
                         if (pack != null)
                         {
-                            var processType = ADO.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
+                            var processType = ADO.WMSDB.DataADO.GetInstant().SelectBy<amv_DocumentProcessTypeMap>(new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentProcessType_ID", doc.DocumentProcessType_ID,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE,SQLOperatorType.EQUALS)

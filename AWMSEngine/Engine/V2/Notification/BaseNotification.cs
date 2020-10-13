@@ -37,9 +37,9 @@ namespace AWMSEngine.Engine.V2.Notification
             NotifyData data = LoadData(reqVO);
             string codeNotification = this.GetCode(reqVO);
 
-            var noti = ADO.NotificationADO.GetInstant().Get(codeNotification, this.BuVO);
+            var noti = ADO.WMSDB.NotificationADO.GetInstant().Get(codeNotification, this.BuVO);
             var userIDs = noti.notifyUsers.Select(x => x.User_ID).ToArray();
-            var user = ADO.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
+            var user = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_User>(new SQLConditionCriteria[]
             {
                 new SQLConditionCriteria("ID", string.Join(',', userIDs), SQLOperatorType.IN)
             }, BuVO);
@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Notification
             var groupFacebook = noti.notifyUsers.GroupBy(x => x.IsSendToFacebook).Select(x => new { x.Key, userIDs = x.ToList().Select(y => y.User_ID).ToList() }).ToList().FindAll(x => x.Key == true).FirstOrDefault();
             var groupAMS = noti.notifyUsers.GroupBy(x => x.IsSendToAMS).Select(x => new { x.Key, userIDs = x.ToList().Select(y => y.User_ID).ToList() }).ToList().FindAll(x => x.Key == true).FirstOrDefault();
 
-            ADO.NotificationADO.GetInstant().InsertNotifyPost(
+            ADO.WMSDB.NotificationADO.GetInstant().InsertNotifyPost(
                 new amt_NotifyPost()
                 {
                     ID=null,

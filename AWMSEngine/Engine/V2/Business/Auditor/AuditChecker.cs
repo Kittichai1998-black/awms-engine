@@ -27,9 +27,9 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
         }
         protected override GetSTOAudit.TRes ExecuteEngine(TReq reqVO)
         {
-            var doc = ADO.DocumentADO.GetInstant().Get(reqVO.pi_docID, this.BuVO);
+            var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(reqVO.pi_docID, this.BuVO);
 
-            doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pi_docID, this.BuVO);
+            doc.DocumentItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(reqVO.pi_docID, this.BuVO);
 
             var docitem = doc.DocumentItems.Find(y => y.ID == reqVO.pi_docItemID);
             if (docitem == null)
@@ -39,12 +39,12 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             if (disto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ DocItemStos");
 
-            var qID = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
+            var qID = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_WorkQueue>(disto.WorkQueue_ID, this.BuVO);
             if (qID != null && qID.EventStatus != WorkQueueEventStatus.CLOSED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณารอสักครู่ กระบวนการเบิกยังไม่จบการทำงาน");
 
             //ตัวที่เลือกaudit คือ pack sto ตั้งต้น
-            var pstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
+            var pstos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.pstoID, StorageObjectType.PACK, false, false, this.BuVO);
             if (pstos == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจสอบคุณภาพ");
 
@@ -56,7 +56,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             var newPackCheckSum = pstos.GetCheckSum();
 
 
-            var bstos = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstoID, StorageObjectType.BASE, false, true, this.BuVO);
+            var bstos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoID, StorageObjectType.BASE, false, true, this.BuVO);
             if (bstos == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจสอบคุณภาพ");
             var packsList = bstos.ToTreeList().Find(x => x.type == StorageObjectType.PACK
@@ -76,14 +76,14 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                     packsList.qty += reqVO.auditQty;
                     var qtyConvert = StaticValue.ConvertToNewUnitBySKU(packsList.skuID.Value, packsList.qty, packsList.unitID, packsList.baseUnitID);
                     packsList.baseQty = qtyConvert.newQty;
-                    ADO.StorageObjectADO.GetInstant().PutV2(packsList, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packsList, this.BuVO);
 
 
                     pstos.qty -= reqVO.auditQty; //เดิม 500 ออดิตpass=200 เหลือ 300
                     var updStoqtyConvert = StaticValue.ConvertToNewUnitBySKU(pstos.skuID.Value, pstos.qty, pstos.unitID, pstos.baseUnitID);
                     pstos.baseQty = updStoqtyConvert.newQty;
-                    ADO.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
-                    ADO.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.INACTIVE, BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
+                    ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.INACTIVE, BuVO);
                     
                 }
                 else
@@ -93,9 +93,9 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                         packsList.qty += reqVO.auditQty;
                         var qtyConvert = StaticValue.ConvertToNewUnitBySKU(packsList.skuID.Value, packsList.qty, packsList.unitID, packsList.baseUnitID);
                         packsList.baseQty = qtyConvert.newQty;
-                        ADO.StorageObjectADO.GetInstant().PutV2(packsList, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(packsList, this.BuVO);
 
-                        var distoofPack = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                        var distoofPack = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Sou_StorageObject_ID", pstos.id.Value,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Des_StorageObject_ID", packsList.id.Value,SQLOperatorType.EQUALS),
@@ -104,14 +104,14 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                         if (distoofPack == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ DocumentItemStorageObject");
 
-                        ADO.DistoADO.GetInstant().Update(distoofPack.ID.Value, packsList.id.Value, packsList.qty, packsList.baseQty, EntityStatus.DONE, BuVO);
+                        ADO.WMSDB.DistoADO.GetInstant().Update(distoofPack.ID.Value, packsList.id.Value, packsList.qty, packsList.baseQty, EntityStatus.DONE, BuVO);
 
                         //จะ sto, distoตัวตั้งต้นออก 
                         pstos.qty = 0;
                         pstos.baseQty = 0;
                         pstos.eventStatus = StorageObjectEventStatus.REMOVED;
-                        ADO.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
-                        ADO.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.REMOVE, BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
+                        ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.REMOVE, BuVO);
 
                      
                 }
@@ -128,14 +128,14 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                 if (updSto.qty == 0) { //audit all เปลี่ยนสถานะ 500
                     pstos.AuditStatus = reqVO.auditStatus;
                     pstos.eventStatus = StorageObjectEventStatus.AUDITED;
-                    ADO.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
 
-                    ADO.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.DONE, BuVO);
+                    ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.DONE, BuVO);
                 }
                 else
                 {
-                    ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO); //ของเดิม เหลือ 300
-                    ADO.DistoADO.GetInstant().Update(reqVO.distoID, updSto.id.Value, updSto.qty, updSto.baseQty, EntityStatus.INACTIVE, BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO); //ของเดิม เหลือ 300
+                    ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, updSto.id.Value, updSto.qty, updSto.baseQty, EntityStatus.INACTIVE, BuVO);
 
                   
                     var auditSto = new StorageObjectCriteria();
@@ -147,7 +147,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
                     auditSto.AuditStatus = reqVO.auditStatus;
                     auditSto.eventStatus = StorageObjectEventStatus.AUDITED;
-                    var newauditSto = ADO.StorageObjectADO.GetInstant().PutV2(auditSto, this.BuVO);
+                    var newauditSto = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(auditSto, this.BuVO);
 
                     var newDisto = disto.Clone();
                     newDisto.ID = null;
@@ -156,7 +156,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                     var distoqtyConvert = StaticValue.ConvertToNewUnitBySKU(pstos.skuID.Value, newDisto.Quantity.Value, pstos.unitID, pstos.baseUnitID);
                     newDisto.BaseQuantity = distoqtyConvert.newQty;
                     newDisto.Status = EntityStatus.DONE;
-                    ADO.DistoADO.GetInstant().Insert(newDisto, BuVO);
+                    ADO.WMSDB.DistoADO.GetInstant().Insert(newDisto, BuVO);
                 }
             }
 

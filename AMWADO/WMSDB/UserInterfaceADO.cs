@@ -7,9 +7,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO.WMSDB
 {
-    public class UserInterfaceADO : BaseMSSQLAccess<UserInterfaceADO>
+    public class UserInterfaceADO : BaseWMSDB<UserInterfaceADO>
     {
         public List<AllMenuPage> ListMenu(int userID, VOCriteria buVO)
         {

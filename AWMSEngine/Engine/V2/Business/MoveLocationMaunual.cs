@@ -36,10 +36,10 @@ namespace AWMSEngine.Engine.V2.Business
         {
             TDocRes res = new TDocRes();
             StorageObjectCriteria data = new StorageObjectCriteria();
-            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
+            var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
             new ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, sto);
 
-            var SouAreaLocation = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            var SouAreaLocation = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                                 new KeyValuePair<string,object>("Code",reqVO.SouLocationCode),
                                 new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
@@ -48,14 +48,14 @@ namespace AWMSEngine.Engine.V2.Business
             if (reqVO.Mode == 0) // AMS Only
             {
                 
-                data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.DesLocationID, this.BuVO);
+                data = ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.DesLocationID, this.BuVO);
             }
             else
             {
                 var wq = this.mapWorkQueue(this.Logger, SouAreaLocation, reqVO, sto, this.BuVO);
                 var disto = this.mapDisto(this.Logger, wq, sto, this.BuVO);
 
-                data = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
+                data = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
             };
 
             res.data = data;
@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business
         private amt_WorkQueue mapWorkQueue(AMWLogger logger, ams_AreaLocationMaster SouAreaLocation, TDocReq reqVO,StorageObjectCriteria sto, VOCriteria buVO)
         {
 
-            var area = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_AreaMaster>(reqVO.DesLocationID, this.BuVO);
+            var area = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_AreaMaster>(reqVO.DesLocationID, this.BuVO);
             var wq = new amt_WorkQueue() { 
                 IOType = IOType.OUTPUT,
                 StorageObject_ID = sto.id.Value,
@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.V2.Business
                 Status = EntityStatus.ACTIVE          
             };
 
-            var wqData = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
+            var wqData = ADO.WMSDB.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
 
             return wqData;
         }
@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.V2.Business
                 Status = EntityStatus.ACTIVE
             };
 
-            var distoData =  AWMSEngine.ADO.DistoADO.GetInstant().Insert(disto, buVO);
+            var distoData =  ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
             return distoData;
         }
 

@@ -1,7 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.QueueApi;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSModel.Constant.EnumConst;
@@ -36,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override TRes ExecuteEngine(TReq reqVO)
         {
           
-            var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
+            var docs = ADO.WMSDB.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
             if (docs.Count() == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
 
@@ -74,9 +73,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var groupDocItem = docItemProcess.GroupBy(x => x.docItemID).Select(x => new { docItem = x.Key, processItem = x.ToList() }).ToList();
             groupDocItem.ForEach(x =>
             {
-                var item = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(x.docItem, this.BuVO);
+                var item = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItem>(x.docItem, this.BuVO);
                 item.ActualBaseQuantity = x.processItem.Sum(y => y.pickBaseQty);
-                ADO.DocumentADO.GetInstant().PutItem(item, this.BuVO);
+                ADO.WMSDB.DocumentADO.GetInstant().PutItem(item, this.BuVO);
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
@@ -96,14 +95,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (reqVO.desASRSAreaCode != null)
             {
                  desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
-                 desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
+                 desALM = ADO.WMSDB.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
             }
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(x =>
             {
                 StorageObjectEventStatus? stoDoneSouEventStatus = null;
                 StorageObjectEventStatus? stoDoneDesEventStatus = null;
-                var doc = ADO.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
+                var doc = ADO.WMSDB.DocumentADO.GetInstant().Get(x.docID, this.BuVO);
                 ProcessQueueDoneStatus statusSTO = null;// Common.FeatureExecute.ExectProject<amt_Document, ProcessQueueDoneStatus>(FeatureCode.EXEWM_CUSTOM_STO_EVENTSTATUS, this.Logger, this.BuVO, doc);
                 if (statusSTO != null)
                 {
@@ -224,19 +223,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 Status = EntityStatus.ACTIVE,
                 EventStatus = WaveEventStatus.NEW
             };
-            var WaveID = AWMSEngine.ADO.WaveADO.GetInstant().Put(Wave, this.BuVO);
+            var WaveID = ADO.WMSDB.WaveADO.GetInstant().Put(Wave, this.BuVO);
             if (WaveID == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถสร้าง wave ได้");
 
             reqVO.processResults.ForEach(x =>
                 {
-                    doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
+                    doc = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(x.docID, this.BuVO);
 
                     doc.Wave_ID = WaveID.Value;
-                    AWMSEngine.ADO.DocumentADO.GetInstant().Put(doc, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().Put(doc, this.BuVO);
 
 
-                    waveTemplate = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
+                    waveTemplate = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_WaveSeqTemplate>(
                      new SQLConditionCriteria[] {
                         new SQLConditionCriteria("DocumentProcessType_ID",doc.DocumentProcessType_ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS)
@@ -261,9 +260,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     EventStatus = WaveEventStatus.NEW,
                     Status = EntityStatus.ACTIVE
                 };
-                var WaveResult = AWMSEngine.ADO.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
+                var WaveResult = ADO.WMSDB.WaveADO.GetInstant().PutSeq(WaveSeq, this.BuVO);
             });
-            var wave = ADO.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
+            var wave = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Wave>(WaveID, this.BuVO);
             return wave;
         }
     }

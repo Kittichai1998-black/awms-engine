@@ -35,7 +35,7 @@ namespace AWMSEngine.WorkerService
             logger.LogInfo("...WORKER...");
             while (true)
             { 
-                var job = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
+                var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
 
                 if (job == null) break;
                 try

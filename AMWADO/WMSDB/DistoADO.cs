@@ -1,19 +1,18 @@
 ﻿using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using Org.BouncyCastle.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO.WMSDB
 {
-    public class DistoADO : BaseMSSQLAccess<DistoADO>
+    public class DistoADO : BaseWMSDB<DistoADO>
     {
         public List<amt_DocumentItemStorageObject> List_bySouWaveSeq_bySouSto(long souWaveSeqID, long souStoID, VOCriteria buVO)
         {
-            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            List<amt_DocumentItemStorageObject> distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Sou_WaveSeq_ID", souWaveSeqID, SQLOperatorType.EQUALS),
@@ -24,7 +23,7 @@ namespace AWMSEngine.ADO
         }
         public List<amt_DocumentItemStorageObject> List_byDesWaveSeq_byDesSto(long desWaveSeqID, long desStoID, VOCriteria buVO)
         {
-            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            List<amt_DocumentItemStorageObject> distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Des_WaveSeq_ID", desWaveSeqID, SQLOperatorType.EQUALS),
@@ -86,7 +85,7 @@ namespace AWMSEngine.ADO
         }
         public amt_DocumentItemStorageObject Get(long ID, VOCriteria buVO)
         {
-            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", ID, SQLOperatorType.EQUALS),
@@ -96,7 +95,7 @@ namespace AWMSEngine.ADO
 
         public List<amt_DocumentItemStorageObject> GetListDisto(List<long> ID, VOCriteria buVO)
         {
-            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("ID", string.Join(',', ID), SQLOperatorType.IN),
@@ -106,7 +105,7 @@ namespace AWMSEngine.ADO
 
         public List<amt_DocumentItemStorageObject> ListBySouWaveSeq(long souWaveSeqID, VOCriteria buVO)
         {
-            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            List<amt_DocumentItemStorageObject> distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Sou_WaveSeq_ID", souWaveSeqID, SQLOperatorType.EQUALS),
@@ -116,7 +115,7 @@ namespace AWMSEngine.ADO
         }
         public List<amt_DocumentItemStorageObject> ListByDesWaveSeq(long desWaveSeqID, VOCriteria buVO)
         {
-            List<amt_DocumentItemStorageObject> distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            List<amt_DocumentItemStorageObject> distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Des_WaveSeq_ID", desWaveSeqID, SQLOperatorType.EQUALS),

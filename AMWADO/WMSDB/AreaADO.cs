@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.ADO
+namespace ADO.WMSDB
 {
-    public class AreaADO : BaseMSSQLAccess<AreaADO>
+    public class AreaADO : BaseWMSDB<AreaADO>
     {
         public List<SPOutCountItemInLocation> CountItemInLocation(
             long? warehouseID, long? areaID, string locationCode, string gate, string bank, int? bay, int? level, VOCriteria buVO)
@@ -31,8 +31,8 @@ namespace AWMSEngine.ADO
         public List<SPOutCountItemInLocation> CountItemInLocation(
             string warehouseCode, string areaCode, string bank, int? bay, int level, VOCriteria buVO)
         {
-            var wm = StaticValue.StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == warehouseCode);
-            var am = StaticValue.StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == areaCode);
+            var wm = WMSStaticValue.StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == warehouseCode);
+            var am = WMSStaticValue.StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == areaCode);
             if (wm == null)
                 throw new AMWException(buVO.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส Warehouse '" + warehouseCode + "'");
             if (am == null)
@@ -55,7 +55,7 @@ namespace AWMSEngine.ADO
 
         public List<ams_AreaLocationMaster> ListAreaLocationMaster(long[] id, VOCriteria buVO)
         {
-           var res = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+           var res = DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                new SQLConditionCriteria("id", string.Join(",", id), SQLOperatorType.IN),
                buVO);
             return res;

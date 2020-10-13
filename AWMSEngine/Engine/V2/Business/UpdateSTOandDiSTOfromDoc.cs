@@ -21,11 +21,11 @@ namespace AWMSEngine.Engine.V2.Business
 
         protected override NullCriteria ExecuteEngine(TReq reqVO)
         {
-            var getDiSTO = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItemStorageObject>(reqVO.distoID.Value, this.BuVO);
+            var getDiSTO = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_DocumentItemStorageObject>(reqVO.distoID.Value, this.BuVO);
 
             if (getDiSTO == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item Storage Object");
-            var getStoPack = ADO.StorageObjectADO.GetInstant().Get(getDiSTO.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
+            var getStoPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(getDiSTO.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
             if (getStoPack == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลของ Pack");
 
@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business
             getStoPack.baseQty = baseUnitTypeConvt.newQty;
 
 
-            var getDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(getDiSTO.DocumentItem_ID.Value, BuVO);
+            var getDocItem = ADO.WMSDB.DocumentADO.GetInstant().GetItemAndStoInDocItem(getDiSTO.DocumentItem_ID.Value, BuVO);
             if (getDocItem == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Document Item");
             getDocItem.DocItemStos.ForEach(x => {
@@ -52,9 +52,9 @@ namespace AWMSEngine.Engine.V2.Business
             if (sumQtyDisto > totalQty)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + getDocItem.Code + " ที่ต้องการรับเข้าเกินจำนวนที่ระบุในเอกสาร");
 
-            var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(getStoPack, this.BuVO);
+            var stoIDUpdated = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(getStoPack, this.BuVO);
 
-            ADO.DistoADO.GetInstant().Update(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.newQty, EntityStatus.INACTIVE, BuVO);
+            ADO.WMSDB.DistoADO.GetInstant().Update(getDiSTO.ID.Value, null, reqVO.Quantity.Value, baseUnitTypeConvt.newQty, EntityStatus.INACTIVE, BuVO);
 
             return null;
         }

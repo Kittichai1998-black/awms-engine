@@ -33,7 +33,7 @@ namespace AWMSEngine.Engine.V2.General
                         }
                     }
 
-                    datas.Add(n, ADO.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO));
+                    datas.Add(n, ADO.WMSDB.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO));
 
 
                 }
@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.V2.General
                 
                 TRes res = new TRes()
                 {
-                    datas = ADO.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO)
+                    datas = ADO.WMSDB.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO)
                 };
                 return res;
             }

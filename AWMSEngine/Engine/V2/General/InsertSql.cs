@@ -33,7 +33,7 @@ namespace AWMSEngine.Engine.V2.General
             var get_revision = Convert.ToBoolean(reqVO.nr);
             List<Dictionary<string, dynamic>> get_ins = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jins);
 
-            tokenModel = ADO.DataADO.GetInstant().InsUpd(
+            tokenModel = ADO.WMSDB.DataADO.GetInstant().InsUpd(
                     get_table,
                     get_ins,
                     get_condition,

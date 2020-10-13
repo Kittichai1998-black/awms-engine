@@ -17,19 +17,19 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             var res = new List<long>();
             reqVO.docIDs.ForEach(docID =>
             {
-                var docItemLists = ADO.DocumentADO.GetInstant().ListItemAndDisto(docID, this.BuVO);
+                var docItemLists = ADO.WMSDB.DocumentADO.GetInstant().ListItemAndDisto(docID, this.BuVO);
                 docItemLists.ForEach(docItem =>
                 {
                     if (docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos.TrueForAll(disto => disto.Status == EntityStatus.DONE))
                     {
-                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                         docItem.EventStatus = DocumentEventStatus.WORKED;
                     }
                 });
 
                 if (docItemLists.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docID, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
                     res.Add(docID);
                 }
             });

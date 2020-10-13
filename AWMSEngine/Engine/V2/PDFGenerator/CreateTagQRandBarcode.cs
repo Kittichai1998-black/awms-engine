@@ -170,7 +170,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
         public Document CreateCustom1(Document document, TReq reqVO)
         {
             //getDoc
-            amt_Document doc = ADO.DocumentADO.GetInstant().Get(reqVO.docID.Value, this.BuVO);
+            amt_Document doc = ADO.WMSDB.DocumentADO.GetInstant().Get(reqVO.docID.Value, this.BuVO);
             if (doc == null)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่พบเอกสารรับเข้า");
 
@@ -182,7 +182,7 @@ namespace AWMSEngine.Engine.V2.PDFGenerator
                            new KeyValuePair<string, object>(OptionConst.OPT_PDF_NO, pdfno)
                        });
 
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
+            ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(reqVO.docID.Value, this.BuVO,
                   new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", new_PDF_NO)
                   });

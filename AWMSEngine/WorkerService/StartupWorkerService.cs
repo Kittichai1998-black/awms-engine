@@ -22,7 +22,7 @@ namespace AWMSEngine.WorkerService
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var workers = ADO.StaticValue.StaticValueManager.GetInstant().WorkerService;
+            var workers = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService;
             foreach (var wk in workers)
             {
                 Task.Run(() =>

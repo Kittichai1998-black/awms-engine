@@ -30,7 +30,7 @@ namespace AWMSEngine.APIService.V2.Business
             TReq reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             reqDoc.docIDs.ForEach(doc =>
             {
-                var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(doc, this.BuVO);
+                var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
                 if (docs != null)
                 {
 
@@ -98,7 +98,7 @@ namespace AWMSEngine.APIService.V2.Business
                 var docCodeLists = new List<string>();
 
                 listDocDiff.ForEach(id => {
-                    var docData = ADO.DataADO.GetInstant().SelectByID<amt_Document>(id, this.BuVO);
+                    var docData = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(id, this.BuVO);
                     docCodeLists.Add(docData.Code);
                 });
                 var error = string.Join('\n', docCodeLists);

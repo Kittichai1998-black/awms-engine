@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using System;
 using System.Collections.Generic;
 using System.Linq;

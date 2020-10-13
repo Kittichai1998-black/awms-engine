@@ -21,7 +21,7 @@ namespace AWMSEngine.APIService.V2.Common
         protected override dynamic ExecuteEngineManual()
         {
             TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            var val = ADO.StaticValue.StaticValueManager.GetInstant();
+            var val = ADO.WMSStaticValue.StaticValueManager.GetInstant();
 
             var fields = val.GetType().GetFields();
 

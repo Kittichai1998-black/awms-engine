@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSEngine.ADO.StaticValue;
+using ADO.WMSStaticValue;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -205,33 +205,33 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 if (Item.packID.HasValue)
                 {
-                    packMst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(Item.packID, this.BuVO);
+                    packMst = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_PackMaster>(Item.packID, this.BuVO);
                     if (packMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + Item.packCode + " / Unit:" + Item.unitType + " ในระบบ");
-                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                    skuMst = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + Item.packCode + " ในระบบ");
                 }
                 else if (!string.IsNullOrWhiteSpace(Item.packCode))
                 {
-                    packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(Item.packCode, Item.unitType, this.BuVO);
+                    packMst = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterByPack(Item.packCode, Item.unitType, this.BuVO);
                     if (packMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
-                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                    skuMst = ADO.WMSDB.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
                 }
                 else if (!string.IsNullOrWhiteSpace(Item.skuCode))
                 {
-                    skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(Item.skuCode, this.BuVO);
+                    skuMst = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(Item.skuCode, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
 
                     if (Item.isUnitTypeForPack)
                     {
-                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
+                        packMst = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
                     }
                     else
                     {
-                        packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID).Code, this.BuVO);
+                        packMst = ADO.WMSDB.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID).Code, this.BuVO);
                     }
 
                 }
@@ -312,7 +312,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     DocItemStos = Item.docItemStos
                 });
             }
-            doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+            doc = ADO.WMSDB.DocumentADO.GetInstant().Create(doc, BuVO);
 
             return doc;
         }
@@ -322,11 +322,11 @@ namespace AWMSEngine.Engine.V2.Business.Document
             List<StorageObjectCriteria> mapStos = new List<StorageObjectCriteria>();
             foreach (var baseSto in reqVO.baseStos)
             {
-                ams_BaseMaster bm = ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseSto.baseCode, this.BuVO);
+                ams_BaseMaster bm = ADO.WMSDB.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseSto.baseCode, this.BuVO);
                 var areaModel = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == baseSto.areaCode);
                 if (bm == null && baseSto.isRegisBaseCode.Value)
                 {
-                    AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                    ADO.WMSDB.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
                     {
                         Code = baseSto.baseCode,
                         Name = baseSto.baseCode,

@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Exception;
-using AWMSEngine.ADO;
+using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.HubService;
 using AWMSModel.Constant.EnumConst;
