@@ -21,6 +21,7 @@ namespace AWMSEngine.APIService.V2.Business
             public string Name;
             public string Description;
             public EntityStatus? Status;
+            public string RolePermissionID;
         }
 
         protected override dynamic ExecuteEngineManual()
