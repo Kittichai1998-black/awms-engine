@@ -1,3 +1,6 @@
+using AMWUtil.PropertyFile;
+using AWCSModel.Constant.StringConst;
+using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +17,18 @@ namespace AWCSEngine
         [STAThread]
         static void Main()
         {
+            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, PropertyConst.APP_FILENAME);
+            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
+
+            AMWUtil.Logger.AMWLoggerManager.InitInstant(
+                appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH],
+                appProperty[PropertyConst.APP_KEY_LOG_FILENAME]);
+
+
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new formSimulation(new VOCriteria()));
         }
     }
 }

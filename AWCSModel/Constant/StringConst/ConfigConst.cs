@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Entity
+namespace AWCSModel.Constant.StringConst
 {
-    public class ers_SAPMovementType : BaseEntitySTD
+    public class ConfigConst
     {
+        
     }
 }

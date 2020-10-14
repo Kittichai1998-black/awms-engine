@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constant\StringConst\" />
-    <Folder Include="Entity\" />
+    <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
   </ItemGroup>
 
 </Project>

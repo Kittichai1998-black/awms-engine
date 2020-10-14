@@ -10,8 +10,4 @@
     <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WCSDB\" />
-  </ItemGroup>
-
 </Project>
