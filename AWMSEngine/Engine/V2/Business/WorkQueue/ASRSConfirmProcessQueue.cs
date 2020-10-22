@@ -214,7 +214,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void WCSSendQueue(List<RootStoProcess> rstos, List<amt_Document> docs)
         {
-            var seq_wq = StaticValue.GetConfigValue(ConfigCommon.SEQ_WQ);
+            var seq_wq = StaticValue.GetConfigValue(ConfigCommon.WQ_SEQ);
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             WCSQueueADO.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
             if (groupQueueWcs == null)
