@@ -22,11 +22,11 @@ namespace AMWUtil.PropertyFile
             this.PropertyFiles = new Dictionary<string, Dictionary<string, string>>();
         }
 
-        public void AddPropertyFile(string key, string path)
+        public void AddPropertyFile(string app, string path)
         {
-            this.AddPropertyFile(new KeyValuePair<string, string>(key, path));
+            this.AddPropertyFile(new KeyValuePair<string, string>(app, path));
         }
-        public void AddPropertyFile(params KeyValuePair<string,string>[] paths)
+        private void AddPropertyFile(params KeyValuePair<string,string>[] paths)
         {
             foreach(var p in paths)
             {
@@ -50,10 +50,17 @@ namespace AMWUtil.PropertyFile
             }
         }
 
-        public Dictionary<string, string> GetPropertyDictionary(string key)
+        public Dictionary<string, string> Get(string app)
         {
-            if (this.PropertyFiles.ContainsKey(key))
-                return this.PropertyFiles[key];
+            if (this.PropertyFiles.ContainsKey(app))
+                return this.PropertyFiles[app];
+            return null;
+        }
+        public string Get(string app,string key)
+        {
+            var a = this.Get(app);
+            if (a.ContainsKey(key))
+                return a[key];
             return null;
         }
     }

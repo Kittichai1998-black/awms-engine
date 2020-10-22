@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.General
         {
             if (ADO.WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
             {
-                var appProp = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().GetPropertyDictionary("app");
+                var appProp = AMWUtil.PropertyFile.PropertyFileManager.GetInstant().Get("app");
 
                 var userdn = appProp["ldap.binddn"];
                 userdn = userdn.Replace("{username}", reqVO.Username);

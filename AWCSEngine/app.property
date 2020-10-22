@@ -3,3 +3,11 @@ database.mssql.connection.wcs = Server=awms.automotionworks.com,3002;Uid=sa;PASS
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {LogName}.{Date}.log
+
+###################################
+
+form.simulation.block.w=100
+form.simulation.block.h=50
+form.simulation.block.border=3
+form.simulation.arrow.size=10
+form.simulation.arrow.margin=10

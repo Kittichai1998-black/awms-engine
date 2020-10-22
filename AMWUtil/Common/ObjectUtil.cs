@@ -142,6 +142,12 @@ namespace AMWUtil.Common
             return s.Select(x => x.GetTry<T>()).ToArray();
         }
 
+        public static string RegexReplate(this string input, string pattern, string replacement)
+        {
+            return Regex.Replace(input, pattern, replacement);
+        }
+
+
         public static TDes JsonCast<TDes>(this object data)
         {
             return data.Json().Json<TDes>();

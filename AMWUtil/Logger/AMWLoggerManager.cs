@@ -55,9 +55,9 @@ namespace AMWUtil.Logger
         {
             return GetLogger(Guid.NewGuid().ToString(), serviceName);
         }
-        public static AMWLogger GetLogger(string logName, dynamic serviceName)
+        public static AMWLogger GetLogger(string logName, string serviceName)
         {
-            return GetLogger(logName, serviceName.ToString());
+            return GetLogger(logName, serviceName);
         }
         public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
         {
@@ -88,20 +88,10 @@ namespace AMWUtil.Logger
                 if (!Directory.Exists(logManager.LogUri))
                     Directory.CreateDirectory(logManager.LogUri);
 
-
+                AMWLogger.ClearLockFiles();
                 string fileName = logManager.LogUri + logManager.LogFile;
-                string key = DateTime.Now.Day + "," + fileName;
-                if (logManager.AMWLoggers.Any(x => x.Key == key))
-                {
-                    return logManager.AMWLoggers.First(x => x.Key == key).Value;
-                }
-                else
-                {
-                    AMWLogger logger = new AMWLogger(fileName, serviceName, isLogging);
-                    logManager.AMWLoggers.Add(new KeyValuePair<string, AMWLogger>(key, logger));
-                    logManager.AMWLoggers.RemoveAll(x => !x.Key.StartsWith(DateTime.Now.Day + ","));
-                    return logger;
-                }
+                AMWLogger logger = new AMWLogger(fileName, serviceName, isLogging);
+                return logger;
 
             }
         

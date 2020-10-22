@@ -29,5 +29,13 @@ namespace AWMSModel.Constant.StringConst
         public const string APP_KEY_MSSQL_CONSTR_WMS = "database.mssql.connection.wms";
         public const string APP_KEY_MSSQL_CONSTR_WCS = "database.mssql.connection.wcs";
 
+
+        public const string APP_KEY_form_simulation_block_w = "form.simulation.block.w";
+        public const string APP_KEY_form_simulation_block_h = "form.simulation.block.h";
+        public const string APP_KEY_form_simulation_block_border = "form.simulation.block.border";
+        public const string APP_KEY_form_simulation_arrow_size = "form.simulation.arrow.size";
+        public const string APP_KEY_form_simulation_arrow_margin = "form.simulation.arrow.margin";
+
+        
     }
 }

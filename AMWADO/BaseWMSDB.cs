@@ -27,9 +27,9 @@ namespace ADO
         }
         private string _ConnectionStringDefault;
         protected BaseWMSDB() 
-            : base(PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY) == null ?
+            : base(PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY) == null ?
                   string.Empty:
-                  PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_MSSQL_CONSTR_WMS])
+                  PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_MSSQL_CONSTR_WMS])
         {
             _ConnectionStringDefault = this.ConnectionString;
         }

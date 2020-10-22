@@ -38,7 +38,7 @@ namespace WCSSimAPI
         {
 
             PropertyFileManager.GetInstant().AddPropertyFile("app", env.ContentRootPath + "/app.conf");
-            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary("app");
+            var appProperty = PropertyFileManager.GetInstant().Get("app");
 
             ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
             ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");

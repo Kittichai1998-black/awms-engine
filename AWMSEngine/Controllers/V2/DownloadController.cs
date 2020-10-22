@@ -28,7 +28,7 @@ namespace AWMSEngine.Controllers.V2
         [HttpGet("get_log")]
         public async Task<IActionResult> LogDownload(string date,string logfile)
         {
-            string path = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_LOG_ROOTPATH];
+            string path = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_LOG_ROOTPATH];
             path = path
                 .Replace("{MachineName}", Environment.MachineName)
                 .Replace("{Date}", date)
@@ -54,7 +54,7 @@ namespace AWMSEngine.Controllers.V2
         {
             try
             {
-                string path = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_LOG_ROOTPATH];
+                string path = PropertyFileManager.GetInstant().Get(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_LOG_ROOTPATH];
                 path = path
                     .Replace("{MachineName}", Environment.MachineName)
                     .Replace("{Date}", date)

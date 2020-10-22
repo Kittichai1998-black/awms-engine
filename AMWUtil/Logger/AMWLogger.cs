@@ -2,6 +2,7 @@
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,30 +22,47 @@ namespace AMWUtil.Logger
         public bool IsLogging { get; set; }
         public string SubServiceName { get; set; }
         private string _ServiceName { get; set; }
+        private string _FileFullName { get; set; }
         private string _FileName { get; set; }
+        private static List<KeyValuePair<string, object>> _LockFiles;
+        private static int _LockDay;
 
+        public static bool ClearLockFiles()
+        {
+            if (AMWLogger._LockDay != DateTime.Now.Day)
+            {
+                AMWLogger._LockDay = DateTime.Now.Day;
+                string lockDay = AMWLogger._LockDay.ToString() + ",";
+                AMWLogger._LockFiles.RemoveAll(x => x.Key.StartsWith(lockDay));
+                return true;
+            }
+            return false;
+        }
 
 
         public AMWLogger(string fileName, string serviceName, bool isLogging = true)
         {
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
             this._ServiceName = serviceName;
-            this._FileName = fileName;
+            this._FileFullName = fileName;
             this.IsLogging = isLogging;
-
+            this._FileName = fileName.Split(new char[] { '\\', '/' }).Last();
         }
 
 
 
-        public static object lockLogWrite = new object();
         public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
             if (!this.IsLogging)
                 return;
+            string _key = DateTime.Now.Day + "," + this._FileName;
+            if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
+                AMWLogger._LockFiles.Add(new KeyValuePair<string, object>(_key, new object()));
 
-            lock (this)
+            object _lock = AMWLogger._LockFiles.First(x => x.Key == _key);
+            lock (_lock)
             {
-                using (var fw = new StreamWriter(this._FileName, true))
+                using (var fw = new StreamWriter(this._FileFullName, true))
                 {
                     message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) > {6}",
                                             DateTime.Now,
