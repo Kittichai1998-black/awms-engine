@@ -115,13 +115,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 if (rstos.Any(x => x.docItems.Any(y => y.docID == doc.ID)))
                 {
                     ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                    if(doc.ParentDocument_ID != null)
+                    if (doc.ParentDocument_ID != null)
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                 }
                 else
                 {
                     ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
-                    if(doc.ParentDocument_ID != null)
+                    if (doc.ParentDocument_ID != null)
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
                 }
             });
@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         stoNextEventStatus,
                         this.BuVO);
                 });
-                
+
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
@@ -214,7 +214,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void WCSSendQueue(List<RootStoProcess> rstos, List<amt_Document> docs)
         {
-
+            var seq_wq = StaticValue.GetConfigValue(ConfigCommon.WQ_SEQ);
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             WCSQueueADO.TReq groupQueueWcs = null;// Common.FeatureExecute.ExectProject<List<RootStoProcess>, WCSQueueADO.TReq>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_SendQueueWCS, this.Logger, this.BuVO, rstos);
             if (groupQueueWcs == null)
@@ -223,23 +223,30 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
                 }, this.BuVO);
 
-            //WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
-            //priority queue by doc and dicitem @Anon	
-            //find for send wcs
-            var groupRstos = rstos.FindAll(rsto =>
-            {
-                return StaticValue.GetAreaMasterGroupType(rsto.souAreaID) == AreaMasterGroupType.STORAGE_AUTO;
-            }).GroupBy(x =>
-            {
-                var docID = x.docItems.Select(y => y.docID).First();
-                return docID;
-            }).Select(x => new { docID = x.Key, rstos = x.ToList() }).ToList();
+                //WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
+                //priority queue by doc and dicitem @Anon	
+                //find for send wcs
+
+                var groupRstos = rstos.FindAll(rsto =>
+                {
+                    return StaticValue.GetAreaMasterGroupType(rsto.souAreaID) == AreaMasterGroupType.STORAGE_AUTO;
+                }).GroupBy(x =>
+                {
+                    var docID = x.docItems.Select(y => y.docID).First();
+                    return docID;
+                }).Select(x => new { docID = x.Key, rstos = x.ToList() }).ToList();
 
                 groupRstos.ForEach(rstoByDoc =>
                 {
+                    long groupSeq;
                     var doc = docs.Find(x => x.ID == rstoByDoc.docID);
                     var docItemGroup = rstoByDoc.rstos.GroupBy(x => x.docItems.Select(y => y.docItemID).First()).Select(x => new { docItemID = x.Key, rstos = x.ToList() }).ToList();
-                    var groupSeq = ADO.WMSDB.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
+
+                    if (seq_wq == "true")
+                        groupSeq = ADO.WMSDB.DataADO.GetInstant().NextNum("GroupSeqProcess", false, this.BuVO);
+                    else
+                        groupSeq = 1;
+
                     int seq = 1;
                     docItemGroup.ForEach(rstoByDocID =>
                     {
@@ -273,7 +280,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                             });
                         });
-                        seq++;
+                        if (seq_wq == "true")
+                            seq++;                        
                     });
                 });
             }
@@ -282,7 +290,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 wcQueue = groupQueueWcs;
             }
             //priority queue by doc and dicitem @Anon	
-            
+
 
             //rstos.FindAll(rsto =>	
             //{	
