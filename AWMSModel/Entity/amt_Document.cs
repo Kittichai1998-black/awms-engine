@@ -40,6 +40,7 @@ namespace AWMSModel.Entity
 
         public long? Wave_ID;
         public long? For_Customer_ID;
+        public int? ProductOwner_ID;
 
 
         public DocumentEventStatus EventStatus;

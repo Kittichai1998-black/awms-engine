@@ -49,5 +49,6 @@ namespace AWMSModel.Criteria.SP.Response
         public int? skuTypeID;
         public DateTime? shelfLifeDate;
         public DateTime? incubationDate;
+        public int? productOwner;
     }
 }

@@ -35,9 +35,9 @@ namespace MyTest2
         [Fact]
         public void TestGUID()
         {
-            AWMSEngine.ADO.WMSDB.DataADO data = new AWMSEngine.ADO.WMSDB.DataADO();
-            AWMSEngine.ADO.WMSDB.DataADO data2 = new AWMSEngine.ADO.WMSDB.DataADO();
-            AWMSEngine.ADO.WMSDB.DataADO data3 = new AWMSEngine.ADO.WMSDB.DataADO();
+            //AWMSEngine.ADO.WMSDB.DataADO data = new AWMSEngine.ADO.WMSDB.DataADO();
+            //AWMSEngine.ADO.WMSDB.DataADO data2 = new AWMSEngine.ADO.WMSDB.DataADO();
+            //AWMSEngine.ADO.WMSDB.DataADO data3 = new AWMSEngine.ADO.WMSDB.DataADO();
 
         }
        
@@ -73,6 +73,12 @@ namespace MyTest2
             }
             sysout.WriteLine(familyNames.ToString());
 
-        } 
+        }
+
+        [Fact]
+        public void TestFTP()
+        {
+            AMWUtil.DataAccess.FTPFileAccess.MoveFileFromFTP("ftp://191.20.80.120:3007/", "Archive/", "../Archive2/", "sap_pallet_20190712-190719-001.xml", "administrator", "amwteam", null);
+        }
     }
 }

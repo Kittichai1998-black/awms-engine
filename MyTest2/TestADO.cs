@@ -23,13 +23,13 @@ namespace MyTest2
         [Fact]
         public void TestGetSTOCode()
         {
-            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, @"D:\Application\awms-engine\AWMSEngine\app.property");
-            VOCriteria buVO = new VOCriteria();
-            AMWLoggerManager.InitInstant("D:/logs/test/", "{Date}.log");
-            AMWLogger logger = AMWLoggerManager.GetLogger("test");
-            var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
+            //PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, @"D:\Application\awms-engine\AWMSEngine\app.property");
+            //VOCriteria buVO = new VOCriteria();
+            //AMWLoggerManager.InitInstant("D:/logs/test/", "{Date}.log");
+            //AMWLogger logger = AMWLoggerManager.GetLogger("test");
+            //var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
 
-            new AWMSEngine.Engine.V2.Validation.ValidateObjectSizeLimit().Execute(logger, buVO, sto);
+            //new AWMSEngine.Engine.V2.Validation.ValidateObjectSizeLimit().Execute(logger, buVO, sto);
 
 
         }

@@ -273,6 +273,7 @@ namespace ADO.WMSDB
             param.Add("IsStock", sto.IsStock); 
             param.Add("IsHold", sto.IsHold);
             param.Add("auditStatus", sto.AuditStatus);
+            param.Add("productOwner", sto.productOwner); 
 
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
