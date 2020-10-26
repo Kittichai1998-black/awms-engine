@@ -51,7 +51,7 @@ namespace AMWUtil.Logger
 
 
 
-        public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogWrite(string logLV, string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             if (!this.IsLogging)
                 return;
@@ -81,35 +81,35 @@ namespace AMWUtil.Logger
         }
 
 
-        public void LogAll(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogAll(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
-            this.LogWrite("ALL" , message, sourceFile, lineNumber);
+            this.LogWrite("ALL", message, sourceFile, lineNumber);
         }
-        public void LogInfo(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogInfo(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
-            this.LogWrite("INF" ,message, sourceFile, lineNumber);
+            this.LogWrite("INF", message, sourceFile, lineNumber);
         }
-        public void LogDebug(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogDebug(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("DEB", message, sourceFile, lineNumber);
         }
-        public void LogError(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogError(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("ERR", message, sourceFile, lineNumber);
         }
-        public void LogWarning(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogWarning(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("WAR", message, sourceFile, lineNumber);
         }
-        public void LogFatal(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogFatal(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("FAT", message, sourceFile, lineNumber);
         }
-        public void LogTrace(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogTrace(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("TRA", message, sourceFile, lineNumber);
         }
-        public void LogOff(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
+        public void LogOff(string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             this.LogWrite("OFF", message, sourceFile, lineNumber);
         }
