@@ -61,14 +61,14 @@ namespace AMWUtil.DataAccess
 
         }
 
-        public static List<string> ReadAllFileFromFTP(string path, string username, string password, string extension, AMWLogger logger)
+        public static List<KeyValuePair<string, string>> ReadAllFileFromFTP(string path, string username, string password, string extension, AMWLogger logger)
         {
             var listFile = FTPFileAccess.GetListFileFromFTP(path , username, password, extension, logger);
-            var res = new List<string>();
+            var res = new List<KeyValuePair<string, string>>();
             foreach (var filename in listFile)
             {
                 var file = FTPFileAccess.ReadFileFromFTP(path + filename, username, password, logger);
-                res.Add(file);
+                res.Add(new KeyValuePair<string, string>(filename, file));
             }
             return res;
         }
