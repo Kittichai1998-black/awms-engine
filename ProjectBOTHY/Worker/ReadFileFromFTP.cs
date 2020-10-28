@@ -1,4 +1,6 @@
 ﻿using ADO.WMSStaticValue;
+using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSEngine.HubService;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -8,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjectBOTHY.Model;
 
 namespace ProjectBOTHY.Worker
 {
@@ -17,36 +20,11 @@ namespace ProjectBOTHY.Worker
         {
         }
 
-        public class TextFileHeader
-        {
-            public string prefix;
-            public string command;
-            public string commandNo;
-            public int? rowCount;
-            public DateTime? timestamp;
-        }
-        public class ItemDetail
-        {
-            public string skuType;
-            public string baseType;
-            public string baseCode;
-            public decimal? price;
-            public string category;
-            public string type;
-            public string owner;
-            public string cashcenter;
-            public DateTime? receiveDate;
-            public decimal? quantity;
-            public string stationIn;
-            public string stationOut;
-        }
-
         public class TextFileDetail
         {
-            public TextFileHeader header;
-            public List<ItemDetail> details;
-            public TextFileHeader footer;
-
+            public FileFormat.TextFileHeader header;
+            public List<FileFormat.ItemDetail> details;
+            public FileFormat.TextFileHeader footer;
         }
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
@@ -58,33 +36,34 @@ namespace ProjectBOTHY.Worker
             _text.ForEach(x =>
             {
                 var txtDetail = x.Value.Split("\r\n");
-                if(txtDetail.Count() > 0)
+                if (txtDetail.Count() > 0)
                 {
                     var header = txtDetail.First().Split("|");
                     var footer = txtDetail.Last().Split("|");
                     var textDetails = new TextFileDetail()
                     {
-                        header = new TextFileHeader()
+                        header = new FileFormat.TextFileHeader()
                         {
                             prefix = header[0],
                             command = header[1],
                             commandNo = header[2],
                         },
-                        footer = new TextFileHeader()
+                        footer = new FileFormat.TextFileHeader()
                         {
                             prefix = footer[0],
                             command = footer[1],
                             commandNo = footer[2],
                             rowCount = string.IsNullOrWhiteSpace(footer[3]) ? (int?)null : Convert.ToInt32(footer[3]),
-                            timestamp = string.IsNullOrWhiteSpace(footer[4]) ? (DateTime?)null : Convert.ToDateTime(footer[4]),
+                            timestamp = string.IsNullOrWhiteSpace(footer[4]) ? null : footer[4],
                         }
                     };
-                    if (header[1] == "STOREIN")
+                    if (textDetails.header.command == "STOREIN")
                     {
                         var docItemDetails = txtDetail.Skip(1).SkipLast(1).ToList();
-                        var setDetail = docItemDetails.Select(x => {
+                        var setDetail = docItemDetails.Select(x =>
+                        {
                             var detail = x.Split("|");
-                            return new ItemDetail()
+                            return new FileFormat.ItemDetail()
                             {
                                 skuType = detail[0],
                                 baseType = detail[1],
@@ -101,15 +80,27 @@ namespace ProjectBOTHY.Worker
                             };
                         }).ToList();
                         textDetails.details = setDetail;
-                        this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, "", buVO);
+                        this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
                     }
-                    else if (txtDetail[1] == "CANCELSTOREIN")
+                    else if (textDetails.header.command.StartsWith("CANCEL"))
                     {
+                        var docs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria()
+                        {
+                            field = "RefID",
+                            value = textDetails.header.commandNo,
+                            operatorType = SQLOperatorType.EQUALS
+                        }, buVO);
 
-                    }
-                    else if (txtDetail[1] == "CANCELSTOREOUT")
-                    {
-
+                        if (docs.Any(x => x.EventStatus != DocumentEventStatus.NEW))
+                        {
+                            throw new AMWException(buVO.Logger, AMWExceptionCode.V1001);
+                        }
+                        else
+                        {
+                            docs.Select(x => x.ID).ToList().ForEach(x =>
+                                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, buVO)
+                            );
+                        }
                     }
                 }
             });
@@ -117,58 +108,84 @@ namespace ProjectBOTHY.Worker
 
         private amt_Document CreateDocFromFTP(TextFileDetail docItemDetail, DocumentTypeID docType, string options, VOCriteria buVO)
         {
-            
+            ams_AreaMaster _desArea = new ams_AreaMaster();
+            ams_AreaMaster _souArea = new ams_AreaMaster();
+
+            if (docItemDetail.header.command == "STOREIN")
+            {
+                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
+            }
+            else if (docItemDetail.header.command == "STOREOUT")
+            {
+                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+            }
+            else if (docItemDetail.header.command == "TRANSFER")
+            {
+                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+                _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
+            }
+
             var parentDoc = new amt_Document()
             {
-                 ActionTime = DateTime.Now,
-                 DocumentDate = DateTime.Now,
-                 DocumentProcessType_ID = DocumentProcessTypeID.FG_TRANSFER_WM,
-                 DocumentItems = null,
-                 DocumentType_ID = docType,
-                 ParentDocument = null,
-                 DocumetnChilds = null,
-                 EventStatus = DocumentEventStatus.NEW,
-                 ProductOwner_ID = docItemDetail.details.First().owner == "BOT" ? 1 : 2,
-                 Status = EntityStatus.ACTIVE,
-                 Options = options
+                ActionTime = DateTime.Now,
+                DocumentDate = DateTime.Now,
+                DocumentProcessType_ID = DocumentProcessTypeID.FG_TRANSFER_WM,
+                DocumentItems = null,
+                DocumentType_ID = docType,
+                ParentDocument = null,
+                DocumetnChilds = null,
+                EventStatus = DocumentEventStatus.NEW,
+                ProductOwner_ID = docItemDetail.details.First().owner == "BOT" ? 1 : 2,
+                Status = EntityStatus.ACTIVE,
+                Options = options,
+                Des_Warehouse_ID = _desArea.Warehouse_ID,
+                Des_AreaMaster_ID = _desArea.ID,
+                Sou_AreaMaster_ID = _souArea.ID,
+                RefID = docItemDetail.header.commandNo
             };
 
             var _skuType = StaticValueManager.GetInstant().SKUMasterTypes.Find(y => y.Code == docItemDetail.details.First().skuType);
             var _baseType = StaticValueManager.GetInstant().BaseMasterTypes.Find(y => y.Code == docItemDetail.details.First().baseType);
 
-
-            var docItem = docItemDetail.details.Select(x => {
-                var pack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria()
+            var docItem = docItemDetail.details.Select(x =>
+            {
+                var sku = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
                 {
-                    field = "Code",
-                    value = x.price,
-                    operatorType = SQLOperatorType.EQUALS
+                    new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Price", x.price, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Info1", x.category, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Info2", x.type, SQLOperatorType.EQUALS)
                 }, buVO).FirstOrDefault();
 
                 return new amt_DocumentItem()
                 {
-                    Code = pack.Code,
+                    Code = sku.Code,
                     BaseCode = x.baseCode,
                     Quantity = x.quantity,
-                    UnitType_ID = pack.UnitType_ID,
+                    UnitType_ID = sku.UnitType_ID,
                     BaseQuantity = x.quantity,
-                    BaseUnitType_ID = pack.UnitType_ID,
-                    Batch = x.category,
-                    OrderNo = x.type,
+                    BaseUnitType_ID = sku.UnitType_ID,
                     Ref1 = x.owner,
-                    Ref2 = x.cashcenter
+                    Options = ObjectUtil.ObjectToQryStr(x)
                 };
-            });
+            }).ToList();
 
+            var parentRes = ADO.WMSDB.DocumentADO.GetInstant().Create(parentDoc, buVO);
 
+            var childDoc = parentRes.Clone();
+            childDoc.DocumentType_ID = docType == DocumentTypeID.GOODS_RECEIVE ? DocumentTypeID.PUTAWAY : DocumentTypeID.PICKING;
+            childDoc.EventStatus = DocumentEventStatus.NEW;
+            childDoc.ParentDocument_ID = parentRes.ID;
+            childDoc.DocumentItems = parentRes.DocumentItems.Clone().Select(x =>
+            {
+                x.ParentDocumentItem_ID = x.ID;
+                x.ID = null;
+                return x;
+            }).ToList();
 
-
-            return new amt_Document();
-        }
-
-        private void RejectDocFromFTP()
-        {
-
+            var childRes = ADO.WMSDB.DocumentADO.GetInstant().Create(childDoc, buVO);
+            parentRes.DocumetnChilds = new List<amt_Document>() { childRes };
+            return parentRes;
         }
     }
 }

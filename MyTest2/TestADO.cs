@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -105,7 +106,7 @@ namespace MyTest2
                 pallet.bcode = bcode;
                 pallet.pcode = itemData.code;
 
-                if(mode == 0)
+                if (mode == 0)
                 {
                     if (itemData.vol > 0)
                     {
@@ -125,11 +126,40 @@ namespace MyTest2
                     palletList.Add(pallet);
                     findPallet(item.FindAll(x => x.vol != 0), defaultVol, newBcode, palletList, defaultVol, mode);
                 }
-                
+
             }
 
             return palletList;
 
+        }
+
+        [Fact]
+        public void TestGenQrystr()
+        {
+            var obj = new { x1 = "x121", x2 = "x22", x3 = "x33" };
+            var props = obj.GetType().GetProperties();
+            var lst = new List<string>();
+            foreach(var xx in props)
+            {
+                var name = xx.Name;
+                var value = xx.GetValue(obj);
+                lst.Add($"{name}={value}");
+            }
+
+            var jstr = string.Join('&', lst);
+        }
+
+        [Fact]
+        public void GetStringValueFromObject()
+        {
+            var obj = new { x1 = "x121", x2 = "", x3 = (decimal?)null };
+            var props = obj.GetType().GetProperties();
+            List<string> str = new List<string>();
+            foreach (var prp in props)
+            {
+                str.Add($"{prp.GetValue(obj)}");
+            }
+            var jstr = string.Join('|', str);
         }
     }
 }
