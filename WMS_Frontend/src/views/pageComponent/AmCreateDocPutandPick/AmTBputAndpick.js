@@ -113,8 +113,9 @@ const AmTBputAndpick = (props) => {
     const onChangeEditor = (value, key) => {
 
         if (value !== 0 && value > 0) {
-            if (doc.editdata[0]['Quantity'] !== undefined) {
-                if (value > doc.editdata[0]['Quantity']) {
+            if (doc.editdata[0]['QtyMax'] !== undefined) {
+                console.log(doc.editdata)
+                if (value > doc.editdata[0]['QtyMax']) {
                     dia.setdailogErr(true)
                     dia.setdailogMsg("Qty is max")
                 } else {
