@@ -29,7 +29,7 @@ namespace ProjectBOTHY.Worker
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            var path = StaticValueManager.GetInstant().GetConfigValue("FTP_Path");
+            var path = StaticValueManager.GetInstant().GetConfigValue("FTP_Root_Path");
             var username = StaticValueManager.GetInstant().GetConfigValue("FTP_Username");
             var password = StaticValueManager.GetInstant().GetConfigValue("FTP_Password");
             var _text = AMWUtil.DataAccess.FTPFileAccess.ReadAllFileFromFTP(path, username, password, "txt", buVO.Logger);
@@ -68,7 +68,7 @@ namespace ProjectBOTHY.Worker
                                 skuType = detail[0],
                                 baseType = detail[1],
                                 baseCode = detail[2],
-                                price = string.IsNullOrWhiteSpace(detail[3]) ? (decimal?)null : Convert.ToDecimal(detail[3]),
+                                price = string.IsNullOrWhiteSpace(detail[3]) ? null : detail[3],
                                 category = detail[4],
                                 type = detail[5],
                                 owner = detail[6],
@@ -147,25 +147,64 @@ namespace ProjectBOTHY.Worker
             var _skuType = StaticValueManager.GetInstant().SKUMasterTypes.Find(y => y.Code == docItemDetail.details.First().skuType);
             var _baseType = StaticValueManager.GetInstant().BaseMasterTypes.Find(y => y.Code == docItemDetail.details.First().baseType);
 
+            var skuList = new List<ams_SKUMaster>();
             var docItem = docItemDetail.details.Select(x =>
             {
-                var sku = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                var skuType = StaticValueManager.GetInstant().SKUMasterTypes.Find(ty => ty.Code == x.skuType);
+                var curSKU = new ams_SKUMaster();
+
+                if (skuType.Code == "ASSET" || skuType.Code == "EMPTY")
                 {
-                    new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Price", x.price, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Info1", x.category, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Info2", x.type, SQLOperatorType.EQUALS)
-                }, buVO).FirstOrDefault();
+                    curSKU = skuList.Find(sku => sku.SKUMasterType_ID == skuType.ID);
+                    if(curSKU == null)
+                    {
+                        curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("SKUMasterType_ID", skuType.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                        }, buVO).FirstOrDefault();
+                        skuList.Add(curSKU);
+                    }
+                }
+                else if (skuType.Code == "BANKNOTE")
+                {
+                    curSKU = skuList.Find(sku => sku.Code == x.price && sku.Info1 == x.category && sku.Info2 == x.type);
+                    if (curSKU == null)
+                    {
+                        curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("SKUMasterType_ID", skuType.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                        }, buVO).FirstOrDefault();
+
+                        if(curSKU == null)
+                        {
+                            curSKU = new ams_SKUMaster()
+                            {
+                                Code = x.price,
+                                UnitType_ID = 139,
+                                ID = null,
+                                Info1 = x.category,
+                                Info2 = x.type,
+                                SKUMasterType_ID = curSKU.ID.Value,
+                                Status = EntityStatus.ACTIVE,
+                                Price = Convert.ToDecimal(x.price)
+                            };
+                            curSKU.ID = ADO.WMSDB.DataADO.GetInstant().Insert<ams_SKUMaster>(buVO, curSKU);
+                        }
+                        skuList.Add(curSKU);
+                    }
+                }
 
                 return new amt_DocumentItem()
                 {
-                    Code = sku.Code,
+                    Code = curSKU.Code,
                     BaseCode = x.baseCode,
                     Quantity = x.quantity,
-                    UnitType_ID = sku.UnitType_ID,
+                    UnitType_ID = curSKU.UnitType_ID,
                     BaseQuantity = x.quantity,
-                    BaseUnitType_ID = sku.UnitType_ID,
-                    Ref1 = x.owner,
+                    BaseUnitType_ID = curSKU.UnitType_ID,
+                    Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
                     Options = ObjectUtil.ObjectToQryStr(x)
                 };
             }).ToList();
@@ -187,8 +226,6 @@ namespace ProjectBOTHY.Worker
             var childRes = ADO.WMSDB.DocumentADO.GetInstant().Create(childDoc, buVO);
             parentRes.DocumetnChilds = new List<amt_Document>() { childRes };
 
-
-
             foreach (var Item in childDoc.DocumentItems)
             {
                 var baseItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(new SQLConditionCriteria[]
@@ -199,7 +236,6 @@ namespace ProjectBOTHY.Worker
                 var unitType = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseItem.UnitType_ID).Code;
                 if (baseItem != null)
                 {
-
                     var stoBase = new StorageObjectCriteria()
                     {
                         code = baseItem.Code,
@@ -270,23 +306,12 @@ namespace ProjectBOTHY.Worker
                         Quantity= Item.Quantity.Value,
                         BaseQuantity = Item.Quantity.Value,
                         UnitType_ID = Item.UnitType_ID.Value,
-                        BaseUnitType_ID = Item.UnitType_ID.Value,
-
-
+                        BaseUnitType_ID = Item.UnitType_ID.Value
                     };
 
                     var distoBase = ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
 
                 }
-                else
-                {
-
-
-                }
-
-
-
-
             }
 
             return parentRes;

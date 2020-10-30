@@ -161,5 +161,19 @@ namespace MyTest2
             }
             var jstr = string.Join('|', str);
         }
+
+        [Fact]
+        public void GetStringValueFromObject2()
+        {
+            StringBuilder _str = new StringBuilder();
+            _str.Append("A|B|C|D|E1");
+            _str.Append($"{Environment.NewLine}A|B|C|D|E2");
+            _str.Append("A|B|C|D|E3");
+            _str.Append("A|B|C|D|E4");
+            _str.Append("A|B|C|D|E5");
+
+            Console.WriteLine(_str);
+        }
     }
+
 }

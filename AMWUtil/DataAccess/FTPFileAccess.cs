@@ -150,5 +150,30 @@ namespace AMWUtil.DataAccess
             }
         }
 
+        public static void UploadTextFileToFTP(string text, string ftpPath, string username, string password, AMWLogger logger)
+        {
+            try
+            {
+                FtpWebRequest ftpAccess = (FtpWebRequest)FtpWebRequest.Create(ftpPath);
+                ftpAccess.Method = WebRequestMethods.Ftp.UploadFile;
+
+                ftpAccess.Credentials = new NetworkCredential(username, password);
+                ftpAccess.ContentLength = text.Length;
+
+                using (Stream stream = ftpAccess.GetRequestStream())
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(text);
+                    stream.Write(bytes, 0, text.Length);
+                    stream.Close();
+                }
+                var response = ((FtpWebResponse)ftpAccess.GetResponse());
+                response.Close();
+                response.Dispose();
+            }
+            catch (WebException e)
+            {
+                throw new AMWException(logger, AMWExceptionCode.S0001, e.Message);
+            }
+        }
     }
 }
