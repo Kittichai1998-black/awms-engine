@@ -29,6 +29,8 @@ namespace AMWUtil.Logger
 
         public static bool ClearLockFiles()
         {
+            if (AMWLogger._LockFiles == null)
+                AMWLogger._LockFiles = new List<KeyValuePair<string, object>>();
             if (AMWLogger._LockDay != DateTime.Now.Day)
             {
                 AMWLogger._LockDay = DateTime.Now.Day;
@@ -50,8 +52,7 @@ namespace AMWUtil.Logger
         }
 
 
-
-        public void LogWrite(string logLV, string message, [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
+        public void LogWrite(string logLV, string message, string sourceFile, int lineNumber)
         {
             if (!this.IsLogging)
                 return;
@@ -59,7 +60,7 @@ namespace AMWUtil.Logger
             if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
                 AMWLogger._LockFiles.Add(new KeyValuePair<string, object>(_key, new object()));
 
-            object _lock = AMWLogger._LockFiles.First(x => x.Key == _key);
+            object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
             {
                 using (var fw = new StreamWriter(this._FileFullName, true))
