@@ -19,15 +19,15 @@ namespace ProjectBOTHY.Engine.FileGenerate
             var dailyStock = ADO.WMSDB.DataADO.GetInstant().QuerySP<SPOutSTOwithSKUDetail>("RP_STO_WITH_SKU_DETAIL", new Dapper.DynamicParameters(), BuVO).OrderBy(x=> x.baseCode);
             var fileName = $"REPORT_{DateTime.Now.ToString("yyyyMMddhhMMss")}.txt";
             
-            var path = StaticValue.GetConfigValue("FTP_Rpt_Path") + fileName;
+            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Rpt_Path") + fileName;
             var details = dailyStock.Select(x => ResponseDocument.GetStringValueFromObject(x, 0)).ToList();
             CreateFileText(details, path);
             return "";
         }
         private void CreateFileText(List<string> obj, string path)
         {
-            var username = StaticValueManager.GetInstant().GetConfigValue("FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("FTP_Password");
+            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTPใFTP_Username");
+            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTPใFTP_Password");
 
             StringBuilder _str = new StringBuilder();
             _str.Append($"START|REPORT|{DateTime.Now.ToString("yyyyMMddhhMMss")}");

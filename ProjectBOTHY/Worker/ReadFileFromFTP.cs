@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ProjectBOTHY.Model;
+using System.Globalization;
 
 namespace ProjectBOTHY.Worker
 {
@@ -29,13 +30,14 @@ namespace ProjectBOTHY.Worker
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            var path = StaticValueManager.GetInstant().GetConfigValue("FTP_Root_Path");
-            var username = StaticValueManager.GetInstant().GetConfigValue("FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("FTP_Password");
+            var path = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Root_Path");
+            var pathSuccess = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Root_Path");
+            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
+            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
             var _text = AMWUtil.DataAccess.FTPFileAccess.ReadAllFileFromFTP(path, username, password, "txt", buVO.Logger);
             _text.ForEach(x =>
             {
-                var txtDetail = x.Value.Split("\r\n");
+                var txtDetail = x.Value.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
                 if (txtDetail.Count() > 0)
                 {
                     var header = txtDetail.First().Split("|");
@@ -73,14 +75,22 @@ namespace ProjectBOTHY.Worker
                                 type = detail[5],
                                 owner = detail[6],
                                 cashcenter = detail[7],
-                                receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? (DateTime?)null : Convert.ToDateTime(detail[8]),
+                                receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? null : detail[8],
                                 quantity = string.IsNullOrWhiteSpace(detail[9]) ? (decimal?)null : Convert.ToDecimal(detail[9]),
                                 stationIn = detail[10],
                                 stationOut = detail[11],
                             };
                         }).ToList();
                         textDetails.details = setDetail;
-                        this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
+                        var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
+
+                        var _baseType = StaticValueManager.GetInstant().BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
+                        var stos = CreateSto(resDoc, _baseType, buVO);
+
+                        if(stos != null)
+                        {
+                        }
+
                     }
                     else if (textDetails.header.command.StartsWith("CANCEL"))
                     {
@@ -130,7 +140,6 @@ namespace ProjectBOTHY.Worker
                 ActionTime = DateTime.Now,
                 DocumentDate = DateTime.Now,
                 DocumentProcessType_ID = DocumentProcessTypeID.FG_TRANSFER_WM,
-                DocumentItems = null,
                 DocumentType_ID = docType,
                 ParentDocument = null,
                 DocumetnChilds = null,
@@ -144,71 +153,113 @@ namespace ProjectBOTHY.Worker
                 RefID = docItemDetail.header.commandNo
             };
 
-            var _skuType = StaticValueManager.GetInstant().SKUMasterTypes.Find(y => y.Code == docItemDetail.details.First().skuType);
-            var _baseType = StaticValueManager.GetInstant().BaseMasterTypes.Find(y => y.Code == docItemDetail.details.First().baseType);
-
-            var skuList = new List<ams_SKUMaster>();
+            var packList = new List<ams_PackMaster>();
             var docItem = docItemDetail.details.Select(x =>
             {
                 var skuType = StaticValueManager.GetInstant().SKUMasterTypes.Find(ty => ty.Code == x.skuType);
-                var curSKU = new ams_SKUMaster();
+                var curPack = new ams_PackMaster();
 
                 if (skuType.Code == "ASSET" || skuType.Code == "EMPTY")
                 {
-                    curSKU = skuList.Find(sku => sku.SKUMasterType_ID == skuType.ID);
-                    if(curSKU == null)
+                    curPack = packList.Find(pack => pack.Code == x.price);
+                    if (curPack == null)
                     {
-                        curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                        curPack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]
                         {
-                            new SQLConditionCriteria("SKUMasterType_ID", skuType.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Code", skuType.Code, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                         }, buVO).FirstOrDefault();
-                        skuList.Add(curSKU);
+                        packList.Add(curPack);
                     }
                 }
                 else if (skuType.Code == "BANKNOTE")
                 {
-                    curSKU = skuList.Find(sku => sku.Code == x.price && sku.Info1 == x.category && sku.Info2 == x.type);
-                    if (curSKU == null)
+                    curPack = packList.Find(pack => pack.Code == x.price);
+                    if (curPack == null)
                     {
-                        curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                        curPack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]
                         {
-                            new SQLConditionCriteria("SKUMasterType_ID", skuType.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                         }, buVO).FirstOrDefault();
 
-                        if(curSKU == null)
+                        if (curPack == null)
                         {
-                            curSKU = new ams_SKUMaster()
+                            var curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
                             {
-                                Code = x.price,
-                                UnitType_ID = 139,
-                                ID = null,
-                                Info1 = x.category,
-                                Info2 = x.type,
-                                SKUMasterType_ID = curSKU.ID.Value,
-                                Status = EntityStatus.ACTIVE,
-                                Price = Convert.ToDecimal(x.price)
-                            };
-                            curSKU.ID = ADO.WMSDB.DataADO.GetInstant().Insert<ams_SKUMaster>(buVO, curSKU);
+                                new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                            }, buVO).FirstOrDefault();
+
+                            if (curSKU == null)
+                            {
+                                curSKU = new ams_SKUMaster()
+                                {
+                                    Code = x.price,
+                                    Name = x.price,
+                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID,
+                                    ID = null,
+                                    SKUMasterType_ID = skuType.ID.Value,
+                                    Status = EntityStatus.ACTIVE,
+                                    Price = Convert.ToDecimal(x.price),
+                                    Description = ""
+                                };
+                                var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curSKU);
+                                curSKU.ID = resID;
+
+                                curPack = new ams_PackMaster()
+                                {
+                                    Code = x.price,
+                                    Name = x.price,
+                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
+                                    ID = null,
+                                    Status = EntityStatus.ACTIVE,
+                                    ObjectSize_ID = 2,
+                                    SKUMaster_ID = curSKU.ID.Value
+                                };
+                                var resPackID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
+                                curPack.ID = resPackID;
+                            }
+                            else
+                            {
+                                curPack = new ams_PackMaster()
+                                {
+                                    Code = x.price,
+                                    Name = x.price,
+                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
+                                    ID = null,
+                                    Status = EntityStatus.ACTIVE,
+                                    ObjectSize_ID = 2,
+                                    SKUMaster_ID = curSKU.ID.Value
+                                };
+                                var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
+                                curPack.ID = resID;
+                            }
                         }
-                        skuList.Add(curSKU);
                     }
                 }
 
                 return new amt_DocumentItem()
                 {
-                    Code = curSKU.Code,
+                    Code = curPack.Code,
                     BaseCode = x.baseCode,
                     Quantity = x.quantity,
-                    UnitType_ID = curSKU.UnitType_ID,
+                    UnitType_ID = curPack.UnitType_ID,
                     BaseQuantity = x.quantity,
-                    BaseUnitType_ID = curSKU.UnitType_ID,
+                    BaseUnitType_ID = curPack.UnitType_ID,
                     Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
-                    Options = ObjectUtil.ObjectToQryStr(x)
+                    Ref2 = string.IsNullOrWhiteSpace(x.category) ? null : x.category,
+                    Ref3 = string.IsNullOrWhiteSpace(x.type) ? null : x.type,
+                    Options = ObjectUtil.ObjectToQryStr(x),
+                    EventStatus = DocumentEventStatus.NEW,
+                    Status = EntityStatus.ACTIVE,
+                    ProductionDate = string.IsNullOrWhiteSpace(x.receiveDate) ? (DateTime?)null : DateTime.ParseExact(x.receiveDate, "yyyyMMdd", CultureInfo.InvariantCulture),
+                    PackMaster_ID = curPack.ID,
+                    SKUMaster_ID = curPack.SKUMaster_ID
                 };
             }).ToList();
 
+            parentDoc.DocumentItems = docItem;
             var parentRes = ADO.WMSDB.DocumentADO.GetInstant().Create(parentDoc, buVO);
 
             var childDoc = parentRes.Clone();
@@ -226,95 +277,120 @@ namespace ProjectBOTHY.Worker
             var childRes = ADO.WMSDB.DocumentADO.GetInstant().Create(childDoc, buVO);
             parentRes.DocumetnChilds = new List<amt_Document>() { childRes };
 
-            foreach (var Item in childDoc.DocumentItems)
+            return parentRes;
+        }
+
+        private StorageObjectCriteria CreateSto(amt_Document doc, ams_BaseMasterType baseMasterType, VOCriteria buVO)
+        {
+            string baseCode = doc.DocumentItems.First().BaseCode;
+            var baseMaster = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(new SQLConditionCriteria[]
             {
-                var baseItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(new SQLConditionCriteria[]
-                 {
-                    new SQLConditionCriteria("Code", Item.BaseCode, SQLOperatorType.EQUALS),
-                 }, buVO).FirstOrDefault();
+                new SQLConditionCriteria("Code", baseCode, SQLOperatorType.EQUALS),
+            }, buVO).FirstOrDefault();
 
-                var unitType = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseItem.UnitType_ID).Code;
-                if (baseItem != null)
+            if (baseMaster == null)
+            {
+                baseMaster = new ams_BaseMaster()
                 {
-                    var stoBase = new StorageObjectCriteria()
-                    {
-                        code = baseItem.Code,
-                        eventStatus = StorageObjectEventStatus.ACTIVE,
-                        name = baseItem.Name,
-                        parentID = null,
-                        parentType = StorageObjectType.BASE,
-                        qty = 1,
-                        baseQty = 1,
-                        unitID = baseItem.UnitType_ID,
-                        baseUnitID = baseItem.UnitType_ID,
-                        unitCode = unitType,
-                        baseUnitCode = unitType,
-                        type = StorageObjectType.BASE,
-                        areaID = null,
-                        warehouseID = 1,
-                        mstID = baseItem.ID,
-                        options = Item.Options,
-                        id = null
-                    };
+                    ID = null,
+                    Code = baseCode,
+                    BaseMasterType_ID = baseMasterType.ID,
+                    Name = baseCode,
+                    Status = EntityStatus.ACTIVE,
+                    ObjectSize_ID = 2,
+                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes
+                        .FindAll(x => x.ObjectType == StorageObjectType.BASE)
+                        .Find(x => x.Code.ToUpper() == baseMasterType.Code.ToUpper()).ID.Value,
+                };
+                var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, baseMaster);
+                baseMaster.ID = resID;
+            }
 
-                    var bstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoBase, buVO);
-                    stoBase.id = bstoID;
+            var stoBase = new StorageObjectCriteria()
+            {
+                code = baseMaster.Code,
+                eventStatus = StorageObjectEventStatus.ACTIVE,
+                name = baseMaster.Name,
+                parentID = null,
+                qty = 1,
+                baseQty = 1,
+                unitID = baseMaster.UnitType_ID,
+                baseUnitID = baseMaster.UnitType_ID,
+                unitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseMaster.UnitType_ID).Code,
+                baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseMaster.UnitType_ID).Code,
+                type = StorageObjectType.BASE,
+                areaID = doc.Des_AreaMaster_ID,
+                warehouseID = 1,
+                mstID = baseMaster.ID,
+                id = null
+            };
 
-                    var skuItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_BaseMaster>(new SQLConditionCriteria[]
-                        {
-                        new SQLConditionCriteria("Code", Item.Code, SQLOperatorType.EQUALS),
-                        }, buVO).FirstOrDefault();
+            var bstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoBase, buVO);
+            stoBase.id = bstoID;
 
-                    var unitTypeSku = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == Item.UnitType_ID).Code;
+            List<StorageObjectCriteria> stos = new List<StorageObjectCriteria>();
 
+            foreach (var Item in doc.DocumentItems)
+            {
+                //var unitType = StaticValueManager.GetInstant().UnitTypes.Find(x => skuMasterType.Code.ToUpper() == x.Code.ToUpper());
+                if (stoBase != null)
+                {
+                    var unitTypeSku = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == Item.UnitType_ID);
                     var stoPack = new StorageObjectCriteria()
                     {
+                        id = null,
                         code = Item.Code,
-                        eventStatus = StorageObjectEventStatus.ACTIVE,
-                        name = skuItem.Name,
+                        eventStatus = StorageObjectEventStatus.NEW,
+                        name = Item.Code,
                         parentID = stoBase.id,
-                        parentType = StorageObjectType.PACK,
+                        parentType = StorageObjectType.BASE,
                         qty = Item.Quantity.Value,
                         baseQty = Item.Quantity.Value,
                         unitID = Item.UnitType_ID.Value,
                         baseUnitID = Item.UnitType_ID.Value,
-                        unitCode = unitTypeSku,
-                        baseUnitCode = unitTypeSku,
+                        unitCode = unitTypeSku.Code,
+                        baseUnitCode = unitTypeSku.Code,
                         type = StorageObjectType.PACK,
-                        areaID = null,
+                        areaID = doc.Des_AreaMaster_ID,
                         warehouseID = 1,
-                        mstID = skuItem.ID,
+                        mstID = Item.PackMaster_ID,
                         options = Item.Options,
                         ref1 = Item.Ref1,
-                        id = null
+                        ref2 = Item.Ref2,
+                        ref3 = Item.Ref3,
+                        productDate = Item.ProductionDate,
+                        skuID = Item.SKUMaster_ID,
                     };
 
                     var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);
                     stoPack.id = pstoID;
 
+                    stos.Add(stoPack);
+
                     var disto = new amt_DocumentItemStorageObject()
                     {
                         IsLastSeq = false,
-                        DocumentItem_ID =Item.ID,
+                        DocumentItem_ID = Item.ID,
                         DocumentType_ID = DocumentTypeID.GOODS_RECEIVE,
                         WorkQueue_ID = null,
                         Sou_StorageObject_ID = stoPack.id.Value,
                         Sou_WaveSeq_ID = null,
                         Status = 0,
-                        Des_StorageObject_ID= null,
+                        Des_StorageObject_ID = null,
                         Des_WaveSeq_ID = null,
-                        Quantity= Item.Quantity.Value,
+                        Quantity = Item.Quantity.Value,
                         BaseQuantity = Item.Quantity.Value,
                         UnitType_ID = Item.UnitType_ID.Value,
                         BaseUnitType_ID = Item.UnitType_ID.Value
                     };
-
                     var distoBase = ADO.WMSDB.DistoADO.GetInstant().Insert(disto, buVO);
-
                 }
             }
 
-            return parentRes;
+            stoBase.mapstos = stos;
+
+            return stoBase;
+
         }
     }
 }

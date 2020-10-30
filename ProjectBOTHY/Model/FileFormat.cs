@@ -25,7 +25,7 @@ namespace ProjectBOTHY.Model
             public string type;
             public string owner;
             public string cashcenter;
-            public DateTime? receiveDate;
+            public string receiveDate;
             public decimal? quantity;
             public string stationIn;
             public string stationOut;

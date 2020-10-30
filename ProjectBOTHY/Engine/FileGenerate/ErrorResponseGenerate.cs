@@ -110,7 +110,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
             if (string.IsNullOrWhiteSpace(fileName))
                 fileName = $"RES_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
 
-            var path = StaticValue.GetConfigValue("FTP_Err_Path") + fileName;
+            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
             this.CreateFileText(_res, path);
 
             return null;
