@@ -24,7 +24,7 @@ namespace AMWUtil.Logger
         private string _ServiceName { get; set; }
         private string _FileFullName { get; set; }
         private string _FileName { get; set; }
-        private static List<KeyValuePair<string, object>> _LockFiles;
+        private static List<KeyValuePair<string, object>> _LockFiles = new List<KeyValuePair<string, object>>();
         private static int _LockDay;
 
         public static bool ClearLockFiles()
