@@ -4,15 +4,6 @@
   "private": true,
   "dependencies": {
     "@aspnet/signalr": "^1.1.4",
-    "@fullcalendar/core": "^5.3.1",
-    "@fullcalendar/daygrid": "^5.3.2",
-    "@fullcalendar/interaction": "^5.3.1",
-    "@fullcalendar/react": "^5.3.1",
-    "@fullcalendar/timegrid": "^5.3.1",
-    "@loadable/component": "^5.6.1",
-    "@material-ui/core": "^4.10.0",
-    "@material-ui/icons": "^3.0.2",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.9.3",
@@ -21,6 +12,11 @@
     "colorette": "^1.2.0",
     "deni-react-treeview": "^1.1.11",
     "downshift": "^3.2.4",
+    "@fullcalendar/core": "^5.3.1",
+    "@fullcalendar/daygrid": "^5.3.2",
+    "@fullcalendar/interaction": "^5.3.1",
+    "@fullcalendar/react": "^5.3.1",
+    "@fullcalendar/timegrid": "^5.3.1",
     "guid": "0.0.12",
     "guid-typescript": "^1.0.9",
     "html2canvas": "^1.0.0-rc.3",
@@ -28,6 +24,10 @@
     "i18next-xhr-backend": "^3.0.0",
     "immutability-helper": "^3.0.0",
     "jsbarcode": "^3.11.0",
+    "@loadable/component": "^5.6.1",
+    "@material-ui/core": "^4.10.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "material-ui-pickers": "^2.2.4",
     "material-ui-time-picker": "^1.1.0",
     "moment": "^2.24.0",
@@ -44,7 +44,8 @@
     "react-full-screen": "^0.2.4",
     "react-i18next": "^10.11.4",
     "react-icons": "^3.9.0",
-    "react-json-view": "^1.19.1",
+    "reactive-qr": "^0.1.8",
+    "react-json-view": "^1.10.2",
     "react-loadable": "^5.5.0",
     "react-pdfmake": "^0.2.0",
     "react-qr-reader": "^2.2.1",
@@ -53,11 +54,10 @@
     "react-scripts": "^3.4.3",
     "react-select": "^2.4.2",
     "react-spring": "^8.0.27",
+    "reactstrap": "^7.1.0",
     "react-table": "^6.10.3",
     "react-table-hoc-fixed-columns": "^2.0.1",
     "react-virtualized": "^9.21.0",
-    "reactive-qr": "^0.1.8",
-    "reactstrap": "^7.1.0",
     "read-excel-file": "^4.0.3",
     "styled-components": "^4.4.0",
     "use-http": "^0.2.8"
@@ -79,8 +79,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "react-to-print": "^2.1.3",
     "@types/chart.js": "^2.9.15",
-    "@types/node": "^13.9.1",
-    "react-to-print": "^2.1.3"
+    "@types/node": "^13.9.1"
   }
 }
