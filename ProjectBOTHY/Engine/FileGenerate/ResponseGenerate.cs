@@ -1,61 +1,63 @@
-﻿using ADO.WMSStaticValue;
-using AMWUtil.Common;
-using AMWUtil.DataAccess;
-using AMWUtil.Exception;
+﻿using AMWUtil.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
 using ProjectBOTHY.Model;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using AMWUtil.Exception;
+using System.Text;
+using ADO.WMSStaticValue;
+using AMWUtil.DataAccess;
 
 namespace ProjectBOTHY.Engine.FileGenerate
 {
-    public class ErrorResponseGenerate : AWMSEngine.Engine.BaseEngine<FileFormat.TextFileDetail, ErrorResponseGenerate.ResponseError>
+    public class ResponseGenerate : AWMSEngine.Engine.BaseEngine<FileFormat.TextFileDetail, ResponseFileFormat>
     {
-        public class ResponseError : ResponseFileFormat
+        protected override ResponseFileFormat ExecuteEngine(FileFormat.TextFileDetail reqVO)
         {
-            public string error;
-        }
-        protected override ResponseError ExecuteEngine(FileFormat.TextFileDetail reqVO)
-        {
-            var _res = new ResponseError();
+            var _res = new ResponseFileFormat();
             var fileName = "";
             var command = reqVO.header.command;
-            var commandNo = reqVO.header.commandNo;
+            var commandNo = command == "CYCLECOUNT" ? DateTime.Now.ToString("yyyyMMdd hhMMss") : reqVO.header.commandNo;
 
             switch (reqVO.header.command)
             {
                 case "STOREIN":
                     {
-                        fileName = $"ERR_STOREIN_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_STOREIN_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
                 case "STOREOUT":
                     {
-                        fileName = $"ERR_STOREOUT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_STOREOUT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
                 case "TRANSFER":
                     {
-                        fileName = $"ERR_TRANSFER_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_TRANSFER_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
                 case "CANCELSTOREIN":
                     {
-                        fileName = $"ERR_CANCEL_STOREIN_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_CANCEL_STOREIN_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
                 case "CANCELSTOREOUT":
                     {
-                        fileName = $"ERR_CANCEL_STOREOUT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_CANCEL_STOREOUT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
                 case "CANCELTRANSFER":
                     {
-                        fileName = $"ERR_CANCEL_TRANSFER_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_CANCEL_TRANSFER_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        break;
+                    }
+                case "CYCLECOUNT":
+                    {
+                        fileName = $"RES_CYCLECOUNT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
                         break;
                     }
             }
@@ -99,33 +101,46 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 timestamp = DateTime.Now.ToString("yyyyMMdd hhMMss")
             };
 
-            if (string.IsNullOrWhiteSpace(fileName))
-                fileName = $"ERR_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+            if(string.IsNullOrWhiteSpace(fileName))
+                fileName = $"RES_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
 
-            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
+            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Res_Path") + fileName;
             this.CreateFileText(_res, path);
-
             return null;
         }
 
-        private void CreateFileText(ResponseError obj, string path)
+        public static string GetStringValueFromObject<T>(T obj, int removeCount)
+        {
+            var props = obj.GetType().GetFields();
+            List<string> str = new List<string>();
+            foreach (var prp in props)
+            {
+                str.Add($"{prp.GetValue(obj)}");
+            }
+            var strJoin = string.Join("|", str);
+            if (removeCount > 0)
+                return strJoin.Remove(strJoin.Length - removeCount);
+            else
+                return strJoin;
+        }
+
+        private void CreateFileText(ResponseFileFormat obj, string path)
         {
             var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
             var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
 
-            if (FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
+            if(FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
                 throw new AMWException(Logger, AMWExceptionCode.V1002, "พบไฟล์นี้ในระบบ");
             StringBuilder _str = new StringBuilder();
-            _str.Append(ResponseGenerate.GetStringValueFromObject(obj.header, 2));
+            _str.Append(GetStringValueFromObject(obj.header, 2));
             obj.details.ForEach(x =>
             {
-                if (obj.header.command == "STOREOUT" || obj.header.command == "CANCELSTOREOUT")
-                    _str.Append($"{Environment.NewLine}{ResponseGenerate.GetStringValueFromObject(x, 0)}");
+                if(obj.header.command == "STOREOUT" || obj.header.command == "CANCELSTOREOUT")
+                    _str.Append($"{Environment.NewLine}{GetStringValueFromObject(x, 0)}");
                 else
-                    _str.Append($"{Environment.NewLine}{ResponseGenerate.GetStringValueFromObject(x, 1)}");
+                    _str.Append($"{Environment.NewLine}{GetStringValueFromObject(x, 1)}");
             });
-            _str.Append($"{Environment.NewLine}{ResponseGenerate.GetStringValueFromObject(obj.footer, 0)}");
-            _str.Append($"{Environment.NewLine}ERROR : {obj.error}");
+            _str.Append($"{Environment.NewLine}{GetStringValueFromObject(obj.footer, 0)}");
             FTPFileAccess.UploadTextFileToFTP(_str.ToString(), path, username, password, BuVO.Logger);
         }
     }

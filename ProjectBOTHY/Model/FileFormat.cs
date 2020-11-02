@@ -7,6 +7,13 @@ namespace ProjectBOTHY.Model
 {
     public class FileFormat
     {
+        public class TextFileDetail
+        {
+            public FileFormat.TextFileHeader header;
+            public List<FileFormat.ItemDetail> details;
+            public FileFormat.TextFileHeader footer;
+        }
+
         public class TextFileHeader
         {
             public string prefix;

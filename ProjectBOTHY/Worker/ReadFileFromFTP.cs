@@ -12,6 +12,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProjectBOTHY.Model;
 using System.Globalization;
+using AMWUtil.DataAccess;
+using ProjectBOTHY.Engine.FileGenerate;
 
 namespace ProjectBOTHY.Worker
 {
@@ -21,20 +23,18 @@ namespace ProjectBOTHY.Worker
         {
         }
 
-        public class TextFileDetail
-        {
-            public FileFormat.TextFileHeader header;
-            public List<FileFormat.ItemDetail> details;
-            public FileFormat.TextFileHeader footer;
-        }
+
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            var path = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Root_Path");
-            var pathSuccess = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Root_Path");
-            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
-            var _text = AMWUtil.DataAccess.FTPFileAccess.ReadAllFileFromFTP(path, username, password, "txt", buVO.Logger);
+            var StaticValue = StaticValueManager.GetInstant();
+            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path");
+            var folderIn = StaticValue.GetConfigValue("ERP.FTP.FTP_In_Path");
+            var folderSuccess = StaticValue.GetConfigValue("ERP.FTP.FTP_Succ_Path");
+            var username = StaticValue.GetConfigValue("ERP.FTP.FTP_Username");
+            var password = StaticValue.GetConfigValue("ERP.FTP.FTP_Password");
+            var _text = AMWUtil.DataAccess.FTPFileAccess.ReadAllFileFromFTP(path + folderIn, username, password, "txt", buVO.Logger);
+
             _text.ForEach(x =>
             {
                 var txtDetail = x.Value.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
@@ -42,7 +42,7 @@ namespace ProjectBOTHY.Worker
                 {
                     var header = txtDetail.First().Split("|");
                     var footer = txtDetail.Last().Split("|");
-                    var textDetails = new TextFileDetail()
+                    var textDetails = new FileFormat.TextFileDetail()
                     {
                         header = new FileFormat.TextFileHeader()
                         {
@@ -59,64 +59,91 @@ namespace ProjectBOTHY.Worker
                             timestamp = string.IsNullOrWhiteSpace(footer[4]) ? null : footer[4],
                         }
                     };
+
+                    var docItemDetails = txtDetail.Skip(1).SkipLast(1).ToList();
+                    var setDetail = docItemDetails.Select(y =>
+                    {
+                        var detail = y.Split("|");
+                        return new FileFormat.ItemDetail()
+                        {
+                            skuType = detail[0],
+                            baseType = detail[1],
+                            baseCode = detail[2],
+                            price = string.IsNullOrWhiteSpace(detail[3]) ? null : detail[3],
+                            category = detail[4],
+                            type = detail[5],
+                            owner = detail[6],
+                            cashcenter = detail[7],
+                            receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? null : detail[8],
+                            quantity = string.IsNullOrWhiteSpace(detail[9]) ? (decimal?)null : Convert.ToDecimal(detail[9]),
+                            stationIn = detail[10],
+                            stationOut = detail[11],
+                        };
+                    }).ToList();
+                    textDetails.details = setDetail;
+
                     if (textDetails.header.command == "STOREIN")
                     {
-                        var docItemDetails = txtDetail.Skip(1).SkipLast(1).ToList();
-                        var setDetail = docItemDetails.Select(y =>
-                        {
-                            var detail = y.Split("|");
-                            return new FileFormat.ItemDetail()
-                            {
-                                skuType = detail[0],
-                                baseType = detail[1],
-                                baseCode = detail[2],
-                                price = string.IsNullOrWhiteSpace(detail[3]) ? null : detail[3],
-                                category = detail[4],
-                                type = detail[5],
-                                owner = detail[6],
-                                cashcenter = detail[7],
-                                receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? null : detail[8],
-                                quantity = string.IsNullOrWhiteSpace(detail[9]) ? (decimal?)null : Convert.ToDecimal(detail[9]),
-                                stationIn = detail[10],
-                                stationOut = detail[11],
-                            };
-                        }).ToList();
-                        textDetails.details = setDetail;
                         var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
 
-                        var _baseType = StaticValueManager.GetInstant().BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
+                        var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
                         var stos = CreateSto(resDoc, _baseType, buVO);
-
-                        if(stos != null)
-                        {
-                        }
-
                     }
                     else if (textDetails.header.command.StartsWith("CANCEL"))
                     {
-                        var docs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria()
-                        {
-                            field = "RefID",
-                            value = textDetails.header.commandNo,
-                            operatorType = SQLOperatorType.EQUALS
+                        var docs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] { 
+                            new SQLConditionCriteria("RefID", textDetails.header.commandNo, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
                         }, buVO);
 
-                        if (docs.Any(z => z.EventStatus != DocumentEventStatus.NEW))
+                        if (docs.Count > 0)
                         {
-                            throw new AMWException(buVO.Logger, AMWExceptionCode.V1001);
+                            if (docs.Any(z => z.EventStatus != DocumentEventStatus.NEW))
+                            {
+                                string fileName = $"ERR_{textDetails.header.command}_{textDetails.header.commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+
+                                var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
+
+                                new ErrorResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
+                            }
+                            else
+                            {
+                                docs.Select(a => a.ID).ToList().ForEach(a =>
+                                    {
+                                        var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(a.Value, buVO);
+                                        if(distos.Count > 0)
+                                        {
+                                            var pstos = distos.Select(x => x.Sou_StorageObject_ID).ToList();
+                                            var baseStoIDs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria()
+                                            {
+                                                field = "ID",
+                                                value = string.Join(",", pstos),
+                                                operatorType = SQLOperatorType.IN
+                                            }, buVO).Select(x => x.ParentStorageObject_ID).Distinct().ToList();
+                                            baseStoIDs.ForEach(bsto =>
+                                            {
+                                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REJECTED, buVO);
+                                            });
+                                            distos.ForEach(disto => ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, buVO));
+                                        }
+                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(a.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, buVO);
+                                    }
+                                );
+                                new ResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
+                            }
                         }
                         else
                         {
-                            docs.Select(a => a.ID).ToList().ForEach(a =>
-                                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(a.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, buVO)
-                            );
+                            new ErrorResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
                         }
                     }
                 }
+
+                FTPFileAccess.MoveFileFromFTP(path, folderIn, folderSuccess, x.Key, username, password, buVO.Logger);
             });
         }
 
-        private amt_Document CreateDocFromFTP(TextFileDetail docItemDetail, DocumentTypeID docType, string options, VOCriteria buVO)
+        private amt_Document CreateDocFromFTP(FileFormat.TextFileDetail docItemDetail, DocumentTypeID docType, string options, VOCriteria buVO)
         {
             ams_AreaMaster _desArea = new ams_AreaMaster();
             ams_AreaMaster _souArea = new ams_AreaMaster();
@@ -146,7 +173,7 @@ namespace ProjectBOTHY.Worker
                 EventStatus = DocumentEventStatus.NEW,
                 ProductOwner_ID = docItemDetail.details.First().owner == "BOT" ? 1 : 2,
                 Status = EntityStatus.ACTIVE,
-                Options = options,
+                Options = $"{ObjectUtil.ObjectToQryStr(docItemDetail.footer)}",
                 Des_Warehouse_ID = _desArea.Warehouse_ID,
                 Des_AreaMaster_ID = _desArea.ID,
                 Sou_AreaMaster_ID = _souArea.ID,
@@ -250,7 +277,7 @@ namespace ProjectBOTHY.Worker
                     Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
                     Ref2 = string.IsNullOrWhiteSpace(x.category) ? null : x.category,
                     Ref3 = string.IsNullOrWhiteSpace(x.type) ? null : x.type,
-                    Options = ObjectUtil.ObjectToQryStr(x),
+                    Options = $"{ObjectUtil.ObjectToQryStr(x)}",
                     EventStatus = DocumentEventStatus.NEW,
                     Status = EntityStatus.ACTIVE,
                     ProductionDate = string.IsNullOrWhiteSpace(x.receiveDate) ? (DateTime?)null : DateTime.ParseExact(x.receiveDate, "yyyyMMdd", CultureInfo.InvariantCulture),

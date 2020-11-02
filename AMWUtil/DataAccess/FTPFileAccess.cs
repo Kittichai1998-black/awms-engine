@@ -73,6 +73,14 @@ namespace AMWUtil.DataAccess
             return res;
         }
 
+        public static void MoveFileFromFTP(string path, string souPath, string desPath, List<string> files, string username, string password, AMWLogger logger)
+        {
+            foreach (var filename in files)
+            {
+                FTPFileAccess.MoveFileFromFTP(path, souPath, desPath, filename, username, password, logger);
+            }
+        }
+
         public static bool CheckFileExistsFromFTP(string path, string username, string password)
         {
             FtpWebRequest ftpAccess = (FtpWebRequest)FtpWebRequest.Create(path);
@@ -115,29 +123,33 @@ namespace AMWUtil.DataAccess
             }
         }
 
-        public static void MoveFileFromFTP(string ftpPath, string souPath, string desPath, string fileName, string username, string password, AMWLogger logger)
+        public static void MoveFileFromFTP(string path, string souPath, string desPath, string fileName, string username, string password, AMWLogger logger)
         {
             try
             {
                 if (souPath == desPath)
                     return;
 
-                if (!FTPFileAccess.CheckFileExistsFromFTP(ftpPath + souPath + fileName, username, password))
+                if (!FTPFileAccess.CheckFileExistsFromFTP($"{path}{souPath}{fileName}", username, password))
                 {
-                    throw new AMWException(logger, AMWExceptionCode.S0001, string.Format("Source '{0}' not found!", ftpPath + souPath + fileName));
+                    throw new AMWException(logger, AMWExceptionCode.S0001, string.Format("Source '{0}' not found!", $"{path}{souPath}{fileName}"));
                 }
 
-                CreateDirectoryToFTP(ftpPath + desPath, username, password, logger);
+                CreateDirectoryToFTP($"{path}{desPath}", username, password, logger);
 
-                if (FTPFileAccess.CheckFileExistsFromFTP(ftpPath + desPath + fileName, username, password))
+                if (FTPFileAccess.CheckFileExistsFromFTP($"{path}{desPath}{fileName}", username, password))
                 {
-                    throw new AMWException(logger, AMWExceptionCode.S0001, string.Format("Target '{0}' already exists!", ftpPath + desPath + fileName));
+                    throw new AMWException(logger, AMWExceptionCode.S0001, string.Format("Target '{0}' already exists!", $"{path}{desPath}{fileName}"));
                 }
 
-                FtpWebRequest ftpAccess = (FtpWebRequest)FtpWebRequest.Create(ftpPath + souPath + fileName);
+                FtpWebRequest ftpAccess = (FtpWebRequest)FtpWebRequest.Create($"{path}{souPath}{fileName}");
                 ftpAccess.Method = WebRequestMethods.Ftp.Rename;
 
-                ftpAccess.RenameTo = desPath+ fileName;
+                ftpAccess.UseBinary = true;
+                ftpAccess.UsePassive = true;
+                ftpAccess.KeepAlive = true;
+
+                ftpAccess.RenameTo = $"/{desPath}{fileName}";
                 ftpAccess.Credentials = new NetworkCredential(username, password);
 
                 var response = ((FtpWebResponse)ftpAccess.GetResponse());
@@ -146,6 +158,8 @@ namespace AMWUtil.DataAccess
             }
             catch (WebException e)
             {
+                String status = ((FtpWebResponse)e.Response).StatusDescription;
+
                 throw new AMWException(logger, AMWExceptionCode.S0001, e.Message);
             }
         }

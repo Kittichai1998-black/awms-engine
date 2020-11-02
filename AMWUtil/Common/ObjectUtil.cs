@@ -484,18 +484,29 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static string ObjectToQryStr<T>(T obj)
+        public static string ObjectToQryStr<T>(T obj , string separeator)
         {
             var props = obj.GetType().GetProperties();
+            var fields = obj.GetType().GetFields();
             var lst = new List<string>();
-            foreach (var field in props)
+            foreach (var field in fields)
             {
                 var name = field.Name;
                 var value = field.GetValue(obj);
                 lst.Add($"{name}={value}");
             }
+            foreach (var prop in props)
+            {
+                var name = prop.Name;
+                var value = prop.GetValue(obj);
+                lst.Add($"{name}={value}");
+            }
 
-            return string.Join('&', lst);
+            return string.Join(separeator, lst);
+        }
+        public static string ObjectToQryStr<T>(T obj)
+        {
+            return ObjectToQryStr(obj, "&");
         }
     }
 }

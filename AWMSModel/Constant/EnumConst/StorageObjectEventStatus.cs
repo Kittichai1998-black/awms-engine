@@ -32,9 +32,12 @@ namespace AWMSModel.Constant.EnumConst
         //-------------------Pack Remove
         REMOVING = 21,
         REMOVED = 22,
-        CANCELING = 23,
+        CANCELING = 25,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        CANCELED = 24,
+        CANCELED = 26,
+
+        REJECTING = 23,
+        REJECTED = 24,
 
 
         //-------------------Pack Outbound
@@ -47,6 +50,8 @@ namespace AWMSModel.Constant.EnumConst
         CONSOLIDATED = 36,
         COMPLETING = 37,
         COMPLETED = 38,
+
+
 
 
     }
