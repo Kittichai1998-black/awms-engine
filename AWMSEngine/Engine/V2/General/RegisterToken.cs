@@ -69,6 +69,12 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0010);
                 }
 
+                var prodOwner = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_User_ProductOwner>(new SQLConditionCriteria[]
+                             {
+                                new SQLConditionCriteria("User_ID",user.ID, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                             }, this.BuVO);
+
                 var permissions = ADO.WMSDB.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
 
                 TokenCriteria token = new TokenCriteria()
@@ -85,7 +91,8 @@ namespace AWMSEngine.Engine.V2.General
                         uname = user.Name,
                         exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXPIRE_HR).Get<int>()),
                         extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXTEND_HR).Get<int>()),
-                        pms = permissions.Select(x=>x.ID.Value).ToArray()
+                        pms = permissions.Select(x=>x.ID.Value).ToArray(),
+                        pos = prodOwner.Select(x=> x.ProductOwner_ID).ToArray()
                     }
                 };
                 string tokenVal = EncryptUtil.Base64Encode(token.HeadDecode.Json()) + "." + EncryptUtil.Base64Encode(token.BodyDecode.Json());

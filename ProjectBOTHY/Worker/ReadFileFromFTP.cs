@@ -23,8 +23,6 @@ namespace ProjectBOTHY.Worker
         {
         }
 
-
-
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
             var StaticValue = StaticValueManager.GetInstant();
@@ -88,6 +86,10 @@ namespace ProjectBOTHY.Worker
 
                         var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
                         var stos = CreateSto(resDoc, _baseType, buVO);
+                    }
+                    else if (textDetails.header.command == "STOREOUT")
+                    {
+                        var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_ISSUE, null, buVO);
                     }
                     else if (textDetails.header.command.StartsWith("CANCEL"))
                     {
@@ -173,11 +175,11 @@ namespace ProjectBOTHY.Worker
                 EventStatus = DocumentEventStatus.NEW,
                 ProductOwner_ID = docItemDetail.details.First().owner == "BOT" ? 1 : 2,
                 Status = EntityStatus.ACTIVE,
-                Options = $"{ObjectUtil.ObjectToQryStr(docItemDetail.footer)}",
+                Options = $"textFile={Newtonsoft.Json.JsonConvert.SerializeObject(docItemDetail.footer)}",
                 Des_Warehouse_ID = _desArea.Warehouse_ID,
                 Des_AreaMaster_ID = _desArea.ID,
                 Sou_AreaMaster_ID = _souArea.ID,
-                RefID = docItemDetail.header.commandNo
+                RefID = docItemDetail.header.commandNo,
             };
 
             var packList = new List<ams_PackMaster>();
@@ -277,7 +279,7 @@ namespace ProjectBOTHY.Worker
                     Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
                     Ref2 = string.IsNullOrWhiteSpace(x.category) ? null : x.category,
                     Ref3 = string.IsNullOrWhiteSpace(x.type) ? null : x.type,
-                    Options = $"{ObjectUtil.ObjectToQryStr(x)}",
+                    Options = $"textFile={Newtonsoft.Json.JsonConvert.SerializeObject(x)}",
                     EventStatus = DocumentEventStatus.NEW,
                     Status = EntityStatus.ACTIVE,
                     ProductionDate = string.IsNullOrWhiteSpace(x.receiveDate) ? (DateTime?)null : DateTime.ParseExact(x.receiveDate, "yyyyMMdd", CultureInfo.InvariantCulture),
@@ -349,6 +351,7 @@ namespace ProjectBOTHY.Worker
                 areaID = doc.Des_AreaMaster_ID,
                 warehouseID = 1,
                 mstID = baseMaster.ID,
+                productOwner = doc.ProductOwner_ID,
                 id = null
             };
 
@@ -387,6 +390,7 @@ namespace ProjectBOTHY.Worker
                         ref3 = Item.Ref3,
                         productDate = Item.ProductionDate,
                         skuID = Item.SKUMaster_ID,
+                        productOwner = doc.ProductOwner_ID
                     };
 
                     var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);

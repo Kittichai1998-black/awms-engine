@@ -161,17 +161,6 @@ const Warehouse = props => {
   };
 
   return (
-    <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"Warehouse"}
-        table={"ams_Warehouse"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -186,7 +175,6 @@ const Warehouse = props => {
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
   );
 };
 

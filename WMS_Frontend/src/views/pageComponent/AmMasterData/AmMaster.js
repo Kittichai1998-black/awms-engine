@@ -328,6 +328,7 @@ const AmMasterData = (props) => {
                 if (props.sortable)
                     setSort(dt)
             }}
+            height={"100%"}
             columns={columns}
             dataKey={props.codeInclude ? "Code" : "ID"}
             dataSource={dataSource}
@@ -336,7 +337,6 @@ const AmMasterData = (props) => {
             rowNumber={true}
             totalSize={count}
             pageSize={props.pageSize}
-            height={props.height-45}
             pagination={true}
             onPageChange={p => {
                 if (page !== p)

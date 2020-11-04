@@ -129,17 +129,6 @@ const BaseMasterType = props => {
     }
   };
   return (
-    <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"BaseMasterType"}
-        table={"ams_BaseMasterType"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -154,7 +143,6 @@ const BaseMasterType = props => {
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
   );
 };
 

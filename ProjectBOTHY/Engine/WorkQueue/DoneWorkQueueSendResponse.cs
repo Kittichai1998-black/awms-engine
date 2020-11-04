@@ -13,7 +13,7 @@ namespace ProjectBOTHY.Engine.WorkQueue
     {
         public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneWorkQueue.TReq reqVO)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

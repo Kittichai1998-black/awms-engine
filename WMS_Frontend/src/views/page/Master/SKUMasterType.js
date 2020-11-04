@@ -134,19 +134,6 @@ const SKUMasterType = props => {
   };
 
   return (
-    <div>
-    {
-  console.log([...iniCols])}
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"SKUMasterType"}
-        table={"ams_SKUMasterType"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -160,9 +147,7 @@ const SKUMasterType = props => {
         height={500}
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
-      />
-    </div>
-  );
+      />);
 };
 
 export default SKUMasterType;

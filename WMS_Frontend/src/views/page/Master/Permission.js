@@ -273,21 +273,7 @@ const Permission = props => {
   }
 
   return (
-    <div>
-      {/* <AmSetUserPer
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"Role"}
-        table={"ams_Role"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        // customUser={true}
-        customPer={true}
-        dataUser={dataUser}
-        columnsEditAPIKey={columnsEditAPIKey}
-        history={props.history}
-      /> */}
+    <>
       <PopupPermission relationComponent={relationComponent} open={open}/>
       
       <AmDialogs
@@ -308,7 +294,7 @@ const Permission = props => {
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
+    </>
   );
 };
 
