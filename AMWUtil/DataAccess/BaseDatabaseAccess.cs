@@ -42,7 +42,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogDebug("[QUERY] " + cmdTxt + " | " + DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[BEGIN_QUERY] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.Query<T>(cmdTxt, parameter, transaction, true, 60, commandType);
@@ -61,7 +61,7 @@ namespace AMWUtil.DataAccess
                     transaction.Commit();
                 }
             }
-            //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
+            if (logger != null) logger.LogDebug("[END_QUERY] output count > " + res.Count());
             return res;
         }
 
@@ -74,7 +74,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             T res;
-            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " | " + DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[BEGIN_SCALAR] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
@@ -94,7 +94,7 @@ namespace AMWUtil.DataAccess
 
                 }
             }
-            //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
+            if (logger != null) logger.LogDebug("[END_SCALAR] output value > " + res);
             return res;
         }
 
@@ -107,7 +107,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             int res;
-            if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt + " | " + DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[BEGIN_EXECUTE] " + cmdTxt + " | " + DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
@@ -126,7 +126,7 @@ namespace AMWUtil.DataAccess
                     transaction.Commit();
                 }
             }
-            //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
+            if (logger != null) logger.LogDebug("[END_EXECUTE] output value > " + res);
             return res;
         }
 

@@ -1,46 +1,60 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AWCSEngine.McEngine
 {
     public abstract class BaseMcEngine
     {
-        protected abstract void Execute(act_McObject mcObject, VOCriteria buVO);
+        protected abstract void Execute(acs_McMaster mcMst, act_McObject mcObj);
         protected int LogDay { get; set; }
 
         private Task TaskRun { get; set; }
+        private VOCriteria BuVO { get; set; }
+        private AMWLogger Logger { get => this.BuVO.Logger; set => this.BuVO.Logger = value; }
 
-        private act_McObject _McObject { get; set; }
-        public act_McObject McObject { get => this._McObject; }
+        public int McObjectID { get; private set; }
+        //public McObjectStatus McEngineStatus { get; private set; }
 
-        public int McStatus { get; set; }
-
-        public BaseMcEngine(act_McObject mcObject)
+        public BaseMcEngine(int mcObjectID)
         {
-            this._McObject = mcObject;
+            this.McObjectID = mcObjectID;
+            this.BuVO = new VOCriteria();
         }
 
         public void Start()
         {
-            var logger = AMWLoggerManager.GetLogger("Machine", this._McObject.Code);
-            
-            VOCriteria buVO = new VOCriteria(logger, null);
-            this.Run(this._McObject, buVO);
+            var mcObj = ADO.WCSDB.DataADO.GetInstant().SelectBy<act_McObject>("ID", this.McObjectID, null).First();
+            var mcMst = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McMaster>("ID", mcObj.McMaster_ID, null).First();
+
+            this.Logger = AMWLoggerManager.GetLogger("Machine", mcObj.Code);
+            this.LogDay = DateTime.Now.Day;
+            this.Logger.LogInfo("########### START ###########");
+            string mcObjStr = mcObj.Json();
+            string mcMstStr = mcMst.Json();
+            this.Logger.LogInfo("McMaster > " + mcMstStr);
+            this.Logger.LogInfo("McObject > " + mcObjStr);
+            this.Run(mcMst,mcObj);
         }
 
-        private void Run(act_McObject mcObject, VOCriteria buVO)
+        private void Run(acs_McMaster mcMst, act_McObject mcObj)
         {
             this.TaskRun = Task.Run(() =>
             {
                 if (this.LogDay != DateTime.Now.Day)
                 {
+                    this.Logger = AMWLoggerManager.GetLogger("Machine", mcObj.Code);
                 }
-                this.Execute(mcObject, buVO);
+                this.Execute(mcMst, mcObj);
+                Thread.Sleep(500);
             });
         }
 
