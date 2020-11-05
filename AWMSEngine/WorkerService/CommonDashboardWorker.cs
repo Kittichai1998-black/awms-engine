@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using AWMSEngine.HubService;
 using AWMSModel.Criteria;
 using Microsoft.AspNetCore.SignalR;
@@ -14,7 +15,8 @@ namespace AWMSEngine.WorkerService
 {
     public class CommonDashboardWorker : BaseWorkerService
     {
-        public CommonDashboardWorker(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
+        public CommonDashboardWorker(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) 
+            : base(workerServiceID, logger, commonHub)
         {
         }
 

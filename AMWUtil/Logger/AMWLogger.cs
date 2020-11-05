@@ -24,7 +24,7 @@ namespace AMWUtil.Logger
         private string _ServiceName { get; set; }
         private string _FileFullName { get; set; }
         private string _FileName { get; set; }
-        private static List<KeyValuePair<string, object>> _LockFiles;
+        private static List<KeyValuePair<string, object>> _LockFiles = new List<KeyValuePair<string, object>>();
         private static int _LockDay;
 
         public static bool ClearLockFiles()
@@ -59,7 +59,7 @@ namespace AMWUtil.Logger
             if (!AMWLogger._LockFiles.Any(x => x.Key == _key))
                 AMWLogger._LockFiles.Add(new KeyValuePair<string, object>(_key, new object()));
 
-            object _lock = AMWLogger._LockFiles.First(x => x.Key == _key);
+            object _lock = AMWLogger._LockFiles.First(x => x.Key == _key).Value;
             lock (_lock)
             {
                 using (var fw = new StreamWriter(this._FileFullName, true))

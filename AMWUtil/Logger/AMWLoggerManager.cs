@@ -55,10 +55,6 @@ namespace AMWUtil.Logger
         {
             return GetLogger(Guid.NewGuid().ToString(), serviceName);
         }
-        public static AMWLogger GetLogger(string logName, string serviceName)
-        {
-            return GetLogger(logName, serviceName);
-        }
         public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
         {
             AMWLoggerManager logManager = AMWLoggerManager.GetInstant();
