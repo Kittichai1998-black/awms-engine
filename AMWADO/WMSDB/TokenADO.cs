@@ -12,7 +12,7 @@ namespace ADO.WMSDB
 {
     public class TokenADO : BaseWMSDB<TokenADO>
     {
-        public amt_Token Register(string username, string password, string secretKey, int actionBy, bool requirePass,
+        public TokenObject Register(string username, string password, string secretKey, int actionBy, bool requirePass,
             VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
@@ -21,20 +21,20 @@ namespace ADO.WMSDB
             param.Add("@secretKey", secretKey);
             param.Add("@actionBy", actionBy);
             param.Add("@requirePass", requirePass);
-            var res = this.Query<amt_Token>(
+            var res = this.Query<TokenObject>(
                                 "SP_TOKEN_REGISTER",
                                 CommandType.StoredProcedure,param, buVO.Logger, buVO.SqlTransaction)
                             .FirstOrDefault();
             return res;
         }
 
-        public amt_Token LDAP(string secretKey, int actionBy,
+        public TokenObject LDAP(string secretKey, int actionBy,
             VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
             param.Add("@secretKey", secretKey);
             param.Add("@actionBy", actionBy);
-            var res = this.Query<amt_Token>(
+            var res = this.Query<TokenObject>(
                                 "SP_LDAP_REGISTER",
                                 CommandType.StoredProcedure,param, buVO.Logger, buVO.SqlTransaction)
                             .FirstOrDefault();
