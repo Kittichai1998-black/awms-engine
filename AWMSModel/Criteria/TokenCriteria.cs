@@ -27,6 +27,7 @@ namespace AWMSModel.Criteria
             public DateTime exp;
             public DateTime extend;
             public long[] pms;
+            public int[] pos;
         }
     }
 }

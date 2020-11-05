@@ -51,6 +51,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBOSS", "ProjectBOSS\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADO", "AMWADO\ADO.csproj", "{66CAEB09-5CB3-4B45-94CC-A3E237C9DF5E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBOTHY", "ProjectBOTHY\ProjectBOTHY.csproj", "{E5036015-3CA7-43B9-946A-D2330887BE18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSModel", "AWCSModel\AWCSModel.csproj", "{8D359218-B257-4244-818C-3523AC92C978}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +137,14 @@ Global
 		{66CAEB09-5CB3-4B45-94CC-A3E237C9DF5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66CAEB09-5CB3-4B45-94CC-A3E237C9DF5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66CAEB09-5CB3-4B45-94CC-A3E237C9DF5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5036015-3CA7-43B9-946A-D2330887BE18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5036015-3CA7-43B9-946A-D2330887BE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5036015-3CA7-43B9-946A-D2330887BE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5036015-3CA7-43B9-946A-D2330887BE18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D359218-B257-4244-818C-3523AC92C978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D359218-B257-4244-818C-3523AC92C978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D359218-B257-4244-818C-3523AC92C978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D359218-B257-4244-818C-3523AC92C978}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -271,7 +271,7 @@ const ProcessQueueDetail = (props) => {
                 setAreaDefault(props.areaDefault(documents.documentListValue[0]))
                 setFlagAuto(true)
             } else {
-                setAreaDefault("0")
+                setAreaDefault(null)
             }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props, documents.documentListValue, area])
@@ -778,7 +778,9 @@ const ProcessQueueDetail = (props) => {
                             setConfirmState(true)
                     }
                 }
-            });
+
+                return res.data;
+            }).then(res => {props.customAfterProcess(res)});
         }
     };
 

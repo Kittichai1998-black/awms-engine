@@ -22,6 +22,8 @@ const AmEditiorTable = (props) => {
     const checkStr = () => {
         if (props.titleText === "Edit") {
             return 'Save';
+        }else if (props.titleText === "Remove") {
+            return 'OK';
         } else {
             if (props.textConfirm) {
                 return props.textConfirm;

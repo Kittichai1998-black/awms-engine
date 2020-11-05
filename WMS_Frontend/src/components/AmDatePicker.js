@@ -49,8 +49,8 @@ export default function DateAndTimePickers(props) {
     const [value, setValue] = useState("");
 
     useEffect(() => {
-        console.log(defaultValue)
-        console.log(props)
+        // console.log(defaultValue)
+        // console.log(props)
         if (defaultValue) {
             let datetime = "";
             if (typeof defaultValue === "string") {
@@ -105,7 +105,7 @@ export default function DateAndTimePickers(props) {
                     fieldDataKey: newDate,
                     fieldDataObject: newDate
                 }
-                console.log("onBlur")
+                // console.log("onBlur")
                 onBlur(dataReturn);
             }
         }
@@ -121,7 +121,7 @@ export default function DateAndTimePickers(props) {
                     fieldDataKey: newDate,
                     fieldDataObject: newDate
                 }
-                console.log("onChange")
+                // console.log("onChange")
                 onChange(dataReturn);
             }
         }
@@ -159,10 +159,10 @@ export default function DateAndTimePickers(props) {
             fieldDataObject: newDate
         }
         if (onBlur) {
-            console.log(dataReturn)
+            // console.log(dataReturn)
             onBlur(dataReturn);
         } else {
-            console.log(dataReturn)
+            // console.log(dataReturn)
             onChange(dataReturn);
         }
     }

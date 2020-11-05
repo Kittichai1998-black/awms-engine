@@ -157,25 +157,21 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
 
-
             var DocumentProcessTypeCodes = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessType>(
-        new SQLConditionCriteria[] {
+         new SQLConditionCriteria[] {
                 new SQLConditionCriteria("Code",reqVO.documentProcessTypeCode, SQLOperatorType.EQUALS),
-    }, this.BuVO).FirstOrDefault();
+     }, this.BuVO).FirstOrDefault();
 
 
             if (DocumentProcessTypeCodes != null)
             {
-
                 var ProceesTypedoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_DocumentProcessMap>(
-               new SQLConditionCriteria[] {
+             new SQLConditionCriteria[] {
                 new SQLConditionCriteria("DocumentProcessType_ID",DocumentProcessTypeCodes.ID, SQLOperatorType.EQUALS),
-           }, this.BuVO).FirstOrDefault();
+         }, this.BuVO).FirstOrDefault();
 
                 var ProceesTypedocID = ProceesTypedoc.DocumentType_ID.GetValueInt();
-
-
-                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1011)
+                if (DocumentProcessTypeCodes != null && ProceesTypedocID == 1012)
                 {
                     var DocprocessID = DocumentProcessTypeCodes.ID;
                     var SkuType = DocumentProcessTypeCodes.SKUGroupType.GetValueInt();
@@ -185,6 +181,17 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
 
                     var OwnerProcess = DocumentProcessTypeCodes.OwnerGroupType.GetValueInt();
 
+
+                    var skuCode = reqVO.issuedOrderItem.Select(x => x.skuCode).ToArray();
+
+                    var skuLists = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                   new SQLConditionCriteria("Code",string.Join(',', skuCode), SQLOperatorType.IN),
+                      }, this.BuVO);
+
+                    if (skuLists.Any(x => x.SKUMasterType_ID != SkuType))
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.U0000, "Item not match DocumantProcessType");
+                    }
 
                     if (OwnerProcess == '0')
                     {
@@ -228,48 +235,10 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                     }
 
                     reqVO.documentProcessTypeID = documentProcessTypeID;
-
-                    var ItemSku = reqVO.issuedOrderItem;
-
-
-                    foreach (var Item in reqVO.issuedOrderItem)
-                    {
-                        if (Item.palletCode != null)
-                        {
-                            var Sto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                                 new SQLConditionCriteria[] {
-                             new SQLConditionCriteria("Code",Item.palletCode, SQLOperatorType.EQUALS),
-                              }, this.BuVO).FirstOrDefault();
-
-                            var SKUCode = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
-                             new SQLConditionCriteria[] {
-                             new SQLConditionCriteria("Code",Item.skuCode, SQLOperatorType.EQUALS),
-                          }, this.BuVO).FirstOrDefault();
-
-                            if (Sto != null && Sto.ObjectType.GetValueInt() == 2 && Sto.PackMaster_ID != null)
-                            {
-                                if (Sto.SKUMaster_ID != SKUCode.ID)
-                                {
-
-                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet not match Item");
-                                }
-
-                            }
-                            else
-                            {
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet not correct");
-
-                            }
-
-                            if (SKUCode == null)
-                            {
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Item not correct");
-                            }
-                        }
-                    }
-
                 }
             }
+
+
 
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()

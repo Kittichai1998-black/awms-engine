@@ -346,21 +346,6 @@ const BaseMaster = props => {
   }
 
   return (
-    <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"BaseMaster"}
-        table={"ams_BaseMaster"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-        //======= MultyBase  ========
-        prefix={2}
-        baseLength={10}
-        checked={isLoad}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -378,7 +363,6 @@ const BaseMaster = props => {
         selection={"checkbox"}
         selectionData={(sel) => { }}
       />
-    </div>
   );
 };
 

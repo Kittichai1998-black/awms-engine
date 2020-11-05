@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.General
 {
-    public class ExtendToken : BaseEngine<ExtendToken.TReqModel, amt_Token>
+    public class ExtendToken : BaseEngine<ExtendToken.TReqModel, TokenObject>
     {
         public class TReqModel
         {
             public string Token;
         }
 
-        protected override amt_Token ExecuteEngine(TReqModel reqVO)
+        protected override TokenObject ExecuteEngine(TReqModel reqVO)
         {
             var tk = reqVO.Token.Split('.');
             TokenCriteria tokenInfo = new TokenCriteria();
@@ -63,7 +63,7 @@ namespace AWMSEngine.Engine.V2.General
 
             tokenInfo.BodyEncode = EncryptUtil.Base64Encode(tokenInfo.BodyDecode.Json());
             tokenInfo.SignatureEncode = EncryptUtil.GenerateSHA256String(tokenInfo.HeadDecode + "." + tokenInfo.BodyEncode + "." + userInfo.SecretKey);
-            return new amt_Token() { Token = tokenInfo.HeadEncode + "." + tokenInfo.BodyEncode + "." + tokenInfo.SignatureEncode };
+            return new TokenObject() { Token = tokenInfo.HeadEncode + "." + tokenInfo.BodyEncode + "." + tokenInfo.SignatureEncode };
         }
     }
 }

@@ -50,7 +50,7 @@ const propTypes = {
      * ความสูง grid
      ** value? : 500
     */
-    height: PropTypes.number,
+   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     /**
      * return style object
      ** value? : {color:"red"}

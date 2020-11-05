@@ -97,9 +97,10 @@ const customSettingBTN = React.forwardRef(({ children, onClick }, ref) => (
 
 const AmTable = (props) => {
     const [selection, setSelection] = useState([])
-    const [pgSize, setPgSize] = useState(props.pageSize ? 20 : props.pageSize);
+    const [pgSize, setPgSize] = useState(props.pageSize ? props.pageSize : 20);
     const [exportExcel, setExportExcel] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
+    const tableContainerRef = useRef(null)
 
     useEffect(() => {
         if(props.onPageSizeChange){
@@ -169,7 +170,7 @@ const AmTable = (props) => {
         }).filter(x=> x.accessor !== undefined);
     }
 
-    return <>
+    return <div style={{height:"100%"}} ref={tableContainerRef}>
         <Suspense fallback="">
             <AmTableComponent
                 style={props.style}
@@ -179,7 +180,7 @@ const AmTable = (props) => {
                 cellStyle={props.cellStyle}
                 dataKey={props.dataKey}
                 rowNumber={props.rowNumber}
-                height={props.height}
+                height={tableContainerRef.current == null ? 0 : tableContainerRef.current.scrollHeight}
                 tableStyle={props.tableStyle}
                 footerStyle={props.footerStyle}
                 headerStyle={props.headerStyle}
@@ -240,7 +241,7 @@ const AmTable = (props) => {
                 : null
             }
         </Suspense>
-    </>
+    </div>
 }
 
 const IconButton = withStyles({

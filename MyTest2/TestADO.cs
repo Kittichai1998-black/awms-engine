@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -23,13 +24,13 @@ namespace MyTest2
         [Fact]
         public void TestGetSTOCode()
         {
-            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, @"D:\Application\awms-engine\AWMSEngine\app.property");
-            VOCriteria buVO = new VOCriteria();
-            AMWLoggerManager.InitInstant("D:/logs/test/", "{Date}.log");
-            AMWLogger logger = AMWLoggerManager.GetLogger("test");
-            var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
+            //PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, @"D:\Application\awms-engine\AWMSEngine\app.property");
+            //VOCriteria buVO = new VOCriteria();
+            //AMWLoggerManager.InitInstant("D:/logs/test/", "{Date}.log");
+            //AMWLogger logger = AMWLoggerManager.GetLogger("test");
+            //var sto = AWMSEngine.ADO.WMSDB.StorageObjectADO.GetInstant().Get("THIP000144", 1, null, false, true, buVO);
 
-            new AWMSEngine.Engine.V2.Validation.ValidateObjectSizeLimit().Execute(logger, buVO, sto);
+            //new AWMSEngine.Engine.V2.Validation.ValidateObjectSizeLimit().Execute(logger, buVO, sto);
 
 
         }
@@ -105,7 +106,7 @@ namespace MyTest2
                 pallet.bcode = bcode;
                 pallet.pcode = itemData.code;
 
-                if(mode == 0)
+                if (mode == 0)
                 {
                     if (itemData.vol > 0)
                     {
@@ -125,11 +126,54 @@ namespace MyTest2
                     palletList.Add(pallet);
                     findPallet(item.FindAll(x => x.vol != 0), defaultVol, newBcode, palletList, defaultVol, mode);
                 }
-                
+
             }
 
             return palletList;
 
         }
+
+        [Fact]
+        public void TestGenQrystr()
+        {
+            var obj = new { x1 = "x121", x2 = "x22", x3 = "x33" };
+            var props = obj.GetType().GetProperties();
+            var lst = new List<string>();
+            foreach(var xx in props)
+            {
+                var name = xx.Name;
+                var value = xx.GetValue(obj);
+                lst.Add($"{name}={value}");
+            }
+
+            var jstr = string.Join('&', lst);
+        }
+
+        [Fact]
+        public void GetStringValueFromObject()
+        {
+            var obj = new { x1 = "x121", x2 = "", x3 = (decimal?)null };
+            var props = obj.GetType().GetProperties();
+            List<string> str = new List<string>();
+            foreach (var prp in props)
+            {
+                str.Add($"{prp.GetValue(obj)}");
+            }
+            var jstr = string.Join('|', str);
+        }
+
+        [Fact]
+        public void GetStringValueFromObject2()
+        {
+            StringBuilder _str = new StringBuilder();
+            _str.Append("A|B|C|D|E1");
+            _str.Append($"{Environment.NewLine}A|B|C|D|E2");
+            _str.Append("A|B|C|D|E3");
+            _str.Append("A|B|C|D|E4");
+            _str.Append("A|B|C|D|E5");
+
+            Console.WriteLine(_str);
+        }
     }
+
 }

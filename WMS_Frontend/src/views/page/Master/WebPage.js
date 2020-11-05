@@ -298,17 +298,6 @@ const WebPage = props => {
         }
     };
     return (
-        <div>
-            {/* <AmMasterData
-                columnsFilterPrimary={primarySearch}
-                columnsFilter={columnsFilter}
-                tableQuery={"WebPage"}
-                table={"ams_WebPage"}
-                dataAdd={columnsAdd}
-                iniCols={iniCols}
-                dataEdit={columnsEdit}
-                history={props.history}
-            /> */}
             <AmMaster
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
@@ -323,7 +312,6 @@ const WebPage = props => {
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
             />
-        </div>
     );
 }
 

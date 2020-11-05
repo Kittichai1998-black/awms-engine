@@ -63,7 +63,7 @@ const AmputAndpickManage = (props) => {
         var remark = 'remark='
         var pallet = 'palletcode='
         var optn;
-        doc.dataSourceItemTB.map(x => {          
+        doc.dataSourceItemTB.map(x => {
             if (x.PalletCode != null && x.remark != null && x.Options != null) {
                 optn = x.Options + '&' +
                     pallet.concat(x.PalletCode) + '&' +
@@ -91,7 +91,7 @@ const AmputAndpickManage = (props) => {
             docs.receiveItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
-                x.quantity = x.Quantity
+                x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
                 x.baseunitType = x.BaseUnitType_Code
                 x.batch = x.Batch
@@ -179,7 +179,7 @@ const AmputAndpickManage = (props) => {
                         onClick={() => {
                             OnCreateDocument();
                         }}
-                    >CREATE</AmButton>: null}
+                    >CREATE</AmButton> : null}
 
                 </div>
             </Grid>

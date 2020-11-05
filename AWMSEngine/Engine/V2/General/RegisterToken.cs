@@ -8,7 +8,7 @@ using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.General
 {
-    public class RegisterToken : BaseEngine<RegisterToken.TReqModel, amt_Token>
+    public class RegisterToken : BaseEngine<RegisterToken.TReqModel, TokenObject>
     {
         public class TReqModel
         {
@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.V2.General
             public string SecretKey;
         }
 
-        protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
+        protected override TokenObject ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
             if (ADO.WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
             {
@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0014);
                 else
                 {
-                    amt_Token tokenModel = ADO.WMSDB.TokenADO.GetInstant().Register(
+                    TokenObject tokenModel = ADO.WMSDB.TokenADO.GetInstant().Register(
                         reqVO.Username,
                         null,
                         reqVO.SecretKey,
@@ -69,6 +69,12 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0010);
                 }
 
+                var prodOwner = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_User_ProductOwner>(new SQLConditionCriteria[]
+                             {
+                                new SQLConditionCriteria("User_ID",user.ID, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("Status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                             }, this.BuVO);
+
                 var permissions = ADO.WMSDB.PermissionADO.GetInstant().ListByUser(user.ID.Value, this.BuVO);
 
                 TokenCriteria token = new TokenCriteria()
@@ -85,14 +91,15 @@ namespace AWMSEngine.Engine.V2.General
                         uname = user.Name,
                         exp = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXPIRE_HR).Get<int>()),
                         extend = DateTime.Now.AddHours(this.StaticValue.GetConfigValue(ConfigCommon.TOKEN_EXTEND_HR).Get<int>()),
-                        pms = permissions.Select(x=>x.ID.Value).ToArray()
+                        pms = permissions.Select(x=>x.ID.Value).ToArray(),
+                        pos = prodOwner.Select(x=> x.ProductOwner_ID).ToArray()
                     }
                 };
                 string tokenVal = EncryptUtil.Base64Encode(token.HeadDecode.Json()) + "." + EncryptUtil.Base64Encode(token.BodyDecode.Json());
                 token.SignatureEncode = EncryptUtil.GenerateSHA256String(tokenVal + "." + user.SecretKey);
                 tokenVal = tokenVal + "." + token.SignatureEncode;
 
-                amt_Token tokenModel = new amt_Token()
+                TokenObject tokenModel = new TokenObject()
                 {
                     ExpireTime = token.BodyDecode.exp,
                     Token = tokenVal

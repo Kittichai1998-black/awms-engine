@@ -415,7 +415,7 @@ const ObjectSize = props => {
   }
 
   return (
-    <div>
+    <>
       <PopupObjSize relationComponent={relationComponent} open={open}/>
       
       <AmDialogs
@@ -436,7 +436,7 @@ const ObjectSize = props => {
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
+    </>
   );
 };
 

@@ -44,6 +44,7 @@ namespace AWMSModel.Entity
         public DateTime? ExpiryDate;
         public DateTime? ShelfLiftDate;
         public DateTime? IncubationDate;
+        public int? ProductOwner_ID;
 
     }
 }

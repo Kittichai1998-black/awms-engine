@@ -57,7 +57,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             {
                 new SQLConditionCriteria("RefID", psto.RefID, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("EventStatus","10", SQLOperatorType.IN),
-                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL)
+                new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
+                new SQLConditionCriteria("ParentDocumentItem_ID", ObjectUtil.QryStrGetValue(OptionVOConst.OPT_DOCITEM_ID, psto.Options), SQLOperatorType.ISNOTNULL)
             }, this.BuVO);
 
             var distos = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]

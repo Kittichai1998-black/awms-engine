@@ -39,7 +39,7 @@ namespace AMWUtil.Logger
             this.LogFileFormat = logFileFormat;
             this.AMWLoggers = new List<KeyValuePair<string, AMWLogger>>();
         }
-        
+
 
 
         ///<summary>
@@ -90,7 +90,7 @@ namespace AMWUtil.Logger
                 return logger;
 
             }
-        
+
         }
 
     }

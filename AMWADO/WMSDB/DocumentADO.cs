@@ -104,8 +104,9 @@ namespace ADO.WMSDB
                 param.Add("@ref2", doc.Ref2);
                 param.Add("@ref3", doc.Ref3);
                 param.Add("@ref4", doc.Ref4);
-
+                
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
+                param.Add("@productOwner", doc.ProductOwner_ID);
 
                 param.Add("@remark", doc.Remark);
                 param.Add("@eventStatus", doc.EventStatus);

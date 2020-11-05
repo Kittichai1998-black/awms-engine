@@ -221,7 +221,7 @@ const BtnAddList = props => {
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
                     setTotalSize(res.data.counts);
-                   // setDefaultSelect([...props.dataCheck]);
+                    // setDefaultSelect([...props.dataCheck]);
                 }
             });
         }
@@ -237,6 +237,7 @@ const BtnAddList = props => {
                 lot: x.Lot,
                 expireDates: x.expireDate ? x.expireDate : null,
                 productionDates: x.productionDate ? x.productionDate : null,
+                eventstatus: 10,
                 //expireDate: x.expireDate ? moment(x.expireDate).format('DD/MM/YYYY') : null,
                 //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
                 auditStatus: x.AuditStatus.toString(),
@@ -342,9 +343,7 @@ const BtnAddList = props => {
     const onSubmit = () => {
         if (dataSelect.length > 0 && props.dataCheck.length > 0) {
             dataSelect.forEach((x, i) => {
-                    let check = props.dataCheck.find(x => x.packID === dataSelect[i].packID);
-                    console.log(check)
-                    console.log(dataSelect)
+                let check = props.dataCheck.find(x => x.packID === dataSelect[i].packID);
                 if (!check) {
                     let datasOnsub = []
                     let datas = dataSelect.find(x => x.ID === undefined)
@@ -354,12 +353,12 @@ const BtnAddList = props => {
                         props.onSubmit(datasOnsub);
                         setOpen(false);
                     }
-                    } else {
-                        setOpen(false);
-                    }
-                })
+                } else {
+                    setOpen(false);
+                }
+            })
 
-           
+
         } else {
             props.onSubmit(dataSelect);
             setOpen(false);
@@ -434,7 +433,7 @@ const BtnAddList = props => {
                         }}
                         dataSource={data}
                         rowNumber={true}
-                        tableConfig={true}                                        
+                        tableConfig={true}
                         sortable
                         sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
                         selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}

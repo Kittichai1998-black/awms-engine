@@ -104,7 +104,6 @@ const TransportCarType = props => {
   };
 
   return (
-    <div>
       <AmMaster
         tableType="master"
         tableQuery={"TransportCarType"}
@@ -117,7 +116,6 @@ const TransportCarType = props => {
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
   );
 };
 
