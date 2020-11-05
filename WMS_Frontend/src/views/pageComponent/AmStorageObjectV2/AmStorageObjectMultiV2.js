@@ -66,10 +66,10 @@ const AmStorageObjectMulti = props => {
 
   const [reset, setReset] = useState(false)
 
-  const QueryAudit = {
+  const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "AuditStatusName", "c":"in", "v": "QUARANTINE,HOLD"},{ "f": "SkuTypeID", "c":"=", "v": ' + (props.typeSKU === "FG" ? 4 : 5) + '}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": "1,2"}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -88,7 +88,7 @@ const AmStorageObjectMulti = props => {
     l: pageSize,
     all: ""
   };
-  const [queryViewData, setQueryViewData] = useState(props.actionAuditStatus === true ? QueryAudit : Query);
+  const [queryViewData, setQueryViewData] = useState(props.actionQueryCustom === true ? QueryCustom : Query);
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
