@@ -2,7 +2,9 @@
 using AMWUtil.DataAccess.Http;
 using AWMSEngine.HubService;
 using AWMSEngine.WorkerService;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -24,8 +26,17 @@ namespace ProjectBOTHY.Worker
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
-            var res = RESTFulAccess.SendJson<TRes>(null, "WCS", RESTFulAccess.HttpMethod.POST, new { });
-            this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res.Json());
+            buVO.Logger.IsLogging = false;
+            var bsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "xx").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
+                }, buVO).FirstOrDefault();
+
+            if(bsto != null)
+            {
+                var mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bsto.ID.Value, StorageObjectType.BASE, false, true, buVO);
+                this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], mapsto.Json());
+            }
         }
     }
 }
