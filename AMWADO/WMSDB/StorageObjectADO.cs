@@ -26,7 +26,7 @@ namespace ADO.WMSDB
             Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
             parameter.Add("@childStoIDs", string.Join(',', childStoIDs));
             var res = this.Query<amt_StorageObject>("SP_STO_LIST_PARENT", 
-                CommandType.StoredProcedure, parameter, buVO.Logger, buVO.SqlTransaction, buVO.SqlConnection).ToList();
+                CommandType.StoredProcedure, parameter, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
         public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)

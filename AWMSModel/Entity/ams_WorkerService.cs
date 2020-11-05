@@ -11,6 +11,5 @@ namespace AWMSModel.Entity
         public string FullClassName;
         public string Options;
         public int Revision;
-        public OnOffFlag OnOff;
     }
 }
