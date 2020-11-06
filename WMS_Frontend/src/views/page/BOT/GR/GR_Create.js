@@ -53,7 +53,7 @@ const RD_Create_FGCustomer = props => {
                     { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
                 ],
-                [
+                [ 
                     { label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL, fieldLabel: ["label"], defaultValue: 2 },
                 ],
                 [
@@ -175,15 +175,12 @@ const RD_Create_FGCustomer = props => {
                 //fieldDataKey: "Name",
                 //required: true
             },
-            Control,
             Headers,
             { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
-            AuditStatusDDL,
             { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
             { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
             ProDate,
-            Expire
 
         ];
         // var columnEdit = [

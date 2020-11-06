@@ -887,7 +887,6 @@ const AmCreateDocument = (props) => {
             )
         }
         else if (type === "dropdownvalue") {
-            console.log(datas)
             return (
                 <AmDropdown id={idddls} styleType="default"
                     placeholder={placeholder ? placeholder : "Select"}

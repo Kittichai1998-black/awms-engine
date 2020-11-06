@@ -420,7 +420,6 @@ const DropdownComponent = (props) => {
             getData(createQueryString(queryApi));
             
         } else if (data) {
-            console.log(data)
             var dataOptions = data;
             dataOptions.forEach(datas => {
                 datas.value = datas[fieldDataKey];
