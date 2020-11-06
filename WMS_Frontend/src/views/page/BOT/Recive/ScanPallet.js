@@ -1,26 +1,19 @@
 ﻿import * as signalR from '@aspnet/signalr';
 import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
-import AmInput from '../../../components/AmInput';
-import AmButton from '../../../components/AmButton';
+import AmInput from '../../../../components/AmInput';
+import AmButton from '../../../../components/AmButton';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
-import AmDropdown from "../../../components/AmDropdown"
-import { apicall, createQueryString } from '../../../components/function/CoreFunction2'
+import { apicall, createQueryString } from '../../../../components//function/CoreFunction2'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import Flash from 'react-reveal/Flash';
-import AmDialogs from '../../../components/AmDialogs'
-import IconButton from '@material-ui/core/IconButton';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
-import IconLock from '@material-ui/icons/Lock';
-import IconLockOpen from '@material-ui/icons/LockOpen';
-import Moment from 'moment';
+import AmDialogs from '../../../../components/AmDialogs'
 import { useTranslation } from 'react-i18next'
+
 import Axios1 from 'axios'
 const Axios = new apicall()
 
@@ -101,62 +94,62 @@ const BorderGrey = styled.div`
 
 const ScanPallet = (props) => {
     const { t } = useTranslation()
-    const { classes, location, history } = props;
-    const [valueText, setValueText] = useState({});
     const [databar, setdatabar] = useState({});
     const [valueBarcode, setvalueBarcode] = useState();
-    const [productCode, setproductCode] = useState();
-    const [productName, setproductName] = useState();
-    const [qty, setqty] = useState(0);
-    const [qtyMax, setqtyMax] = useState(0);
-    const [areaGate, setareaGate] = useState();
-    const [carton, setcarton] = useState();
-    const [pallet, setpallet] = useState();
-    const [orderNo, setorderNo] = useState();
-    const [unitCode, setunitCode] = useState('PC');
-
-    const [productCode2, setproductCode2] = useState();
-    const [productName2, setproductName2] = useState();
-    const [qty2, setqty2] = useState(0);
-    const [qtyMax2, setqtyMax2] = useState(0);
-    const [areaGate2, setareaGate2] = useState();
-    const [carton2, setcarton2] = useState();
-    const [pallet2, setpallet2] = useState();
-    const [orderNo2, setorderNo2] = useState();
-    const [unitCode2, setunitCode2] = useState('PC');
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogSuc, setStateDialogSuc] = useState(false);
     const [msgDialogSuc, setMsgDialogSuc] = useState("");
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [calHeight, setCalHeight] = useState(0.25);
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
-    const [area2, setarea2] = useState();
-    const [gateLeft, setgateLeft] = useState(false);
-    const [gateRight, setgateRight] = useState(false);
-    const [isFull, setisFull] = useState();
-    const [width_height, set_width_height] = useState({
-        width: window.innerWidth,
-        height: window.innerHeight
-    })
-    const [lockStateLeft, setLockStateLeft] = useState(false)
-    const [lockStateRight, setLockStateRight] = useState(false)
 
-    const [lockGateID, setLockGateID] = useState([])
-    const [manualAddLeft, setManualAddLeft] = useState({})
+    const [data, setData] = useState([])
 
 
     useEffect(() => {
-        setTimeout(() => {
-            set_width_height({
-                width: window.innerWidth,
-                height: window.innerHeight
+        // console.log(dashboard)
+
+        let url = window.apipath + '/recive'
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl(url, {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
             })
-        }, 20);
-    }, [isFullScreen])
+            //.configureLogging(signalR.LogLevel.Information)
+            .build();
 
+        const signalrStart = () => {
 
+            connection.start()
+                .then(() => {
+                    connection.on( res => {
+                        console.log(JSON.parse(res));
+                        //setCount(count + 1);
+                        //data[0][0].table[0].headercol = headercol1
+                        //data[0][0].table[0].data = JSON.parse(res)
+                        //setData([...data])
+                    })
+                })
+                .catch((err) => {
+                    //console.log(err);
+                    setTimeout(() => signalrStart(), 5000);
+                })
+        };
+
+        connection.onclose((err) => {
+            if (err) {
+                signalrStart()
+            }
+        });
+
+        signalrStart()
+
+        return () => {
+            connection.stop()
+        }
+
+    }, [localStorage.getItem('Lang')])
 
 
     const StorageObjectQuery = {
@@ -172,66 +165,7 @@ const ScanPallet = (props) => {
 
     }
 
- 
 
-    const Scanbar = () => {
-        var databars = { ...databar }
-        Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
-            if (res.data._result.status = 1) {
-
-                if (res.data.bsto != null) {
-                    var datass = res.data.bsto.mapstos[0]
-                    var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    if (datass.qty == null) {
-                        setqty(0)
-                    } else { setqty(datass.qty) }
-                    if (dataQtyMax.maxQuantity == null) {
-                        setqtyMax(0)
-                    } else {
-                        setqtyMax(dataQtyMax.maxQuantity)
-
-                    }
-                    if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                        var qtyIn = parseFloat(datass.qty)
-                        var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                        var calQty = qtyMaxIn - qtyIn
-
-                        if (calQty < qtyMaxIn) {
-                            var MsgError = "Recive " + calQty + "/" + qtyMaxIn;
-                            setMsgDialogSuc(MsgError);
-                            setStateDialogSuc(true);
-                        }
-                        else if (calQty == qtyMaxIn) {
-                            var MsgErrors = "Empty"
-                            setMsgDialog(MsgErrors);
-                            setStateDialog(true);
-                        } else {
-
-                        }
-
-                    }
-                } else {
-
-                    setMsgDialog(res.data._result.message);
-                    setStateDialog(true);
-                }
-
-
-            } else {
-                setMsgDialog(res.data._result.message);
-                setStateDialog(true);
-            }
-
-        })
-
-
-    }
-
-  
-
-    
 
     const HeadLock = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#1769aa" }} >
@@ -272,8 +206,7 @@ const ScanPallet = (props) => {
                                                 databarcode.scanCode = bar
                                                 //setdatabar(databarcode)
                                                 setdatabar(databarcode);
-                                                document.getElementById("barcodeLong").value = "";
-                                                Scanbar();
+                                                document.getElementById("barcodeLong").value = "";                                            
                                             }
                                         }}
                                     >
