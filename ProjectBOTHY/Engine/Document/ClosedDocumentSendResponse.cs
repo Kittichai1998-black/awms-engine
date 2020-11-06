@@ -2,7 +2,9 @@
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.Document;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using ProjectBOTHY.Engine.FileGenerate;
 using ProjectBOTHY.Model;
 using System;
@@ -18,7 +20,13 @@ namespace ProjectBOTHY.Engine.WorkQueue
         {
             reqVO.ForEach(id =>
             {
-                var getDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(id, buVO);
+                var getDoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria() 
+                    { field = "ID", value = id, operatorType = SQLOperatorType.EQUALS }, buVO).FirstOrDefault();
+                if (getDoc != null)
+                {
+                    getDoc.DocumentItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria() 
+                    { field = "Document_ID", value = getDoc.ID, operatorType = SQLOperatorType.EQUALS }, buVO);
+                }
 
                 var headerDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<FileFormat.TextFileHeader>(ObjectUtil.QryStrGetValue(getDoc.Options, "textFile"));
 

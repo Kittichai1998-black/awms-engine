@@ -14,12 +14,13 @@ using ProjectBOTHY.Model;
 using System.Globalization;
 using AMWUtil.DataAccess;
 using ProjectBOTHY.Engine.FileGenerate;
+using AMWUtil.Logger;
 
 namespace ProjectBOTHY.Worker
 {
     public class ReadFileFromFTP : AWMSEngine.WorkerService.BaseWorkerService
     {
-        public ReadFileFromFTP(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
+        public ReadFileFromFTP(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, logger, commonHub)
         {
         }
 

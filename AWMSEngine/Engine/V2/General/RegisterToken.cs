@@ -8,7 +8,7 @@ using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.General
 {
-    public class RegisterToken : BaseEngine<RegisterToken.TReqModel, amt_Token>
+    public class RegisterToken : BaseEngine<RegisterToken.TReqModel, TokenObject>
     {
         public class TReqModel
         {
@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine.V2.General
             public string SecretKey;
         }
 
-        protected override amt_Token ExecuteEngine(RegisterToken.TReqModel reqVO)
+        protected override TokenObject ExecuteEngine(RegisterToken.TReqModel reqVO)
         {
             if (ADO.WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<bool>("AUTHEN.LDAP"))
             {
@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.General
                     throw new AMWException(this.Logger, AMWExceptionCode.A0014);
                 else
                 {
-                    amt_Token tokenModel = ADO.WMSDB.TokenADO.GetInstant().Register(
+                    TokenObject tokenModel = ADO.WMSDB.TokenADO.GetInstant().Register(
                         reqVO.Username,
                         null,
                         reqVO.SecretKey,
@@ -99,7 +99,7 @@ namespace AWMSEngine.Engine.V2.General
                 token.SignatureEncode = EncryptUtil.GenerateSHA256String(tokenVal + "." + user.SecretKey);
                 tokenVal = tokenVal + "." + token.SignatureEncode;
 
-                amt_Token tokenModel = new amt_Token()
+                TokenObject tokenModel = new TokenObject()
                 {
                     ExpireTime = token.BodyDecode.exp,
                     Token = tokenVal

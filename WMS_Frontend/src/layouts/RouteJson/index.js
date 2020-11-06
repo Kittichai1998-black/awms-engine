@@ -7,7 +7,9 @@ import DefaultRoute from "./routeDefault";
 // import STGT from "./routeSTGT";
 // import AERP from "./routeAERP";
 import BOSS from "./routeBOSS";
+import BOT from "./routeBOT";
 import ENGINE from "./routeEngine";
+import BOTHY from "../RouteJson/routeBOTHY"
 // import PANKAN from "./routePANKAN";
 
 var PROJ = null;

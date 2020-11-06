@@ -11,12 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Logger;
 
 namespace AWMSEngine.WorkerService.DocumentClosed
 {
     public class ClosedDocumentWorker : BaseWorkerService
     {
-        public ClosedDocumentWorker(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
+        public ClosedDocumentWorker(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub)
+            : base(workerServiceID, logger, commonHub)
         {
         }
 

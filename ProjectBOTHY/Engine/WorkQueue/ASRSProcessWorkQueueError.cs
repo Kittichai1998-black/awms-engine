@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBOTHY.Engine.WorkQueue
 {
-    public class ASRSProcessWorkQueue : BaseEngine<ASRSProcessWorkQueue.TReq, string>
+    public class ASRSProcessWorkQueueError : BaseEngine<ASRSProcessWorkQueueError.TReq, string>
     {
         public class TReq
         {

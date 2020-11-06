@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine
         public AMWLogger Logger { get; set; }
 
         protected string Token => this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN);
-        protected amt_Token TokenInfo => this.BuVO.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
+        protected TokenObject TokenInfo => this.BuVO.Get<TokenObject>(BusinessVOConst.KEY_TOKEN_INFO);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
         protected ams_APIKey APIKeyInfo => this.BuVO.Get<ams_APIKey>(BusinessVOConst.KEY_APIKEY_INFO);
 
@@ -63,7 +63,8 @@ namespace AWMSEngine.Engine
 
         public TRes Execute(AMWLogger logger,
             VOCriteria buVO,
-            TReq reqVO)
+            TReq reqVO,
+            bool callPlugIn = true)
         {
             this._subServiceNameTMP = logger.SubServiceName;
             logger.SubServiceName = this.GetType().Name.Split('.').Last();
@@ -82,7 +83,8 @@ namespace AWMSEngine.Engine
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 this.ValidateRequestParameter(reqVO);
-                resVO = Common.FeatureExecute.ExectProject<TReq, TRes>("PLUGIN.CLASS.ENGINE." + this.GetType().Name, this.Logger, this.BuVO, reqVO);
+                if(callPlugIn)
+                    resVO = Common.FeatureExecute.ExectProject<TReq, TRes>("PLUGIN.CLASS.ENGINE." + this.GetType().Name, this.Logger, this.BuVO, reqVO);
                 if(resVO == null)
                     resVO = this.ExecuteEngine(reqVO);
                 //resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };

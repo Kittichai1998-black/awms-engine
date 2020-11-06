@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Logger;
 using AWMSEngine.HubService;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
@@ -16,52 +17,53 @@ namespace AWMSEngine.WorkerService
     public abstract class BaseWorkerService
     {
         protected long WorkerServiceID { get; set; }
+        protected AMWLogger Logger { get; set; }
         protected readonly IHubContext<CommonMessageHub> CommonMsgHub;
 
         protected abstract void ExecuteEngine(Dictionary<string,string> options, VOCriteria buVO);
 
-        public BaseWorkerService(long workerServiceID, IHubContext<CommonMessageHub> commonHub)
+        public BaseWorkerService(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub)
         {
             this.CommonMsgHub = commonHub;
             this.WorkerServiceID = workerServiceID;
+            this.Logger = logger;
         }
 
-        public async Task ExecuteAsync()
+        public Task Execute()
         {
-            var logger = AMWLoggerManager.GetLogger("worker." + this.WorkerServiceID, this.GetType().Name);
             VOCriteria buVO = new VOCriteria();
-            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, logger);
-            logger.LogInfo("######START######");
-            logger.LogInfo("...WORKER...");
+            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
+            var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
+            string prefixLog = "[" + job.Code + "(" + job.ID + ")] ";
+            var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);
+            this.Logger.LogInfo(prefixLog + "[Begin] Option=" + job.Options);
+            int logRunTimeMS = 60000;
             while (true)
-            { 
-                var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
-
+            {
                 if (job == null) break;
                 try
                 {
-                    if (job.OnOff == AWMSModel.Constant.EnumConst.OnOffFlag.ON)
+                    this.ExecuteEngine(options, buVO);
+                    if (logRunTimeMS >= 60000)
                     {
-                        var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);
-                        this.ExecuteEngine(options, buVO);
-                        //logger.LogInfo("ON");
-                    }
-                    else
-                    {
-                        //logger.LogInfo("OFF");
+                        logRunTimeMS -= 60000;
+                        this.Logger.LogInfo(prefixLog + "Runing...");
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex.Message);
-                    logger.LogError(ex.StackTrace);
+                    this.Logger.LogError(prefixLog + ex.Message);
+                    //this.Logger.LogError(prefixLog + ex.StackTrace);
                 }
                 finally
                 {
-                    await Task.Delay(job.SleepMS);
+                    logRunTimeMS += job.SleepMS;
+                    Thread.Sleep(job.SleepMS);
+                    //await Task.Delay(job.SleepMS);
                 }
             }
-            logger.LogInfo("######REMOVE######");
+            this.Logger.LogInfo(prefixLog + "Ending... (job not active)");
+            return Task.CompletedTask;
         }
     }
 }
