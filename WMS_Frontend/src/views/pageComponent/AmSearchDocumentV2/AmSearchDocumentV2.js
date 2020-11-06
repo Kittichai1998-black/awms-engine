@@ -57,7 +57,17 @@ const AmSearchDocumentV2 = props => {
   const [pageSize, setPageSize] = useState(50);
 
   const [reset, setReset] = useState(false)
-
+  const QueryCustom = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "Document",
+    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'desc'}]",
+    sk: 0,
+    l: pageSize,
+    all: ""
+  };
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -69,8 +79,8 @@ const AmSearchDocumentV2 = props => {
     l: pageSize,
     all: ""
   };
-  const [queryViewData, setQueryViewData] = useState(Query);
-
+  //const [queryViewData, setQueryViewData] = useState(Query);
+  const [queryViewData, setQueryViewData] = useState(props.actionQueryCustom === true ? QueryCustom : Query);
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
