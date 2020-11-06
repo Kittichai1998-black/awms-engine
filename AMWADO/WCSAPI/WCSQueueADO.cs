@@ -90,7 +90,16 @@ namespace ADO.WCSAPI
         {
             return new TResCheckQueue() { _result = new TResCheckQueue.Result() { resultcheck = 1, resultmessage = "SUCCESS" },data = new List<TResCheckQueue.CheckQueue>() };
             //var res = this.SendJson<TRes>("WCS_CHECK_QUEUE", datas, null, buVO);
+         
             //return res;
         }
+        public TRes SendConfirm(WorkQueueCriteria datas, VOCriteria buVO)
+        {
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+
+            var res = this.SendJson<TRes>("WCS_SEND_CONFIRM", datas, buVO);
+            return res;
+        }
+
     }
 }

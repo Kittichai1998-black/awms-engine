@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         msgError = "Document Items Not Found."
                                     });
                                 }
-                                
+
                                 docs.DocumentItems.ForEach(y =>
                                 {
                                     if (y.DocItemStos == null || y.DocItemStos.Count() == 0)
@@ -68,7 +68,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         }
                                         else
                                         {
-                                            if(y.BaseQuantity == null)
+
+                                            if (docs.DocumentType_ID == DocumentTypeID.PICKING)
                                             {
                                                 if (y.DocItemStos.TrueForAll(z => z.Status == EntityStatus.DONE))
                                                 {
@@ -76,77 +77,44 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                     ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                                                 }
                                             }
-                                            else
+                                            else if (docs.DocumentType_ID == DocumentTypeID.PUTAWAY)
                                             {
-                                                decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
-                                                decimal totalQty = y.BaseQuantity ?? 0;
-                                                if (sumQtyDisto == totalQty)
+                                                if (y.BaseQuantity != null)
                                                 {
-                                                    y.EventStatus = DocumentEventStatus.WORKED;
-                                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                    decimal sumQtyDisto = y.DocItemStos.Where(z => z.DocumentItem_ID == y.ID && z.Status == EntityStatus.DONE).Sum(z => z.BaseQuantity ?? 0);
+                                                    decimal totalQty = y.BaseQuantity ?? 0;
+                                                    if (sumQtyDisto == totalQty)
+                                                    {
+                                                        y.EventStatus = DocumentEventStatus.WORKED;
+                                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                    }
                                                 }
+                                                else
+                                                {
+                                                    if (y.DocItemStos.TrueForAll(z => z.Status == EntityStatus.DONE))
+                                                    {
+                                                        y.EventStatus = DocumentEventStatus.WORKED;
+                                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(y.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                    }
+                                                }
+
                                             }
                                         }
                                     }
 
                                 });
-                                if(docs.DocumentItems.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
+                                if (docs.DocumentItems.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
                                     docs.EventStatus = DocumentEventStatus.WORKED;
                                     ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);
                                     docLists.Add(x);
                                 }
-                                //else
-                                //{
-                                //    //no docItem id
-                                //    //กรณีที่มีdocitem เป็น working แต่ไม่มีผูกกับ disto ให้อัพเดทเป็น workedอัตโนมัติ
-                                //    if (docs.DocumentType_ID == DocumentTypeID.PICKING)
-                                //    {
-                                //        docs.DocumentItems.ForEach(docItem =>
-                                //        {
-                                //            if (docItem.EventStatus == DocumentEventStatus.WORKING && docItem.DocItemStos == null || docItem.DocItemStos.Count() == 0)
-                                //            {
-                                //                docItem.EventStatus = DocumentEventStatus.WORKED;
-                                //                ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                //            }
-                                //        });
-                                //    }
-                                //    else
-                                //    {
-                                //        docs.DocumentItems.ForEach(docItem =>
-                                //        {
-                                //            if (docItem.EventStatus == DocumentEventStatus.WORKING)
-                                //            {
-                                //                if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
-                                //                {
-                                //                    decimal sumQtyDisto = docItem.DocItemStos.Sum(z => z.BaseQuantity ?? 0);
-                                //                    decimal totalQty = docItem.BaseQuantity ?? 0;
-                                //                    if (sumQtyDisto != totalQty)
-                                //                    {
-                                //                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จำนวนสินค้าของรายการ SKU: " + docItem.Code + " ที่ต้องการรับเข้าไม่ตรงกับจำนวนที่ระบุในเอกสาร");
-                                //                    }
-                                //                    else
-                                //                    {
-                                //                        docItem.EventStatus = DocumentEventStatus.WORKED;
-                                //                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                //                    }
-                                //                }
-                                //            }
-                                //        });
-                                //    }
-                                //    if (docs.DocumentItems.TrueForAll(u => u.EventStatus == DocumentEventStatus.WORKED))
-                                //    {
-                                //        docs.EventStatus = DocumentEventStatus.WORKED;
-                                //        ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.WORKED, this.BuVO);
-                                //        RemoveOPTDocument(x, docs.Options, this.BuVO);
-                                //        docLists.Add(x);
-                                //    }
-                                //}
-                                if(docs.ParentDocument_ID != null)
+
+                                if (docs.ParentDocument_ID != null)
                                 {
                                     var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
-                                    if(getParentDoc == null)
+                                    if (getParentDoc == null)
                                     {
                                         throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "Document Not Found");
                                     }
@@ -154,15 +122,31 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     var ParentDoc = docs.DocumentItems.GroupBy(
                                         p => p.ParentDocumentItem_ID, (key, g) => new { ParentItemID = key, DocItems = g.ToList() }).ToList();
 
-                                    ParentDoc.ForEach(group => { 
-                                        if(group.DocItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
+                                    ParentDoc.ForEach(group => {
+
+                                        var parentDocItem = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                                            new SQLConditionCriteria("ParentDocumentItem_ID",group.ParentItemID.Value, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.NOTEQUALS),
+                                            new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                                        }, this.BuVO);
+
+
+                                        if (group.DocItems.TrueForAll(xx => xx.EventStatus == DocumentEventStatus.WORKED))
                                         {
-                                            var qrItems = getParentDoc.DocumentItems.FindAll(y => y.ID == group.ParentItemID);
-                                            qrItems.ForEach(grItem =>
+                                            var qrItems = getParentDoc.DocumentItems.Find(y => y.ID == group.ParentItemID);
+                                            if (qrItems.BaseQuantity != null)
                                             {
-                                                grItem.EventStatus = DocumentEventStatus.WORKED;
-                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                                            });
+                                                if (qrItems != null && parentDocItem != null && qrItems.BaseQuantity == parentDocItem.Sum(y => y.BaseQuantity))
+                                                {
+                                                    qrItems.EventStatus = DocumentEventStatus.WORKED;
+                                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(qrItems.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                qrItems.EventStatus = DocumentEventStatus.WORKED;
+                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(qrItems.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                            }
                                         }
 
                                     });
