@@ -37,22 +37,24 @@ namespace AWMSEngine.WorkerService
             {
                 this.Run(wk, logger);
             }
-
-            while (true)
+            Task.Run(() =>
             {
-                var tasks = StartupWorkerService.Tasks.FindAll(x => x.task.IsCompleted || x.task.IsCanceled || x.task.IsFaulted);
-                foreach (var t in tasks)
+                while (true)
                 {
-                    logger.LogInfo("[" + t.worker.Code + "(" + t.worker.ID.Value + ")] " +
-                        "==== task.IsCompleted:" + t.task.IsCompleted + " | " +
-                        "task.IsCanceled:" + t.task.IsCanceled + " | " +
-                        "task.IsFaulted:" + t.task.IsFaulted + " ====");
-                    StartupWorkerService.Tasks.Remove(t);
-                    this.Run(t.worker, logger);
-                    logger.LogInfo("[" + t.worker.Code + "("+t.worker.ID.Value+")] ==== TRY BEGIN ====");
+                    var tasks = StartupWorkerService.Tasks.FindAll(x => x.task.IsCompleted || x.task.IsCanceled || x.task.IsFaulted);
+                    foreach (var t in tasks)
+                    {
+                        logger.LogInfo("[" + t.worker.Code + "(" + t.worker.ID.Value + ")] " +
+                            "==== task.IsCompleted:" + t.task.IsCompleted + " | " +
+                            "task.IsCanceled:" + t.task.IsCanceled + " | " +
+                            "task.IsFaulted:" + t.task.IsFaulted + " ====");
+                        StartupWorkerService.Tasks.Remove(t);
+                        this.Run(t.worker, logger);
+                        logger.LogInfo("[" + t.worker.Code + "(" + t.worker.ID.Value + ")] ==== TRY BEGIN ====");
+                    }
+                    Thread.Sleep(60000);
                 }
-                Thread.Sleep(60000);
-            }
+            });
             return Task.CompletedTask;
         }
 
