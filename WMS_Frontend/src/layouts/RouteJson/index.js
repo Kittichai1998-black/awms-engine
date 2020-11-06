@@ -7,6 +7,7 @@ import DefaultRoute from "./routeDefault";
 // import STGT from "./routeSTGT";
 // import AERP from "./routeAERP";
 import BOSS from "./routeBOSS";
+import BOT from "./routeBOT";
 import ENGINE from "./routeEngine";
 import BOTHY from "../RouteJson/routeBOTHY"
 // import PANKAN from "./routePANKAN";
@@ -29,9 +30,7 @@ if (window.project === "STA") {
 } else if (window.project === "AERP") {
   // PROJ = AERP;
 } else if (window.project === "BOSS") {
-    PROJ = BOSS;
-} else if (window.project === "BOTHY") {
-    PROJ = BOTHY;
+  PROJ = BOSS;
 } else {
   PROJ = ENGINE;
 }
