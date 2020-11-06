@@ -63,6 +63,21 @@ const StorageObjectFull = props => {
       },
       Cell: e => getIsHold(e.original.IsHoldName)
     },
+
+    {
+      Header: "Quality Status",
+      accessor: "AuditStatusName",
+      width: 50,
+      sortable: false,
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: AuditStatus,
+        typeDropDown: "normal",
+        widthDD: 120,
+      },
+      Cell: e => getAuditStatus(e.original.AuditStatusName)
+    },
     {
       Header: "Pallet",
       accessor: "Pallet",
