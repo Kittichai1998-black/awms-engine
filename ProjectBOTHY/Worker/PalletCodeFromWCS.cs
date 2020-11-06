@@ -7,6 +7,7 @@ using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
+using ProjectBOTHY.Hub;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,8 @@ namespace ProjectBOTHY.Worker
 {
     public class PalletCodeFromWCS : BaseWorkerService
     {
-        public PalletCodeFromWCS(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, logger, commonHub)
+        public PalletCodeFromWCS(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub)
+            : base(workerServiceID, logger, commonHub)
         {
         }
 
@@ -29,7 +31,7 @@ namespace ProjectBOTHY.Worker
         {
             buVO.Logger.IsLogging = false;
             var bsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                    new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "xx").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "area").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
                 }, buVO).FirstOrDefault();
 
