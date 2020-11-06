@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.DataAccess.Http;
+using AMWUtil.Logger;
 using AWMSEngine.HubService;
 using AWMSEngine.WorkerService;
 using AWMSModel.Constant.EnumConst;
@@ -15,13 +16,13 @@ namespace ProjectBOTHY.Worker
 {
     public class PalletCodeFromWCS : BaseWorkerService
     {
+        public PalletCodeFromWCS(long workerServiceID, AMWLogger logger, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, logger, commonHub)
+        {
+        }
+
         public class TRes
         {
             public string baseCode;
-        }
-
-        public PalletCodeFromWCS(long workerServiceID, IHubContext<CommonMessageHub> commonHub) : base(workerServiceID, commonHub)
-        {
         }
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
