@@ -159,7 +159,11 @@ namespace AWMSModel.Constant.EnumConst
         ESP_CORRECTIONS_CUS = 8102,
         ESP_CORRECTIONS_SUP = 8103,
 
-        OTH_OTHER_WM = 9991
+        OTH_OTHER_WM = 9991,
+
+        WM_TRANSFER_AUTO = 1001,
+        WM_TRANSFER_MANUAL = 1002,
+
 
     }
 }
