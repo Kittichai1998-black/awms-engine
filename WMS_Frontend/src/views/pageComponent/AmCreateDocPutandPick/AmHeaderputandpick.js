@@ -517,8 +517,9 @@ const AmHeaderputandpick = (props) => {
                     dataSelect2 = dataSelect.map((x, idx) => {
                         const found = doc.dataSourceItemTB.find(x => x.ID === dataSelect[idx].ID);
                         const CheckID = valueQtyDocItems.find(xy => xy.docItemID === x.ID)
-                        //console.log(found)
-                        if (CheckID) {
+                        console.log(CheckID)
+                        console.log(found)
+                        if (CheckID && !found) {
                             x.DiffQty = CheckID.recQty
                             return x;
                         } else if (!found) {
@@ -531,7 +532,6 @@ const AmHeaderputandpick = (props) => {
                     //    Checkdataselect = 0
 
                     //} else {   
-                    console.log(dataSelect2)
                     if (doc.dataSourceItemTB.length === 0) {
                         doc.setdataSourceItemTB(dataSelect2);
                         doc.setdialogItem(false)
