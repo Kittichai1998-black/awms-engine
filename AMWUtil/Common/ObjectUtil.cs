@@ -508,5 +508,11 @@ namespace AMWUtil.Common
         {
             return ObjectToQryStr(obj, "&");
         }
+
+        public static T QryStringToObject<T>(string qryStr)
+        {
+            T obj = (T)ObjectUtil.QryStrToDynamic(qryStr);
+            return obj;
+        }
     }
 }

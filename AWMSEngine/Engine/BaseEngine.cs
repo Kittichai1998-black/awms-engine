@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine
         public AMWLogger Logger { get; set; }
 
         protected string Token => this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN);
-        protected amt_Token TokenInfo => this.BuVO.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
+        protected TokenObject TokenInfo => this.BuVO.Get<TokenObject>(BusinessVOConst.KEY_TOKEN_INFO);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
         protected ams_APIKey APIKeyInfo => this.BuVO.Get<ams_APIKey>(BusinessVOConst.KEY_APIKEY_INFO);
 

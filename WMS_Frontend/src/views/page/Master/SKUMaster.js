@@ -290,7 +290,6 @@ const SKUMaster = props => {
         }
     }
     return (
-        <div>
             <AmMaster
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
@@ -305,7 +304,6 @@ const SKUMaster = props => {
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
             />
-        </div>
     );
 };
 

@@ -27,6 +27,7 @@ const ProcessQueue = (props) => {
       confirmProcessUrl={props.confirmProcessUrl}
       modeDefault={props.modeDefault}
       waveProcess={props.waveProcess}
+      customAfterProcess={props.customAfterProcess}
       />
     </ProcessQueueProvider>
   </>
@@ -117,6 +118,11 @@ ProcessQueue.propTypes = {
     ** value? : true | false
    */
    waveProcess:PropTypes.bool,
+   /**
+    * ฟังก์ชั่นหลัง Process Queue เสร็จ
+    ** value? : (processResponse) => { }
+   */
+  customAfterProcess:PropTypes.func,
 }
 ProcessQueue.defaultProps = {
   processSingle:false,

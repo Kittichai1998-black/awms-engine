@@ -316,17 +316,6 @@ const AreaLocationCondition = props => {
     };
 
     return (
-        <div>
-            {/* <MasterData
-        columnsFilter={columnsFilter}
-        columnsFilterPrimary={columnsFilterPri}
-        tableQuery={"AreaLocationMaster"}
-        table={"ams_AreaLocationMaster"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
             <AmMaster
                 columnsFilterPrimary={columnsFilterPri}
                 columnsFilter={columnsFilter}
@@ -340,7 +329,6 @@ const AreaLocationCondition = props => {
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
             />
-        </div>
     );
 };
 

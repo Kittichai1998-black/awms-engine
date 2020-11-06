@@ -8,11 +8,11 @@ namespace AWCSEngine.McEngine
 {
     public class McRGV : BaseMcEngine
     {
-        public McRGV(act_McObject mcObject) : base(mcObject)
+        public McRGV(int mcObject) : base(mcObject)
         {
         }
 
-        protected override void Execute(act_McObject mcObject, VOCriteria buVO)
+        protected override void Execute(acs_McMaster mcMst, act_McObject mcObj)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_Token : BaseEntityCreateModify
+    public class TokenObject
     {
         public string Token;
         public string ExtendKey;

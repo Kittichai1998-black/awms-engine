@@ -778,7 +778,9 @@ const ProcessQueueDetail = (props) => {
                             setConfirmState(true)
                     }
                 }
-            });
+
+                return res.data;
+            }).then(res => {props.customAfterProcess(res)});
         }
     };
 

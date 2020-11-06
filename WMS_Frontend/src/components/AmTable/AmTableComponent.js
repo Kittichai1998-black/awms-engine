@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
+import React, { useContext, useEffect, useState, useLayoutEffect, useRef } from "react";
 import AmTableBody from "./AmTableBody";
 import { AmTableProvider, AmTableContext } from "./AmTableContext";
 import AmPagination from "./AmPagination";
@@ -136,6 +136,9 @@ const AmTableSetup = (props) => {
     const [page, setPage] = useState(1)
     const [dataSource, setDataSource] = useState([])
     const [resetPage, setResetPage] = useState(props.resetPage)
+    const [height, setHeight] = useState(0)
+    const topBarRef = useRef(null)
+    const btmBarRef = useRef(null)
 
     const { selectionData, sortData, sortable } = props;
     useEffect(() => {
@@ -232,18 +235,28 @@ const AmTableSetup = (props) => {
             props.onPageChange(page)
     }, [page])
 
-    return <div>
-        <Topbar
-            customTopControl={props.customTopControl}
-            customTopLeftControl={props.customTopLeftControl}
-            customTopRightControl={props.customTopRightControl}
-            totalSize={props.totalSize}
-            resetPage={resetPage}
-            pageSize={props.pageSize}
-            dataSource={dataSource}
-            pagination={props.pagination}
-            page={(e) => setPage(e)}
-        />
+    useEffect(() => {
+        let tableHeight = props.height - 
+        (topBarRef.current !== null ? topBarRef.current.scrollHeight : 0) - 
+        (btmBarRef.current !== null ? btmBarRef.current.scrollHeight : 0);
+
+        setHeight(tableHeight);
+    }, [topBarRef])
+
+    return <>
+        <div className={"topBar"} ref={topBarRef}>
+            <Topbar
+                customTopControl={props.customTopControl}
+                customTopLeftControl={props.customTopLeftControl}
+                customTopRightControl={props.customTopRightControl}
+                totalSize={props.totalSize}
+                resetPage={resetPage}
+                pageSize={props.pageSize}
+                dataSource={dataSource}
+                pagination={props.pagination}
+                page={(e) => setPage(e)}
+            />
+        </div>
         <div style={{ maxHeight: props.height }}>
             <AmTableBody
                 dataSource={dataSource}
@@ -270,18 +283,20 @@ const AmTableSetup = (props) => {
                 rowStyle={props.rowStyle}
             />
         </div>
-        <Bottombar
-            customBtmControl={props.customBtmControl}
-            customBtmLeftControl={props.customBtmLeftControl}
-            customBtmRightControl={props.customBtmRightControl}
-            totalSize={props.totalSize}
-            resetPage={resetPage}
-            pageSize={props.pageSize}
-            dataSource={dataSource}
-            pagination={props.pagination}
-            page={(e) => setPage(e)}
-        />
-    </div>
+        <div className={"btmBar"} ref={btmBarRef}>
+            <Bottombar
+                customBtmControl={props.customBtmControl}
+                customBtmLeftControl={props.customBtmLeftControl}
+                customBtmRightControl={props.customBtmRightControl}
+                totalSize={props.totalSize}
+                resetPage={resetPage}
+                pageSize={props.pageSize}
+                dataSource={dataSource}
+                pagination={props.pagination}
+                page={(e) => setPage(e)}
+            />
+        </div>
+    </>
 }
 
 export default AmTableComponent;

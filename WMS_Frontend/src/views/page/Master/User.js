@@ -420,20 +420,7 @@ const User = props => {
   }
 
   return (
-    <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"User"}
-        table={"ams_User"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        customUser={true}
-        dataUser={dataUser}
-        columnsEditPassWord={columnsEditPassWord}
-        history={props.history}
-      /> */}
+    <>
       <PopupObjSize relationComponent={relationComponent} open={open}/>
       <PopupPassword open={openPassword}/>
       
@@ -456,7 +443,7 @@ const User = props => {
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
+    </>
   );
 };
 

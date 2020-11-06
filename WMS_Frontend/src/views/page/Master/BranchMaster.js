@@ -120,17 +120,6 @@ const BranchMaster = props => {
     }
   };
   return (
-    <div>
-      {/* <MasterData
-        columnsFilterPrimary={primarySearch}
-        columnsFilter={columnsFilter}
-        tableQuery={"Branch"}
-        table={"ams_Branch"}
-        dataAdd={columns}
-        iniCols={iniCols}
-        dataEdit={columnsEdit}
-        history={props.history}
-      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -145,7 +134,6 @@ const BranchMaster = props => {
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
-    </div>
   );
 };
 

@@ -122,7 +122,7 @@ namespace AWMSModel.Criteria
         public SqlConnection SqlConnection
         {
             get { return this.Get<SqlConnection>(BusinessVOConst.KEY_DB_CONNECTION); }
-            private set { this.Set(BusinessVOConst.KEY_DB_CONNECTION, value); }
+            set { this.Set(BusinessVOConst.KEY_DB_CONNECTION, value); this.SqlTransaction = null; }
         }
         public SqlTransaction SqlTransaction
         {
@@ -131,7 +131,7 @@ namespace AWMSModel.Criteria
         }
         public AMWLogger Logger { 
             get => this.Get<AMWLogger>(BusinessVOConst.KEY_LOGGER);
-            private set { this.Set(BusinessVOConst.KEY_LOGGER, value); }
+            set => this.Set(BusinessVOConst.KEY_LOGGER, value); 
         }
 
         public List<HttpResultModel> FinalLogSendAPIEvent
