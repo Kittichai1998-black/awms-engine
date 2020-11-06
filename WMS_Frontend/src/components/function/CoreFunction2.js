@@ -15,9 +15,6 @@ const SettimeAlert = () => {
 class apicall {
 
     get(url) {
-        console.log(localStorage.getItem("Token"))
-        var tokenSplit = localStorage.getItem("Token").split(".");
-        console.log(tokenSplit)
         return Axios.get(url + "&token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 0) {
                 if (res.data._result.code === "A0001") {
