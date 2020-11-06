@@ -23,10 +23,10 @@ const Axios = new apicall();
 //======================================================================
 const StorageObjectFull = props => {
   const productOwner = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "ProductOwner",
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "User_ProductOwner",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID,Code,Name",
+    f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -68,20 +68,9 @@ const StorageObjectFull = props => {
       accessor: "Pallet",
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
-    }, {
-      Header: 'Product Owner', accessor: 'ProductOwnerCode',
-      width: 100, sortable: false, filterType: "dropdown",
-      filterConfig: {
-        fieldDataKey: "Code",
-        filterType: "dropdown",
-        fieldLabel: ["Code", "Name"],
-        dataDropDown: productOwner,
-        typeDropDown: "normal",
-        widthDD: 180,
-      },
     },
     //{ Header: "Product Owner", accessor: "ProductOwnerCode", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+    //{ Header: "Lot", accessor: "Lot", width: 80 },
 
     {
       Header: "Item Code",
@@ -94,8 +83,25 @@ const StorageObjectFull = props => {
       fixWidth: 200,
 
     },
+    { Header: "SkuTypeCode", accessor: "SkuTypeCode", width: 100 },
+    { Header: "Ref1", accessor: "Ref1", width: 100 },
+    { Header: "Ref2", accessor: "Ref2", width: 100 },
+    { Header: "Ref3", accessor: "Ref3", width: 100 },
+    { Header: "Ref4", accessor: "Ref4", width: 100 },
     //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
     //{ Header: "Customer", accessor: "For_Customer", width: 100 },
+    {
+      Header: 'Product Owner', accessor: 'ProductOwnerCode',
+      width: 100, sortable: false, filterType: "dropdown",
+      filterConfig: {
+        fieldDataKey: "Code",
+        filterType: "dropdown",
+        fieldLabel: ["Code", "Name"],
+        dataDropDown: productOwner,
+        typeDropDown: "normal",
+        widthDD: 180,
+      },
+    },
     { Header: "Area", accessor: "Area", width: 100 },
     { Header: "Location", accessor: "Location", width: 100 },
 
@@ -107,10 +113,22 @@ const StorageObjectFull = props => {
       // Cell: e => getNumberQty(e.original)
     },
     { Header: "Unit", accessor: "Unit", width: 100 },
-    { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
-    { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    // { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
+    // { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
+    // { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
     { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
+    {
+      Header: "Product Date",
+      accessor: "Product_Date",
+      width: 150,
+      type: "datetime",
+      filterType: "datetime",
+      filterConfig: {
+        filterType: "datetime",
+      }
+      , customFilter: { field: "Product_Date" },
+      dateFormat: "DD/MM/YYYY HH:mm"
+    },
     {
       Header: "Received Time",
       accessor: "Receive_Time",

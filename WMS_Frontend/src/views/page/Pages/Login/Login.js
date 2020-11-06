@@ -197,6 +197,7 @@ const Login = props => {
                             savetoSession("User_ID", json_dec.uid);
                             savetoSession("ExpireTime", json_dec.exp);
                             savetoSession("Username", json_dec.ucode);
+                            savetoSession("User_ProductOwner", json_dec.pos);
                             GetMenu(res.data.Token);
                             // let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
                             // GetStaticValue(reqSelect);

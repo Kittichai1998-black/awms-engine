@@ -72,20 +72,21 @@ namespace AWMSEngine
                     });
                 });
 
-                this.Logger.LogInfo("services.AddRazorPages()");
+                
                 services.AddRazorPages();
-                this.Logger.LogInfo("services.AddMvc().AddNewtonsoftJson()");
+                this.Logger.LogInfo("services.AddRazorPages()");
                 services.AddMvc().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-                this.Logger.LogInfo("services.AddSignalR()");
+                this.Logger.LogInfo("services.AddMvc().AddNewtonsoftJson()");
                 services.AddSignalR();
-                this.Logger.LogInfo("services.AddSingleton()");
+                this.Logger.LogInfo("services.AddSignalR()");
                 services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-                this.Logger.LogInfo("services.AddControllers()");
+                this.Logger.LogInfo("services.AddSingleton()");
                 services.AddControllers();
-                this.Logger.LogInfo("SetUpScheduler()");
+                this.Logger.LogInfo("services.AddControllers()");
                 this.SetUpScheduler();
-                this.Logger.LogInfo("SetUpWorker()");
+                this.Logger.LogInfo("SetUpScheduler()");
                 this.SetUpWorker(services);
+                this.Logger.LogInfo("SetUpWorker()");
             }
             catch (Exception ex)
             {

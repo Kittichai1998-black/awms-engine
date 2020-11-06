@@ -69,7 +69,7 @@ const AmStorageObjectMulti = props => {
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": "1,2"}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
@@ -126,7 +126,7 @@ const AmStorageObjectMulti = props => {
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
-      console.log(fdata)
+
       if (fdata.customFilter !== undefined) {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)
