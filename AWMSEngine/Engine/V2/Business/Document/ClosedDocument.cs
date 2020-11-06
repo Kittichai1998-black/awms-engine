@@ -1,6 +1,5 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using ADO.WMSStaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -27,7 +26,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
                 reqVO.ForEach(x =>
                 {
-                    var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(x, this.BuVO);
+                    var docs = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(x, this.BuVO);
+
                     if (docs != null)
                     {
                         try
@@ -35,7 +35,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                             //update StorageObjects
                             if (docs.EventStatus == DocumentEventStatus.CLOSING)
                             {
+
                                 var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+
                                 if (distos == null || distos.Count == 0)
                                 {
                                     this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -51,12 +53,57 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                         distos.ForEach(disto =>
                                         {
                                             var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, BuVO);
-                                            stosPack.IsStock = true;
-                                            ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
-                                            updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);
+                                            if (stosPack != null)
+                                            {
+                                                stosPack.IsStock = true;
+                                                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stosPack, this.BuVO);
+                                                updatePallet(stosPack.parentID.Value, stosPack.parentType.Value);
+                                            }
                                         });
                                     }
-                                     
+                                    else if (docs.DocumentType_ID == DocumentTypeID.PICKING)
+                                    {
+                                        var sumdisto = distos.GroupBy(x => x.DocumentItem_ID).Select(y => new { sumQty = y.ToList().Sum(z => z.Quantity), docItemID = y.Key }).ToList();
+                                        var errorlist = new List<string>();
+                                        sumdisto.ForEach(x =>
+                                        {
+                                            var docitem = docs.DocumentItems.Find(u => u.ID == x.docItemID);
+                                            if (docitem.Quantity > x.sumQty)
+                                            {
+                                                var diff_qty = docitem.Quantity - x.sumQty;
+                                                var unit = StaticValue.UnitTypes.Find(sel => sel.ID == docitem.UnitType_ID);
+                                                errorlist.Add("Item Code: " + docitem.Code + " ขาดเป็นจำนวน " + diff_qty.ToString() + " " + unit.Code);
+                                            }
+                                        });
+
+                                        if (errorlist != null && errorlist.Count > 0)
+                                        {
+                                            var message = "เอกสารมีการเบิกไม่ครบตามจำนวนที่ระบุในเอกสาร เนื่องจากของในคลังมีไม่ครบ - " + string.Join(',', errorlist);
+                                            BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                            {
+                                                docID = x,
+                                                msgWarning = message
+                                            });
+
+                                        }
+                                    }
+                                    else if (docs.DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
+                                    {
+                                        //update auditing, counting => sto Received เลย
+                                        distos.ForEach(disto =>
+                                        {
+                                            var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, BuVO);
+                                            if (stosPack != null)
+                                            {
+                                                if (stosPack.eventStatus != StorageObjectEventStatus.RECEIVED
+                                                || stosPack.eventStatus != StorageObjectEventStatus.PICKING
+                                                || stosPack.eventStatus != StorageObjectEventStatus.PICKED)
+                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(stosPack.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                                            }
+                                        });
+                                    }
+
+
                                     void updatePallet(long parent_id, StorageObjectType parent_type)
                                     {
                                         if (parent_type != StorageObjectType.LOCATION)
@@ -67,7 +114,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                                 stoLists = sto.ToTreeList();
 
                                             var all_pack = stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type);
-                                            if (stoLists.Count() > 0 && all_pack.TrueForAll(x => x.IsStock == true)) 
+                                            if (stoLists.Count() > 0 && all_pack.TrueForAll(x => x.IsStock == true))
                                             {
                                                 var parentUpdate = stoLists.Find(x => x.id == parent_id);
                                                 parentUpdate.IsStock = true;
@@ -80,15 +127,92 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                     }
                                     //update Closed Document
                                     var listItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+
                                     if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                                     {
-                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                        listItem.ForEach(paItem =>
+                                        {
+                                            paItem.EventStatus = DocumentEventStatus.CLOSED;
+                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(paItem.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                        });
+                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.CLOSED, this.BuVO);
+
+                                        //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                                         if (docs.ParentDocument_ID != null)
                                         {
                                             var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
-                                            if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
+                                            if (getParentDoc != null)
                                             {
-                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                                if (docs.DocumentType_ID == DocumentTypeID.PICKING)
+                                                {
+                                                    var sumdocitems = listItem.GroupBy(x => x.ParentDocumentItem_ID).Select(y => new { sumQty = y.ToList().Sum(z => z.Quantity), parentdocItemID = y.Key }).ToList();
+
+                                                    var errorlist = new List<string>();
+                                                    sumdocitems.ForEach(xx =>
+                                                    {
+                                                        var docitem = getParentDoc.DocumentItems.Find(u => u.ID == xx.parentdocItemID);
+                                                        if (docitem.Quantity > xx.sumQty)
+                                                        {
+                                                            var diff_qty = docitem.Quantity - xx.sumQty;
+                                                            var unit = StaticValue.UnitTypes.Find(sel => sel.ID == docitem.UnitType_ID);
+                                                            errorlist.Add("Item Code: " + docitem.Code + " ขาดเป็นจำนวน " + diff_qty.ToString() + " " + unit.Code);
+                                                        }
+                                                    });
+                                                    if (errorlist != null && errorlist.Count > 0)
+                                                    {
+                                                        var message = "เอกสารมีการเบิกไม่ครบตามจำนวนที่ระบุในเอกสาร เนื่องจากของในคลังมีไม่ครบ - " + string.Join(',', errorlist);
+                                                        BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                                        {
+                                                            docID = x,
+                                                            msgWarning = message
+                                                        });
+
+                                                    }
+                                                    else
+                                                    {
+                                                        if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
+                                                        {
+                                                            getParentDoc.DocumentItems.ForEach(grItem =>
+                                                            {
+                                                                var childDocItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                                                                new SQLConditionCriteria("ParentDocumentItem_ID",grItem.ID.Value, SQLOperatorType.EQUALS),
+                                                                new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                                                                 }, this.BuVO);
+                                                                if (childDocItems != null && childDocItems.TrueForAll(i => i.EventStatus == DocumentEventStatus.CLOSED))
+                                                                {
+                                                                    grItem.EventStatus = DocumentEventStatus.CLOSED;
+                                                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                                }
+                                                            });
+                                                            if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSED))
+                                                            {
+                                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getParentDoc.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
+                                                    {
+                                                        getParentDoc.DocumentItems.ForEach(grItem =>
+                                                        {
+                                                            var childDocItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                                                                new SQLConditionCriteria("ParentDocumentItem_ID",grItem.ID.Value, SQLOperatorType.EQUALS),
+                                                                new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                                                                 }, this.BuVO);
+                                                            if (childDocItems != null && childDocItems.TrueForAll(i => i.EventStatus == DocumentEventStatus.CLOSED))
+                                                            {
+                                                                grItem.EventStatus = DocumentEventStatus.CLOSED;
+                                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                            }
+                                                        });
+                                                        if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSED))
+                                                        {
+                                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getParentDoc.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
 
@@ -135,7 +259,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
 
             return res;
         }
-         
+
 
         private void RemoveOPTDocument(long docID, string options, VOCriteria buVO)
         {
