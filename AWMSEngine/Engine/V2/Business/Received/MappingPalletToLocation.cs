@@ -64,29 +64,44 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             else
             {
-                var createEmptyPalletSTO = new ScanMapStoNoDoc();
-
-                var createPalletData = new ScanMapStoNoDoc.TReq()
+                var findItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
                 {
-                    rootID = null,
-                    scanCode = reqVO.baseCode,
-                    warehouseID = warehouse.ID,
-                    areaID = area.ID,
-                    mode = VirtualMapSTOModeType.REGISTER,
-                    action = VirtualMapSTOActionType.ADD,
-                    amount = 1,
-                    locationCode = location.Code,
-                    batch = "",
-                    isRoot = true,
-                    lot = "",
-                    options = "",
-                    orderNo = "",
-                    productDate = null,
-                    unitCode = ""
-                };
+                    new SQLConditionCriteria("BaseCode", reqVO.baseCode, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+                }, BuVO);
 
-                var res = createEmptyPalletSTO.Execute(this.Logger, this.BuVO, createPalletData);
-                result.recievedStatus = true;
+                if(findItems.Count == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่พบเอกสารรับเข้า");
+                else
+                {
+                    if(findItems.Select(x=> x.Document_ID).Count() > 1)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พบเอกสารมากกว่า 1 เอกสาร");
+
+                    var scanMap = new ScanMapStoNoDoc();
+
+                    var createPalletData = new ScanMapStoNoDoc.TReq()
+                    {
+                        rootID = null,
+                        scanCode = reqVO.baseCode,
+                        warehouseID = warehouse.ID,
+                        areaID = area.ID,
+                        mode = VirtualMapSTOModeType.REGISTER,
+                        action = VirtualMapSTOActionType.ADD,
+                        amount = 1,
+                        locationCode = location.Code,
+                        batch = "",
+                        isRoot = true,
+                        lot = "",
+                        options = "",
+                        orderNo = "",
+                        productDate = null,
+                        unitCode = ""
+                    };
+
+                    var res = scanMap.Execute(this.Logger, this.BuVO, createPalletData);
+                    result.recievedStatus = true;
+                }
             }
             return result;
         }
