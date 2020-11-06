@@ -280,6 +280,7 @@ namespace ProjectBOTHY.Worker
                     Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
                     Ref2 = string.IsNullOrWhiteSpace(x.category) ? null : x.category,
                     Ref3 = string.IsNullOrWhiteSpace(x.type) ? null : x.type,
+                    Ref4 = string.IsNullOrWhiteSpace(x.cashcenter) ? null : x.cashcenter,
                     Options = $"textFile={Newtonsoft.Json.JsonConvert.SerializeObject(x)}",
                     EventStatus = DocumentEventStatus.NEW,
                     Status = EntityStatus.ACTIVE,
@@ -389,9 +390,11 @@ namespace ProjectBOTHY.Worker
                         ref1 = Item.Ref1,
                         ref2 = Item.Ref2,
                         ref3 = Item.Ref3,
+                        ref4 = Item.Ref4,
                         productDate = Item.ProductionDate,
                         skuID = Item.SKUMaster_ID,
-                        productOwner = doc.ProductOwner_ID
+                        productOwner = doc.ProductOwner_ID,
+                        AuditStatus = AuditStatus.QUARANTINE,
                     };
 
                     var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);

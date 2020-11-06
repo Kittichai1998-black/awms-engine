@@ -6,6 +6,9 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum DocumentProcessTypeID
     {
+        WM_TRANSFER_AUTO = 1001,
+        WM_TRANSFER_MANUAL = 1002,
+
         RAW_TRANSFER_WM = 1011,
         RAW_TRANSFER_CUS = 1012,
         RAW_TRANSFER_SUP = 1013,

@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using ADO.WMSStaticValue;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -64,29 +65,83 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             else
             {
-                var createEmptyPalletSTO = new ScanMapStoNoDoc();
-
-                var createPalletData = new ScanMapStoNoDoc.TReq()
+                var findItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
                 {
-                    rootID = null,
-                    scanCode = reqVO.baseCode,
-                    warehouseID = warehouse.ID,
-                    areaID = area.ID,
-                    mode = VirtualMapSTOModeType.REGISTER,
-                    action = VirtualMapSTOActionType.ADD,
-                    amount = 1,
-                    locationCode = location.Code,
-                    batch = "",
-                    isRoot = true,
-                    lot = "",
-                    options = "",
-                    orderNo = "",
-                    productDate = null,
-                    unitCode = ""
-                };
+                    new SQLConditionCriteria("BaseCode", reqVO.baseCode, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+                }, BuVO);
 
-                var res = createEmptyPalletSTO.Execute(this.Logger, this.BuVO, createPalletData);
-                result.recievedStatus = true;
+                if(findItems.Count == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่พบเอกสารรับเข้า");
+                else
+                {
+                    if(findItems.Select(x=> x.Document_ID).Count() > 1)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พบเอกสารมากกว่า 1 เอกสาร");
+
+                    var scanMap = new ScanMapStoNoDoc();
+
+                    var createPalletData = new ScanMapStoNoDoc.TReq()
+                    {
+                        rootID = null,
+                        scanCode = reqVO.baseCode,
+                        warehouseID = warehouse.ID,
+                        areaID = area.ID,
+                        mode = VirtualMapSTOModeType.REGISTER,
+                        action = VirtualMapSTOActionType.ADD,
+                        amount = 1,
+                        locationCode = location.Code,
+                        batch = "",
+                        isRoot = true,
+                        lot = "",
+                        options = "",
+                        orderNo = "",
+                        productDate = null,
+                        unitCode = ""
+                    };
+
+                    var res = scanMap.Execute(this.Logger, this.BuVO, createPalletData);
+
+                    var selectDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(findItems.Select(x => x.Document_ID).First(), BuVO);
+
+                    findItems.ForEach(Item=>
+                    {
+                        var unitTypeSku = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == Item.UnitType_ID);
+                        var stoPack = new StorageObjectCriteria()
+                        {
+                            id = null,
+                            code = Item.Code,
+                            eventStatus = StorageObjectEventStatus.NEW,
+                            name = Item.Code,
+                            parentID = res.id,
+                            parentType = StorageObjectType.BASE,
+                            qty = Item.Quantity.Value,
+                            baseQty = Item.Quantity.Value,
+                            unitID = Item.UnitType_ID.Value,
+                            baseUnitID = Item.UnitType_ID.Value,
+                            unitCode = unitTypeSku.Code,
+                            baseUnitCode = unitTypeSku.Code,
+                            type = StorageObjectType.PACK,
+                            areaID = res.areaID,
+                            warehouseID = 1,
+                            mstID = Item.PackMaster_ID,
+                            options = Item.Options,
+                            ref1 = Item.Ref1,
+                            ref2 = Item.Ref2,
+                            ref3 = Item.Ref3,
+                            ref4 = Item.Ref4,
+                            productDate = Item.ProductionDate,
+                            skuID = Item.SKUMaster_ID,
+                            productOwner = selectDoc.ProductOwner_ID,
+                            AuditStatus = AuditStatus.QUARANTINE,
+                        };
+
+                        var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, BuVO);
+                        stoPack.id = pstoID;
+
+                    });
+                    result.recievedStatus = true;
+                }
             }
             return result;
         }
