@@ -179,7 +179,7 @@ const DocumentSearch = props => {
                 docTypeCode="2003"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/RejectGRDocAPI"}
+                apiReject={"/v2/reject_doc_bot"}
                 apiClose={"/v2/closed_document_manual"}
                 actionQueryCustom={true}
             />

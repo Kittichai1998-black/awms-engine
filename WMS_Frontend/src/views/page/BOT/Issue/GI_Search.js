@@ -178,7 +178,7 @@ const DocumentSearch = props => {
                 docTypeCode="1012"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/reject_document"}
+                apiReject={"/v2/reject_doc_bot"}
                 apiClose={"/v2/closed_document_manual"}
                 actionQueryCustom={true}
             />
