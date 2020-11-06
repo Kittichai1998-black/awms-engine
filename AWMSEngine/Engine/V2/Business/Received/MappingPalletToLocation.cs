@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using ADO.WMSStaticValue;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -100,6 +101,45 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     };
 
                     var res = scanMap.Execute(this.Logger, this.BuVO, createPalletData);
+
+                    var selectDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(findItems.Select(x => x.Document_ID).First(), BuVO);
+
+                    findItems.ForEach(Item=>
+                    {
+                        var unitTypeSku = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == Item.UnitType_ID);
+                        var stoPack = new StorageObjectCriteria()
+                        {
+                            id = null,
+                            code = Item.Code,
+                            eventStatus = StorageObjectEventStatus.NEW,
+                            name = Item.Code,
+                            parentID = res.id,
+                            parentType = StorageObjectType.BASE,
+                            qty = Item.Quantity.Value,
+                            baseQty = Item.Quantity.Value,
+                            unitID = Item.UnitType_ID.Value,
+                            baseUnitID = Item.UnitType_ID.Value,
+                            unitCode = unitTypeSku.Code,
+                            baseUnitCode = unitTypeSku.Code,
+                            type = StorageObjectType.PACK,
+                            areaID = res.areaID,
+                            warehouseID = 1,
+                            mstID = Item.PackMaster_ID,
+                            options = Item.Options,
+                            ref1 = Item.Ref1,
+                            ref2 = Item.Ref2,
+                            ref3 = Item.Ref3,
+                            ref4 = Item.Ref4,
+                            productDate = Item.ProductionDate,
+                            skuID = Item.SKUMaster_ID,
+                            productOwner = selectDoc.ProductOwner_ID,
+                            AuditStatus = AuditStatus.QUARANTINE,
+                        };
+
+                        var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, BuVO);
+                        stoPack.id = pstoID;
+
+                    });
                     result.recievedStatus = true;
                 }
             }
