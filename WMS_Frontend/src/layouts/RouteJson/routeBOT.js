@@ -17,7 +17,7 @@ const StorageObject = Loadable({
 
 
 const Scanpallet = Loadable({
-    loader: () => import("../../views/page/BOTHY/ScanPallet"),
+    loader: () => import("../../views/page/BOT/Recive/ScanPallet"),
     loading: Loading
 });
 const routes = [
@@ -32,7 +32,7 @@ const routes = [
     name: "StorageObject",
     compoment: StorageObject,
     exact: true
-    }
+    },
 
   { path: "/scan/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
 ];

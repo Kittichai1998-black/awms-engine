@@ -1,17 +1,17 @@
 ﻿import * as signalR from '@aspnet/signalr';
 import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
-import AmInput from '../../../components/AmInput';
-import AmButton from '../../../components/AmButton';
+import AmInput from '../../../../components/AmInput';
+import AmButton from '../../../../components/AmButton';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
-import { apicall, createQueryString } from '../../../components/function/CoreFunction2'
+import { apicall, createQueryString } from '../../../../components//function/CoreFunction2'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import AmDialogs from '../../../components/AmDialogs'
+import AmDialogs from '../../../../components/AmDialogs'
 import { useTranslation } from 'react-i18next'
 
 import Axios1 from 'axios'
