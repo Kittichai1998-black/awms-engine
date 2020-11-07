@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
 import AmInput from '../../../../components/AmInput';
-import AmButton from '../../../../components/AmButton';
+import AmButton from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -12,6 +12,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import AmDialogs from '../../../../components/AmDialogs'
+import AmTble from '../../../../components/AmTable/AmTableComponent'
 import { useTranslation } from 'react-i18next'
 
 import Axios1 from 'axios'
@@ -90,6 +91,13 @@ const BorderGrey = styled.div`
 
 
 
+const dataSource = [
+    {
+        palletcode: 'KK00011',
+        Code: 'ffff',
+        Name: 'ffff',
+    }
+]
 
 
 const ScanPallet = (props) => {
@@ -103,14 +111,15 @@ const ScanPallet = (props) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
-
-    const [data, setData] = useState([])
+    const [data, setData] = useState(dataSource)
+    const [palletCode, setpalletCode] = useState('KK00011');
+    const [remark, setremark] = useState();
 
 
     useEffect(() => {
         // console.log(dashboard)
 
-        let url = window.apipath + '/recive'
+        let url = window.apipath + '/receive'
         let connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
                 skipNegotiation: true,
@@ -123,8 +132,8 @@ const ScanPallet = (props) => {
 
             connection.start()
                 .then(() => {
-                    connection.on( res => {
-                        console.log(JSON.parse(res));
+                    connection.on('', res => {
+                        console.log(res)
                         //setCount(count + 1);
                         //data[0][0].table[0].headercol = headercol1
                         //data[0][0].table[0].data = JSON.parse(res)
@@ -132,7 +141,7 @@ const ScanPallet = (props) => {
                     })
                 })
                 .catch((err) => {
-                    //console.log(err);
+                    console.log(err);
                     setTimeout(() => signalrStart(), 5000);
                 })
         };
@@ -149,7 +158,7 @@ const ScanPallet = (props) => {
             connection.stop()
         }
 
-    }, [localStorage.getItem('Lang')])
+    }, [])
 
 
     const StorageObjectQuery = {
@@ -173,9 +182,9 @@ const ScanPallet = (props) => {
                 <Grid item xs={4}>
                 </Grid> <Grid item xs={6}>
                     <FormInline>
-                        <div style={{ marginRight: "20px" }}>                     
+                        <div style={{ marginRight: "20px" }}>
                         </div>
-                        <Typography style={{ color: "#212121" }} variant="h4" component="h3">{getGate}</Typography>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{palletCode}</Typography>
                     </FormInline>
                 </Grid>
             </Grid>
@@ -183,65 +192,137 @@ const ScanPallet = (props) => {
     }
 
 
+    const ComfirmRecive = () => {
+        let datas
+        if (palletCode) {
+            datas = {
+                'palletCode': palletCode,
+                'remark': remark ? remark : null
+            }
+            console.log(datas)
+            if (datas) {
+
+                setStateDialogSuc(true)
+                setMsgDialogSuc('สำเร็จ')
+                setpalletCode();
+                setremark();
+                setData([])
+
+            }
+        }
+
+
+    }
+
+    const ComfirmNotPass = () => {
+
+
+    }
+
+    const column = [
+        { Header: "Pallet", accessor: "palletcode", width: 110, },
+        { Header: "Item Code", accessor: "Code" },
+        { Header: "Item Name", accessor: "Name" },
+        { Header: "Control No.", accessor: "orderNo", width: 100, },
+        { Header: "Lot", accessor: "lot" },
+        { Header: "Vendor Lot", accessor: "ref1" },
+
+    ];
+
+
+
     return (
-        
-          <div>
-                <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
-                <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
-                <div>
-                    <Grid container spacing={24}>
-                        <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
-                            <div style={{ paddingTop: "30px" }}>
-                                <FormInline>
-                                    <Typography variant="h4" component="h3">Pallet Code : </Typography>
-                                    <AmInput style={{ width: "300px" }}
-                                        id="barcodeLong"
-                                        autoFocus={true}
-                                        value={valueBarcode}
 
-                                        onKeyPress={(value, a, b, event) => {
-                                            if (event.key === "Enter") {
-                                                let bar = value
-                                                var databarcode = databar
-                                                databarcode.scanCode = bar
-                                                //setdatabar(databarcode)
-                                                setdatabar(databarcode);
-                                                document.getElementById("barcodeLong").value = "";                                            
-                                            }
-                                        }}
-                                    >
-                                    </AmInput></FormInline></div>
-                        </Grid>
-                
-                        <Grid item xs={12} >
-                        <div>
-                            <Card style={{ height: "85%", width: '85%', marginLeft: '5%', marginRight: '5%' }}>
-                                    <div>
-                                      <div>{HeadLock(area1 ? area1 : "")}</div> 
-                            
-                                    </div>
-                                <Card>
-                                    <Card style={{ height: "60%", width: '60%', marginLeft: '2%', paddingBottom: '2%', paddingTop: '2%'}}>
+        <div>
+            <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+            <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
+            <div>
+                <Grid item xs={12} >
+                    <div>
+                        <Card style={{ height: "90%", width: '90%', marginLeft: '5%', marginRight: '5%' }}>
+                            <div>
+                                <div>{HeadLock()}</div>
 
-                                        <Grid container spacing={12} style={{ paddingBottom: '2%', paddingTop: '2%' }} >
-                                            <Grid item xs={12}></Grid><Grid item xs={6}>
-                                                
-                                            </Grid></Grid>
-                              
-                                            <div>
-
-                                         
-                                            </div>
-                                        </Card>
-                                    </Card>
-                                </Card>
                             </div>
-                        </Grid>
+                            <FormInline>
+                                <Grid item xs={8}>
 
-                    </Grid>
-                </div>
+                                    <div style={{ marginLeft: '5%' }}>
+                                        <div style={{ paddingBottom: '1%' }}>
+                                            <Typography variant="h5" component="h3">ข้อมูลพาเลท</Typography>
+                                        </div>
+                                        <AmTble
+                                            dataKey="ID"
+                                            columns={column}
+                                            pageSize={200}
+                                            tableConfig={false}
+                                            dataSource={data}
+                                            //   height={200}
+                                            rowNumber={true}
+                                        >
+                                        </AmTble>
+                                    </div>
+
+
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                    <div style={{
+                                        paddingTop: '5%'
+                                    }}>
+                                        < AmButton
+                                            variant="contained"
+                                            style={{
+                                                width: "70%", height: "100%",
+                                                marginLeft: '20%', background: '#43a047',
+                                                color: '#ffffff', paddingBottom: '10%',
+                                                paddingTop: '10%'
+                                            }}
+                                            size="large"
+                                            onClick={() => { ComfirmRecive() }}>PASS</AmButton>
+                                    </div>
+                                    <div style={{
+                                        paddingBottom: '5%',
+                                        paddingTop: '5%'
+                                    }}>
+                                        < AmButton
+                                            variant="contained"
+                                            style={{
+                                                width: "70%", height: "100%",
+                                                marginLeft: '20%', background: '#d50000',
+                                                color: '#ffffff', paddingBottom: '10%',
+                                                paddingTop: '10%'
+                                            }}
+                                            size="large"
+                                            onClick={() => { ComfirmNotPass() }}>NOT PASS</AmButton>
+                                    </div>
+                                    <FormInline style={{ paddingBottom: '5%', marginLeft: '7%' }}>
+                                        <Typography variant="h5" component="h3">Remark</Typography>
+                                        <AmInput style={{ width: "60%" }}
+                                            id="remark"
+                                            autoFocus={true}
+                                            value={valueBarcode}
+
+                                            onChange={(value, a, b, event) => {
+
+                                                if (value) {
+                                                    setremark(value)
+                                                }
+
+
+                                            }}
+                                        >
+                                        </AmInput>
+                                    </FormInline>
+                                </Grid >
+                            </FormInline>
+                        </Card>
+
+                    </div>
+                </Grid>
             </div>
-   
+        </div>
+
     );
 }
 ScanPallet.propTypes = {
