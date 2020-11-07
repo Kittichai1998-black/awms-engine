@@ -1,22 +1,17 @@
-﻿using AMWUtil.Common;
+﻿using ADO.WMSDB;
+using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-
-using ADO.WMSStaticValue;
-using ADO.WMSDB;
-using AWMSEngine.Common;
+using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
-using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.Document
+namespace ProjectBOTHY.Engine.Business.Document
 {
     public class RejectDocument : BaseEngine<RejectDocument.TReq, List<amt_Document>>
     {
@@ -35,39 +30,47 @@ namespace AWMSEngine.Engine.V2.Business.Document
             foreach (var docID in reqVO.docIDs)
             {
                 var dataDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(docID, this.BuVO);
+
                 if (dataDoc != null)
                 {
-                    if (dataDoc.EventStatus == DocumentEventStatus.NEW)
+                    if (dataDoc.DocumentProcessType_ID != DocumentProcessTypeID.WM_TRANSFER_MANUAL)
                     {
-                        if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || dataDoc.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
+                        throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถ Reject เอกสารที่มี DocumentProcessType เป็น WM_TRANSFER_MANUAL");
+                    }
+                    else
+                    {
+                        if (dataDoc.EventStatus == DocumentEventStatus.NEW)
                         {
-                            //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
-                            var listDocChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
-                                                new SQLConditionCriteria[] {
-                                                new SQLConditionCriteria("ParentDocument_ID",dataDoc.ID, SQLOperatorType.EQUALS),
-                                                }, this.BuVO);
-
-                            foreach (var docChild in listDocChild)
+                            if (dataDoc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVE || dataDoc.DocumentType_ID == DocumentTypeID.GOODS_ISSUE)
                             {
-                                this.checkStoDocument(this.Logger, docChild, reqVO.remark, this.BuVO);
-                            }
+                                //var docParent = ADO.WMSDB.DataADO.GetInstant().SelectByID<amt_Document>(dataDoc.ParentDocument_ID, this.BuVO);
+                                var listDocChild = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                                                    new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("ParentDocument_ID",dataDoc.ID, SQLOperatorType.EQUALS),
+                                                    }, this.BuVO);
 
-                            this.updateDocChild(dataDoc, reqVO.remark, this.BuVO);
+                                foreach (var docChild in listDocChild)
+                                {
+                                    this.checkStoDocument(this.Logger, docChild, reqVO.remark, this.BuVO);
+                                }
+
+                                this.updateDocChild(dataDoc, reqVO.remark, this.BuVO);
+
+                            }
+                            else
+                            {
+                                this.checkStoDocument(this.Logger, dataDoc, reqVO.remark, this.BuVO);
+                                if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY || dataDoc.DocumentType_ID == DocumentTypeID.PICKING)
+                                    this.updateDocParent(dataDoc, this.BuVO);
+                            }
 
                         }
                         else
                         {
-                            this.checkStoDocument(this.Logger, dataDoc, reqVO.remark, this.BuVO);
-                            if (dataDoc.DocumentType_ID == DocumentTypeID.PUTAWAY || dataDoc.DocumentType_ID == DocumentTypeID.PICKING)
-                                this.updateDocParent(dataDoc, this.BuVO);
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะเอกสารต้องเป็น New เท่านั้น");
                         }
-
+                        docs.Add(dataDoc);
                     }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สถานะเอกสารต้องเป็น New เท่านั้น");
-                    }
-                    docs.Add(dataDoc);
                 }
                 else
                 {

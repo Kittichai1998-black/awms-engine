@@ -13,9 +13,8 @@ import RemoveCircle from "@material-ui/icons/RemoveCircle";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import Tooltip from '@material-ui/core/Tooltip';
 import queryString from "query-string";
-import AmShowImage from '../../../../components/AmShowImage'
-import AmDialogUploadImage from '../../../../components/AmDialogUploadImage'
 import AuditStatusIcon from "../../../../components/AmAuditStatus";
+
 
 
 const Axios = new apicall();
@@ -189,7 +188,6 @@ const StorageObject = props => {
     return qryStr["remark"]
   }
   const getIsHold = value => {
-
     if (value === "UNLOCK") {
       return <div style={{ textAlign: "center" }}>
         <Tooltip title="UNLOCK" >
@@ -223,7 +221,7 @@ const StorageObject = props => {
         {data.Code}
         <AmRedirectLog
           api={
-            "/log/storageobjectlog?id=" +
+            "/log/docitemstolog?id=" +
             data.ID +
             "&ParentStorageObject_ID=" +
             data.ID
@@ -284,14 +282,7 @@ const StorageObject = props => {
     }
   };
 
-  const getImgPallet = Pallet => {
-    let link = window.apipath + "/v2/download/download_image?fileName=" + Pallet + "&token=" + localStorage.getItem("Token");
-    return <div style={{ display: "flex", maxWidth: '250px' }}>
-      <label>{Pallet}</label>
-      <AmShowImage src={link} />
-      <AmDialogUploadImage titleDialog={"Upload Image of Pallet : " + Pallet} fileName={Pallet} />
-    </div>
-  }
+
   return (
     <div>
       <AmStorageObjectMulti
@@ -300,7 +291,7 @@ const StorageObject = props => {
         dataRemark={columns}
         export={false}
         multi={true}
-        action={true}
+        action={false}
         actionQueryCustom={true}
       />
     </div>

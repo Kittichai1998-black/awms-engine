@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import Axios from 'axios';
-import {Redirect} from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import moment from 'moment';
 // import * as Status from '../Warehouse/Status';
 import queryString from 'query-string'
@@ -24,14 +24,14 @@ class apicall {
                     SettimeAlert();
                 }
                 else { }
-                    //alert(res.data._result.message)
+                //alert(res.data._result.message)
             }
             return res
         });
     }
 
     post(url, dataR) {
-    let data = trimObj(dataR)
+        let data = trimObj(dataR)
         if (data !== undefined) {
             data.token = localStorage.getItem("Token")
         }
@@ -44,7 +44,7 @@ class apicall {
                     SettimeAlert();
                 }
                 else { }
-                    //alert(res.data._result.message)
+                //alert(res.data._result.message)
             }
             return res
         });
@@ -62,7 +62,7 @@ class apicall {
                     SettimeAlert();
                 }
                 else { }
-                   // alert(res.data._result.message)
+                // alert(res.data._result.message)
             }
             return res
         });
@@ -80,7 +80,7 @@ class apicall {
                     SettimeAlert();
                 }
                 else { }
-                    //alert(res.data._result.message)
+                //alert(res.data._result.message)
             }
             return res
         });
@@ -107,7 +107,7 @@ const createQueryString = (select) => {
 }
 
 const IsEmptyObject = (obj) => {
-    if(typeof(obj) === "object")
+    if (typeof (obj) === "object")
         return Object.keys(obj).length === 0 && obj.constructor === Object
     else
         return false;
@@ -180,15 +180,15 @@ function FilterURL(seacrhlocation, select) {
 }
 
 function trimObj(obj) {
-    if(obj === null){
+    if (obj === null) {
         return null
     }
 
     if (!Array.isArray(obj) && typeof obj != 'object') return obj;
-    return Object.keys(obj).reduce(function(acc, key) {
-      acc[key.trim()] = typeof obj[key] == 'string'? obj[key].trim() : trimObj(obj[key]);
-      return acc;
-    }, Array.isArray(obj)? []:{});
-  }
+    return Object.keys(obj).reduce(function (acc, key) {
+        acc[key.trim()] = typeof obj[key] == 'string' ? obj[key].trim() : trimObj(obj[key]);
+        return acc;
+    }, Array.isArray(obj) ? [] : {});
+}
 
 export { apicall, createQueryString, Clone, DateTimeConverter, FilterURL, IsEmptyObject }

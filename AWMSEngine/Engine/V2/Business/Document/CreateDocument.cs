@@ -44,6 +44,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
             public string desWarehouseCode;//คลังปลายทาง
             public string desAreaMasterCode;//พื้นที่วางสินสินค้าปลายทาง
 
+            public int? productOwnerID;
+
             public long? forCustomerID;
             public string forCustomerCode;
             public int? transportID;
@@ -69,6 +71,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 public string packCode;
                 public long? packID;
                 public string skuCode;
+                public string baseCode;
+                public string locationCode;
                 public decimal? quantity;
                 public string unitType;
                 public decimal? baseQuantity;
@@ -175,7 +179,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 Des_Branch_ID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                 Des_Warehouse_ID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                 Des_AreaMaster_ID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
-
+                ProductOwner_ID = reqVO.productOwnerID,
                 For_Customer_ID =
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
@@ -282,6 +286,8 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options, "basecode"),
                     SKUMaster_ID = skuMst != null ? skuMst.ID : null,
                     PackMaster_ID = packMst != null ? packMst.ID : null,
+                    BaseCode = Item.baseCode,
+                    LocationCode = Item.locationCode,
 
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
