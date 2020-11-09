@@ -38,6 +38,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public DateTime actualTime;
             public List<string> barcode_pstos;
             public bool autoDoc = false;
+            public string options;
         }
 
         public class TReqDocumentItemAndDISTO
@@ -209,6 +210,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             sto.areaID = _areaASRS.ID.Value;
             sto.parentID = _locationASRS.ID.Value;
             sto.parentType = StorageObjectType.LOCATION;
+
+            sto.options = ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, reqVO.options); 
 
             return sto;
         }
