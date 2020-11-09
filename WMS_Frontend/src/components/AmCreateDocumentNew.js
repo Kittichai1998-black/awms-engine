@@ -21,7 +21,7 @@ import { getUnique } from './function/ObjectFunction'
 import AmDialogconfirm from './AmDialogConfirm'
 import queryString from "query-string";
 import LabelT from './AmLabelMultiLanguage'
-import AmTable from './AmTable/AmTable'
+import AmTable from './AmTable/AmTableComponent'
 
 
 import moment from "moment";
@@ -787,7 +787,7 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, obj) => {
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, datas, obj) => {
         if (type === "date") {
             return (
                 <AmDatepicker
@@ -885,7 +885,26 @@ const AmCreateDocument = (props) => {
                     ddlType={"search"} //รูปแบบ Dropdown 
                 />
             )
-        } else if (type === "datepicker") {
+        }
+        else if (type === "dropdownvalue") {
+            return (
+                <AmDropdown id={idddls} styleType="default"
+                    placeholder={placeholder ? placeholder : "Select"}
+                    width={width ? width : '300px'}
+                    zIndex={2000}
+                    data={datas}
+                    style={{ width: width ? width : '300px' }}
+                    fieldDataKey={key}
+                    // disabled={disabled ? disabled : false}
+                    returnDefaultValue={true}
+                    defaultValue={defaultValue ? defaultValue : ""}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
+                    ddlType={"normal"}
+                />
+
+            )
+        }
+        else if (type === "datepicker") {
             return (
                 <AmDatepicker
                     returndefaultValue={createDocumentData[key]}
@@ -950,7 +969,7 @@ const AmCreateDocument = (props) => {
                                 <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                     <div style={{ marginTop: "5px" }}> <FormInline>
                                         <LabelT style={LabelTStyle}>{y.label + syn}</LabelT>
-                                        {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.defaultValueDate, y)}
+                                        {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.defaultValueDate, y.datas, y)}
                                     </FormInline></div>
                                 </Grid>
                             )

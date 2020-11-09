@@ -393,7 +393,8 @@ namespace ProjectBOTHY.Worker
                         ref4 = Item.Ref4,
                         productDate = Item.ProductionDate,
                         skuID = Item.SKUMaster_ID,
-                        productOwner = doc.ProductOwner_ID
+                        productOwner = doc.ProductOwner_ID,
+                        AuditStatus = AuditStatus.QUARANTINE,
                     };
 
                     var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);

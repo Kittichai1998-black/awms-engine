@@ -42,6 +42,23 @@ const Scanpallet = Loadable({
   loader: () => import("../../views/page/BOT/Recive/ScanPallet"),
   loading: Loading
 });
+
+const GR_Create = Loadable({
+  loader: () => import("../../views/page/BOT/GR/GR_Create"),
+  loading: Loading
+});
+const GR_Detail = Loadable({
+  loader: () => import("../../views/page/BOT/GR/GR_Detail"),
+  loading: Loading
+}); 
+const PA_Create = Loadable({
+  loader: () => import("../../views/page/BOT/PA/PA_Create"),
+  loading: Loading
+});
+const PA_Detail = Loadable({
+  loader: () => import("../../views/page/BOT/PA/PA_Detail"),
+  loading: Loading
+}); 
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -91,7 +108,7 @@ const routes = [
     compoment: AD_Search,
     exact: true
   },
-  { path: "/scan/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
+    { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
 ];
 
 export default routes;

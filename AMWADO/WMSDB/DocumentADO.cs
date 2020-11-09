@@ -146,6 +146,8 @@ namespace ADO.WMSDB
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
+            param.Add("@baseCode", docItem.BaseCode);
+            param.Add("@locationCode", docItem.LocationCode);
             param.Add("@quantity", docItem.Quantity);
             param.Add("@baseQuantity", docItem.BaseQuantity);
             param.Add("@unitTypeID", docItem.UnitType_ID);
