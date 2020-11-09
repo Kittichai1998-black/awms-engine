@@ -69,7 +69,8 @@ const AmStorageObjectMulti = props => {
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "r_StorageObjectV3",
-    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
+    //q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
+    q: '[{ "f": "Status", "c":"!=", "v": 0},{ "f": "ProductOwner_ID", "c":"in", "v": "' + localStorage.getItem("User_ProductOwner") + '"}]',
     f: "*",
     g: "",
     s: "[{'f':'Pallet','od':'asc'}]",
