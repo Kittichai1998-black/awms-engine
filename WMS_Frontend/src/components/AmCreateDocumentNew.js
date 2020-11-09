@@ -21,7 +21,7 @@ import { getUnique } from './function/ObjectFunction'
 import AmDialogconfirm from './AmDialogConfirm'
 import queryString from "query-string";
 import LabelT from './AmLabelMultiLanguage'
-import AmTable from './AmTable/AmTable'
+import AmTable from './AmTable/AmTableComponent'
 
 
 import moment from "moment";

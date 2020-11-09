@@ -108,7 +108,7 @@ const routes = [
     compoment: AD_Search,
     exact: true
   },
-  { path: "/scan/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
+    { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
 ];
 
 export default routes;
