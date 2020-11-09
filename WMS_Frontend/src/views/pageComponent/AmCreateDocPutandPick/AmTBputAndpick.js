@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import PropTypes from "prop-types"
 import { PutandPickContext } from './PutandPickContext';
-import AmTable from '../../../components/AmTable/AmTable';
+import AmTable from '../../../components/AmTable/AmTableComponent';
 import AmButton from '../../../components/AmButton';
 import AmInput from '../../../components/AmInput'
 import AmEditorTable from '../../../components/table/AmEditorTable'
