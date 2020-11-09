@@ -225,7 +225,6 @@ const ScanPallet = (props) => {
                 'palletCode': palletCode,
                 'remark': remark ? remark : null
             }
-            console.log(datas)
             if (datas) {
 
                 setStateDialogSuc(true)

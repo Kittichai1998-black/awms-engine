@@ -107,7 +107,8 @@ const routes = [
     name: "Search Audit",
     compoment: AD_Search,
     exact: true
-  },
+    },
+    { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
     { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
 ];
 

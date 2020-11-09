@@ -364,7 +364,6 @@ const AmCreateDocument = (props) => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
-
         if (data === "") {
             editData[field] = null
         }
@@ -400,6 +399,7 @@ const AmCreateDocument = (props) => {
 
 
         if (typeof data === "object" && data) {
+            console.log(data[field])
             editData[field] = data[field] ? data[field] : data.value
         }
         else {
@@ -456,7 +456,7 @@ const AmCreateDocument = (props) => {
             }
 
         } else {
-
+            console.log(editData)
             setEditData(editData)
         }
 
@@ -476,6 +476,7 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata, inputError) => {
+        console.log(inputError)
         if (status) {
             let xxx = [...dataSource];
             if (!inputError.length) {
@@ -511,7 +512,6 @@ const AmCreateDocument = (props) => {
                 setDialogItem(false)
                 setDataSource([...xxx])
             } else {
-
                 setInputError(inputError.map(x => x.accessor))
             }
         } else {
@@ -787,7 +787,7 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, defaultValueDate, datas, obj) => {
+    const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue, disabled, defaultValueDate, datas, obj) => {
         if (type === "date") {
             return (
                 <AmDatepicker
@@ -895,7 +895,7 @@ const AmCreateDocument = (props) => {
                     data={datas}
                     style={{ width: width ? width : '300px' }}
                     fieldDataKey={key}
-                    // disabled={disabled ? disabled : false}
+                    disabled={disabled ? disabled : false}
                     returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
@@ -969,7 +969,7 @@ const AmCreateDocument = (props) => {
                                 <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                     <div style={{ marginTop: "5px" }}> <FormInline>
                                         <LabelT style={LabelTStyle}>{y.label + syn}</LabelT>
-                                        {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.defaultValueDate, y.datas, y)}
+                                        {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue, y.disabled, y.defaultValueDate, y.datas, y)}
                                     </FormInline></div>
                                 </Grid>
                             )
