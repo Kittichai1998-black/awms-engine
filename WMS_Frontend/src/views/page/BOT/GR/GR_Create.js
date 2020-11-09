@@ -10,6 +10,7 @@ import {
     createQueryString
 } from "../../../../components/function/CoreFunction";
 
+
 const Axios = new apicall();
 
 const SKUMaster = {
@@ -62,19 +63,19 @@ const RD_Create_FGCustomer = props => {
             let Onwer;
             if (proOwner === '1,2') {
                 Onwer = {
-                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
-                    fieldLabel: ["label"], defaultValue: 1,
+                    label: "Product Owner", type: "dropdown", key: "productOwnerID", queryApi: ProductOwnerQuery,
+                    fieldLabel: ["Code", "Name"],defaultValue: 1,
                 }
             } else if (proOwner === '1') {
                 Onwer = {
-                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
-                    fieldLabel: ["label"], defaultValue: 1, disabled:true
+                    label: "Product Owner", type: "dropdown", key: "productOwnerID",  queryApi: ProductOwnerQuery,
+                    fieldLabel: ["Code", "Name"],defaultValue: 1, disabled:true
                 }
 
             } else if (proOwner === '2'){
                 Onwer = {
-                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
-                    fieldLabel: ["label"], defaultValue: 2, disabled: true
+                    label: "Product Owner", type: "dropdown", key: "productOwnerID", queryApi: ProductOwnerQuery,
+                    fieldLabel: ["Code", "Name"],defaultValue: 2, disabled: true
                 }
 
             }
@@ -85,11 +86,12 @@ const RD_Create_FGCustomer = props => {
                         { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
-                        { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
+                        { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1001, codeTranslate: "Process Type" },
                         { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
                     ],
                     [
-                        Onwer
+                        Onwer,
+                        { label: "Des. Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
                     ],
                     [
                         { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -149,8 +151,6 @@ const RD_Create_FGCustomer = props => {
             }
             setskuquery(objQuery)
         }
-
-        console.log(skuquery)
 
         var columnEdit = [
           
@@ -214,6 +214,19 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
+    const AreaMasterQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+
 
 
     const BaseMaster_Sto = {
@@ -228,6 +241,18 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
+
+    const ProductOwnerQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "ProductOwner",
+        q: '[{ "f": "Status", "c":"<", "v": 2},]',
+        f: "*",
+        g: "",
+        s: "[{ 'f': 'ID', 'od': 'asc' }]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
     const CustomerQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",

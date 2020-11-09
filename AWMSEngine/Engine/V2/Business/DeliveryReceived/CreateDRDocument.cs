@@ -269,6 +269,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     documentDate = reqVO.documentDate,
                     actionTime = reqVO.actionTime ?? reqVO.documentDate,
 
+                    productOwnerID = reqVO.productOwnerID,
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,

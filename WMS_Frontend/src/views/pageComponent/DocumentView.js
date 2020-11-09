@@ -1002,7 +1002,8 @@ const DocumentView = props => {
                     selection={"checkbox"}
                     selectionData={(data) => {
                         setSelection(data);
-                    }} dataKey="ID"
+                    }}
+                    dataKey="ID"
                     columns={columns}
                     pageSize={100}
                     dataSource={data}

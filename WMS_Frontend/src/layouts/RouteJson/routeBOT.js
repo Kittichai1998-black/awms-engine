@@ -109,6 +109,7 @@ const routes = [
     exact: true
     },
     { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
+    { path: "/receive/detail", name: "GR Create", compoment: GR_Detail, exact: true },
     { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true }
 ];
 
