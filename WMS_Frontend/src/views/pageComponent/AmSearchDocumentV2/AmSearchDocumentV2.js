@@ -60,7 +60,7 @@ const AmSearchDocumentV2 = props => {
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
-    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
+    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": "' + localStorage.getItem("User_ProductOwner") + '"}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
