@@ -55,8 +55,8 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
-
   const [reset, setReset] = useState(false)
+
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -68,6 +68,7 @@ const AmSearchDocumentV2 = props => {
     l: pageSize,
     all: ""
   };
+
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",

@@ -35,46 +35,83 @@ const RD_Create_FGCustomer = props => {
     const [skuquery, setskuquery] = useState(SKUMaster);
     const [Type, setType] = useState(true);
     const [ProcessTypeCode, setProcessTypeCode] = useState();
+    const [proOwner, setproOwner] = useState();
 
     const POwnerDDL = [
         { label: 'BOT', value: '1', productOwnerID: '1' },
         { label: 'CCC', value: '2', productOwnerID: '2' },
     ];
+
+    const TypeSku = [
+        { label: 'N', value: 'N' },
+        { label: 'G', value: 'G' },
+        { label: 'B', value: 'B' },
+        { label: 'S', value: 'S' },
+        { label: 'U', value: 'U' }
+
+    ]
+
+    useEffect(() => {
+        setproOwner(localStorage.getItem("User_ProductOwner"))
+    }, [localStorage.getItem("User_ProductOwner")])
+
+
+
     useEffect(() => {
         if (CodeprocessType !== "" && CodeprocessType !== null) {
+            let Onwer;
+            if (proOwner === '1,2') {
+                Onwer = {
+                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
+                    fieldLabel: ["label"], defaultValue: 1,
+                }
+            } else if (proOwner === '1') {
+                Onwer = {
+                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
+                    fieldLabel: ["label"], defaultValue: 1, disabled:true
+                }
 
-            console.log(localStorage.getItem("User_ProductOwner"))
-            var headerCreate = [
-                [
-                    { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
-                ],
-                [
-                    { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
-                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
-                ],
-                [ 
-                    { label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL, fieldLabel: ["label"], defaultValue: 2 },
-                ],
-                [
-                    { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
-                    { label: "Des. Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
-                ],
-                [
-                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark", width: '300px' }
-                ],
+            } else if (proOwner === '2'){
+                Onwer = {
+                    label: "Product Owner", type: "dropdownvalue", key: "productOwnerID", datas: POwnerDDL,
+                    fieldLabel: ["label"], defaultValue: 2, disabled: true
+                }
+
+            }
+            if (Onwer) {
+                var headerCreate = [
+                    [
+                        { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
+                        { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
+                    ],
+                    [
+                        { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 4011, codeTranslate: "Process Type" },
+                        { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
+                    ],
+                    [
+                        Onwer
+                    ],
+                    [
+                        { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
+                        { label: "Des. Warehouse", type: "dropdown", key: "desWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Warehouse" }
+                    ],
+                    [
+                        { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
+                        { label: "Remark", type: "input", key: "remark", codeTranslate: "Remark", width: '300px' }
+                    ],
 
 
-            ];
+                ];
 
-            setHeaderDoc(headerCreate)
-            setskuquery();
-            setType(true)
+                setHeaderDoc(headerCreate)
+                setskuquery();
+                setType(true)
+            }
         } else {
 
         }
-    }, [CodeprocessType]);
+
+    }, [proOwner, CodeprocessType]);
 
     useEffect(() => {
         if (HeaderDoc.length > 0) {
@@ -91,7 +128,7 @@ const RD_Create_FGCustomer = props => {
                     createDocType={"receive"}
                     history={props.history}
                     itemNo={true}
-                    defualItemNo={'0001'}
+                    //defualItemNo={'0001'}
                     apiRes={apiRes}
                 />
             );
@@ -113,44 +150,21 @@ const RD_Create_FGCustomer = props => {
             setskuquery(objQuery)
         }
 
-        let Headers;
-        let Horder;
-        let AuditStatusDDL;
-        let Control;
-        let ProDate;
-        let Expire;
-        if (skuType === 5) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", width: '300px' }
-            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px', required: true }
-            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "dateFalse", width: '300px', defaultValue: false }
-            Expire = { Header: "Expire Date", accessor: "expireDate", type: "dateFalse", width: '300px', defaultValue: false }
-
-        } else if (skuType === 9) {
-            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px' }
-            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
-            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px' }
-            Expire = { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px' }
-
-        } else {
-            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true }
-            Control = { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' }
-            ProDate = { Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true }
-            Expire = { Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true }
-        }
-
-
-        if (ProcessTypeCode === '5191' || ProcessTypeCode === '4132' || ProcessTypeCode === '4192') {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '9', disabled: true }
-        } else if (ProcessTypeCode === '5011' || ProcessTypeCode === '4991' || ProcessTypeCode === '4092') {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '1', disabled: true }
-        } else if (ProcessTypeCode === '5013') {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0', disabled: true }
-        } else {
-            AuditStatusDDL = { Header: "Quality Status", accessor: "auditStatus", type: "dropdownvalue", data: AuditStatus, key: "value", defaultValue: '0' }
-        }
+        console.log(skuquery)
 
         var columnEdit = [
-            { Header: "เลขที่ภาชนะ", accessor: "baseCode", type: "input", required: true, width: '300px' },
+          
+            {
+                Header: "เลขที่ภาชนะ",
+                accessor: "baseCode",
+                type: "dropdown",
+                queryApi: BaseMaster_Sto,
+                fieldLabel: ["baseCode"],
+                fieldDataKey: "baseCode",
+                columsddl: columsFindPopupBase,
+                //required: true,
+                width: '300px'
+            },
 
             {
                 Header: "ชนิดราคา",
@@ -159,46 +173,33 @@ const RD_Create_FGCustomer = props => {
                 search: "Code",
                 queryApi: skuquery,
                 fieldLabel: ["Code"],
-                columsddl: columsFindPopupSKU,
-                related: ["Name"],
+                columsddl: columsFindPopupSKU,           
                 fieldDataKey: "Code", // ref กับ accessor
-                required: true
-            },
-            {
-                Header: "Item Name",
-                accessor: "Name",
-                type: "text",
-                //queryApi: skuquery,
-                //fieldLabel: ["Name"],
-                //columsddl: columsFindPopupSKU,
-                //related: ["Code",],
-                //fieldDataKey: "Name",
                 //required: true
             },
-            Headers,
-            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
-            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
+            { Header: "แบบ", accessor: "ref2", type: "input", width: '300px' },
+
+            {
+                Header: "ประเภทธนบัตร",
+                accessor: "ref3",
+                type: "dropdownvalue",
+                key: "value",
+                data: TypeSku,
+                defaultValue:'N',
+                fieldLabel: ["label"]
+            },
+
+            { Header: "สถาบัน", accessor: "ref1", type: "input", width: '300px' },
+            { Header: "ศูนย์เงินสด", accessor: "ref4", type: "input", width: '300px' },
+            { Header: "จำนวน", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
+            { Header: "หน่วยนับ", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
+            { Header: "วันที่รับเข้า", accessor: "productionDate", type: "date", width: '300px' },
             { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
-            { Header: "Carton No.", accessor: "cartonNo", type: "input", width: '300px' },
-            ProDate,
 
         ];
-        // var columnEdit = [
-        //     {
-        //         Header: "เลขที่ภาชนะ",
-        //         accessor: "",
-        //         type: "text"
-        //     }
-        // ]
+
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
-
-    const AuditStatus = [
-        { label: 'QUARANTINE', value: '0' },
-        { label: 'PASSED', value: '1' },
-        //{ label: 'REJECTED', value: '2' },
-        { label: 'HOLD', value: '9' },
-    ];
 
 
     const WarehouseQuery = {
@@ -213,13 +214,15 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-    const UnitTypeQuery = {
+
+
+    const BaseMaster_Sto = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "UnitTypeConvert",
+        t: "BaseMaster_Sto",
         q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "*",
+        f: "ID,Code as baseCode,Name as name",
         g: "",
-        s: "[{ 'f': 'unitTypeID', 'od': 'asc' }]",
+        s: "[{ 'f': 'ID', 'od': 'asc' }]",
         sk: 0,
         l: 100,
         all: ""
@@ -238,6 +241,10 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
+
+
+
+
     const SupplierQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Supplier",
@@ -255,7 +262,7 @@ const RD_Create_FGCustomer = props => {
     const DocumentProcessTypeQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1001}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -269,31 +276,24 @@ const RD_Create_FGCustomer = props => {
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
+    const columsFindPopupBase = [
+        { Header: "Code", accessor: "baseCode", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "name", width: 250, sortable: true },
+    ];
+
 
     const columns = [
-        { Header: "Item Code", accessor: "Code" },
-        { Header: "Item Name", accessor: "Name", width: 200 },
-        { Header: "Control No.", accessor: "orderNo" },
-        { Header: "Lot", accessor: "lot" },
-        { Header: "Vendor Lot", accessor: "ref1" },
-        { Header: "Quantity", accessor: "quantity" },
-        { Header: "Unit", accessor: "unitType" },
-        {
-            Header: "Quality Status", accessor: "auditStatus",
-            Cell: e => getAuditStatus(e.original)
-        },
-        { Header: "Remark", accessor: "remark" },
-        { Header: "Carton No.", accessor: "cartonNo" },
-        {
-            Header: "MFG.Date", accessor: "productionDate",
-            Cell: e => getFormatDatePro(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDatePro(e.original)
-        },
-        {
-            Header: "Expire Date", accessor: "expireDate",
-            Cell: e => getFormatDateExp(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDateExp(e.original)
-        }
+
+        { Header: "เลขที่ภาชนะ", accessor: "Code"},
+        { Header: "ชนิดราคา",accessor: "Code" },
+        { Header: "แบบ", accessor: "ref2"},
+        {Header: "ประเภทธนบัตร", accessor: "ref3"},
+        { Header: "สถาบัน", accessor: "ref1"},
+        { Header: "ศูนย์เงินสด", accessor: "ref4" },
+        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "หน่วยนับ", accessor: "unitType" },
+        { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
+        { Header: "Remark", accessor: "remark"}
     ];
 
     const getFormatDatePro = (e) => {
@@ -325,7 +325,7 @@ const RD_Create_FGCustomer = props => {
     const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
-        <Grid container>
+        {/*<Grid container>
             <Grid item xs container direction="column">
             </Grid>
             <Grid item>
@@ -336,7 +336,7 @@ const RD_Create_FGCustomer = props => {
                     docTypename={"receive"}
                 ></AmCreateDoc>
             </Grid>
-        </Grid>
+        </Grid>*/}
         <div>
             {table}</div></div>;
 };

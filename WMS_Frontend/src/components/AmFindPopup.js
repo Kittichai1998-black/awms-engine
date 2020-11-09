@@ -412,6 +412,7 @@ const FindPopup = (props) => {
         setKeywordSub(e)
     }
     const onHandleClickChange = (dataObject) => {
+        console.log(dataObject)
         setOpen(false);
         setKeywordSub(null);
         setDefaultVal(null);
@@ -421,7 +422,6 @@ const FindPopup = (props) => {
         getValueKey(dataObject)
 
         setDataObjects(dataObject)
-
         onChange(dataObject[fieldDataKey], dataObject, id, fieldDataKey);
 
     }
