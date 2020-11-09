@@ -273,9 +273,9 @@ namespace ProjectBOTHY.Worker
                 {
                     Code = curPack.Code,
                     BaseCode = x.baseCode,
-                    Quantity = x.quantity,
+                    Quantity = skuType.Code == "BANKNOTE" ? x.quantity : 1,
                     UnitType_ID = curPack.UnitType_ID,
-                    BaseQuantity = x.quantity,
+                    BaseQuantity = skuType.Code == "BANKNOTE" ? x.quantity : 1,
                     BaseUnitType_ID = curPack.UnitType_ID,
                     Ref1 = string.IsNullOrWhiteSpace(x.owner) ? null : x.owner,
                     Ref2 = string.IsNullOrWhiteSpace(x.category) ? null : x.category,
