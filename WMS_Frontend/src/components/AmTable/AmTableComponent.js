@@ -239,9 +239,9 @@ const AmTableSetup = (props) => {
         let tableHeight = props.height - 
         (topBarRef.current !== null ? topBarRef.current.scrollHeight : 0) - 
         (btmBarRef.current !== null ? btmBarRef.current.scrollHeight : 0);
-
+        console.log(tableHeight)
         setHeight(tableHeight);
-    }, [topBarRef])
+    }, [topBarRef, btmBarRef, props.height])
 
     return <>
         <div className={"topBar"} ref={topBarRef}>
@@ -257,11 +257,11 @@ const AmTableSetup = (props) => {
                 page={(e) => setPage(e)}
             />
         </div>
-        <div style={{ maxHeight: props.height }}>
+        <div style={{ maxHeight: height }}>
             <AmTableBody
                 dataSource={dataSource}
                 width={props.width}
-                height={props.height}
+                height={height}
                 columns={props.columns}
                 cellStyle={props.cellStyle}
                 dataKey={props.dataKey}

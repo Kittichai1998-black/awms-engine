@@ -170,6 +170,7 @@ const AmTable = (props) => {
         }).filter(x=> x.accessor !== undefined);
     }
 
+    console.log(tableContainerRef);
     return <div style={{height:"100%"}} ref={tableContainerRef}>
         <Suspense fallback="">
             <AmTableComponent
@@ -272,6 +273,7 @@ AmTable.propTypes = {...AmTablePropTypes,
 };
 AmTable.defaultProps ={
     pageSize:50,
-    tableConfig:true
+    tableConfig:true,
+    height:"100%"
 }
 export default AmTable;
