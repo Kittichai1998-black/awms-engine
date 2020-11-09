@@ -55,12 +55,12 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
-
   const [reset, setReset] = useState(false)
+
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
-    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": ' + localStorage.getItem("User_ProductOwner") + '}]',
+    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": "' + localStorage.getItem("User_ProductOwner") + '"}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
@@ -68,6 +68,7 @@ const AmSearchDocumentV2 = props => {
     l: pageSize,
     all: ""
   };
+
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",

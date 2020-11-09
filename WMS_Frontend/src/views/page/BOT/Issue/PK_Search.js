@@ -94,7 +94,7 @@ const DocumentSearch = props => {
                 fieldLabel: ["Code", "Name"],
                 dataDropDown: MVTQuery,
                 typeDropDown: "normal",
-                widthDD: 220,
+                widthDD: 250,
             },
         },
         {
@@ -109,7 +109,7 @@ const DocumentSearch = props => {
                 widthDD: 180,
             },
         },
-        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", width: 150 },
+        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
             Header: "Doc. Date",

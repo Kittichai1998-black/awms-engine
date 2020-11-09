@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class RegisterWorkQueueAuto  : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
+    public class RegisterWorkQueueFromWMS  : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
        
         protected override WorkQueueCriteria ExecuteEngine(RegisterWorkQueue.TReq reqVO)

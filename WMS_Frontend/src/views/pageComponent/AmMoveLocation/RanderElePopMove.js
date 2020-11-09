@@ -21,7 +21,7 @@ const FormInline = styled.div`
 
 const LabelH = {
   fontWeight: "bold",
-  width: "200px"
+  width: "250px"
 };
 const LabelDD = {
   fontWeight: "bold",

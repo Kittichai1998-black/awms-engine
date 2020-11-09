@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.V2.ASRS
 {
-    public class RegisterWorkQueueAutoAPI : BaseAPIService
+    public class RegisterWorkQueueFromWMSAPI : BaseAPIService
     {
-        public RegisterWorkQueueAutoAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public RegisterWorkQueueFromWMSAPI(AWMSEngine.Controllers.V2.BaseController controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
@@ -17,7 +17,7 @@ namespace AWMSEngine.APIService.V2.ASRS
         {
             this.BeginTransaction();
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterWorkQueue.TReq>(this.RequestVO);
-            var engine = new RegisterWorkQueueAuto();
+            var engine = new RegisterWorkQueueFromWMS();
             var res = engine.Execute(this.Logger, this.BuVO, req);
             return res;
         }
