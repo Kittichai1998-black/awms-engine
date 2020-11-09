@@ -127,7 +127,7 @@ const AmStorageObjectMulti = props => {
   const onChangeFilterData = (filterValue) => {
     var res = {};
     filterValue.forEach(fdata => {
-
+      console.log(fdata)
       if (fdata.customFilter !== undefined) {
         if (IsEmptyObject(fdata.customFilter)) {
           res = QueryGenerate({ ...queryViewData }, fdata.field, fdata.value)

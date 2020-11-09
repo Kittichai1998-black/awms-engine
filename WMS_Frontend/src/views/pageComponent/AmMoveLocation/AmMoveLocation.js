@@ -302,7 +302,7 @@ const AmMoveLocation = props => {
       {
         Header: 'Area',
         accessor: 'AreaMaster_Name',
-        width: 130,
+        width: 150,
         sortable: true,
       },
       {
@@ -318,7 +318,7 @@ const AmMoveLocation = props => {
         <AmFindPopup
           id={"alm"}
           fieldDataKey="ID"
-          fieldLabel={["AreaMaster_Code", "Code"]}
+          fieldLabel={["AreaMaster_Name", "Code"]}
           labelPattern=" : "
           valueData={valueDataFindPopup ? valueDataFindPopup["Code"] : ""}
           labelTitle={"Area Location"}
