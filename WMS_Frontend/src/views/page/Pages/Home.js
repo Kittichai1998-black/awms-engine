@@ -1,8 +1,6 @@
 import React from 'react';
 import img from '../../../assets/logo/home.png'
 import styled from 'styled-components'
-import Assignment from "@material-ui/icons/Assignment";
-import IconButton from "@material-ui/core/IconButton";
 const Container = styled.div`
     height: 100%;
     display: flex;
@@ -23,17 +21,6 @@ const Home = (props) => {
   return (
 
     <Container>
-      <IconButton
-        size="small"
-        aria-label="info"
-        style={{ padding: "0px" }}
-      >
-        <Assignment
-          fontSize="small"
-          style={{ color: "#e74c3c" }}
-        // onClick={() => { onClickDeletePallet(listDatas[indexName], listDatas, indexName) }}
-        />
-      </IconButton>
       <div align="center">
 
         {ContentImg}

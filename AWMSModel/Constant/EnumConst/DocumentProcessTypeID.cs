@@ -8,7 +8,7 @@ namespace AWMSModel.Constant.EnumConst
     {
         WM_TRANSFER_AUTO = 1001,
         WM_TRANSFER_MANUAL = 1002,
-
+        WM_CYCLECOUNT = 1003,
         RAW_TRANSFER_WM = 1011,
         RAW_TRANSFER_CUS = 1012,
         RAW_TRANSFER_SUP = 1013,
