@@ -99,7 +99,7 @@ const DailyLoad = (props) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 dataTable={datavalue}
@@ -109,7 +109,7 @@ const DailyLoad = (props) => {
                 page={true}
                 tableKey={"ID"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }
