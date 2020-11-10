@@ -265,6 +265,8 @@ namespace AWMSModel.Criteria
                             refID = x.refID,
                             ref1 = x.ref1,
                             ref2 = x.ref2,
+                            ref3 = x.ref3,
+                            ref4 = x.ref4,
                             IsHold = x.IsHold,
                             AuditStatus = x.AuditStatus,
                             IsStock = x.IsStock,
