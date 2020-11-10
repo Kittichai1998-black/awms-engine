@@ -135,7 +135,7 @@ const ScanPallet = (props) => {
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
     const [data, setData] = useState()
-    const [palletCode, setpalletCode] = useState('KK00011');
+    const [palletCode, setpalletCode] = useState("");
     const [remark, setremark] = useState();
 
 
@@ -158,6 +158,7 @@ const ScanPallet = (props) => {
                     connection.on('ReceiveHub', res => {
                         //console.log(res)
                         console.log(JSON.parse(res))
+                        setpalletCode(JSON.parse(res).code)
                         setData(JSON.parse(res).mapstos)
                     })
                 })
@@ -181,37 +182,9 @@ const ScanPallet = (props) => {
 
     }, [])
 
-
-    const StorageObjectQuery = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "StorageObjectQuery",
-        q: '',
-        f: "ID,Code,Name, AreaMaster_ID",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 2,
-        all: "",
-
-    }
-
-
-
     const HeadLock = () => {
-        return <CardContent style={{ height: "80px", background: "#1769aa" }} >
-            <Grid container spacing={12}>
-                <Grid item xs={4}>
-                </Grid> <Grid item xs={6}>
-                    <FormInline>
-                        <div style={{ marginRight: "20px" }}>
-                        </div>
-                        {palletCode ?
-                            <Typography style={{ color: "#ffffff" }} variant="h3" component="h3">เลขที่ภาชนะ : {palletCode}</Typography>
-                            : null
-                        }
-                    </FormInline>
-                </Grid>
-            </Grid>
+        return <CardContent style={{ height: "80px", background: "#1769aa", textAlign: "center" }} >
+            <Typography style={{ color: "#ffffff" }} variant="h3" component="h3">เลขที่ภาชนะ : {palletCode}</Typography>
         </CardContent>
     }
 
@@ -241,19 +214,120 @@ const ScanPallet = (props) => {
 
 
     }
+    const GenButtonDef = () => {
+        return <div style={{
+            paddingTop: '5%'
+        }}>
+            <div style={{
+                paddingBottom: '5%'
+            }}> < AmButton
+                variant="contained"
+                style={{
+                    width: "70%", height: "100%",
+                    marginLeft: '20%', background: '#bdc3c7',
+                    color: '#ffffff', paddingBottom: '10%',
+                    paddingTop: '10%'
+                }}
+                size="large">
+                </AmButton>
+            </div>
+            < AmButton
+                variant="contained"
+                style={{
+                    width: "70%", height: "100%",
+                    marginLeft: '20%', background: '#bdc3c7',
+                    color: '#ffffff', paddingBottom: '10%',
+                    paddingTop: '10%',
+                }}
+                size="large"
+            >
+            </AmButton>
+
+        </div>
+    }
+    const GenButton = (type) => {
+        if (type === "RECIVE") {
+            return <div style={{
+                paddingTop: '5%'
+            }}>
+                <div style={{
+                    paddingBottom: '5%'
+                }}> < AmButton
+                    variant="contained"
+                    style={{
+                        width: "70%", height: "100%",
+                        marginLeft: '20%', background: '#43a047',
+                        color: '#ffffff', paddingBottom: '10%',
+                        paddingTop: '10%'
+                    }}
+                    size="large"
+                    onClick={() => { ComfirmRecive() }}>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  PASS </Typography>
+                    </AmButton>
+                </div>
+                < AmButton
+                    variant="contained"
+                    style={{
+                        width: "70%", height: "100%",
+                        marginLeft: '20%', background: '#d50000',
+                        color: '#ffffff', paddingBottom: '10%',
+                        paddingTop: '10%',
+                    }}
+                    size="large"
+                    onClick={() => { ComfirmNotPass() }}>
+                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
+                        NOT PASS
+            </Typography>
+                </AmButton>
+
+            </div>
+        } else if (type === "AUDIT") {
+            return <div style={{
+                paddingTop: '5%'
+            }}>
+                <div style={{
+                    paddingBottom: '5%'
+                }}> < AmButton
+                    variant="contained"
+                    style={{
+                        width: "70%", height: "100%",
+                        marginLeft: '20%', background: '#ffc107',
+                        color: '#ffffff', paddingBottom: '10%',
+                        paddingTop: '10%'
+                    }}
+                    size="large"
+                    onClick={() => { ComfirmRecive() }}>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  RECIVED </Typography>
+                    </AmButton>
+                </div>
+                < AmButton
+                    variant="contained"
+                    style={{
+                        width: "70%", height: "100%",
+                        marginLeft: '20%', background: '#95a5a6',
+                        color: '#ffffff', paddingBottom: '10%',
+                        paddingTop: '10%',
+                    }}
+                    size="large"
+                    onClick={() => { ComfirmNotPass() }}>
+                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
+                        CANCEL
+            </Typography>
+                </AmButton>
+
+            </div>
+        }
+    }
 
     const column = [
         { Header: "สินค้า", accessor: "code", width: 80 },
-        { Header: "ชนิดราคา", accessor: "skuTypeName", width: 80 },
+        { Header: "ชนิดราคา", accessor: "skuTypeName", width: 100 },
         { Header: "แบบ", accessor: "ref2", width: 70, },
-        { Header: "ประเภทธนบัตร", accessor: "ref3", width: 80 },
-        { Header: "สถาบัน", accessor: "ref1", width: 100 },
+        { Header: "ประเภทธนบัตร", accessor: "ref3", width: 70 },
+        { Header: "สถาบัน", accessor: "ref1", width: 80 },
         { Header: "ศูนย์เงินสด", accessor: "ref4", width: 100 },
         { Header: "จำนวน", accessor: "qty", width: 100 },
     ];
-
-
-
     return (
 
         <div>
@@ -282,85 +356,47 @@ const ScanPallet = (props) => {
                                             <Typography variant="h4" component="h3">ข้อมูลพาเลท</Typography>
                                         </div>
                                         <AmTble
-
                                             dataSource={data}
                                             columns={column}
                                             pageSize={20}
                                             minRows={6}
                                             currentPage={0}
-
-                                        // dataKey="ID"
-                                        // columns={column}
-                                        // pageSize={200}
-                                        // tableConfig={false}
-                                        // dataSource={data}
-
-                                        // //   height={200}
-                                        // rowNumber={true}
-                                        // style={{
-                                        //     background: 'white',
-                                        //     fontSize: 20,
-                                        //     maxHeight: 2000,
-                                        //     // fontWeight: '700', 
-                                        //     zIndex: 0
-                                        // }}
+                                            style={{
+                                                background: 'white',
+                                                fontSize: 20,
+                                            }}
+                                            dataKey="ID"
                                         >
                                         </AmTble>
                                     </div>
-
-
                                 </Grid>
 
                                 <Grid item xs={4}>
                                     <div style={{
                                         paddingTop: '5%'
                                     }}>
-                                        < AmButton
-                                            variant="contained"
-                                            style={{
-                                                width: "70%", height: "100%",
-                                                marginLeft: '20%', background: '#43a047',
-                                                color: '#ffffff', paddingBottom: '10%',
-                                                paddingTop: '10%'
-                                            }}
-                                            size="large"
-                                            onClick={() => { ComfirmRecive() }}>
-                                            <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  PASS </Typography>
-                                        </AmButton>
+                                        {console.log(data)}
+
+                                        {data !== undefined ?
+                                            (data[0].eventStatus === 10 ? GenButton("RECIVE") : GenButton("AUDIT"))
+                                            : GenButtonDef()}
                                     </div>
-                                    <div style={{
-                                        paddingBottom: '5%',
-                                        paddingTop: '5%'
+
+                                    <FormInline style={{
+                                        paddingBottom: '5%', marginLeft: '7%', paddingTop: '5%'
                                     }}>
-                                        < AmButton
-                                            variant="contained"
-                                            style={{
-                                                width: "70%", height: "100%",
-                                                marginLeft: '20%', background: '#d50000',
-                                                color: '#ffffff', paddingBottom: '10%',
-                                                paddingTop: '10%',
-                                            }}
-                                            size="large"
-                                            onClick={() => { ComfirmNotPass() }}>
-                                            <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
-                                                NOT PASS
-                                            </Typography>
-                                        </AmButton>
-                                    </div>
-                                    <FormInline style={{ paddingBottom: '5%', marginLeft: '7%' }}>
                                         <Typography
                                             variant="h5" component="h3">REMARK : </Typography>
                                         <AmInput style={{ width: "60%" }}
                                             id="remark"
                                             autoFocus={true}
                                             value={valueBarcode}
+
                                             onChange={(value, a, b, event) => {
 
                                                 if (value) {
                                                     setremark(value)
                                                 }
-
-
                                             }}
                                         >
                                         </AmInput>
@@ -372,7 +408,7 @@ const ScanPallet = (props) => {
                     </div>
                 </Grid>
             </div>
-        </div>
+        </div >
 
     );
 }
