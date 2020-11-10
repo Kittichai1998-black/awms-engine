@@ -223,7 +223,6 @@ const GR_Detail = props => {
 
 
     const GetAuditStatusIcon = (value) => {
-        console.log(value.diAuditStatus)
         if (value.diAuditStatus != undefined) {
             return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
         } else if (value.AuditStatus != undefined) {
@@ -240,12 +239,7 @@ const GR_Detail = props => {
 
 
 
-    return (
-        <div>
-            <div>{docview}</div>
-        </div>
-
-    );
+    return ({docview});
 };
 
 export default GR_Detail;
