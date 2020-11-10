@@ -456,7 +456,6 @@ const AmCreateDocument = (props) => {
             }
 
         } else {
-            console.log(editData)
             setEditData(editData)
         }
 
@@ -483,7 +482,9 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
+                let chkSku = dataSource.find(x => x.baseCode === rowdata.baseCode &&
+                    x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType &&
+                    x.productionDate === rowdata.productionDate)
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
@@ -1005,6 +1006,7 @@ const AmCreateDocument = (props) => {
             options: null,
             orderNo: null,
             parentDocumentID: null,
+            productOwnerID:null,
             ref1: null,
             ref2: null,
             ref4: null,
@@ -1027,6 +1029,7 @@ const AmCreateDocument = (props) => {
             packID: null,
             skuCode: null,
             quantity: null,
+            baseCode: null,
             unitType: null,
             baseQuantity: null,
             baseunitType: null,
@@ -1162,8 +1165,9 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map((x, i) => {
-                console.log(x)
                 x.skuCode = x.Code ? x.Code : null
+                x.baseQuantity = x.baseQuantity ? x.baseQuantity : x.quantity
+                x.baseunitType = x.baseunitType ? x.baseunitType : x.unitType
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.expireDate = x.expireDates ? x.expireDates : x.expireDate ? x.expireDate : null
@@ -1174,6 +1178,8 @@ const AmCreateDocument = (props) => {
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
                 x.skuCode = x.Code ? x.Code : null
+                x.baseQuantity = x.baseQuantity ? x.baseQuantity : x.quantity
+                x.baseunitType = x.baseunitType ? x.baseunitType : x.unitType
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
                 x.options = x.remark ? remark.concat(x.remark) : null

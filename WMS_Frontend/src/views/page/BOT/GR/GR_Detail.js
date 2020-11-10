@@ -48,18 +48,7 @@ const GR_Detail = props => {
     }, [header])
 
     useEffect(() => {
-        if (OwnerGroupType !== undefined) {
-            var DataprocessType;
-            if (OwnerGroupType === 1) {
-                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse" , values: "SouWarehouseName" }
-            } else if (OwnerGroupType === 2) {
-                DataprocessType = { label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" }
-            } else if (OwnerGroupType === 3) {
-                DataprocessType = { label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" }
-            } else {
-                DataprocessType = { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" }
-            }
-        }
+  
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
@@ -70,10 +59,11 @@ const GR_Detail = props => {
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
-                { label: "PO NO.", values: "Ref1" }
+                {label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
             ],
             [
-                DataprocessType,
+                { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
                 { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
             ],
             [
@@ -87,32 +77,33 @@ const GR_Detail = props => {
 
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
+        //{
+        //    Header: "ชนิดราคา",
+        //    Cell: e => { return e.original.SKUMaster_Code},
+        //    CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
+        //},
+        //{
+        //    Header: "Item Name",
+        //    Cell: e => { return e.original.SKUMaster_Name },
+        //    CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
+        //},
         {
-            Header: "Item Code",
-            Cell: e => { return e.original.SKUMaster_Code},
-            CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
-        },
+            Header: "เลขที่ภาชนะ",
+            accessor: "baseCode"},
+
         {
-            Header: "Item Name",
-            Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
+            Header: "ชนิดราคา",
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
-        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
-        { Header: "Lot", accessor: "Lot",width: 130, widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Receive Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-        { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
-        { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
+        { Header: "แบบ", accessor: "ref2" },
+        {Header: "ประเภทธนบัตร",accessor: "ref3" },
+        { Header: "สถาบัน", accessor: "ref1" },
+        { Header: "ศูนย์เงินสด", accessor: "ref4" },
+        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "หน่วยนับ", accessor: "unitType"},
+        { Header: "วันที่รับเข้า", accessor: "productionDate" },
+        { Header: "Remark", accessor: "remark"},
     ];
 
 

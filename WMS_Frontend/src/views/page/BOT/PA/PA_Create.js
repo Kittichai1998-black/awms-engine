@@ -29,7 +29,9 @@ const Create_GR_DR = props => {
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "PO NO.", type: "labeltext", key: "Ref1", valueTexts: "", codeTranslate: "PO NO." },
+                    { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: "", valueTexts: "", codeTranslate: "ProductOwner" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: "", valueTexts: "", codeTranslate: "DesAreaMaster" },
+                  
                 ],
                 [
                     { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
@@ -54,20 +56,15 @@ const Create_GR_DR = props => {
             let Sou_Supplier_ID = dataDocument.Sou_Supplier_ID
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
+            let ProductOwner_ID = dataDocument.ProductOwner_ID
+            let DesAreaMaster_ID = dataDocument.DesAreaMaster_ID
+            let ProductOwnerCode = dataDocument.ProductOwnerCode
+            let DesAreaMasterName = dataDocument.DesAreaMasterName
             let ForCustomerName = dataDocument.ForCustomerName
+           
             let Ref1 = dataDocument.Ref1
             let For_Customer_ID = dataDocument.For_Customer_ID
-            let Source;
-            if (SouWarehouseName != null) {
-                Source = { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" }
-            } else if (SouCustomerName != null) {
-                Source = { label: "Sou. Customer", type: "labeltext", key: "souCustomerID", texts: SouCustomerName, valueTexts: Sou_Customer_ID, codeTranslate: "Source Customer" }
-            } else if (SouSupplierName != null) {
-                Source = { label: "Sou. Supplier", type: "labeltext", key: "souSupplierID", texts: SouSupplierName, valueTexts: Sou_Supplier_ID, codeTranslate: "Source Supplier" }
-
-            } else {
-                Source = { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: '', valueTexts: '', codeTranslate: "Source Warehouse" }
-            }
+           
 
             headerCreate = [
 
@@ -80,18 +77,17 @@ const Create_GR_DR = props => {
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "PO NO.", type: "labeltext", texts: Ref1, valueTexts: Ref1, codeTranslate: "PO NO.", key: "ref1", }
+                    { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: ProductOwnerCode, valueTexts: ProductOwner_ID, codeTranslate: "ProductOwner" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: DesAreaMaster_ID, codeTranslate: "DesAreaMaster" },
                 ],
                 [
-                    Source,
+                    { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },
                     { label: "Des. Warehouse", type: "labeltext", key: "desWarehouseID", texts: DesWarehouseName , valueTexts: Des_Warehouse_ID, codeTranslate: "Des Warehouse" }
                 ],
                 [ 
                     { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
                     { label: "Remark", type: "input", key: "Remark", codeTranslate: "Remark" }
                 ],
-
-               
 
             ];
 
