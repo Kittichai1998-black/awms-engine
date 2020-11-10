@@ -45,7 +45,13 @@ namespace ProjectBOTHY.Engine.WorkQueue
 
             newText.details = items;
 
-            new FileGenerate.ErrorResponseGenerate().Execute(Logger, BuVO, newText);
+            new FileGenerate.ErrorResponseGenerate().Execute(Logger, BuVO, new FileGenerate.ErrorResponseGenerate.Treq()
+            {
+                header = newText.header,
+                details = newText.details,
+                footer = newText.footer,
+                error = "ไม่พบสินค้าที่ต้องการเบิก"
+            });
             return null;
         }
     }

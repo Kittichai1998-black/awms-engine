@@ -15,6 +15,7 @@ using System.Globalization;
 using AMWUtil.DataAccess;
 using ProjectBOTHY.Engine.FileGenerate;
 using AMWUtil.Logger;
+using Microsoft.Extensions.Logging;
 
 namespace ProjectBOTHY.Worker
 {
@@ -36,110 +37,129 @@ namespace ProjectBOTHY.Worker
 
             _text.ForEach(x =>
             {
-                var txtDetail = x.Value.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
-                if (txtDetail.Count() > 0)
+                try
                 {
-                    var header = txtDetail.First().Split("|");
-                    var footer = txtDetail.Last().Split("|");
-                    var textDetails = new FileFormat.TextFileDetail()
+                    var txtDetail = x.Value.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
+                    if (txtDetail.Count() > 0)
                     {
-                        header = new FileFormat.TextFileHeader()
+                        var header = txtDetail.First().Split("|");
+                        var footer = txtDetail.Last().Split("|");
+                        var textDetails = new FileFormat.TextFileDetail()
                         {
-                            prefix = header[0],
-                            command = header[1],
-                            commandNo = header[2],
-                        },
-                        footer = new FileFormat.TextFileHeader()
-                        {
-                            prefix = footer[0],
-                            command = footer[1],
-                            commandNo = footer[2],
-                            rowCount = string.IsNullOrWhiteSpace(footer[3]) ? (int?)null : Convert.ToInt32(footer[3]),
-                            timestamp = string.IsNullOrWhiteSpace(footer[4]) ? null : footer[4],
-                        }
-                    };
-
-                    var docItemDetails = txtDetail.Skip(1).SkipLast(1).ToList();
-                    var setDetail = docItemDetails.Select(y =>
-                    {
-                        var detail = y.Split("|");
-                        return new FileFormat.ItemDetail()
-                        {
-                            skuType = detail[0],
-                            baseType = detail[1],
-                            baseCode = detail[2],
-                            price = string.IsNullOrWhiteSpace(detail[3]) ? null : detail[3],
-                            category = detail[4],
-                            type = detail[5],
-                            owner = detail[6],
-                            cashcenter = detail[7],
-                            receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? null : detail[8],
-                            quantity = string.IsNullOrWhiteSpace(detail[9]) ? (decimal?)null : Convert.ToDecimal(detail[9]),
-                            stationIn = detail[10],
-                            stationOut = detail[11],
-                        };
-                    }).ToList();
-                    textDetails.details = setDetail;
-
-                    if (textDetails.header.command == "STOREIN")
-                    {
-                        var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
-
-                        var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
-                        var stos = CreateSto(resDoc, _baseType, buVO);
-                    }
-                    else if (textDetails.header.command == "STOREOUT")
-                    {
-                        var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_ISSUE, null, buVO);
-                    }
-                    else if (textDetails.header.command.StartsWith("CANCEL"))
-                    {
-                        var docs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] { 
-                            new SQLConditionCriteria("RefID", textDetails.header.commandNo, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
-                        }, buVO);
-
-                        if (docs.Count > 0)
-                        {
-                            if (docs.Any(z => z.EventStatus != DocumentEventStatus.NEW))
+                            header = new FileFormat.TextFileHeader()
                             {
-                                string fileName = $"ERR_{textDetails.header.command}_{textDetails.header.commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                                prefix = header[0],
+                                command = header[1],
+                                commandNo = header[2],
+                            },
+                            footer = new FileFormat.TextFileHeader()
+                            {
+                                prefix = footer[0],
+                                command = footer[1],
+                                commandNo = footer[2],
+                                rowCount = string.IsNullOrWhiteSpace(footer[3]) ? (int?)null : Convert.ToInt32(footer[3]),
+                                timestamp = string.IsNullOrWhiteSpace(footer[4]) ? null : footer[4],
+                            }
+                        };
 
-                                var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
+                        var docItemDetails = txtDetail.Skip(1).SkipLast(1).ToList();
+                        var setDetail = docItemDetails.Select(y =>
+                        {
+                            var detail = y.Split("|");
+                            return new FileFormat.ItemDetail()
+                            {
+                                skuType = detail[0],
+                                baseType = detail[1],
+                                baseCode = detail[2],
+                                price = string.IsNullOrWhiteSpace(detail[3]) ? null : detail[3],
+                                category = detail[4],
+                                type = detail[5],
+                                owner = detail[6],
+                                cashcenter = detail[7],
+                                receiveDate = string.IsNullOrWhiteSpace(detail[8]) ? null : detail[8],
+                                quantity = string.IsNullOrWhiteSpace(detail[9]) ? (decimal?)null : Convert.ToDecimal(detail[9]),
+                                stationIn = detail[10],
+                                stationOut = detail[11],
+                            };
+                        }).ToList();
+                        textDetails.details = setDetail;
 
-                                new ErrorResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
+                        if (textDetails.header.command == "STOREIN")
+                        {
+                            var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
+
+                            var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
+                            var stos = CreateSto(resDoc, _baseType, buVO);
+                        }
+                        else if (textDetails.header.command == "STOREOUT")
+                        {
+                            var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_ISSUE, null, buVO);
+                        }
+                        else if (textDetails.header.command.StartsWith("CANCEL"))
+                        {
+                            var docs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[] {
+                                new SQLConditionCriteria("RefID", textDetails.header.commandNo, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
+                            }, buVO);
+
+                            if (docs.Count > 0)
+                            {
+                                if (docs.Any(z => z.EventStatus != DocumentEventStatus.NEW))
+                                {
+                                    string fileName = $"ERR_{textDetails.header.command}_{textDetails.header.commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+
+                                    var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
+
+
+                                    new ErrorResponseGenerate().Execute(buVO.Logger, buVO, new ErrorResponseGenerate.Treq()
+                                    {
+                                        header = textDetails.header,
+                                        details = textDetails.details,
+                                        footer = textDetails.footer,
+                                        error = "เอกสารกำลังทำงาน ไม่สามารถยกเลิกได้"
+                                    });
+                                }
+                                else
+                                {
+                                    docs.Select(a => a.ID).ToList().ForEach(a =>
+                                        {
+                                            var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(a.Value, buVO);
+                                            if (distos.Count > 0)
+                                            {
+                                                var pstos = distos.Select(x => x.Sou_StorageObject_ID).ToList();
+                                                var baseStoIDs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria()
+                                                {
+                                                    field = "ID",
+                                                    value = string.Join(",", pstos),
+                                                    operatorType = SQLOperatorType.IN
+                                                }, buVO).Select(x => x.ParentStorageObject_ID).Distinct().ToList();
+                                                baseStoIDs.ForEach(bsto =>
+                                                {
+                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REJECTED, buVO);
+                                                });
+                                                distos.ForEach(disto => ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, buVO));
+                                            }
+                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(a.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, buVO);
+                                        }
+                                    );
+                                    new ResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
+                                }
                             }
                             else
                             {
-                                docs.Select(a => a.ID).ToList().ForEach(a =>
-                                    {
-                                        var distos = ADO.WMSDB.DocumentADO.GetInstant().ListDISTOByDoc(a.Value, buVO);
-                                        if(distos.Count > 0)
-                                        {
-                                            var pstos = distos.Select(x => x.Sou_StorageObject_ID).ToList();
-                                            var baseStoIDs = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria()
-                                            {
-                                                field = "ID",
-                                                value = string.Join(",", pstos),
-                                                operatorType = SQLOperatorType.IN
-                                            }, buVO).Select(x => x.ParentStorageObject_ID).Distinct().ToList();
-                                            baseStoIDs.ForEach(bsto =>
-                                            {
-                                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REJECTED, buVO);
-                                            });
-                                            distos.ForEach(disto => ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.REMOVE, buVO));
-                                        }
-                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(a.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, buVO);
-                                    }
-                                );
-                                new ResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
+                                new ErrorResponseGenerate().Execute(buVO.Logger, buVO, new ErrorResponseGenerate.Treq()
+                                {
+                                    header = textDetails.header,
+                                    details = textDetails.details,
+                                    footer = textDetails.footer,
+                                    error = "ไม่พบเอกสารที่ต้องการยกเลิก"
+                                });
                             }
                         }
-                        else
-                        {
-                            new ErrorResponseGenerate().Execute(buVO.Logger, buVO, textDetails);
-                        }
                     }
+                }
+                catch
+                {
                 }
 
                 FTPFileAccess.MoveFileFromFTP(path, folderIn, folderSuccess, x.Key, username, password, buVO.Logger);
@@ -204,68 +224,81 @@ namespace ProjectBOTHY.Worker
                 }
                 else if (skuType.Code == "BANKNOTE")
                 {
-                    curPack = packList.Find(pack => pack.Code == x.price);
-                    if (curPack == null)
+                    try
                     {
-                        curPack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]
-                        {
-                            new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
-                        }, buVO).FirstOrDefault();
-
+                        curPack = packList.Find(pack => pack.Code == x.price);
                         if (curPack == null)
                         {
-                            var curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
+                            curPack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]
                             {
-                                new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
-                                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                            new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                             }, buVO).FirstOrDefault();
 
-                            if (curSKU == null)
+                            if (curPack == null)
                             {
-                                curSKU = new ams_SKUMaster()
+                                var curSKU = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]
                                 {
-                                    Code = x.price,
-                                    Name = x.price,
-                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID,
-                                    ID = null,
-                                    SKUMasterType_ID = skuType.ID.Value,
-                                    Status = EntityStatus.ACTIVE,
-                                    Price = Convert.ToDecimal(x.price),
-                                    Description = ""
-                                };
-                                var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curSKU);
-                                curSKU.ID = resID;
+                                new SQLConditionCriteria("Code", x.price, SQLOperatorType.EQUALS),
+                                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                                }, buVO).FirstOrDefault();
 
-                                curPack = new ams_PackMaster()
+                                if (curSKU == null)
                                 {
-                                    Code = x.price,
-                                    Name = x.price,
-                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
-                                    ID = null,
-                                    Status = EntityStatus.ACTIVE,
-                                    ObjectSize_ID = 2,
-                                    SKUMaster_ID = curSKU.ID.Value
-                                };
-                                var resPackID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
-                                curPack.ID = resPackID;
-                            }
-                            else
-                            {
-                                curPack = new ams_PackMaster()
+                                    curSKU = new ams_SKUMaster()
+                                    {
+                                        Code = x.price,
+                                        Name = x.price,
+                                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID,
+                                        ID = null,
+                                        SKUMasterType_ID = skuType.ID.Value,
+                                        Status = EntityStatus.ACTIVE,
+                                        Price = Convert.ToDecimal(x.price),
+                                        Description = ""
+                                    };
+                                    var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curSKU);
+                                    curSKU.ID = resID;
+
+                                    curPack = new ams_PackMaster()
+                                    {
+                                        Code = x.price,
+                                        Name = x.price,
+                                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
+                                        ID = null,
+                                        Status = EntityStatus.ACTIVE,
+                                        ObjectSize_ID = 2,
+                                        SKUMaster_ID = curSKU.ID.Value
+                                    };
+                                    var resPackID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
+                                    curPack.ID = resPackID;
+                                }
+                                else
                                 {
-                                    Code = x.price,
-                                    Name = x.price,
-                                    UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
-                                    ID = null,
-                                    Status = EntityStatus.ACTIVE,
-                                    ObjectSize_ID = 2,
-                                    SKUMaster_ID = curSKU.ID.Value
-                                };
-                                var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
-                                curPack.ID = resID;
+                                    curPack = new ams_PackMaster()
+                                    {
+                                        Code = x.price,
+                                        Name = x.price,
+                                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.Find(y => y.Code == "Banknote").ID.Value,
+                                        ID = null,
+                                        Status = EntityStatus.ACTIVE,
+                                        ObjectSize_ID = 2,
+                                        SKUMaster_ID = curSKU.ID.Value
+                                    };
+                                    var resID = ADO.WMSDB.DataADO.GetInstant().Insert(buVO, curPack);
+                                    curPack.ID = resID;
+                                }
                             }
                         }
+                    }
+                    catch
+                    {
+                        new ErrorResponseGenerate().Execute(buVO.Logger, buVO, new ErrorResponseGenerate.Treq()
+                        {
+                            header = docItemDetail.header,
+                            details = docItemDetail.details,
+                            footer = docItemDetail.footer,
+                            error = "ข้อมูลไฟล์ไม่ถูกต้อง กรุณาตรวจสอบไฟล์อีกครั้ง"
+                        });
                     }
                 }
 
