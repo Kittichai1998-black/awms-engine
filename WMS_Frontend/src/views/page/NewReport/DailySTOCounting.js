@@ -133,7 +133,7 @@ const DailySTOReceive = (props) => {
     }
 
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 dataTable={datavalue}
@@ -143,7 +143,7 @@ const DailySTOReceive = (props) => {
                 page={true}
                 tableKey={"docID"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

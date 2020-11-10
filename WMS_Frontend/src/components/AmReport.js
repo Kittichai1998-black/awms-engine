@@ -87,7 +87,7 @@ const AmReport = (props) => {
             return {}
     }
     return (
-        <div>
+        <>
             <div style={{ marginBottom: '10px' }}>
                 {bodyHeadReport}
             </div>
@@ -128,7 +128,7 @@ const AmReport = (props) => {
             </div>
 
 
-        </div>
+        </>
 
     )
 }
