@@ -33,7 +33,7 @@ const styles = theme => ({
 });
 
 
-const  StockLocationUsed= (props) => {
+const StockLocationUsed = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -41,7 +41,7 @@ const  StockLocationUsed= (props) => {
     const columns = [
         { Header: 'Bank', accessor: 'bank', width: 120, sortable: false },
         { Header: 'Bank Use', accessor: 'bankUse', width: 120, sortable: false, filterable: false, Footer: true, },
-        { Header: 'Total Bank', accessor: 'TotalBank', width: 100, sortable: false, Footer: true, filterable: false,},
+        { Header: 'Total Bank', accessor: 'TotalBank', width: 100, sortable: false, Footer: true, filterable: false, },
         {
             Header: 'Percent Bank', accessor: 'PercentBank', width: 100,
             sortable: false, Footer: (data, datarow, e) => SumTotal(data, datarow, e),
@@ -57,7 +57,7 @@ const  StockLocationUsed= (props) => {
             filterable: false,
         },
         { Header: 'Level', accessor: 'level', width: 120, sortable: false },
-        { Header: 'Level Use', accessor: 'levelUse', width: 150, sortable: false, filterable: false, Footer: true, filterable: false,},
+        { Header: 'Level Use', accessor: 'levelUse', width: 150, sortable: false, filterable: false, Footer: true, filterable: false, },
         { Header: 'Total Level', accessor: 'TotalLevel', width: 100, sortable: false, Footer: true, filterable: false, },
         {
             Header: 'Percent Level', accessor: 'PercentLevel', width: 100, sortable: false,
@@ -65,11 +65,11 @@ const  StockLocationUsed= (props) => {
             "Cell": (e) => getFormatdata(e.original.PercentLevel),
             filterable: false,
         },
-      
+
     ];
 
     const getFormatdata = (data) => {
-       // console.log(data.toFixed(2))
+        // console.log(data.toFixed(2))
         if (data) {
             let per = data.toFixed(3) + '%'
             return per
@@ -91,13 +91,13 @@ const  StockLocationUsed= (props) => {
             let Totaldata = _.sumBy(data, 'TotalLevel')
             Totalper = (usedata / Totaldata) * 100
         }
-         let totalPerCent =Totalper.toFixed(3) + '%'
+        let totalPerCent = Totalper.toFixed(3) + '%'
 
         return totalPerCent
     }
 
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 page={true}
@@ -105,7 +105,7 @@ const  StockLocationUsed= (props) => {
                 fileNameTable={"STOCKUSE"}
                 tableKey={"Code"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

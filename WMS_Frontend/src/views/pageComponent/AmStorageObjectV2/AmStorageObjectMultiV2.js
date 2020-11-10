@@ -373,7 +373,7 @@ const AmStorageObjectMulti = props => {
   };
   //===========================================================
   return (
-    <div>
+    <>
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -456,7 +456,7 @@ const AmStorageObjectMulti = props => {
             }]) : null}
       />
 
-    </div>
+    </>
   );
 };
 export default AmStorageObjectMulti;

@@ -33,7 +33,7 @@ const styles = theme => ({
 });
 
 
-const  DeadStock = (props) => {
+const DeadStock = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -51,14 +51,14 @@ const  DeadStock = (props) => {
         { Header: 'Code', accessor: 'Code', width: 120, sortable: false },
         { Header: 'Name', accessor: 'Name', width: 120, sortable: false },
         { Header: 'Recive Date', accessor: 'ReciveDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
-        { Header: 'ShelfLife Date', accessor: 'ShelfLifeDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY"},
+        { Header: 'ShelfLife Date', accessor: 'ShelfLifeDate', width: 120, sortable: false, filterable: false, type: 'datetime', dateFormat: "DD/MM/YYYY" },
         { Header: 'Shelf Day', accessor: 'TotalShelfDay', width: 120, sortable: false, filterable: false, },
         { Header: 'Recive Day', accessor: 'TotalRecive', width: 120, sortable: false, filterable: false, },
-      
+
     ];
 
     const getFormatdata = (data) => {
-       // console.log(data.toFixed(2))
+        // console.log(data.toFixed(2))
         let per = data.toFixed(3) + '%'
         return per
     }
@@ -79,13 +79,13 @@ const  DeadStock = (props) => {
             Totalper = (usedata / Totaldata) * 100
 
         }
-         let totalPerCent = Totalper.toFixed(3) + '%'
+        let totalPerCent = Totalper.toFixed(3) + '%'
 
         return totalPerCent
     }
 
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 page={true}
@@ -93,7 +93,7 @@ const  DeadStock = (props) => {
                 fileNameTable={"DEADSTOCK"}
                 tableKey={"Code"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

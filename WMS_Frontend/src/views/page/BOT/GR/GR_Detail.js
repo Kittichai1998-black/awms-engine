@@ -78,7 +78,7 @@ const GR_Detail = props => {
     const columns = [
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
         //{
-        //    Header: "��Դ�Ҥ�",
+        //    Header: "��Դ�Ҥ�",
         //    Cell: e => { return e.original.SKUMaster_Code},
         //    CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
         //},
@@ -87,22 +87,22 @@ const GR_Detail = props => {
         //    Cell: e => { return e.original.SKUMaster_Name },
         //    CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         //},
+        
+        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
         {
-            Header: "�Ţ����Ҫ��",
-            accessor: "baseCode"},
-
-        {
-            Header: "��Դ�Ҥ�",
+            Header: "ชนิดราคา",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
-        { Header: "Ẻ", accessor: "ref2" },
-        {Header: "���������ѵ�",accessor: "ref3" },
-        { Header: "ʶҺѹ", accessor: "ref1" },
-        { Header: "�ٹ���Թʴ", accessor: "ref4" },
-        { Header: "�ӹǹ", accessor: "quantity" },
-        { Header: "˹��¹Ѻ", accessor: "unitType"},
-        { Header: "�ѹ����Ѻ���", accessor: "productionDate" },
+        { Header: "เลขที่ภาชนะ", accessor: "Code"},
+        { Header: "ชนิดราคา",accessor: "Code" },
+        { Header: "แบบ", accessor: "ref2"},
+        { Header: "ประเภทธนบัตร", accessor: "ref3"},
+        { Header: "สถาบัน", accessor: "ref1"},
+        { Header: "ศูนย์เงินสด", accessor: "ref4" },
+        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "หน่วยนับ", accessor: "unitType" },
+        { Header: "วันที่รับเข้า", accessor: "productionDate"},
         { Header: "Remark", accessor: "remark"},
     ];
 

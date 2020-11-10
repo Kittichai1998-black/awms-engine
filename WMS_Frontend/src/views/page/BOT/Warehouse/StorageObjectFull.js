@@ -295,7 +295,7 @@ const StorageObjectFull = props => {
     </div>
   }
   return (
-    <div>
+    <>
       <AmStorageObjectMulti
         iniCols={iniCols}
         selection={true}
@@ -304,7 +304,7 @@ const StorageObjectFull = props => {
         multi={true}
         action={true}
       />
-    </div>
+    </>
   );
 };
 

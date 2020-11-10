@@ -154,7 +154,7 @@ const DocumentSearch = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/receive/detail?docID=" + data.ID}
+                    api={"/receive/putawaydetail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -165,7 +165,7 @@ const DocumentSearch = props => {
     };
 
     return (
-        <div>
+        <>
             <AmPopup
                 typePopup={dialogState.type}
                 closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -181,7 +181,7 @@ const DocumentSearch = props => {
                 apiClose={"/v2/closed_document_manual"}
                 actionQueryCustom={true}
             />
-        </div>
+        </>
     );
 };
 

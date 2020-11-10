@@ -284,7 +284,7 @@ const StorageObject = props => {
 
 
   return (
-    <div>
+    <>
       <AmStorageObjectMulti
         iniCols={iniCols}
         selection={true}
@@ -294,7 +294,7 @@ const StorageObject = props => {
         action={false}
         actionQueryCustom={true}
       />
-    </div>
+    </>
   );
 };
 

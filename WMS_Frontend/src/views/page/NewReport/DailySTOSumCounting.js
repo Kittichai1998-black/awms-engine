@@ -134,7 +134,7 @@ const DailySTOSumCounting = (props) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 dataTable={datavalue}
@@ -144,7 +144,7 @@ const DailySTOSumCounting = (props) => {
                 page={true}
                 tableKey={"docID"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

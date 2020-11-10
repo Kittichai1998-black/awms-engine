@@ -309,7 +309,7 @@ const RD_Create_FGCustomer = props => {
 
     const columns = [
 
-        { Header: "เลขที่ภาชนะ", accessor: "Code"},
+        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
         { Header: "ชนิดราคา",accessor: "Code" },
         { Header: "แบบ", accessor: "ref2"},
         {Header: "ประเภทธนบัตร", accessor: "ref3"},
