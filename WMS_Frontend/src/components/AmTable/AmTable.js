@@ -170,8 +170,7 @@ const AmTable = (props) => {
         }).filter(x=> x.accessor !== undefined);
     }
 
-    console.log(tableContainerRef);
-    return <div style={{height:"100%"}} ref={tableContainerRef}>
+    return <div style={{height:props.height ? props.height : "100%"}} ref={tableContainerRef}>
         <Suspense fallback="">
             <AmTableComponent
                 style={props.style}

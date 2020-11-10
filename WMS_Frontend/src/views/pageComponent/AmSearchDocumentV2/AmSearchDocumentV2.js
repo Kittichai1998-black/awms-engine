@@ -55,8 +55,8 @@ const AmSearchDocumentV2 = props => {
   const [dialogState, setDialogState] = useState({});
   const [remark, setRemark] = useState("");
   const [pageSize, setPageSize] = useState(50);
-  const [reset, setReset] = useState(false)
 
+  const [reset, setReset] = useState(false)
   const QueryCustom = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -68,7 +68,6 @@ const AmSearchDocumentV2 = props => {
     l: pageSize,
     all: ""
   };
-
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -151,7 +150,7 @@ const AmSearchDocumentV2 = props => {
 
             }
           } else if (filterConfig.filterType === "datetime") {
-            col.width = 420;
+            col.width = 425;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
@@ -297,7 +296,7 @@ const AmSearchDocumentV2 = props => {
   };
   //===========================================================
   return (
-    <div>
+    <>
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -361,7 +360,7 @@ const AmSearchDocumentV2 = props => {
         }]}
       />
 
-    </div>
+    </>
   );
 };
 export default AmSearchDocumentV2;
