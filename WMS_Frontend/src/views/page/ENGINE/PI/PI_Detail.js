@@ -251,7 +251,7 @@ const PI_Detail = props => {
     };
    
     return (
-        <div>{docview}</div>
+        <>{docview}</>
       
     );
 };

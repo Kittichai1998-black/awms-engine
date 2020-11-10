@@ -144,7 +144,7 @@ const DocumentSearch = props => {
     };
 
     return (
-        <div>
+        <>
             <AmPopup
                 typePopup={dialogState.type}
                 closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -160,7 +160,7 @@ const DocumentSearch = props => {
                 apiReject={"/v2/RejectGRDocAPI"}
                 apiClose={"/v2/closed_document_manual"}
             />
-        </div>
+        </>
     );
 };
 
