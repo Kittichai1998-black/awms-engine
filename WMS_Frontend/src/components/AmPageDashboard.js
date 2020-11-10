@@ -124,29 +124,29 @@ const AmMonitor = props => {
     const time = props.time ? clock : null
 
     const goFull = () => {
-        console.log(width_height)
+        //console.log(width_height)
         setIsFullScreen(true);
         openFullscreen();
-        if(width_height.width < 1000){
+        if (width_height.width < 1000) {
             setCalHeight(0.4);
         }
-        else if(width_height.width < 1300){
+        else if (width_height.width < 1300) {
             setCalHeight(0.4);
         }
-        else if(width_height.width > 1300){
+        else if (width_height.width > 1300) {
             setCalHeight(0.55);
         }
     }
     const goMin = () => {
         setIsFullScreen(false);
         closeFullscreen();
-        if(width_height.width < 1000){
+        if (width_height.width < 1000) {
             setCalHeight(0.35);
         }
-        else if(width_height.width < 1300){
+        else if (width_height.width < 1300) {
             setCalHeight(0.37);
         }
-        else if(width_height.width > 1300){
+        else if (width_height.width > 1300) {
             setCalHeight(0.4);
         }
     }
@@ -214,7 +214,7 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        //console.log(rowInfo)
+        // console.log(rowInfo)
         if (rowInfo.StyleStatus !== undefined) {
             if (rowInfo.StyleStatus === "normal") {
                 return { backgroundColor: "white", lineHeight: "35px" }
@@ -275,8 +275,6 @@ const AmMonitor = props => {
                 <Grid container key={xi}>
                     <b>{x[0].table[0].title ? x[0].table[0].title : null}</b>
                     <Grid item md={12}>
-                        {console.log(width_height.height)}
-                        {console.log(width_height.height)}
                         <AmTable
                             // primaryKey="ID"
                             dataSource={x[0].table[0].data}
@@ -400,7 +398,7 @@ const AmMonitor = props => {
     ) : null
 
     return (
-        <div style={isFullScreen ? {overflow:"hidden", width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 999999 } : {}}>
+        <div style={isFullScreen ? { overflow: "hidden", width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 999999 } : {}}>
             <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <Grid container direction="row" justify="flex-start" alignItems="stretch" >
                     <Grid item xs={12} sm={6} md={6} xl={6}>

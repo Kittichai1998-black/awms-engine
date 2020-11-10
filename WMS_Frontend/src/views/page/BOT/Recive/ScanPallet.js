@@ -134,7 +134,7 @@ const ScanPallet = (props) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
-    const [data, setData] = useState(dataSource)
+    const [data, setData] = useState()
     const [palletCode, setpalletCode] = useState('KK00011');
     const [remark, setremark] = useState();
 
@@ -142,7 +142,7 @@ const ScanPallet = (props) => {
     useEffect(() => {
         // console.log(dashboard)
 
-        let url = window.apipath + '/receive'
+        let url = window.apipath + '/dashboard'
         let connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
                 skipNegotiation: true,
@@ -155,12 +155,10 @@ const ScanPallet = (props) => {
 
             connection.start()
                 .then(() => {
-                    connection.on('', res => {
-                        console.log(res)
-                        //setCount(count + 1);
-                        //data[0][0].table[0].headercol = headercol1
-                        //data[0][0].table[0].data = JSON.parse(res)
-                        //setData([...data])
+                    connection.on('ReceiveHub', res => {
+                        //console.log(res)
+                        console.log(JSON.parse(res))
+                        setData(JSON.parse(res).mapstos)
                     })
                 })
                 .catch((err) => {
@@ -245,13 +243,13 @@ const ScanPallet = (props) => {
     }
 
     const column = [
-        { Header: "สินค้า", accessor: "code" },
-        { Header: "ชนิดราคา", accessor: "unit" },
-        { Header: "แบบ", accessor: "unitType", width: 100, },
-        { Header: "ประเภทธนบัตร", accessor: "packUnitType" },
-        { Header: "สถาบัน", accessor: "ownnwer" },
-        { Header: "ศูนย์เงินสด", accessor: "customer" },
-        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "สินค้า", accessor: "code", width: 80 },
+        { Header: "ชนิดราคา", accessor: "skuTypeName", width: 80 },
+        { Header: "แบบ", accessor: "ref2", width: 70, },
+        { Header: "ประเภทธนบัตร", accessor: "ref3", width: 80 },
+        { Header: "สถาบัน", accessor: "ref1", width: 100 },
+        { Header: "ศูนย์เงินสด", accessor: "ref4", width: 100 },
+        { Header: "จำนวน", accessor: "qty", width: 100 },
     ];
 
 
@@ -284,21 +282,28 @@ const ScanPallet = (props) => {
                                             <Typography variant="h4" component="h3">ข้อมูลพาเลท</Typography>
                                         </div>
                                         <AmTble
-                                            dataKey="ID"
-                                            columns={column}
-                                            pageSize={200}
-                                            tableConfig={false}
-                                            dataSource={data}
 
-                                            //   height={200}
-                                            rowNumber={true}
-                                            style={{
-                                                background: 'white',
-                                                fontSize: 20,
-                                                maxHeight:2000,
-                                                // fontWeight: '700', 
-                                                zIndex: 0
-                                            }}
+                                            dataSource={data}
+                                            columns={column}
+                                            pageSize={20}
+                                            minRows={6}
+                                            currentPage={0}
+
+                                        // dataKey="ID"
+                                        // columns={column}
+                                        // pageSize={200}
+                                        // tableConfig={false}
+                                        // dataSource={data}
+
+                                        // //   height={200}
+                                        // rowNumber={true}
+                                        // style={{
+                                        //     background: 'white',
+                                        //     fontSize: 20,
+                                        //     maxHeight: 2000,
+                                        //     // fontWeight: '700', 
+                                        //     zIndex: 0
+                                        // }}
                                         >
                                         </AmTble>
                                     </div>
@@ -321,7 +326,7 @@ const ScanPallet = (props) => {
                                             size="large"
                                             onClick={() => { ComfirmRecive() }}>
                                             <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  PASS </Typography>
-                                            </AmButton>
+                                        </AmButton>
                                     </div>
                                     <div style={{
                                         paddingBottom: '5%',
@@ -340,12 +345,12 @@ const ScanPallet = (props) => {
                                             <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
                                                 NOT PASS
                                             </Typography>
-                                            </AmButton>
+                                        </AmButton>
                                     </div>
                                     <FormInline style={{ paddingBottom: '5%', marginLeft: '7%' }}>
                                         <Typography
                                             variant="h5" component="h3">REMARK : </Typography>
-                                        <AmInput style={{ width: "60%"}}
+                                        <AmInput style={{ width: "60%" }}
                                             id="remark"
                                             autoFocus={true}
                                             value={valueBarcode}
