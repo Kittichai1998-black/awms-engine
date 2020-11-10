@@ -214,39 +214,9 @@ const ScanPallet = (props) => {
 
 
     }
-    const GenButtonDef = () => {
-        return <div style={{
-            paddingTop: '5%'
-        }}>
-            <div style={{
-                paddingBottom: '5%'
-            }}> < AmButton
-                variant="contained"
-                style={{
-                    width: "70%", height: "100%",
-                    marginLeft: '20%', background: '#bdc3c7',
-                    color: '#ffffff', paddingBottom: '10%',
-                    paddingTop: '10%'
-                }}
-                size="large">
-                </AmButton>
-            </div>
-            < AmButton
-                variant="contained"
-                style={{
-                    width: "70%", height: "100%",
-                    marginLeft: '20%', background: '#bdc3c7',
-                    color: '#ffffff', paddingBottom: '10%',
-                    paddingTop: '10%',
-                }}
-                size="large"
-            >
-            </AmButton>
 
-        </div>
-    }
     const GenButton = (type) => {
-        if (type === "RECIVE") {
+        if (type === "AUDIT") {
             return <div style={{
                 paddingTop: '5%'
             }}>
@@ -281,7 +251,7 @@ const ScanPallet = (props) => {
                 </AmButton>
 
             </div>
-        } else if (type === "AUDIT") {
+        } else if (type === "RECIVE") {
             return <div style={{
                 paddingTop: '5%'
             }}>
@@ -289,6 +259,7 @@ const ScanPallet = (props) => {
                     paddingBottom: '5%'
                 }}> < AmButton
                     variant="contained"
+                    disabled={true}
                     style={{
                         width: "70%", height: "100%",
                         marginLeft: '20%', background: '#ffc107',
@@ -379,7 +350,7 @@ const ScanPallet = (props) => {
 
                                         {data !== undefined ?
                                             (data[0].eventStatus === 10 ? GenButton("RECIVE") : GenButton("AUDIT"))
-                                            : GenButtonDef()}
+                                            : GenButton("RECIVE")}
                                     </div>
 
                                     <FormInline style={{
