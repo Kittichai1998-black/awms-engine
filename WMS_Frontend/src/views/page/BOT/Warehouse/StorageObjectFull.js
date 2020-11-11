@@ -179,6 +179,8 @@ const StorageObjectFull = props => {
       return <AuditStatusIcon key={1} statusCode={1} />;
     } else if (Status === "REJECTED") {
       return <AuditStatusIcon key={2} statusCode={2} />;
+    } else if (Status === "NOTPASS") {
+      return <AuditStatusIcon key={3} statusCode={3} />;
     } else if (Status === "HOLD") {
       return <AuditStatusIcon key={9} statusCode={9} />;
     } else {

@@ -2,6 +2,7 @@
 using AMWUtil.Logger;
 using AWMSEngine.HubService;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

@@ -95,10 +95,10 @@ namespace ADO.WCSAPI
         }
         public TRes SendConfirm(WorkQueueCriteria datas, VOCriteria buVO)
         {
-            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
 
-            var res = this.SendJson<TRes>("WCS_SEND_CONFIRM", datas, buVO);
-            return res;
+            //var res = this.SendJson<TRes>("WCS_SEND_CONFIRM", datas, buVO);
+            //return res;
         }
 
     }
