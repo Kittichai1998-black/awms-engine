@@ -34,11 +34,17 @@ namespace ProjectBOTHY.Worker
                     new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "area").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
                 }, buVO).FirstOrDefault();
-
-            if(bsto != null)
+            StorageObjectCriteria mapsto = new StorageObjectCriteria();
+            if (bsto != null)
             {
-                var mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bsto.ID.Value, StorageObjectType.BASE, false, true, buVO);
+                
+                mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bsto.ID.Value, StorageObjectType.BASE, false, true, buVO);
                 this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], mapsto.Json());
+            }
+            else
+            {
+                var res = new Object();
+                this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res.Json());
             }
         }
     }

@@ -13,6 +13,7 @@ const Status = [
     { status: 'QUARANTINE', code: 0, label: 'QUARANTINE', labelShort: 'Q' }, //เเดง
     { status: 'PASSED', code: 1, label: 'PASSED', labelShort: 'P' }, //เขียว
     { status: 'REJECTED', code: 2, label: 'REJECTED', labelShort: 'R' }, //เทา
+    { status: 'NOTPASS', code: 3, label: 'NOTPASS', labelShort: 'N' }, //เขียว
     { status: 'HOLD', code: 9, label: 'HOLD', labelShort: 'H' }, //
 ]
 
