@@ -381,6 +381,8 @@ namespace ProjectBOTHY.Worker
                     baseMaster.ID = resID;
                 }
 
+                var findStageArea = StaticValueManager.GetInstant().AreaMasters.Find(x => x.AreaMasterType_ID == AreaMasterTypeID.STO_STAGING);
+
                 var stoBase = new StorageObjectCriteria()
                 {
                     code = baseMaster.Code,
@@ -394,7 +396,7 @@ namespace ProjectBOTHY.Worker
                     unitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseMaster.UnitType_ID).Code,
                     baseUnitCode = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == baseMaster.UnitType_ID).Code,
                     type = StorageObjectType.BASE,
-                    areaID = doc.Des_AreaMaster_ID,
+                    areaID = findStageArea.ID,
                     warehouseID = 1,
                     mstID = baseMaster.ID,
                     productOwner = doc.ProductOwner_ID,
