@@ -299,7 +299,7 @@ const ScanPallet = (props) => {
                     }}
                     size="large"
                     onClick={() => { ComfirmPass("1") }}>
-                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  PASS </Typography>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  ผ่าน </Typography>
                     </AmButton>
                 </div>
                 < AmButton
@@ -313,14 +313,14 @@ const ScanPallet = (props) => {
                     size="large"
                     onClick={() => { ComfirmPass("3") }}>
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
-                        NOT PASS
+                        ไม่ผ่าน
             </Typography>
                 </AmButton>
                 <FormInline style={{
                     paddingBottom: '5%', marginLeft: '7%', paddingTop: '5%'
                 }}>
                     <Typography
-                        variant="h5" component="h3">REMARK : </Typography>
+                        variant="h5" component="h3">หมายเหตุ : </Typography>
                     <AmInput style={{ width: "60%" }}
                         id="remark"
                         autoFocus={true}
@@ -356,7 +356,7 @@ const ScanPallet = (props) => {
                     size="large"
                     onClick={() => { ComfirmRecive() }}>
                         <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
-                            RECIVED
+                            รับเข้า
         </Typography>
                     </AmButton>
                 </div>
@@ -379,7 +379,7 @@ const ScanPallet = (props) => {
                     paddingBottom: '10%', marginLeft: '7%', paddingTop: '5%'
                 }}>
                     <Typography
-                        variant="h5" component="h3">REMARK : </Typography>
+                        variant="h5" component="h3">หมายเหตุ : </Typography>
                     <AmInput style={{ width: "60%" }}
                         id="remark"
                         autoFocus={true}
