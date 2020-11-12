@@ -231,9 +231,10 @@ const ScanPallet = (props) => {
     const ComfirmCancel = () => {
         if (palletCode) {
             let postdata = {
-                baseCode: palletCode,
+                bstosID: dataPallet.id,
+                remark: remark,
             };
-            Axios.post(window.apipath + "/v2/register_wq_from_wms", postdata).then(
+            Axios.post(window.apipath + "/v2/cancel_wq_from_wms", postdata).then(
                 res => {
                     if (res.data._result !== undefined) {
                         if (res.data._result.status === 1) {
