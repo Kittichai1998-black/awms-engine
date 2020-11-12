@@ -8,13 +8,13 @@ namespace AWMSModel.Constant.EnumConst
     {
 
         STO_ASRS = 10,
-        STO_STAGING = 11,
+        STO_STAGING = 30,
         MC_GATE = 20,
         MC_RGV = 21,
         MC_CRANE = 22,
         MC_CONVEYOR = 23,
-        STA_PICK = 30,
-        STA_CONSO = 31
+        STA_PICK = 40,
+        STA_CONSO = 41
 
     }
 }
