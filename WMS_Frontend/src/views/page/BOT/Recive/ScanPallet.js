@@ -8,13 +8,15 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
 import Flash from 'react-reveal/Flash';
-import { apicall, createQueryString } from '../../../../components//function/CoreFunction2'
+import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import AmDialogs from '../../../../components/AmDialogs'
 import AmTble from '../../../../components/AmTable/AmTableComponent'
 import moment from "moment";
+import AmAux from '../../../../components/AmAux';
+import AmDropdown from '../../../../components/AmDropdown';
 import { useTranslation } from 'react-i18next'
 
 import Axios1 from 'axios'
@@ -65,7 +67,7 @@ input {
 `;
 const LabelH = styled.label`
 font-weight: bold;
-  width: 200px;
+  width: 50px;
 `;
 
 const Border = styled.div`
@@ -94,34 +96,6 @@ const BorderGrey = styled.div`
 
 
 
-const dataSource = [{
-    "code": '1000',
-    "unit": '5000000',
-    "unitType": '17',
-    "packUnitType": 'N (ใหม่)',
-    "ownnwer": 'BOT',
-    "customer": 'SCB',
-    "quantity": '20'
-},
-{
-    "code": '5000',
-    "unit": '5000000',
-    "unitType": '17',
-    "packUnitType": 'G (ดี)',
-    "ownnwer": 'BOT',
-    "customer": 'SCB',
-    "quantity": '20'
-},
-{
-    "code": '5000',
-    "unit": '5000000',
-    "unitType": '17',
-    "packUnitType": 'G (ดี)',
-    "ownnwer": 'BOT',
-    "customer": 'SCB',
-    "quantity": '20'
-},
-]
 
 
 const ScanPallet = (props) => {
@@ -140,10 +114,27 @@ const ScanPallet = (props) => {
     const [palletCode, setpalletCode] = useState("");
     const [remark, setremark] = useState();
     const [dialogState, setDialogState] = useState({});
-
-
+    const [dashboard, setDashboarde] = useState("ReceiveHub");
+    const AreaMaster = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "AreaMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+    const onHandleDDLChange = (value) => {
+        // console.log(value)
+        if (value === 3) {
+            setDashboarde("ReceiveHub");
+        } else {
+            setDashboarde("ReceiveHub2");
+        }
+    };
     useEffect(() => {
-        // console.log(dashboard)
 
         let url = window.apipath + '/dashboard'
         let connection = new signalR.HubConnectionBuilder()
@@ -155,12 +146,11 @@ const ScanPallet = (props) => {
             .build();
 
         const signalrStart = () => {
-
             connection.start()
                 .then(() => {
-                    connection.on('ReceiveHub', res => {
+                    connection.on(dashboard, res => {
                         //console.log(res)
-                        // console.log(JSON.parse(res))
+                        //console.log(JSON.parse(res))
                         setpalletCode(JSON.parse(res).code)
                         setDataPallet((JSON.parse(res)))
                         setData(JSON.parse(res).mapstos)
@@ -184,15 +174,14 @@ const ScanPallet = (props) => {
             connection.stop()
         }
 
-    }, [])
+    }, [dashboard])
+
 
     const HeadLock = () => {
         return <CardContent style={{ height: "80px", background: "#1769aa", textAlign: "center" }} >
             <Typography style={{ color: "#ffffff" }} variant="h3" component="h3">เลขที่ภาชนะ : {palletCode}</Typography>
         </CardContent>
     }
-
-
     const ComfirmRecive = () => {
         if (palletCode) {
             let postdata = {
@@ -349,10 +338,13 @@ const ScanPallet = (props) => {
             </div>
         } else if (type === "RECIVE") {
             return <div style={{
-                paddingTop: '5%'
+                paddingTop: '5%',
             }}>
                 <div style={{
-                    paddingBottom: '5%'
+                    paddingBottom: '5%',
+                    marginTop: '80px',
+                    marginBottom: '20px'
+
                 }}>  < AmButton
                     variant="contained"
                     style={{
@@ -368,7 +360,8 @@ const ScanPallet = (props) => {
         </Typography>
                     </AmButton>
                 </div>
-                < AmButton
+
+                {/* < AmButton
                     variant="contained"
                     style={{
                         width: "70%", height: "100%",
@@ -381,9 +374,9 @@ const ScanPallet = (props) => {
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
                         CANCEL
             </Typography>
-                </AmButton>
+                </AmButton> */}
                 <FormInline style={{
-                    paddingBottom: '5%', marginLeft: '7%', paddingTop: '5%'
+                    paddingBottom: '10%', marginLeft: '7%', paddingTop: '5%'
                 }}>
                     <Typography
                         variant="h5" component="h3">REMARK : </Typography>
@@ -415,8 +408,26 @@ const ScanPallet = (props) => {
         { Header: "จำนวน", accessor: "qty", width: 100 },
     ];
     return (
+        <><AmAux>
+            <FormInline style={{ float: "right", marginRight: "50px", marginBottom: "20px" }}>
+                {" "}
+                <LabelH>{"พื้นที่"} : </LabelH>
+                <AmDropdown
+                    id={"ID"}
+                    placeholder={"กรุณาเลือกพื้นที่"}
+                    fieldDataKey={"ID"}
+                    fieldLabel={["Name"]}
+                    labelPattern=" : "
+                    width={200}
+                    ddlMinWidth={200}
+                    defaultValue={3}
+                    zIndex={1000}
+                    queryApi={AreaMaster}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
+                />
 
-        <div>
+            </FormInline>
+        </AmAux>
             <AmDialogs
                 typePopup={dialogState.type}
                 onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -480,7 +491,7 @@ const ScanPallet = (props) => {
                     </div>
                 </Grid>
             </div>
-        </div >
+        </ >
 
     );
 }
