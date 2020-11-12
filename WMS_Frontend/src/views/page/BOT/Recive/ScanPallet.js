@@ -114,7 +114,7 @@ const ScanPallet = (props) => {
     const [palletCode, setpalletCode] = useState("");
     const [remark, setremark] = useState();
     const [dialogState, setDialogState] = useState({});
-    const [dashboard, setDashboarde] = useState("ReceiveHub");
+    const [dashboard, setDashboarde] = useState("");
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -150,7 +150,7 @@ const ScanPallet = (props) => {
                 .then(() => {
                     connection.on(dashboard, res => {
                         //console.log(res)
-                        //console.log(JSON.parse(res))
+                        console.log(JSON.parse(res))
                         setpalletCode(JSON.parse(res).code)
                         setDataPallet((JSON.parse(res)))
                         setData(JSON.parse(res).mapstos)
@@ -192,8 +192,8 @@ const ScanPallet = (props) => {
                 length: 1.200,
                 height: 1.000,
                 warehouseCode: "1001",
-                areaCode: "G01",
-                locationCode: "G01",
+                areaCode: data.areaID === 3 ? "LIF01" : "LIF01",
+                locationCode: data.areaID === 3 ? "LIF01" : "LIF02",
                 actualTime: moment().format("YYYY-MM-DDT00:00"),
                 options: remark,
                 mappingPallets: [{}]
@@ -250,8 +250,8 @@ const ScanPallet = (props) => {
                 length: 1.200,
                 height: 1.000,
                 warehouseCode: "1001",
-                areaCode: "G01",
-                locationCode: "G01",
+                areaCode: data.areaID === 3 ? "LIF01" : "LIF02",
+                locationCode: data.areaID === 3 ? "LIF01" : "LIF02",
                 actualTime: moment().format("YYYY-MM-DDT00:00"),
                 options: remark,
                 bstosID: dataPallet.id,
@@ -402,7 +402,7 @@ const ScanPallet = (props) => {
         { Header: "สินค้า", accessor: "code", width: 80 },
         { Header: "ชนิดราคา", accessor: "skuTypeName", width: 100 },
         { Header: "แบบ", accessor: "ref2", width: 70, },
-        { Header: "ประเภทธนบัตร", accessor: "ref3", width: 70 },
+        { Header: "ประเภท", accessor: "ref3", width: 70 },
         { Header: "สถาบัน", accessor: "ref1", width: 80 },
         { Header: "ศูนย์เงินสด", accessor: "ref4", width: 100 },
         { Header: "จำนวน", accessor: "qty", width: 100 },
@@ -420,7 +420,7 @@ const ScanPallet = (props) => {
                     labelPattern=" : "
                     width={200}
                     ddlMinWidth={200}
-                    defaultValue={3}
+                    //defaultValue={3}
                     zIndex={1000}
                     queryApi={AreaMaster}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
