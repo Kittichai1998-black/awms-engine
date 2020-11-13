@@ -16,7 +16,7 @@ namespace ProjectBOTHY.Model
             public string skuType;
             public string baseType;
             public string baseCode;
-            public decimal? quantity;
+            public int? quantity;
         }
     }
 }

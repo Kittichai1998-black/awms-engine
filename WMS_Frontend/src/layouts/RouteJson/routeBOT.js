@@ -30,6 +30,10 @@ const PK_Search = Loadable({
   loader: () => import("../../views/page/BOT/Issue/PK_Search"),
   loading: Loading
 });
+const PK_Create_Wave = Loadable({
+  loader: () => import("../../views/page/BOT/Issue/PK_ManageQueue"),
+  loading: Loading
+});
 const AD_Search = Loadable({
   loader: () => import("../../views/page/BOT/Audit/AD_Search"),
   loading: Loading
@@ -131,6 +135,12 @@ const routes = [
     path: "/issue/pickingsearch",
     name: "Search Picking",
     compoment: PK_Search,
+    exact: true
+  },
+  {
+    path: "/issue/create_wave",
+    name: "Create Picking",
+    compoment: PK_Create_Wave,
     exact: true
   },
   {
