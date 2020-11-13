@@ -154,28 +154,48 @@ const RD_Create_FGCustomer = props => {
 
         var columnEdit = [
           
-            {
+            //{
+            //    Header: "เลขที่ภาชนะ",
+            //    accessor: "BaseCode",
+            //    type: "findPopUp",
+            //    search: "BaseCode",
+            //    queryApi: BaseMaster_Sto, 
+            //    fieldLabel: ["BaseCode"],
+            //    columsddl: columsFindPopupBase,                     
+            //    fieldDataKey: "BaseCode",
+            //    required: true
+            //},
+
+
+            //{
+            //    Header: "ชนิดราคา",
+            //    accessor: "Code",
+            //    type: "findPopUp",
+            //    search: "Code",
+            //    queryApi: BaseMasterSto,
+            //    fieldLabel: ["Code"],
+            //    columsddl: columsFindPopup,
+            //    fieldDataKey: "ID",
+            //    required: true
+            //},
+                    {
                 Header: "เลขที่ภาชนะ",
-                accessor: "baseCode",
-                type: "dropdown",
-                queryApi: BaseMaster_Sto,
-                fieldLabel: ["baseCode"],
-                fieldDataKey: "baseCode",
-                columsddl: columsFindPopupBase,
-                //required: true,
-                width: '300px'
+                accessor: "BaseCode", 
+                fieldLabel:["BaseCode"],
+                queryApi: BaseMasterSto,
+                type: "dropdown",                   
+                key: "ID", 
+                required: true
             },
 
             {
                 Header: "ชนิดราคา",
-                accessor: "Code",
-                type: "findPopUp",
-                search: "Code",
+                accessor: "Code", 
+                fieldLabel:["Code"],
                 queryApi: skuquery,
-                fieldLabel: ["Code"],
-                columsddl: columsFindPopupSKU,           
-                fieldDataKey: "Code", // ref กับ accessor
-                //required: true
+                type: "dropdown",                   
+                key: "ID", 
+                required: true
             },
             { Header: "แบบ", accessor: "ref2", type: "input", width: '300px' },
 
@@ -191,15 +211,25 @@ const RD_Create_FGCustomer = props => {
 
             { Header: "สถาบัน", accessor: "ref1", type: "input", width: '300px' },
             { Header: "ศูนย์เงินสด", accessor: "ref4", type: "input", width: '300px' },
-            { Header: "จำนวน", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
-            { Header: "หน่วยนับ", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
+            {
+                Header: "จำนวน", accessor: "quantity", type: "inputNum",
+                required: true,
+                width: '300px'
+            },
+            {
+                Header: "หน่วยนับ", accessor: "unitType", fieldDataKey: 'UnitType_Code' ,
+                fieldLabel: 'UnitType_Name',
+                type: "unitConvert", width: '300px',
+                required: true
+            },
             { Header: "วันที่รับเข้า", accessor: "productionDate", type: "date", width: '300px' },
-            { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
+            { Header: "หมายเหตุ", accessor: "remark", type: "input", width: '300px' },
 
         ];
 
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
+
 
 
     const WarehouseQuery = {
@@ -229,11 +259,11 @@ const RD_Create_FGCustomer = props => {
 
 
 
-    const BaseMaster_Sto = {
+    const BaseMasterSto = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "BaseMaster_Sto",
         q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "ID,Code as baseCode,Name as name",
+        f: "*",
         g: "",
         s: "[{ 'f': 'ID', 'od': 'asc' }]",
         sk: 0,
@@ -296,20 +326,20 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-    const columsFindPopupSKU = [
+
+    const columsFindPopupBase = [
+        { Header: "BaseCode", accessor: "BaseCode", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+    ];
+
+    const columsFindPopup= [
         { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
-    const columsFindPopupBase = [
-        { Header: "Code", accessor: "baseCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "name", width: 250, sortable: true },
-    ];
-
-
     const columns = [
 
-        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
         { Header: "ชนิดราคา",accessor: "Code" },
         { Header: "แบบ", accessor: "ref2"},
         {Header: "ประเภทธนบัตร", accessor: "ref3"},
@@ -320,6 +350,12 @@ const RD_Create_FGCustomer = props => {
         { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
         { Header: "Remark", accessor: "remark"}
     ];
+
+
+
+    const getUnit = (e) => {
+        console.log(e)
+    }
 
     const getFormatDatePro = (e) => {
         if (e.productionDate)
