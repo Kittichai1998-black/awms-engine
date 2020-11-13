@@ -12,7 +12,7 @@ import AmInput from '../../../components/AmInput'
 import MuiDialogActions from "@material-ui/core/DialogActions"
 import MuiDialogContent from "@material-ui/core/DialogContent"
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import AmTable from '../../../components/AmTable/AmTable'
+import AmTable from '../../../components/AmTable/AmTableComponent'
 import Dialog from "@material-ui/core/Dialog"
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -140,6 +140,7 @@ const AmHeaderputandpick = (props) => {
     const [columns, setcolumns] = useState();
     const [docCanCreate, setdocCanCreate] = useState();
     const [ChkCol, setChkCol] = useState(false)
+    const [dataCheck, setdataCheck] = useState([]);
 
 
 
@@ -150,10 +151,16 @@ const AmHeaderputandpick = (props) => {
             doc.setdataSourceItemTB([])
             doc.setdatadocItem([])
             doc.setdataSet([])
+            setdataCheck([])
             getData();
             GetdataItem(doc.docID) //getdataHeader
         }
     }, [doc.docID])
+
+        useEffect(() => {
+
+            console.log(props.doccolumnEdit)
+        }, [props.doccolumnEdit])
 
     useEffect(() => {
         if (doc.datadocItem > 0) {
@@ -171,6 +178,10 @@ const AmHeaderputandpick = (props) => {
     useEffect(() => {
         getDocCodedata();
     }, [])
+
+    useEffect(() => {
+        setdataCheck(dataCheck)
+    }, [dataCheck])
 
 
     useEffect(() => {
@@ -448,36 +459,37 @@ const AmHeaderputandpick = (props) => {
     const onChangeEditor = (value, obj, element, event, datarow) => {
         if (doc.dataSourceItemTB.length === 0) {
             let qtys = datarow.DiffQty
-            if (value > qtys) {
-                dia.setdailogMsg('Quantity Max')
-                dia.setdailogErr(true)
 
-            } else if (value <= qtys) {
-                let datas = {
+            //if (value > qtys) {
+            //    dia.setdailogMsg('Quantity Max')
+            //    dia.setdailogErr(true)
 
-                    recQty: parseFloat(value),
-                    docItemID: datarow.ID
-                }
+            //} else if (value <= qtys) {
+            let datas = {
 
-
-                valueQtys.push(datas)
-                setDataSelect([]);
+                recQty: parseFloat(value),
+                docItemID: datarow.ID
             }
+
+
+            valueQtys.push(datas)
+            setDataSelect([]);
+            //}
         } else {
-            if (value > datarow.DiffQty) {
-                dia.setdailogMsg('Quantity Max')
-                dia.setdailogErr(true)
+            //if (value > datarow.DiffQty) {
+            //dia.setdailogMsg('Quantity Max')
+            //dia.setdailogErr(true)
 
 
-            } else if (value <= datarow.DiffQty) {
-                let datas = {
-                    recQty: parseFloat(value),
-                    docItemID: datarow.ID
+            //} else if (value <= datarow.DiffQty) {
+            let datas = {
+                recQty: parseFloat(value),
+                docItemID: datarow.ID
 
-                }
-                valueQtys.push(datas)
-                setDataSelect([]);
             }
+            valueQtys.push(datas)
+            setDataSelect([]);
+            //}
 
         }
         setValueQtyDocItems(valueQtys)
@@ -517,13 +529,21 @@ const AmHeaderputandpick = (props) => {
                     dataSelect2 = dataSelect.map((x, idx) => {
                         const found = doc.dataSourceItemTB.find(x => x.ID === dataSelect[idx].ID);
                         const CheckID = valueQtyDocItems.find(xy => xy.docItemID === x.ID)
-                        console.log(CheckID)
-                        console.log(found)
+                        //console.log(found)
                         if (CheckID && !found) {
-                            x.DiffQty = CheckID.recQty
+                            if (CheckID.recQty <= x.Quantity) {
+                                x.DiffQty = CheckID.recQty
+
+                            } else {
+                                dia.setdailogMsg("Quantity is Max");
+                                dia.setdailogErr(true)
+                            }
                             return x;
                         } else if (!found) {
                             return x
+                        } else {
+                            //dia.setdailogMsg("Item Dupicate");
+                            //dia.setdailogErr(true)
                         }
                     })
                     //if (Checkdataselect === 1) {
@@ -533,13 +553,14 @@ const AmHeaderputandpick = (props) => {
 
                     //} else {   
                     if (doc.dataSourceItemTB.length === 0) {
+                        dataCheck.push(dataSelect2);
                         doc.setdataSourceItemTB(dataSelect2);
                         doc.setdialogItem(false)
                     } else {
                         dataSelect2.forEach((x, i) => {
-                            console.log(x)
                             if (x) {
                                 doc.dataSourceItemTB.push(dataSelect2[i])
+                                dataCheck.push(dataSelect2);
                             }
                         })
                         doc.setdialogItem(false)
@@ -570,22 +591,12 @@ const AmHeaderputandpick = (props) => {
         setDataSelect([]);
         doc.setdialogItem(false)
         doc.setdialogItemSet(false)
-
-
-
     }
 
     const genInputQty = (datarow) => {
+        console.log(datarow)
+        console.log(dataCheck)
         let defaultQty = datarow.DiffQty;
-        //if (datarow.Qty != undefined && doc.dataSourceItemTB.length == 0 && (datarow.Quantity - datarow.Qty) > 0) {
-        //    defaultQty = (datarow.Quantity - datarow.Qty)
-        //} else if (datarow.Quantity - datarow.Qty > 0) {
-        //    defaultQty = (datarow.Quantity - datarow.Qty)
-        //} else if ((datarow.Quantity - datarow.Qty) === 0) {
-        //    defaultQty = 0
-        //} else {
-        //    defaultQty = datarow.Quantity
-        //}
         return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
             type="input"

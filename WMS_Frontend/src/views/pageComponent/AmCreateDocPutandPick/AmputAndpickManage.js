@@ -149,6 +149,7 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
+            //console.log(docs)
             CreateDocuments(docs)
         }
 
