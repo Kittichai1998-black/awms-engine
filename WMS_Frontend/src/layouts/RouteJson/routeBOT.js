@@ -30,10 +30,6 @@ const PK_Search = Loadable({
   loader: () => import("../../views/page/BOT/Issue/PK_Search"),
   loading: Loading
 });
-const PK_Create_Wave = Loadable({
-  loader: () => import("../../views/page/BOT/Issue/PK_ManageQueue"),
-  loading: Loading
-});
 const AD_Search = Loadable({
   loader: () => import("../../views/page/BOT/Audit/AD_Search"),
   loading: Loading
@@ -44,7 +40,7 @@ const Scanpallet = Loadable({
 });
 
 const GR_Create = Loadable({
-  loader: () => import("../../views/page/BOT/GR/GR_Create"),
+    loader: () => import("../../views/page/BOT/GR/GR_Create"),
   loading: Loading
 });
 const GR_Detail = Loadable({
@@ -52,7 +48,7 @@ const GR_Detail = Loadable({
   loading: Loading
 });
 const PA_Create = Loadable({
-  loader: () => import("../../views/page/BOT/PA/PA_Create"),
+    loader: () => import("../../views/page/BOT/PA/PA_Create"),
   loading: Loading
 });
 const PA_Detail = Loadable({
@@ -114,15 +110,9 @@ const routes = [
   },
 
   {
-    path: "/receive/search",
-    name: "Search Goods Receive",
-    compoment: GR_Search,
-    exact: true
-  },
-  {
-    path: "/receive/putawaysearch",
-    name: "Search Put Away",
-    compoment: PA_Search,
+    path: "/report/storageobject",
+    name: "StorageObject",
+    compoment: StorageObjectReport,
     exact: true
   },
   {
@@ -138,26 +128,20 @@ const routes = [
     exact: true
   },
   {
-    path: "/issue/create_wave",
-    name: "Create Picking",
-    compoment: PK_Create_Wave,
-    exact: true
-  },
-  {
     path: "/audit/search",
     name: "Search Audit",
     compoment: AD_Search,
     exact: true
-  },
-  {
-    path: "receive/putawaycreate",
-    name: "Crate PutAway",
-    compoment: PA_Create,
-    exact: true
+    },
 
-  },
+
+
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
-  { path: "/receive/detail", name: "GR Create", compoment: GR_Detail, exact: true },
+  { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
+  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
+  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
+  { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
   { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true },
   {
     path: "/report/storageobject",
