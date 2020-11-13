@@ -1,5 +1,10 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
+import {
+    apicall,
+    createQueryString,
+    IsEmptyObject
+} from "../../../../components/function/CoreFunction";
 
 const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
 const colDocumentItem = [
@@ -55,6 +60,9 @@ const desAreaQuery = {
 const processCondition = {
     "conditions": [{ "field": "Full Pallet", "key": "useFullPick", "enable": true, "defaultValue": true, "editable": false }],
     "eventStatuses": [{ "field": "Recevied", "value": 12, "enable": true, "defaultValue": true, "editable": false,}],
+    "auditStatuses": [{ "field": "QUARANTINE", "value": 0, "enable": true, "defaultValue": true, "editable": false,},
+    { "field": "PASSED", "value": 1, "enable": true, "defaultValue": true, "editable": false,},
+    { "field": "NOTPASSED", "value": 3, "enable": true, "defaultValue": true, "editable": false,}],
     "orderBys": [{"field": "Receive Date", "enable": true, "sortField": "psto.createtime", "sortBy": "0", "editable": true,}]
 }
 
@@ -63,6 +71,12 @@ const documentDetail = {
     field: [{ "accessor": "Code", "label": "Code" }, { "accessor": "DocumentProcessType_ID", "label": "DocumentProcessType_ID" },],
     fieldHeader: [{ "accessor": "Code", "label": "Code" }]
 }
+
+var Axios = new apicall();
+
+const customAfterProcess  = (res) => {
+    Axios.post(window.apipath + "/v2/pcq_error", { docID:res.processResults[0].docID });
+};
 
 const ProcessQueue = () => {
     const customDesAreaDefault = (doc) => {
@@ -83,6 +97,7 @@ const ProcessQueue = () => {
         modeDefault={"1"}
         waveProcess={false}
         confirmProcessUrl={"confirm_process_wq"}
+        customAfterProcess = {res => customAfterProcess(res)}
     />
 }
 

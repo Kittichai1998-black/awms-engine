@@ -90,7 +90,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                         skuType = x.skuType,
                         baseType = x.baseType,
                         baseCode = x.baseCode,
-                        quantity = x.quantity
+                        quantity = (int?)x.quantity
                     };
                 }
             }).ToList();
@@ -103,6 +103,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 rowCount = _res.details.Count(),
                 timestamp = DateTime.Now.ToString("yyyyMMdd hhMMss")
             };
+            _res.error = reqVO.error;
 
             if (string.IsNullOrWhiteSpace(fileName))
                 fileName = $"ERR_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
