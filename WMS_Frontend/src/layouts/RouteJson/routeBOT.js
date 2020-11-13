@@ -14,10 +14,6 @@ const StorageObject = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/StorageObject"),
   loading: Loading
 });
-const StorageObjectReport = Loadable({
-  loader: () => import("../../views/page/BOT/Report/StorageObject"),
-  loading: Loading
-});
 const GR_Search = Loadable({
   loader: () => import("../../views/page/BOT/Recive/GR_Search"),
   loading: Loading
@@ -59,7 +55,46 @@ const PA_Detail = Loadable({
   loader: () => import("../../views/page/BOT/PA/PA_Detail"),
   loading: Loading
 });
-
+const CurrentInventory = Loadable({
+  loader: () => import("../../views/page/BOT/Report/CurrentInventory"),
+  loading: Loading
+});
+const StockCard = Loadable({
+  loader: () => import("../../views/page/BOT/Report/StockCard"),
+  loading: Loading
+});
+const StorageObjectReport = Loadable({
+  loader: () => import("../../views/page/BOT/Report/StorageObject"),
+  loading: Loading
+});
+const DailySTOReceive = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOReceive"),
+  loading: Loading
+});
+const DailySTOIssue = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOIssue"),
+  loading: Loading
+});
+const DailySTOAudit = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOAudit"),
+  loading: Loading
+});
+const DailySTOSumReceive = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOSumReceive"),
+  loading: Loading
+});
+const DailySTOSumIssue = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOSumIssue"),
+  loading: Loading
+});
+const DailySTOSumAudit = Loadable({
+  loader: () => import("../../views/page/BOT/Report/DailySTOSumAudit"),
+  loading: Loading
+});
+const MoveLocation = Loadable({
+  loader: () => import("../../views/page/BOT/Warehouse/MoveLocation"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -73,12 +108,7 @@ const routes = [
     compoment: StorageObject,
     exact: true
   },
-  {
-    path: "/report/storageobject",
-    name: "StorageObject",
-    compoment: StorageObjectReport,
-    exact: true
-  },
+
   {
     path: "/receive/search",
     name: "Search Goods Receive",
@@ -119,6 +149,21 @@ const routes = [
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR Create", compoment: GR_Detail, exact: true },
   { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true },
+  {
+    path: "/report/storageobject",
+    name: "StorageObject",
+    compoment: StorageObjectReport,
+    exact: true
+  },
+  { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
+  { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
+  { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
+  { path: "/report/issue", name: "Issue Report", compoment: DailySTOIssue, exact: true },
+  { path: "/report/audit", name: "Audit Report", compoment: DailySTOAudit, exact: true },
+  { path: "/report/dailyreceivesum", name: "Receive Summary Report ", compoment: DailySTOSumReceive, exact: true },
+  { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
+  { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
+  { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
 ];
 
 export default routes;
