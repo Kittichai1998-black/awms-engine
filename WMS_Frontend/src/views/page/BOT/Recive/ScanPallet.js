@@ -102,11 +102,6 @@ const ScanPallet = (props) => {
     const { t } = useTranslation()
     const [databar, setdatabar] = useState({});
     const [valueBarcode, setvalueBarcode] = useState();
-    const [stateDialog, setStateDialog] = useState(false);
-    const [msgDialog, setMsgDialog] = useState("");
-    const [stateDialogSuc, setStateDialogSuc] = useState(false);
-    const [msgDialogSuc, setMsgDialogSuc] = useState("");
-    const [isFullScreen, setIsFullScreen] = useState(false);
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
     const [data, setData] = useState()
