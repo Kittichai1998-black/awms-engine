@@ -170,34 +170,30 @@ const Create_GR_DR = props => {
 
 
     const columnEdit = [
-        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code", type: "text" },
-        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name", type: "text" },
-        { Header: "Control No.", accessor: "OrderNo", type: "text", codeTranslate: "OrderNo" },
-        { Header: "Lot", accessor: "Lot", type: "text", codeTranslate: "Lot" },
-        { Header: "Vendor Lot", accessor: "Ref1", type: "text", codeTranslate: "Ref1" },
-        { Header: "Quantity", accessor: "Quantity", type: "inputNum", codeTranslate: "Qty" },
-        { Header: "Unit", accessor: "UnitType_Code", type: "text", codeTranslate: "Unit" },
-        { Header: "Quality Status", accessor: "AuditStatus", type: "text", codeTranslate: "AuditStatus" },
-        { Header: "Remark", accessor: "Remark", type: "text", codeTranslate: "Remark"},
-        { Header: "Carton No.", accessor: "CartonNo", type: "text", codeTranslate: "CartonNo" },
-        { Header: "MFG.Date", accessor: "ProductionDate", type: "text", codeTranslate: "ProductionDate" },
-        { Header: "Expire Date", accessor: "ExpireDate", type: "text", codeTranslate: "ExpireDate"},
-
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode", codeTranslate: "Base Code", type: "text" },
+        { Header: "ชนิดราคา", accessor: "Code", codeTranslate: "Code", type: "text"},
+        { Header: "แบบ", accessor: "Ref2", codeTranslate: "Ref2", type: "text"},
+        { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3", type: "text" },
+        { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1", type: "text"},
+        { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4", type: "text"},
+        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity", type: "inputNum" },
+        { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit", type: "text" },
+        { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate", type: "text"},
+        { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark", type: "text" },
     ];
 
     const columnEditItem = [
-        { Header: "Item Code", accessor: "SKUMaster_Code", codeTranslate: "Item Code" },
-        { Header: "Item Name", accessor: "SKUMaster_Name", codeTranslate: "Item Name" },
-        { Header: "Control No.", accessor: "OrderNo", codeTranslate: "OrderNo" },
-        { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
-        { Header: "Vendor Lot", accessor: "Ref1", codeTranslate: "Ref1" },
-        { Header: "Quantity", accessor: "Quantity", codeTranslate: "Qty" },
-        { Header: "Unit", accessor: "UnitType_Code", codeTranslate: "Unit" },
-        { Header: "Quality Status", accessor: "AuditStatus", codeTranslate: "AuditStatus" },
-        { Header: "Remark", accessor: "Remark", codeTranslate: "Remark" },
-        { Header: "Carton No.", accessor: "CartonNo", codeTranslate: "CartonNo" },
-        { Header: "MFG.Date", accessor: "ProductionDate", codeTranslate: "ProductDate" },
-        { Header: "Expire Date", accessor: "ExpireDate", codeTranslate: "ExpireDate" },
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode", codeTranslate: "Base Code" },
+        { Header: "ชนิดราคา", accessor: "Code", codeTranslate: "Code" },
+        { Header: "แบบ", accessor: "Ref2", codeTranslate: "Ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3"},
+        { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1"},
+        { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4"},
+        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity"},
+        { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit"},
+        { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate"},
+        { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
+    
 
     ];
 
@@ -210,18 +206,16 @@ const Create_GR_DR = props => {
 
 
     const columns = [
-        { Header: "Quality Status", accessor: "AuditStatus" },
-        { Header: "Item Code", accessor: "SKUMaster_Code" },
-        { Header: "Item Name", accessor: "SKUMaster_Name" },
-        { Header: "Control No.", accessor: "OrderNo" },
-        { Header: "Lot", accessor: "Lot",width: 130,},
-        { Header: "Vendor Lot", accessor: "Ref1" },
-        { Header: "Qty", accessor: "_qty", width: 120,},
-        { Header: "Unit", accessor: "UnitType_Code", width: 70,},
-        { Header: "Remark", accessor: "Remark" },
-        { Header: "Carton No.", accessor: "CartonNo" },
-        { Header: "MFG.Date", accessor: "ProductionDate" },
-        { Header: "Expire Date", accessor: "ExpireDate" },
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode", codeTranslate: "Base Code" },
+        { Header: "ชนิดราคา", accessor: "Code", codeTranslate: "Code" },
+        { Header: "แบบ", accessor: "Ref2", codeTranslate: "Ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3" },
+        { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1" },
+        { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4" },
+        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity" },
+        { Header: "หน่วยนับ", accessor: "UnitType", codeTranslate: "Unit" },
+        { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate" },
+        { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
     ];
 
     const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc
