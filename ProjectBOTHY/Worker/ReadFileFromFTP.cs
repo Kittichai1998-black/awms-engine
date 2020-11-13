@@ -89,7 +89,7 @@ namespace ProjectBOTHY.Worker
                             var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
 
                             var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
-                            this.CreateSto(resDoc, _baseType, buVO);
+                            //this.CreateSto(resDoc, _baseType, buVO);
                         }
                         else if (textDetails.header.command == "STOREOUT")
                         {
@@ -184,7 +184,7 @@ namespace ProjectBOTHY.Worker
             }
             else if (docItemDetail.header.command == "STOREOUT")
             {
-                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+                _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
             }
             else if (docItemDetail.header.command == "TRANSFER")
             {

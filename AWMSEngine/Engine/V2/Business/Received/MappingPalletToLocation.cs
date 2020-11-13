@@ -139,6 +139,23 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         var pstoID = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(stoPack, BuVO);
                         stoPack.id = pstoID;
 
+                        var disto = new amt_DocumentItemStorageObject()
+                        {
+                            IsLastSeq = false,
+                            DocumentItem_ID = Item.ID,
+                            DocumentType_ID = DocumentTypeID.GOODS_RECEIVE,
+                            WorkQueue_ID = null,
+                            Sou_StorageObject_ID = stoPack.id.Value,
+                            Sou_WaveSeq_ID = null,
+                            Status = 0,
+                            Des_StorageObject_ID = null,
+                            Des_WaveSeq_ID = null,
+                            Quantity = Item.Quantity.Value,
+                            BaseQuantity = Item.Quantity.Value,
+                            UnitType_ID = Item.UnitType_ID.Value,
+                            BaseUnitType_ID = Item.UnitType_ID.Value
+                        };
+                        var distoBase = ADO.WMSDB.DistoADO.GetInstant().Insert(disto, BuVO);
                     });
                     result.recievedStatus = true;
                 }
