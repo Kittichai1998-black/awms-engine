@@ -13,13 +13,14 @@ import IconButton from "@material-ui/core/IconButton";
 import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
 import AmPopup from "../../../../components/AmPopup";
+import { useTranslation } from 'react-i18next'
 import { DocumentEventStatus } from "../../../../components/Models/DocumentEventStatus";
 import { DataGeneratePopup, DataGenerateStatus } from "../../../pageComponent/AmSearchDocumentV2/SetPopup";
 const Axios = new apicall();
 
 //======================================================================
 const DocumentSearch = props => {
-
+    const { t } = useTranslation()
 
     const [dialogState, setDialogState] = useState({});
 
@@ -72,7 +73,7 @@ const DocumentSearch = props => {
     const iniCols = [
 
         {
-            Header: "Status", accessor: "EventStatus", width: 150,
+            Header: t("Status"), accessor: "EventStatus", width: 150,
             filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
@@ -84,7 +85,7 @@ const DocumentSearch = props => {
         },
         { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
-            Header: "Process No.",
+            Header: t("Process No."),
             accessor: "ReDocumentProcessTypeName",
             width: 200,
             sortable: false,
@@ -98,7 +99,7 @@ const DocumentSearch = props => {
             },
         },
         {
-            Header: 'Product Owner', accessor: 'ProductOwnerCode',
+            Header: t('Product Owner'), accessor: 'ProductOwnerCode',
             width: 100, sortable: false, filterType: "dropdown",
             filterConfig: {
                 fieldDataKey: "Code",
@@ -109,10 +110,10 @@ const DocumentSearch = props => {
                 widthDD: 180,
             },
         },
-        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
-        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
+        { Header: t("Sou. Warehouse"), accessor: "SouWarehouseName", filterable: false, width: 150 },
+        { Header: t("Des. Warehouse"), accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
-            Header: "Doc. Date",
+            Header: t("Doc. Date"),
             accessor: "DocumentDate",
             width: 150,
             type: "datetime",
@@ -124,7 +125,7 @@ const DocumentSearch = props => {
             , customFilter: { field: "DocumentDate" }
         },
         {
-            Header: "Action Time",
+            Header: t("Action Time"),
             accessor: "ActionTime",
             width: 150,
             type: "datetime",
@@ -135,7 +136,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: "Create Time", accessor: "Created", width: 200,
+            Header: t("Create Time"), accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",
@@ -143,7 +144,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "CreateTime" }
         },
         {
-            Header: "Modify Time", accessor: "LastUpdate", width: 200,
+            Header: t("Modify Time"), accessor: "LastUpdate", width: 200,
             filterable: false,
         }
     ];
