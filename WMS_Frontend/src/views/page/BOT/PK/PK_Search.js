@@ -34,17 +34,6 @@ const DocumentSearch = props => {
         l: 100,
         all: "",
     }
-    const productOwner = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "ProductOwner",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"in", "v":"' + localStorage.getItem("User_ProductOwner") + '"}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
     const GeneratePopup = (data) => {
         var dataGenerate = DataGeneratePopup(data)
         var dataGenerateStatus = DataGenerateStatus(data)
@@ -94,25 +83,15 @@ const DocumentSearch = props => {
                 fieldLabel: ["Code", "Name"],
                 dataDropDown: MVTQuery,
                 typeDropDown: "normal",
-                widthDD: 250,
-            },
-        },
-        {
-            Header: 'Product Owner', accessor: 'ProductOwnerCode',
-            width: 100, sortable: false, filterType: "dropdown",
-            filterConfig: {
-                fieldDataKey: "Code",
-                filterType: "dropdown",
-                fieldLabel: ["Code", "Name"],
-                dataDropDown: productOwner,
-                typeDropDown: "normal",
-                widthDD: 180,
+                widthDD: 220,
             },
         },
         { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
+        { Header: "Sou. Customer", accessor: "SouCustomerName", width: 150 },
+        { Header: "Sou. Supplier", accessor: "SouSupplierName", width: 150 },
         { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
-            Header: "Doc. Date",
+            Header: "Doc Date",
             accessor: "DocumentDate",
             width: 150,
             type: "datetime",
@@ -148,6 +127,7 @@ const DocumentSearch = props => {
         }
     ];
 
+
     const getRedirect = data => {
         return (
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
@@ -164,7 +144,7 @@ const DocumentSearch = props => {
     };
 
     return (
-        <>
+        <div>
             <AmPopup
                 typePopup={dialogState.type}
                 closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -177,11 +157,10 @@ const DocumentSearch = props => {
                 docTypeCode="1002"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/reject_doc_bot"}
+                apiReject={"/v2/reject_document"}
                 apiClose={"/v2/closed_document_manual"}
-                actionQueryCustom={true}
             />
-        </>
+        </div>
     );
 };
 

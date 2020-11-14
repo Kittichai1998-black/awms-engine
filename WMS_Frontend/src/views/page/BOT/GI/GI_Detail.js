@@ -13,7 +13,7 @@ import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
 import AmAuditStatus from '../../../../components/AmAuditStatus';
 import moment from "moment";
 
-const GR_Detail = props => {
+const GI_Detail = props => {
 
     const [OwnerGroupType, setOwnerGroupType] = useState(1);
     const [docview, setdocview] = useState();
@@ -29,15 +29,15 @@ const GR_Detail = props => {
                 //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
                 CreateputAway={true}
-                TextBtnCreateputAway={'Creare PutAway'}
-                apiCreate={'/receive/putawaycreate?docID='}
+                TextBtnCreateputAway={'Creare Picking'}
+                apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
                 typeDoc={"received"}
-                typeDocNo={1011}
+                typeDocNo={1012}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/receive/search"}
+                linkBack={"/issue/search"}
                 history={props.history}
                 usePrintPDF={true}
             >
@@ -75,7 +75,19 @@ const GR_Detail = props => {
     }, [OwnerGroupType])
 
 
-    const columns = [  
+    const columns = [
+        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },   
+        //{
+        //    Header: "��Դ�Ҥ�",
+        //    Cell: e => { return e.original.SKUMaster_Code},
+        //    CellPDF: e => { return e.SKUMaster_Code}, widthPDF: 40
+        //},
+        //{
+        //    Header: "Item Name",
+        //    Cell: e => { return e.original.SKUMaster_Name },
+        //    CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
+        //},
+        
         { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
         {
             Header: "ชนิดราคา",
@@ -84,13 +96,13 @@ const GR_Detail = props => {
         },
         { Header: "เลขที่ภาชนะ", accessor: "Code"},
         { Header: "ชนิดราคา",accessor: "Code" },
-        { Header: "แบบ", accessor: "Ref2"},
-        { Header: "ประเภทธนบัตร", accessor: "Ref3"},
-        { Header: "สถาบัน", accessor: "Ref1"},
-        { Header: "ศูนย์เงินสด", accessor: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity" },
-        { Header: "หน่วยนับ", accessor: "BaseUnitType_Name" },
-        { Header: "วันที่รับเข้า", accessor: "ProductionDate"},
+        { Header: "แบบ", accessor: "ref2"},
+        { Header: "ประเภทธนบัตร", accessor: "ref3"},
+        { Header: "สถาบัน", accessor: "ref1"},
+        { Header: "ศูนย์เงินสด", accessor: "ref4" },
+        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "หน่วยนับ", accessor: "unitType" },
+        { Header: "วันที่รับเข้า", accessor: "productionDate"},
         { Header: "Remark", accessor: "remark"},
     ];
 
@@ -227,4 +239,4 @@ const GR_Detail = props => {
     );
 };
 
-export default GR_Detail;
+export default GI_Detail;

@@ -1025,6 +1025,7 @@ const AmCreateDocument = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
+            productOwnerID:null,
             souWarehouseID: null,
             transportID: null
         }

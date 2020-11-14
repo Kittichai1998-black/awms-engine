@@ -69,15 +69,22 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     new SQLConditionCriteria("BaseCode", reqVO.baseCode, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.PUTAWAY, SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL)
                 }, BuVO);
 
                 if(findItems.Count == 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่พบเอกสารรับเข้า");
                 else
                 {
-                    if(findItems.Select(x=> x.Document_ID).Count() > 1)
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พบเอกสารมากกว่า 1 เอกสาร");
+                    //if(findItems.Select(x=> x.Document_ID).Count() > 1)
+                    //throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พบเอกสารมากกว่า 1 เอกสาร");
+
+                    var selectDoc = findItems.Select(x => x.Document_ID).Distinct().Select(x => {
+                        return ADO.WMSDB.DocumentADO.GetInstant().Get(x, BuVO);
+                    }).ToList().FindAll(x=> x.DocumentType_ID == DocumentTypeID.PUTAWAY && x.EventStatus == DocumentEventStatus.NEW).ToList();
+
+                    if(selectDoc.Count == 0)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่ใช่พบเอกสารรับเข้า ไม่สามารถรับเข้าได้");
 
                     var scanMap = new ScanMapStoNoDoc();
 
@@ -102,10 +109,10 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     var res = scanMap.Execute(this.Logger, this.BuVO, createPalletData);
 
-                    var selectDoc = ADO.WMSDB.DocumentADO.GetInstant().Get(findItems.Select(x => x.Document_ID).First(), BuVO);
 
-                    findItems.ForEach(Item=>
+                    findItems.FindAll(x=> selectDoc.Select(y => y.ID).Contains(x.Document_ID)).ForEach(Item=>
                     {
+                        var productOwner = selectDoc.Find(x => x.ID == Item.Document_ID);
                         var unitTypeSku = StaticValueManager.GetInstant().UnitTypes.Find(x => x.ID == Item.UnitType_ID);
                         var stoPack = new StorageObjectCriteria()
                         {
@@ -132,7 +139,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             ref4 = Item.Ref4,
                             productDate = Item.ProductionDate,
                             skuID = Item.SKUMaster_ID,
-                            productOwner = selectDoc.ProductOwner_ID,
+                            productOwner = productOwner.ProductOwner_ID,
                             AuditStatus = AuditStatus.QUARANTINE,
                         };
 
