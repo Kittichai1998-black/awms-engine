@@ -87,7 +87,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                         skuType = x.skuType,
                         baseType = x.baseType,
                         baseCode = x.baseCode,
-                        quantity = x.quantity
+                        quantity = (int?)x.quantity
                     };
                 }
             }).ToList();
