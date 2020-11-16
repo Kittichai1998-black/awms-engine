@@ -76,7 +76,7 @@ const GR_Detail = props => {
 
 
     const columns = [  
-        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
         {
             Header: "ชนิดราคา",
             Cell: e => { return e.original.SKUMaster_Code },
@@ -99,7 +99,7 @@ const GR_Detail = props => {
 
     const columnsDetailSOU = [
         {
-            Header: "Task", accessor: "status", width: 40, Cell: e => getStatusGR(e.original),
+            Header: "สถานะ", accessor: "status", width: 40, Cell: e => getStatusGR(e.original),
             widthPDF: 5,
             CellPDF: value => {
                 if (value.status === 1 || value.status === 3) return "Y";
@@ -108,34 +108,22 @@ const GR_Detail = props => {
                 else return null;
             }
         },
-        { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
-        { Header: "Pack Code", accessor: "packCode",  widthPDF: 10, width: 150,  },
-        { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
-        { Header: "Pallet",width: 100, accessor: "rootCode", widthPDF: 10 },
-        { Header: "Control NO.", accessor: "diOrderNo", widthPDF: 10 },
-        { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
+        { Header: "เลขที่เอกสาร", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
+        { Header: "เลขที่ภาชนะ", accessor: "baseCode", widthPDF: 10, width: 150, },
+        { Header: "แบบ", accessor: "diRef2" },
+        { Header: "ประเภทธนบัตร", accessor: "diRef3" },
+        { Header: "สถาบัน", accessor: "diRef1" },
+        { Header: "ศูนย์เงินสด", accessor: "diRef4" },
+        { Header: "จำนวนรับเข้า", accessor: "distoQty", widthPDF: 10, width: 120 },
         //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
-        { Header: "Unit", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
+        { Header: "หน่วยนับ", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
+        { Header: "หมายเหตุ", accessor: "remark", widthPDF: 10 },
         {
-            Header: "Quality Status", accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
-        { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        {
-            Header: "MFG.Date", accessor: "diProductionDate",
+            Header: "วันที่รับเข้า", accessor: "diProductionDate",
             Cell: e => getFormatDatePro(e.original), widthPDF: 15,
             CellPDF: e => getFormatDatePro(e)
-        },
-        {
-            Header: "Expire Date", accessor: "diExpireDate",
-            Cell: e => getFormatDateExp(e.original), widthPDF: 15,
-            CellPDF: e => getFormatDateExp(e)
-        },
+        }
+
     ];
 
     const getFormatDatePro = (e) => {

@@ -44,6 +44,7 @@ namespace AWMSModel.Entity
         public string UnitType_Code;
         public string UnitType_Name;
         public long? BaseUnitType_ID;
+        public string BaseCode;
         public string BaseUnitType_Code;
         public string BaseUnitType_Name;
 

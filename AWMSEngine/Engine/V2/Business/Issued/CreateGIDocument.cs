@@ -61,6 +61,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 public string unitType;
                 public decimal? baseQuantity;
                 public string baseunitType;
+                public string baseCode;
                 public string batch;
                 public string lot;
                 public string orderNo;
