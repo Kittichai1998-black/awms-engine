@@ -13,13 +13,18 @@ using System.Threading.Tasks;
 
 namespace ProjectBOTHY.Engine.FileGenerate
 {
-    public class ErrorResponseGenerate : AWMSEngine.Engine.BaseEngine<FileFormat.TextFileDetail, ErrorResponseGenerate.ResponseError>
+    public class ErrorResponseGenerate : AWMSEngine.Engine.BaseEngine<ErrorResponseGenerate.Treq, ErrorResponseGenerate.ResponseError>
     {
+        public class Treq : FileFormat.TextFileDetail
+        {
+            public string error;
+        }
+
         public class ResponseError : ResponseFileFormat
         {
             public string error;
         }
-        protected override ResponseError ExecuteEngine(FileFormat.TextFileDetail reqVO)
+        protected override ResponseError ExecuteEngine(Treq reqVO)
         {
             var _res = new ResponseError();
             var fileName = "";
@@ -85,7 +90,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                         skuType = x.skuType,
                         baseType = x.baseType,
                         baseCode = x.baseCode,
-                        quantity = x.quantity
+                        quantity = (int?)x.quantity
                     };
                 }
             }).ToList();
@@ -98,6 +103,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 rowCount = _res.details.Count(),
                 timestamp = DateTime.Now.ToString("yyyyMMdd hhMMss")
             };
+            _res.error = reqVO.error;
 
             if (string.IsNullOrWhiteSpace(fileName))
                 fileName = $"ERR_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";

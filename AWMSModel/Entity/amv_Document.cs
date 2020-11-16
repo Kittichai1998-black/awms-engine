@@ -80,7 +80,10 @@ namespace AWMSModel.Entity
         public string DocumentProcessTypeCode;
         public string ReDocumentProcessTypeName;
         public long? DocumentProcessType_ID;
-
+        public string DesAreaMasterCode;
+        public string DesAreaMasterName;
+        public string ProductOwnerCode;
+        public string ProductOwnerName;
         public long? OwnerGroupType;
         public string Created;
         public string Modified;

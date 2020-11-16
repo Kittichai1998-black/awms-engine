@@ -83,19 +83,19 @@ const Aside = props => {
                   <ListItem
                     divider
                     button
-                    onClick={() => {onHandleClickToggle(x.text)}}
+                    onClick={() => { onHandleClickToggle(x.text) }}
                   >
                     {props.icon === true
                       ? x.icon === null
                         ? ''
                         : HomeIcon(x.icon)
                       : null}
-                    <ListItemText primary={t(x.text.trim())} />
+                    <ListItemText primary={t(x.text)} />
                     {sidebar.menuToggle.menuID === x.text && sidebar.menuToggle.toggle === true ? (
                       <ExpandLess />
                     ) : (
-                      <ExpandMore />
-                    )}
+                        <ExpandMore />
+                      )}
                   </ListItem>
                   {x.child.map((y, idx2) => {
                     return (
@@ -117,7 +117,7 @@ const Aside = props => {
                             button
                             component={Link}
                             to={y.to}
-                            onClick={()=> sidebar.setMobileSidebarToggle(false)}
+                            onClick={() => sidebar.setMobileSidebarToggle(false)}
                           >
                             <span
                               className='cui-user'
@@ -129,7 +129,7 @@ const Aside = props => {
                                 ? ''
                                 : HomeIcon(y.iconSub)
                               : null}
-                            <ListItemText primary={t(y.text.trim())} />
+                            <ListItemText primary={t(y.text)} />
                             {/* <ListItemText primary={y.text} /> */}
                           </ListItem>
                         </List>
@@ -141,7 +141,7 @@ const Aside = props => {
             } else {
               return (
                 <ListItem key={idx} divider button component={Link} to={x.to}>
-                  <ListItemText primary={t(x.text.trim())} />
+                  <ListItemText primary={t(x.text)} />
                   {/* <ListItemText primary={x.text} /> */}
                 </ListItem>
               );

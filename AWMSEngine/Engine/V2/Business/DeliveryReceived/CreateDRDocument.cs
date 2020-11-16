@@ -39,7 +39,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
             public string souSupplierCode;
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
             public int? transportID;
-
+            public int? productOwnerID;
             public long? desCustomerID;
             public long? desSupplierID;
             public long? desBranchID;
@@ -65,6 +65,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                 public string packCode;
                 public long? packID;
                 public string skuCode;
+                public string baseCode;
+                public string locationCode;
                 public decimal? quantity;
                 public string unitType;
                 public decimal? baseQuantity;
@@ -267,6 +269,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     documentDate = reqVO.documentDate,
                     actionTime = reqVO.actionTime ?? reqVO.documentDate,
 
+                    productOwnerID = reqVO.productOwnerID,
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
@@ -290,6 +293,8 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                         {
                             skuCode = x.skuCode,
                             packCode = x.packCode,
+                            baseCode = x.baseCode,
+                            locationCode = x.locationCode,
                             auditStatus = x.auditStatus,
                             quantity = x.quantity,
                             unitType = x.unitType,

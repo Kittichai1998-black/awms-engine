@@ -73,7 +73,11 @@ const DefaultProcessCondition = (doc, con) => {
                 lot: x.Lot,
                 orderNo: x.OrderNo,
                 options: null,
-                baseQty: x.BaseQuantity
+                baseQty: x.BaseQuantity,
+                ref1: x.Ref1,
+                ref2: x.Ref2,
+                ref3: x.Ref3,
+                ref4: x.Ref4
             }]
             x.priority = "2";
             if (con.conditions !== undefined) {
@@ -721,8 +725,8 @@ const ProcessQueueDetail = (props) => {
                     docID: docItem.Document_ID,
                     docItemID: docItem.ID,
                     locationCode: null,
-                    baseCode: getOptions.palletcode ? getOptions.palletcode : null,
-                    skuCode: getOptions.palletcode ? null : docItem.Code ? docItem.Code : null,
+                    baseCode: docItem.baseCode ? docItem.baseCode : null,
+                    skuCode: docItem.baseCode ? null : docItem.Code ? docItem.Code : null,
                     priority: docItem.priority ? docItem.priority : 2,
                     useShelfLifeDate: docItem.useShelfLifeDate ? docItem.useShelfLifeDate : false,
                     useExpireDate: docItem.useExpireDate ? docItem.useExpireDate : false,
@@ -780,29 +784,29 @@ const ProcessQueueDetail = (props) => {
                 }
 
                 return res.data;
-            }).then(res => {props.customAfterProcess(res)});
+            }).then(res => {
+                if(props.customAfterProcess !== undefined)
+                    props.customAfterProcess(res)
+            });
         }
     };
 
     const Memo = React.memo(({ documentData, cols }) => {
         return documentData.map((doc, idx) => {
-            return <>
-                <DocumentExpansion key={idx} doc={doc}>
-                    <>
-                        <Grid style={{ "padding": "10px" }} container>
-                            {genDocumentHeader(doc)}
-                        </Grid>
-                        <AmTable width={"100%"}
-                            columns={cols}
-                            dataSource={doc.docItems}
-                            sortable={false}
-                            filterable={false}
-                            dataKey="ID"
-                            pageSize={1000}
-                            minRows={3} />
-                    </>
+            return <DocumentExpansion key={idx} doc={doc}>
+                    <Grid style={{ "padding": "10px" }} container>
+                        {genDocumentHeader(doc)}
+                    </Grid>
+                    <AmTable width={"100%"}
+                        height="150px"
+                        columns={cols}
+                        dataSource={doc.docItems}
+                        sortable={false}
+                        filterable={false}
+                        dataKey="ID"
+                        pageSize={1000}
+                        minRows={3} />
                 </DocumentExpansion>
-            </>
         })
     });
 

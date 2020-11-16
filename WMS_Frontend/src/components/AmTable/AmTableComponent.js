@@ -13,8 +13,16 @@ const IsEmptyObject = (obj) => {
         return false;
 }
 
+const usePrevious = (value) => {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value
+    }, [value])
+
+    return ref.current;
+}
+
 const Topbar = React.memo((propsTopbar) => {
-    // console.log(propsTopbar.dataSource)
     if (propsTopbar.customTopControl) {
         return <>
             <div style={{ display: "inline-block", verticalAlign: "middle" }}>{propsTopbar.customTopControl}</div>
@@ -53,7 +61,6 @@ const Topbar = React.memo((propsTopbar) => {
         }
         else {
 
-            // console.log(propsTopbar.dataSource)
             return propsTopbar.pagination ? <AmPagination
                 totalSize={propsTopbar.totalSize ? propsTopbar.totalSize : propsTopbar.dataSource.length}
                 pageSize={propsTopbar.pageSize}
@@ -237,11 +244,11 @@ const AmTableSetup = (props) => {
 
     useEffect(() => {
         let tableHeight = props.height - 
-        (topBarRef.current !== null ? topBarRef.current.scrollHeight : 0) - 
-        (btmBarRef.current !== null ? btmBarRef.current.scrollHeight : 0);
-
+        (topBarRef.current !== null ? topBarRef.current.clientHeight : 0) - 
+        (btmBarRef.current !== null ? btmBarRef.current.clientHeight : 0);
+        console.log(props.height)
         setHeight(tableHeight);
-    }, [topBarRef])
+    }, [topBarRef, btmBarRef, props.height])
 
     return <>
         <div className={"topBar"} ref={topBarRef}>
@@ -257,11 +264,11 @@ const AmTableSetup = (props) => {
                 page={(e) => setPage(e)}
             />
         </div>
-        <div style={{ maxHeight: props.height }}>
+        <div style={{ maxHeight: height }}>
             <AmTableBody
                 dataSource={dataSource}
                 width={props.width}
-                height={props.height}
+                height={height}
                 columns={props.columns}
                 cellStyle={props.cellStyle}
                 dataKey={props.dataKey}

@@ -61,6 +61,8 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
   //   console.log("dataSource")
   // }, [dataSource])
 
+  const ref = useRef([]);
+
   useEffect(() => {
     let getColumns = [...Columns];
     if (rowNumber) {
@@ -74,13 +76,13 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
         Cell: ele => {
           let numrow = 0;
           if (page !== undefined) {
-            if (!ele.data._footer && ele.original["_groupFooter"] === undefined ) {
+            if (!ele.data._footer && ele.original["_groupFooter"] === undefined) {
               if (page > 0) {
                 numrow = ele.viewIndex + 1 + parseInt(page - 1) * pagination.pageSize;
               } else {
                 numrow = ele.viewIndex + 1;
               }
-              
+
               return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
           }
@@ -120,20 +122,24 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
       } else {
         getColumns.unshift({
           Header: ele => {
-            return <input
-              id="selectAll"
-              checked={selection.selectAllState}
-              type="checkbox"
-              onChange={e => {
-                if (e.target.checked) {
-                  selection.addAll(dataSource)
-                } else {
-                  selection.removeAll(null);
-                }
-                selection.selectAll(null)
+            if (selectionCustom) {
+              return null;
+            } else {
+              return <input
+                id="selectAll"
+                checked={selection.selectAllState}
+                type="checkbox"
+                onChange={e => {
+                  if (e.target.checked) {
+                    selection.addAll(dataSource)
+                  } else {
+                    selection.removeAll([]);
+                  }
+                  selection.selectAll(null)
 
-              }}
-            />
+                }}
+              />
+            }
           },
           filterable: false,
           fixed: "left",
@@ -142,17 +148,21 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
           sortable: false,
           Cell: ele => {
             if (ele.original[dataKey] !== undefined) {
+              ref.current[ele.viewIndex] = React.createRef();
               return (
-                <input
+                <input ref={ref.current[ele.viewIndex]}
                   id={"selection_" + ele.original[dataKey]}
                   type="checkbox"
                   name="selection"
                   value={ele.data[dataKey]}
                   onChange={e => {
-                    if (e.target.checked) {
-                      selection.add({ data: ele.original, uniq: dataKey });
-                    } else {
-                      selection.remove({ uniq: dataKey, data: ele.original[dataKey] });
+                    if (!ele.data.disabled) {
+                      if (e.target.checked) {
+                        selection.add({ data: ele.original, uniq: dataKey });
+                      } else {
+                        selection.remove({ uniq: dataKey, data: ele.original[dataKey] });
+                        ref.current[ele.viewIndex].current.checked = false;
+                      }
                     }
                   }}
                   disabled={selectionCustom ? selectionCustom(ele.data) : false}
@@ -169,22 +179,6 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
     setColumns([...getColumns]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Columns, selection.selectAllState, dataSource]);
-
-  useEffect(() => {
-    if(selectionState){
-      selection.selectionValue.forEach(x => {
-        if (document.getElementById("selection_" + x[dataKey]) !== null)
-          document.getElementById("selection_" + x[dataKey]).checked = true;
-      });
-      if (!selection.selectAllState && selection.selectionValue.length === 0) {
-        let getDataKey = dataSource.map(res => { return res[dataKey] });
-        getDataKey.forEach(dk => {
-          if (document.getElementById("selection_" + dk) !== null)
-            document.getElementById("selection_" + dk).checked = false;
-        });
-      }
-    }
-  }, [selectionState, selection.selectionValue, selection.selectAllState, dataSource])
 
   return columns
 }
@@ -259,6 +253,8 @@ const AmTableBody = (props) => {
   const containerRef = useRef();
   const dataSource = useDataSource(props.dataSource, props.groupBy)
 
+  const { selection } = useContext(AmTableContext);
+
   const tableSize = useWindowSize(containerRef)
   const columns = useColumns(
     props.columns,
@@ -269,6 +265,33 @@ const AmTableBody = (props) => {
     props.selectionDisabledCustom,
     props.dataSource
   )
+
+  useEffect(() => {
+    selection.selectionValue.forEach(x=> {
+      if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+        document.getElementById("selection_"+ x[props.dataKey]).checked = true;
+    });
+    if(!selection.selectAllState && selection.selectionValue.length === 0){
+      let getDataKey = dataSource.map(res => {return res[props.dataKey]});
+      getDataKey.forEach(dk => {
+        if(document.getElementById("selection_"+ dk) !== null)
+          document.getElementById("selection_"+ dk).checked = false;
+      });
+    }
+    props.dataSource.forEach(x=> {
+      let findX = selection.selectionValue.find(y => y[props.dataKey] == x[props.dataKey])
+      if(findX !== undefined){
+        if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+          document.getElementById("selection_"+ x[props.dataKey]).checked = true;
+      }      
+      else{
+        if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+          document.getElementById("selection_"+ x[props.dataKey]).checked = false;
+      }
+        
+    });
+  },[columns, selection.selectAllState, props.dataSource, selection.selectionValue])
+
 
   return <TableContainer style={props.style} width={props.width} height={props.height} ref={containerRef}>
     <Table style={props.tableStyle}>

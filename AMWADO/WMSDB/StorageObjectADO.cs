@@ -465,7 +465,12 @@ namespace ADO.WMSDB
             param.Add("batch", search.condition.batch);
             param.Add("lot", search.condition.lot);
             param.Add("orderNo", search.condition.orderNo);
-            param.Add("options", search.condition.options); 
+            param.Add("options", search.condition.options);
+            param.Add("refID", search.condition.refID);
+            param.Add("ref1", search.condition.ref1);
+            param.Add("ref2", search.condition.ref2);
+            param.Add("ref3", search.condition.ref3);
+            param.Add("ref4", search.condition.ref4);
 
             param.Add("orderBys", search.orderBys.Select(x => x.fieldName + " " + x.orderByType.ToString()).JoinString());
             param.Add("not_pstoIDs", search.not_pstoIDs.JoinString());

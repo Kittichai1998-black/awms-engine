@@ -17,17 +17,17 @@ const ProcessQueue = (props) => {
           documentDetail={props.documentDetail}
         />
       <AmProcessQueueDetail documentItemDetail={props.documentItemDetail} 
-      processCondition={props.processCondition}
-      percentRandom={props.percentRandom}
-      areaQuery={props.areaQuery}
-      customDesArea={props.customDesArea}
-      areaDefault={props.areaDefault}
-      columnsConfirm={props.columnsConfirm}
-      processUrl={props.processUrl}
-      confirmProcessUrl={props.confirmProcessUrl}
-      modeDefault={props.modeDefault}
-      waveProcess={props.waveProcess}
-      customAfterProcess={props.customAfterProcess}
+        processCondition={props.processCondition}
+        percentRandom={props.percentRandom}
+        areaQuery={props.areaQuery}
+        customDesArea={props.customDesArea}
+        areaDefault={props.areaDefault}
+        columnsConfirm={props.columnsConfirm}
+        processUrl={props.processUrl}
+        confirmProcessUrl={props.confirmProcessUrl}
+        modeDefault={props.modeDefault}
+        waveProcess={props.waveProcess}
+        customAfterProcess={props.customAfterProcess}
       />
     </ProcessQueueProvider>
   </>

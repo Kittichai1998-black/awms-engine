@@ -9,6 +9,7 @@ namespace AWMSModel.Constant.EnumConst
         QUARANTINE = 0,
         PASSED = 1,
         REJECTED = 2,
+        NOTPASS = 3,
         HOLD = 9
     }
 }

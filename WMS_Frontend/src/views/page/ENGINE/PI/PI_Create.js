@@ -389,8 +389,7 @@ const PI_Create = props => {
     const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc
     const apiRes = "/counting/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
-    return <div>       
-        {table}</div>;
+    return <>{table}</>;
 };
 
 export default PI_Create;

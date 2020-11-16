@@ -57,7 +57,17 @@ const AmSearchDocumentV2 = props => {
   const [pageSize, setPageSize] = useState(50);
 
   const [reset, setReset] = useState(false)
-
+  const QueryCustom = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "Document",
+    q: '[{ "f": "DocumentType_ID", "c":"=", "v": "' + props.docTypeCode + '"},{ "f": "ProductOwner_ID", "c":"in", "v": "' + localStorage.getItem("User_ProductOwner") + '"}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'ID','od':'desc'}]",
+    sk: 0,
+    l: pageSize,
+    all: ""
+  };
   const Query = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
@@ -69,8 +79,8 @@ const AmSearchDocumentV2 = props => {
     l: pageSize,
     all: ""
   };
-  const [queryViewData, setQueryViewData] = useState(Query);
-
+  //const [queryViewData, setQueryViewData] = useState(Query);
+  const [queryViewData, setQueryViewData] = useState(props.actionQueryCustom === true ? QueryCustom : Query);
   useEffect(() => {
     if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
       getData(queryViewData)
@@ -140,7 +150,7 @@ const AmSearchDocumentV2 = props => {
 
             }
           } else if (filterConfig.filterType === "datetime") {
-            col.width = 420;
+            col.width = 425;
             col.Filter = (field, onChangeFilter) => {
               return <FormInline>
                 <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
@@ -286,7 +296,7 @@ const AmSearchDocumentV2 = props => {
   };
   //===========================================================
   return (
-    <div>
+    <>
       <AmDialogs
         typePopup={dialogState.type}
         onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -350,7 +360,7 @@ const AmSearchDocumentV2 = props => {
         }]}
       />
 
-    </div>
+    </>
   );
 };
 export default AmSearchDocumentV2;

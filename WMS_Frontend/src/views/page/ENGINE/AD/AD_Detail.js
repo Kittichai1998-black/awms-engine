@@ -242,7 +242,7 @@ const AD_Detail = props => {
     };
 
     return (
-        <div>{docview}</div>
+        <>{docview}</>
 
     );
 };

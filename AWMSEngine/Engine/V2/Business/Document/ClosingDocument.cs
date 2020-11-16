@@ -32,13 +32,35 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                 var listItem = ADO.WMSDB.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                                 if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                                 {
-                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                    listItem.ForEach(paItem =>
+                                    {
+                                        paItem.EventStatus = DocumentEventStatus.CLOSING;
+                                        ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(paItem.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                    });
+                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(x, DocumentEventStatus.CLOSING, this.BuVO);
+
                                     if (docs.ParentDocument_ID != null)
                                     {
                                         var getParentDoc = ADO.WMSDB.DocumentADO.GetInstant().GetDocumentAndDocItems(docs.ParentDocument_ID.Value, this.BuVO);
                                         if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.WORKED))
                                         {
-                                            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(docs.ParentDocument_ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                                            getParentDoc.DocumentItems.ForEach(grItem =>
+                                            {
+                                                var childDocItems = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[] {
+                                                    new SQLConditionCriteria("ParentDocumentItem_ID",grItem.ID.Value, SQLOperatorType.EQUALS),
+                                                    //new SQLConditionCriteria("EventStatus", DocumentEventStatus.CLOSING, SQLOperatorType.EQUALS),
+                                                    new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                                                     }, this.BuVO);
+                                                if (childDocItems != null && childDocItems.TrueForAll(i => i.EventStatus == DocumentEventStatus.CLOSING))
+                                                {
+                                                    grItem.EventStatus = DocumentEventStatus.CLOSING;
+                                                    ADO.WMSDB.DocumentADO.GetInstant().UpdateItemEventStatus(grItem.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                                }
+                                            });
+                                            if (getParentDoc.DocumentItems.TrueForAll(z => z.EventStatus == DocumentEventStatus.CLOSING))
+                                            {
+                                                ADO.WMSDB.DocumentADO.GetInstant().UpdateEventStatus(getParentDoc.ID.Value, DocumentEventStatus.CLOSING, this.BuVO);
+                                            }
                                         }
                                     }
                                     RemoveOPTDocument(x, docs.Options, this.BuVO);

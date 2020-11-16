@@ -23,10 +23,10 @@ const Axios = new apicall();
 //======================================================================
 const StorageObjectFull = props => {
   const productOwner = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "ProductOwner",
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "User_ProductOwner",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "ID,Code,Name",
+    f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -36,7 +36,7 @@ const StorageObjectFull = props => {
   const iniCols = [
 
     {
-      Header: "Status",
+      Header: "สถานะ",
       accessor: "Status",
       width: 120,
       sortable: false,
@@ -50,7 +50,7 @@ const StorageObjectFull = props => {
       Cell: e => getStatus(e.original.Status)
     },
     {
-      Header: "Warehouse Lock",
+      Header: "ล็อคพาเลท",
       accessor: "IsHoldName",
       width: 30,
       sortable: false,
@@ -64,12 +64,48 @@ const StorageObjectFull = props => {
       Cell: e => getIsHold(e.original.IsHoldName)
     },
     {
-      Header: "Pallet",
+      Header: "สถานะการตรวจสอบ",
+      accessor: "AuditStatusName",
+      width: 50,
+      sortable: false,
+      filterType: "dropdown",
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: AuditStatus,
+        typeDropDown: "normal",
+        widthDD: 120,
+      },
+      Cell: e => getAuditStatus(e.original.AuditStatusName)
+    },
+    {
+      Header: "เลขที่ภาชนะ",
       accessor: "Pallet",
       width: 130,
       //Cell: e => getImgPallet(e.original.Pallet)
-    }, {
-      Header: 'Product Owner', accessor: 'ProductOwnerCode',
+    },
+    //{ Header: "Product Owner", accessor: "ProductOwnerCode", width: 100 },
+    //{ Header: "Lot", accessor: "Lot", width: 80 },
+
+    {
+      Header: "สินค้า",
+      accessor: "SKU_Code",
+      width: 100
+    },
+    // {
+    //   Header: "Item Name",
+    //   accessor: "SKU_Name",
+    //   fixWidth: 200,
+
+    // },
+    { Header: "ชนิดราคา", accessor: "SkuTypeCode", width: 100 },
+    { Header: "สถาบัน", accessor: "Ref1", width: 100 },
+    { Header: "แบบ", accessor: "Ref2", width: 100 },
+    { Header: "ประเภท", accessor: "Ref3", width: 100 },
+    { Header: "ศูนย์เงินสด", accessor: "Ref4", width: 100 },
+    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
+    //{ Header: "Customer", accessor: "For_Customer", width: 100 },
+    {
+      Header: 'เจ้าของสินค้า', accessor: 'ProductOwnerCode',
       width: 100, sortable: false, filterType: "dropdown",
       filterConfig: {
         fieldDataKey: "Code",
@@ -80,49 +116,45 @@ const StorageObjectFull = props => {
         widthDD: 180,
       },
     },
-    //{ Header: "Product Owner", accessor: "ProductOwnerCode", width: 100 },
-    { Header: "Lot", accessor: "Lot", width: 80 },
+    { Header: "จุดทำงาน", accessor: "Area", width: 100 },
+    { Header: "ตำแหน่งจุดทำงาน", accessor: "Location", width: 100 },
 
     {
-      Header: "Item Code",
-      accessor: "SKU_Code",
-      width: 100
-    },
-    {
-      Header: "Item Name",
-      accessor: "SKU_Name",
-      fixWidth: 200,
-
-    },
-    //{ Header: "Control No.", accessor: "OrderNo", width: 100 },
-    //{ Header: "Customer", accessor: "For_Customer", width: 100 },
-    { Header: "Area", accessor: "Area", width: 100 },
-    { Header: "Location", accessor: "Location", width: 100 },
-
-    {
-      Header: "Qty",
+      Header: "จำนวน",
       accessor: "SaleQty",
       width: 70,
       type: "number"
       // Cell: e => getNumberQty(e.original)
     },
-    { Header: "Unit", accessor: "Unit", width: 100 },
-    { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
-    { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
-    { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
-    { Header: "Remark", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
+    { Header: "หน่วย", accessor: "Unit", width: 100 },
+    // { Header: "STD Weight Pack", accessor: "WeiSTD_Pack", width: 100, type: "number" },
+    // { Header: "Actual Weight Pack", accessor: "Wei_Pack", width: 100, type: "number" },
+    // { Header: "STD Weight Pallet", accessor: "WeiSTD_Pallet", width: 100, type: "number" },
+    { Header: "หมายเหตุ", accessor: "Remark", width: 100, Cell: e => getOptions(e.original.Options) },
     {
-      Header: "Received Time",
-      accessor: "Receive_Time",
+      Header: "วันที่รับเข้า",
+      accessor: "Product_Date",
       width: 150,
       type: "datetime",
       filterType: "datetime",
       filterConfig: {
         filterType: "datetime",
       }
-      , customFilter: { field: "Receive_Time" },
+      , customFilter: { field: "Product_Date" },
       dateFormat: "DD/MM/YYYY HH:mm"
     },
+    // {
+    //   Header: "วันที่รับเข้า",
+    //   accessor: "Receive_Time",
+    //   width: 150,
+    //   type: "datetime",
+    //   filterType: "datetime",
+    //   filterConfig: {
+    //     filterType: "datetime",
+    //   }
+    //   , customFilter: { field: "Receive_Time" },
+    //   dateFormat: "DD/MM/YYYY HH:mm"
+    // },
     {
       width: 60,
       accessor: "",
@@ -146,6 +178,8 @@ const StorageObjectFull = props => {
       return <AuditStatusIcon key={1} statusCode={1} />;
     } else if (Status === "REJECTED") {
       return <AuditStatusIcon key={2} statusCode={2} />;
+    } else if (Status === "NOTPASS") {
+      return <AuditStatusIcon key={3} statusCode={3} />;
     } else if (Status === "HOLD") {
       return <AuditStatusIcon key={9} statusCode={9} />;
     } else {
@@ -262,7 +296,7 @@ const StorageObjectFull = props => {
     </div>
   }
   return (
-    <div>
+    <>
       <AmStorageObjectMulti
         iniCols={iniCols}
         selection={true}
@@ -271,7 +305,7 @@ const StorageObjectFull = props => {
         multi={true}
         action={true}
       />
-    </div>
+    </>
   );
 };
 

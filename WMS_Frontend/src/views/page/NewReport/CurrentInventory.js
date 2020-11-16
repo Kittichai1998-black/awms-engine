@@ -161,7 +161,7 @@ const CurrentInventory = (props) => {
     }
 
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 page={true}
@@ -170,7 +170,7 @@ const CurrentInventory = (props) => {
                 tableKey={"Code"}
                 groupBy={true}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

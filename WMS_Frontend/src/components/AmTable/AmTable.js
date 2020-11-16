@@ -101,6 +101,8 @@ const AmTable = (props) => {
     const [exportExcel, setExportExcel] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const tableContainerRef = useRef(null)
+    const [height, setHeight] = useState(0);
+    
 
     useEffect(() => {
         if(props.onPageSizeChange){
@@ -169,8 +171,12 @@ const AmTable = (props) => {
             else return {}
         }).filter(x=> x.accessor !== undefined);
     }
+    
+    useEffect(() => {
+        setHeight(tableContainerRef.current == null ? 0 : tableContainerRef.current.clientHeight)
+    }, [tableContainerRef])
 
-    return <div style={{height:"100%"}} ref={tableContainerRef}>
+    return <div style={{maxHeight:props.height ? props.height : "100%", height:props.height ? props.height : "100%"}} ref={tableContainerRef}>
         <Suspense fallback="">
             <AmTableComponent
                 style={props.style}
@@ -180,7 +186,7 @@ const AmTable = (props) => {
                 cellStyle={props.cellStyle}
                 dataKey={props.dataKey}
                 rowNumber={props.rowNumber}
-                height={tableContainerRef.current == null ? 0 : tableContainerRef.current.scrollHeight}
+                height={height}
                 tableStyle={props.tableStyle}
                 footerStyle={props.footerStyle}
                 headerStyle={props.headerStyle}
@@ -272,6 +278,7 @@ AmTable.propTypes = {...AmTablePropTypes,
 };
 AmTable.defaultProps ={
     pageSize:50,
-    tableConfig:true
+    tableConfig:true,
+    height:"100%"
 }
 export default AmTable;

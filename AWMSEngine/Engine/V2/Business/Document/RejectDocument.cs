@@ -69,6 +69,10 @@ namespace AWMSEngine.Engine.V2.Business.Document
                     }
                     docs.Add(dataDoc);
                 }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ Reject เอกสารได้");
+                }
             }
             return docs;
         }

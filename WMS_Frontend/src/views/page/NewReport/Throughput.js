@@ -33,7 +33,7 @@ const styles = theme => ({
 });
 
 
-const  Throughput= (props) => {
+const Throughput = (props) => {
     const { t } = useTranslation()
     const { classes } = props;
 
@@ -54,12 +54,12 @@ const  Throughput= (props) => {
         { Header: 'Day', accessor: 'day', width: 120, sortable: false },
         { Header: 'Month', accessor: 'month', width: 120, sortable: false },
         { Header: 'Year', accessor: 'year', width: 120, sortable: false }
-      
+
     ];
 
 
     return (
-        <div className={classes.root}>
+        <>
             <AmReport
                 columnTable={columns}
                 page={true}
@@ -67,7 +67,7 @@ const  Throughput= (props) => {
                 fileNameTable={"THROUGHPUT"}
                 tableKey={"Code"}
             ></AmReport>
-        </div>
+        </>
     )
 
 }

@@ -52,6 +52,11 @@ namespace ADO.WCSAPI
         {
             public long[] queueID;
         }
+        public class TReqCancel
+        {
+            public string baseCode;
+            public string areaCode;
+        }
         public class TResCheckQueue
         {
             public List<CheckQueue> data;
@@ -69,6 +74,7 @@ namespace ADO.WCSAPI
             }
            
         }
+
 
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
@@ -90,7 +96,23 @@ namespace ADO.WCSAPI
         {
             return new TResCheckQueue() { _result = new TResCheckQueue.Result() { resultcheck = 1, resultmessage = "SUCCESS" },data = new List<TResCheckQueue.CheckQueue>() };
             //var res = this.SendJson<TRes>("WCS_CHECK_QUEUE", datas, null, buVO);
+         
             //return res;
         }
+        public TRes SendConfirm(WorkQueueCriteria datas, VOCriteria buVO)
+        {
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+
+            //var res = this.SendJson<TRes>("WCS_SEND_CONFIRM", datas, buVO);
+            //return res;
+        }
+        public TRes SendCancel(TReqCancel datas, VOCriteria buVO)
+        {
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+
+            //var res = this.SendJson<TRes>("WCS_SEND_CANCEL", datas, buVO);
+            //return res;
+        }
+
     }
 }

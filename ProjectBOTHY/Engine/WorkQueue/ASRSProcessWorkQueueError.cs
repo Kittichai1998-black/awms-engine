@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AWMSEngine.Engine;
+using AWMSModel.Constant.EnumConst;
 using ProjectBOTHY.Model;
 using System;
 using System.Collections.Generic;
@@ -40,12 +41,22 @@ namespace ProjectBOTHY.Engine.WorkQueue
             var items = new List<FileFormat.ItemDetail>();
             foreach (var i in getDoc.DocumentItems)
             {
-                items.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<FileFormat.ItemDetail>(i.Options));
+                var getText = AMWUtil.Common.ObjectUtil.QryStrGetValue(i.Options, "textFile");
+                items.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<FileFormat.ItemDetail>(getText));
             }
 
             newText.details = items;
 
-            new FileGenerate.ErrorResponseGenerate().Execute(Logger, BuVO, newText);
+            new FileGenerate.ErrorResponseGenerate().Execute(Logger, BuVO, new FileGenerate.ErrorResponseGenerate.Treq()
+            {
+                header = newText.header,
+                details = newText.details,
+                footer = newText.footer,
+                error = "ไม่พบสินค้าที่ต้องการเบิก"
+            });
+
+            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(getDoc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, BuVO);
+            ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(getDoc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REJECTED, BuVO);
             return null;
         }
     }

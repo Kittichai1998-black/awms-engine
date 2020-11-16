@@ -21,11 +21,12 @@ import { getUnique } from './function/ObjectFunction'
 import AmDialogconfirm from './AmDialogConfirm'
 import queryString from "query-string";
 import LabelT from './AmLabelMultiLanguage'
-import AmTable from './AmTable/AmTable'
+import AmTable from './AmTable/AmTableComponent'
 
 
 import moment from "moment";
 import "moment/locale/pt-br";
+
 
 // import ValidateInput from './function/ValidateInput'
 
@@ -182,17 +183,26 @@ const AmCreateDocument = (props) => {
     }, [props.columnEdit])
 
     useEffect(() => {
-        if (skuID !== undefined && UnitQurys !== undefined) {
+        if (skuID) {
             setunitCon(UnitTypeConverts)
-            getUnitTypeConvertQuery(skuID, UnitQurys)
         }
     }, [skuID])
 
     useEffect(() => {
+        if (unitCon) {
+            getUnitTypeConvertQuery(skuID, UnitQurys)
+        }
+    }, [unitCon])
+
+    useEffect(() => {
         setdataUnit(dataUnit)
-    }, [dataUnit])
+    }, [dataUnit, skuID])
 
 
+
+    useEffect(() => {
+        setDataSource([])
+    }, [props.onChangeProcessType])
 
     useEffect(() => {
         if (createDocumentData != {}) {
@@ -222,7 +232,7 @@ const AmCreateDocument = (props) => {
 
 
     useEffect(() => {
-        setDataSource([])
+
         if (processType !== undefined) {
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
@@ -250,6 +260,13 @@ const AmCreateDocument = (props) => {
     useEffect(() => {
         Addlist(dataSource)
     }, [props.addList, dataSource])
+
+
+    //useEffect(() => {
+    //    if (!dialog) {
+    //        setdataUnit();
+    //    }
+    //},[dialog])
 
 
     const UnitTypeConverts = {
@@ -283,7 +300,7 @@ const AmCreateDocument = (props) => {
 
 
     const getUnitTypeConvertQuery = (skuID, unitTypeQuery) => {
-        if (unitTypeQuery != null && skuID != undefined && skuID != 0) {
+        if (unitTypeQuery) {
             let objQuery = unitTypeQuery;
             if (objQuery !== null) {
                 let unitqry = JSON.parse(objQuery.q)
@@ -294,6 +311,7 @@ const AmCreateDocument = (props) => {
             setUnitQurys(unitCon)
             getDataUnitType(objQuery)
         }
+
     }
 
 
@@ -312,6 +330,7 @@ const AmCreateDocument = (props) => {
         let idx = dataSource.findIndex(x => x.ID === v);
         dataSource.splice(idx, 1);
         setDataSource([...dataSource]);
+        setdataCheck([...dataSource]);
         // setReload({})
     }
 
@@ -364,7 +383,6 @@ const AmCreateDocument = (props) => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
-
         if (data === "") {
             editData[field] = null
         }
@@ -372,12 +390,12 @@ const AmCreateDocument = (props) => {
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
-
+   
         if (field === "Code" && data) {
             setskuID(data.ID);
-        }
+        } 
 
-
+  
         //if (props.itemNo && addData) {
         //    if (addDataID === -1) {
         //        let itemNos = props.defualItemNo
@@ -398,11 +416,14 @@ const AmCreateDocument = (props) => {
         //    }
         //}
 
-
         if (typeof data === "object" && data) {
-            editData[field] = data[field] ? data[field] : data.value
-        }
-        else {
+            if (field === 'unitType') {
+                editData[field] = data.label
+                editData['unitTypeCode'] = data.value
+            } else {
+                editData[field] = data[field] ? data[field] : data.value
+            }
+        } else {
             if (data === "") {
                 editData[field] = null
             } else {
@@ -482,7 +503,11 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
+                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType
+                    && x.orderNo === rowdata.orderNo && x.auditStatus === rowdata.auditStatus && x.productionDate === rowdata.productionDate &&
+                    x.expireDate === rowdata.expireDate
+
+                )
 
                 if (chkSku && chkEdit === undefined) {
                     setStateDialogErr(true)
@@ -536,7 +561,7 @@ const AmCreateDocument = (props) => {
                         }) : false
                         return <div key={key}>
 
-                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
+                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel, row.fieldDataKey,
                                 row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, row.disabled, i, rowError, row.required)}
 
                         </div>
@@ -547,7 +572,7 @@ const AmCreateDocument = (props) => {
     }
 
 
-    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate,
+    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, fieldDataKey, style, width, validate,
         placeholder, TextInputnum, texts, key, datas, defaultValue, disabled, index, rowError, required) => {
         if (type === "input") {
             return (
@@ -582,7 +607,7 @@ const AmCreateDocument = (props) => {
                                     error={rowError}
                                     // helperText={inputError.length ? "required field" : false}
                                     inputRef={ref.current[index]}
-                                    defaultValue={editData !== null && editData !== {} && editData["qtyrandom"] !== undefined ? editData[accessor].replace("%", "") : ""}
+                                    defaultValue={editData !== null && editData !== {} && editData["qtyrandom"] !== undefined && editData[accessor] ? editData[accessor].replace("%", "") : ""}
                                     style={width ? width : TextInputnum ? { width: "280px" } : { width: "300px" }}
                                     type="number"
                                     onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
@@ -645,8 +670,8 @@ const AmCreateDocument = (props) => {
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
-                            fieldDataKey={"UnitType_Code"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            fieldLabel={["UnitType_Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            fieldDataKey={fieldDataKey ? fieldDataKey : "UnitType_Code"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={[fieldLabel ? fieldLabel :"UnitType_Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             width={width ? width : 300} //กำหนดความกว้างของช่อง input
                             ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
@@ -1000,6 +1025,7 @@ const AmCreateDocument = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
+            productOwnerID:null,
             souWarehouseID: null,
             transportID: null
         }
@@ -1143,7 +1169,7 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map((x, i) => {
-                console.log(x)
+                x.unitType = x.unitTypeCode ? x.unitTypeCode : x.unitType
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
@@ -1154,6 +1180,7 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
+                x.unitType = x.unitTypeCode ? x.unitTypeCode : x.unitType
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
@@ -1177,7 +1204,8 @@ const AmCreateDocument = (props) => {
                         setStateDialogErr(true);
                     }
                 } else {
-                    CreateDocuments(doc)
+                    //console.log(doc)
+                  CreateDocuments(doc)
                 }
             }
         }
@@ -1288,8 +1316,10 @@ const AmCreateDocument = (props) => {
             <AmTable
                 dataKey="ID"
                 columns={props.columnsModifi ? props.columnsModifi : columns}
-                pageSize={200}
-                tableConfig={false}
+                pageSize={1000}
+                //pagination={true}
+                //onPageSizeChange={(pg) => { setPageSize(pg) }}
+                //tableConfig={true}
                 dataSource={dataSource.length > 0 ? dataSource : []}
                 //   height={200}
                 rowNumber={true}

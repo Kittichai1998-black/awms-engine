@@ -10,7 +10,7 @@ import {
 import SvgIcon from '@material-ui/core/SvgIcon';
 import AmDialogs from '../../components/AmDialogs'
 import Table from "../../components/table/AmTable";
-import AmTable from "../../components/AmTable/AmTable";
+import AmTable from "../../components/AmTable/AmTableComponent";
 import queryString from "query-string";
 import DocumentEventStatus from "../../components/AmStatus";
 // import "bootstrap/dist/css/bootstrap.min.css";
@@ -1002,7 +1002,8 @@ const DocumentView = props => {
                     selection={"checkbox"}
                     selectionData={(data) => {
                         setSelection(data);
-                    }} dataKey="ID"
+                    }}
+                    dataKey="ID"
                     columns={columns}
                     pageSize={100}
                     dataSource={data}

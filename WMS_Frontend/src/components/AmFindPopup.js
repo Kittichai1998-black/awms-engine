@@ -421,7 +421,6 @@ const FindPopup = (props) => {
         getValueKey(dataObject)
 
         setDataObjects(dataObject)
-
         onChange(dataObject[fieldDataKey], dataObject, id, fieldDataKey);
 
     }

@@ -187,7 +187,7 @@ const AmReport = props => {
   }
   //===========================================================
   return (
-    <div>
+    <>
 
       <AmTable
         columns={columns}
@@ -216,7 +216,7 @@ const AmReport = props => {
         } : null}
       />
 
-    </div>
+    </>
   );
 };
 export default AmReport;

@@ -41,6 +41,7 @@ const AuditStatus = [
   { label: "QUARANTINE", value: 0 },
   { label: "PASSED", value: 1 },
   { label: "REJECTED", value: 2 },
+  { label: "NOTPASSED", value: 3 },
   { label: "HOLD", value: 9 },
 ]
 const AuditStatus1_2 = AuditStatus.map(function (x) {
