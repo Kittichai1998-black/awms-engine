@@ -100,6 +100,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             if (queueTrx.Des_Warehouse_ID == _warehouse.ID.Value)
             {
+                workQueueRes = ManageWQ(reqVO, queueTrx, docItems, stos);
 
                 if (queueTrx.IOType == IOType.INPUT)
                 {
@@ -135,7 +136,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     }
                 }
-                workQueueRes = ManageWQ(reqVO, queueTrx, docItems, stos);
 
                 return workQueueRes;
             }
