@@ -164,7 +164,7 @@ const routes = [
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
-  { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true },
+  { path: "/receive/rec", name: "Scanpallet", compoment: Scanpallet, exact: true },
   {
     path: "/report/storageobject",
     name: "StorageObject",
