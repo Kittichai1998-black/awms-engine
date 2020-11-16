@@ -15,32 +15,12 @@ const StorageObject = Loadable({
   loading: Loading
 });
 const GR_Search = Loadable({
-  loader: () => import("../../views/page/BOT/Recive/GR_Search"),
-  loading: Loading
-});
-const PA_Search = Loadable({
-  loader: () => import("../../views/page/BOT/Recive/PA_Search"),
-  loading: Loading
-});
-const GI_Search = Loadable({
-  loader: () => import("../../views/page/BOT/Issue/GI_Search"),
-  loading: Loading
-});
-const PK_Search = Loadable({
-  loader: () => import("../../views/page/BOT/Issue/PK_Search"),
-  loading: Loading
-});
-const AD_Search = Loadable({
-  loader: () => import("../../views/page/BOT/Audit/AD_Search"),
-  loading: Loading
-});
-const Scanpallet = Loadable({
-  loader: () => import("../../views/page/BOT/Recive/ScanPallet"),
+  loader: () => import("../../views/page/BOT/GR/GR_Search"),
   loading: Loading
 });
 
 const GR_Create = Loadable({
-    loader: () => import("../../views/page/BOT/GR/GR_Create"),
+  loader: () => import("../../views/page/BOT/GR/GR_Create"),
   loading: Loading
 });
 const GR_Detail = Loadable({
@@ -48,11 +28,53 @@ const GR_Detail = Loadable({
   loading: Loading
 });
 const PA_Create = Loadable({
-    loader: () => import("../../views/page/BOT/PA/PA_Create"),
+  loader: () => import("../../views/page/BOT/PA/PA_Create"),
   loading: Loading
 });
 const PA_Detail = Loadable({
   loader: () => import("../../views/page/BOT/PA/PA_Detail"),
+  loading: Loading
+});
+const PA_Search = Loadable({
+  loader: () => import("../../views/page/BOT/PA/PA_Search"),
+  loading: Loading
+});
+const GI_Search = Loadable({
+  loader: () => import("../../views/page/BOT/GI/GI_Search"),
+  loading: Loading
+});
+
+const GI_Create = Loadable({
+  loader: () => import("../../views/page/BOT/GI/GI_Create"),
+  loading: Loading
+});
+
+const GI_Detail = Loadable({
+  loader: () => import("../../views/page/BOT/GI/GI_Detail"),
+  loading: Loading
+});
+
+const PK_Search = Loadable({
+  loader: () => import("../../views/page/BOT/PK/PK_Search"),
+  loading: Loading
+});
+
+const PK_Create = Loadable({
+  loader: () => import("../../views/page/BOT/PK/PK_Create"),
+  loading: Loading
+});
+
+const PK_Detail = Loadable({
+  loader: () => import("../../views/page/BOT/PK/PK_Detail"),
+  loading: Loading
+});
+const AD_Search = Loadable({
+  loader: () => import("../../views/page/BOT/Audit/AD_Search"),
+  loading: Loading
+});
+
+const Scanpallet = Loadable({
+  loader: () => import("../../views/page/BOT/Recive/ScanPallet"),
   loading: Loading
 });
 const CurrentInventory = Loadable({
@@ -95,6 +117,10 @@ const MoveLocation = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/MoveLocation"),
   loading: Loading
 });
+const MonitorPicking = Loadable({
+  loader: () => import("../../views/page/BOT/Warehouse/MonitorWorkingPD"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -132,7 +158,7 @@ const routes = [
     name: "Search Audit",
     compoment: AD_Search,
     exact: true
-    },
+  },
 
 
 
@@ -142,7 +168,7 @@ const routes = [
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
-  { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true },
+  { path: "/receive/rec", name: "Scanpallet", compoment: Scanpallet, exact: true },
   {
     path: "/report/storageobject",
     name: "StorageObject",
@@ -158,6 +184,7 @@ const routes = [
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
+  { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 ];
 
 export default routes;

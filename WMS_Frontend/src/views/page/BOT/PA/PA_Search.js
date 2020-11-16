@@ -12,21 +12,22 @@ import AmRediRectInfo from "../../../../components/AmRedirectInfo";
 import IconButton from "@material-ui/core/IconButton";
 import ErrorIcon from "@material-ui/icons/Error";
 import queryString from "query-string";
-import Grid from '@material-ui/core/Grid';
 import AmPopup from "../../../../components/AmPopup";
-import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
+import { useTranslation } from 'react-i18next'
 import { DocumentEventStatus } from "../../../../components/Models/DocumentEventStatus";
 import { DataGeneratePopup, DataGenerateStatus } from "../../../pageComponent/AmSearchDocumentV2/SetPopup";
 const Axios = new apicall();
 
 //======================================================================
 const DocumentSearch = props => {
+    const { t } = useTranslation()
 
     const [dialogState, setDialogState] = useState({});
+
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1001}]',
         f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -72,7 +73,7 @@ const DocumentSearch = props => {
     const iniCols = [
 
         {
-            Header: "Status", accessor: "EventStatus", width: 150,
+            Header: t("Status"), accessor: "EventStatus", width: 150,
             filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
@@ -82,9 +83,9 @@ const DocumentSearch = props => {
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
-        { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
+        { Header: t("Doc No."), accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
-            Header: "Process No.",
+            Header: t("Process No."),
             accessor: "ReDocumentProcessTypeName",
             width: 200,
             sortable: false,
@@ -98,7 +99,7 @@ const DocumentSearch = props => {
             },
         },
         {
-            Header: 'Product Owner', accessor: 'ProductOwnerCode',
+            Header: t('Product Owner'), accessor: 'ProductOwnerCode',
             width: 100, sortable: false, filterType: "dropdown",
             filterConfig: {
                 fieldDataKey: "Code",
@@ -109,10 +110,10 @@ const DocumentSearch = props => {
                 widthDD: 180,
             },
         },
-        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
-        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
+        { Header: t("Sou. Warehouse"), accessor: "SouWarehouseName", filterable: false, width: 150 },
+        { Header: t("Des. Warehouse"), accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
-            Header: "Doc. Date",
+            Header: t("Doc. Date"),
             accessor: "DocumentDate",
             width: 150,
             type: "datetime",
@@ -124,7 +125,7 @@ const DocumentSearch = props => {
             , customFilter: { field: "DocumentDate" }
         },
         {
-            Header: "Action Time",
+            Header: t("Action Time"),
             accessor: "ActionTime",
             width: 150,
             type: "datetime",
@@ -135,7 +136,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: "Create Time", accessor: "Created", width: 200,
+            Header: t("Create Time"), accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",
@@ -143,17 +144,18 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "CreateTime" }
         },
         {
-            Header: "Modify Time", accessor: "LastUpdate", width: 200,
+            Header: t("Modify Time"), accessor: "LastUpdate", width: 200,
             filterable: false,
         }
     ];
+
 
     const getRedirect = data => {
         return (
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/issue/pickingdetail?docID=" + data.ID}
+                    api={"/receive/putawaydetail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -171,10 +173,9 @@ const DocumentSearch = props => {
                 open={dialogState.state}
                 content={dialogState.content}
             />
-
             <AmSearchDocument
                 iniCols={iniCols}
-                docTypeCode="1002"
+                docTypeCode="1001"
                 buttonClose={true}
                 buttonReject={false}
                 apiReject={"/v2/reject_doc_bot"}

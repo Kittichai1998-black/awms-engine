@@ -214,7 +214,7 @@ const AmMonitor = props => {
             return {}
     }
     const checkStatusColor = (rowInfo) => {
-        // console.log(rowInfo)
+        console.log(rowInfo)
         if (rowInfo.StyleStatus !== undefined) {
             if (rowInfo.StyleStatus === "normal") {
                 return { backgroundColor: "white", lineHeight: "35px" }

@@ -1,23 +1,21 @@
 ﻿import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from "../../../../components/AmCreateDocumentNew";
-import AmCreateDoc from '../../../../components/AmImportDocumentExcel';
+import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
 import Grid from '@material-ui/core/Grid';
-//import queryString from "query-string";
-import moment from "moment";
+import queryString from "query-string";
 import {
     apicall,
     createQueryString
 } from "../../../../components/function/CoreFunction";
-
-
+import moment from "moment";
 const Axios = new apicall();
 
 const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
     q: '[{ "f": "Status", "c":"<", "v": 2}]',
-    f: "*",
+    f: "*,ID as skuID",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -25,32 +23,32 @@ const SKUMaster = {
     all: ""
 };
 
+const view_sto = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "PackStorageObject",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "*",
+    g: "",
+    s: "[{'f':'packID','od':'ASC'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+};
 
-const RD_Create_FGCustomer = props => {
+
+const GI_Create_FGCustomer = props => {
     const [CodeprocessType, setCodeprocessType] = useState(1);
-    const [CodeprocessNo, setCodeprocessNo] = useState(4)
     const [table, setTable] = useState(null);
     const [HeaderDoc, setHeaderDoc] = useState([]);
     const [skuType, setskuType] = useState(4);
     const [columSKU, setcolumSKU] = useState();
     const [skuquery, setskuquery] = useState(SKUMaster);
+    const [addlistquery, setaddlistquery] = useState(view_sto);
     const [Type, setType] = useState(true);
     const [ProcessTypeCode, setProcessTypeCode] = useState();
+    const [addlist, setaddlist] = useState({})
     const [proOwner, setproOwner] = useState();
 
-    const POwnerDDL = [
-        { label: 'BOT', value: '1', productOwnerID: '1' },
-        { label: 'CCC', value: '2', productOwnerID: '2' },
-    ];
-
-    const TypeSku = [
-        { label: 'N', value: 'N' },
-        { label: 'G', value: 'G' },
-        { label: 'B', value: 'B' },
-        { label: 'S', value: 'S' },
-        { label: 'U', value: 'U' }
-
-    ]
 
     useEffect(() => {
         setproOwner(localStorage.getItem("User_ProductOwner"))
@@ -83,7 +81,7 @@ const RD_Create_FGCustomer = props => {
                 var headerCreate = [
                     [
                         { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                        { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
+                        { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
                         { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1001, codeTranslate: "Process Type" },
@@ -91,7 +89,7 @@ const RD_Create_FGCustomer = props => {
                     ],
                     [
                         Onwer,
-                        { label: "Des Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
+                        { label: "Des. Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
                     ],
                     [
                         { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -114,12 +112,13 @@ const RD_Create_FGCustomer = props => {
         }
 
     }, [proOwner, CodeprocessType]);
-
     useEffect(() => {
         if (HeaderDoc.length > 0) {
+
             setTable(
                 <AmCreateDocument
-                    //addList={addList}
+                    addList={addlist}
+                    add={ false}
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
@@ -127,9 +126,9 @@ const RD_Create_FGCustomer = props => {
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
-                    createDocType={"receive"}
+                    createDocType={"issue"}
                     history={props.history}
-                    itemNo={true}
+                    //itemNo={true}
                     //defualItemNo={'0001'}
                     apiRes={apiRes}
                 />
@@ -137,7 +136,7 @@ const RD_Create_FGCustomer = props => {
         }
 
 
-    }, [HeaderDoc, CodeprocessType, columSKU])
+    }, [HeaderDoc, CodeprocessType, columSKU, addlist])
 
 
     useEffect(() => {
@@ -149,66 +148,95 @@ const RD_Create_FGCustomer = props => {
                 skuqrys = [{ "f": "Status", "c": "<", "v": 2 }, { 'f': 'SKUMasterType_ID', 'c': '=', 'v': skuType }]
                 objQuery.q = JSON.stringify(skuqrys);
             }
+
             setskuquery(objQuery)
+        }
+        let Headers;
+        let AuditStatusDDL;
+
+        if (skuType === 5) {
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input",  width: '300px' }
+        } else {
+            Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px' }
         }
 
         var columnEdit = [
-
             {
-                Header: "เลขที่ภาชนะ",
-                accessor: "BaseCode",
-                fieldLabel: ["BaseCode"],
-                queryApi: BaseMasterSto,
-                type: "dropdown",
-                key: "ID",
-                required: true
-            },
-
-            {
-                Header: "ชนิดราคา",
+                Header: "Item Code",
                 accessor: "Code",
-                fieldLabel: ["Code"],
+                type: "findPopUp",
                 queryApi: skuquery,
-                type: "dropdown",
-                key: "ID",
+                fieldLabel: ["Code"],
+                columsddl: columsFindPopupSKU,
+                related: ["Name"],
+                fieldDataKey: "Code", 
                 required: true
             },
-            { Header: "แบบ", accessor: "ref2", type: "input", width: '300px' },
-
             {
-                Header: "ประเภทธนบัตร",
-                accessor: "ref3",
-                type: "dropdownvalue",
-                key: "value",
-                data: TypeSku,
-                defaultValue: 'N',
-                fieldLabel: ["label"]
+                Header: "Item Name",
+                accessor: "Name",
+                type: "text",
+                //queryApi: skuquery,
+                //fieldLabel: ["Name"],
+                //columsddl: columsFindPopupSKU,
+                //related: ["Code"],
+                //fieldDataKey: "Name", 
+                //required: true
             },
+            { Header: "Control No.", accessor: "orderNo", type: "input", width: '300px' },
+            { Header: "Quantity", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
+            { Header: "Unit", accessor: "unitType", type: "unitConvert", width: '300px', required: true },
 
-            { Header: "สถาบัน", accessor: "ref1", type: "input", width: '300px' },
-            { Header: "ศูนย์เงินสด", accessor: "ref4", type: "input", width: '300px' },
-            {
-                Header: "จำนวน", accessor: "quantity", type: "inputNum",
-                required: true,
-                width: '300px'
-            },
-            {
-                Header: "หน่วยนับ",
-                accessor: "unitType",
-                fieldDataKey: 'UnitType_Code',
-                fieldLabel: 'UnitType_Name',
-                type: "unitConvert", width: '300px',
-                required: true
-            },
-            { Header: "วันที่รับเข้า", accessor: "productionDate", type: "date", width: '300px' },
-            { Header: "หมายเหตุ", accessor: "remark", type: "input", width: '300px' },
-
+            { Header: "Remark", accessor: "remark", type: "input", width: '300px' },
+            //{ Header: "MFG.Date", accessor: "productionDate", type: "date", width: '300px', required: true },
+            //{ Header: "Expire Date", accessor: "expireDate", type: "date", width: '300px', required: true },
         ];
-
         setcolumSKU(columnEdit)
     }, [skuType, ProcessTypeCode])
 
 
+    useEffect(() => {
+
+        var addLists = {
+            queryApi: view_sto,
+            columns: columsFindPopupSto,
+            primaryKeyTable: "packID",
+        };
+
+        setaddlist(addLists)
+
+    }, [skuType, ProcessTypeCode])
+
+    const AuditStatus = [
+        { label: 'QUARANTINE', value: '0' },
+        { label: 'PASSED', value: '1' },
+        { label: 'REJECTED ', value: '2' },
+        { label: 'HOLD', value: '9' },
+    ];
+
+    const UnitTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "UnitType",
+        q: '[{ "f": "Status", "c":"<", "v": 2},]',
+        f: "ID,Code,Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+    const DocumentProcessTypeQuery = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "DocumentProcessTypeMap",
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
     const WarehouseQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -236,20 +264,6 @@ const RD_Create_FGCustomer = props => {
 
 
 
-
-    const BaseMasterSto = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "BaseMaster_Sto",
-        q: '[{ "f": "Status", "c":"<", "v": 2},]',
-        f: "*",
-        g: "",
-        s: "[{ 'f': 'ID', 'od': 'asc' }]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-
     const ProductOwnerQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "ProductOwner",
@@ -274,10 +288,6 @@ const RD_Create_FGCustomer = props => {
         all: ""
     };
 
-
-
-
-
     const SupplierQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Supplier",
@@ -292,32 +302,13 @@ const RD_Create_FGCustomer = props => {
 
 
 
-    const DocumentProcessTypeQuery = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1001}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
-
-
-    const columsFindPopupBase = [
-        { Header: "BaseCode", accessor: "BaseCode", fixed: "left", width: 110, sortable: true },
-        { Header: "Name", accessor: "Name", width: 250, sortable: true },
-    ];
-
-    const columsFindPopup = [
+    const columsFindPopupSKU = [
         { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
-    const columns = [
-
-        { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
+    const columsFindPopupSto = [
+        { Header: "เลขที่ภาชนะ", accessor: "palletcode"  },
         { Header: "ชนิดราคา", accessor: "Code" },
         { Header: "แบบ", accessor: "ref2" },
         { Header: "ประเภทธนบัตร", accessor: "ref3" },
@@ -327,57 +318,55 @@ const RD_Create_FGCustomer = props => {
         { Header: "หน่วยนับ", accessor: "unitType" },
         { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
         { Header: "หมายเหตุ", accessor: "remark" }
+
     ];
 
 
-
-    const getUnit = (e) => {
-        console.log(e)
-    }
+    const columns = [
+        { Header: "เลขที่ภาชนะ", accessor: "palletcode" },
+        { Header: "ชนิดราคา", accessor: "Code" },
+        { Header: "แบบ", accessor: "ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "ref3" },
+        { Header: "สถาบัน", accessor: "ref1" },
+        { Header: "ศูนย์เงินสด", accessor: "ref4" },
+        { Header: "จำนวน", accessor: "quantity" },
+        { Header: "หน่วยนับ", accessor: "unitType" },
+        { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
+        { Header: "Remark", accessor: "remark" }
+    ];
 
     const getFormatDatePro = (e) => {
-        if (e.productionDate)
-            return moment(e.productionDate).format("DD/MM/YYYY");
+        if (e.productionDates) {
+            return moment(e.productionDates).format("DD/MM/YYYY");
+        }
+       
     }
 
     const getFormatDateExp = (e) => {
-        if (e.expireDate)
-            return moment(e.expireDate).format("DD/MM/YYYY");
+        if (e.expireDates) {
+            return moment(e.expireDates).format("DD/MM/YYYY");
+        }
+      
     }
 
     const getAuditStatus = (e) => {
-        console.log(e)
-        if (e.auditStatus) {
-            if (e.auditStatus === '0') {
+        if (e.auditStatus ) {
+            if (e.auditStatus === '0' ) {
                 return "QUARANTINE"
-            } else if (e.auditStatus === '1') {
+            } else if (e.auditStatus === '1' ) {
                 return "PASSED"
-            } else if (e.auditStatus === '2') {
+            } else if (e.auditStatus === '2' ) {
                 return "REJECTED"
-            } else if (e.auditStatus === '9') {
+            } else if (e.auditStatus === '9' ) {
                 return "HOLD"
             }
         }
     }
 
-    const apicreate = "/v2/CreateDRDocAPI/"; //API สร้าง Doc
-    const apiRes = "/receive/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
+    const apicreate = "/v2/CreateDIDocAPI/"; //API สร้าง Doc
+    const apiRes = "/issue/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
-    return <div>
-        {/*<Grid container>
-            <Grid item xs container direction="column">
-            </Grid>
-            <Grid item>
-                <AmCreateDoc
-                    apicreate={"/v2/CreateDRDocAPI/"}
-                    apiRes={"/receive/detail?docID="}
-                    history={props.history}
-                    docTypename={"receive"}
-                ></AmCreateDoc>
-            </Grid>
-        </Grid>*/}
-        <div>
-            {table}</div></div>;
+    return <div>  {table}</div>;
 };
 
-export default RD_Create_FGCustomer;
+export default GI_Create_FGCustomer;

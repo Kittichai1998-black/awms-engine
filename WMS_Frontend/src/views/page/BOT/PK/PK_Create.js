@@ -22,15 +22,15 @@ const Create_GR_DR = props => {
 
                 [
                     { label: "Doc NO.", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
-                    { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
                     { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
                     { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
                 ],
                 [
-                    { label: "Product Owner", type: "labeltext", key: "productOwnerID", texts: "", valueTexts: "", codeTranslate: "ProductOwner" },
-                    { label: "Des Area", type: "labeltext", key: "desAreaMasterID", texts: "", valueTexts: "", codeTranslate: "DesAreaMaster" },
+                    { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: "", valueTexts: "", codeTranslate: "ProductOwner" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: "", valueTexts: "", codeTranslate: "DesAreaMaster" },
 
                 ],
                 [
@@ -103,7 +103,7 @@ const Create_GR_DR = props => {
                     doccolumnEdit={columnEdit}
                     docapicreate={apicreate}
                     doccreateDocType={"putAway"}
-                    doctypeDocNo={1011}
+                    doctypeDocNo={1012}
                     dochistory={props.history}
                     onChangeDoument={(e) => { setdataDocument(e) }}
                     docItemQuery={DocumentItem}
@@ -218,8 +218,8 @@ const Create_GR_DR = props => {
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
     ];
 
-    const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc
-    const apiRes = "/receive/putawaydetail?docID="; //path ˹����������´ �͹����ѧ����Դ
+    const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
+    const apiRes = "/issue/pickingcreate?docID="; //path ˹����������´ �͹����ѧ����Դ
 
     return <div>
         {table}</div>;
