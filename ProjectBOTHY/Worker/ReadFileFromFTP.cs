@@ -201,7 +201,7 @@ namespace ProjectBOTHY.Worker
                 ParentDocument = null,
                 DocumetnChilds = null,
                 EventStatus = DocumentEventStatus.NEW,
-                ProductOwner_ID = docItemDetail.details.First().owner == "BOT" ? 1 : 2,
+                ProductOwner_ID = docItemDetail.details.First().owner == "BOT" || string.IsNullOrEmpty(docItemDetail.details.First().owner) ? 1 : 2,
                 Status = EntityStatus.ACTIVE,
                 Options = $"textFile={Newtonsoft.Json.JsonConvert.SerializeObject(docItemDetail.footer)}",
                 Des_Warehouse_ID = _desArea.Warehouse_ID,
@@ -312,8 +312,8 @@ namespace ProjectBOTHY.Worker
 
                 return new amt_DocumentItem()
                 {
-                    Code = curPack.Code,
-                    BaseCode = x.baseCode,
+                    Code = string.IsNullOrWhiteSpace(curPack.Code) ? null : curPack.Code,
+                    BaseCode = string.IsNullOrWhiteSpace(x.baseCode) ? null : x.baseCode,
                     //Quantity = skuType.Code == "BANKNOTE" ? x.quantity : 1,
                     //UnitType_ID = curPack.UnitType_ID,
                     //BaseQuantity = skuType.Code == "BANKNOTE" ? x.quantity : 1,

@@ -207,16 +207,8 @@ const TestPicking = Loadable({
   loader: () => import("../../views/page/PickingExample"),
   loading: Loading
 });
-const CountingAdj = Loadable({
-  loader: () => import("../../views/page/MRK/Counting/CountingAdj"),
-  loading: Loading
-});
 const TestCreateDocument = Loadable({
   loader: () => import("../../views/page/TestCreateDocument"),
-  loading: Loading
-});
-const ReceivePallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/ReceivePallet"),
   loading: Loading
 });
 const LocationSummary = Loadable({
@@ -428,7 +420,6 @@ const GR_PalletEmpByHH = Loadable({
 });
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
-  { path: "/counting/manualcounting", name: "base5", compoment: CountingAdj, exact: true },
   { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
   { path: "/testMasterV2", name: "base5", compoment: testMasterV2, exact: true },
   { path: "/TestPicking", name: "Inbound Progress", compoment: TestPicking, exact: true },
@@ -480,7 +471,6 @@ let routes = [
   { path: "/exdropdown", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/sto/picking", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
-  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
   { path: "/dashboard/locationview", name: "Location Summary", compoment: LocationSummary, exact: true },
   { path: "/log/apiservicelog", name: "API Service Log", compoment: APIServiceLog, exact: true },
@@ -512,15 +502,15 @@ let routes = [
   //{ path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   //{ path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
 
-  //{ path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+  { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   //{ path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
   //{ path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
   //{ path: "/issue/pickingchecker", name: "PK Checker", compoment: PK_Checker, exact: true },
 
-  //{ path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
+  { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   //{ path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
   //{ path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-  // { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
+  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },

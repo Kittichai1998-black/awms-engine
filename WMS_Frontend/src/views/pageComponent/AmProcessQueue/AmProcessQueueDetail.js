@@ -73,7 +73,11 @@ const DefaultProcessCondition = (doc, con) => {
                 lot: x.Lot,
                 orderNo: x.OrderNo,
                 options: null,
-                baseQty: x.BaseQuantity
+                baseQty: x.BaseQuantity,
+                ref1: x.Ref1,
+                ref2: x.Ref2,
+                ref3: x.Ref3,
+                ref4: x.Ref4
             }]
             x.priority = "2";
             if (con.conditions !== undefined) {
@@ -721,8 +725,8 @@ const ProcessQueueDetail = (props) => {
                     docID: docItem.Document_ID,
                     docItemID: docItem.ID,
                     locationCode: null,
-                    baseCode: getOptions.palletcode ? getOptions.palletcode : null,
-                    skuCode: getOptions.palletcode ? null : docItem.Code ? docItem.Code : null,
+                    baseCode: docItem.baseCode ? docItem.baseCode : null,
+                    skuCode: docItem.baseCode ? null : docItem.Code ? docItem.Code : null,
                     priority: docItem.priority ? docItem.priority : 2,
                     useShelfLifeDate: docItem.useShelfLifeDate ? docItem.useShelfLifeDate : false,
                     useExpireDate: docItem.useExpireDate ? docItem.useExpireDate : false,
