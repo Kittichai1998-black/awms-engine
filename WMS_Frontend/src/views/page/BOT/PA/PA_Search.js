@@ -83,7 +83,7 @@ const DocumentSearch = props => {
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
-        { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
+        { Header: t("Doc No."), accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
             Header: t("Process No."),
             accessor: "ReDocumentProcessTypeName",
