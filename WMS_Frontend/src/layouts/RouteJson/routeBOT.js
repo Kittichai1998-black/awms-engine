@@ -117,6 +117,10 @@ const MoveLocation = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/MoveLocation"),
   loading: Loading
 });
+const MonitorPicking = Loadable({
+  loader: () => import("../../views/page/BOT/Warehouse/MonitorWorkingPD"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -180,6 +184,7 @@ const routes = [
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
+  { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 ];
 
 export default routes;
