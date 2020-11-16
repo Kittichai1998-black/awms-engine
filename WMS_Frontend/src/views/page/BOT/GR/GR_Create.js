@@ -64,18 +64,18 @@ const RD_Create_FGCustomer = props => {
             if (proOwner === '1,2') {
                 Onwer = {
                     label: "Product Owner", type: "dropdown", key: "productOwnerID", queryApi: ProductOwnerQuery,
-                    fieldLabel: ["Code", "Name"],defaultValue: 1,
+                    fieldLabel: ["Code", "Name"], defaultValue: 1,
                 }
             } else if (proOwner === '1') {
                 Onwer = {
-                    label: "Product Owner", type: "dropdown", key: "productOwnerID",  queryApi: ProductOwnerQuery,
-                    fieldLabel: ["Code", "Name"],defaultValue: 1, disabled:true
+                    label: "Product Owner", type: "dropdown", key: "productOwnerID", queryApi: ProductOwnerQuery,
+                    fieldLabel: ["Code", "Name"], defaultValue: 1, disabled: true
                 }
 
-            } else if (proOwner === '2'){
+            } else if (proOwner === '2') {
                 Onwer = {
                     label: "Product Owner", type: "dropdown", key: "productOwnerID", queryApi: ProductOwnerQuery,
-                    fieldLabel: ["Code", "Name"],defaultValue: 2, disabled: true
+                    fieldLabel: ["Code", "Name"], defaultValue: 2, disabled: true
                 }
 
             }
@@ -83,7 +83,7 @@ const RD_Create_FGCustomer = props => {
                 var headerCreate = [
                     [
                         { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                        { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
+                        { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
                         { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1001, codeTranslate: "Process Type" },
@@ -91,7 +91,7 @@ const RD_Create_FGCustomer = props => {
                     ],
                     [
                         Onwer,
-                        { label: "Des. Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
+                        { label: "Des Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
                     ],
                     [
                         { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -154,23 +154,23 @@ const RD_Create_FGCustomer = props => {
 
         var columnEdit = [
 
-             {
+            {
                 Header: "เลขที่ภาชนะ",
-                accessor: "BaseCode", 
-                fieldLabel:["BaseCode"],
+                accessor: "BaseCode",
+                fieldLabel: ["BaseCode"],
                 queryApi: BaseMasterSto,
-                type: "dropdown",                   
-                key: "ID", 
+                type: "dropdown",
+                key: "ID",
                 required: true
             },
 
             {
                 Header: "ชนิดราคา",
-                accessor: "Code", 
-                fieldLabel:["Code"],
+                accessor: "Code",
+                fieldLabel: ["Code"],
                 queryApi: skuquery,
-                type: "dropdown",                   
-                key: "ID", 
+                type: "dropdown",
+                key: "ID",
                 required: true
             },
             { Header: "แบบ", accessor: "ref2", type: "input", width: '300px' },
@@ -181,7 +181,7 @@ const RD_Create_FGCustomer = props => {
                 type: "dropdownvalue",
                 key: "value",
                 data: TypeSku,
-                defaultValue:'N',
+                defaultValue: 'N',
                 fieldLabel: ["label"]
             },
 
@@ -310,23 +310,23 @@ const RD_Create_FGCustomer = props => {
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
-    const columsFindPopup= [
+    const columsFindPopup = [
         { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
 
     const columns = [
 
-        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
-        { Header: "ชนิดราคา",accessor: "Code" },
-        { Header: "แบบ", accessor: "ref2"},
-        {Header: "ประเภทธนบัตร", accessor: "ref3"},
-        { Header: "สถาบัน", accessor: "ref1"},
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
+        { Header: "ชนิดราคา", accessor: "Code" },
+        { Header: "แบบ", accessor: "ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "ref3" },
+        { Header: "สถาบัน", accessor: "ref1" },
         { Header: "ศูนย์เงินสด", accessor: "ref4" },
         { Header: "จำนวน", accessor: "quantity" },
         { Header: "หน่วยนับ", accessor: "unitType" },
         { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
-        { Header: "หมายเหตุ", accessor: "remark"}
+        { Header: "หมายเหตุ", accessor: "remark" }
     ];
 
 

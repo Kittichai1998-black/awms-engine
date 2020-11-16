@@ -2,44 +2,36 @@ import * as signalR from '@aspnet/signalr';
 
 // import Axios from 'axios'
 import React, { useState, useEffect } from 'react'
-
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import AmDropdown from '../../../../components/AmDropdown';
 import AmIconStatus from "../../../../components/AmIconStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
 // import { createQueryString } from '../../../../components/function/CoreFunction'
-
+import { useTranslation } from 'react-i18next'
 //type time,datetime,datelog
-const headercol1 = [
-    { accessor: "ActualTime", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "Gate", Header: "Gate", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "OrderNo", Header: "SI (Order No)", width: 100, sortable: false, style: { textAlign: "center" } },
-    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
-    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "Product", Header: "Reorder (Item Code)", sortable: false },
-    // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
-    // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
-    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-
-
-    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
-]
-
-const headercol2 = [
-    { accessor: "TIME", Header: "Time", className: 'center', width: 100, type: "time", sortable: false, style: { textAlign: "center" } },
-    { accessor: "TaskName", Header: "Task", width: 130, sortable: false, style: { textAlign: "center" }, Cell: row => <AmIconStatus styleType={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</AmIconStatus> },
-    // { accessor: "Priority", Header: "Priority", type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
-    { accessor: "OrderNo", Header: "SI (Order No)", width: 100, sortable: false, style: { textAlign: "center" } },
-    { accessor: "Qty", Header: "Qty", width: 100, sortable: false },
-    { accessor: "Pallet_Code", Header: "Pallet", width: 140, sortable: false, style: { textAlign: "center" } },
-    { accessor: "Product", Header: "Reorder (Item Code)", sortable: false },  
-    // { accessor: "Remark", Header: "Remark", sortable: false },
-    // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
-    { accessor: "Document_Code", Header: "Doc No.", width: 160, sortable: false, style: { textAlign: "center" } },
-]
-
 export default props => {
+    const { t } = useTranslation()
+    const headercol1 = [
+        { accessor: "ActualTime", Header: t("Time"), className: 'center', width: 80, type: "time", sortable: false, style: { textAlign: "center" } },
+        // { accessor: "Cur_AreaLocation_Code", Header: "Gate", width: 60, sortable: false, style: { textAlign: "center" } },
+        { accessor: "Priority", Header: t("Priority"), type: "priority", width: 80, sortable: false, style: { textAlign: "center" } },
+        // { accessor: "Lot", Header: t("Lot"), width: 100, sortable: false, style: { textAlign: "center" } },
+        // { accessor: "OrderNo", Header: t("Control No."), width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "PalletCode", Header: t("Pallet"), width: 100, sortable: false, style: { textAlign: "center" } },
+        { accessor: "PackName", Header: t("Item Code"), width: 40, sortable: false, cellStyle: { overflow: 'hidden', whiteSpace: 'nowrap', whiteSpace: 'nowrap' } },
+        { accessor: "Qty", Header: t("Qty"), width: 80, sortable: false },
+        { accessor: "Ref1", Header: t("สถาบัน"), width: 80, sortable: false },
+        { accessor: "Ref2", Header: t("แบบ"), width: 80, sortable: false },
+        { accessor: "Ref3", Header: t("ประเภท"), width: 80, sortable: false },
+        { accessor: "Ref4", Header: t("ศูนย์เงินสด"), width: 80, sortable: false },
+        // { accessor: "Sou_Area", Header: "Source", width: 100, sortable: false },
+        // { accessor: "Cur_Area", Header: "Current", width: 170, sortable: false },
+        // { accessor: "Des_Area", Header: "Destination", width: 160, sortable: false },
 
-    const [Hub, setHub] = useState(["DASHBOARD_WORKING_OUT_ALL", "DASHBOARD_WORKING_IN_ALL"])
+
+        { accessor: "DocumentCode", Header: t("Doc No."), width: 100, sortable: false, style: { textAlign: "center" } },
+    ]
+    const [Hub, setHub] = useState(["DASHBOARD_WORKING_OUT"])
     const [data, setData] = useState([
         [ //row
             { //col 
@@ -48,19 +40,7 @@ export default props => {
                     { //table in col
                         data: [],
                         headercol: headercol1,
-                        title: "Outbound"
-                    }
-                ]
-            }
-        ],
-        [ //row
-            { //col 
-                type: null,
-                table: [
-                    { //table in col
-                        data: [],
-                        headercol: headercol2,
-                        title: "Inbound"
+                        title: ""
                     }
                 ]
             }
@@ -80,18 +60,13 @@ export default props => {
         connection.start()
             .then(() => {
                 connection.on(Hub[0], res => {
-                    console.log(JSON.parse(res));
+                    //console.log(JSON.parse(res));
                     data[0][0].table[0].data = JSON.parse(res)
-                    setData([...data])
-                })
-                connection.on(Hub[1], res => {
-                    console.log(JSON.parse(res));
-                    data[1][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
             })
             .catch((err) => {
-                console.log(err);
+                //console.log(err);
                 setTimeout(() => signalrStart(), 5000);
             })
     };

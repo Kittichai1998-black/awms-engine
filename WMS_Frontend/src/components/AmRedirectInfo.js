@@ -52,7 +52,7 @@ const AmRedirectInfo = props => {
                         size="small"
                         aria-label="info"
                         onClick={handleClickOpenDialog}
-                        style={{ marginLeft: "3px", position: 'relative' }}
+                        style={{ marginLeft: "3px", position: 'unset' }}
                     >
                         <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
                     </IconButton>
@@ -70,7 +70,7 @@ const AmRedirectInfo = props => {
                         size="small"
                         aria-label="info"
                         onClick={handleClickOpenDialog}
-                                style={{ marginLeft: "3px",  position: 'relative' }}
+                        style={{ marginLeft: "3px", position: 'unset' }}
                     >
                         {customIcon}
                     </IconButton>
@@ -89,7 +89,7 @@ const AmRedirectInfo = props => {
                     <AmButton
                         styleType={styleTypeBtn ? styleTypeBtn : 'default'}
                         onClick={handleClickOpenDialog}
-                                    style={{ marginLeft: "3px", lineHeight: 1.5, position: 'relative'  }}
+                        style={{ marginLeft: "3px", lineHeight: 1.5, position: 'unset' }}
                         startIcon={startIcon}
                         endIcon={endIcon}
                         append={appendIcon}
@@ -109,7 +109,7 @@ const AmRedirectInfo = props => {
                     size="small"
                     aria-label="info"
                     onClick={PageDetail}
-                                    style={{ marginLeft: "3px", position: 'relative'  }}
+                    style={{ marginLeft: "3px", position: 'unset' }}
                 >
                     {customIcon}
                 </IconButton>
@@ -118,7 +118,7 @@ const AmRedirectInfo = props => {
                                         size="small"
                                         aria-label="info"
                                         onClick={PageDetail}
-                                        style={{ marginLeft: "3px", position: 'relative'  }}
+                                        style={{ marginLeft: "3px", position: 'unset' }}
                                     >
                                         <SaveIcon fontSize="small" style={{ color: "#1a237e" }} />
                                     </IconButton>

@@ -117,6 +117,10 @@ const MoveLocation = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/MoveLocation"),
   loading: Loading
 });
+const MonitorPicking = Loadable({
+  loader: () => import("../../views/page/BOT/Warehouse/MonitorWorkingPD"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -150,7 +154,7 @@ const routes = [
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
   { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
-  { path: "/monitor/recive", name: "Scanpallet", compoment: Scanpallet, exact: true },
+  { path: "/receive/rec", name: "Scanpallet", compoment: Scanpallet, exact: true },
   {
     path: "/report/storageobject",
     name: "StorageObject",
@@ -166,6 +170,7 @@ const routes = [
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
+  { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 ];
 
 export default routes;

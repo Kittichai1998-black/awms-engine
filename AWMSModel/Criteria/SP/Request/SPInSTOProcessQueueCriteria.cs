@@ -37,6 +37,11 @@ namespace AWMSModel.Criteria.SP.Request
             public string lot;
             public string orderNo;
             public string options;
+            public string refID;
+            public string ref1;
+            public string ref2;
+            public string ref3;
+            public string ref4;
             public decimal? baseQty;
         }
         public class OrderByProcess

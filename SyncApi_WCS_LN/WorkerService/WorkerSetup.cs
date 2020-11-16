@@ -17,9 +17,9 @@ namespace SyncApi_WCS_LN.WorkerService
             foreach(var api_name in api_names)
             {
                 string api_url = ConfigADO.Post2wmsConfigs[string.Format(ConfigString.KEY_POST2WMS_APIURL, api_name)];
-                string sp_request = ConfigADO.Post2wmsConfigs[string.Format(ConfigString.KEY_POST2WMS_SP_GET_REQUEST, api_name)];
-                string sp_update = ConfigADO.Post2wmsConfigs[string.Format(ConfigString.KEY_POST2WMS_SP_UPDATE_RESULT, api_name)];
-                var exec = new WorkerPost2WMS(sp_request, sp_update, api_url);
+                string sp_request = ConfigADO.Post2wmsConfigs[string.Format(ConfigString.KEY_POST2WMS_SP_REQUEST, api_name)];
+                string sp_response = ConfigADO.Post2wmsConfigs[string.Format(ConfigString.KEY_POST2WMS_SP_RESPONSE, api_name)];
+                var exec = new WorkerWCS2WMS(sp_request, sp_response, api_url);
                 Task t = Task.Run(() =>
                 {
                     exec.Run();
