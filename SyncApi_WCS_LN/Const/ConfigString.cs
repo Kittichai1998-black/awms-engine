@@ -12,8 +12,8 @@ namespace SyncApi_WCS_LN.Const
         public const string KEY_POST2WMS_APINAMES = "post2wms.api_names";
         public const string KEY_POST2WMS_THREAD_SLEEP = "post2wms.thread_sleep";
         public const string KEY_POST2WMS_APIURL = "post2wms.{0}.api_url";
-        public const string KEY_POST2WMS_SP_GET_REQUEST = "post2wms.{0}.get_req";
-        public const string KEY_POST2WMS_SP_UPDATE_RESULT = "post2wms.{0}.update_res";
+        public const string KEY_POST2WMS_SP_REQUEST = "post2wms.{0}.sp_req";
+        public const string KEY_POST2WMS_SP_RESPONSE = "post2wms.{0}.sp_res";
 
 
         public const string KEY_APICONTROLLER_APINAMES = "controller.api_names";

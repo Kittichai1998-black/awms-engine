@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace SyncApi_WCS_LN.WorkerService
 {
-    public class WorkerPost2WMS
+    public class WorkerWCS2WMS
     {
-        public string SP_Post { get; set; }
-        public string SP_Result { get; set; }
+        public string SP_Request { get; set; }
+        public string SP_Response { get; set; }
         public string APIUrl { get; set; }
         public AMWLogger Logger { get; set; }
 
@@ -28,12 +28,12 @@ namespace SyncApi_WCS_LN.WorkerService
             public int Status;
         }
 
-        public WorkerPost2WMS(string sp_post, string sp_result,string apiUrl)
+        public WorkerWCS2WMS(string sp_request, string sp_response,string apiUrl)
         {
-            this.SP_Post = sp_post;
-            this.SP_Result = sp_result;
+            this.SP_Request = sp_request;
+            this.SP_Response = sp_response;
             this.APIUrl = apiUrl;
-            this.Logger = AMWLoggerManager.GetLogger(this.SP_Post, "worker");
+            this.Logger = AMWLoggerManager.GetLogger(this.SP_Request, "worker");
         }
 
 
@@ -44,7 +44,7 @@ namespace SyncApi_WCS_LN.WorkerService
             {
                 try
                 {
-                    var posts = DataADO.GetInstant().Query<dynamic>(this.SP_Post, this.Logger);
+                    var posts = DataADO.GetInstant().Query<dynamic>(this.SP_Request, this.Logger);
                     if(posts != null && posts.Count() > 0)
                     {
                         foreach(var post in posts)
@@ -62,8 +62,8 @@ namespace SyncApi_WCS_LN.WorkerService
                             }
                             finally
                             {
-                                if (!string.IsNullOrWhiteSpace(this.SP_Result))
-                                    DataADO.GetInstant().Query<dynamic>(this.SP_Result, this.Logger, data_result);
+                                if (!string.IsNullOrWhiteSpace(this.SP_Response))
+                                    DataADO.GetInstant().Query<dynamic>(this.SP_Response, this.Logger, data_result);
                             }
                         }
                     }
