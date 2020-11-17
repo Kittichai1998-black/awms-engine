@@ -50,7 +50,7 @@ const PK_Detail = props => {
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
                 { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },

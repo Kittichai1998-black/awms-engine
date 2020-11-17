@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 import AmButton from "../../../components/AmButton";
 import AmEditorTable from '../../../components/table/AmEditorTable';
 import AmTable from "../../../components/AmTable/AmTable";
@@ -34,12 +34,12 @@ const ObjectSize = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType:"dropdown",
-      colStyle:{textAlign:"center"},
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      colStyle: { textAlign: "center" },
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -99,14 +99,15 @@ const ObjectSize = props => {
     {
       Header: "",
       width: 15,
-      filterable:false,
+      filterable: false,
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setEditObjectSizeID(e.original.ID)}}
+        onClick={() => { setEditObjectSizeID(e.original.ID) }}
         style={{ marginLeft: "3px" }}>
-        <FaPallet style={{ color: "#3E5FFA" }}/>
-      </IconButton>}
+        <FaPallet style={{ color: "#3E5FFA" }} />
+      </IconButton>
+    }
   ];
 
   const columns = [
@@ -168,7 +169,7 @@ const ObjectSize = props => {
       type: "input",
       name: "MaxInnerVolume",
       placeholder: "MaxInnerVolume"
-    },  
+    },
   ];
 
   const columnsEdit = [
@@ -238,7 +239,7 @@ const ObjectSize = props => {
       type: "input",
       name: "MaxInnerVolume",
       placeholder: "MaxInnerVolume"
-    },  
+    },
     {
       field: "Status",
       type: "dropdown",
@@ -307,13 +308,14 @@ const ObjectSize = props => {
       return null;
     }
   };
-  
-  useEffect(()=> {
-    if(editObjectSizeID !== undefined){
+
+  useEffect(() => {
+    if (editObjectSizeID !== undefined) {
       Axios.get(
         window.apipath + "/v2/GetObjectSizeMapAPI?ID=" + editObjectSizeID
       ).then(res => {
-        setObjectSizeData(res.data.datas)})
+        setObjectSizeData(res.data.datas)
+      })
     }
   }, [editObjectSizeID]);
 
@@ -325,12 +327,12 @@ const ObjectSize = props => {
       ];
 
       console.log(objSizeData)
-      if(objSizeData !== undefined && objSizeData.length > 0){
+      if (objSizeData !== undefined && objSizeData.length > 0) {
         setOpen(true)
       }
 
       const defaultValue = () => {
-        return objSizeData.filter(x=> x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
+        return objSizeData.filter(x => x.ObjMapID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
         {
@@ -350,15 +352,15 @@ const ObjectSize = props => {
                     var oldObjSize = objSizeData.filter(x => x.ObjMapID !== null);
                     oldObjSize.forEach(e => {
                       var oldObj = select.find(x => x.ObjMapID === e.ObjMapID);
-                      if(oldObj === undefined){
-                        objUpdate.push({"ID":e.ObjMapID, "Status":0})
-                      }else{
-                        if(e.Status !== 1)
-                          objUpdate.push({"ID":e.ObjMapID, "Status":1})
+                      if (oldObj === undefined) {
+                        objUpdate.push({ "ID": e.ObjMapID, "Status": 0 })
+                      } else {
+                        if (e.Status !== 1)
+                          objUpdate.push({ "ID": e.ObjMapID, "Status": 1 })
                       }
                     });
-                    newObjSize.forEach(x=> {
-                      objUpdate.push({"ID":null, "Status":1, "ObjectSize_ID":editObjectSizeID, "InnerObjectSize_ID":x.ID, "Revision":1 })
+                    newObjSize.forEach(x => {
+                      objUpdate.push({ "ID": null, "Status": 1, "ObjectSize_ID": editObjectSizeID, "InnerObjectSize_ID": x.ID, "Revision": 1 })
                     });
 
                     updateObjSize.current = objUpdate;
@@ -375,25 +377,26 @@ const ObjectSize = props => {
     console.log(objectSizeData)
     setRelationComponent(getObjectSizeColumns(objectSizeData))
   }, [objectSizeData])
-  
-  const PopupObjSize = React.memo(({relationComponent, open}) => {
-    return <AmEditorTable 
-    open={open} 
-    onAccept={(status, rowdata)=> {
-      if(!status){
-        setOpen(false)
-        setEditObjectSizeID(null)
-      }
-      else{
-        UpdateObjectSizeMap();
-        setOpen(false)
-        setEditObjectSizeID(null)
-      }
-    }}
-    titleText={"Object Size"} 
-    data={{}}
-    columns={relationComponent}
-  />});
+
+  const PopupObjSize = React.memo(({ relationComponent, open }) => {
+    return <AmEditorTable
+      open={open}
+      onAccept={(status, rowdata) => {
+        if (!status) {
+          setOpen(false)
+          setEditObjectSizeID(null)
+        }
+        else {
+          UpdateObjectSizeMap();
+          setOpen(false)
+          setEditObjectSizeID(null)
+        }
+      }}
+      titleText={"Object Size"}
+      data={{}}
+      columns={relationComponent}
+    />
+  });
 
   const UpdateObjectSizeMap = () => {
     let updjson = {
@@ -405,24 +408,24 @@ const ObjectSize = props => {
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if(res.data._result.status === 1){
-        setDialogState({type:"success", content:"Success", state:true})
+      if (res.data._result.status === 1) {
+        setDialogState({ type: "success", content: "Success", state: true })
       }
-      else{
-        setDialogState({type:"error", content:res.data._result.message, state:true})
+      else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
     });
   }
 
   return (
     <>
-      <PopupObjSize relationComponent={relationComponent} open={open}/>
-      
+      <PopupObjSize relationComponent={relationComponent} open={open} />
+
       <AmDialogs
-            typePopup={dialogState.type}
-            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
-            open={dialogState.state}
-            content={dialogState.content} />
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

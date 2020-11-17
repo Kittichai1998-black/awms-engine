@@ -78,6 +78,7 @@ const DailySTOReceive = (props) => {
             }
             , customFilter: { field: "CreateTime" },
             dateFormat: "DD/MM/YYYY HH:mm"
+
         },
         { Header: t('Pallet'), accessor: 'bstoCode', width: 120, sortable: false, filterable: false, },
         { Header: t('Doc No.'), accessor: 'docCode', width: 130, sortable: false },
@@ -94,7 +95,8 @@ const DailySTOReceive = (props) => {
         { Header: t('Item Code'), accessor: 'pstoCode', width: 120, sortable: false },
         {
             Header: t('Qty'), accessor: 'qty', width: 100, sortable: false,
-            Footer: true, filterable: false
+            Footer: true, filterable: false,
+            "Cell": (e) => comma(e.value.toString())
         },
         { Header: t('Unit'), accessor: 'unitType', width: 100, sortable: false, filterable: false, },
         // {
@@ -108,8 +110,8 @@ const DailySTOReceive = (props) => {
 
     const comma = (value) => {
         //console.log(value)
-        return null
-        //return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        //return null
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     return (
         <>

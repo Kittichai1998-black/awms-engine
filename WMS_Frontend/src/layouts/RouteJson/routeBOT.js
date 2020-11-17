@@ -137,6 +137,7 @@ const MonitorPicking = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/MonitorWorkingPD"),
   loading: Loading
 });
+
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -165,6 +166,13 @@ const routes = [
    { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
   { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
+  { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
+  { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
+
+  // { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
+  // { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
+  { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
