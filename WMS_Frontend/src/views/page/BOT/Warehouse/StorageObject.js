@@ -155,13 +155,13 @@ const StorageObject = props => {
     //   , customFilter: { field: "Receive_Time" },
     //   dateFormat: "DD/MM/YYYY HH:mm"
     // },
-    {
-      width: 60,
-      accessor: "",
-      Header: "Log ",
-      filterable: false,
-      Cell: e => getRedirectLog(e.original)
-    }
+    // {
+    //   width: 60,
+    //   accessor: "",
+    //   Header: "Log ",
+    //   filterable: false,
+    //   Cell: e => getRedirectLog(e.original)
+    // }
   ];
   const getAuditStatus = Status => {
     //return null
