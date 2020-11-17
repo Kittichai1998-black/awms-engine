@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-
 import AmReport from '../../../pageComponent/AmReportV2/AmReport'
-
 import { apicall } from '../../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
@@ -100,7 +98,8 @@ const DailySTOSumReceive = (props) => {
         { Header: t('Item Code'), accessor: 'pstoCode', width: 120, sortable: false },
         {
             Header: t('Qty'), accessor: 'qty', width: 100, sortable: false,
-            Footer: true, filterable: false
+            Footer: true, filterable: false,
+            "Cell": (e) => comma(e.value.toString())
         },
         { Header: t('Unit'), accessor: 'unitType', width: 100, sortable: false, filterable: false, },
         // {

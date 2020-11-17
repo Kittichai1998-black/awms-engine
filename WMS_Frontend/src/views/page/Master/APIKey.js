@@ -205,6 +205,7 @@ const APIKey = props => {
     }
   };
   return (
+    <>
       <AmSetAPIKey
         columnsFilter={columnsFilter}
         columnsFilterPrimary={primarySearch}
@@ -218,6 +219,7 @@ const APIKey = props => {
         columnsEditAPIKey={columnsEditAPIKey}
         history={props.history}
       />
+    </>
   );
 };
 

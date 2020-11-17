@@ -37,9 +37,9 @@ const useQueryData = (queryObj) => {
     const [dataSource, setDataSource] = useState([])
     const [count, setCount] = useState(0)
 
-    useEffect(()=> {
+    useEffect(() => {
         let objQueryStr = queryString.parse(window.location.search)
-        for(let str in objQueryStr){
+        for (let str in objQueryStr) {
             QueryGenerate(queryObj, str, objQueryStr[str], '', '')
         }
     }, [])
@@ -80,7 +80,7 @@ const mstQuery = (tableQuery, codeInclude, pageSize) => ({
     all: "",
 });
 
-const useColumns = (cols) => {
+const useColumns = (cols, customUpdateData) => {
     const [columns, setColumns] = useState(cols);
     const [editData, setEditData] = useState();
     const [removeData, setRemoveData] = useState();
@@ -147,8 +147,13 @@ const useColumns = (cols) => {
             Cell: (e) => <><IconButton
                 size="small"
                 aria-label="info"
-                style={{ marginLeft: "3px", position:"relative" }}
-                onClick={() => { setEditData({ ...e.data }) }}
+                style={{ marginLeft: "3px", position: "relative" }}
+                onClick={() => {
+                    if (customUpdateData !== undefined)
+                        setEditData({ ...e.data, ...customUpdateData })
+                    else
+                        setEditData({ ...e.data })
+                }}
             >
                 <EditIcon
                     fontSize="small"
@@ -159,7 +164,7 @@ const useColumns = (cols) => {
                     size="small"
                     aria-label="info"
                     onClick={() => { setRemoveData({ ...e.data, "Status": 2 }) }}
-                    style={{ marginLeft: "3px", position:"relative" }}>
+                    style={{ marginLeft: "3px", position: "relative" }}>
                     <DeleteIcon
                         fontSize="small"
                         style={{ color: "#e74c3c" }} />
@@ -196,7 +201,7 @@ const AmMasterData = (props) => {
     const [pageSize, setPageSize] = useState(20);
 
     useEffect(() => {
-        if(queryObj.l !== pageSize){
+        if (queryObj.l !== pageSize) {
             queryObj.l = pageSize
             setQueryObj({ ...queryObj })
         }
@@ -277,9 +282,9 @@ const AmMasterData = (props) => {
     }
 
     const onClickAdd = () => {
-        let obj = {ID: null, status: 1, revision: 1}
-        if(props.customAddData !== undefined){
-            obj ={ ...obj, ...props.customAddData }
+        let obj = { ID: null, status: 1, revision: 1 }
+        if (props.customAddData !== undefined) {
+            obj = { ...obj, ...props.customAddData }
         }
         setEditorColumns(props.dataAdd);
         setUpdateData(obj)
@@ -288,17 +293,19 @@ const AmMasterData = (props) => {
 
     const genMenuAction = () => {
         let obj = [];
-        if(props.customAction !== undefined){
+        if (props.customAction !== undefined) {
             props.customAction.forEach(x => obj.push(x))
         }
-        if(props.dataAdd !== undefined){
-            obj.push({label:"Add", action:()=>{onClickAdd()}})
+        if (props.dataAdd !== undefined) {
+            obj.push({ label: "Add", action: () => { onClickAdd() } })
         }
         return obj;
     }
 
     return <>
         <AmMasterEditorData config={{ required: true, title: popupTitle }}
+            customAdd={props.customAddData}
+            customEdit={props.customEditData}
             editorColumns={editorColumns}
             editData={updateData}
             response={(status, data) => {
@@ -328,7 +335,6 @@ const AmMasterData = (props) => {
                 if (props.sortable)
                     setSort(dt)
             }}
-            height={"100%"}
             columns={columns}
             dataKey={props.codeInclude ? "Code" : "ID"}
             dataSource={dataSource}
@@ -337,6 +343,7 @@ const AmMasterData = (props) => {
             rowNumber={true}
             totalSize={count}
             pageSize={props.pageSize}
+            height={props.height - 45}
             pagination={true}
             onPageChange={p => {
                 if (page !== p)
@@ -346,9 +353,10 @@ const AmMasterData = (props) => {
             }}
             selection={props.selection}
             selectionData={props.selectionData}
-            onPageSizeChange={(pg)=> {setPageSize(pg)}}
+            onPageSizeChange={(pg) => { setPageSize(pg) }}
             customAction={genMenuAction()}
             tableConfig={true}
+            customTopLeftControl={props.customTopLeft}
         />
     </>
 }

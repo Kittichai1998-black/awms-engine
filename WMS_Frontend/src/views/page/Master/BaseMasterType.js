@@ -13,12 +13,12 @@ const BaseMasterType = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType:"dropdown",
-      colStyle:{textAlign:"center"},
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      colStyle: { textAlign: "center" },
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -129,6 +129,8 @@ const BaseMasterType = props => {
     }
   };
   return (
+    <>
+
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -143,6 +145,7 @@ const BaseMasterType = props => {
         height={500}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
+    </>
   );
 };
 

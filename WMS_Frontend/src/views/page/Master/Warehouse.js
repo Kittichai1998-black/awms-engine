@@ -25,7 +25,7 @@ const Warehouse = props => {
       fixWidth: 162,
       sortable: false,
       filterType: "dropdown",
-      colStyle:{textAlign:"center"},
+      colStyle: { textAlign: "center" },
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: EntityEventStatus,
@@ -161,6 +161,7 @@ const Warehouse = props => {
   };
 
   return (
+    <>
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -175,6 +176,7 @@ const Warehouse = props => {
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
+    </>
   );
 };
 

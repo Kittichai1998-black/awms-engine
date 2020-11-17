@@ -54,7 +54,7 @@ const BaseMaster = props => {
       fixWidth: 162,
       sortable: false,
       filterType: "dropdown",
-      colStyle:{textAlign:"center"},
+      colStyle: { textAlign: "center" },
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: EntityEventStatus,
@@ -324,7 +324,7 @@ const BaseMaster = props => {
   const customActions = [
     {
       label: <label style={{ marginBottom: 0 }}><PrintIcon fontSize="small" style={{ marginRight: 5 }} />{"Print Barcode"}</label>,
-      action: (data, custom) => {onPrintBarcode(data); custom(true)}
+      action: (data, custom) => { onPrintBarcode(data); custom(true) }
     },
   ];
   const onPrintBarcode = async (dataSel) => {
@@ -346,6 +346,7 @@ const BaseMaster = props => {
   }
 
   return (
+    <>
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -362,7 +363,9 @@ const BaseMaster = props => {
         customAction={customActions}
         selection={"checkbox"}
         selectionData={(sel) => { }}
+        codeInclude={true}
       />
+    </>
   );
 };
 

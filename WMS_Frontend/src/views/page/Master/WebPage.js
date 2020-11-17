@@ -2,7 +2,7 @@ import React from "react";
 //import MasterData from "../../pageComponent/MasterData";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 const WebPage = props => {
 
@@ -34,16 +34,16 @@ const WebPage = props => {
             accessor: "Status",
             fixWidth: 162,
             sortable: false,
-            filterType:"dropdown",
-            colStyle:{textAlign:"center"},
-            filterConfig:{
-              filterType:"dropdown",
-              dataDropDown:EntityEventStatus,
-              typeDropDown:"normal",
-              width:120
+            filterType: "dropdown",
+            colStyle: { textAlign: "center" },
+            filterConfig: {
+                filterType: "dropdown",
+                dataDropDown: EntityEventStatus,
+                typeDropDown: "normal",
+                width: 120
             },
             Cell: e => getStatus(e.original)
-          },
+        },
         { Header: "Code", accessor: "Code", width: 120 },
         { Header: "Name", accessor: "Name", width: 200 },
         { Header: "Seq No.", accessor: "Seq", width: 70 },
@@ -120,7 +120,7 @@ const WebPage = props => {
             dataDropDown: WebPageGroupQuery,
             fieldLabel: ["Code", "Name"],
             placeholder: "Web Page Group"
-        }, 
+        },
     ];
     const columnsEdit = [
         {
@@ -298,6 +298,8 @@ const WebPage = props => {
         }
     };
     return (
+        <>
+
             <AmMaster
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
@@ -312,6 +314,7 @@ const WebPage = props => {
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
             />
+        </>
     );
 }
 
