@@ -88,7 +88,7 @@ const GI_Detail = props => {
         //    CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         //},
         
-        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
         {
             Header: "ชนิดราคา",
             Cell: e => { return e.original.SKUMaster_Code },

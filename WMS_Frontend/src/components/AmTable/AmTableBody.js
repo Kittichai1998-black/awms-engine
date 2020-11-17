@@ -85,6 +85,13 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
 
               return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
+            else{
+              if (page > 0) {
+                numrow = ele.viewIndex - 1 + parseInt(page - 1) * pagination.pageSize;
+              } else {
+                numrow = ele.viewIndex - 1;
+              }
+            }
           }
         }
       });
@@ -401,7 +408,7 @@ const GenerateFooter = ({ columns, props, dataSource }) => {
 const GenerateFooterCell = (column, props, dataSource, idx) => {
   const dataByField = [];
   let totalField = 0;
-  dataSource.filter(x => x["_footer"]===true).forEach((data, rowIndex) => {
+  dataSource.filter(x => !x["_footer"]).forEach((data, rowIndex) => {
     if (typeof data[column.accessor] === "number")
       totalField += data[column.accessor]
 

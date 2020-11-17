@@ -76,7 +76,7 @@ const GR_Detail = props => {
 
 
     const columns = [  
-        { Header: "เลขที่ภาชนะ", accessor: "baseCode"},
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
         {
             Header: "ชนิดราคา",
             Cell: e => { return e.original.SKUMaster_Code },
