@@ -13,6 +13,7 @@ namespace AWMSModel.Entity
         public long? SKUMaster_ID;
         public long? PackMaster_ID;
         public string Code;
+        public string BaseCode;
         public decimal? Quantity;
         public decimal? BaseQuantity;
         public string Options;
@@ -44,7 +45,6 @@ namespace AWMSModel.Entity
         public string UnitType_Code;
         public string UnitType_Name;
         public long? BaseUnitType_ID;
-        public string BaseCode;
         public string BaseUnitType_Code;
         public string BaseUnitType_Name;
 

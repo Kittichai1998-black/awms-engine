@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
+ c
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
