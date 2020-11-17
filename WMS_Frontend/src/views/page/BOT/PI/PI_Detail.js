@@ -6,16 +6,22 @@ import React, { useState, useEffect } from "react";
 import CheckCircle from "@material-ui/icons/CheckCircle";
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
-import AmAuditStatus from '../../../../components/AmAuditStatus';
 import queryString from "query-string";
+import AmRediRectInfo from "../../../../components/AmRedirectInfo";
+import AmAuditStatus from '../../../../components/AmAuditStatus';
+import IconButton from "@material-ui/core/IconButton";
+import ErrorIcon from "@material-ui/icons/Error";
+import WarningIcon from '@material-ui/icons/Warning';
 import moment from "moment";
+import AmPopup from "../../../../components/AmPopup";
 
-const PK_Detail = props => {
+const PI_Detail = props => {
 
     const [OwnerGroupType, setOwnerGroupType] = useState(1);
     const [docview, setdocview] = useState();
     const [header, setheader] = useState();
 
+    const [dialogState, setDialogState] = useState({});
 
 
     useEffect(() => {
@@ -25,26 +31,25 @@ const PK_Detail = props => {
                 openDES={false}
                 optionDocItems={optionDocItems}
                 columnsDetailSOU={columnsDetailSOU}
-                columnsDetailDES={columnsDetailDES}
+                //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
+                CreateputAway={false}
+                //apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
-                typeDoc={"issued"}
-                typeDocNo={1002}
+                typeDoc={"counting"}
+                typeDocNo={2004}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/issue/pickingsearch"}
+                linkBack={"/counting/search"}
                 history={props.history}
                 usePrintPDF={false}
-                usePickingOnFloor={false}
-                columnsPickingonFloor={columnsPickingonFloor}
             >
             </DocView>
             )
         }
 
     }, [header])
-
     useEffect(() => {
 
         var TextHeader = [
@@ -70,8 +75,8 @@ const PK_Detail = props => {
             ]
         ];
         setheader(TextHeader)
-
     }, [OwnerGroupType])
+
 
 
     const columns = [
@@ -87,12 +92,11 @@ const PK_Detail = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity" },
+        { Header: "จำนวน", accessor: "Quantity", Cell: e => getFormatPrscen(e.original)},
         { Header: "หน่วยนับ", accessor: "BaseUnitType_Name" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate" },
         { Header: "Remark", accessor: "remark" },
     ];
-
 
     const columnsDetailSOU = [
         {
@@ -105,6 +109,7 @@ const PK_Detail = props => {
                 else return null;
             }
         },
+        { Header: "เลขที่เอกสาร", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         { Header: "เลขที่ภาชนะ", accessor: "baseCode", widthPDF: 10, width: 150, },
         { Header: "แบบ", accessor: "diRef2" },
         { Header: "ประเภทธนบัตร", accessor: "diRef3" },
@@ -122,6 +127,8 @@ const PK_Detail = props => {
 
     ];
 
+  
+
     const getFormatDatePro = (e) => {
         if (e.diProductionDate) {
             return moment(e.diProductionDate).format("DD/MM/YYYY");
@@ -134,26 +141,57 @@ const PK_Detail = props => {
             return moment(e.diExpireDate).format("DD/MM/YYYY");
         }
     }
-    const columnsDetailDES = [
-        //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
-        { width: 100, accessor: "code ", Header: "Pallet" },
-        // { width: 150, accessor: "packCode", Header: "Pack Code" },
-        // { accessor: "packName", Header: "Pack Name" },
-        { Header: "Item Code", accessor: "SKUItems" },
-        { width: 125, accessor: "orderNo", Header: "Order No." },
-        { width: 110, accessor: "_packQty", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
-    ];
-    const columnsPickingonFloor = [
-        { width: 40, accessor: "status", Header: "Task", Cell: e => getStatusGR(e.original) },
-        { width: 130, Header: "Location", Cell: e => e.original.areaCode + ":" + e.original.areaLocationCode },
-        { width: 100, accessor: "rootCode", Header: "Pallet" },
-        { width: 150, accessor: "packCode", Header: "Pack Code" },
-        { accessor: "packName", Header: "Pack Name" },
-        { width: 125, accessor: "Lot", Header: "Lot" },
-        { width: 110, accessor: "distoQtyMax", Header: "Qty" },
-        { width: 60, accessor: "packUnitCode", Header: "Unit" }
-    ];
+
+    const getFormatPrscen = (e) => {
+        var query = queryString.parse(e.Options)
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
+
+    const getDoccode = (e) => {
+        if (e.ID != 0) {
+            let links;
+            if (e.dcDocType_ID === 1001) {
+                links = "/receive/putawaydetail?docID="
+
+            } else if (e.dcDocType_ID === 1002) {
+                links = "/issue/pickingdetail?docID="
+            }
+            if (e.dcID) {
+                return (
+                    <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                        {e.dcCode}
+                        <AmRediRectInfo
+                            api={links + e.dcID}
+                            history={props.history}
+                            docID={""}
+                        >
+                            {" "}
+                        </AmRediRectInfo>
+                    </div>
+
+                );
+            }
+        }
+    };
+
+    const GetAuditStatusIcon = (value) => {
+        if (value.auditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.auditStatus} /></div>
+        } else if (value.AuditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
+        }
+    };
+
+
+    const getFormatQty = (e) => {
+        let query = queryString.parse(e.Options)
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
+
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
@@ -166,6 +204,28 @@ const PK_Detail = props => {
         else return null;
     };
 
+    const getOptError = (data) => {
+        var qryStrOptions = queryString.parse(data.options);
+        return <div style={{ textAlign: "center" }}>
+            <label>{data.rootCode}</label>
+            {qryStrOptions.err === null || qryStrOptions.err === undefined ? null : <IconButton
+                aria-label="error"
+                size="small"
+                aria-label="info"
+                style={{ marginLeft: "3px" }}
+            >
+                <WarningIcon
+                    fontSize="small"
+                    style={{ color: "#FFA726" }}
+                    onClick={() =>
+                        setDialogState({ type: "warning", content: qryStrOptions.err, state: true })
+                    }
+                />
+            </IconButton>}
+
+        </div>
+
+    }
     const getDocID = () => {
         const values = queryString.parse(props.location.search);
         var ID = values.docID.toString();
@@ -173,99 +233,21 @@ const PK_Detail = props => {
     };
 
     const GetAuditStatus = (value) => {
-        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
-            return "QUARANTINE"
-        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
-            return "PASSED"
-        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
-            return "REJECTED"
-        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
-            return "HOLD"
-        }
+        return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
     };
 
-
-    const GetAuditStatusIcon = (value) => {
-        console.log(value.diAuditStatus)
-        if (value.diAuditStatus != undefined) {
-            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
-        } else if (value.AuditStatus != undefined) {
-            return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
-        }
-    };
-    const colListDocItems = [
-        { width: 200, accessor: "SKUMaster_Name", Header: "Item Code" },
-        { width: 130, accessor: "Lot", Header: "Lot" },
-        { width: 150, accessor: "Quantity", Header: "จำนวนที่รับเข้าได้" },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit" }
-    ];
-    const addPalletMapSTO = {
-        apiCreate: '/v2/ScanMapStoFromDocAPI',
-        // columnsDocItems: colListDocItems,
-        ddlArea: {
-            visible: true,
-            field: "areaID",
-            typeDropdown: "search",
-            name: "Area",
-            placeholder: "Select Area",
-            fieldLabel: ["Code", "Name"],
-            fieldDataKey: "ID",
-            // defaultValue: 15,
-            required: true,
-            // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
-        },
-        ddlLocation: {
-            visible: true,
-            field: "locationID",
-            typeDropdown: "search",
-            name: "Location",
-            placeholder: "Select Location",
-            fieldLabel: ["Code", "Name"],
-            fieldDataKey: "ID",
-            // defaultValue: 14,
-            required: false,
-            // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
-        },
-        inputTitle: [
-            {
-                field: "projCode",
-                name: "Project",
-                type: "text",
-                customShow: (dataDocument) => {
-                    return dataDocument.document.Ref1;
-                },
-            }
-        ],
-        inputBase:
-        {
-            visible: true,
-            field: "baseCode",
-            type: "input",
-            name: "Pallet Code",
-            placeholder: "Pallet Code",
-            maxLength: 10,
-            required: true,
-            validate: /^.+$/,
-        },
-        // [
-        //   {
-        //     field: "baseCode",
-        //     placeholder: "Pallet Code",
-        //     required: true,
-        //     type: "input",
-        //     name: "Pallet Code",
-        //     maxLength: 10,
-        //     validate: /^.+$/,
-        //   }
-        // ]
-    }
-
-    //received
-    //issued
     return (
-        <div>{docview}</div>
+        <>
+            <AmPopup
+                typePopup={dialogState.type}
+                closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
+                open={dialogState.state}
+                content={dialogState.content}
+            />
+            {docview}
+        </>
 
     );
 };
 
-export default PK_Detail;
+export default PI_Detail;

@@ -502,23 +502,23 @@ let routes = [
   //{ path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
   //{ path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
 
-  { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
+  //{ path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   //{ path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
   //{ path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
   //{ path: "/issue/pickingchecker", name: "PK Checker", compoment: PK_Checker, exact: true },
 
-  { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
+  //{ path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   //{ path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
   //{ path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-  { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
+  //{ path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
   { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
 
-  { path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
-  { path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
-  { path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
+  //{ path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
+  //{ path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
+  //{ path: "/counting/search", name: "AD View", compoment: AD_Search, exact: true },
 
   { path: "/warehouse/depackaging", name: "De Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/qualitystatus", name: "Quality Status", compoment: QualityStatus, exact: true },

@@ -15,19 +15,18 @@ import queryString from "query-string";
 import Grid from '@material-ui/core/Grid';
 import AmPopup from "../../../../components/AmPopup";
 import AmCreateDoc from '../../../.././components/AmImportDocumentExcel'
-import { useTranslation } from 'react-i18next'
 import { DocumentEventStatus } from "../../../../components/Models/DocumentEventStatus";
 import { DataGeneratePopup, DataGenerateStatus } from "../../../pageComponent/AmSearchDocumentV2/SetPopup";
 const Axios = new apicall();
 
 //======================================================================
 const DocumentSearch = props => {
-    const { t } = useTranslation()
+
     const [dialogState, setDialogState] = useState({});
     const MVTQuery = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "DocumentProcessTypeMap",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2003}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
         f: "ID,Code,ReProcessType_Name as Name",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -35,17 +34,6 @@ const DocumentSearch = props => {
         l: 100,
         all: "",
     }
-    const productOwner = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "ProductOwner",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"in", "v":"' + localStorage.getItem("User_ProductOwner") + '"}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
     const GeneratePopup = (data) => {
         var dataGenerate = DataGeneratePopup(data)
         var dataGenerateStatus = DataGenerateStatus(data)
@@ -73,7 +61,7 @@ const DocumentSearch = props => {
     const iniCols = [
 
         {
-            Header: t("Status"), accessor: "EventStatus", width: 150,
+            Header: "Status", accessor: "EventStatus", width: 150,
             filterType: "dropdown",
             filterConfig: {
                 filterType: "dropdown",
@@ -83,11 +71,11 @@ const DocumentSearch = props => {
             },
             Cell: dataRow => GeneratePopup(dataRow.original)
         },
-        { Header: t("Doc No."), accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
+        { Header: "Doc No.", accessor: "Code", width: 150, sortable: false, Cell: dataRow => getRedirect(dataRow.original) },
         {
-            Header: t("Process No."),
+            Header: "Process No.",
             accessor: "ReDocumentProcessTypeName",
-            width: 200,
+            width: 250,
             sortable: false,
             filterType: "dropdown",
             filterConfig: {
@@ -98,22 +86,12 @@ const DocumentSearch = props => {
                 widthDD: 250,
             },
         },
+        { Header: "Sou.Warehouse", accessor: "SouWarehouseName", filterable: false, width: 150 },
+        { Header: "Sou. Customer", accessor: "SouCustomerName", width: 150 },
+        { Header: "Sou. Supplier", accessor: "SouSupplierName", width: 150 },
+        { Header: "Des. Warehouse", accessor: "DesWarehouseName", filterable: false, width: 150 },
         {
-            Header: t('Product Owner'), accessor: 'ProductOwnerCode',
-            width: 100, sortable: false, filterType: "dropdown",
-            filterConfig: {
-                fieldDataKey: "Code",
-                filterType: "dropdown",
-                fieldLabel: ["Code", "Name"],
-                dataDropDown: productOwner,
-                typeDropDown: "normal",
-                widthDD: 180,
-            },
-        },
-        { Header: t("Sou. Warehouse"), accessor: "SouWarehouseName", filterable: false, width: 150 },
-        { Header: t("Des. Warehouse"), accessor: "DesWarehouseName", filterable: false, width: 150 },
-        {
-            Header: t("Doc. Date"),
+            Header: "Doc. Date",
             accessor: "DocumentDate",
             width: 150,
             type: "datetime",
@@ -125,7 +103,7 @@ const DocumentSearch = props => {
             , customFilter: { field: "DocumentDate" }
         },
         {
-            Header: t("Action Time"),
+            Header: "Action Time",
             accessor: "ActionTime",
             width: 150,
             type: "datetime",
@@ -136,7 +114,7 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "ActionTime" }
         },
         {
-            Header: t("Create Time"), accessor: "Created", width: 200,
+            Header: "Create Time", accessor: "Created", width: 200,
             filterType: "datetime",
             filterConfig: {
                 filterType: "datetime",
@@ -144,11 +122,10 @@ const DocumentSearch = props => {
             dateFormat: "DD/MM/YYYY HH:mm", customFilter: { field: "CreateTime" }
         },
         {
-            Header: t("Modify Time"), accessor: "LastUpdate", width: 200,
+            Header: "Modify Time", accessor: "LastUpdate", width: 200,
             filterable: false,
         }
     ];
-
 
 
     const getRedirect = data => {
@@ -156,7 +133,7 @@ const DocumentSearch = props => {
             <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
                 {data.Code}
                 <AmRediRectInfo
-                    api={"/audit/detail?docID=" + data.ID}
+                    api={"/counting/detail?docID=" + data.ID}
                     history={props.history}
                     docID={""}
                 >
@@ -167,7 +144,7 @@ const DocumentSearch = props => {
     };
 
     return (
-        <>
+        <div>
             <AmPopup
                 typePopup={dialogState.type}
                 closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
@@ -177,14 +154,13 @@ const DocumentSearch = props => {
 
             <AmSearchDocument
                 iniCols={iniCols}
-                docTypeCode="2003"
+                docTypeCode="2004"
                 buttonClose={true}
                 buttonReject={false}
-                apiReject={"/v2/reject_doc_bot"}
+                apiReject={"/v2/reject_document"}
                 apiClose={"/v2/closed_document_manual"}
-                actionQueryCustom={true}
             />
-        </>
+        </div>
     );
 };
 

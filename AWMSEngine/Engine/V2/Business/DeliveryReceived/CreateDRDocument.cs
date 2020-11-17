@@ -282,7 +282,7 @@ namespace AWMSEngine.Engine.V2.Business.ReceivedOrder
                     eventStatus = reqVO.eventStatus,
 
                     remark = reqVO.remark,
-
+                 
 
 
 

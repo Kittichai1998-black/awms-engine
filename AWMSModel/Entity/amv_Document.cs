@@ -84,6 +84,7 @@ namespace AWMSModel.Entity
         public string DesAreaMasterName;
         public string ProductOwnerCode;
         public string ProductOwnerName;
+        public long ProductOwner_ID;
         public long? OwnerGroupType;
         public string Created;
         public string Modified;

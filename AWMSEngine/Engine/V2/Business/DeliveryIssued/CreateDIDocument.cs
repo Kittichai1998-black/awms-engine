@@ -56,6 +56,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
             public DateTime documentDate;
             public string remark;
             public string options;
+            public int? productOwnerID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -276,6 +277,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
+                    productOwnerID = reqVO.productOwnerID,
 
                     Items = reqVO.issuedOrderItem.Select(
                         x => new CreateDocument.TReq.Item
@@ -303,6 +305,7 @@ namespace AWMSEngine.Engine.V2.Business.IssuedOrder
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
                             baseunitType = x.baseunitType,
+                            baseCode=x.baseCode,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()

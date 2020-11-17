@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                 public string skuCode;
                 public decimal? quantity;
                 public string unitType;
-
+                public string baseCode;
                 public string batch;
                 public string lot;
                 public string orderNo;
@@ -193,7 +193,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
 
                             quantity = x.quantity,
                             unitType = x.unitType,
-
+                            baseCode = x.baseCode,
                             orderNo = x.orderNo,
                             batch = x.batch,
                             lot = x.lot,

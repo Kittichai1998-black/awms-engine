@@ -57,7 +57,7 @@ const Create_GR_DR = props => {
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
             let ProductOwner_ID = dataDocument.ProductOwner_ID
-            let DesAreaMaster_ID = dataDocument.DesAreaMaster_ID
+            let Des_AreaMaster_ID = dataDocument.Des_AreaMaster_ID
             let ProductOwnerCode = dataDocument.ProductOwnerCode
             let DesAreaMasterName = dataDocument.DesAreaMasterName
             let ForCustomerName = dataDocument.ForCustomerName
@@ -69,7 +69,7 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoccan", key: "ID", fieldLabel: ["Code"], codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
@@ -78,7 +78,7 @@ const Create_GR_DR = props => {
                 ],
                 [
                     { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: ProductOwnerCode, valueTexts: ProductOwner_ID, codeTranslate: "ProductOwner" },
-                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: DesAreaMaster_ID, codeTranslate: "DesAreaMaster" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: Des_AreaMaster_ID, codeTranslate: "DesAreaMaster" },
                 ],
                 [
                     { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },

@@ -505,7 +505,7 @@ const AmCreateDocument = (props) => {
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
                 let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType
                     && x.orderNo === rowdata.orderNo && x.auditStatus === rowdata.auditStatus && x.productionDate === rowdata.productionDate &&
-                    x.expireDate === rowdata.expireDate
+                    x.expireDate === rowdata.expireDate && x.basecode === rowdata.basecode
 
                 )
 
@@ -1037,6 +1037,7 @@ const AmCreateDocument = (props) => {
             unitType: null,
             baseQuantity: null,
             baseunitType: null,
+            basecode:null,
             batch: null,
             lot: null,
             orderNo: null,
