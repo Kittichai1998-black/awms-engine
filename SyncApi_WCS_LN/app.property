@@ -5,13 +5,13 @@
 post2wms.api_names = StoreinUpdate,StoreoutUpdate,SelectpickUpdate,SelectreturnUpdate,ConsoloadUpdate,StoreauditUpdate,Storemovement
 post2wms.thread_sleep = 300
 
-post2wms.StoreinUpdate.api_url = 
-post2wms.StoreinUpdate.sp_get_req = 
-post2wms.StoreinUpdate.sp_update_res =
+post2wms.StoreinUpdate.api_url = https://localhost/api/test1
+post2wms.StoreinUpdate.sp_request = SP_REQ_StoreinUpdate
+post2wms.StoreinUpdate.sp_response = SP_RES_StoreinUpdate
 
 post2wms.StoreoutUpdate.api_url = 
-post2wms.StoreoutUpdate.sp_get_req = 
-post2wms.StoreoutUpdate.sp_update_res =
+post2wms.StoreoutUpdate.sp_request = 
+post2wms.StoreoutUpdate.sp_response =
 
 post2wms.SelectpickUpdate.api_url = 
 post2wms.SelectpickUpdate.sp_get_req = 
@@ -38,3 +38,7 @@ post2wms.Storemovement.sp_get_req =
 post2wms.Storemovement.sp_update_res =
 
 #################################
+
+
+controller.api_names = StoreInventory,xxx,xx,xx1
+controller.StoreInventory.sp_exec = SP_WMS2WCS_StoreInventory

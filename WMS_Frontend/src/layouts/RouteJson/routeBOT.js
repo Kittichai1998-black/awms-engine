@@ -141,26 +141,12 @@ const routes = [
     compoment: StorageObjectReport,
     exact: true
   },
-  {
-    path: "/issue/search",
-    name: "Search Issue",
-    compoment: GI_Search,
-    exact: true
-  },
-  {
-    path: "/issue/pickingsearch",
-    name: "Search Picking",
-    compoment: PK_Search,
-    exact: true
-  },
-  {
-    path: "/audit/search",
-    name: "Search Audit",
-    compoment: AD_Search,
-    exact: true
-  },
 
 
+  { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
+  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
+  { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
+  // { path: "/issue/managequeue", name: "GI Manage Queue", compoment: GI_WorkQueue, exact: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
