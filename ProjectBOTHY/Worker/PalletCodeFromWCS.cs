@@ -33,7 +33,7 @@ namespace ProjectBOTHY.Worker
             var bsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "area").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("EventStatus", "10,14", AWMSModel.Constant.EnumConst.SQLOperatorType.IN)
+                    //new SQLConditionCriteria("EventStatus", "10,14", AWMSModel.Constant.EnumConst.SQLOperatorType.IN)
                 }, buVO).FirstOrDefault();
             StorageObjectCriteria mapsto = new StorageObjectCriteria();
             if (bsto != null)

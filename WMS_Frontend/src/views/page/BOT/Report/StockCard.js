@@ -86,23 +86,23 @@ const StockCard = (props) => {
             , customFilter: { field: "ModifyTime" },
             dateFormat: "DD/MM/YYYY HH:mm"
         },
-        { Header: t('Doc No.'), accessor: 'DocCode', width: 120, sortable: false, filterable: false, },
-        { Header: t('Item Code'), accessor: 'SkuCode', width: 120, sortable: false },
-        { Header: t('SKU Type'), accessor: 'SkuTypeName', width: 140, sortable: false },
+        { Header: t('Doc No.'), accessor: 'DocCode', width: 100, sortable: false, filterable: false, },
+        { Header: t('Item Code'), accessor: 'SkuCode', width: 100, sortable: false },
+        { Header: t('SKU Type'), accessor: 'SkuTypeName', width: 100, sortable: false },
         {
-            Header: t('Issue'), accessor: 'CreditQuantity', width: 70, sortable: false,
+            Header: t('Issue'), accessor: 'CreditQuantity', width: 100, sortable: false,
             Footer: true, filterable: false,
-            //"Cell": (e) => comma(e.value.toString()), filterable: false,
+            "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         {
-            Header: t('Receive'), accessor: 'DebitQuantity', width: 70, sortable: false,
+            Header: t('Receive'), accessor: 'DebitQuantity', width: 100, sortable: false,
             Footer: true, filterable: false,
-            //"Cell": (e) => comma(e.value.toString()), filterable: false,
+            "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         {
-            Header: t('Total'), accessor: 'TotalQuantity', width: 70, sortable: false,
+            Header: t('Total'), accessor: 'TotalQuantity', width: 100, sortable: false,
             Footer: true, filterable: false,
-            //"Cell": (e) => comma(e.value.toString()), filterable: false,
+            "Cell": (e) => comma(e.value.toString()), filterable: false,
         },
         { Header: t('Unit'), accessor: 'UnitTypeCode', width: 70, sortable: false, filterable: false, },
         {
