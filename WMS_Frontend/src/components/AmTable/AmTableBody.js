@@ -85,13 +85,6 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
 
               return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
-            else{
-              if (page > 0) {
-                numrow = ele.viewIndex - 1 + parseInt(page - 1) * pagination.pageSize;
-              } else {
-                numrow = ele.viewIndex - 1;
-              }
-            }
           }
         }
       });
@@ -219,7 +212,7 @@ const useDataSource = (props, groupBy) => {
             return groupData
           }
           else {
-            groupData.push({ ...sumBy, "_footer": true, "_groupFooter": true })
+            groupData.push({ ...sumBy, "_footer": true, "_groupFooter":true })
             return groupData
           }
         });
@@ -241,10 +234,10 @@ function useWindowSize(ref) {
   const [size, setSize] = useState([0, 0]);
   useLayoutEffect(() => {
     function updateSize() {
-      if (ref.current !== undefined) {
+      if (ref.current !== undefined){
         setSize([ref.current.offsetWidth, ref.current.offsetHeight]);
       }
-    } if (size[0] === 0 && size[1] === 0) {
+    }if(size[0] === 0&& size[1] === 0){
       updateSize()
     }
     window.addEventListener('resize', updateSize);
@@ -252,7 +245,7 @@ function useWindowSize(ref) {
       window.removeEventListener('resize', updateSize);
     }
   }, []);
-
+  
   return size;
 }
 
@@ -274,30 +267,30 @@ const AmTableBody = (props) => {
   )
 
   useEffect(() => {
-    selection.selectionValue.forEach(x => {
-      if (document.getElementById("selection_" + x[props.dataKey]) !== null)
-        document.getElementById("selection_" + x[props.dataKey]).checked = true;
+    selection.selectionValue.forEach(x=> {
+      if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+        document.getElementById("selection_"+ x[props.dataKey]).checked = true;
     });
-    if (!selection.selectAllState && selection.selectionValue.length === 0) {
-      let getDataKey = dataSource.map(res => { return res[props.dataKey] });
+    if(!selection.selectAllState && selection.selectionValue.length === 0){
+      let getDataKey = dataSource.map(res => {return res[props.dataKey]});
       getDataKey.forEach(dk => {
-        if (document.getElementById("selection_" + dk) !== null)
-          document.getElementById("selection_" + dk).checked = false;
+        if(document.getElementById("selection_"+ dk) !== null)
+          document.getElementById("selection_"+ dk).checked = false;
       });
     }
-    props.dataSource.forEach(x => {
+    props.dataSource.forEach(x=> {
       let findX = selection.selectionValue.find(y => y[props.dataKey] == x[props.dataKey])
-      if (findX !== undefined) {
-        if (document.getElementById("selection_" + x[props.dataKey]) !== null)
-          document.getElementById("selection_" + x[props.dataKey]).checked = true;
+      if(findX !== undefined){
+        if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+          document.getElementById("selection_"+ x[props.dataKey]).checked = true;
+      }      
+      else{
+        if(document.getElementById("selection_"+ x[props.dataKey]) !== null)
+          document.getElementById("selection_"+ x[props.dataKey]).checked = false;
       }
-      else {
-        if (document.getElementById("selection_" + x[props.dataKey]) !== null)
-          document.getElementById("selection_" + x[props.dataKey]).checked = false;
-      }
-
+        
     });
-  }, [columns, selection.selectAllState, props.dataSource, selection.selectionValue])
+  },[columns, selection.selectAllState, props.dataSource, selection.selectionValue])
 
 
   return <TableContainer style={props.style} width={props.width} height={props.height} ref={containerRef}>
@@ -318,10 +311,15 @@ const GenerateRow = ({ columns, props, dataSource }) => {
       customDataSource.push({})
     }
   }
+
+  let getIdx = -1
+
   return <>
     {customDataSource.map((data, idx) => {
+      if(!data._footer && data["_groupFooter"] === undefined)
+        getIdx += 1;
       return <TableRow key={idx}>
-        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle} rowStyle={props.rowStyle ? props.rowStyle(data) : null} />
+        <GenerateCell columns={columns} data={data} rowIndex={getIdx} cellStyle={props.cellStyle} rowStyle={props.rowStyle ? props.rowStyle(data) : null}/>
       </TableRow>
     })}
   </>
@@ -368,13 +366,13 @@ const GenerateCell = React.memo(({ columns, data, rowIndex, cellStyle, rowStyle 
 
     let style = {};
 
-    if (rowStyle !== undefined && rowStyle !== null) {
+    if(rowStyle !== undefined && rowStyle !== null){
       style = rowStyle;
     }
 
     if ((cellStyle !== undefined && cellStyle !== null) && column.colStyle === undefined) {
       const customCellStyle = cellStyle(column.code, data[column.accessor], data);
-      style = { ...style, ...customCellStyle }
+      style = {...style, ...customCellStyle}
     }
 
     if (column.fixed) {
