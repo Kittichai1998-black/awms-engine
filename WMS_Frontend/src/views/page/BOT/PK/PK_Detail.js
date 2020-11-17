@@ -50,16 +50,16 @@ const PK_Detail = props => {
             var DataprocessType;
             if (OwnerGroupType === 1) {
                 DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
+                { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             } else if (OwnerGroupType === 2) {
                 DataprocessType = [{ label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" },
-                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
+                { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
             } else if (OwnerGroupType === 3) {
                 DataprocessType = [{ label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" },
                 { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
             } else {
                 DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse"  ,values: "DesWarehouseName" }]
+                { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
             }
 
         }
@@ -67,7 +67,7 @@ const PK_Detail = props => {
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
                 { label: "Process Type", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
@@ -91,14 +91,14 @@ const PK_Detail = props => {
         //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
         {
             Header: "Item Code",
-            Cell: e => { return e.original.SKUMaster_Code},
-            CellPDF: e => { return e.SKUMaster_Code},
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code },
             widthPDF: 40
         },
         {
             Header: "Item Name",
             Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return  e.SKUMaster_Name },
+            CellPDF: e => { return e.SKUMaster_Name },
             widthPDF: 40
         },
         { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },

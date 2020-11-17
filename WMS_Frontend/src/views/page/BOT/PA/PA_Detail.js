@@ -56,15 +56,15 @@ const PA_Detail = props => {
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
                 { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
-                { label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
-                { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
+                { label: "Product Owner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                { label: "Des Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
             ],
             [
                 { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },

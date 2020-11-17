@@ -48,19 +48,19 @@ const GI_Detail = props => {
     }, [header])
 
     useEffect(() => {
-  
+
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process No.", value:  "DocumentProcessTypeCode",values : "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
-                {label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
-                { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
+                { label: "Product Owner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                { label: "Des Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
             ],
             [
                 { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
@@ -87,23 +87,23 @@ const GI_Detail = props => {
         //    Cell: e => { return e.original.SKUMaster_Name },
         //    CellPDF: e => { return  e.SKUMaster_Name }, widthPDF: 40
         //},
-        
-        { Header: "เลขที่ภาชนะ", accessor: "BaseCode"},
+
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
         {
             Header: "ชนิดราคา",
             Cell: e => { return e.original.SKUMaster_Code },
             CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
-        { Header: "เลขที่ภาชนะ", accessor: "Code"},
-        { Header: "ชนิดราคา",accessor: "Code" },
-        { Header: "แบบ", accessor: "ref2"},
-        { Header: "ประเภทธนบัตร", accessor: "ref3"},
-        { Header: "สถาบัน", accessor: "ref1"},
+        { Header: "เลขที่ภาชนะ", accessor: "Code" },
+        { Header: "ชนิดราคา", accessor: "Code" },
+        { Header: "แบบ", accessor: "ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "ref3" },
+        { Header: "สถาบัน", accessor: "ref1" },
         { Header: "ศูนย์เงินสด", accessor: "ref4" },
         { Header: "จำนวน", accessor: "quantity" },
         { Header: "หน่วยนับ", accessor: "unitType" },
-        { Header: "วันที่รับเข้า", accessor: "productionDate"},
-        { Header: "Remark", accessor: "remark"},
+        { Header: "วันที่รับเข้า", accessor: "productionDate" },
+        { Header: "Remark", accessor: "remark" },
     ];
 
 
@@ -121,9 +121,9 @@ const GI_Detail = props => {
             }
         },
         { Header: "Doc NO.", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
-        { Header: "Pack Code", accessor: "packCode",  widthPDF: 10, width: 150,  },
+        { Header: "Pack Code", accessor: "packCode", widthPDF: 10, width: 150, },
         { Header: "Pack Name", accessor: "packName", widthPDF: 20 },
-        { Header: "Pallet",width: 100, accessor: "rootCode", widthPDF: 10 },
+        { Header: "Pallet", width: 100, accessor: "rootCode", widthPDF: 10 },
         { Header: "Control NO.", accessor: "diOrderNo", widthPDF: 10 },
         { Header: "Lot", width: 130, accessor: "diLot", widthPDF: 10 },
         { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
@@ -191,7 +191,7 @@ const GI_Detail = props => {
     const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
 
     const getStatusGR = value => {
-        if (value.status === 0 )
+        if (value.status === 0)
             return <Circle style={{ color: "gray" }} />;
         else if (value.status === 1)
             return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
