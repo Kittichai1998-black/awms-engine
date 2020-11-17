@@ -172,7 +172,7 @@ const routes = [
 
   // { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
   // { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
-  { path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
+  //{ path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
 
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
