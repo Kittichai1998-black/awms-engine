@@ -33,14 +33,16 @@ namespace ProjectBOTHY.Worker
             var bsto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("AreaMaster_ID", options.First(x => x.Key == "area").Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
-                    //new SQLConditionCriteria("EventStatus", "10,14", AWMSModel.Constant.EnumConst.SQLOperatorType.IN)
                 }, buVO).FirstOrDefault();
             StorageObjectCriteria mapsto = new StorageObjectCriteria();
             if (bsto != null)
             {
                 
                 mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bsto.ID.Value, StorageObjectType.BASE, false, true, buVO);
-                this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], mapsto.Json());
+                if(mapsto.mapstos.TrueForAll(x=> x.eventStatus == StorageObjectEventStatus.NEW || x.eventStatus == StorageObjectEventStatus.AUDITED))
+                    this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], mapsto.Json());
+                else
+                    this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], "");
             }
             else
             {

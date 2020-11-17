@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     new SQLConditionCriteria("BaseCode", reqVO.baseCode, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("EventStatus", DocumentEventStatus.NEW, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL)
+                    new SQLConditionCriteria("ParentDocumentItem_ID", "", SQLOperatorType.ISNOTNULL),
                 }, BuVO);
 
                 if(findItems.Count == 0)
@@ -81,10 +81,17 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     var selectDoc = findItems.Select(x => x.Document_ID).Distinct().Select(x => {
                         return ADO.WMSDB.DocumentADO.GetInstant().Get(x, BuVO);
-                    }).ToList().FindAll(x=> x.DocumentType_ID == DocumentTypeID.PUTAWAY && x.EventStatus == DocumentEventStatus.NEW).ToList();
+                    }).ToList().FindAll(x=> x.DocumentType_ID == DocumentTypeID.PUTAWAY && x.Status == EntityStatus.ACTIVE).ToList();
 
                     if(selectDoc.Count == 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่ใช่พบเอกสารรับเข้า ไม่สามารถรับเข้าได้");
+
+                    selectDoc.ForEach(x =>
+                    {
+                        var chkArea = StaticValue.AreaRoutes.Find(y => y.Sou_AreaMaster_ID == area.ID && y.Des_AreaMaster_ID == x.Des_AreaMaster_ID);
+                        if(chkArea == null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "วางสินค้าไม่ถูกตำแหน่ง ไม่พบเอกสารรับเข้าสินค้าจากตำแหน่งนี้");
+                    });
 
                     var scanMap = new ScanMapStoNoDoc();
 

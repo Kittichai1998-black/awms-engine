@@ -85,6 +85,13 @@ const useColumns = (Columns, rowNumber, selectionState, dataKey, page, selection
 
               return <div style={{ fontWeight: "bold", textAlign: "right", paddingRight: "2px" }}>{numrow}</div>;
             }
+            else{
+              if (page > 0) {
+                numrow = ele.viewIndex - 1 + parseInt(page - 1) * pagination.pageSize;
+              } else {
+                numrow = ele.viewIndex - 1;
+              }
+            }
           }
         }
       });
