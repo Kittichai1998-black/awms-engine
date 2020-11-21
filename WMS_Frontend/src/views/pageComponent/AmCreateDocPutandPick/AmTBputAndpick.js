@@ -87,7 +87,6 @@ const AmTBputAndpick = (props) => {
     const columns = props.doccolumnEditItem.concat(rem)
 
     const setEditdatass = (e) => {
-        console.log(e)
         doc.seteditdata([e.original])
         setdialog(true)
         console.log(dialog)

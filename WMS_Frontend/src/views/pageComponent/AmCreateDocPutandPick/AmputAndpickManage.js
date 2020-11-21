@@ -124,7 +124,7 @@ const AmputAndpickManage = (props) => {
             docs.issueItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
-                x.quantity = x.Quantity
+                x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
                 x.baseCode = x.BaseCode
                 x.baseunitType = x.BaseUnitType_Code
@@ -153,7 +153,8 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-            CreateDocuments(docs)
+            //console.log(docs)
+           CreateDocuments(docs)
         }
 
     }

@@ -177,6 +177,11 @@ const AmHeaderputandpick = (props) => {
         setdataCheck(dataCheck)
     }, [dataCheck])
 
+    useEffect(() => {
+        console.log(columns)
+        console.log(doc.datadocItem)
+    }, [columns, doc.datadocItem])
+
 
     useEffect(() => {
         let dataHead = props.docheaderCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
@@ -212,6 +217,8 @@ const AmHeaderputandpick = (props) => {
 
     useEffect(() => {
         console.log(columns)
+        console.log(doc.datadocItem)
+        console.log(dataSelectSet)
     }, [columns])
 
 
@@ -246,9 +253,9 @@ const AmHeaderputandpick = (props) => {
         setChkCol(true)
         props.doccolumnEditItem.forEach((x, i) => {
 
-            if (x.accessor === "Quantity") {
+            if (x.accessor === "DiffQty" ) {
                 datas = {
-                    width: 160, Header: x.Header, accessor: "Quantity", Cell: e => genInputQty(e.original)
+                    width: 160, Header: x.Header, accessor: 'DiffQty', Cell: e => genInputQty(e.original)
                 }    
 
             } else {
@@ -462,7 +469,6 @@ const AmHeaderputandpick = (props) => {
 
             //} else if (value <= qtys) {
             let datas = {
-
                 recQty: parseFloat(value),
                 docItemID: datarow.ID
             }
@@ -590,8 +596,6 @@ const AmHeaderputandpick = (props) => {
     }
 
     const genInputQty = (datarow) => {
-        console.log(datarow)
-        console.log(dataCheck)
         let defaultQty = datarow.DiffQty;
         return <AmInput id={datarow.ID}
             style={{ width: "100px" }}
