@@ -103,7 +103,6 @@ const AmTable = (props) => {
     const tableContainerRef = useRef(null)
     const [height, setHeight] = useState(0);
     
-
     useEffect(() => {
         if(props.onPageSizeChange){
             props.onPageSizeChange(pgSize)
@@ -173,10 +172,16 @@ const AmTable = (props) => {
     }
     
     useEffect(() => {
-        setHeight(tableContainerRef.current == null ? 0 : tableContainerRef.current.clientHeight)
+        console.log(props.height)
+        if(props.height)
+            if(typeof props.height === "string")
+                if(props.height.indexOf("%") < 0)
+                    setHeight(props.height)
+        else
+            setHeight(tableContainerRef.current == null ? 0 : tableContainerRef.current.clientHeight)
     }, [tableContainerRef])
-
-    return <div style={{maxHeight:props.height ? props.height : "100%", height:props.height ? props.height : "100%"}} ref={tableContainerRef}>
+    
+    return <div style={{height:props.height ? props.height : "100%", maxHeight:props.height ? props.height : "100%"}} ref={tableContainerRef}>
         <Suspense fallback="">
             <AmTableComponent
                 style={props.style}

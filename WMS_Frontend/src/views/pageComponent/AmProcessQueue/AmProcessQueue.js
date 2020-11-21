@@ -1,14 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types"
 import {ProcessQueueProvider} from './ProcessQueueContext';
 import AmProcessQueueHeader from './AmProcessQueueHeader';
 import AmProcessQueueDetail from './AmProcessQueueDetail';
 
 const ProcessQueue = (props) => {
-
-  return <>
-    <ProcessQueueProvider>
-      <AmProcessQueueHeader 
+  let content = props.contentHeight - 140;
+  return <ProcessQueueProvider>
+      <AmProcessQueueHeader
           documentPopup={props.documentPopup}
           documentQuery={props.documentQuery}
           warehouseQuery={props.warehouseQuery}
@@ -16,21 +15,24 @@ const ProcessQueue = (props) => {
           processSingle={props.processSingle}
           documentDetail={props.documentDetail}
         />
-      <AmProcessQueueDetail documentItemDetail={props.documentItemDetail} 
-        processCondition={props.processCondition}
-        percentRandom={props.percentRandom}
-        areaQuery={props.areaQuery}
-        customDesArea={props.customDesArea}
-        areaDefault={props.areaDefault}
-        columnsConfirm={props.columnsConfirm}
-        processUrl={props.processUrl}
-        confirmProcessUrl={props.confirmProcessUrl}
-        modeDefault={props.modeDefault}
-        waveProcess={props.waveProcess}
-        customAfterProcess={props.customAfterProcess}
-      />
+      <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
+      <AmProcessQueueDetail documentItemDetail={props.documentItemDetail}
+          contentHeight={content}
+          processCondition={props.processCondition}
+          percentRandom={props.percentRandom}
+          areaQuery={props.areaQuery}
+          customDesArea={props.customDesArea}
+          areaDefault={props.areaDefault}
+          columnsConfirm={props.columnsConfirm}
+          processUrl={props.processUrl}
+          confirmProcessUrl={props.confirmProcessUrl}
+          modeDefault={props.modeDefault}
+          waveProcess={props.waveProcess}
+          customAfterProcess={props.customAfterProcess}
+          confirmErrorClear={props.confirmErrorClear}
+          processErrorClear={props.processErrorClear}
+        />
     </ProcessQueueProvider>
-  </>
 }
 
 ProcessQueue.propTypes = {
