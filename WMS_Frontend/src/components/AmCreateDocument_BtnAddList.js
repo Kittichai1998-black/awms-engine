@@ -252,7 +252,9 @@ const BtnAddList = props => {
                 //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
                 auditStatus: x.AuditStatus.toString(),
                 ShelfLifePercent: x.ShelfLifeRemainPercent ? x.ShelfLifeRemainPercent + '%' : null,
-                remark: query.remark != null ? query.remark : null
+                remark: query.remark != null ? query.remark : null,
+                basecode: x.palletcode,
+                BaseCode: x.palletcode,
             }
             return obj
         })

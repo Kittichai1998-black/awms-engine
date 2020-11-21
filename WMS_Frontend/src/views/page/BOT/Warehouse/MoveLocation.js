@@ -124,7 +124,6 @@ const MoveLocation = props => {
     ));
   };
   const getStatus1 = Status => {
-    console.log(Status)
     if (Status === "RECEIVED") {
       return <AmStorageObjectStatus key={"RECEIVED"} statusCode={12} />;
     } else if (Status === "AUDITED") {

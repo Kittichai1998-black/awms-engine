@@ -37,6 +37,7 @@ const AmputAndpickManage = (props) => {
             parentDocumentID: null,
             ref1: null,
             ref2: null,
+            ref4: null,
             refID: null,
             remark: null,
             souAreaMasterCode: null,
@@ -48,6 +49,7 @@ const AmputAndpickManage = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
+            productOwnerID: null,
             souWarehouseID: null,
             transportID: null
         }
@@ -151,7 +153,6 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-            //console.log(docs)
             CreateDocuments(docs)
         }
 

@@ -41,6 +41,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
+            public int? productOwnerID;
             public string remark;
             public string ref1;
             public string ref2;
@@ -168,6 +169,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
+                    productOwnerID = reqVO.productOwnerID,
 
                     Items = reqVO.receiveItems.Select(
                         x => new CreateDocument.TReq.Item

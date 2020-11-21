@@ -1,7 +1,7 @@
 import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 
 //======================================================================
@@ -37,12 +37,12 @@ const PackMasterType = props => {
       accessor: "Status",
       fixed: "left",
       fixWidth: 162,
-      filterType:"dropdown",
-      colStyle:{textAlign:"center"},
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      colStyle: { textAlign: "center" },
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -211,6 +211,7 @@ const PackMasterType = props => {
     }
   };
   return (
+    <>
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -224,6 +225,7 @@ const PackMasterType = props => {
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
       />
+    </>
   );
 };
 

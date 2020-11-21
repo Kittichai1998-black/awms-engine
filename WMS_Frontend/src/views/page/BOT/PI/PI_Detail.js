@@ -3,22 +3,25 @@ import React, { useState, useEffect } from "react";
 // import AmIconStatus from "../../../../components/AmIconStatus";
 // import { Button } from "@material-ui/core";
 // import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
-import Circle from "@material-ui/icons/RadioButtonUnchecked";
+import CheckCircle from "@material-ui/icons/CheckCircle";
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HighlightOff from "@material-ui/icons/HighlightOff";
-import Grid from '@material-ui/core/Grid';
 import queryString from "query-string";
 import AmRediRectInfo from "../../../../components/AmRedirectInfo";
-import AmCreateDoc from '../../../.././components/AmImportDocumentExcel';
 import AmAuditStatus from '../../../../components/AmAuditStatus';
+import IconButton from "@material-ui/core/IconButton";
+import ErrorIcon from "@material-ui/icons/Error";
+import WarningIcon from '@material-ui/icons/Warning';
 import moment from "moment";
+import AmPopup from "../../../../components/AmPopup";
 
-const PA_Detail = props => {
+const PI_Detail = props => {
 
     const [OwnerGroupType, setOwnerGroupType] = useState(1);
     const [docview, setdocview] = useState();
     const [header, setheader] = useState();
 
+    const [dialogState, setDialogState] = useState({});
 
 
     useEffect(() => {
@@ -30,41 +33,37 @@ const PA_Detail = props => {
                 columnsDetailSOU={columnsDetailSOU}
                 //columnsDetailDES={columnsDetailDES}
                 OnchageOwnerGroupType={(value) => { setOwnerGroupType(value) }}
+                CreateputAway={false}
+                //apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
-                typeDoc={"received"}
-                typeDocNo={1001}
+                typeDoc={"counting"}
+                typeDocNo={2004}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}
-                linkBack={"/receive/putawaysearch"}
+                linkBack={"/counting/search"}
                 history={props.history}
-                // useAddPalletMapSTO={true}
-                // addPalletMapSTO={addPalletMapSTO}
-                buttonConfirmMappingSTO={true}
-                usePrintBarcodePallet={true}
-                QrCodemanuak={true}
-                usePrintPDF={true}
+                usePrintPDF={false}
             >
             </DocView>
             )
         }
 
     }, [header])
-
     useEffect(() => {
 
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc. Date", values: "DocumentDate", type: "date" }
+                { label: "Doc Date", values: "DocumentDate", type: "date" }
             ],
             [
                 { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
             [
-                { label: "Product Owner", value: "ProductOwnerCode", values: "ProductOwnerName" },
-                { label: "Des Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
+                { label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
             ],
             [
                 { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
@@ -76,8 +75,9 @@ const PA_Detail = props => {
             ]
         ];
         setheader(TextHeader)
-
     }, [OwnerGroupType])
+
+
 
     const columns = [
         { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
@@ -92,12 +92,11 @@ const PA_Detail = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity" },
+        { Header: "จำนวน", accessor: "Quantity", Cell: e => getFormatPrscen(e.original)},
         { Header: "หน่วยนับ", accessor: "BaseUnitType_Name" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate" },
         { Header: "Remark", accessor: "remark" },
     ];
-
 
     const columnsDetailSOU = [
         {
@@ -110,6 +109,7 @@ const PA_Detail = props => {
                 else return null;
             }
         },
+        { Header: "เลขที่เอกสาร", accessor: "dcCode", Cell: e => getDoccode(e.original), widthPDF: 15 },
         { Header: "เลขที่ภาชนะ", accessor: "baseCode", widthPDF: 10, width: 150, },
         { Header: "แบบ", accessor: "diRef2" },
         { Header: "ประเภทธนบัตร", accessor: "diRef3" },
@@ -127,18 +127,7 @@ const PA_Detail = props => {
 
     ];
 
-    const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
-
-    const getStatusGR = value => {
-        if (value.status === 0)
-            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
-        else if (value.status === 1)
-            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
-        else if (value.status === 3)
-            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
-        else return null;
-    };
-
+  
 
     const getFormatDatePro = (e) => {
         if (e.diProductionDate) {
@@ -152,100 +141,113 @@ const PA_Detail = props => {
             return moment(e.diExpireDate).format("DD/MM/YYYY");
         }
     }
-    const GetAuditStatus = (value) => {
-        if (value.AuditStatus === 0 || value.diAuditStatus === 0) {
-            return "QUARANTINE"
-        } else if (value.AuditStatus === 1 || value.diAuditStatus === 1) {
-            return "PASSED"
-        } else if (value.AuditStatus === 2 || value.diAuditStatus === 2) {
-            return "REJECTED"
-        } else if (value.AuditStatus === 9 || value.diAuditStatus === 9) {
-            return "HOLD"
+
+    const getFormatPrscen = (e) => {
+        var query = queryString.parse(e.Options)
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
+
+    const getDoccode = (e) => {
+        if (e.ID != 0) {
+            let links;
+            if (e.dcDocType_ID === 1001) {
+                links = "/receive/putawaydetail?docID="
+
+            } else if (e.dcDocType_ID === 1002) {
+                links = "/issue/pickingdetail?docID="
+            }
+            if (e.dcID) {
+                return (
+                    <div style={{ display: "flex", padding: "0px", paddingLeft: "10px" }}>
+                        {e.dcCode}
+                        <AmRediRectInfo
+                            api={links + e.dcID}
+                            history={props.history}
+                            docID={""}
+                        >
+                            {" "}
+                        </AmRediRectInfo>
+                    </div>
+
+                );
+            }
         }
     };
 
     const GetAuditStatusIcon = (value) => {
-        if (value.diAuditStatus != undefined) {
-            return <div> <AmAuditStatus key={1} statusCode={value.diAuditStatus} /></div>
+        if (value.auditStatus != undefined) {
+            return <div> <AmAuditStatus key={1} statusCode={value.auditStatus} /></div>
         } else if (value.AuditStatus != undefined) {
             return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
         }
     };
 
 
+    const getFormatQty = (e) => {
+        let query = queryString.parse(e.Options)
+        if (query.qtyrandom) {
+            return query.qtyrandom + '%'
+        }
+    }
+
+    const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];
+
+    const getStatusGR = value => {
+        if (value.status === 0)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "gray" }} />;
+        else if (value.status === 1)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "orange" }} />;
+        else if (value.status === 3)
+            return <CheckCircleOutlineRoundedIcon style={{ color: "green" }} />;
+        else return null;
+    };
+
+    const getOptError = (data) => {
+        var qryStrOptions = queryString.parse(data.options);
+        return <div style={{ textAlign: "center" }}>
+            <label>{data.rootCode}</label>
+            {qryStrOptions.err === null || qryStrOptions.err === undefined ? null : <IconButton
+                aria-label="error"
+                size="small"
+                aria-label="info"
+                style={{ marginLeft: "3px" }}
+            >
+                <WarningIcon
+                    fontSize="small"
+                    style={{ color: "#FFA726" }}
+                    onClick={() =>
+                        setDialogState({ type: "warning", content: qryStrOptions.err, state: true })
+                    }
+                />
+            </IconButton>}
+
+        </div>
+
+    }
     const getDocID = () => {
         const values = queryString.parse(props.location.search);
         var ID = values.docID.toString();
         return ID;
     };
 
-    const addPalletMapSTO = {
-        // apiCreate: '/v2/ScanMapStoFromDocAPI',
-        // columnsDocItems: colListDocItems,
-        ddlArea: {
-            visible: true,
-            field: "areaID",
-            typeDropdown: "search",
-            name: "Area",
-            placeholder: "Select Area",
-            fieldLabel: ["Code", "Name"],
-            fieldDataKey: "ID",
-            // defaultValue: 15,
-            required: true,
-            // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
-        },
-        ddlLocation: {
-            visible: true,
-            field: "locationID",
-            typeDropdown: "search",
-            name: "Location",
-            placeholder: "Select Location",
-            fieldLabel: ["Code", "Name"],
-            fieldDataKey: "ID",
-            // defaultValue: 14,
-            required: false,
-            // customQ: "{ 'f': 'AreaMasterType_ID', 'c':'in', 'v': '30'}"
-        },
-        // inputTitle: [
-        //     {
-        //         field: "projCode",
-        //         name: "Project",
-        //         type: "text",
-        //         customShow: (dataDocument) => {
-        //             return dataDocument.document.Ref1;
-        //         },
-        //     }
-        // ],
-        inputBase:
-        {
-            visible: true,
-            field: "baseCode",
-            type: "input",
-            name: "Pallet Code",
-            placeholder: "Pallet Code",
-            maxLength: 10,
-            required: true,
-            validate: /^.+$/,
-        },
-        // [
-        //   {
-        //     field: "baseCode",
-        //     placeholder: "Pallet Code",
-        //     required: true,
-        //     type: "input",
-        //     name: "Pallet Code",
-        //     maxLength: 10,
-        //     validate: /^.+$/,
-        //   }
-        // ]
-    }
+    const GetAuditStatus = (value) => {
+        return <div> <AmAuditStatus key={1} statusCode={value.AuditStatus} /></div>
+    };
 
-    //received
-    //issued
     return (
-        <div>{docview}</div>
+        <>
+            <AmPopup
+                typePopup={dialogState.type}
+                closeState={(e) => { setDialogState({ ...dialogState, state: false }) }}
+                open={dialogState.state}
+                content={dialogState.content}
+            />
+            {docview}
+        </>
 
     );
 };
 
-export default PA_Detail;
+export default PI_Detail;

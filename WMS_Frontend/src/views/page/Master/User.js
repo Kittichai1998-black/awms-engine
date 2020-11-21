@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import {EntityEventStatus} from "../../../components/Models/EntityStatus";
+import { EntityEventStatus } from "../../../components/Models/EntityStatus";
 
 import IconButton from "@material-ui/core/IconButton";
 import AmEditorTable from '../../../components/table/AmEditorTable';
@@ -53,12 +53,12 @@ const User = props => {
       accessor: "Status",
       fixWidth: 162,
       sortable: false,
-      filterType:"dropdown",
-      colStyle:{textAlign:"center"},
-      filterConfig:{
-        filterType:"dropdown",
-        dataDropDown:EntityEventStatus,
-        typeDropDown:"normal"
+      filterType: "dropdown",
+      colStyle: { textAlign: "center" },
+      filterConfig: {
+        filterType: "dropdown",
+        dataDropDown: EntityEventStatus,
+        typeDropDown: "normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -75,27 +75,27 @@ const User = props => {
     {
       Header: "",
       width: 15,
-      filterable:false,
-      sortable:false,
+      filterable: false,
+      sortable: false,
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setUserID(e.original.ID); setUserPass(e.original)}}
+        onClick={() => { setUserID(e.original.ID); setUserPass(e.original) }}
         style={{ marginLeft: "3px" }}>
-        <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
+        <GroupIcon fontSize="small" style={{ color: "#3E5FFA" }} />
       </IconButton>
     },
     {
       Header: "",
       width: 15,
-      filterable:false,
-      sortable:false,
+      filterable: false,
+      sortable: false,
       Cell: e => <IconButton
         size="small"
         aria-label="info"
-        onClick={()=>{setUserPassID(e.original.ID)}}
+        onClick={() => { setUserPassID(e.original.ID) }}
         style={{ marginLeft: "3px" }}>
-        <LockIcon fontSize="small" style={{ color: "#3E5FFA" }}/>
+        <LockIcon fontSize="small" style={{ color: "#3E5FFA" }} />
       </IconButton>
     }
   ];
@@ -120,7 +120,7 @@ const User = props => {
       type: "password",
       name: "Password",
       placeholder: "Password",
-      custom:(data) => {
+      custom: (data) => {
         return "API.INSERT.SQLCUSTOM.@@sql_gen_password," + data + "," + saltPass;
       },
       required: true
@@ -140,7 +140,7 @@ const User = props => {
       validate: /^[0-9\.]+$/
     }
   ];
-  
+
   const columnsEdit = [
     {
       field: "Code",
@@ -247,18 +247,19 @@ const User = props => {
     }
   };
 
-  useEffect(()=> {
-    if(userPass !== undefined){
+  useEffect(() => {
+    if (userPass !== undefined) {
       Axios.get(
         window.apipath + "/v2/GetUserRoleAPI?ID=" + userPass.ID
       ).then(res => {
-        setUserRoleData(res.data.datas)})
+        setUserRoleData(res.data.datas)
+      })
     }
     return () => setUserPass()
   }, [userPass]);
 
-  useEffect(()=> {
-    if(userPassID !== undefined){
+  useEffect(() => {
+    if (userPassID !== undefined) {
       setOpenPassword(true)
     }
   }, [userPassID]);
@@ -270,12 +271,12 @@ const User = props => {
         { Header: "Name", accessor: "Name", width: 250 }
       ];
 
-      if(dataSou !== undefined && dataSou.length > 0){
+      if (dataSou !== undefined && dataSou.length > 0) {
         setOpen(true)
       }
 
       const defaultValue = () => {
-        return dataSou.filter(x=> x.User_ID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
+        return dataSou.filter(x => x.User_ID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
       return [
         {
@@ -295,15 +296,15 @@ const User = props => {
                     var oldObjSize = dataSou.filter(x => x.User_ID !== null);
                     oldObjSize.forEach(e => {
                       var oldObj = select.find(x => x.ID === e.ID);
-                      if(oldObj === undefined){
-                        objUpdate.push({"ID":e.ID, "Status":0})
-                      }else{
-                        if(e.Status !== 1)
-                          objUpdate.push({"ID":e.ID, "Status":1})
+                      if (oldObj === undefined) {
+                        objUpdate.push({ "ID": e.ID, "Status": 0 })
+                      } else {
+                        if (e.Status !== 1)
+                          objUpdate.push({ "ID": e.ID, "Status": 1 })
                       }
                     });
-                    newObjSize.forEach(x=> {
-                      objUpdate.push({"ID":null, "Status":1, "User_ID":userID, "Role_ID":x.ID, "Revision":1 })
+                    newObjSize.forEach(x => {
+                      objUpdate.push({ "ID": null, "Status": 1, "User_ID": userID, "Role_ID": x.ID, "Revision": 1 })
                     });
                     updateUserRole.current = objUpdate;
                   }}
@@ -316,63 +317,65 @@ const User = props => {
         }
       ]
     }
-    
+
     setRelationComponent(getUserRoleColumns(userRoleData))
   }, [userRoleData])
-  
-  const PopupObjSize = React.memo(({relationComponent, open}) => {
-    return <AmEditorTable 
-    open={open} 
-    onAccept={(status, rowdata)=> {
-      if(!status){
-      }
-      else{
-        UpdateUserRole();
-      }
-      setOpen(false)
-    }}
-    titleText={"User Role"} 
-    data={{}}
-    columns={relationComponent}
-  />});
 
-  const PopupPassword = React.memo(({open}) => {
-    return <AmEditorTable 
-    open={openPassword} 
-    onAccept={(status, rowdata)=> {
-      if(!status){
-      }
-      else{
-        UpdatePassword();
-      }
-      setUserPassID()
-      setOpenPassword(false);
-    }}
-    titleText={"Password"} 
-    data={{}}
-    columns={[{ 
-      "field":"Password",
-      "component":(data=null, cols, key)=>{
-        return <div key={key}>
+  const PopupObjSize = React.memo(({ relationComponent, open }) => {
+    return <AmEditorTable
+      open={open}
+      onAccept={(status, rowdata) => {
+        if (!status) {
+        }
+        else {
+          UpdateUserRole();
+        }
+        setOpen(false)
+      }}
+      titleText={"User Role"}
+      data={{}}
+      columns={relationComponent}
+    />
+  });
+
+  const PopupPassword = React.memo(({ open }) => {
+    return <AmEditorTable
+      open={openPassword}
+      onAccept={(status, rowdata) => {
+        if (!status) {
+        }
+        else {
+          UpdatePassword();
+        }
+        setUserPassID()
+        setOpenPassword(false);
+      }}
+      titleText={"Password"}
+      data={{}}
+      columns={[{
+        "field": "Password",
+        "component": (data = null, cols, key) => {
+          return <div key={key}>
             <FormInline>
-            <label style={{width:"150px",paddingLeft:"20px"}}>Password : </label>
-            <AmInput 
-              autoComplete="off"
-              id="Password"
-              placeholder="Password"
-              required={true}
-              validate={true}
-              msgError="Error" 
-              regExp={/^[0-9\.]+$/}
-              style={{width:"270px",margin:"0px"}}
-              type="password"
-              value={password}
-              onChangeV2={(value)=>{setPassword(value);}}/>
-        </FormInline>
-        </div>
-      }
-    }]}
-  />});
+              <label style={{ width: "150px", paddingLeft: "20px" }}>Password : </label>
+              <AmInput
+                autoComplete="off"
+                id="Password"
+                placeholder="Password"
+                required={true}
+                validate={true}
+                msgError="Error"
+                regExp={/^[0-9\.]+$/}
+                style={{ width: "270px", margin: "0px" }}
+                type="password"
+                value={password}
+                onChangeV2={(value) => { setPassword(value); }} />
+            </FormInline>
+          </div>
+        }
+      }]}
+    />
+  });
 
   const UpdateUserRole = () => {
     let updjson = {
@@ -384,11 +387,11 @@ const User = props => {
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if(res.data._result.status === 1){
-        setDialogState({type:"success", content:"Success", state:true})
+      if (res.data._result.status === 1) {
+        setDialogState({ type: "success", content: "Success", state: true })
       }
-      else{
-        setDialogState({type:"error", content:res.data._result.message, state:true})
+      else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
     });
   }
@@ -404,38 +407,51 @@ const User = props => {
     let updjson = {
       t: "ams_User",
       pk: "ID",
-      datas: [{"ID":userPassID, password:pass, SaltPassword:guidstr}],
+      datas: [{ "ID": userPassID, password: pass, SaltPassword: guidstr }],
       nr: false,
       _token: localStorage.getItem("Token")
     };
 
     Axios.put(window.apipath + "/v2/InsUpdDataAPI", updjson).then(res => {
-      if(res.data._result.status === 1){
-        setDialogState({type:"success", content:"Success", state:true})
+      if (res.data._result.status === 1) {
+        setDialogState({ type: "success", content: "Success", state: true })
       }
-      else{
-        setDialogState({type:"error", content:res.data._result.message, state:true})
+      else {
+        setDialogState({ type: "error", content: res.data._result.message, state: true })
       }
     });
   }
 
   return (
     <>
-      <PopupObjSize relationComponent={relationComponent} open={open}/>
-      <PopupPassword open={openPassword}/>
-      
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"User"}
+        table={"ams_User"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        customUser={true}
+        dataUser={dataUser}
+        columnsEditPassWord={columnsEditPassWord}
+        history={props.history}
+      /> */}
+      <PopupObjSize relationComponent={relationComponent} open={open} />
+      <PopupPassword open={openPassword} />
+
       <AmDialogs
-            typePopup={dialogState.type}
-            onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
-            open={dialogState.state}
-            content={dialogState.content} />
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
         tableQuery={"User"}
         table={"ams_User"}
         dataAdd={columns}
-        customAddData={{"saltPassword":saltPass}}
+        customAddData={{ "SaltPassword": saltPass }}
         history={props.history}
         columns={iniCols}
         dataEdit={columnsEdit}
