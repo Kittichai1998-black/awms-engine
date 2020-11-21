@@ -28,7 +28,7 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "PERCENT.WEIGHT.PERCENT_WEIGHT_AUTO")]
         PERCENT_WEIGHT_AUTO,
 
-        [EnumValueAttribute(ValueString = "SYSTEM.CONFIG.")]
+        [EnumValueAttribute(ValueString = "SYSTEM.CONFIG.WORK_QUEUE_SEQ")]
         WQ_SEQ
     }
 }
