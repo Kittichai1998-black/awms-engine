@@ -128,6 +128,7 @@ const ProcessQueue = (props) => {
         documentQuery={documentQuery}
         warehouseQuery={warehouseQuery}
         areaQuery={desAreaQuery}
+        warehouseDefault="1"
         documentItemDetail={colDocumentItem}
         documentDetail={documentDetail}
         processSingle={true}
