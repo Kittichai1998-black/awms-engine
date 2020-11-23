@@ -19,17 +19,10 @@ namespace AWMSEngine.Common
         {
             var staticVal = ADO.WMSStaticValue.StaticValueManager.GetInstant();
             string className = string.Empty;
-            try
-            {
-                className = staticVal.GetConfigValue(featurePluginCode);
-            }
-            catch
-            {
-                return null;
-            }
-
+            className = staticVal.GetConfigValue(featurePluginCode);
             if (string.IsNullOrWhiteSpace(className))
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Feature '" + featurePluginCode + "' Field FullClassName Not Found");
+                return null;
+                //throw new AMWException(logger, AMWExceptionCode.V2001, "Feature '" + featurePluginCode + "' Field FullClassName Not Found");
             Type type = ClassType.GetClassType(className);
             if (type == null)
                 throw new AMWException(logger, AMWExceptionCode.S0001, "Feature " + featurePluginCode + " Class Type Not Found.");
