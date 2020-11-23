@@ -243,10 +243,10 @@ const AmTableSetup = (props) => {
     }, [page])
 
     useEffect(() => {
-        let tableHeight = props.height - 
+        let parseHeight = parseInt(props.height,10);
+        let tableHeight = parseHeight - 
         (topBarRef.current !== null ? topBarRef.current.clientHeight : 0) - 
         (btmBarRef.current !== null ? btmBarRef.current.clientHeight : 0);
-        console.log(props.height)
         setHeight(tableHeight);
     }, [topBarRef, btmBarRef, props.height])
 

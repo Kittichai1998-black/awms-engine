@@ -46,85 +46,58 @@ const PK_Detail = props => {
     }, [header])
 
     useEffect(() => {
-        if (OwnerGroupType !== undefined) {
-            var DataprocessType;
-            if (OwnerGroupType === 1) {
-                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }]
-            } else if (OwnerGroupType === 2) {
-                DataprocessType = [{ label: "Sou. Customer", value: "SouCustomer", values: "SouCustomerName" },
-                    { label: "Des. Customer", value: "DesCustomer", values: "DesCustomerName" }]
-            } else if (OwnerGroupType === 3) {
-                DataprocessType = [{ label: "Sou. Supplier", value: "SouSupplier", values: "SouSupplierName" },
-                { label: "Des. Supplier", value: "DesSupplier", values: "DesSupplierName" }]
-            } else {
-                DataprocessType = [{ label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
-                    { label: "Des. Warehouse", value: "DesWarehouse", value: "DesWarehouse"  ,values: "DesWarehouseName" }]
-            }
-
-        }
 
         var TextHeader = [
             [
                 { label: "Doc No.", values: "Code" },
-                { label: "Doc Date", values: "DocumentDate", type: "date" }
+                { label: "Doc. Date", values: "DocumentDate", type: "date" }
             ],
             [
-                { label: "Process Type", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
+                { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
                 { label: "Action Time", values: "ActionTime", type: "dateTime" }
             ],
-
-            DataprocessType,
-
             [
-                { label: "Doc Status", values: "renderDocumentStatus()", type: "function" },
+                { label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
+            ],
+            [
+                { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
+            ],
+            [
+                { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
                 { label: "Remark", values: "Remark" }
             ]
         ];
         setheader(TextHeader)
 
-
     }, [OwnerGroupType])
 
 
     const columns = [
-        //{ width: 100, accessor: "ItemNo", Header: "Item No.", widthPDF: 25 },
+        { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
         {
-            Header: "Item Code",
-            Cell: e => { return e.original.SKUMaster_Code},
-            CellPDF: e => { return e.SKUMaster_Code},
-            widthPDF: 40
+            Header: "ชนิดราคา",
+            Cell: e => { return e.original.SKUMaster_Code },
+            CellPDF: e => { return e.SKUMaster_Code }, widthPDF: 40
         },
-        {
-            Header: "Item Name",
-            Cell: e => { return e.original.SKUMaster_Name },
-            CellPDF: e => { return  e.SKUMaster_Name },
-            widthPDF: 40
-        },
-        { Header: "Control No.", accessor: "OrderNo", widthPDF: 20 },
-        { width: 130, accessor: "Lot", Header: "Lot", widthPDF: 25 },
-        { Header: "Vendor Lot", accessor: "Ref1", widthPDF: 25 },
-        { width: 120, accessor: "_sumQtyDisto", Header: "Picking Quantity", widthPDF: 20 },
-        { width: 120, accessor: "Quantity", Header: "Request Quantity", widthPDF: 20 },
-        { width: 70, accessor: "UnitType_Code", Header: "Unit", widthPDF: 20 },
-        {
-            Header: "Quality Status", accessor: "AuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 30
-        },
-        { Header: "Remark", accessor: "remark", widthPDF: 20 },
-        { Header: "Carton No.", accessor: "CartonNo", widthPDF: 20 },
-        { Header: "MFG.Date", accessor: "ProductionDate", widthPDF: 35 },
-        { Header: "Expire Date", accessor: "ExpireDate", widthPDF: 35 },
+        { Header: "เลขที่ภาชนะ", accessor: "Code" },
+        { Header: "ชนิดราคา", accessor: "Code" },
+        { Header: "แบบ", accessor: "Ref2" },
+        { Header: "ประเภทธนบัตร", accessor: "Ref3" },
+        { Header: "สถาบัน", accessor: "Ref1" },
+        { Header: "ศูนย์เงินสด", accessor: "Ref4" },
+        { Header: "จำนวน", accessor: "Quantity" },
+        { Header: "หน่วยนับ", accessor: "BaseUnitType_Name" },
+        { Header: "วันที่รับเข้า", accessor: "ProductionDate" },
+        { Header: "Remark", accessor: "remark" },
     ];
 
 
     const columnsDetailSOU = [
-        //{ width: 100, accessor: "diItemNo", Header: "Item No.", widthPDF: 10 },
         {
-            width: 40, accessor: "status", Header: "Task",
-            Cell: e => getStatusGR(e.original), widthPDF: 5,
+            Header: "สถานะ", accessor: "status", width: 40, Cell: e => getStatusGR(e.original),
+            widthPDF: 5,
             CellPDF: value => {
                 if (value.status === 1 || value.status === 3) return "Y";
                 else if (value.status === 0)
@@ -132,32 +105,21 @@ const PK_Detail = props => {
                 else return null;
             }
         },
-        { width: 100, accessor: "rootCode", Header: "Pallet", widthPDF: 10 },
-        { width: 150, accessor: "packCode", Header: "Pack Code", widthPDF: 10 },
-        { accessor: "packName", Header: "Pack Name", widthPDF: 20 },
-        { Header: "Control No.", accessor: "diOrderNo", widthPDF: 10 },
-        { width: 130, accessor: "diLot", Header: "Lot", widthPDF: 10 },
-        { Header: "Vendor Lot", accessor: "diRef1", widthPDF: 10 },
-        { Header: "Actual Quantity", accessor: "distoQty", widthPDF: 10, width: 120 },
-        { Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
-        { width: 70, accessor: "distoUnitCode", Header: "Unit", widthPDF: 10 },
+        { Header: "เลขที่ภาชนะ", accessor: "baseCode", widthPDF: 10, width: 150, },
+        { Header: "แบบ", accessor: "diRef2" },
+        { Header: "ประเภทธนบัตร", accessor: "diRef3" },
+        { Header: "สถาบัน", accessor: "diRef1" },
+        { Header: "ศูนย์เงินสด", accessor: "diRef4" },
+        { Header: "จำนวนรับเข้า", accessor: "distoQty", widthPDF: 10, width: 120 },
+        //{ Header: "Quantity Per Pallet", accessor: "distoQtyMax", widthPDF: 10, width: 120, },
+        { Header: "หน่วยนับ", accessor: "distoUnitCode", widthPDF: 10, width: 70, },
+        { Header: "หมายเหตุ", accessor: "remark", widthPDF: 10 },
         {
-            Header: "Quality Status",
-            accessor: "diAuditStatus",
-            Cell: e => GetAuditStatusIcon(e.original),
-            CellPDF: e => GetAuditStatus(e),
-            widthPDF: 10
-        },
-        { Header: "Remark", accessor: "remark", widthPDF: 10 },
-        { Header: "Carton No.", accessor: "diCartonNo", widthPDF: 10 },
-        {
-            Header: "MFG.Date", accessor: "diProductionDate",
-            Cell: e => getFormatDatePro(e.original), CellPDF: e => getFormatDatePro(e), widthPDF: 15
-        },
-        {
-            Header: "Expire Date", accessor: "diExpireDate",
-            Cell: e => getFormatDateExp(e.original), CellPDF: e => getFormatDateExp(e), widthPDF: 15
-        },
+            Header: "วันที่รับเข้า", accessor: "diProductionDate",
+            Cell: e => getFormatDatePro(e.original), widthPDF: 15,
+            CellPDF: e => getFormatDatePro(e)
+        }
+
     ];
 
     const getFormatDatePro = (e) => {

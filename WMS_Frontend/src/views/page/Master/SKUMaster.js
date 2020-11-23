@@ -44,7 +44,7 @@ const SKUMaster = props => {
                 dataDropDown: EntityEventStatus,
                 typeDropDown: "normal"
             },
-            colStyle:{textAlign:"center"},
+            colStyle: { textAlign: "center" },
             Cell: e => getStatus(e.original)
         },
         {
@@ -70,7 +70,7 @@ const SKUMaster = props => {
             width: 120,
             type: "number"
         },
-        { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
+        { Header: "Base Unit", accessor: "UnitTypeCode", width: 100 },
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -114,20 +114,12 @@ const SKUMaster = props => {
             validate: /^[0-9\.]+$/
         },
         {
-            field: "WeightKG",
-            type: "input",
-            inputType: "number",
-            name: "Gross Weight",
-            placeholder: "Gross Weight",
-            validate: /^[0-9\.]+$/
-        },
-        {
             field: "UnitType_ID",
             type: "dropdown",
             typeDropDown: "search",
-            name: "Unit Type",
+            name: "Base Unit",
             dataDropDown: UnitTypeQuery,
-            placeholder: "Unit Type",
+            placeholder: "Base Unit",
             fieldLabel: ["Code", "Name"],
             fieldValue: "ID",
         }
@@ -139,8 +131,10 @@ const SKUMaster = props => {
             type: "input",
             name: "SKU Code",
             placeholder: "Code",
-            validate: /^.+$/,
-            required: true
+            disabled: true
+            //validate: /^.+$/,           
+            //required: true
+
         },
         {
             field: "Name",
@@ -170,20 +164,12 @@ const SKUMaster = props => {
             validate: /^[0-9\.]+$/
         },
         {
-            field: "WeightKG",
-            type: "input",
-            inputType: "number",
-            name: "Gross Weight",
-            placeholder: "Gross Weight",
-            validate: /^[0-9\.]+$/
-        },
-        {
             field: "UnitType_ID",
             type: "dropdown",
             typeDropDown: "search",
-            name: "Unit Type",
+            name: "Base Unit",
             dataDropDown: UnitTypeQuery,
-            placeholder: "Unit Type",
+            placeholder: "Base Unit",
             fieldLabel: ["Code", "Name"],
             fieldValue: "ID",
         },
@@ -289,7 +275,13 @@ const SKUMaster = props => {
             return e.original.ShelfLifePercent + '%'
         }
     }
+
+    const customEdit = () => {
+        return <div>{'hhhhhh'}</div>
+    }
+
     return (
+        <>
             <AmMaster
                 columnsFilterPrimary={primarySearch}
                 columnsFilter={columnsFilter}
@@ -303,7 +295,9 @@ const SKUMaster = props => {
                 height={500}
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+                codeInclude={true}
             />
+        </>
     );
 };
 

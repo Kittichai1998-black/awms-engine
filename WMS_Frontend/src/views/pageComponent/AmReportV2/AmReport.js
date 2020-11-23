@@ -188,7 +188,7 @@ const AmReport = props => {
   //===========================================================
   return (
     <>
-
+      {console.log(dataSource)}
       <AmTable
         columns={columns}
         dataKey={props.tableKey}

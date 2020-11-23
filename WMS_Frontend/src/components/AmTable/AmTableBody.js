@@ -311,10 +311,15 @@ const GenerateRow = ({ columns, props, dataSource }) => {
       customDataSource.push({})
     }
   }
+
+  let getIdx = -1
+
   return <>
     {customDataSource.map((data, idx) => {
+      if(!data._footer && data["_groupFooter"] === undefined)
+        getIdx += 1;
       return <TableRow key={idx}>
-        <GenerateCell columns={columns} data={data} rowIndex={idx} cellStyle={props.cellStyle} rowStyle={props.rowStyle ? props.rowStyle(data) : null}/>
+        <GenerateCell columns={columns} data={data} rowIndex={getIdx} cellStyle={props.cellStyle} rowStyle={props.rowStyle ? props.rowStyle(data) : null}/>
       </TableRow>
     })}
   </>
@@ -401,7 +406,7 @@ const GenerateFooter = ({ columns, props, dataSource }) => {
 const GenerateFooterCell = (column, props, dataSource, idx) => {
   const dataByField = [];
   let totalField = 0;
-  dataSource.filter(x => x["_footer"]===true).forEach((data, rowIndex) => {
+  dataSource.filter(x => !x["_footer"]).forEach((data, rowIndex) => {
     if (typeof data[column.accessor] === "number")
       totalField += data[column.accessor]
 

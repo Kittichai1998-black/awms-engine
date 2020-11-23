@@ -57,7 +57,7 @@ const Create_GR_DR = props => {
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
             let ProductOwner_ID = dataDocument.ProductOwner_ID
-            let DesAreaMaster_ID = dataDocument.DesAreaMaster_ID
+            let Des_AreaMaster_ID = dataDocument.Des_AreaMaster_ID
             let ProductOwnerCode = dataDocument.ProductOwnerCode
             let DesAreaMasterName = dataDocument.DesAreaMasterName
             let ForCustomerName = dataDocument.ForCustomerName
@@ -69,7 +69,7 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoccan", key: "ID", fieldLabel: ["Code"], codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
@@ -78,7 +78,7 @@ const Create_GR_DR = props => {
                 ],
                 [
                     { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: ProductOwnerCode, valueTexts: ProductOwner_ID, codeTranslate: "ProductOwner" },
-                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: DesAreaMaster_ID, codeTranslate: "DesAreaMaster" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: Des_AreaMaster_ID, codeTranslate: "DesAreaMaster" },
                 ],
                 [
                     { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },
@@ -176,7 +176,7 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3", type: "text" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1", type: "text" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4", type: "text" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity", type: "inputNum" },
+        { Header: "จำนวน", accessor: "DiffQty", type: "inputNum", codeTranslate: "Qty" },
         { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit", type: "text" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate", type: "text" },
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark", type: "text" },
@@ -189,7 +189,7 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity" },
+        { Header: "จำนวน", accessor: "DiffQty", codeTranslate: "Qty" },
         { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate" },
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
@@ -204,7 +204,6 @@ const Create_GR_DR = props => {
         { Header: "Lot", accessor: "Lot", codeTranslate: "Lot" },
     ];
 
-
     const columns = [
         { Header: "เลขที่ภาชนะ", accessor: "BaseCode", codeTranslate: "Base Code" },
         { Header: "ชนิดราคา", accessor: "Code", codeTranslate: "Code" },
@@ -212,7 +211,7 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity" },
+        { Header: "จำนวน", accessor: "DiffQty", codeTranslate: "Qty" },
         { Header: "หน่วยนับ", accessor: "UnitType", codeTranslate: "Unit" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate" },
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },

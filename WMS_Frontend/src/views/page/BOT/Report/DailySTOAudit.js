@@ -106,7 +106,8 @@ const DailySTOAudit = (props) => {
         { Header: t('Item Code'), accessor: 'pstoCode', width: 120, sortable: false },
         {
             Header: t('Qty'), accessor: 'qty', width: 100, sortable: false,
-            Footer: true, filterable: false
+            Footer: true, filterable: false,
+            "Cell": (e) => comma(e.value.toString())
         },
         { Header: t('Unit'), accessor: 'unitType', width: 100, sortable: false, filterable: false, },
         // {

@@ -35,7 +35,7 @@ namespace ProjectBOTHY.Engine.Business.Document
                 {
                     if (dataDoc.DocumentProcessType_ID != DocumentProcessTypeID.WM_TRANSFER_MANUAL)
                     {
-                        throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถ Reject เอกสารที่มี DocumentProcessType เป็น WM_TRANSFER_MANUAL");
+                        throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถ Reject เอกสารที่มี DocumentProcessType เป็น WM_TRANSFER_AUTO");
                     }
                     else
                     {

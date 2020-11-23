@@ -47,6 +47,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string ref3;
             public string ref4;
             public string options;
+            public int? productOwnerID;
             public DocumentProcessTypeID documentProcessTypeID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
@@ -61,6 +62,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 public string unitType;
                 public decimal? baseQuantity;
                 public string baseunitType;
+                public string baseCode;
                 public string batch;
                 public string lot;
                 public string orderNo;
@@ -167,6 +169,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     eventStatus = reqVO.eventStatus,
                     documentProcessTypeID = reqVO.documentProcessTypeID,
                     remark = reqVO.remark,
+                    productOwnerID = reqVO.productOwnerID,
 
                     Items = reqVO.issueItems.Select(
                         x => new CreateDocument.TReq.Item
@@ -193,6 +196,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                             refID = x.refID,
                             itemNo = x.itemNo,
                             baseQuantity = x.baseQuantity,
+                            baseCode = x.baseCode,
                             baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,

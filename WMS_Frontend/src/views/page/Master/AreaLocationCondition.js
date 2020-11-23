@@ -76,7 +76,7 @@ const AreaLocationCondition = props => {
             },
             Cell: e => getStatus(e.original)
         },
-        { Header: "Priority", accessor: "Priority"},   
+        { Header: "Priority", accessor: "Priority" },
         { Header: "Bank", accessor: "LocationBankNumRange" },
         { Header: "Bay", accessor: "LocationBayNumRange" },
         { Header: "Level", accessor: "LocationLvNumRange" },
@@ -85,7 +85,7 @@ const AreaLocationCondition = props => {
         { Header: "SKU Code", accessor: "SKU_Code" },
         { Header: "SKU Name", accessor: "SKU_Name" },
         { Header: "SKUType", accessor: "SKUType_Name" },
-        { Header: "Unit Type", accessor: "UnitType_Name"},
+        { Header: "Unit Type", accessor: "UnitType_Name" },
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -148,7 +148,7 @@ const AreaLocationCondition = props => {
             placeholder: "SKU Master",
             fieldLabel: ["Code", "Name"],
             required: true
-        }, 
+        },
         {
             field: "SKUMasterType_ID",
             type: "dropdown",
@@ -168,7 +168,7 @@ const AreaLocationCondition = props => {
             placeholder: "Unit Type",
             fieldLabel: ["Code", "Name"],
             fieldValue: "ID",
-        }  
+        }
     ];
 
     const columnsEdit = [
@@ -180,11 +180,12 @@ const AreaLocationCondition = props => {
             validate: /^[0-9\.]+$/,
             required: true
         },
-    
+
         {
             field: "LocationBankNumRange",
             type: "input",
             name: "Bank",
+
             placeholder: "Bank",
             validate: /^[0-9\.]+$/
         },
@@ -237,8 +238,8 @@ const AreaLocationCondition = props => {
             fieldLabel: ["Code", "Name"],
             fieldValue: "ID",
             required: true
-        },     
-          {
+        },
+        {
             field: "Status",
             type: "dropdown",
             typeDropDown: "normal",
@@ -316,6 +317,17 @@ const AreaLocationCondition = props => {
     };
 
     return (
+        <>
+            {/* <MasterData
+        columnsFilter={columnsFilter}
+        columnsFilterPrimary={columnsFilterPri}
+        tableQuery={"AreaLocationMaster"}
+        table={"ams_AreaLocationMaster"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
             <AmMaster
                 columnsFilterPrimary={columnsFilterPri}
                 columnsFilter={columnsFilter}
@@ -328,7 +340,10 @@ const AreaLocationCondition = props => {
                 tableType="view"
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+                customTopLeft={<span> ** Bank 1-4 more than less 30  degree Celsius,
+                    **Bank  5-8  between 30  degree Celsius and 35  degree Celsius</span>}
             />
+        </>
     );
 };
 

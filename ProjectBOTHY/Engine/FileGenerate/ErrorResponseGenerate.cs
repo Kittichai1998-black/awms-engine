@@ -119,8 +119,8 @@ namespace ProjectBOTHY.Engine.FileGenerate
             var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
             var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
 
-            if (FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
-                throw new AMWException(Logger, AMWExceptionCode.V1002, "พบไฟล์นี้ในระบบ");
+            //if (FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
+                //throw new AMWException(Logger, AMWExceptionCode.V1002, "พบไฟล์นี้ในระบบ");
             StringBuilder _str = new StringBuilder();
             _str.Append(ResponseGenerate.GetStringValueFromObject(obj.header, 2));
             obj.details.ForEach(x =>

@@ -19,29 +19,27 @@ const Create_GR_DR = props => {
         var headerCreate = []
         if (dataDocument === undefined) {
             headerCreate = [
-
                 [
-                    { label: "Doc NO.", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
-                    { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
+                    { label: "Doc NO.", type: "findPopUpDoccan", key: "ID", fieldLabel: ["Code"], codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
-                    { label: "Process No.", type: "labeltext", key: "documentProcessTypeID", texts: "", valueTexts: "", codeTranslate: "Document ProcessType" },
-                    { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time" }
+                    { label: "Process No.", value: "DocumentProcessTypeCode", values: "ReDocumentProcessTypeName" },
+                    { label: "Action Time", values: "ActionTime", type: "dateTime" }
                 ],
                 [
-                    { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: "", valueTexts: "", codeTranslate: "ProductOwner" },
-                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: "", valueTexts: "", codeTranslate: "DesAreaMaster" },
-
+                    { label: "ProductOwner", value: "ProductOwnerCode", values: "ProductOwnerName" },
+                    { label: "Des. Area", value: "DesAreaMasterCode", values: "DesAreaMasterName" }
                 ],
                 [
-                    { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", valueTexts: "", codeTranslate: "Source Warehouse" },
-                    { label: "Des. Warehouse", type: "labeltext", key: "desWarehouseID", valueTexts: "", codeTranslate: "Des Warehouse" }
+                    { label: "Sou. Warehouse", value: "SouWarehouse", values: "SouWarehouseName" },
+                    { label: "Des. Warehouse", value: "DesWarehouse", values: "DesWarehouseName" }
                 ],
                 [
-
-                    { label: "Doc Status", type: "labeltext", key: "", texts: "NEW", codeTranslate: "Doc Status" },
-                    { label: "Remark", type: "input", key: "Remark", codeTranslate: "Remark" }
+                    { label: "Doc Status", values: "renderDocumentStatusIcon()", type: "function" },
+                    { label: "Remark", values: "Remark" }
                 ]
+            
 
             ];
 
@@ -57,7 +55,7 @@ const Create_GR_DR = props => {
             let DesWarehouseName = dataDocument.DesWarehouseName
             let Des_Warehouse_ID = dataDocument.Des_Warehouse_ID
             let ProductOwner_ID = dataDocument.ProductOwner_ID
-            let DesAreaMaster_ID = dataDocument.DesAreaMaster_ID
+            let Des_AreaMaster_ID = dataDocument.Des_AreaMaster_ID
             let ProductOwnerCode = dataDocument.ProductOwnerCode
             let DesAreaMasterName = dataDocument.DesAreaMasterName
             let ForCustomerName = dataDocument.ForCustomerName
@@ -69,7 +67,7 @@ const Create_GR_DR = props => {
             headerCreate = [
 
                 [
-                    { label: "Doc Delivery", type: "findPopUpDoc", key: "ID", queryApi: DocumentDR, fieldLabel: ["Code"], defaultValue: 1, codeTranslate: "Doc Delivery", cols: columsDoc },
+                    { label: "Doc NO.", type: "findPopUpDoccan", key: "ID", fieldLabel: ["Code"], codeTranslate: "Doc Delivery", cols: columsDoc },
                     { label: "Document Date", type: "date", key: "documentDate", codeTranslate: "Document Date" }
                 ],
                 [
@@ -78,7 +76,7 @@ const Create_GR_DR = props => {
                 ],
                 [
                     { label: "ProductOwner", type: "labeltext", key: "productOwnerID", texts: ProductOwnerCode, valueTexts: ProductOwner_ID, codeTranslate: "ProductOwner" },
-                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: DesAreaMaster_ID, codeTranslate: "DesAreaMaster" },
+                    { label: "Des. Area", type: "labeltext", key: "desAreaMasterID", texts: DesAreaMasterName, valueTexts: Des_AreaMaster_ID, codeTranslate: "DesAreaMaster" },
                 ],
                 [
                     { label: "Sou. Warehouse", type: "labeltext", key: "souWarehouseID", texts: SouWarehouseName, valueTexts: Sou_Warehouse_ID, codeTranslate: "Source Warehouse" },
@@ -93,7 +91,6 @@ const Create_GR_DR = props => {
 
         }
 
-
         if (headerCreate.length > 0) {
             setTable(
                 <AmputAndpick
@@ -102,7 +99,7 @@ const Create_GR_DR = props => {
                     doccolumns={columns}
                     doccolumnEdit={columnEdit}
                     docapicreate={apicreate}
-                    doccreateDocType={"putAway"}
+                    doccreateDocType={"picking"}
                     doctypeDocNo={1012}
                     dochistory={props.history}
                     onChangeDoument={(e) => { setdataDocument(e) }}
@@ -127,25 +124,12 @@ const Create_GR_DR = props => {
         var qryStr = queryString.parse(value.Options);
         return qryStr["carton_no"];
     };
-    const PalletCode = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q:
-            '[{"f":"Status" , "c":"=" , "v":"1"},{"f": "EventStatus" , "c":"in" , "v": "12,97"},{"f": "GroupType" , "c":"=" , "v": "1"}]', //���͹� '[{ "f": "Status", "c":"<", "v": 2}]'
-        f:
-            "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo as orderNo,Remark as remark,Size,Options",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 20,
-        all: ""
-    };
 
 
     const DocumentDR = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "Document",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1011}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "DocumentType_ID", "c":"=", "v": 1012}]',
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'DESC'}]",
@@ -176,7 +160,7 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3", type: "text" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1", type: "text" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4", type: "text" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity", type: "inputNum" },
+        { Header: "จำนวน", accessor: "DiffQty", type: "inputNum", codeTranslate: "Qty"  },
         { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit", type: "text" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate", type: "text" },
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark", type: "text" },
@@ -189,9 +173,9 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity" },
+        { Header: "จำนวน", accessor: "DiffQty", codeTranslate: "Qty"  },
         { Header: "หน่วยนับ", accessor: "UnitType_Name", codeTranslate: "Unit" },
-        { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate" },
+        { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate"},
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
 
 
@@ -212,14 +196,14 @@ const Create_GR_DR = props => {
         { Header: "ประเภทธนบัตร", accessor: "Ref3", codeTranslate: "Ref3" },
         { Header: "สถาบัน", accessor: "Ref1", codeTranslate: "Ref1" },
         { Header: "ศูนย์เงินสด", accessor: "Ref4", codeTranslate: "Ref4" },
-        { Header: "จำนวน", accessor: "Quantity", codeTranslate: "Quantity" },
+        { Header: "จำนวน", accessor: "DiffQty", codeTranslate: "Qty" },
         { Header: "หน่วยนับ", accessor: "UnitType", codeTranslate: "Unit" },
         { Header: "วันที่รับเข้า", accessor: "ProductionDate", codeTranslate: "ProductionDate" },
         { Header: "หมายเหตุ", accessor: "Remark", codeTranslate: "Remark" },
     ];
 
-    const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
-    const apiRes = "/issue/pickingcreate?docID="; //path ˹����������´ �͹����ѧ����Դ
+    const apicreate = "/v2/CreateGIDocAPI/"; 
+    const apiRes = "/issue/pickingdetail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>
         {table}</div>;

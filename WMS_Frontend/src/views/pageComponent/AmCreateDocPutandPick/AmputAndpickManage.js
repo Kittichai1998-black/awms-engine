@@ -37,6 +37,7 @@ const AmputAndpickManage = (props) => {
             parentDocumentID: null,
             ref1: null,
             ref2: null,
+            ref4: null,
             refID: null,
             remark: null,
             souAreaMasterCode: null,
@@ -48,6 +49,7 @@ const AmputAndpickManage = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
+            productOwnerID: null,
             souWarehouseID: null,
             transportID: null
         }
@@ -94,6 +96,7 @@ const AmputAndpickManage = (props) => {
                 x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
                 x.baseunitType = x.BaseUnitType_Code
+                x.baseCode = x.BaseCode
                 x.batch = x.Batch
                 x.lot = x.Lot
                 x.orderNo = x.OrderNo
@@ -121,8 +124,9 @@ const AmputAndpickManage = (props) => {
             docs.issueItems = doc.dataSourceItemTB.map(x => {
                 x.unitType = x.UnitType_Code
                 x.skuCode = x.Code
-                x.quantity = x.Quantity
+                x.quantity = x.DiffQty
                 x.baseQuantity = x.BaseQuantity
+                x.baseCode = x.BaseCode
                 x.baseunitType = x.BaseUnitType_Code
                 x.batch = x.Batch
                 x.lot = x.Lot
@@ -149,8 +153,8 @@ const AmputAndpickManage = (props) => {
 
 
         if (Object.keys(docs).length > countDoc) {
-            console.log(docs)
-            //CreateDocuments(docs)
+            //console.log(docs)
+           CreateDocuments(docs)
         }
 
     }

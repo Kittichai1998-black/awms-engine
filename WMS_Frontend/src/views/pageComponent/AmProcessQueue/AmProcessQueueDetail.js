@@ -15,8 +15,9 @@ import styled from 'styled-components';
 import AmTable from '../../../components/AmTable';
 import { ProcessQueueContext } from './ProcessQueueContext';
 import { Grid, IconButton } from "@material-ui/core";
-import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import MuiAccordion from '@material-ui/core/Accordion';
+import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
+import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -437,12 +438,12 @@ const ProcessQueueDetail = (props) => {
             documents.removeDocumentList(docID);
         };
 
-        return <><ExpansionPanel
+        return <Accordion
             onChange={onChangeExpansion(doc.document["ID"])}
             expanded={checkExpansion()}
             style={{ marginBottom: "5px" }}
         >
-            <ExpansionPanelSummary
+            <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}>
                 <CheckboxCustom onClick={event => {
                     event.stopPropagation();
@@ -451,9 +452,11 @@ const ProcessQueueDetail = (props) => {
                     defaultChecked={doc.flag} />
                 <IconButtonCustom><Delete onClick={() => RemoveDocument(doc.document["ID"])} /></IconButtonCustom>
                 <Typography>{setFieldHeader}</Typography>
-            </ExpansionPanelSummary>
-            {children}
-        </ExpansionPanel></>
+            </AccordionSummary>
+            <AccordionDetails>
+                {children}
+            </AccordionDetails>
+        </Accordion>
     };
 
     const RenderDialog = () => {
@@ -725,8 +728,8 @@ const ProcessQueueDetail = (props) => {
                     docID: docItem.Document_ID,
                     docItemID: docItem.ID,
                     locationCode: null,
-                    baseCode: docItem.baseCode ? docItem.baseCode : null,
-                    skuCode: docItem.baseCode ? null : docItem.Code ? docItem.Code : null,
+                    baseCode: docItem.BaseCode ? docItem.BaseCode : null,
+                    skuCode: docItem.BaseCode ? null : docItem.Code ? docItem.Code : null,
                     priority: docItem.priority ? docItem.priority : 2,
                     useShelfLifeDate: docItem.useShelfLifeDate ? docItem.useShelfLifeDate : false,
                     useExpireDate: docItem.useExpireDate ? docItem.useExpireDate : false,
@@ -756,12 +759,19 @@ const ProcessQueueDetail = (props) => {
             processQueueData["processQueues"] = processQueueArr;
 
             Axios.post(window.apipath + "/v2/" + props.processUrl, processQueueData).then(res => {
-                if (res.data._result.status !== 1) {
+                if(props.customAfterProcess !== undefined)
+                    return props.customAfterProcess(res.data)
+                else
+                    return res.data;
+            }).then(res => {
+                if (res._result.status !== 1) {
+                    if(props.processErrorClear)
+                        documents.clearDocument();
                     setDialogState(!dialogState)
-                    setDialogText(res.data._result.message)
+                    setDialogText(res._result.message)
                     setDialogType("error")
                 } else {
-                    var process = res.data.processResults.filter(proRes => {
+                    var process = res.processResults.filter(proRes => {
                         return proRes.processResultItems.find(item => {
                             return item.pickStos.length > 0
                         })
@@ -777,16 +787,11 @@ const ProcessQueueDetail = (props) => {
                         createResData["desASRSLocationCode"] = null;
                         createResData["desASRSAreaCode"] = areaSelection.Code;
                         createResData["processResults"] = process;
-                        setProcessQueueData(res.data)
+                        setProcessQueueData(res)
                         if (!confirmState)
                             setConfirmState(true)
                     }
                 }
-
-                return res.data;
-            }).then(res => {
-                if(props.customAfterProcess !== undefined)
-                    props.customAfterProcess(res)
             });
         }
     };
@@ -798,14 +803,14 @@ const ProcessQueueDetail = (props) => {
                         {genDocumentHeader(doc)}
                     </Grid>
                     <AmTable width={"100%"}
-                        height="150px"
+                        height={295}
                         columns={cols}
                         dataSource={doc.docItems}
                         sortable={false}
                         filterable={false}
                         dataKey="ID"
-                        pageSize={1000}
-                        minRows={3} />
+                        pageSize={3000}
+                        minRows={11} />
                 </DocumentExpansion>
         })
     });
@@ -834,10 +839,11 @@ const ProcessQueueDetail = (props) => {
                         setDialogState(!dialogState)
                         setDialogText(confirmState._result.message)
                         setDialogType("error")
+                        if(props.confirmErrorClear)
+                            documents.clearDocument();
                     }
                     else {
                         documents.clearDocument();
-                        //warehouse.clearWarehouse();
                         setDialogState(!dialogState)
                         setDialogText(confirmState._result.message)
                         setDialogType("success")
@@ -845,13 +851,15 @@ const ProcessQueueDetail = (props) => {
                 }
                 setConfirmState(dialogState)
             }
-            } />
+            } 
+        />
         {
             dialog.key !== "orderBys" ? <AmEditorTable
                 open={dialog.state}
                 onAccept={(status, rowdata) => {
                     if (rowdata !== undefined && status) {
                         const doc = documents.documentListValue.find(x => x.document.ID === rowdata.Document_ID)
+                        console.log(doc)
                         doc.docItems.forEach(item => {
                             if(dialog.key === "conditions"){
                                 let findCondition = processCondition.conditions.filter(x=> x.enable);
@@ -884,12 +892,11 @@ const ProcessQueueDetail = (props) => {
                     onClose={() => { setDialog({ "state": false, data: {} }); }}
                 />
         }
-        <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
-        {
-            <Memo documentData={documents.documentListValue} cols={props.documentItemDetail} />
-        }
-        <Grid container>
-            <Grid item xs="12">
+        <div style={{position:"relative",height:props.contentHeight + 36}}>
+            <div style={{height:props.contentHeight, overflowY:"auto"}}>
+                <Memo documentData={documents.documentListValue} cols={props.documentItemDetail} />
+            </div>
+            <div style={{width:"100%",position:"absolute", bottom:0, right:0,}}>
                 <IconButtonCustom>
                     <DeleteIcon 
                     style={{ float: "left" }}
@@ -897,12 +904,6 @@ const ProcessQueueDetail = (props) => {
                     disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0}
                     onClick={() => { documents.clearDocument() }}
                 /></IconButtonCustom>
-                {/* <AmButton
-                    style={{ float: "left" }}
-                    styleType="delete"
-                    disabled={documents.documentListValue === undefined || documents.documentListValue.length === 0}
-                    onClick={() => { documents.clearDocument() }
-                    }>Clear</AmButton> */}
                 <AmButton
                     style={{ marginLeft: 10, float: "right" }}
                     styleType="info"
@@ -937,8 +938,9 @@ const ProcessQueueDetail = (props) => {
                 </FormInline>
 
                 <div style={{ clear: "both" }}></div>
-            </Grid>
-        </Grid>
+            </div>
+        </div>
+        
     </>
 }
 
@@ -956,7 +958,7 @@ const useColumnsConfirm = (cols) => {
                     return <div style={{ display: "inline-block", paddingLeft: calPadding2 }}><SubdirectoryArrowRightIcon style={{ display: "inline-block" }} fontSize={"small"} /><div style={{ paddingLeft: calPadding, display: "inline-block" }}><FaPallet />{row.original.bstoCode}</div></div>
                 }
                 else {
-                    return <div><InsertDriveFileIcon fontSize={"small"} />{row.original.bstoCode}</div>
+                    return <><InsertDriveFileIcon fontSize={"small"} />{row.original.bstoCode}</>
                 }
             }
             setColumns([findCode, ...cols])
@@ -969,7 +971,7 @@ const useColumnsConfirm = (cols) => {
                     return <div style={{ display: "inline-block", paddingLeft: calPadding2 }}><SubdirectoryArrowRightIcon style={{ display: "inline-block" }} fontSize={"small"} /><div style={{ paddingLeft: calPadding, display: "inline-block" }}><FaPallet />{row.original.bstoCode}</div></div>
                 }
                 else {
-                    return <div><InsertDriveFileIcon fontSize={"small"} />{row.original.bstoCode}</div>
+                    return <><InsertDriveFileIcon fontSize={"small"} />{row.original.bstoCode}</>
                 }
             }
             setColumns([...cols])
@@ -1007,7 +1009,7 @@ const ConfirmDialog = (props) => {
                             else if (obj === "baseQty") {
                                 let findQty = documents.documentListValue.find(x => x.ID === processRes["Document_ID"]).docItems.find(x => x.ID === processRes["docItemID"])
                                 let sumPicking = processRes["pickStos"].map(psto => psto.pickQty).reduce((s, v) => s + v, []);
-                                itemHeader["pickQty"] = sumPicking + '/' + findQty.Quantity
+                                itemHeader["pickQty"] = sumPicking + '/' + findQty.Quantity === 0 ? sumPicking : findQty.Quantity;
                             }
                             else
                                 itemHeader[obj] = processRes[obj]
@@ -1050,23 +1052,25 @@ const ConfirmDialog = (props) => {
     }
 
     const res = () => itemProcess.length > 0 ? itemProcess.map(x => {
-        return <><ExpansionPanel style={{ marginBottom: "5px" }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        return <Accordion style={{ marginBottom: "5px"}}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>{x.docCode}</Typography>
-            </ExpansionPanelSummary>
-            <div style={{ width: "100%" }}>
-                <AmTable
-                    columns={columns}
-                    dataSource={x.processResult}
-                    sortable={false}
-                    filterable={false}
-                    dataKey="pstoID"
-                    pageSize={1000}
-                    tableConfig={false}
-                    minRows={3}
-                />
-            </div>
-        </ExpansionPanel></>
+            </AccordionSummary>
+            <AccordionDetails>
+                <div style={{ width: "100%", height:"400px" }}>
+                    <AmTable
+                        columns={columns}
+                        dataSource={x.processResult}
+                        sortable={false}
+                        filterable={false}
+                        dataKey="pstoID"
+                        pageSize={1000}
+                        minRows={20}
+                        tableConfig={false}
+                    />
+                </div>
+            </AccordionDetails>
+        </Accordion>
     }) : null;
 
     const renderProcess = () => {
@@ -1129,7 +1133,7 @@ const ConfirmDialog = (props) => {
     />;
 }
 
-const ExpansionPanel = withStyles({
+const Accordion = withStyles({
     root: {
         border: '1px solid rgba(0, 0, 0, .125)',
         boxShadow: 'none',
@@ -1144,9 +1148,9 @@ const ExpansionPanel = withStyles({
         },
     },
     expanded: {},
-})(MuiExpansionPanel);
+})(MuiAccordion);
 
-const ExpansionPanelSummary = withStyles({
+const AccordionSummary = withStyles({
     root: {
         backgroundColor: 'rgba(0, 0, 0, .03)',
         borderBottom: '1px solid rgba(0, 0, 0, .125)',
@@ -1168,7 +1172,14 @@ const ExpansionPanelSummary = withStyles({
             padding: 0,
         }
     },
-})(MuiExpansionPanelSummary);
+})(MuiAccordionSummary);
+
+
+const AccordionDetails = withStyles({
+    root: {
+        display:"block"
+    },
+})(MuiAccordionDetails);
 
 const CheckboxCustom = withStyles({
     root: {
@@ -1237,7 +1248,7 @@ const OrderbyCustom = (props) => {
     }
 
     const createElement = () => {
-        return <div>
+        return <>
             <FormInline>
                 <AmDropdown
                     id={"order"}
@@ -1274,7 +1285,7 @@ const OrderbyCustom = (props) => {
                  {/* <AmButton styleType="delete_clear" onClick={() => onClickRemoveItem(x)}>Remove</AmButton> */}
             </FormInline>)
             }
-        </div>
+        </>
     }
 
     return <AmDialogConfirm

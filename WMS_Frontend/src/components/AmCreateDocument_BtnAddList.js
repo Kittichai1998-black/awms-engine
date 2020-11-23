@@ -19,7 +19,7 @@ import AmAux from "./AmAux";
 import AmButton from "./AmButton";
 import AmInput from "./AmInput";
 // import AmTable from "./table/AmTable";
-import AmTable from "./AmTable/AmTable";
+import AmTable from "./AmTable/AmTableComponent";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 import queryString from "query-string";
@@ -227,6 +227,10 @@ const BtnAddList = props => {
         }
     }, [open, query]);
 
+    useEffect(() => {
+        console.log(data)
+    },[data])
+
 
     const SetFormaatdata = (datas) => {
         let dataSet = datas.map(x => {
@@ -248,7 +252,9 @@ const BtnAddList = props => {
                 //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
                 auditStatus: x.AuditStatus.toString(),
                 ShelfLifePercent: x.ShelfLifeRemainPercent ? x.ShelfLifeRemainPercent + '%' : null,
-                remark: query.remark != null ? query.remark : null
+                remark: query.remark != null ? query.remark : null,
+                basecode: x.palletcode,
+                BaseCode: x.palletcode,
             }
             return obj
         })
