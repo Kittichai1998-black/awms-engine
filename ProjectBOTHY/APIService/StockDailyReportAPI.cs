@@ -19,8 +19,7 @@ namespace ProjectBOTHY.APIService
         {
 
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<StockDailyReport>(this.RequestVO);
-            var res = new StockDailyReport().Execute(this.Logger, this.BuVO, req);
+            var res = new StockDailyReport().Execute(this.Logger, this.BuVO, "");
             return res;
         }
     }

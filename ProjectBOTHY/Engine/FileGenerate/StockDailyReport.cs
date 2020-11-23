@@ -22,12 +22,12 @@ namespace ProjectBOTHY.Engine.FileGenerate
             var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Rpt_Path") + fileName;
             var details = dailyStock.Select(x => ResponseGenerate.GetStringValueFromObject(x, 0)).ToList();
             CreateFileText(details, path);
-            return "";
+            return null;
         }
         private void CreateFileText(List<string> obj, string path)
         {
-            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTPใFTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTPใFTP_Password");
+            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
+            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
 
             StringBuilder _str = new StringBuilder();
             _str.Append($"START|REPORT|{DateTime.Now.ToString("yyyyMMddhhMMss")}");

@@ -1,7 +1,9 @@
-import React from 'react';
+
+import React, { useState } from "react";
 import img from '../../../assets/logo/home.png'
 import Assignment from "@material-ui/icons/Assignment";
 import { apicall } from '../../../components/function/CoreFunction'
+import AmDialogs from "../../../components/AmDialogs";
 import IconButton from "@material-ui/core/IconButton";
 import styled from 'styled-components'
 const Axios = new apicall();
@@ -13,6 +15,7 @@ const Container = styled.div`
     `;
 
 const Home = (props) => {
+  const [dialogState, setDialogState] = useState({});
   let Img = require('../../../assets/logo/home.png')
   let ContentImg;
   if (window.project === "ENGINE") { Img = require('../../../assets/logo/home.png'); ContentImg = <img src={Img} width="50%" style={{ marginTop: '5%' }}></img> }
@@ -24,17 +27,13 @@ const Home = (props) => {
 
   const sentReport = () => {
 
-    Axios.post(window.apipath + "/v2/stock_daily_report", []).then(res => {
-      console.log(res)
+    Axios.post(window.apipath + "/v2/stock_daily_report", {}).then(res => {
       if (res.data._result !== undefined) {
         if (res.data._result.status === 1) {
-          // setDialogState({ type: "success", content: "Success", state: true })
-          // if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
-          //   getData(queryViewData)
+          setDialogState({ type: "success", content: "Success", state: true })
         } else {
-          // setDialogState({ type: "error", content: res.data._result.message, state: true })
-          // if (!IsEmptyObject(queryViewData) && queryViewData !== undefined)
-          //   getData(queryViewData)
+          setDialogState({ type: "error", content: res.data._result.message, state: true })
+
         }
       }
 
@@ -45,6 +44,11 @@ const Home = (props) => {
   return (
 
     <Container>
+      <AmDialogs
+        typePopup={dialogState.type}
+        onAccept={(e) => { setDialogState({ ...dialogState, state: false }) }}
+        open={dialogState.state}
+        content={dialogState.content} />
       <div align="center">
 
         {ContentImg}
