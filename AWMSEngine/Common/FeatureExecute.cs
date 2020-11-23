@@ -13,14 +13,15 @@ namespace AWMSEngine.Common
 {
     public static class FeatureExecute
     {
-        public static TExecRes ExectProject<TExecReq, TExecRes>(string featurePluginCode,  AMWLogger logger, VOCriteria buVO, TExecReq req)
+        public static TExecRes ExectProject<TExecReq, TExecRes>(Type typeEngine,string featurePluginCode,  AMWLogger logger, VOCriteria buVO, TExecReq req)
+            //where TEngine : BaseEngine<TExecReq,TExecRes>, new()
             where TExecRes : class
         {
             var staticVal = ADO.WMSStaticValue.StaticValueManager.GetInstant();
             string className = string.Empty;
             try
             {
-                className = staticVal.GetConfigValue<string>(featurePluginCode);
+                className = staticVal.GetConfigValue(featurePluginCode);
             }
             catch
             {
@@ -33,7 +34,7 @@ namespace AWMSEngine.Common
             if (type == null)
                 throw new AMWException(logger, AMWExceptionCode.S0001, "Feature " + featurePluginCode + " Class Type Not Found.");
             var getInstanct = (IProjectEngine<TExecReq, TExecRes>)Activator.CreateInstance(type, new object[] { });
-            return getInstanct.ExecuteEngine(logger, buVO, req);
+            return getInstanct.Execute(typeEngine, logger, buVO, req);
         }
 
     }

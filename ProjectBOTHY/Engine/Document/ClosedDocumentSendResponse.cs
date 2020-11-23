@@ -16,7 +16,7 @@ namespace ProjectBOTHY.Engine.Document
 {
     public class ClosedDocumentSendResponse : IProjectEngine<List<long>, List<long>>
     {
-        public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
+        protected override List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
 
             var closedDoc = new ClosedDocument();

@@ -25,7 +25,7 @@ namespace ADO
             //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             try
             {
-                var apiURL = WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<string>(apiConfigName);
+                var apiURL = WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
                 var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
                 return res;
             }
@@ -51,7 +51,7 @@ namespace ADO
             List<HttpResultModel> outResults = new List<HttpResultModel>();
             try
             {
-                var apiURL = WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue<string>(apiConfigName);
+                var apiURL = WMSStaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
                 var res = RESTFulAccess.SendForm<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
                 return res;
             }
