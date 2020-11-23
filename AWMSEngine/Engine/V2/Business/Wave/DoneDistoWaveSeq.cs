@@ -415,7 +415,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             if (baseCode != null)
                 return ADO.WMSDB.StorageObjectADO.GetInstant().Get(baseCode, null, areaID, false, true, this.BuVO);
 
-            var AutoPallet = StaticValue.GetConfigValue<bool>("MASTER.AUTO_CREATE_BASE");
+            var AutoPallet = StaticValue.GetConfigValue("MASTER.AUTO_CREATE_BASE").Get<bool>();
             if (AutoPallet)
             {
                 

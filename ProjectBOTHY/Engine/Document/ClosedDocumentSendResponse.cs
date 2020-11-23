@@ -16,7 +16,7 @@ namespace ProjectBOTHY.Engine.WorkQueue
 {
     public class ClosedDocumentSendResponse : IProjectEngine<List<long>, List<long>>
     {
-        public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
+        protected override List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
             reqVO.ForEach(id =>
             {
