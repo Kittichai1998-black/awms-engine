@@ -118,37 +118,28 @@ namespace ADO.WMSStaticValue
             try
             {
                 string c = string.Format(code.Attribute<EnumValueAttribute>().ValueString, (int)processType);
-                var res = GetConfigValue<string>(c);
+                var res = GetConfigValue(c);
                 return res;
             }
             catch
             {
-                return GetConfigValue<string>(string.Format(code.Attribute<EnumValueAttribute>().ValueString, "ALL"));
+                return GetConfigValue(string.Format(code.Attribute<EnumValueAttribute>().ValueString, "ALL"));
             }
         }
         public string GetConfigValue(ConfigCommon code)
         {
             string c = code.Attribute<EnumValueAttribute>().ValueString;
-            return GetConfigValue<string>(c);
+            return GetConfigValue(c);
         }
         public string GetConfigValue(string code)
-        {
-            return GetConfigValue<string>(code);
-        }
-        public T GetConfigValue<T>(ConfigCommon code)
-        {
-            string c = code.Attribute<EnumValueAttribute>().ValueString;
-            return GetConfigValue<T>(c);
-        }
-        public T GetConfigValue<T>(string code)
         {
             string _namespace = code.LastIndexOf('.') > 0 ? code.Substring(0, code.LastIndexOf('.')) : string.Empty;
             string _datakey = code.LastIndexOf('.') > 0 ? code.Substring(code.LastIndexOf('.')+1) : code;
 
             var config = this.Configs.FirstOrDefault(x => x.DataKey == _datakey && (x.Namespace ?? string.Empty) == _namespace);
             if (config == null)
-                throw new Exception("ไม่พบ Config '" + code + "' ในระบบ!");
-            return config.DataValue.Get<T>();
+                return string.Empty;
+            return config.DataValue.Get<string>();
         }
         public bool IsMatchConfigArray(string code, object value)
         {
