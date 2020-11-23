@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProjectBOTHY.Engine.Business.Document
+namespace ProjectBOTHY.Engine.Document
 {
     public class RejectDocument : BaseEngine<RejectDocument.TReq, List<amt_Document>>
     {
