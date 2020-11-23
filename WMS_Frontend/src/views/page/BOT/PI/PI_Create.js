@@ -82,7 +82,7 @@ const PI_Create = props => {
                 var headerCreate = [
                     [
                         { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                        { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
+                        { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
                         { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1003, codeTranslate: "Process Type" },
@@ -90,7 +90,7 @@ const PI_Create = props => {
                     ],
                     [
                         Onwer,
-                        { label: "Des. Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
+                        { label: "Des Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
                     ],
                     [
                         { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -123,7 +123,7 @@ const PI_Create = props => {
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
-                    onChangeProcessTypeCode={((e)=> { setProcessTypeCode(e) })}
+                    onChangeProcessTypeCode={((e) => { setProcessTypeCode(e) })}
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
@@ -136,7 +136,7 @@ const PI_Create = props => {
                 />
             );
         }
-     
+
 
     }, [HeaderDoc, CodeprocessType, addlist])
 
@@ -154,8 +154,8 @@ const PI_Create = props => {
             setskuquery(objQuery)
         }
 
-    
-     
+
+
         var columnEdit = [
 
             {
@@ -334,7 +334,7 @@ const PI_Create = props => {
 
     ];
 
-  
+
 
     const columns = [
         { Header: "เลขที่ภาชนะ", accessor: "BaseCode" },
@@ -389,7 +389,7 @@ const PI_Create = props => {
     const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc
     const apiRes = "/counting/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
-    return <div>       
+    return <div>
         {table}</div>;
 };
 

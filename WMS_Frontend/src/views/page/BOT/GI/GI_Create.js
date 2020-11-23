@@ -81,7 +81,7 @@ const GI_Create_FGCustomer = props => {
                 var headerCreate = [
                     [
                         { label: "Doc No.", type: "labeltext", key: "", texts: "-", codeTranslate: "Document No." },
-                        { label: "Doc Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
+                        { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
                         { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1002, codeTranslate: "Process Type" },
@@ -89,7 +89,7 @@ const GI_Create_FGCustomer = props => {
                     ],
                     [
                         Onwer,
-                        { label: "Des. Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
+                        { label: "Des Area", type: "dropdown", key: "desAreaMasterID", queryApi: AreaMasterQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Des Area" }
                     ],
                     [
                         { label: "Sou. Warehouse", type: "dropdown", key: "souWarehouseID", queryApi: WarehouseQuery, fieldLabel: ["Code", "Name"], defaultValue: 1, codeTranslate: "Source Warehouse" },
@@ -118,7 +118,7 @@ const GI_Create_FGCustomer = props => {
             setTable(
                 <AmCreateDocument
                     addList={addlist}
-                    add={ false}
+                    add={false}
                     headerCreate={HeaderDoc}
                     onChangeProcessType={((e) => { setCodeprocessType(e) })}
                     onChangeProcesTypeSKU={((e) => { setskuType(e) })}
@@ -155,7 +155,7 @@ const GI_Create_FGCustomer = props => {
         let AuditStatusDDL;
 
         if (skuType === 5) {
-            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input",  width: '300px' }
+            Headers = { Header: "Vendor Lot", accessor: "ref1", type: "input", width: '300px' }
         } else {
             Headers = { Header: "Lot", accessor: "lot", type: "input", width: '300px' }
         }
@@ -167,11 +167,11 @@ const GI_Create_FGCustomer = props => {
             { Header: "แบบ", accessor: "ref2", type: "text" },
             { Header: "ประเภทธนบัตร", accessor: "ref3", type: "text" },
             { Header: "สถาบัน", accessor: "ref1", type: "text" },
-            { Header: "ศูนย์เงินสด", accessor: "ref4", type: "text"},
+            { Header: "ศูนย์เงินสด", accessor: "ref4", type: "text" },
             { Header: "จำนวน", accessor: "quantity", type: "inputNum", required: true, width: '300px' },
             { Header: "หน่วยนับ", accessor: "unitType", type: "text" },
             { Header: "วันที่รับเข้า", accessor: "productionDate", Cell: e => getFormatDatePro(e.original) },
-            { Header: "หมายเหตุ", accessor: "remark", type: "text"}
+            { Header: "หมายเหตุ", accessor: "remark", type: "text" }
 
 
         ];
@@ -292,7 +292,7 @@ const GI_Create_FGCustomer = props => {
     ];
 
     const columsFindPopupSto = [
-        { Header: "เลขที่ภาชนะ", accessor: "basecode"  },
+        { Header: "เลขที่ภาชนะ", accessor: "basecode" },
         { Header: "ชนิดราคา", accessor: "Code" },
         { Header: "แบบ", accessor: "ref2" },
         { Header: "ประเภทธนบัตร", accessor: "ref3" },
@@ -323,25 +323,25 @@ const GI_Create_FGCustomer = props => {
         if (e.productionDates) {
             return moment(e.productionDates).format("DD/MM/YYYY");
         }
-       
+
     }
 
     const getFormatDateExp = (e) => {
         if (e.expireDates) {
             return moment(e.expireDates).format("DD/MM/YYYY");
         }
-      
+
     }
 
     const getAuditStatus = (e) => {
-        if (e.auditStatus ) {
-            if (e.auditStatus === '0' ) {
+        if (e.auditStatus) {
+            if (e.auditStatus === '0') {
                 return "QUARANTINE"
-            } else if (e.auditStatus === '1' ) {
+            } else if (e.auditStatus === '1') {
                 return "PASSED"
-            } else if (e.auditStatus === '2' ) {
+            } else if (e.auditStatus === '2') {
                 return "REJECTED"
-            } else if (e.auditStatus === '9' ) {
+            } else if (e.auditStatus === '9') {
                 return "HOLD"
             }
         }
