@@ -109,7 +109,7 @@ const ScanPallet = (props) => {
     const [palletCode, setpalletCode] = useState("");
     const [remark, setremark] = useState();
     const [dialogState, setDialogState] = useState({});
-    const [dashboard, setDashboarde] = useState("ReceiveHub");
+    const [dashboard, setDashboarde] = useState("");
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -415,8 +415,8 @@ const ScanPallet = (props) => {
                     labelPattern=" : "
                     width={200}
                     ddlMinWidth={200}
-                    returnDefaultValue={true}
-                    defaultValue={3}
+                    //returnDefaultValue={true}
+                    //defaultValue={3}
                     zIndex={1000}
                     queryApi={AreaMaster}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
