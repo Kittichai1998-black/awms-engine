@@ -5,7 +5,9 @@ import AmProcessQueueHeader from './AmProcessQueueHeader';
 import AmProcessQueueDetail from './AmProcessQueueDetail';
 
 const ProcessQueue = (props) => {
-  let content = props.contentHeight - 140;
+  let content = props.contentHeight - (props.warehouseDefault !== undefined ? 170 : 140);
+  console.log(content)
+  console.log(props.warehouseDefault)
   return <ProcessQueueProvider>
       <AmProcessQueueHeader
           documentPopup={props.documentPopup}

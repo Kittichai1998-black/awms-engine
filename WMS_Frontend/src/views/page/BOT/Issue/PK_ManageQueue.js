@@ -6,19 +6,19 @@ import {
     IsEmptyObject
 } from "../../../../components/function/CoreFunction";
 
-const columnsDocument = [{ "accessor": "Code", "Header": "Code", "sortable": true }];
+const columnsDocument = [{ "accessor": "Code", "Header": "เลขที่ใบเบิก", "sortable": true }];
 const colDocumentItem = [
-    { "accessor": "Code", "Header": "Code", "sortable": false, "width": 200 },
-    { "accessor": "SKUMaster_Name", "Header": "Name", "sortable": false },
-    { "accessor": "Quantity", "Header": "Qty", "sortable": false, "width": 80 },
-    { "accessor": "UnitType_Name", "Header": "Unit", "sortable": false, "width": 80 },
+    { "accessor": "BaseCode", "Header": "เลขที่ภาชนะ", "sortable": false, "width": 200 },
+    { "accessor": "Code", "Header": "ชนิดราคา", "sortable": false, "width": 80 },
+    { "accessor": "Quantity", "Header": "จำนวน", "sortable": false, "width": 80 },
+    { "accessor": "Ref2", "Header": "แบบ", "sortable": false, "width": 80 },
+    { "accessor": "Ref3", "Header": "ประเภทธนบัตร", "sortable": false, "width": 80 },
+    { "accessor": "Ref1", "Header": "สถาบัน", "sortable": false, "width": 80 },
+    { "accessor": "Ref4", "Header": "ศูนย์เงินสด", "sortable": false, "width": 80 },
 ];
 const columnsConfirm = [
-    { "accessor":"bstoCode", "Header":"Code", "sortable":false, "width":200 },
-    { "accessor": "pstoBatch", "Header": "Batch", "sortable": false },
-    { "accessor": "pstoLot", "Header": "Lot", "sortable": false, "width": 100 },
-    { "accessor": "pstoOrderNo", "Header": "Order No", "sortable": false, "width": 100 },
-    { "accessor": "pickQty", "Header": "Pick Qty", "sortable": false, "width": 100 },
+    { "accessor":"bstoCode", "Header":"เลขที่ภาชนะ", "sortable":false, "width":200 },
+    { "accessor": "pickQty", "Header": "จำนวน", "sortable": false, "width": 150 },
 ];
 
 const documentQuery = {
@@ -75,19 +75,60 @@ const documentDetail = {
 var Axios = new apicall();
 
 const customAfterProcess  = (res) => {
-    Axios.post(window.apipath + "/v2/pcq_error", { docID:res.processResults[0].docID });
+    if(res._result.status === 0)
+        Axios.post(window.apipath + "/v2/pcq_error", { docID:res.processResults[0].docID });
+    else{
+        let flagError = false;
+        for(let i = 0; i < res.processResults.length; i++){
+            let p = res.processResults[i]
+            if(flagError)
+                break;
+            for(let j = 0; j < p.processResultItems.length; j++){
+                let pc = p.processResultItems[j];
+                if(pc.pickStos.length === 0)
+                {
+                    flagError = true;
+                    res._result.status = 0
+                    res._result.message = "ไม่พบสินค้าในเอกสาร " + p.docCode + ":" + pc.docItemCode
+                    break;
+                }
+                else{
+                    let sumQty = pc.pickStos.reduce((o, n) => {
+                        return o + n.pickBaseQty;
+                    }, 0);
+                    if(pc.baseQty !== null){
+                        if(pc.baseQty !== sumQty)
+                        {
+                            flagError = true;
+                            res._result.status = 0
+                            res._result.message = "ไม่พบสินค้าในเอกสาร " + p.docCode + ":" + pc.docItemCode
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if(flagError === true){
+            Axios.post(window.apipath + "/v2/pcq_error", { docID:res.processResults[0].docID });
+        }
+    }
+    
+    return res;
 };
 
-const ProcessQueue = () => {
+const ProcessQueue = (props) => {
     const customDesAreaDefault = (doc) => {
         return 3;
     }
-
     return <AmProcessQueue
+        contentHeight={props.height}
+        confirmErrorClear={true}
+        processErrorClear={true}
         documentPopup={columnsDocument}
         documentQuery={documentQuery}
         warehouseQuery={warehouseQuery}
         areaQuery={desAreaQuery}
+        warehouseDefault="1"
         documentItemDetail={colDocumentItem}
         documentDetail={documentDetail}
         processSingle={true}
@@ -97,7 +138,7 @@ const ProcessQueue = () => {
         modeDefault={"1"}
         waveProcess={false}
         confirmProcessUrl={"confirm_process_wq"}
-        customAfterProcess = {res => customAfterProcess(res)}
+        customAfterProcess = {(res) => customAfterProcess(res)}
     />
 }
 
