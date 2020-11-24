@@ -55,21 +55,21 @@ const GI_Detail = Loadable({
 });
 
 const PI_Create = Loadable({
-    loader: () => import("../../views/page/BOT/PI/PI_Create"),
-    loading: Loading
+  loader: () => import("../../views/page/BOT/PI/PI_Create"),
+  loading: Loading
 });
 const PI_Detail = Loadable({
-    loader: () => import("../../views/page/BOT/PI/PI_Detail"),
-    loading: Loading
+  loader: () => import("../../views/page/BOT/PI/PI_Detail"),
+  loading: Loading
 });
 const PI_Search = Loadable({
-    loader: () => import("../../views/page/BOT/PI/PI_Search"),
-    loading: Loading
+  loader: () => import("../../views/page/BOT/PI/PI_Search"),
+  loading: Loading
 });
 
 const PI_ManageQueue = Loadable({
-    loader: () => import("../../views/page/BOT/PI/PI_ManageQueue"),
-    loading: Loading
+  loader: () => import("../../views/page/BOT/PI/PI_ManageQueue"),
+  loading: Loading
 });
 
 
@@ -137,7 +137,10 @@ const MonitorPicking = Loadable({
   loader: () => import("../../views/page/BOT/Warehouse/MonitorWorkingPD"),
   loading: Loading
 });
-
+const PK_ManageQueue = Loadable({
+  loader: () => import("../../views/page/BOT/Issue/PK_ManageQueue"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/warehouse/storageobjectFull",
@@ -162,14 +165,11 @@ const routes = [
 
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
   { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
-  { path: "/issue/search", name: "GI View", compoment: GI_Search, exact: true },
-   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
-  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
-  { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
+  { path: "/issue/search", name: "GI Search", compoment: GI_Search, exact: true },
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
   { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
-
+  { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
   // { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
   // { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
   //{ path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
@@ -196,12 +196,12 @@ const routes = [
   { path: "/report/dailyissuesum", name: "Issue Summary Report ", compoment: DailySTOSumIssue, exact: true },
   { path: "/report/dailyauditsum", name: "Audit Summary Report ", compoment: DailySTOSumAudit, exact: true },
   { path: "/warehouse/move", name: "Move Location", compoment: MoveLocation, exact: true },
-    { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
+  { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
-    { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
-    { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
-    { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
-    { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_ManageQueue, exact: true },
+  { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
+  { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
+  { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
+  { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_ManageQueue, exact: true },
 ];
 
 export default routes;
