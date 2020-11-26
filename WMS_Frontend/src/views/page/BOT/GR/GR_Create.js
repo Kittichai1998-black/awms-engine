@@ -137,7 +137,7 @@ const RD_Create_FGCustomer = props => {
         }
 
 
-    }, [HeaderDoc, CodeprocessType, columSKU])
+    }, [HeaderDoc])
 
 
     useEffect(() => {
@@ -170,6 +170,7 @@ const RD_Create_FGCustomer = props => {
                 fieldLabel: ["Code"],
                 queryApi: skuquery,
                 type: "dropdown",
+                defaultValue: 1,
                 key: "ID",
                 required: true
             },
@@ -197,7 +198,8 @@ const RD_Create_FGCustomer = props => {
                 accessor: "unitType",
                 fieldDataKey: 'UnitType_Code',
                 fieldLabel: 'UnitType_Name',
-                type: "unitConvert", width: '300px',
+                type: "unitConvert",
+                width: '300px',
                 required: true
             },
             { Header: "วันที่รับเข้า", accessor: "productionDate", type: "date", width: '300px' },
@@ -206,7 +208,7 @@ const RD_Create_FGCustomer = props => {
         ];
 
         setcolumSKU(columnEdit)
-    }, [skuType, ProcessTypeCode])
+    }, [skuType])
 
 
 
