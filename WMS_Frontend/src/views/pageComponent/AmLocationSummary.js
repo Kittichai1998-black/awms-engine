@@ -52,22 +52,39 @@ input {
 
 const AmLocationSummary = props => {
     const [dataTop, setDataTop] = useState()
-    const [dataSide, setDataSide] = useState()
+    const [dataBottom, setDataBottom] = useState()
     const [dataDetail, setDataDetail] = useState([])
     const [dataFull, setDataFull] = useState()
     const [dataBank, setDataBank] = useState()
     const [dataAll, setDataAll] = useState()
-    const [titleBank, setTitleBank] = useState()
+    const [titleBottom2, setTitleBottom2] = useState("")
     const [btnClear, setBtnClear] = useState()
+    const [titleBottom, setTitleBottom] = useState("Side view")
     const [open, setOpen] = useState({
         full: true,
         bank: false,
         cell: false
     });
-    const [editData, setEditData] = useState({});
+    const [editData, setEditData] = useState({ view: "top", warehouse_id: 1, area_id: 1 });
     const [toggleModal, setToggleModal] = useState(false)
 
     const [inputError, setInputError] = useState([])
+    const [textSearch, setTextSearch] = useState()
+    const [dataDraw1, setdataDraw1] = useState()
+    const [dataDraw2, setdataDraw2] = useState()
+    const [refresh, setRefresh] = useState()
+    const view_AreaMaster = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "AreaMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2},{"f" : "AreaMasterType_ID", "c" : "=", "v" : 10}]',
+        f: "ID as area_id,Name,Code",
+        g: "",
+        s: "[{ 'f': 'ID', 'od': 'asc' }]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+    const [areaMaster, setAreaMaster] = useState(view_AreaMaster)
     // const refDetail = useRef();
     const locationSummary = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -81,47 +98,61 @@ const AmLocationSummary = props => {
         all: ""
     }
 
-    let bank = [{}],
-        bay = [{}],
-        level = [{}],
-        topTr,
+    let topTr,
         sideTd = [],
-        mergeDatas = []
+        mergeDatas = [],
+        pos_X_1 = [{}],
+        pos_Y_1 = [],
+        pos_X_2 = [{}],
+        pos_Y_2 = []
 
     const dataDD = [
         { label: "Top view", value: "top" },
-        { label: "Bottom view", value: "bottom" },
+        { label: "Front view", value: "front" },
         { label: "Side view", value: "side" }
     ]
 
-    const view_AreaMaster = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"<", "v": 2},{"f" : "AreaMasterType_ID", "c" : "=", "v" : 10}]',
-        f: "*",
+    const table_Warehouse = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "Warehouse",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID as warehouse_id,Name,Code",
         g: "",
         s: "[{ 'f': 'ID', 'od': 'asc' }]",
         sk: 0,
         l: 100,
         all: ""
-    };
-    const columsFindPopupArea = [
+    }
+
+    const columsFindPopupArea_Warehouse = [
         { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
     ];
     const columnEdit = [
         {
+            Header: "Warehouse",
+            accessor: "warehouse_id",
+            type: "findPopUp",
+            required: true,
+            // fieldDataKey: "warehouse_id",
+            fieldLabel: ["Code", "Name"],
+            idddl: "warehouse_id",
+            queryApi: table_Warehouse,
+            // defaultValue: 1,
+            columsddl: columsFindPopupArea_Warehouse
+        },
+        {
             idddl: "area",
             Header: "Area",
-            accessor: "ID",
+            accessor: "area_id",
             type: "findPopUp",
             // search: "Code",
-            queryApi: view_AreaMaster,
+            queryApi: areaMaster,
             fieldLabel: ["Code", "Name"],
-            columsddl: columsFindPopupArea,
+            columsddl: columsFindPopupArea_Warehouse,
             // related: ["Name"],
-            // fieldDataKey: "Code", // ref กับ accessor
-            defaultValue: 1,
+            // fieldDataKey: "area_id", // ref กับ accessor
+            // defaultValue: 1,
             required: true
         },
         { Header: "Level", accessor: "select", type: "input", width: '300px' },
@@ -139,139 +170,139 @@ const AmLocationSummary = props => {
     const ref = useRef(columnEdit.map(() => createRef()))
 
     useEffect(() => {
-        Axios.get(createQueryString(locationSummary)).then((row) => {
-            if (row.data._result.status && row.data.datas.length) {
-                setDataAll(row.data.datas)
+        Axios.get(createQueryString(locationSummary)).then((res) => {
+            if (res.data._result.status && res.data.datas.length)
+                setDataAll(res.data.datas)
+        })
+    }, [refresh])
 
-                let pack = row.data.datas.filter(x => x.bsto_Code),
-                    palletLen = getUnique(pack, "bsto_Code").length,
-                    palletAll = getUnique(row.data.datas, "Code").length,
-                    palletPer = (palletLen / palletAll * 100).toFixed(3),
-                    groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
-                    groupBankP = groupBy(row.data.datas.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
-                    // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
-                    // groupLvP = groupBy(pack.sort((a, b) => (a.Lv > b.Lv) ? 1 : ((b.Lv > a.Lv) ? -1 : 0)), "Lv"),
-                    setFull = (
-                        <Card style={{ margin: "5px" }}>
-                            <CardContent style={{ padding: "5px" }}>
-                                {/* <div style={{ textAlign: "center" }}>
-                                    <b style={{ color: "red" }}>Location : {x[0].Code}</b>
-                                </div> */}
-                                <p style={{ margin: "0px" }}><b>Used Location</b></p>
-                                <p style={{ margin: "0px" }}>Pallet : {palletLen}/{palletAll} {`(${palletPer}%)`}</p>
-                                <p style={{ margin: "0px" }}>Pack : {pack.length}</p>
-
-                                {groupSKUP.length ? (
-                                    <>
-                                        <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>SKU Type</b></p>
-                                        {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
-                                    </>
-                                ) : null}
-
-                                {pack.length ? (
-                                    <>
-                                        <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Bank</b></p>
-                                        {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
-
-                                        {/* <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Bay</b></p>
-                                        {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
-    
-                                        <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Lv</b></p>
-                                        {groupLvP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Lv)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
-                                    </>
-                                ) : null}
-                            </CardContent>
-                        </Card>
-                    )
-                setDataFull(setFull)
-            }
-
+    useEffect(() => {
+        Axios.get(getUrlDrawGraph(editData)).then((res) => {
+            if (res.data._result.status && res.data.datas.length)
+                setdataDraw1(res.data.datas)
         })
     }, [])
 
     useEffect(() => {
         if (dataAll) {
-            dataAll.map(x => {
+            console.log(dataAll);
+            let pack = dataAll.filter(x => x.bsto_Code),
+                palletLen = getUnique(pack, "bsto_Code").length,
+                palletAll = getUnique(dataAll, "Code").length,
+                palletPer = (palletLen / palletAll * 100).toFixed(3),
+                groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
+                groupBankP = groupBy(dataAll.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
+                // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
+                // groupLvP = groupBy(pack.sort((a, b) => (a.Lv > b.Lv) ? 1 : ((b.Lv > a.Lv) ? -1 : 0)), "Lv"),
+                setFull = (
+                    <Card style={{ margin: "5px" }}>
+                        <CardContent style={{ padding: "5px" }}>
+                            {/* <div style={{ textAlign: "center" }}>
+                                    <b style={{ color: "red" }}>Location : {x[0].Code}</b>
+                                </div> */}
+                            <p style={{ margin: "0px" }}><b>Used Location</b></p>
+                            <p style={{ margin: "0px" }}>Pallet : {palletLen}/{palletAll} {`(${palletPer}%)`}</p>
+                            <p style={{ margin: "0px" }}>Pack : {pack.length}</p>
 
-                let chkBank = bank.find(y => y.Bank === x.Bank),
-                    chkBay = bay.find(y => y.Bay === x.Bay),
-                    chkLv = level.find(y => y.Lv === x.Lv)
-                if (!chkBank) {
-                    bank.push(x)
-                }
-                if (!chkBay) {
-                    bay.push(x)
-                }
-                if (!chkLv) {
-                    level.push(x)
-                }
+                            {groupSKUP.length ? (
+                                <>
+                                    <hr style={{ margin: "5px 0" }} />
+                                    <p style={{ margin: "0px" }}><b>SKU Type</b></p>
+                                    {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
+                                </>
+                            ) : null}
+
+                            {pack.length ? (
+                                <>
+                                    <hr style={{ margin: "5px 0" }} />
+                                    <p style={{ margin: "0px" }}><b>Bank</b></p>
+                                    {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
+
+                                    {/* <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>Bay</b></p>
+                                        {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
+
+                                        <hr style={{ margin: "5px 0" }} />
+                                        <p style={{ margin: "0px" }}><b>Lv</b></p>
+                                        {groupLvP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Lv)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
+                                </>
+                            ) : null}
+                        </CardContent>
+                    </Card>
+                )
+            setDataFull(setFull)
+        }
+    }, [dataAll])
+
+    useEffect(() => {
+        if (dataDraw1) {
+            let title, sort_Y
+            // eslint-disable-next-line default-case
+            switch (editData.view) {
+                case 'top': setTitleBottom("Side view"); title = "Bank / Bay"; sort_Y = 'asc'; break;
+                case 'front': setTitleBottom("Top view"); title = "Lv / Bank"; sort_Y = 'desc'; break;
+                case 'side': setTitleBottom("Top view"); title = "Lv / Bay"; sort_Y = 'desc'; break;
+            }
+
+            // console.log(dataDraw1);
+            dataDraw1.map(x => {
+                let chk_X = pos_X_1.find(y => y.Pos_X === x.Pos_X),
+                    chk_Y = pos_Y_1.find(y => y.Pos_Y === x.Pos_Y)
+                !chk_X && pos_X_1.push(x)
+                !chk_Y && pos_Y_1.push(x)
             })
-            let bayPercen_10 = (bay.length - 1) * 0.1,
+            pos_Y_1.sort((a, b) => sort_Y === "asc" ? ((a.Pos_Y > b.Pos_Y) ? 1 : -1) : ((a.Pos_Y < b.Pos_Y) ? 1 : -1)).unshift({})
+
+            let percenXHeader = (pos_X_1.length - 1) * 0.1,
                 padding = "5px",
-                palletLen = (bank.length - 1) * (bay.length - 1),
-
-                dataT = bank.sort((a, b) => (a.Bank < b.Bank) ? -1 : ((b.Bank < a.Bank) ? 1 : 0)).map((x, xi) => {
-                    let countPalletBank = 0
+                dataT = pos_Y_1.map((y, yi) => {
+                    let percenLast = 0
                     return (
-                        <tr className="HoverTable" onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
-                            bay.map((y, yi) => {
-                                let dataFil = groupBy(dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code }), "bsto_Code")
-                                let dataFin = dataAll.find(z => { return z.Bank === x.Bank && z.Bay === y.Bay })
+                        <tr className="HoverTable" onClick={(e) => clickRow(y.Pos_Y, e)} key={yi}>{
+                            pos_X_1.map((x, xi) => {
+                                // console.log(xi, x);
+                                // console.log(yi, y);
+                                // let dataFil = groupBy(dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code }), "bsto_Code")
+                                let dataFin = dataDraw1.find(z => { return z.Pos_X === x.Pos_X && z.Pos_Y === y.Pos_Y })
 
-                                if (xi === 0 && yi && yi % bayPercen_10 === 0 && bayPercen_10 % 1 === 0) { // header แกน x
-                                    return <td colSpan={bayPercen_10} key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
-                                } else if (xi === 0 && yi && yi % bayPercen_10 !== 0 && bayPercen_10 % 1 !== 0) { // header แกน y
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
-                                } else if (yi === 0 && xi) { // header แกน y
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{parseInt(x.Bank)}</td>
-                                } else if (yi === 0 && xi === 0) {
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
-                                } else if (yi && xi) {
-                                    let percen = groupBy(dataFil, "Code").length / (level.length - 1) * 100,
-                                        row
-                                    // cssBg = `rgba(210, 105, 30, ${color})`
-                                    countPalletBank += dataFil.length
-
-                                    // if (xi >= 1 && xi <= 4) {
-
-                                    // } else {
-
-                                    // }
-                                    switch (xi) {
+                                if (yi === 0 && xi === 0) {
+                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{title}</td>
+                                } else if (yi === 0 && xi && xi % percenXHeader === 0 && percenXHeader % 1 === 0) { // header แกน x แบ่ง 10 เปอเซ็นลงตัว
+                                    return <td colSpan={percenXHeader} key={xi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{xi}</td>
+                                } else if (yi === 0 && xi && xi % percenXHeader !== 0 && percenXHeader % 1 !== 0) { // header แกน x แบ่ง 10 เปอเซ็นไม่ลงตัว
+                                    return <td key={xi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{xi}</td>
+                                } else if (xi === 0 && yi) { // header แกน y
+                                    return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{y.Pos_Y}</td>
+                                }
+                                else if (yi && xi) {
+                                    dataFin && (percenLast += dataFin.Density_AVG)
+                                    let row
+                                    // eslint-disable-next-line default-case
+                                    switch (yi) {
                                         case 1:
                                             row = 25; break
                                         case 2:
-
                                             row = 50; break
                                         case 3:
-
                                             row = 75; break
                                         case 4:
-
                                             row = 100; break
-                                        default:
-
-                                            row = 0; break
                                     }
                                     return (
                                         <>
                                             <td style={{
                                                 padding: padding,
-                                                backgroundColor: dataFin ? bgColor(percen) : "black",
+                                                backgroundColor: dataFin ? bgColor(dataFin.Density_AVG) : "black",
                                                 border: "1px solid black"
                                             }}></td>
-                                            {yi === bay.length - 1 ? <td>{countPalletBank ? (countPalletBank / palletLen * 100).toFixed(3) + "%" : null}</td> : null}
-                                            {yi === bay.length - 1 ? <td
+                                            {xi === pos_X_1.length - 1 ? <td>{percenLast ? (percenLast / pos_X_1.length - 1).toFixed(3) + "%" : null}</td> : null}
+                                            {xi === pos_X_1.length - 1 ? <td
                                                 style={{
                                                     backgroundColor: bgColor(row),
                                                     textAlign: 'left !important'
                                                     // border: row?"1px solid black":null
                                                 }}
-                                            >{row && row + clickDesCription(row)}</td> : null}
+                                            >{row && clickDesCription(row)}</td> : null}
 
                                         </>
                                     )
@@ -282,66 +313,55 @@ const AmLocationSummary = props => {
                 })
             setDataTop(dataT)
         }
-    }, [dataAll])
+    }, [dataDraw1])
 
-    const clickDesCription = (row) => {
-        if (row == 25) {
-            return " (Low Density)"
-        } else if (row == 50) {
-            return " (Medium Density)"
-        } else if (row == 75) {
-            return " (High Density)"
-        } else if (row == 100) {
-            return " (Full)"
-        } else {
-            return null
-        }
-    }
-    const clickRow = (rowBank, e) => {
-        if (rowBank) {
-            if (topTr) {
-                topTr.classList.remove("active");
-                // topTr.removeAttribute("style")
+    useEffect(() => {
+        if (dataDraw2) {
+            console.log(dataDraw2);
+            let title, sort_Y, selectText
+            // eslint-disable-next-line default-case
+            switch (editData.view) {
+                case 'top': setTitleBottom("Side view"); title = "Lv / Bay"; sort_Y = 'desc'; selectText = "Bank"; break;
+                case 'front': setTitleBottom("Top view"); title = "Bank / Bay"; sort_Y = 'asc'; selectText = "Lv"; break;
+                case 'side': setTitleBottom("Top view"); title = "Bank / Bay"; sort_Y = 'asc'; selectText = "Lv"; break;
             }
-            sideTd.forEach(x => {
-                x.style.border = "1px solid black"
+
+            dataDraw2[0].map(x => {
+                let chk_X = pos_X_2.find(y => y.Pos_X === x.Pos_X),
+                    chk_Y = pos_Y_2.find(y => y.Pos_Y === x.Pos_Y)
+                !chk_X && pos_X_2.push(x)
+                !chk_Y && pos_Y_2.push(x)
             })
-            sideTd.length = 0
 
-            setDataDetail([])
-            mergeDatas.length = 0
-            // document.getElementById('divTableSideView').style
-
-            // e.currentTarget.setAttribute("style", "border: 2px solid yellow;");
-            e.currentTarget.classList.add("active");
-            topTr = e.currentTarget
+            pos_Y_2.sort((a, b) => sort_Y === "asc" ? ((a.Pos_Y > b.Pos_Y) ? 1 : -1) : ((a.Pos_Y < b.Pos_Y) ? 1 : -1)).unshift({})
 
             let padding = "8px",
-                dataS = level.sort((a, b) => (a.Lv > b.Lv) ? -1 : ((b.Lv > a.Lv) ? 1 : 0)).map((x, xi) => {
+                dataB = pos_Y_2.map((y, yi) => {
                     return (
-                        <tr key={xi}>{
-                            bay.map((y, yi) => {
-                                let dataFil = dataAll.filter(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank && z.bsto_Code })
-                                let dataFin = dataAll.find(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank })
+                        <tr key={yi}>{
+                            pos_X_2.map((x, xi) => {
+                                let dataFin = dataDraw2[0].find(z => { return z.Pos_X === x.Pos_X && z.Pos_Y === y.Pos_Y && z.Density_AVG })
+                                // let dataFil = dataAll.filter(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank && z.bsto_Code })
+                                // let dataFin = dataAll.find(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank })
                                 // wid = 100 / (bay.length + 1) + "%"
 
-                                if (xi === 0 && yi) {
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{yi}</td>
-                                } else if (yi === 0 && xi) {
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{x.Lv}</td>
-                                } else if (yi === 0 && xi === 0) {
-                                    return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Lv\Bay</td>
+                                if (yi === 0 && xi) {
+                                    return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{xi}</td>
+                                } else if (xi === 0 && yi) {
+                                    return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{y.Pos_Y}</td>
+                                } else if (xi === 0 && yi === 0) {
+                                    return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{title}</td>
                                 } else {
-                                    let color = dataFil.length ? "#993300" : null,
-                                        cssBg = `rgba(210, 105, 30, ${color})`
+                                    // let color = dataFil.length ? "#993300" : null,
+                                    //     cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td
                                             className="HoverTable"
                                             key={yi}
-                                            onClick={(e) => clickData(rowBank, y.Bay, x.Lv, e)}
+                                            onClick={(e) => clickData(x.Pos_X, y.Pos_Y, dataDraw2[1], selectText, e)}
                                             style={{
                                                 padding: padding,
-                                                backgroundColor: dataFin ? color : "black",
+                                                backgroundColor: dataFin ? "#993300" : null,
                                                 border: "1px solid black"
                                             }}></td>
                                     )
@@ -350,18 +370,18 @@ const AmLocationSummary = props => {
                         }</tr>
                     )
                 })
-            setTitleBank("Bank " + parseInt(rowBank))
-            setDataSide(dataS)
+            setTitleBottom2(selectText + " " + parseInt(dataDraw2[1]))
+            setDataBottom(dataB)
             setBtnClear()
 
-            let pack = dataAll.filter(x => x.bsto_Code && x.Bank === rowBank),
+            let pack = dataAll.filter(x => x.bsto_Code && x.Bank === dataDraw2[1]),
                 groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
                 groupBay = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
                 groupLv = groupBy(pack.sort((a, b) => (a.Lv > b.Lv) ? 1 : ((b.Lv > a.Lv) ? -1 : 0)), "Lv"),
                 setBank = pack.length ? (
                     <Card style={{ margin: "5px" }}>
                         <CardContent style={{ padding: "5px" }}>
-                            <p style={{ margin: "0px" }}><b>Bank {parseInt(rowBank)}</b></p>
+                            <p style={{ margin: "0px" }}><b>Bank {parseInt(dataDraw2[1])}</b></p>
 
                             <hr style={{ margin: "5px 0" }} />
                             <p style={{ margin: "0px" }}><b>SKU Type</b></p>
@@ -381,9 +401,59 @@ const AmLocationSummary = props => {
             setDataBank(setBank)
             setOpen({ full: false, bank: true, cell: false })
         }
+    }, [dataDraw2])
+
+    const clickDesCription = (row) => {
+        if (row == 25) {
+            return "<= 25"
+        } else if (row == 50) {
+            return "<= 50"
+        } else if (row == 75) {
+            return "<= 75"
+        } else if (row == 100) {
+            return "> 75"
+        } else {
+            return null
+        }
+    }
+    const clickRow = (bank_lv, e) => {
+        if (bank_lv) {
+            let viewB
+            const _editData = { ...editData }
+            // eslint-disable-next-line default-case
+            switch (editData.view) {
+                case 'top': viewB = 'side'; _editData.bank = bank_lv; delete _editData.select; break;
+                case 'front': viewB = 'top'; _editData.select = bank_lv; delete _editData.bank; break;
+                case 'side': viewB = 'top'; _editData.select = bank_lv; delete _editData.bank; break;
+            }
+            _editData.view = viewB
+
+            if (topTr) {
+                topTr.classList.remove("active");
+                // topTr.removeAttribute("style")
+            }
+            sideTd.forEach(x => {
+                x.style.border = "1px solid black"
+            })
+            sideTd.length = 0
+
+            setDataDetail([])
+            mergeDatas.length = 0
+            // document.getElementById('divTableSideView').style
+            // e.currentTarget.setAttribute("style", "border: 2px solid yellow;");
+            e.currentTarget.classList.add("active");
+            topTr = e.currentTarget
+
+            Axios.get(getUrlDrawGraph(_editData)).then((res) => {
+                if (res.data._result.status && res.data.datas.length) {
+                    setdataDraw2([res.data.datas, bank_lv])
+                }
+
+            })
+        }
     }
 
-    const clickData = (selBank, selBay, selLv, e) => {
+    const clickData = (po_x, po_y, bank_lv, textSelectRow, e) => {
         let chk
         if (e.currentTarget.style.border.search("black") !== -1 && e.currentTarget.style.backgroundColor && e.currentTarget.style.backgroundColor !== "black") {
             e.currentTarget.style.border = "2px solid Aqua"
@@ -395,7 +465,14 @@ const AmLocationSummary = props => {
             chk = false
         }
 
-        let dataFil = dataAll.filter(z => { return z.Lv === selLv && z.Bay === selBay && z.Bank === selBank && z.bsto_Code })
+        let bank, bay, lv
+
+        // eslint-disable-next-line default-case
+        switch (textSelectRow) {
+            case "Bank": bank = bank_lv; bay = po_x; lv = po_y; break;
+            case "Lv": bank = po_y; bay = po_x; lv = bank_lv; break;
+        }
+        let dataFil = dataAll.filter(z => { return z.Lv === lv && z.Bay === bay && z.Bank === bank && z.bsto_Code })
 
         if (chk) {
             mergeDatas = [...mergeDatas, dataFil]
@@ -496,128 +573,21 @@ const AmLocationSummary = props => {
         setOpen({ bank: true, full: false, cell: false })
     }
 
-    // const editorListcolunm = () => {
-    //     if (props.columnEdit !== undefined) {
-    //         return props.columnEdit.map((row, i) => {
-    //             return {
-    //                 "field": row.accessor,
-    //                 "component": (data = null, cols, key) => {
-    //                     // let rowError = inputError.length ? inputError.some(x => {
-    //                     //     return x === row.accessor
-    //                     // }) : false
-    //                     return <div key={key}>
-
-    //                         {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
-    //                             row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, row.disabled, i, rowError, row.required)}
-
-    //                     </div>
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }
     const onChangeEditor = (field, data, required, row) => {
         if (typeof data === "object" && data) {
             editData[field] = data[field] ? data[field] : data.value
-        } else {
+        } else if (data) {
             editData[field] = data
+        } else {
+            delete editData[field]
         }
-        console.log(editData);
-        // if(data)
-        // if (data === "") {
-        //     editData[field] = null
-        // }
 
-        // if (addData && Object.keys(editData).length === 0) {
-        //     editData["ID"] = addDataID
-        // }
-
-        // if (field === "Code") {
-        //     setskuID(data.ID);
-        // }
-
-
-        // //if (props.itemNo && addData) {
-        // //    if (addDataID === -1) {
-        // //        let itemNos = props.defualItemNo
-        // //        let itemn = itemNos.toString();
-        // //        editData["itemNo"] = itemn
-        // //    } else {
-        // //        let ItemNoInt = parseInt(props.defualItemNo)
-        // //        let itemNos = (ItemNoInt + (dataSource.length))
-        // //        let itemn;
-        // //        if (itemNos < 10) {
-        // //            itemn = ("000" + itemNos);
-        // //        } else if (itemNos >= 10 || itemNos < 100) {
-        // //            itemn = ("00" + itemNos);
-        // //        } else if (itemNos >= 100) {
-        // //            itemn = ("0" + itemNos);
-        // //        }
-        // //        editData["itemNo"] = itemn
-        // //    }
-        // //}
-
-
-        // if (typeof data === "object" && data) {
-        //         editData[field] = data[field] ? data[field] : data.value
-        // }
-        // else {
-        //     if (data === "") {
-        //         editData[field] = null
-        //     } else {
-        //         editData[field] = data
-        //     }
-        // }
-
-
-        // if (row && row.related && row.related.length) {
-        //     let indexField = row.related.reduce((obj, x) => {
-        //         obj[x] = props.columnEdit.findIndex(y => y.accessor === x)
-        //         return obj
-        //     }, {})
-        //     for (let [key, index] of Object.entries(indexField)) {
-        //         if (data) {
-        //             if (key === "packID") {
-        //                 editData.packID_map_skuID = data.packID + "-" + data.skuID
-        //             }
-        //             editData[key] = data[key]
-        //         } else {
-        //             delete editData[key]
-        //         }
-
-        //         if (index !== -1) {
-        //             if (data) {
-        //                 if (ref.current[index].current.value)                           
-        //                     ref.current[index].current.value = data[key]
-        //             } else {
-        //                 //ref.current[index].current.value = ""
-        //             }
-        //         }
-        //     }
-        // }
-
-        // if (row && row.removeRelated && row.removeRelated.length && editData.packID_map_skuID && (+editData.packID_map_skuID.split('-')[0] !== +editData.packID || +editData.packID_map_skuID.split('-')[1] !== +editData.skuID)) {
-        //     row.removeRelated.forEach(x => delete editData[x])
-        // }
-
-        // if (props.createDocType === "audit" || props.createDocType === "counting") {
-        //     if (field === 'quantity') {
-        //         if (data < 101 && data > 0) {
-        //             editData['quantitys'] = data
-        //             editData['quantity'] = data + '%'
-        //             setEditData(editData)
-        //         } else {
-        //             setStateDialogErr(true)
-        //             setMsgDialog("quantity Not Correct")
-        //         }
-        //     } else {
-
-        //     }
-
-        // } else {
-
-        //     setEditData(editData)
-        // }
+        if (field === "warehouse_id") {
+            let q_view_AreaMaster = JSON.parse(view_AreaMaster.q)
+            q_view_AreaMaster.push({ "f": "Warehouse_ID", "c": "=", "v": data.warehouse_id })
+            view_AreaMaster.q = JSON.stringify(q_view_AreaMaster)
+            setAreaMaster(view_AreaMaster)
+        }
 
         if (required) {
             if (!editData[field]) {
@@ -632,88 +602,47 @@ const AmLocationSummary = props => {
                 setInputError(arrNew)
             }
         }
-        // console.log(_editData);
-        // setEditData(_editData)
     }
 
-    const onHandleEditConfirm = (status, rowdata, inputError) => {
+    const getUrlDrawGraph = (datas) => {
+        let url = window.apipath + "/v2/GetSPSearchAPI?" +
+            "&warehouse_id=" + datas.warehouse_id +
+            "&area_id=" + datas.area_id +
+            "&spname=STOLOC_PLOTGRAPH"
+        datas.view && (url += "&view=" + datas.view)
+        datas.bank && (url += "&bank=" + datas.bank)
+        datas.select && (url += "&select=" + datas.select)
+        datas.code && (url += "&code=" + datas.code)
+        datas.lot && (url += "&lot=" + datas.lot)
+        datas.batch && (url += "&batch=" + datas.batch)
+        datas.fromExpireDate && (url += "&fromExpireDate=" + datas.fromExpireDate)
+        datas.toExpireDate && (url += "&toExpireDate=" + datas.toExpireDate)
+        datas.fromProductDate && (url += "&fromProductDate=" + datas.fromProductDate)
+        datas.toProductDate && (url += "&toProductDate=" + datas.toProductDate)
+        datas.fromIncubationDay && (url += "&fromIncubationDay=" + datas.fromIncubationDay)
+        datas.toIncubationDay && (url += "&toIncubationDay=" + datas.toIncubationDay)
+        return url
+    }
+
+    const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            console.log(rowdata);
-            // let xxx= [...dataSource];
-            let url = window.apipath + "/v2/GetSPSearchAPI?" +
-                "&area_id=" + rowdata.ID +
-                "&spname=STOLOC_PLOTGRAPH"
-
-            rowdata.view && (url += "&view=" + rowdata.view)
-            rowdata.select && (url += "&select=" + rowdata.select)
-            rowdata.code && (url += "&code=" + rowdata.code)
-            rowdata.lot && (url += "&lot=" + rowdata.lot)
-            rowdata.batch && (url += "&batch=" + rowdata.batch)
-            rowdata.fromExpireDate && (url += "&fromExpireDate=" + rowdata.fromExpireDate)
-            rowdata.toExpireDate && (url += "&toExpireDate=" + rowdata.toExpireDate)
-            rowdata.fromProductDate && (url += "&fromProductDate=" + rowdata.fromProductDate)
-            rowdata.toProductDate && (url += "&toProductDate=" + rowdata.toProductDate)
-            rowdata.fromIncubationDay && (url += "&fromIncubationDay=" + rowdata.fromIncubationDay)
-            rowdata.toIncubationDay && (url += "&toIncubationDay=" + rowdata.toIncubationDay)
-
-            console.log(url);
             if (!inputError.length) {
-                Axios.get(url).then((res) => {
-                    console.log(res);
-                    // ${rowdata.view && "view=" + rowdata.view}
-                    // ${rowdata.select && "select=" + rowdata.select}
-                    // ${rowdata.code && "code=" + rowdata.code}
-                    // ${rowdata.lot && "lot=" + rowdata.lot}
-                    // ${rowdata.batch && "batch=" + rowdata.batch}
-                    // ${rowdata.fromExpireDate && "fromExpireDate=" + rowdata.fromExpireDate}
-                    // ${rowdata.toExpireDate && "toExpireDate=" + rowdata.toExpireDate}
-                    // ${rowdata.fromProductDate && "fromProductDate=" + rowdata.fromProductDate}
-                    // ${rowdata.toProductDate && "toProductDate=" + rowdata.toProductDate}
-                    // ${rowdata.fromIncubationDay && "fromIncubationDay=" + rowdata.fromIncubationDay}
-                    // ${rowdata.toIncubationDay && "toIncubationDay=" + rowdata.toIncubationDay}
+                Axios.get(getUrlDrawGraph(rowdata)).then((res) => {
+                    if (res.data._result.status && res.data.datas.length) {
+                        setRefresh({})
+                        setOpen({ bank: false, full: true, cell: false })
+                        setBtnClear()
+                        setTitleBottom2("")
+                        setToggleModal(false)
+                        
+                        setdataDraw1(res.data.datas)
+                    }
                 })
-
-                //     let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
-                //     let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
-                //     //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                //     let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
-
-                //     if (chkSku && chkEdit === undefined) {
-                //         setStateDialogErr(true)
-                //         setMsgDialog("มีข้อมูล Item Code นี้แล้ว")
-                //         return
-                //     }
-
-
-                //     if (chkEdit) {
-                //         for (let key of Object.keys(chkEdit))
-                //             delete chkEdit[key]
-                //         for (let row in rowdata) {
-
-                //             chkEdit[row] = rowdata[row]
-                //         }
-                //     } else {     
-
-                //         setAddDataID(addDataID -1);
-                //         xxx.push(rowdata)                    
-
-
-                //     }         
-                //     setEditData({})
-                //     setInputError([])
-                //     setDialog(false)
-                //     setDialogItem(false)
-                //     setDataSource([...xxx])
             } else {
-
                 setInputError(inputError.map(x => x.accessor))
             }
         } else {
-
-            // setInputError([])
-            // setEditData({})
             setToggleModal(false)
-            // setDialogItem(false)
         }
     }
 
@@ -724,41 +653,11 @@ const AmLocationSummary = props => {
                 titleText="Search"
                 textConfirm="Search"
                 open={toggleModal}
-                onAccept={(status, rowdata, inputError) => onHandleEditConfirm(status, rowdata, inputError)}
+                onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata)}
                 data={editData}
                 objColumnsAndFieldCheck={{ objColumn: columnEdit, fieldCheck: "accessor" }}
-                columns={editorListcolunm(columnEdit, ref, inputError, editData, onChangeEditor)}
+                columns={editorListcolunm(columnEdit, ref, [], editData, onChangeEditor)}
             />
-
-            <Grid
-                container
-                spacing={1}
-                direction="row"
-                justify="space-between"
-                alignItems="flex-start">
-                <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                    <button className="btn btn-primary" style={{ padding: "1px" }} onClick={() => setToggleModal(true)} >Search</button>
-                </Grid>
-                <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                    <FormInline>
-                        <Label>View :</Label>
-                        <AmDropdown
-                            id={"ts"}
-                            placeholder="Select"
-                            data={dataDD}
-                            width={200} //��˹��������ҧ�ͧ��ͧ input
-                            ddlMinWidth={200} //��˹��������ҧ�ͧ���ͧ dropdown
-                            defaultValue="top"
-                            // valueData={valueText} //��� value ������͡
-                            onChange={(value, dataObject, inputID, fieldDataKey) =>
-                                onChangeEditor("view", dataObject, inputID, fieldDataKey)
-                            }
-                        // ddlType={"search"}
-                        // style={{ padding: "1px", float: "right", marginRight: "2px" }}
-                        />
-                    </FormInline>
-                </Grid>
-            </Grid>
             <Grid
                 container
                 spacing={1}
@@ -767,11 +666,6 @@ const AmLocationSummary = props => {
                 alignItems="flex-start">
 
                 <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                    {/* <div style={{ textAlign: "center" }}>
-                        <b style={{ fontSize: "20px" }}>Detail</b>
-                    </div> */}
-
-                    {/* {dataDetail} */}
                     <List
                         component="nav"
                         aria-labelledby="nested-list-subheader"
@@ -787,7 +681,7 @@ const AmLocationSummary = props => {
                             {open.full ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
                         <Collapse in={open.full} timeout="auto" unmountOnExit>
-                            <div style={{ height: (window.innerHeight - 179), overflow: "auto" }}>
+                            <div style={{ height: (window.innerHeight - 196), overflow: "auto" }}>
                                 {dataFull}
                             </div>
                         </Collapse>
@@ -797,7 +691,7 @@ const AmLocationSummary = props => {
                             {open.bank ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
                         <Collapse in={open.bank} timeout="auto" unmountOnExit>
-                            <div style={{ height: (window.innerHeight - 179), overflow: "auto" }}>
+                            <div style={{ height: (window.innerHeight - 196), overflow: "auto" }}>
                                 {dataBank}
                             </div>
                         </Collapse>
@@ -810,17 +704,57 @@ const AmLocationSummary = props => {
                             {open.cell ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
                         <Collapse in={open.cell} timeout="auto" unmountOnExit>
-                            <div style={{ height: (window.innerHeight - 179), overflow: "auto" }}>
+                            <div style={{ height: (window.innerHeight - 196), overflow: "auto" }}>
                                 {dataDetail}
                             </div>
                         </Collapse>
                     </List>
                 </Grid>
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
+                    <Grid
+                        container
+                        spacing={1}
+                        direction="row"
+                        justify="space-between"
+                        alignItems="flex-start">
+                        <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                            <FormInline>
+                                <AmDropdown
+                                    id={"view"}
+                                    placeholder="Select"
+                                    data={dataDD}
+                                    width={120}
+                                    ddlMinWidth={120}
+                                    defaultValue="top"
+                                    // returnDefaultValue={true}
+                                    // valueData={valueText}
+                                    onChange={(value, dataObject, inputID, fieldDataKey) => {
+                                        let active = document.getElementsByClassName('HoverTable active')
+                                        active.length && active[0].classList.remove("active")
+                                        if (dataObject)
+                                            editData.view = dataObject.value
+                                        Axios.get(getUrlDrawGraph(editData)).then((res) => {
+                                            if (res.data._result.status && res.data.datas.length) {
+                                                setRefresh({})
+                                                setDataBottom()
+                                                setOpen({ bank: false, full: true, cell: false })
+                                                setBtnClear()
+                                                setTitleBottom2("")
+
+                                                setdataDraw1(res.data.datas)
+                                            }
+                                        })
+                                    }}
+                                />
+                                {textSearch}
+                            </FormInline>
+                        </Grid>
+                        <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                            <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px" }} onClick={() => setToggleModal(true)} >Search</button>
+                        </Grid>
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <b style={{ fontSize: "20px" }}>Top View</b>
-                        <div id={"divTableTopView"} style={{ height: '50%' }}>
-                            {/* (window.innerHeight - 200) / 2 */}
+                        <div id={"divTableTopView"} style={{ height: '50%', marginTop: "10px" }}>
                             <table>
                                 <tbody>
                                     {dataTop}
@@ -829,12 +763,12 @@ const AmLocationSummary = props => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ marginTop: '5px' }}>
-                        <b style={{ fontSize: "20px" }}>Side View {titleBank}</b>
+                        <b style={{ fontSize: "20px" }}>{titleBottom + " " + titleBottom2}</b>
                         {btnClear}
                         <div id={"divTableSideView"} style={{ height: '50%' }}>
                             <table>
                                 <tbody>
-                                    {dataSide}
+                                    {dataBottom}
                                 </tbody>
                             </table>
                         </div>
