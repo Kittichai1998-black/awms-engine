@@ -18,7 +18,7 @@ const App = (props) => {
       <AmSpinner textshow="Loading Data..." />
       <BrowserRouter>
         <Switch>
-          <Route path="/Login" name="Login Page" render={() => <Login />} />
+          <Route path="/Login" name="Login Page" render={() => <Login alternateLogin={false} loginCount={1}/>} />
           <Route path="/monitor_io" name="Monitor IO" render={() => container(<MonitorIO />)} />
           <Route path="/404" name="Not Found" component={P404} />
           <Route path="/" name="Home" component={Layout} />
