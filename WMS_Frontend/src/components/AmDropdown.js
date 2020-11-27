@@ -456,6 +456,7 @@ const DropdownComponent = (props) => {
     }, [queryApi, data]);
 
     useEffect(() => {
+        console.log(defaultValue)
         if (defaultValue !== undefined) {
             setDefaultVal(defaultValue);
         }
@@ -637,6 +638,7 @@ const DropdownComponent = (props) => {
                                 width={width}
                                 onHandleClickClear={onHandleClickClear}
                                 required={required}
+                                defaultValue={defaultVal}
                                 {...other}
                             />
                         }

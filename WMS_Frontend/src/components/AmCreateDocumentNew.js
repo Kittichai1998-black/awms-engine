@@ -262,12 +262,9 @@ const AmCreateDocument = (props) => {
     }, [props.addList, dataSource])
 
 
-    //useEffect(() => {
-    //    if (!dialog) {
-    //        setdataUnit();
-    //    }
-    //},[dialog])
-
+    useEffect(() => {
+        console.log(editData)
+    }, [editData])
 
     const UnitTypeConverts = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -421,7 +418,8 @@ const AmCreateDocument = (props) => {
                 editData[field] = data.label
                 editData['unitTypeCode'] = data.value
             } else {
-                editData[field] = data[field] ? data[field] : data.value
+   
+                editData[field] = data[field] ? data[field] : null
             }
         } else {
             if (data === "") {
@@ -503,9 +501,10 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType
-                    && x.orderNo === rowdata.orderNo && x.auditStatus === rowdata.auditStatus && x.productionDate === rowdata.productionDate &&
-                    x.expireDate === rowdata.expireDate && x.basecode === rowdata.basecode
+                let chkSku = dataSource.find(
+                    x => x.Code === rowdata.Code &&
+                        x.BaseCode === rowdata.BaseCode &&
+                        x.unitTypeCode === rowdata.unitTypeCode
 
                 )
 
@@ -650,7 +649,7 @@ const AmCreateDocument = (props) => {
                             // valueData={valueText[idddl]} //ค่า value ที่เลือก
                             queryApi={queryApi}
                             // data={dataUnit}
-                            returnDefaultValue={true}
+                            //returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
@@ -905,7 +904,7 @@ const AmCreateDocument = (props) => {
                     valueData={dataDDLHead[idddls]} //ค่า value ที่เลือก
                     queryApi={queryApi}
                     //returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
+                    defaultValue={ defaultValue ? defaultValue : ""}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
                     ddlType={"search"} //รูปแบบ Dropdown 
                 />

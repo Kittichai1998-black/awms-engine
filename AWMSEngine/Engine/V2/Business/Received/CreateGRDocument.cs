@@ -199,6 +199,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             baseunitType = x.baseunitType,
                             eventStatus = x.eventStatus,
                             docItemStos = x.docItemStos,
+                            baseCode = x.baseCode,
                             baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
                             {
                                 baseCode = y.baseCode,
