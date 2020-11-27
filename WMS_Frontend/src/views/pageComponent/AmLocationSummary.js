@@ -574,12 +574,19 @@ const AmLocationSummary = props => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
+        console.log(row);
         if (typeof data === "object" && data) {
+
             editData[field] = data[field] ? data[field] : data.value
+            editData[field + "_show"] = `${data.Code} : ${data.Name}`
+            editData[field + "_header"] = row.Header
         } else if (data) {
             editData[field] = data
+            editData[field + "_header"] = row.Header
         } else {
             delete editData[field]
+            delete editData[field + "_show"]
+            delete editData[field + "_header"]
         }
 
         if (field === "warehouse_id") {
@@ -602,6 +609,8 @@ const AmLocationSummary = props => {
                 setInputError(arrNew)
             }
         }
+
+        console.log(editData);
     }
 
     const getUrlDrawGraph = (datas) => {
@@ -634,8 +643,26 @@ const AmLocationSummary = props => {
                         setBtnClear()
                         setTitleBottom2("")
                         setToggleModal(false)
-                        
+
                         setdataDraw1(res.data.datas)
+
+                        let ele = (
+                            <>
+                                {rowdata.wahouse_id && <label><b>{rowdata.warehouse_id_header} :</b> {rowdata.warehouse_id_show} </label>}
+                                {rowdata.area_id && <label><b>{rowdata.area_id_header} :</b> {rowdata.area_id_show} </label>}
+                                {rowdata.select && <label><b>{rowdata.select_header} :</b> {rowdata.select} </label>}
+                                {rowdata.code && <label><b>{rowdata.code_header} :</b> {rowdata.code} </label>}
+                                {rowdata.lot && <label><b>{rowdata.lot_header} :</b> {rowdata.lot} </label>}
+                                {rowdata.batch && <label><b>{rowdata.batch_header} :</b> {rowdata.batch} </label>}
+                                {rowdata.fromExpireDate && <label><b>{rowdata.fromExpireDate_header} :</b> {rowdata.fromExpireDate} </label>}
+                                {rowdata.toExpireDate && <label><b>{rowdata.toExpireDate_header} :</b> {rowdata.toExpireDate} </label>}
+                                {rowdata.fromProductDate && <label><b>{rowdata.fromProductDate_header} :</b> {rowdata.fromProductDate} </label>}
+                                {rowdata.toProductDate && <label><b>{rowdata.toProductDate_header} :</b> {rowdata.toProductDate} </label>}
+                                {rowdata.fromIncubationDay && <label><b>{rowdata.fromIncubationDay_header} :</b> {rowdata.fromIncubationDay} </label>}
+                                {rowdata.toIncubationDay && <label><b>{rowdata.toIncubationDay_header} :</b> {rowdata.toIncubationDay} </label>}
+                            </>
+                        )
+                        setTextSearch(ele)
                     }
                 })
             } else {
@@ -711,7 +738,39 @@ const AmLocationSummary = props => {
                     </List>
                 </Grid>
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
-                    <Grid
+                    <FormInline>
+                        <AmDropdown
+                            id={"view"}
+                            placeholder="Select"
+                            data={dataDD}
+                            width={120}
+                            ddlMinWidth={120}
+                            defaultValue="top"
+                            // returnDefaultValue={true}
+                            // valueData={valueText}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => {
+                                let active = document.getElementsByClassName('HoverTable active')
+                                active.length && active[0].classList.remove("active")
+                                if (dataObject)
+                                    editData.view = dataObject.value
+                                Axios.get(getUrlDrawGraph(editData)).then((res) => {
+                                    if (res.data._result.status && res.data.datas.length) {
+                                        setRefresh({})
+                                        setDataBottom()
+                                        setOpen({ bank: false, full: true, cell: false })
+                                        setBtnClear()
+                                        setTitleBottom2("")
+
+                                        setdataDraw1(res.data.datas)
+                                    }
+                                })
+                            }}
+                        />
+                        <div style={{ overflow: "auto", whiteSpace: "nowrap", maxWidth: "77%", marginLeft: "10px" }}>{textSearch}</div>
+
+                        <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px", position: "absolute", right: 2 }} onClick={() => setToggleModal(true)} >Search</button>
+                    </FormInline>
+                    {/* <Grid
                         container
                         spacing={1}
                         direction="row"
@@ -746,13 +805,12 @@ const AmLocationSummary = props => {
                                         })
                                     }}
                                 />
-                                {textSearch}
                             </FormInline>
                         </Grid>
                         <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
                             <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px" }} onClick={() => setToggleModal(true)} >Search</button>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <div id={"divTableTopView"} style={{ height: '50%', marginTop: "10px" }}>
                             <table>
