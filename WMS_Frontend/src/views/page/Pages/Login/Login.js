@@ -27,6 +27,7 @@ import { createQueryString } from '../../../../components/function/CoreFunction'
 import queryString from "query-string";
 import _ from "lodash";
 import Axios from "axios";
+import { defaultProps } from "react-select/lib/Select";
 const AmButton = React.lazy(() => import('../../../../components/AmButton'));
 const AmInput = React.lazy(() => import('../../../../components/AmInput'));
 const styles = theme => ({
@@ -106,6 +107,10 @@ const Login = props => {
     });
     const [alertmsg, setAlertmsg] = useState("");
     const [status, setStatus] = useState(false);
+
+    const [loginCount, setLoginCount] = useState(0);
+    const [currentUser, setCurrentUser] = useState([]);
+
     const onHandleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -118,10 +123,13 @@ const Login = props => {
     // useEffect(() => { console.log(valueForm) }, [valueForm])
 
     const redirect = () => {
-        if (sessionStorage.getItem("Token") !== null) {
-            return <Redirect to="/" />;
+        if(loginCount === props.loginCount){
+            if (sessionStorage.getItem("Token") !== null) {
+                return <Redirect to="/" />;
+            }
         }
     };
+
     const savetoSession = (name, data) => {
         localStorage.setItem(name, data);
         sessionStorage.setItem(name, localStorage.getItem([name]));
@@ -170,8 +178,10 @@ const Login = props => {
                 });
         });
     }
-    const onHandleLogin = () => {
-        if (valueForm.username.length === 0 && valueForm.password.length === 0) {
+    const onHandleLogin = (checkUser = false) => {
+        if(currentUser.find(x=> x === valueForm.username) !== undefined)
+            setAlertmsg(`${valueForm.username} was Login Already.`);
+        else if (valueForm.username.length === 0 && valueForm.password.length === 0) {
             setAlertmsg("Please input your username and password.");
         } else if (valueForm.username.length === 0) {
             setAlertmsg("Please input your username.");
@@ -192,13 +202,21 @@ const Login = props => {
                             var split_token = res.data.Token.split(".");
                             var desc_token = atob(split_token[1]);
                             var json_dec = JSON.parse(desc_token)
-                            savetoSession("Token", res.data.Token);
-                            savetoSession("ExtendTime", json_dec.extend);
-                            savetoSession("User_ID", json_dec.uid);
-                            savetoSession("ExpireTime", json_dec.exp);
-                            savetoSession("Username", json_dec.ucode);
-                            savetoSession("User_ProductOwner", json_dec.pos);
-                            GetMenu(res.data.Token);
+                            if(!checkUser){
+                                savetoSession("Token", res.data.Token);
+                                savetoSession("ExtendTime", json_dec.extend);
+                                savetoSession("User_ID", json_dec.uid);
+                                savetoSession("ExpireTime", json_dec.exp);
+                                savetoSession("Username", json_dec.ucode);
+                                savetoSession("User_ProductOwner", json_dec.pos);
+                                GetMenu(res.data.Token);
+                                setCurrentUser([...currentUser, json_dec.ucode])
+                                setLoginCount(loginCount+1)
+                            }
+                            else{
+                                setCurrentUser([...currentUser, json_dec.ucode])
+                                setLoginCount(loginCount+1)
+                            }
                             // let reqSelect = ["SKUMasterType", "AreaMaster", "Warehouse"];
                             // GetStaticValue(reqSelect);
                         } else if (res.data._result.status === 0) {
@@ -220,114 +238,60 @@ const Login = props => {
                 .catch(error => {
                     console.log(error);
                 });
+                
+            setValueForm({
+                ...valueForm,
+                "username":"",
+                "password":"",
+            });
         }
     };
-    // const onHandleLoginViewReport = () => {
-    //     let config = {
-    //         headers: {
-    //             "Access-Control-Allow-Origin": "*",
-    //             "Content-Type": "application/json; charset=utf-8",
-    //             accept: "application/json"
-    //         }
-    //     };
-    //     Axios.post(window.apipath + "/v2/token/register", valueFormView, config)
-    //         .then(res => {
-    //             if (res.data._result !== undefined) {
-    //                 if (res.data._result.status === 1) {
-    //                     savetoSession("Token", res.data.Token);
-    //                     //savetoSession("ClientSecret_SecretKey", res.data.ClientSecret_SecretKey);
-    //                     savetoSession("ExtendKey", res.data.ExtendKey);
-    //                     savetoSession("User_ID", res.data.User_ID);
-    //                     savetoSession("ExpireTime", res.data.ExpireTime);
-    //                     savetoSession("Username", valueForm.username);
-    //                     GetMenu(res.data.Token);
+
+    const alternateLogin = (value, obj, ele, event) => {
+        if(loginCount === 0)
+            onHandleLogin();
+        else
+            onHandleLogin(true);
+    };
 
 
-    //                 } else if (res.data._result.status === 0) {
-    //                     setStatus(false);
-    //                     // window.error(res.data._result.message)
-    //                     if (res.data._result.code === "U0000") {
-    //                         setAlertmsg("The username or password is incorrect. Try again.");
-    //                     } else {
-    //                         setAlertmsg(res.data._result.message);
-    //                     }
-    //                 }
-    //             } else {
-    //                 setStatus(false);
-    //                 setAlertmsg("You can't log in to AMS.");
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         });
-    // };
     return (
+        <>
+        <div style={{position:"fixed", zIndex:10}}>{currentUser.map(x=> {return <div>{x}</div>})}</div>
         <Grid container className={classes.root}>
             <Grid item xs={12} md={12}>
                 <Grid container direction="row" justify="center" alignItems="center">
                     <Card className={classes.card}>
                         <Suspense fallback={null}>
-                            <CardHeader
-                                classes={{
-                                    root: classes.header,
-                                    title: classes.title
-                                }}
-                                title="AMS"
-                            />
+                            
+                            <CardHeader classes={{root: classes.header, title: classes.title}}title="AMS"/>
                             <CardContent className={classes.content}>
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justify="flex-start"
-                                    alignItems="center"
-                                    className={classes.subcontent}
-                                >
+                                <Grid container direction="row" justify="flex-start" alignItems="center" className={classes.subcontent}>
                                     <Grid item xs={5} sm={4}>
-                                        <Typography
-                                            variant="subtitle1"
-                                            className={classNames(classes.inlineTitle, classes.spacing)}
-                                        >
-                                            <AccountCircle className={classes.spacing} />
-                                            Username:
-                  </Typography>
+                                        <Typography variant="subtitle1" className={classNames(classes.inlineTitle, classes.spacing)}>
+                                            <AccountCircle className={classes.spacing} />Username:
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={7} sm={8}>
-
                                         <AmInput
                                             autoFocus={true}
                                             id="username"
                                             placeholder="Username"
-                                            // className={classes.input}
-                                            // value={valueForm.username}
-                                            onChange={onHandleChange}
+                                            onChangeV2={onHandleChange}
+                                            value={valueForm.username}
                                             onKeyPress={(v, o, ele, event) => {
-                                                // setValueForm({
-                                                //     ...valueForm, [ele.id]: v
-                                                // });
-                                                valueForm[ele.id] = v;
                                                 if (event.key === "Enter") {
                                                     onHandleLogin();
                                                 }
                                             }}
-                                            style={{ width: "100%" }}
-                                        />
-
+                                            style={{ width: "100%" }}/>
                                     </Grid>
                                 </Grid>
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justify="flex-start"
-                                    alignItems="center"
-                                >
+                                <Grid container direction="row" justify="flex-start" alignItems="center">
                                     <Grid item xs={5} sm={4}>
-                                        <Typography
-                                            variant="subtitle1"
-                                            className={classNames(classes.inlineTitle, classes.spacing)}
-                                        >
-                                            <VPNKey className={classes.spacing} />
-                                            Password:
-                  </Typography>
+                                        <Typography variant="subtitle1" className={classNames(classes.inlineTitle, classes.spacing)}>
+                                            <VPNKey className={classes.spacing} />Password:
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={7} sm={8}>
                                         <AmInput
@@ -337,38 +301,24 @@ const Login = props => {
                                             // className={classes.input}
                                             InputProps={{
                                                 endAdornment: (
-                                                    <InputAdornment
-                                                        position="end"
-                                                        style={{ backgroundColor: "transparent" }}
-                                                    >
+                                                    <InputAdornment position="end" style={{ backgroundColor: "transparent" }}>
                                                         <IconButton
                                                             className={classes.iconButton}
                                                             size="small"
                                                             aria-label="Toggle password visibility"
-                                                            onClick={onHandleClickShowPassword}
-                                                        >
-                                                            {showPassword ? (
-                                                                <VisibilityOff fontSize="small" />
-                                                            ) : (
-                                                                    <Visibility fontSize="small" />
-                                                                )}
+                                                            onClick={onHandleClickShowPassword}>
+                                                            {showPassword ? (<VisibilityOff fontSize="small" />) : (<Visibility fontSize="small" />)}
                                                         </IconButton>
                                                     </InputAdornment>
                                                 )
                                             }}
-                                            // value={valueForm.password}
-                                            onChange={onHandleChange}
+                                            value={valueForm.password}
+                                            onChangeV2={onHandleChange}
                                             onKeyPress={(v, o, ele, event) => {
-                                                // setValueForm({
-                                                //     ...valueForm, [ele.id]: v
-                                                // });
-                                                valueForm[ele.id] = v;
                                                 if (event.key === "Enter") {
                                                     onHandleLogin();
                                                 }
-                                            }}
-                                            style={{ width: "100%" }}
-                                        />
+                                            }} style={{ width: "100%" }}/>
                                     </Grid>
                                 </Grid>
                             </CardContent>
@@ -376,8 +326,7 @@ const Login = props => {
                                 <Typography variant="subtitle2" className={classes.alert}>
                                     {alertmsg}
                                 </Typography>
-
-                                <AmButton styleType="confirm" onClick={onHandleLogin}>
+                                <AmButton styleType="confirm" onClick={props.alternateLogin ? alternateLogin : onHandleLogin}>
                                     {"Login"}
                                 </AmButton>
                             </CardActions>
@@ -385,39 +334,20 @@ const Login = props => {
                     </Card>
                     {redirect()}
                 </Grid>
-
-                {/* {window.project === "TAP" ? ( */}
-                <div style={{ textAlign: "center", paddingTop: "20px" }}>
-                    {/* <IconButton className={classes.button} aria-label="description">
-              <Description onClick={onHandleLoginViewReport} />
-            </IconButton> */}
-                    {/* <AmButton
-            style={{ margin: "5px" }}
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-            onClick={() => window.location = "/monitorIO?IOType=IN"}
-          >
-            <Description />
-            Inbounds ASRS Monitor
-            </AmButton>
-          <AmButton
-            style={{ margin: "5px" }}
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-            onClick={() => window.location = "/monitorIO?IOType=OUT"}
-          >
-            <Description />
-            Outbounds ASRS Monitor
-            </AmButton> */}
-                </div>
-                {/* ) : null} */}
             </Grid>
         </Grid>
+    </>
     );
 };
+
 Login.propTypes = {
     classes: PropTypes.object.isRequired
 };
+
+Login.defaultProps = {
+    loginCount:1,
+    alternateLogin:false
+}
+
+
 export default withStyles(styles)(Login);
