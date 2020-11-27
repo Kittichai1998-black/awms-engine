@@ -86,7 +86,7 @@ const RD_Create_FGCustomer = props => {
                         { label: "Doc. Date", type: "date", key: "documentDate", codeTranslate: "Document Date", width: '300px' }
                     ],
                     [
-                        { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1001, codeTranslate: "Process Type" },
+                        { label: "Process No.", type: "dropdown", key: "documentProcessTypeID", queryApi: DocumentProcessTypeQuery, fieldLabel: ["Code", "ReProcessType_Name"], defaultValue: 1002, codeTranslate: "Process Type" },
                         { label: "Action Time", type: "dateTime", key: "actionTime", codeTranslate: "Action Time", width: '300px' }
                     ],
                     [
@@ -160,7 +160,7 @@ const RD_Create_FGCustomer = props => {
                 fieldLabel: ["BaseCode"],
                 queryApi: BaseMasterSto,
                 type: "dropdown",
-                key: "ID",
+                key: "BaseCode",
                 required: true
             },
 
@@ -171,7 +171,7 @@ const RD_Create_FGCustomer = props => {
                 queryApi: skuquery,
                 type: "dropdown",
                 defaultValue: 1,
-                key: "ID",
+                key: "Code",
                 required: true
             },
             { Header: "แบบ", accessor: "ref2", type: "input", width: '300px' },

@@ -649,7 +649,7 @@ const AmCreateDocument = (props) => {
                             // valueData={valueText[idddl]} //ค่า value ที่เลือก
                             queryApi={queryApi}
                             // data={dataUnit}
-                            //returnDefaultValue={true}
+                            returnDefaultValue={true}
                             defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
