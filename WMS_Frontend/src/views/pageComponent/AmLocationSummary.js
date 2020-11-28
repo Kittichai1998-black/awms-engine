@@ -29,6 +29,7 @@ import AmDropdown from '../../components/AmDropdown'
 import styled from 'styled-components'
 import Label from '../../components/AmLabelMultiLanguage'
 import { editorListcolunm } from '../../components/table/AmGennarateFormForEditorTable'
+import AmDialogs from '../../components/AmDialogs'
 // import Aux from 'react-aux'
 
 const Axios = new apicall()
@@ -51,6 +52,7 @@ input {
 `;
 
 const AmLocationSummary = props => {
+    const [dialogError, setDialogError] = useState({ isOpen: false, text: "" })
     const [dataTop, setDataTop] = useState()
     const [dataBottom, setDataBottom] = useState()
     const [dataDetail, setDataDetail] = useState([])
@@ -155,7 +157,7 @@ const AmLocationSummary = props => {
             // defaultValue: 1,
             required: true
         },
-        { Header: "Level", accessor: "select", type: "input", width: '300px' },
+        { Header: "Level", accessor: "select", type: "input", width: '300px', required: true },
         { Header: "Pallet Code", accessor: "code", type: "input", width: '300px' },
         { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
         { Header: "Batch", accessor: "batch", type: "input", width: '300px' },
@@ -185,7 +187,6 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         if (dataAll) {
-            console.log(dataAll);
             let pack = dataAll.filter(x => x.bsto_Code),
                 palletLen = getUnique(pack, "bsto_Code").length,
                 palletAll = getUnique(dataAll, "Code").length,
@@ -244,7 +245,6 @@ const AmLocationSummary = props => {
                 case 'side': setTitleBottom("Top view"); title = "Lv / Bay"; sort_Y = 'desc'; break;
             }
 
-            // console.log(dataDraw1);
             dataDraw1.map(x => {
                 let chk_X = pos_X_1.find(y => y.Pos_X === x.Pos_X),
                     chk_Y = pos_Y_1.find(y => y.Pos_Y === x.Pos_Y)
@@ -260,8 +260,6 @@ const AmLocationSummary = props => {
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(y.Pos_Y, e)} key={yi}>{
                             pos_X_1.map((x, xi) => {
-                                // console.log(xi, x);
-                                // console.log(yi, y);
                                 // let dataFil = groupBy(dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code }), "bsto_Code")
                                 let dataFin = dataDraw1.find(z => { return z.Pos_X === x.Pos_X && z.Pos_Y === y.Pos_Y })
 
@@ -317,7 +315,6 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         if (dataDraw2) {
-            console.log(dataDraw2);
             let title, sort_Y, selectText
             // eslint-disable-next-line default-case
             switch (editData.view) {
@@ -574,7 +571,6 @@ const AmLocationSummary = props => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
-        console.log(row);
         if (typeof data === "object" && data) {
 
             editData[field] = data[field] ? data[field] : data.value
@@ -589,7 +585,7 @@ const AmLocationSummary = props => {
             delete editData[field + "_header"]
         }
 
-        if (field === "warehouse_id") {
+        if (field === "warehouse_id" && data) {
             let q_view_AreaMaster = JSON.parse(view_AreaMaster.q)
             q_view_AreaMaster.push({ "f": "Warehouse_ID", "c": "=", "v": data.warehouse_id })
             view_AreaMaster.q = JSON.stringify(q_view_AreaMaster)
@@ -610,7 +606,6 @@ const AmLocationSummary = props => {
             }
         }
 
-        console.log(editData);
     }
 
     const getUrlDrawGraph = (datas) => {
@@ -633,11 +628,15 @@ const AmLocationSummary = props => {
         return url
     }
 
-    const onHandleEditConfirm = (status, rowdata) => {
+    const onHandleEditConfirm = (status, rowdata, inputErr) => {
         if (status) {
-            if (!inputError.length) {
+            if (!inputErr.length) {
                 Axios.get(getUrlDrawGraph(rowdata)).then((res) => {
-                    if (res.data._result.status && res.data.datas.length) {
+                    if (res.data._result.status) {
+                        if (!res.data.datas.length) {
+                            setDialogError({ isOpen: true, text: "ไม่พบข้อมูล" })
+                            return
+                        }
                         setRefresh({})
                         setOpen({ bank: false, full: true, cell: false })
                         setBtnClear()
@@ -648,7 +647,7 @@ const AmLocationSummary = props => {
 
                         let ele = (
                             <>
-                                {rowdata.wahouse_id && <label><b>{rowdata.warehouse_id_header} :</b> {rowdata.warehouse_id_show} </label>}
+                                {rowdata.warehouse_id && <label><b>{rowdata.warehouse_id_header} :</b> {rowdata.warehouse_id_show} </label>}
                                 {rowdata.area_id && <label><b>{rowdata.area_id_header} :</b> {rowdata.area_id_show} </label>}
                                 {rowdata.select && <label><b>{rowdata.select_header} :</b> {rowdata.select} </label>}
                                 {rowdata.code && <label><b>{rowdata.code_header} :</b> {rowdata.code} </label>}
@@ -663,10 +662,12 @@ const AmLocationSummary = props => {
                             </>
                         )
                         setTextSearch(ele)
+                    } else {
+                        setDialogError({ isOpen: true, text: res.data._result.message })
                     }
                 })
             } else {
-                setInputError(inputError.map(x => x.accessor))
+                setInputError(inputErr.map(x => x.accessor))
             }
         } else {
             setToggleModal(false)
@@ -675,15 +676,16 @@ const AmLocationSummary = props => {
 
     return (
         <>
+            <AmDialogs typePopup={"eror"} content={dialogError.text} onAccept={(e) => { setDialogError({ ...dialogError, isOpen: e }) }} open={dialogError.isOpen}></AmDialogs >
             <ModalForm
                 style={{ width: "600px", height: "500px" }}
                 titleText="Search"
                 textConfirm="Search"
                 open={toggleModal}
-                onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata)}
+                onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata, inputErr)}
                 data={editData}
                 objColumnsAndFieldCheck={{ objColumn: columnEdit, fieldCheck: "accessor" }}
-                columns={editorListcolunm(columnEdit, ref, [], editData, onChangeEditor)}
+                columns={editorListcolunm(columnEdit, ref, inputError, editData, onChangeEditor)}
             />
             <Grid
                 container
