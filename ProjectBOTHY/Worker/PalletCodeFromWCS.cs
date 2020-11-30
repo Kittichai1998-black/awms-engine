@@ -39,7 +39,7 @@ namespace ProjectBOTHY.Worker
             {
                 
                 mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(bsto.ID.Value, StorageObjectType.BASE, false, true, buVO);
-                if(mapsto.mapstos.TrueForAll(x=> x.eventStatus == StorageObjectEventStatus.NEW || x.eventStatus == StorageObjectEventStatus.AUDITED))
+                if(mapsto.mapstos.TrueForAll(x=> x.eventStatus == StorageObjectEventStatus.NEW || x.eventStatus == StorageObjectEventStatus.AUDITED || x.eventStatus == StorageObjectEventStatus.AUDITING))
                     this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], mapsto.Json());
                 else
                     this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], "");
