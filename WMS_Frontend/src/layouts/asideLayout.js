@@ -62,12 +62,15 @@ const Aside = props => {
     );
   }
   useEffect(() => {
-    setRoutes(route(localStorage.getItem('MenuItems')));
+    var data = route(localStorage.getItem('MenuItems'));
+
+    setRoutes(data);
   }, [localStorage.getItem('MenuItems')]);
 
   return (
     <MuiThemeProvider theme={theme}>
-      <div className={classes.toolbar} />
+      <div>
+        <div className={classes.toolbar} />
         <List
           component='nav'
           className={classes.root}
@@ -94,7 +97,7 @@ const Aside = props => {
                         <ExpandMore />
                       )}
                   </ListItem>
-                  {x.child.map((y, idx2) => {
+                  {x.child.filter(x=> x.visible).map((y, idx2) => {
                     return (
                       <Collapse
                         key={idx2}
@@ -145,6 +148,7 @@ const Aside = props => {
             }
           })}
         </List>
+      </div>
     </MuiThemeProvider>
   );
 };
