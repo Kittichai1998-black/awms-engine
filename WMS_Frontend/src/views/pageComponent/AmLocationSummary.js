@@ -29,6 +29,7 @@ import AmDropdown from '../../components/AmDropdown'
 import styled from 'styled-components'
 import Label from '../../components/AmLabelMultiLanguage'
 import { editorListcolunm } from '../../components/table/AmGennarateFormForEditorTable'
+import AmDialogs from '../../components/AmDialogs'
 // import Aux from 'react-aux'
 
 const Axios = new apicall()
@@ -51,6 +52,7 @@ input {
 `;
 
 const AmLocationSummary = props => {
+    const [dialogError, setDialogError] = useState({ isOpen: false, text: "" })
     const [dataTop, setDataTop] = useState()
     const [dataBottom, setDataBottom] = useState()
     const [dataDetail, setDataDetail] = useState([])
@@ -155,7 +157,7 @@ const AmLocationSummary = props => {
             // defaultValue: 1,
             required: true
         },
-        { Header: "Level", accessor: "select", type: "input", width: '300px' },
+        { Header: "Level", accessor: "select", type: "input", width: '300px', required: true },
         { Header: "Pallet Code", accessor: "code", type: "input", width: '300px' },
         { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
         { Header: "Batch", accessor: "batch", type: "input", width: '300px' },
@@ -185,7 +187,6 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         if (dataAll) {
-            console.log(dataAll);
             let pack = dataAll.filter(x => x.bsto_Code),
                 palletLen = getUnique(pack, "bsto_Code").length,
                 palletAll = getUnique(dataAll, "Code").length,
@@ -244,7 +245,6 @@ const AmLocationSummary = props => {
                 case 'side': setTitleBottom("Top view"); title = "Lv / Bay"; sort_Y = 'desc'; break;
             }
 
-            // console.log(dataDraw1);
             dataDraw1.map(x => {
                 let chk_X = pos_X_1.find(y => y.Pos_X === x.Pos_X),
                     chk_Y = pos_Y_1.find(y => y.Pos_Y === x.Pos_Y)
@@ -260,8 +260,6 @@ const AmLocationSummary = props => {
                     return (
                         <tr className="HoverTable" onClick={(e) => clickRow(y.Pos_Y, e)} key={yi}>{
                             pos_X_1.map((x, xi) => {
-                                // console.log(xi, x);
-                                // console.log(yi, y);
                                 // let dataFil = groupBy(dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code }), "bsto_Code")
                                 let dataFin = dataDraw1.find(z => { return z.Pos_X === x.Pos_X && z.Pos_Y === y.Pos_Y })
 
@@ -317,7 +315,6 @@ const AmLocationSummary = props => {
 
     useEffect(() => {
         if (dataDraw2) {
-            console.log(dataDraw2);
             let title, sort_Y, selectText
             // eslint-disable-next-line default-case
             switch (editData.view) {
@@ -575,14 +572,20 @@ const AmLocationSummary = props => {
 
     const onChangeEditor = (field, data, required, row) => {
         if (typeof data === "object" && data) {
+
             editData[field] = data[field] ? data[field] : data.value
+            editData[field + "_show"] = `${data.Code} : ${data.Name}`
+            editData[field + "_header"] = row.Header
         } else if (data) {
             editData[field] = data
+            editData[field + "_header"] = row.Header
         } else {
             delete editData[field]
+            delete editData[field + "_show"]
+            delete editData[field + "_header"]
         }
 
-        if (field === "warehouse_id") {
+        if (field === "warehouse_id" && data) {
             let q_view_AreaMaster = JSON.parse(view_AreaMaster.q)
             q_view_AreaMaster.push({ "f": "Warehouse_ID", "c": "=", "v": data.warehouse_id })
             view_AreaMaster.q = JSON.stringify(q_view_AreaMaster)
@@ -602,6 +605,7 @@ const AmLocationSummary = props => {
                 setInputError(arrNew)
             }
         }
+
     }
 
     const getUrlDrawGraph = (datas) => {
@@ -624,22 +628,46 @@ const AmLocationSummary = props => {
         return url
     }
 
-    const onHandleEditConfirm = (status, rowdata) => {
+    const onHandleEditConfirm = (status, rowdata, inputErr) => {
         if (status) {
-            if (!inputError.length) {
+            if (!inputErr.length) {
                 Axios.get(getUrlDrawGraph(rowdata)).then((res) => {
-                    if (res.data._result.status && res.data.datas.length) {
+                    if (res.data._result.status) {
+                        if (!res.data.datas.length) {
+                            setDialogError({ isOpen: true, text: "ไม่พบข้อมูล" })
+                            return
+                        }
                         setRefresh({})
                         setOpen({ bank: false, full: true, cell: false })
                         setBtnClear()
                         setTitleBottom2("")
                         setToggleModal(false)
-                        
+
                         setdataDraw1(res.data.datas)
+
+                        let ele = (
+                            <>
+                                {rowdata.warehouse_id && <label><b>{rowdata.warehouse_id_header} :</b> {rowdata.warehouse_id_show} </label>}
+                                {rowdata.area_id && <label><b>{rowdata.area_id_header} :</b> {rowdata.area_id_show} </label>}
+                                {rowdata.select && <label><b>{rowdata.select_header} :</b> {rowdata.select} </label>}
+                                {rowdata.code && <label><b>{rowdata.code_header} :</b> {rowdata.code} </label>}
+                                {rowdata.lot && <label><b>{rowdata.lot_header} :</b> {rowdata.lot} </label>}
+                                {rowdata.batch && <label><b>{rowdata.batch_header} :</b> {rowdata.batch} </label>}
+                                {rowdata.fromExpireDate && <label><b>{rowdata.fromExpireDate_header} :</b> {rowdata.fromExpireDate} </label>}
+                                {rowdata.toExpireDate && <label><b>{rowdata.toExpireDate_header} :</b> {rowdata.toExpireDate} </label>}
+                                {rowdata.fromProductDate && <label><b>{rowdata.fromProductDate_header} :</b> {rowdata.fromProductDate} </label>}
+                                {rowdata.toProductDate && <label><b>{rowdata.toProductDate_header} :</b> {rowdata.toProductDate} </label>}
+                                {rowdata.fromIncubationDay && <label><b>{rowdata.fromIncubationDay_header} :</b> {rowdata.fromIncubationDay} </label>}
+                                {rowdata.toIncubationDay && <label><b>{rowdata.toIncubationDay_header} :</b> {rowdata.toIncubationDay} </label>}
+                            </>
+                        )
+                        setTextSearch(ele)
+                    } else {
+                        setDialogError({ isOpen: true, text: res.data._result.message })
                     }
                 })
             } else {
-                setInputError(inputError.map(x => x.accessor))
+                setInputError(inputErr.map(x => x.accessor))
             }
         } else {
             setToggleModal(false)
@@ -648,15 +676,16 @@ const AmLocationSummary = props => {
 
     return (
         <>
+            <AmDialogs typePopup={"eror"} content={dialogError.text} onAccept={(e) => { setDialogError({ ...dialogError, isOpen: e }) }} open={dialogError.isOpen}></AmDialogs >
             <ModalForm
                 style={{ width: "600px", height: "500px" }}
                 titleText="Search"
                 textConfirm="Search"
                 open={toggleModal}
-                onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata)}
+                onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata, inputErr)}
                 data={editData}
                 objColumnsAndFieldCheck={{ objColumn: columnEdit, fieldCheck: "accessor" }}
-                columns={editorListcolunm(columnEdit, ref, [], editData, onChangeEditor)}
+                columns={editorListcolunm(columnEdit, ref, inputError, editData, onChangeEditor)}
             />
             <Grid
                 container
@@ -711,7 +740,39 @@ const AmLocationSummary = props => {
                     </List>
                 </Grid>
                 <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
-                    <Grid
+                    <FormInline>
+                        <AmDropdown
+                            id={"view"}
+                            placeholder="Select"
+                            data={dataDD}
+                            width={120}
+                            ddlMinWidth={120}
+                            defaultValue="top"
+                            // returnDefaultValue={true}
+                            // valueData={valueText}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => {
+                                let active = document.getElementsByClassName('HoverTable active')
+                                active.length && active[0].classList.remove("active")
+                                if (dataObject)
+                                    editData.view = dataObject.value
+                                Axios.get(getUrlDrawGraph(editData)).then((res) => {
+                                    if (res.data._result.status && res.data.datas.length) {
+                                        setRefresh({})
+                                        setDataBottom()
+                                        setOpen({ bank: false, full: true, cell: false })
+                                        setBtnClear()
+                                        setTitleBottom2("")
+
+                                        setdataDraw1(res.data.datas)
+                                    }
+                                })
+                            }}
+                        />
+                        <div style={{ overflow: "auto", whiteSpace: "nowrap", maxWidth: "77%", marginLeft: "10px" }}>{textSearch}</div>
+
+                        <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px", position: "absolute", right: 2 }} onClick={() => setToggleModal(true)} >Search</button>
+                    </FormInline>
+                    {/* <Grid
                         container
                         spacing={1}
                         direction="row"
@@ -746,13 +807,12 @@ const AmLocationSummary = props => {
                                         })
                                     }}
                                 />
-                                {textSearch}
                             </FormInline>
                         </Grid>
                         <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
                             <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px" }} onClick={() => setToggleModal(true)} >Search</button>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <div id={"divTableTopView"} style={{ height: '50%', marginTop: "10px" }}>
                             <table>

@@ -69,7 +69,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                         validate={true}
                         msgError="Error"
                         regExp={validate ? validate : ""}
-                        onChange={(ele) => { onChangeEditor(cols.field, ele, required) }}
+                        onChange={(ele) => { onChangeEditor(cols.field, ele, required, row) }}
                     />
 
                 </InputDiv>
@@ -90,7 +90,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                                 defaultValue={editData !== null && editData !== {} && editData["quantity"] !== undefined ? editData[accessor].replace("%", "") : ""}
                                 style={width ? width : TextInputnum ? { width: "280px" } : { width: "300px" }}
                                 type="number"
-                                onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
+                                onChange={(ele) => { onChangeEditor(cols.field, ele, required, row) }} />
                             <div style={{ paddingLeft: "5px", paddingTop: "5px" }}>
                                 <Label>{TextInputnum}</Label>
                             </div>
@@ -104,7 +104,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                                 defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
                                 style={TextInputnum ? { width: "100px" } : { width: "300px" }}
                                 type="number"
-                                onChange={(ele) => { onChangeEditor(cols.field, ele, required) }} />
+                                onChange={(ele) => { onChangeEditor(cols.field, ele, required, row) }} />
                         )
                     }</FormInline>
                 </InputDiv>
@@ -239,7 +239,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                         // helperText={inputError.length ? "required field" : false}
                         defaultValue={defaultValue ? defaultValue : true}
                         TypeDate={"datetime-local"}
-                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required, row) }}
                     />
                 </InputDiv>
             </FormInline>
@@ -256,7 +256,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                         style={{ width: width ? width : '300px' }}
                         // helperText={inputError.length ? "required field" : false}
                         TypeDate={"date"}
-                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required, row) }}
                     />
                 </InputDiv>
             </FormInline>
@@ -273,7 +273,7 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
                         style={{ width: width ? width : '300px' }}
                         // helperText={inputError.length ? "required field" : false}
                         TypeDate={"date"}
-                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required) }}
+                        onChange={(ele) => { onChangeEditor(cols.field, ele.fieldDataObject, required, row) }}
                     />
                 </InputDiv>
             </FormInline>
