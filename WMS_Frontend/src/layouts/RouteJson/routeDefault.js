@@ -514,7 +514,7 @@ let routes = [
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
-  { path: "/shipment/search", name: "SO View", compoment: SO_Search, exact: true },
+  { path: "/shipment/search", name: "SO Search", compoment: SO_Search, exact: true, child:true },
 
   //{ path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   //{ path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },

@@ -62,15 +62,12 @@ const Aside = props => {
     );
   }
   useEffect(() => {
-    var data = route(localStorage.getItem('MenuItems'));
-
-    setRoutes(data);
-  }, []);
+    setRoutes(route(localStorage.getItem('MenuItems')));
+  }, [localStorage.getItem('MenuItems')]);
 
   return (
     <MuiThemeProvider theme={theme}>
-      <div>
-        <div className={classes.toolbar} />
+      <div className={classes.toolbar} />
         <List
           component='nav'
           className={classes.root}
@@ -148,7 +145,6 @@ const Aside = props => {
             }
           })}
         </List>
-      </div>
     </MuiThemeProvider>
   );
 };

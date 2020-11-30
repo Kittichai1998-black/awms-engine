@@ -24,5 +24,4 @@ const items = menuItems => {
   }
   return items;
 };
-
 export default items;

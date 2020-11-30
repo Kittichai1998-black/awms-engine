@@ -28,6 +28,8 @@ import { LayoutContext } from '../reducers/context';
 
 import Header from "./headerLayout";
 
+//const AmMenuBar = lazy(() => import("./asideLayout"));
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -253,9 +255,9 @@ const MenuListMoblie = React.memo(({ classes, theme, sidebar }) => {
     </Drawer>
 });
 
-const MainContainer = React.memo(({ route, path, height }) => {
+const MainContainer = React.memo(({ route, path, height, link }) => {
     return <Switch>
-        {route.map((x, idx) => (
+        {route(link).map((x, idx) => (
             <Route
                 key={idx}
                 path={x.path}
@@ -330,11 +332,12 @@ const Default = props => {
     const size = useWindowSize(refContainer)
 
     let Path = window.location.pathname.split('/');
+
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
 
         setRoutes(data);
-    }, []);
+    }, [localStorage.getItem('MenuItems')]);
 
     const NavicateBarN = () => {
 
@@ -460,7 +463,7 @@ const Default = props => {
                         </Breadcrumbs>
                     </Paper>
                     <div ref={refContainer} style={{ width: "100%", overflowY: 'auto', overflowX:'hidden', height: size[1] }}>
-                        <MainContainer route={routeLink} path={window.location.pathname} height={size[1]}/>
+                        <MainContainer link={localStorage.getItem("MenuItems")} route={routeLink} path={window.location.pathname} height={size[1]}/>
                     </div>
                 </main>
 
