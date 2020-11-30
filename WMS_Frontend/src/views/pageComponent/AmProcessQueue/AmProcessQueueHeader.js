@@ -111,7 +111,7 @@ const ProcessQueueHeader = (props) => {
 
     useEffect(()=>{
       if(props.warehouseDefault !== undefined && props.warehouseDefault !== ""){
-        setWarehouseID(props.warehouseDefault);
+        setWarehouseID(props.warehouseDefault.ID);
         warehouse.setWarehouse(props.warehouseDefault);
       }
       documentDetail.setDocumentDetail(props.documentDetail)

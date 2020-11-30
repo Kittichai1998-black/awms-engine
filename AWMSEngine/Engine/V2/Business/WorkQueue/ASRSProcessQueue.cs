@@ -177,47 +177,44 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         }
 
 
-                        if (_condi.baseQty.HasValue)//query ใหม่จาก DB
+                        if (_condi.baseQty == 0)
                         {
-                            if(_condi.baseQty == 0)
-                            {
-                                _condi.baseQty = null;
-                            }
-                            SPInSTOProcessQueueCriteria stoProcCri = new SPInSTOProcessQueueCriteria()
-                            {
-                                locationCode = proc.locationCode,
-                                baseCode = proc.baseCode,
-                                skuCode = proc.skuCode,
-                                eventStatuses = proc.eventStatuses,
-                                auditStatuses = proc.auditStatuses,
-                                condition = _condi,
-                                orderBys = proc.orderBys,
-                                useExpireDate = proc.useExpireDate,
-                                useFullPick = proc.useFullPick,
-                                useIncubateDate = proc.useIncubateDate,
-                                useShelfLifeDate = proc.useShelfLifeDate,
-                                warehouseCode = souWM.Code,
-                                refID = docItem.RefID,
-                                not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList(),
-                                forCustomerID = doc.For_Customer_ID,
-                                desCustomerID = doc.Des_Customer_ID,
-                                packUnitID = docItem.UnitType_ID
-                            };
-                            var _pickStos = ADO.WMSDB.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
-                            this.ValidateWCS(_pickStos, reqVO);
-
-                            if (proc.baseQty.HasValue)
-                                tmpStoProcs.AddRange(_pickStos.Clone());
-                            else if (proc.percentRandom.HasValue)
-                            {
-                                var _tmpPickStos = _pickStos.RandomList(proc.percentRandom.Value);
-                                if (reqVO.lockNotExistsRandom)
-                                    lockStos.AddRange(_pickStos.Where(x => !_tmpPickStos.Any(y => y.rstoID == x.rstoID)));
-                                _pickStos = _tmpPickStos;
-                                tmpStoProcs.AddRange(_pickStos.Clone());
-                            }
-                            pickStos.AddRange(_pickStos);
+                            _condi.baseQty = null;
                         }
+                        SPInSTOProcessQueueCriteria stoProcCri = new SPInSTOProcessQueueCriteria()
+                        {
+                            locationCode = proc.locationCode,
+                            baseCode = proc.baseCode,
+                            skuCode = proc.skuCode,
+                            eventStatuses = proc.eventStatuses,
+                            auditStatuses = proc.auditStatuses,
+                            condition = _condi,
+                            orderBys = proc.orderBys,
+                            useExpireDate = proc.useExpireDate,
+                            useFullPick = proc.useFullPick,
+                            useIncubateDate = proc.useIncubateDate,
+                            useShelfLifeDate = proc.useShelfLifeDate,
+                            warehouseCode = souWM.Code,
+                            refID = docItem.RefID,
+                            not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList(),
+                            forCustomerID = doc.For_Customer_ID,
+                            desCustomerID = doc.Des_Customer_ID,
+                            packUnitID = docItem.UnitType_ID
+                        };
+                        var _pickStosProcess = ADO.WMSDB.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
+                        this.ValidateWCS(_pickStosProcess, reqVO);
+
+                        if (proc.baseQty.HasValue)
+                            tmpStoProcs.AddRange(_pickStosProcess.Clone());
+                        else if (proc.percentRandom.HasValue)
+                        {
+                            var _tmpPickStos = _pickStosProcess.RandomList(proc.percentRandom.Value);
+                            if (reqVO.lockNotExistsRandom)
+                                lockStos.AddRange(_pickStosProcess.Where(x => !_tmpPickStos.Any(y => y.rstoID == x.rstoID)));
+                            _pickStosProcess = _tmpPickStos;
+                            tmpStoProcs.AddRange(_pickStosProcess.Clone());
+                        }
+                        pickStos.AddRange(_pickStosProcess);
 
                     }
                 }
