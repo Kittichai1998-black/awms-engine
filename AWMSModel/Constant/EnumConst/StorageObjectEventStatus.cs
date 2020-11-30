@@ -21,9 +21,11 @@ namespace AWMSModel.Constant.EnumConst
         RECEIVING = 11,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         RECEIVED = 12,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         AUDITING = 13,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         AUDITED = 14,
+        [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         COUNTING = 15,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
         COUNTED = 16,
