@@ -1,9 +1,7 @@
 import React from "react";
 import AmProcessQueue from "../../../pageComponent/AmProcessQueue/AmProcessQueue";
 import {
-    apicall,
-    createQueryString,
-    IsEmptyObject
+    apicall
 } from "../../../../components/function/CoreFunction";
 
 const columnsDocument = [{ "accessor": "Code", "Header": "เลขที่ใบเบิก", "sortable": true }];

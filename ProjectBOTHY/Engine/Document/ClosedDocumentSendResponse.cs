@@ -34,7 +34,7 @@ namespace ProjectBOTHY.Engine.Document
                         { field = "Document_ID", value = getDoc.ID, operatorType = SQLOperatorType.EQUALS }, buVO);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(getDoc.Options))
+                    if (!string.IsNullOrWhiteSpace(getDoc.Options) && getDoc.DocumentProcessType_ID == DocumentProcessTypeID.WM_TRANSFER_AUTO)
                     {
                         var headerDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<FileFormat.TextFileHeader>(ObjectUtil.QryStrGetValue(getDoc.Options, "textFile"));
 

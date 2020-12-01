@@ -31,6 +31,7 @@ namespace AWMSModel.Criteria
         public string PathLV3 { get; set; }
         public string Icon { get; set; }
         public string subIcon { get; set; }
+        public bool Visible { get; set; }
     }
 
     public class AllMenuPage
@@ -40,6 +41,7 @@ namespace AWMSModel.Criteria
         public string Name { get; set; }
         public string Description { get; set; }
         public int WebPageGroup_ID { get; set; }
+        public bool Visible { get; set; }
         public int pageID { get; set; }
         public int pageSeq { get; set; }
         public string pageName { get; set; }

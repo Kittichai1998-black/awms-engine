@@ -142,51 +142,27 @@ const PK_ManageQueue = Loadable({
   loading: Loading
 });
 const routes = [
-  {
-    path: "/warehouse/storageobjectFull",
-    name: "StorageObject",
-    compoment: StorageObjectFull,
-    exact: true
-  },
-  {
-    path: "/warehouse/storageobject",
-    name: "StorageObject",
-    compoment: StorageObject,
-    exact: true
-  },
-
-  {
-    path: "/report/storageobject",
-    name: "StorageObject",
-    compoment: StorageObjectReport,
-    exact: true
-  },
-
-
+  { path: "/warehouse/storageobjectFull", name: "StorageObject", compoment: StorageObjectFull, exact: true },
+  { path: "/warehouse/storageobject", name: "StorageObject", compoment: StorageObject, exact: true },
+  { path: "/report/storageobject", name: "StorageObject", compoment: StorageObjectReport, exact: true },
   { path: "/issue/create", name: "GI Create", compoment: GI_Create, exact: true },
-  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true },
+  { path: "/issue/detail", name: "GI View", compoment: GI_Detail, exact: true, child:true },
   { path: "/issue/search", name: "GI Search", compoment: GI_Search, exact: true },
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
-  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true },
+  { path: "/issue/pickingdetail", name: "PK View", compoment: PK_Detail, exact: true, child:true },
   { path: "/issue/pickingsearch", name: "PK View", compoment: PK_Search, exact: true },
   { path: "/issue/managequeue", name: "PK Manage Queue", compoment: PK_ManageQueue, exact: true },
   // { path: "/audit/create", name: "AD Create", compoment: AD_Create, exact: true },
   // { path: "/audit/detail", name: "AD View", compoment: AD_Detail, exact: true },
   //{ path: "/audit/search", name: "AD View", compoment: AD_Search, exact: true },
-
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
-  { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
-  { path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
+  { path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true, child:true },
+  { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },
   { path: "/receive/putawaycreate", name: "PA Create", compoment: PA_Create, exact: true },
-  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true },
-  { path: "/receive/putawaysearch", name: "PA View", compoment: PA_Search, exact: true },
+  { path: "/receive/putawaydetail", name: "PA View", compoment: PA_Detail, exact: true, child:true },
+  { path: "/receive/putawaysearch", name: "PA Search", compoment: PA_Search, exact: true },
   { path: "/receive/rec", name: "Scanpallet", compoment: Scanpallet, exact: true },
-  {
-    path: "/report/storageobject",
-    name: "StorageObject",
-    compoment: StorageObjectReport,
-    exact: true
-  },
+  { path: "/report/storageobject", name: "StorageObject", compoment: StorageObjectReport, exact: true },
   { path: "/report/currentinventory", name: "Current Inventory", compoment: CurrentInventory, exact: true },
   { path: "/report/stockcard", name: "StockCard", compoment: StockCard, exact: true },
   { path: "/report/receive", name: "Receive Report", compoment: DailySTOReceive, exact: true },
@@ -199,8 +175,8 @@ const routes = [
   { path: "/monitor/picking", name: "Monitor Picking", compoment: MonitorPicking, exact: true },
 
   { path: "/counting/create", name: "PI Create", compoment: PI_Create, exact: true },
-  { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true },
-  { path: "/counting/search", name: "PI View", compoment: PI_Search, exact: true },
+  { path: "/counting/detail", name: "PI View", compoment: PI_Detail, exact: true, child:true },
+  { path: "/counting/search", name: "PI Search", compoment: PI_Search, exact: true },
   { path: "/counting/managequeue", name: "PI Manage Queue", compoment: PI_ManageQueue, exact: true },
 ];
 

@@ -65,7 +65,7 @@ const Aside = props => {
     var data = route(localStorage.getItem('MenuItems'));
 
     setRoutes(data);
-  }, []);
+  }, [localStorage.getItem('MenuItems')]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -97,7 +97,7 @@ const Aside = props => {
                         <ExpandMore />
                       )}
                   </ListItem>
-                  {x.child.map((y, idx2) => {
+                  {x.child.filter(x=> x.visible).map((y, idx2) => {
                     return (
                       <Collapse
                         key={idx2}

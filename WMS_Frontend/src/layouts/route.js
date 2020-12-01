@@ -7,6 +7,7 @@ const items = menuItems => {
   if (json === undefined || json.items === null) {
   } else {
     jsonresult.forEach(row => {
+      console.log(row)
       items.push({
         text: row.Name,
         language_code: row.language_code,
@@ -16,7 +17,8 @@ const items = menuItems => {
             to: "/" + res.PathLV1 + "/" + res.PathLV2,
             text: res.pageName,
             language_code: res.language_code,
-            iconSub: iconMenuTree[res.Icon]
+            iconSub: iconMenuTree[res.Icon],
+            visible: res.Visible
           };
         })
       });

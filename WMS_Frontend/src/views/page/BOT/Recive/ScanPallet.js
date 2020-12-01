@@ -145,7 +145,7 @@ const ScanPallet = (props) => {
                 .then(() => {
                     connection.on(dashboard, res => {
                         //console.log(res)
-                        //console.log(JSON.parse(res))
+                        console.log(JSON.parse(res))
                         setpalletCode(JSON.parse(res).code)
                         setDataPallet((JSON.parse(res)))
                         setData(JSON.parse(res).mapstos)
@@ -475,7 +475,7 @@ const ScanPallet = (props) => {
 
                                         {data !== undefined && data !== null ?
                                             data.length === 0 ? null :
-                                                (data[0].eventStatus !== 14 ? GenButton("RECIVE") : GenButton("AUDIT"))
+                                                (data[0].eventStatus !== 14 && data[0].eventStatus !== 13 ? GenButton("RECIVE") : GenButton("AUDIT"))
                                             : GenButton("RECIVE")}
                                     </div>
 

@@ -19,7 +19,7 @@ const columnsConfirm = [
 const documentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
     t: "Document",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
@@ -78,7 +78,7 @@ const ProcessQueue = (props) => {
         documentQuery={documentQuery}
         warehouseQuery={warehouseQuery}
         areaQuery={desAreaQuery}
-        warehouseDefault="1"
+        warehouseDefault={{Code:"5001", ID:1}}
         documentItemDetail={colDocumentItem}
         documentDetail={documentDetail}
         processSingle={true}

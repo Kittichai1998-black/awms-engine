@@ -21,7 +21,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
             var _res = new ResponseFileFormat();
             var fileName = "";
             var command = reqVO.header.command;
-            var commandNo = command == "CYCLECOUNT" ? DateTime.Now.ToString("yyyyMMdd hhMMss") : reqVO.header.commandNo;
+            var commandNo = command == "CYCLECOUNT" ? DateTime.Now.ToString("yyyyMMddhhMMss") : reqVO.header.commandNo;
 
             switch (reqVO.header.command)
             {

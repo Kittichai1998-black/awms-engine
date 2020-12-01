@@ -38,8 +38,7 @@ namespace AWMSEngine.Engine.V2.General
                     Seq = row.Seq,
                     Name = row.Name,
                     Description = row.Description,
-                    Icon = row.Icon
-                    ,
+                    Icon = row.Icon,
                     WebPages = null
                 });
             }
@@ -63,7 +62,8 @@ namespace AWMSEngine.Engine.V2.General
                         PathLV1 = row.PathLV1,
                         PathLV2 = row.PathLV2,
                         PathLV3 = row.PathLV3,
-                        Icon = row.subIcon
+                        Icon = row.subIcon,
+                        Visible = row.Visible
                     });
 
                     GroupID = row.WebPageGroup_ID;
