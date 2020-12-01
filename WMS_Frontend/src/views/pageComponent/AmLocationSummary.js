@@ -157,7 +157,7 @@ const AmLocationSummary = props => {
             // defaultValue: 1,
             required: true
         },
-        { Header: "Level", accessor: "select", type: "input", width: '300px', required: true },
+        { Header: "Level", accessor: "select", type: "inputNum", width: '300px' },
         { Header: "Pallet Code", accessor: "code", type: "input", width: '300px' },
         { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
         { Header: "Batch", accessor: "batch", type: "input", width: '300px' },
@@ -166,8 +166,8 @@ const AmLocationSummary = props => {
         { Header: "to", accessor: "toExpireDate", type: "date", width: '300px' },
         { Header: "Product date from", accessor: "fromProductDate", type: "date", width: '300px' },
         { Header: "to", accessor: "toProductDate", type: "date", width: '300px' },
-        { Header: "Incubation day from", accessor: "fromIncubationDay", type: "input", width: '300px' },
-        { Header: "to", accessor: "toIncubationDay", type: "input", width: '300px' },
+        { Header: "Incubation day from", accessor: "fromIncubationDay", type: "inputNum", width: '300px' },
+        { Header: "to", accessor: "toIncubationDay", type: "inputNum", width: '300px' },
     ]
     const ref = useRef(columnEdit.map(() => createRef()))
 
