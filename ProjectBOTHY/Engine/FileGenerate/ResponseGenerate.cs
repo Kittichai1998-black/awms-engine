@@ -57,7 +57,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                     }
                 case "CYCLECOUNT":
                     {
-                        fileName = $"RES_CYCLECOUNT_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
+                        fileName = $"RES_CYCLECOUNT_{commandNo}.txt";
                         break;
                     }
             }
@@ -98,14 +98,13 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 command = command,
                 commandNo = commandNo,
                 rowCount = _res.details.Count(),
-                timestamp = DateTime.Now.ToString("yyyyMMdd hhMMss")
+                timestamp = DateTime.Now.ToString("yyyyMMddhhMMss")
             };
 
             if(string.IsNullOrWhiteSpace(fileName))
                 fileName = $"RES_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
 
-            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Res_Path") + fileName;
-            this.CreateFileText(_res, path);
+            this.CreateFileText(_res, StaticValue.GetConfigValue("ERP.FILE.File_Res_Path"), fileName);
             return null;
         }
 
@@ -124,12 +123,9 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 return strJoin;
         }
 
-        private void CreateFileText(ResponseFileFormat obj, string path)
+        private void CreateFileText(ResponseFileFormat obj, string path, string fileName)
         {
-            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
-
-            if(FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
+            if(File.Exists($"{path}/{fileName}"))
                 throw new AMWException(Logger, AMWExceptionCode.V1002, "พบไฟล์นี้ในระบบ");
             StringBuilder _str = new StringBuilder();
             _str.Append(GetStringValueFromObject(obj.header, 2));
@@ -141,7 +137,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                     _str.Append($"{Environment.NewLine}{GetStringValueFromObject(x, 1)}");
             });
             _str.Append($"{Environment.NewLine}{GetStringValueFromObject(obj.footer, 0)}");
-            FTPFileAccess.UploadTextFileToFTP(_str.ToString(), path, username, password, BuVO.Logger);
+            LocalFileAccess.CreateTextFile(path, _str.ToString(), fileName);
         }
     }
 }

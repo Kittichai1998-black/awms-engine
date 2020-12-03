@@ -49,7 +49,7 @@ namespace ProjectBOTHY.Engine.WorkQueue
             AuditStatus AdStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.aditStatus);
             var sto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
-            if (reqVO.aditStatus == "NOTPASS")
+            if (AdStatus == AuditStatus.NOTPASS)
             {
                 var items = new List<FileFormat.ItemDetail>();
                 sto.mapstos.ForEach(mapsto =>

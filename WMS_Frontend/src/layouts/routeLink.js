@@ -20,7 +20,6 @@ const getUrl = (item) => {
             x.exact = chkRoute.exact;
         }
     });
-    console.log(permissionLink)
     return permissionLink;
 }
 

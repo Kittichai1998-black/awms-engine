@@ -127,7 +127,7 @@ const PI_Create = props => {
                     columns={columns}
                     columnEdit={columSKU}
                     apicreate={apicreate}
-                    createDocType={"counting"}
+                    createDocType={"audit"}
                     history={props.history}
                     defaulact={defaulacts}
                     //itemNo={true}
@@ -386,7 +386,7 @@ const PI_Create = props => {
         }
     }
 
-    const apicreate = "/v2/CreatePIDocAPI/"; //API สร้าง Doc
+    const apicreate = "/v2/CreateADDocAPI/"; //API สร้าง Doc
     const apiRes = "/counting/detail?docID="; //path หน้ารายละเอียด ตอนนี้ยังไม่เปิด
 
     return <div>

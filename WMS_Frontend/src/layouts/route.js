@@ -7,7 +7,6 @@ const items = menuItems => {
   if (json === undefined || json.items === null) {
   } else {
     jsonresult.forEach(row => {
-      console.log(row)
       items.push({
         text: row.Name,
         language_code: row.language_code,

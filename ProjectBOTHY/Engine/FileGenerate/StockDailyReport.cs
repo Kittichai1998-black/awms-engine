@@ -19,16 +19,12 @@ namespace ProjectBOTHY.Engine.FileGenerate
             var dailyStock = ADO.WMSDB.DataADO.GetInstant().QuerySP<SPOutSTOwithSKUDetail>("RP_STO_WITH_SKU_DETAIL", new Dapper.DynamicParameters(), BuVO).OrderBy(x=> x.baseCode);
             var fileName = $"REPORT_{DateTime.Now.ToString("yyyyMMddhhMMss")}.txt";
             
-            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Rpt_Path") + fileName;
             var details = dailyStock.Select(x => ResponseGenerate.GetStringValueFromObject(x, 0)).ToList();
-            CreateFileText(details, path);
+            CreateFileText(details, StaticValue.GetConfigValue("ERP.FILE.File_Rpt_Path"), fileName);
             return null;
         }
-        private void CreateFileText(List<string> obj, string path)
+        private void CreateFileText(List<string> obj, string path, string fileName)
         {
-            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
-
             StringBuilder _str = new StringBuilder();
             _str.Append($"START|REPORT|{DateTime.Now.ToString("yyyyMMddhhMMss")}");
             obj.ForEach(x =>
@@ -36,7 +32,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
                 _str.Append($"{Environment.NewLine}{x}");
             });
             _str.Append($"{Environment.NewLine}END|{DateTime.Now.ToString("yyyyMMddhhMMss")}|{obj.Count()}|{DateTime.Now.ToString("yyyyMMddhhMMss")}");
-            FTPFileAccess.UploadTextFileToFTP(_str.ToString(), path, username, password, BuVO.Logger);
+            LocalFileAccess.CreateTextFile(path, _str.ToString(), fileName);
         }
     }
 }

@@ -36,8 +36,8 @@ const PI_Detail = props => {
                 CreateputAway={false}
                 //apiCreate={'/issue/pickingcreate?docID='}
                 columns={columns}
-                typeDoc={"counting"}
-                typeDocNo={2004}
+                typeDoc={"audit"}
+                typeDocNo={2003}
                 docID={getDocID()}
                 header={header}
                 buttonBack={true}

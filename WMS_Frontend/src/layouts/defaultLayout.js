@@ -192,7 +192,7 @@ function useInterval(callback, delay) {
     }, [delay]);
 }
 
-const MenuListDesktop = React.memo(({ classes, theme, sidebar }) => {
+const MenuListDesktop = React.memo(({ classes, theme, sidebar, menuList }) => {
     return <Drawer
         className={classes.drawer}
         variant='persistent'
@@ -218,12 +218,13 @@ const MenuListDesktop = React.memo(({ classes, theme, sidebar }) => {
                 iconChild={true}
                 colorLink={'#37474F'}
                 backgroundColorChild={'#78909C'}
+                menuList={menuList}
             />
         </List>
     </Drawer>
 });
 
-const MenuListMoblie = React.memo(({ classes, theme, sidebar }) => {
+const MenuListMoblie = React.memo(({ classes, theme, sidebar, menuList }) => {
     return <Drawer
         className={classes.drawer}
         variant='persistent'
@@ -250,6 +251,7 @@ const MenuListMoblie = React.memo(({ classes, theme, sidebar }) => {
                 iconChild={true}
                 colorLink={'#37474F'}
                 backgroundColorChild={'#78909C'}
+                menuList={menuList}
             />
         </List>
     </Drawer>
@@ -433,11 +435,11 @@ const Default = props => {
                 <CssBaseline />
                 <Header />
                 <div className={classes.sectionDesktop}>
-                    <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar} />
+                    <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar} menuList={localStorage.getItem('MenuItems')}/>
                 </div>
 
                 <div className={classes.sectionMobile}>
-                    <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar} />
+                    <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar} menuList={localStorage.getItem('MenuItems')}/>
                     {sidebar.mobileSidebarToggle ?
                         <div onClick={() => sidebar.setMobileSidebarToggle(false)} className={[classes.divfull]}></div>
                         : null}

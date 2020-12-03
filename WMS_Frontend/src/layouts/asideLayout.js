@@ -54,28 +54,22 @@ const Aside = props => {
     sidebar.setMenuToggle({ type: 'expand', menuID: menuID });
   }
 
-  function HomeIcon(type) {
+  const HomeIcon = (type) => {
     return (
       <SvgIcon>
         <path d={type} />
       </SvgIcon>
     );
   }
-  useEffect(() => {
-    var data = route(localStorage.getItem('MenuItems'));
 
-    setRoutes(data);
-  }, [localStorage.getItem('MenuItems')]);
+  useEffect(() => {
+    setRoutes(route(props.menuList));
+  }, [props.menuList]);
 
   return (
     <MuiThemeProvider theme={theme}>
-      <div>
         <div className={classes.toolbar} />
-        <List
-          component='nav'
-          className={classes.root}
-          style={{ backgroundColor: props.backgroundColor }}
-        >
+        <List component='nav' className={classes.root} style={{ backgroundColor: props.backgroundColor }}>
           {routes.map((x, idx) => {
             if (x.child) {
               return (
@@ -148,7 +142,6 @@ const Aside = props => {
             }
           })}
         </List>
-      </div>
     </MuiThemeProvider>
   );
 };

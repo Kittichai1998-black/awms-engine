@@ -84,6 +84,7 @@ const useDocumentQuery = (warehouseID, docQuery, addDocList) => {
     return documentQuery;
 }
 const FindPopup = React.memo(({valueData, queryApi, columns, clearText, onHandleSelectDocument, warehouseID}) => {
+  console.log(warehouseID)
   return <AmFindPopup
   id={"DocumentSelection"}
   placeholder={"Document"}
@@ -193,6 +194,7 @@ const ProcessQueueHeader = (props) => {
       
       <FormInline>
         <label style={{"width":100}}>Document : </label>
+        {console.log(warehouseID)}
         <FindPopup 
           columns={props.documentPopup}
           valueData={documentSelection["ID"]} 

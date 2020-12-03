@@ -108,17 +108,13 @@ namespace ProjectBOTHY.Engine.FileGenerate
             if (string.IsNullOrWhiteSpace(fileName))
                 fileName = $"ERR_{command}_{commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
 
-            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
-            this.CreateFileText(_res, path);
+            this.CreateFileText(_res, StaticValue.GetConfigValue("ERP.FILE.File_Err_Path"), fileName);
 
             return null;
         }
 
-        private void CreateFileText(ResponseError obj, string path)
+        private void CreateFileText(ResponseError obj, string path, string fileName)
         {
-            var username = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Username");
-            var password = StaticValueManager.GetInstant().GetConfigValue("ERP.FTP.FTP_Password");
-
             //if (FTPFileAccess.CheckFileExistsFromFTP(path, username, password))
                 //throw new AMWException(Logger, AMWExceptionCode.V1002, "พบไฟล์นี้ในระบบ");
             StringBuilder _str = new StringBuilder();
@@ -132,7 +128,7 @@ namespace ProjectBOTHY.Engine.FileGenerate
             });
             _str.Append($"{Environment.NewLine}{ResponseGenerate.GetStringValueFromObject(obj.footer, 0)}");
             _str.Append($"{Environment.NewLine}ERROR : {obj.error}");
-            FTPFileAccess.UploadTextFileToFTP(_str.ToString(), path, username, password, BuVO.Logger);
+            LocalFileAccess.CreateTextFile(path, _str.ToString(), fileName);
         }
     }
 }

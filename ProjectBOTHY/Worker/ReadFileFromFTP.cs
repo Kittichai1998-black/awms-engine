@@ -27,19 +27,19 @@ namespace ProjectBOTHY.Worker
 
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
+            
             var StaticValue = StaticValueManager.GetInstant();
-            var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path");
-            var folderIn = StaticValue.GetConfigValue("ERP.FTP.FTP_In_Path");
-            var folderSuccess = StaticValue.GetConfigValue("ERP.FTP.FTP_Succ_Path");
-            var username = StaticValue.GetConfigValue("ERP.FTP.FTP_Username");
-            var password = StaticValue.GetConfigValue("ERP.FTP.FTP_Password");
-            var _text = AMWUtil.DataAccess.FTPFileAccess.ReadAllFileFromFTP(path + folderIn, username, password, "txt", buVO.Logger);
+            var folderIn = StaticValue.GetConfigValue("ERP.FILE.File_In_Path");
+            var folderSuccess = StaticValue.GetConfigValue("ERP.FILE.File_Succ_Path");
+            var folderError = StaticValue.GetConfigValue("ERP.FILE.File_Err_Path");
+            var _text = LocalFileAccess.GetFileList(folderIn, "txt").ToList();
             var textDetails = new FileFormat.TextFileDetail();
             _text.ForEach(x =>
             {
                 try
                 {
-                    var txtDetail = x.Value.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
+                    var text = LocalFileAccess.ReadFile(x);
+                    var txtDetail = text.Split("\r\n").ToList().FindAll(y => !string.IsNullOrWhiteSpace(y));
                     if (txtDetail.Count() > 0)
                     {
                         var header = txtDetail.First().Split("|");
@@ -86,14 +86,14 @@ namespace ProjectBOTHY.Worker
 
                         if (textDetails.header.command == "STOREIN")
                         {
-                            var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
+                            var resDoc = this.CreateDocFromFile(textDetails, DocumentTypeID.GOODS_RECEIVE, null, buVO);
 
                             var _baseType = StaticValue.BaseMasterTypes.Find(y => y.Code == textDetails.details.First().baseType);
                             this.CreateBaseMaster(resDoc, _baseType, buVO);
                         }
                         else if (textDetails.header.command == "STOREOUT")
                         {
-                            var resDoc = this.CreateDocFromFTP(textDetails, DocumentTypeID.GOODS_ISSUE, null, buVO);
+                            var resDoc = this.CreateDocFromFile(textDetails, DocumentTypeID.GOODS_ISSUE, null, buVO);
                         }
                         else if (textDetails.header.command.StartsWith("CANCEL"))
                         {
@@ -108,8 +108,7 @@ namespace ProjectBOTHY.Worker
                                 {
                                     string fileName = $"ERR_{textDetails.header.command}_{textDetails.header.commandNo}_{DateTime.Now.ToString("yyyyMMdd")}.txt";
 
-                                    var path = StaticValue.GetConfigValue("ERP.FTP.FTP_Root_Path") + StaticValue.GetConfigValue("ERP.FTP.FTP_Err_Path") + fileName;
-
+                                    var path = StaticValue.GetConfigValue("ERP.FILE.File_Root_Path") + StaticValue.GetConfigValue("ERP.FILE.File_Err_Path") + fileName;
 
                                     new ErrorResponseGenerate().Execute(buVO.Logger, buVO, new ErrorResponseGenerate.Treq()
                                     {
@@ -169,11 +168,11 @@ namespace ProjectBOTHY.Worker
                     });
                 }
 
-                FTPFileAccess.MoveFileFromFTP(path, folderIn, folderSuccess, x.Key, username, password, buVO.Logger);
+                LocalFileAccess.MoveFile(x, folderSuccess, folderError);
             });
         }
 
-        private amt_Document CreateDocFromFTP(FileFormat.TextFileDetail docItemDetail, DocumentTypeID docType, string options, VOCriteria buVO)
+        private amt_Document CreateDocFromFile(FileFormat.TextFileDetail docItemDetail, DocumentTypeID docType, string options, VOCriteria buVO)
         {
             ams_AreaMaster _desArea = new ams_AreaMaster();
             ams_AreaMaster _souArea = new ams_AreaMaster();

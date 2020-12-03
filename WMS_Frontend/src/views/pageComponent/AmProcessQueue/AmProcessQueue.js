@@ -48,9 +48,9 @@ ProcessQueue.propTypes = {
   warehouseQuery : PropTypes.object.isRequired,
   /**
     * กำหนดค่าเริ่มต้นสำหรับสร้าง Warehouse
-    * ** value : "1"
+    * ** value : {Code:"5001", ID:1}
     */
-  warehouseDefault : PropTypes.string,
+  warehouseDefault : PropTypes.object,
   /**
    * รูปแบบของหัวตารางเลือกเอกสาร
    ** value : Array Object [{"accessor":"", "Header":"", "sortable":true}]

@@ -325,7 +325,7 @@ const HeaderLayout = (props) => {
           </div>
           <div className={classes.grow} />
           <div style={{display:"flex"}}>
-            <NotifyBox/>
+            {/* <NotifyBox/> */}
             {renderMenu([{label:"ENGLISH", onClick:()=> changeLang("EN")},{label:"ไทย", onClick:()=> changeLang("TH")}], "lang", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}>{localStorage.getItem("Lang")}</label>)}
             {renderMenu([{label:"Logout", onClick:()=> handleLogout()}], "user", <label style={{cursor:"pointer",margin:"0",serSelect:"none"}}><AccountCircle />{localStorage.getItem('Username')}</label>)}
           </div>
