@@ -2,43 +2,54 @@
 
 #######################################
 
-post2wms.api_names = StoreinUpdate,StoreoutUpdate,SelectpickUpdate,SelectreturnUpdate,ConsoloadUpdate,StoreauditUpdate,Storemovement
+post2wms.api_names = StoreLogin,StoreinUpdate,StoreoutUpdate,SelectpickUpdate,SelectreturnUpdate,ConsoloadUpdate,StoreauditUpdate,Storemovement
 post2wms.thread_sleep = 300
 
-post2wms.StoreinUpdate.api_url = https://localhost/api/test1
-post2wms.StoreinUpdate.sp_request = SP_REQ_StoreinUpdate
-post2wms.StoreinUpdate.sp_response = SP_RES_StoreinUpdate
-
-post2wms.StoreoutUpdate.api_url = 
-post2wms.StoreoutUpdate.sp_request = 
-post2wms.StoreoutUpdate.sp_response =
-
-post2wms.SelectpickUpdate.api_url = 
-post2wms.SelectpickUpdate.sp_get_req = 
-post2wms.SelectpickUpdate.sp_update_res =
+post2wms.StoreLogin.api_url = https://localhost/api/test1
+post2wms.StoreLogin.sp_req = SP_REQ_StoreLogin
+post2wms.StoreLogin.sp_res = SP_RES_StoreinUpdate
 
 post2wms.StoreinUpdate.api_url = 
-post2wms.StoreinUpdate.sp_get_req = 
-post2wms.StoreinUpdate.sp_update_res =
+post2wms.StoreinUpdate.sp_req = 
+post2wms.StoreinUpdate.sp_res =
+
+post2wms.StoreoutUpdate.api_url = 
+post2wms.StoreoutUpdate.sp_req = 
+post2wms.StoreoutUpdate.sp_res =
+
+post2wms.SelectpickUpdate.api_url = 
+post2wms.SelectpickUpdate.sp_req = 
+post2wms.SelectpickUpdate.sp_res =
 
 post2wms.SelectreturnUpdate.api_url = 
-post2wms.SelectreturnUpdate.sp_get_req = 
-post2wms.SelectreturnUpdate.sp_update_res =
+post2wms.SelectreturnUpdate.sp_req = 
+post2wms.SelectreturnUpdate.sp_res =
 
 post2wms.ConsoloadUpdate.api_url = 
-post2wms.ConsoloadUpdate.sp_get_req = 
-post2wms.ConsoloadUpdate.sp_update_res =
+post2wms.ConsoloadUpdate.sp_req = 
+post2wms.ConsoloadUpdate.sp_res =
 
 post2wms.StoreauditUpdate.api_url = 
-post2wms.StoreauditUpdate.sp_get_req = 
-post2wms.StoreauditUpdate.sp_update_res =
+post2wms.StoreauditUpdate.sp_req = 
+post2wms.StoreauditUpdate.sp_res =
 
 post2wms.Storemovement.api_url = 
-post2wms.Storemovement.sp_get_req = 
-post2wms.Storemovement.sp_update_res =
+post2wms.Storemovement.sp_req = 
+post2wms.Storemovement.sp_res =
 
 #################################
 
 
-controller.api_names = StoreInventory,xxx,xx,xx1
-controller.StoreInventory.sp_exec = SP_WMS2WCS_StoreInventory
+controller.api_names = StoreItems,Storein,Storeout,Selectpick,Selectreturn,Consoload,Storeaudit,Sorttag,StartSorter,ClearBufferAGV,StoreInventory
+
+controller.StoreItems.sp_exec = 
+controller.Storein.sp_exec = 
+controller.Storeout.sp_exec = 
+controller.Selectpick.sp_exec = 
+controller.Selectreturn.sp_exec = 
+controller.Consoload.sp_exec = 
+controller.Storeaudit.sp_exec = 
+controller.Sorttag.sp_exec = 
+controller.StartSorter.sp_exec = 
+controller.ClearBufferAGV.sp_exec = 
+controller.StoreInventory.sp_exec = 
