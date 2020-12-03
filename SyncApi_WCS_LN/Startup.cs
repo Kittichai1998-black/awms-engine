@@ -21,12 +21,11 @@ namespace SyncApi_WCS_LN
         {
             using (StreamReader sr = new StreamReader("app.property"))
             {
-                while (sr.EndOfStream)
+                while (sr.EndOfStream == false)
                 {
                     string line = sr.ReadLine();
-                    if (string.IsNullOrWhiteSpace(line) ||
-                        line.Trim().StartsWith("#") ||
-                        line.IndexOf("=") < 0) continue;
+                    if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#") || line.IndexOf("=") < 0) 
+                        continue;
 
                     string[] kv = line.Split("=", 2);
                     string k = kv[0].Trim();

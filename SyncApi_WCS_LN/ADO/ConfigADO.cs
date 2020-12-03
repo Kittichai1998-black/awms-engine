@@ -8,10 +8,10 @@ namespace SyncApi_WCS_LN.ADO
 {
     public static class ConfigADO
     {
-        public static Dictionary<string,string> DatatbaseConfigs { get; set; }
+        public static Dictionary<string, string> DatatbaseConfigs { get; set; } = new Dictionary<string, string>();
 
-        public static Dictionary<string, string> Post2wmsConfigs { get; set; }
-        public static Dictionary<string, string> ApiControllerConfigs { get; set; }
+        public static Dictionary<string, string> Post2wmsConfigs { get; set; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> ApiControllerConfigs { get; set; } = new Dictionary<string, string>();
         /*
         public static string Post_ConsoloadUpdate_sp_post { get; set; }
         public static string Post_ConsoloadUpdate_sp_result { get; set; }
