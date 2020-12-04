@@ -19,6 +19,8 @@ namespace SyncApi_WCS_LN
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            AMWUtil.Logger.AMWLoggerManager.InitInstant("D:/logs/wcs_ptt/{Date}/", "{LogName}.{Date}.log");
+
             using (StreamReader sr = new StreamReader("app.property"))
             {
                 while (sr.EndOfStream == false)
