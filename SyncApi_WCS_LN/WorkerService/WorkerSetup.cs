@@ -25,7 +25,7 @@ namespace SyncApi_WCS_LN.WorkerService
                     exec.Run();
                 });
             }
-            return null;
+            return Task.CompletedTask;
         }
     }
 }

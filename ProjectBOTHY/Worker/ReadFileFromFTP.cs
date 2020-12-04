@@ -176,20 +176,62 @@ namespace ProjectBOTHY.Worker
         {
             ams_AreaMaster _desArea = new ams_AreaMaster();
             ams_AreaMaster _souArea = new ams_AreaMaster();
+            string souArea = "";
+            string desArea = "";
 
-            if (docItemDetail.header.command == "STOREIN")
+            try
             {
-                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
+                if (docItemDetail.header.command == "STOREIN")
+                {
+                    desArea = docItemDetail.details.First().stationIn;
+                    _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
+                    if (_desArea == null)
+                        throw new Exception();
+                }
+                else if (docItemDetail.header.command == "STOREOUT")
+                {
+                    souArea = docItemDetail.details.First().stationOut;
+                    _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+                    if (_souArea == null)
+                        throw new Exception();
+                }
+                else if (docItemDetail.header.command == "TRANSFER")
+                {
+                    souArea = docItemDetail.details.First().stationIn;
+                    desArea = docItemDetail.details.First().stationOut;
+                    _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+                    _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
+                    if(_desArea == null || _souArea == null)
+                        throw new Exception();
+                }
             }
-            else if (docItemDetail.header.command == "STOREOUT")
+            catch
             {
-                _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
+                string textError = "";
+                if (docItemDetail.header.command == "STOREIN")
+                    textError = $"ไม่พบ Area {desArea}";
+                else if (docItemDetail.header.command == "STOREOUT")
+                    textError = $"ไม่พบ Area {souArea}";
+                else
+                {
+                    if(_desArea == null && _souArea == null)
+                        textError = $"ไม่พบ Area ต้นทาง {souArea} และ Area ปลายทาง {desArea}";
+                    else if(_desArea == null)
+                        textError = $"ไม่พบ Area ปลายทาง {desArea}";
+                    else
+                        textError = $"ไม่พบ Area ต้นทาง {souArea}";
+                }
+                new ErrorResponseGenerate().Execute(buVO.Logger, buVO, new ErrorResponseGenerate.Treq()
+                {
+                    header = docItemDetail.header,
+                    details = docItemDetail.details,
+                    footer = docItemDetail.footer,
+                    error = textError
+                });
+
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, $"ไม่พบ Area ในระบบ");
             }
-            else if (docItemDetail.header.command == "TRANSFER")
-            {
-                _desArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationOut);
-                _souArea = StaticValueManager.GetInstant().AreaMasters.Find(y => y.Code == docItemDetail.details.First().stationIn);
-            }
+            
 
             var parentDoc = new amt_Document()
             {
