@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
 import Flash from 'react-reveal/Flash';
-import { apicall } from '../../../../components/function/CoreFunction2'
+import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -98,7 +98,6 @@ const BorderGrey = styled.div`
 
 const ScanPallet = (props) => {
     const { t } = useTranslation()
-    const [databar, setdatabar] = useState({});
     const [valueBarcode, setvalueBarcode] = useState();
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
@@ -108,17 +107,27 @@ const ScanPallet = (props) => {
     const [remark, setremark] = useState();
     const [dialogState, setDialogState] = useState({});
     const [dashboard, setDashboarde] = useState("");
-    const AreaMaster = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "AreaMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20}]',
-        f: "*",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    };
+
+    const [area, setArea] = useState([]);
+
+    useEffect(() => {
+        const AreaMaster = {
+            queryString: window.apipath + "/v2/SelectDataMstAPI/",
+            t: "AreaMaster",
+            q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20}]',
+            f: "*",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: ""
+        };
+
+        Axios.get(createQueryString(AreaMaster)).then(res => {
+            setArea(res.data.datas);
+        })
+    }, [])
+
     const onHandleDDLChange = (value) => {
         // console.log(value)
         if (value === 3) {
@@ -127,8 +136,8 @@ const ScanPallet = (props) => {
             setDashboarde("ReceiveHub2");
         }
     };
-    useEffect(() => {
 
+    useEffect(() => {
         let url = window.apipath + '/dashboard'
         let connection = new signalR.HubConnectionBuilder()
             .withUrl(url, {
@@ -185,7 +194,7 @@ const ScanPallet = (props) => {
                 length: 1.200,
                 height: 1.000,
                 warehouseCode: "5001",
-                areaCode: dataPallet.areaID === 3 ? "LIF01" : "LIF01",
+                areaCode: dataPallet.areaID === 3 ? "LIF01" : "LIF02",
                 locationCode: dataPallet.areaID === 3 ? "LIF01" : "LIF02",
                 actualTime: moment().format("YYYY-MM-DDT00:00"),
                 options: remark,
@@ -416,7 +425,10 @@ const ScanPallet = (props) => {
                     //returnDefaultValue={true}
                     //defaultValue={3}
                     zIndex={1000}
-                    queryApi={AreaMaster}
+                    //queryApi={AreaMaster}
+                    data={area}
+                    defaultValue={3}
+                    returnDefaultValue={true}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
                 />
 
