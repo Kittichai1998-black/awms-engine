@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             if (stoPallet != null)
             {
                 var areaSto = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoPallet.AreaMaster_ID);
-                if (areaSto.AreaMasterType_ID != AreaMasterTypeID.STO_STAGING)
+                if (areaSto.AreaMasterType_ID == AreaMasterTypeID.STO_ASRS)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถย้ายสินค้าในคลังสินค้าได้");
 
                 if(stoPallet.AreaLocationMaster_ID != location.ID)

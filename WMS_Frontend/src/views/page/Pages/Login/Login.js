@@ -124,7 +124,7 @@ const Login = props => {
 
     const redirect = () => {
         if(loginCount === props.loginCount){
-            if (sessionStorage.getItem("Token") !== null) {
+            if (sessionStorage.getItem("Token") !== null && localStorage.getItem("MenuItems") !== null) {
                 return <Redirect to="/" />;
             }
         }

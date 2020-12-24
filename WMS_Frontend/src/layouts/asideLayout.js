@@ -70,6 +70,7 @@ const Aside = props => {
     <MuiThemeProvider theme={theme}>
         <div className={classes.toolbar} />
         <List component='nav' className={classes.root} style={{ backgroundColor: props.backgroundColor }}>
+          
           {routes.map((x, idx) => {
             if (x.child) {
               return (

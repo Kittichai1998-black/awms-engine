@@ -437,7 +437,6 @@ const Default = props => {
                 <div className={classes.sectionDesktop}>
                     <MenuListDesktop classes={classes} theme={theme} sidebar={sidebar} menuList={localStorage.getItem('MenuItems')}/>
                 </div>
-
                 <div className={classes.sectionMobile}>
                     <MenuListMoblie classes={classes} theme={theme} sidebar={sidebar} menuList={localStorage.getItem('MenuItems')}/>
                     {sidebar.mobileSidebarToggle ?
