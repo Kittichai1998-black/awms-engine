@@ -425,6 +425,10 @@ const AddminPage = Loadable({
   loading: Loading
 });
 
+const MonitorTest = Loadable({
+  loader: () => import("../../views/page/Monitor/MonitorTest"),
+  loading: Loading
+});
 
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
@@ -533,7 +537,7 @@ let routes = [
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
   { path: "/warehouse/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
-  //{ path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true , child: true },
+  { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true , child: true },
   { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true , child: true },
 ];
 
