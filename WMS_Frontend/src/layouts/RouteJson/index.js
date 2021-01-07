@@ -1,11 +1,11 @@
 import DefaultRoute from "./routeDefault";
 import ENGINE from "./routeEngine";
-// import PANKAN from "./routePANKAN";
+import GCL from "./routeGCL";
 
 var PROJ = null;
 
-if (window.project === "BOT") {
-    //PROJ = BOT;
+if (window.project === "GCL") {
+    PROJ = GCL;
 } else {
     PROJ = ENGINE;
 }
