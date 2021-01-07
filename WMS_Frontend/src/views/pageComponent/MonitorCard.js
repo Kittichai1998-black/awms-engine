@@ -211,6 +211,20 @@ const MasterData = (props) => {
         rowCut.push(sliceIt)
       }
       setGridConfigs(rowCut)
+    } else {
+      setGridConfigs([[
+        {gateCode:"G01", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G02", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G03", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G04", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G05", allQty:"0", lot:"", qty:"0"}],
+
+        [{gateCode:"G06", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G07", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G08", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G09", allQty:"0", lot:"", qty:"0"},
+        {gateCode:"G10", allQty:"0", lot:"", qty:"0"}]
+      ]);
     }
   }, [data])
 
