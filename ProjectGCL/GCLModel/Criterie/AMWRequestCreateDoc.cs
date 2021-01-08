@@ -8,7 +8,8 @@ namespace GCLModel.Criteria
     public class AMWRequestCreateDoc
     {
 
-        [Required(ErrorMessage = "kor wor yor")]
+        //[Required(ErrorMessage = "kor wor yor")]
+        
             public string api_ref;
             public string doc_wms;
             public string customer;
@@ -21,9 +22,9 @@ namespace GCLModel.Criteria
             public decimal? qty_per_pallet;
             public string unit;
             public string status;
-            public string warehouse;
-
-        public string discharge;
+            public string sou_warehouse;
+            public string des_warehouse;
+            public string discharge;
 
     }
 }

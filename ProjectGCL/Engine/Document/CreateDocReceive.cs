@@ -26,16 +26,16 @@ namespace ProjectGCL.Engine.Document
         public class TReq : AMWRequestCreateDoc
         {
         }
-        public class TRes 
+        public class TRes
         {
             public string api_ref;
-            public string doc_wms; 
+            public string doc_wms;
             public string doc_wcs;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var StaticValue = ADO.WMSStaticValue.StaticValueManager.GetInstant();
+            amt_Document document = new amt_Document();
 
             var customer = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_Customer>(
                     new SQLConditionCriteria[] {
@@ -55,26 +55,38 @@ namespace ProjectGCL.Engine.Document
             if (sku == null)
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี sku นี้ในระบบ");
 
-            var pack = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_PackMaster>(
-                    new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("SKUMaster_ID",sku.ID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("UnitType_ID",sku.UnitType_ID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
-                    }, this.BuVO).FirstOrDefault();
-
-            if (pack == null)
-                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี pack นี้ในระบบ");
-
             var warehouse = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Code",reqVO.warehouse, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Code",reqVO.des_warehouse, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
             if (warehouse == null)
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี warehouse นี้ในระบบ");
 
-            var document = this.CreateDoc(this.Logger, reqVO, sku,pack, this.BuVO);
+            var documentCheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("refID",reqVO.doc_wms, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Status",2,SQLOperatorType.NOTEQUALS)
+                    }, this.BuVO).FirstOrDefault();
+
+            if (documentCheck != null)
+            {
+                if (documentCheck.EventStatus == DocumentEventStatus.NEW)
+                {
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentCheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    document = this.CreateDoc(this.Logger, reqVO, sku, this.BuVO);
+                }
+                else if (documentCheck.EventStatus == DocumentEventStatus.WORKING)
+                {
+                    throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่สามารถสร้างเอกสารได้เพราะมีเอกสารที่กำลังทำงานอยู่");
+                }
+
+            }
+            else
+            {
+                document = this.CreateDoc(this.Logger, reqVO, sku, this.BuVO);
+            }
 
             var res = new TRes()
             {
@@ -83,9 +95,9 @@ namespace ProjectGCL.Engine.Document
                 doc_wcs = document.Code
 
             };
-            return null;
+            return res;
         }
-        private amt_Document CreateDoc(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, ams_PackMaster pack, VOCriteria buVO)
+        private amt_Document CreateDoc(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, VOCriteria buVO)
         {
             amt_Document docResult = new amt_Document();
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
@@ -105,14 +117,14 @@ namespace ProjectGCL.Engine.Document
                 souAreaMasterID = null,
                 desBranchID = null,
                 forCustomerCode = reqVO.customer,
-                documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_CUS,
+                documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
                 lot = reqVO.lot,
                 batch = null,
                 documentDate = DateTime.Now,
                 actionTime = DateTime.Now,
                 eventStatus = DocumentEventStatus.NEW,
-                desWarehouseCode = reqVO.warehouse,
-                souWarehouseCode = "5005",
+                desWarehouseCode = reqVO.des_warehouse,
+                souWarehouseCode = reqVO.sou_warehouse,
                 options = optionsDocItems
 
             };
@@ -139,5 +151,6 @@ namespace ProjectGCL.Engine.Document
             return docResult;
 
         }
+
     }
 }
