@@ -37,6 +37,26 @@ namespace ProjectGCL.Engine.Document
         {
             amt_Document document = new amt_Document();
 
+
+            if (String.IsNullOrWhiteSpace(reqVO.customer))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "customer เป็นค่าว่าง");
+
+            if (String.IsNullOrWhiteSpace(reqVO.api_ref))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "api_ref เป็นค่าว่าง");
+
+            if (String.IsNullOrWhiteSpace(reqVO.doc_wms))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "doc_wms เป็นค่าว่าง");
+
+            if (String.IsNullOrWhiteSpace(reqVO.grade))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "grade เป็นค่าว่าง");
+
+            if (String.IsNullOrWhiteSpace(reqVO.sku))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "sku เป็นค่าว่าง");
+
+            if (String.IsNullOrWhiteSpace(reqVO.unit))
+                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "unit เป็นค่าว่าง");
+
+
             var customer = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_Customer>(
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",reqVO.customer, SQLOperatorType.EQUALS),
@@ -55,7 +75,7 @@ namespace ProjectGCL.Engine.Document
             if (sku == null)
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี sku นี้ในระบบ");
 
-            var warehouse = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
+            var warehouse = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_Warehouse>(
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",reqVO.des_warehouse, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
@@ -64,20 +84,33 @@ namespace ProjectGCL.Engine.Document
             if (warehouse == null)
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่มี warehouse นี้ในระบบ");
 
-            var documentCheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+            var documentGRCheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("refID",reqVO.doc_wms, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVE,SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",2,SQLOperatorType.NOTEQUALS)
                     }, this.BuVO).FirstOrDefault();
 
-            if (documentCheck != null)
+            var documentPACheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                    new SQLConditionCriteria[] {
+                                    new SQLConditionCriteria("refID",reqVO.doc_wms, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY,SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("Status",2,SQLOperatorType.NOTEQUALS)
+                    }, this.BuVO).FirstOrDefault();
+
+            if (documentGRCheck != null)
             {
-                if (documentCheck.EventStatus == DocumentEventStatus.NEW)
+                if (documentGRCheck.EventStatus == DocumentEventStatus.NEW)
                 {
-                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentCheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
-                    document = this.CreateDoc(this.Logger, reqVO, sku, this.BuVO);
+                    ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentGRCheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    if(documentPACheck != null)
+                    {
+                        ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentPACheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    }
+                    document = this.CreateDocGR(this.Logger, reqVO, sku, this.BuVO);
+                    this.CreateDocPA(this.Logger, reqVO, sku, document, this.BuVO);
                 }
-                else if (documentCheck.EventStatus == DocumentEventStatus.WORKING)
+                else if (documentGRCheck.EventStatus == DocumentEventStatus.WORKING)
                 {
                     throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "ไม่สามารถสร้างเอกสารได้เพราะมีเอกสารที่กำลังทำงานอยู่");
                 }
@@ -85,7 +118,8 @@ namespace ProjectGCL.Engine.Document
             }
             else
             {
-                document = this.CreateDoc(this.Logger, reqVO, sku, this.BuVO);
+                document = this.CreateDocGR(this.Logger, reqVO, sku, this.BuVO);
+                this.CreateDocPA(this.Logger, reqVO, sku, document, this.BuVO);
             }
 
             var res = new TRes()
@@ -97,9 +131,9 @@ namespace ProjectGCL.Engine.Document
             };
             return res;
         }
-        private amt_Document CreateDoc(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, VOCriteria buVO)
+        private amt_Document CreateDocGR(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, VOCriteria buVO)
         {
-            amt_Document docResult = new amt_Document();
+            amt_Document docResultGR = new amt_Document();
             List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
 
             var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.discharge);
@@ -107,10 +141,11 @@ namespace ProjectGCL.Engine.Document
             optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, reqVO.end_pallet);
             optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY_PER_PALLET, reqVO.qty_per_pallet);
 
-            AuditStatus AdStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
+            AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
 
             var docH = new CreateGRDocument.TReq()
             {
+                documentTypeID = DocumentTypeID.GOODS_RECEIVE,
                 refID = reqVO.doc_wms,
                 ref1 = reqVO.grade,
                 souBranchID = null,
@@ -139,6 +174,64 @@ namespace ProjectGCL.Engine.Document
                 orderNo = null,
                 refID = reqVO.doc_wms,
                 ref1 = reqVO.grade,
+                auditStatus = AdditStatus,
+                eventStatus = DocumentEventStatus.NEW,
+                options = optionsDocItems
+
+            });
+
+            docH.receiveItems = docItemsList;
+            docResultGR = new CreateGRDocument().Execute(Logger, this.BuVO, docH);
+
+            return docResultGR;
+
+        }
+
+        private amt_Document CreateDocPA(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, amt_Document DocGR, VOCriteria buVO)
+        {
+            amt_Document docResultPA = new amt_Document();
+            List<CreateGRDocument.TReq.ReceiveItem> docItemsList = new List<CreateGRDocument.TReq.ReceiveItem>();
+
+            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.discharge);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.start_pallet);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, reqVO.end_pallet);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY_PER_PALLET, reqVO.qty_per_pallet);
+
+            AuditStatus AdStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
+
+            var docH = new CreateGRDocument.TReq()
+            {
+                documentTypeID = DocumentTypeID.PUTAWAY,
+                parentDocumentID = DocGR.ID.Value,
+                refID = reqVO.doc_wms,
+                ref1 = reqVO.grade,
+                souBranchID = null,
+                souAreaMasterID = null,
+                desBranchID = null,
+                forCustomerCode = reqVO.customer,
+                documentProcessTypeID = DocumentProcessTypeID.FG_TRANSFER_WM,
+                lot = reqVO.lot,
+                batch = null,
+                documentDate = DateTime.Now,
+                actionTime = DateTime.Now,
+                eventStatus = DocumentEventStatus.NEW,
+                desWarehouseCode = reqVO.des_warehouse,
+                souWarehouseCode = reqVO.sou_warehouse,
+                options = optionsDocItems
+
+            };
+
+            docItemsList.Add(new CreateGRDocument.TReq.ReceiveItem
+            {
+
+                skuCode = sku.Code,
+                quantity = reqVO.qty,
+                unitType = reqVO.unit,
+                batch = null,
+                lot = reqVO.lot,
+                orderNo = null,
+                refID = reqVO.doc_wms,
+                ref1 = reqVO.grade,
                 auditStatus = AdStatus,
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
@@ -146,9 +239,9 @@ namespace ProjectGCL.Engine.Document
             });
 
             docH.receiveItems = docItemsList;
-            docResult = new CreateGRDocument().Execute(Logger, this.BuVO, docH);
+            docResultPA = new CreateGRDocument().Execute(Logger, this.BuVO, docH);
 
-            return docResult;
+            return docResultPA;
 
         }
 

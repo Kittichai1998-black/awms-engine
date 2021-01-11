@@ -10,6 +10,8 @@ namespace AWMSModel.Constant.EnumConst
         PASSED = 1,
         REJECTED = 2,
         NOTPASS = 3,
-        HOLD = 9
+        HOLD = 9,
+        //GCL
+        //QI / ACC / ACD / ACN / ACM
     }
 }

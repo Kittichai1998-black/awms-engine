@@ -146,8 +146,6 @@ namespace ADO.WMSDB
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);
-            param.Add("@baseCode", docItem.BaseCode);
-            param.Add("@locationCode", docItem.LocationCode);
             param.Add("@quantity", docItem.Quantity);
             param.Add("@baseQuantity", docItem.BaseQuantity);
             param.Add("@unitTypeID", docItem.UnitType_ID);
@@ -185,8 +183,8 @@ namespace ADO.WMSDB
             docItem.ID = docItemTmp.ID;
             if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
                 docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; DistoADO.GetInstant().Insert(x, buVO); });
-            
-            /*docItem.StorageObjectIDs = DataADO.GetInstant()
+
+            /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
                 .Select(x=>x.StorageObject_ID)
                 .ToList();*/
