@@ -25,7 +25,7 @@ namespace ProjectGCL.Engine.Document
     public class CreateDocIssue : BaseEngine<CreateDocIssue.TReq, CreateDocIssue.TRes>
     {
 
-        public class TReq : AMWRequestCreateGRDoc
+        public class TReq : AMWRequestCreateGIDoc
         {
         }
         public class TRes
@@ -42,7 +42,7 @@ namespace ProjectGCL.Engine.Document
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             amt_Document document = new amt_Document();
-
+            ResConfirmResult dataProcessQ = new ResConfirmResult();
 
             if (String.IsNullOrWhiteSpace(reqVO.api_ref))
                 throw new AMWException(this.BuVO.Logger, AMWExceptionCode.S0001, "api_ref เป็นค่าว่าง");
@@ -110,8 +110,11 @@ namespace ProjectGCL.Engine.Document
                     {
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentPACheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
                     }
-                    document = this.CreateDocGI(this.Logger, reqVO, sku, this.BuVO);
-                    this.CreateDocPK(this.Logger, reqVO, sku, document, this.BuVO);
+                    document = this.CreateDocGI(this.Logger, reqVO, warehouse, customer, sku, this.BuVO);
+                    this.CreateDocPK(this.Logger, reqVO, warehouse, customer, sku, document, this.BuVO);
+                    dataProcessQ = this.AutoProcess(document, false, reqVO, this.BuVO);
+
+                   
                 }
                 else if (documentGRCheck.EventStatus == DocumentEventStatus.WORKING)
                 {
@@ -121,9 +124,12 @@ namespace ProjectGCL.Engine.Document
             }
             else
             {
-                document = this.CreateDocGI(this.Logger, reqVO, sku, this.BuVO);
-                this.CreateDocPK(this.Logger, reqVO, sku, document, this.BuVO);
+                document = this.CreateDocGI(this.Logger, reqVO, warehouse, customer, sku, this.BuVO);
+                this.CreateDocPK(this.Logger, reqVO, warehouse, customer, sku, document, this.BuVO);
             }
+
+            if (dataProcessQ == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Process Queue ไม่สำเร็จ");
 
             var res = new TRes()
             {
@@ -134,23 +140,22 @@ namespace ProjectGCL.Engine.Document
             };
             return res;
         }
-        private amt_Document CreateDocGI(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, VOCriteria buVO)
+        private amt_Document CreateDocGI(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse, ams_Customer customer, ams_SKUMaster sku, VOCriteria buVO)
         {
             amt_Document docResultGI = new amt_Document();
             List<CreateGIDocument.TReq.IssueItem> docItemsList = new List<CreateGIDocument.TReq.IssueItem>();
 
-            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.discharge);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.start_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, reqVO.end_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY_PER_PALLET, reqVO.qty_per_pallet);
+            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.staging);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.dock);
 
             AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
 
             var docH = new CreateGIDocument.TReq()
             {
                 documentTypeID = DocumentTypeID.GOODS_ISSUE,
-                refID = reqVO.doc_wms,
                 ref1 = reqVO.grade,
+                ref2 = reqVO.doc_wms,
+                ref3 = reqVO.dock,
                 souBranchID = null,
                 souAreaMasterID = null,
                 desBranchID = null,
@@ -170,12 +175,15 @@ namespace ProjectGCL.Engine.Document
             {
                 skuCode = sku.Code,
                 quantity = reqVO.qty,
-                unitType = reqVO.unit,
+                baseQuantity = reqVO.qty,
+                unitType = StaticValue.UnitTypes.First(x => x.Code == reqVO.unit).Code,
+                baseunitType = StaticValue.UnitTypes.First(x => x.Code == reqVO.unit).Code,
                 batch = null,
                 lot = reqVO.lot,
                 orderNo = null,
-                refID = reqVO.doc_wms,
                 ref1 = reqVO.grade,
+                ref2 = reqVO.doc_wms,
+                ref3 = reqVO.dock,
                 auditStatus = AdditStatus,
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
@@ -189,24 +197,22 @@ namespace ProjectGCL.Engine.Document
 
         }
 
-        private amt_Document CreateDocPK(AMWLogger logger, TReq reqVO, ams_SKUMaster sku, amt_Document DocGR, VOCriteria buVO)
+        private amt_Document CreateDocPK(AMWLogger logger, TReq reqVO, ams_Warehouse warehouse, ams_Customer customer, ams_SKUMaster sku, amt_Document DocGI, VOCriteria buVO)
         {
             amt_Document docResultPK = new amt_Document();
             List<CreateGIDocument.TReq.IssueItem> docItemsList = new List<CreateGIDocument.TReq.IssueItem>();
 
-            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.discharge);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.start_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_END_PALLET, reqVO.end_pallet);
-            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_QTY_PER_PALLET, reqVO.qty_per_pallet);
-
-            AuditStatus AdStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
+            var optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue("", GCLOptionVOConst.OPT_DISCHARGE, reqVO.staging);
+            optionsDocItems = AMWUtil.Common.ObjectUtil.QryStrSetValue(optionsDocItems, GCLOptionVOConst.OPT_START_PALLET, reqVO.dock);
+            AuditStatus AdditStatus = EnumUtil.GetValueEnum<AuditStatus>(reqVO.status);
 
             var docH = new CreateGIDocument.TReq()
             {
                 documentTypeID = DocumentTypeID.PICKING,
-                parentDocumentID = DocGR.ID.Value,
-                refID = reqVO.doc_wms,
+                parentDocumentID = DocGI.ID.Value,
                 ref1 = reqVO.grade,
+                ref2 = reqVO.doc_wms,
+                ref3 = reqVO.dock,
                 souBranchID = null,
                 souAreaMasterID = null,
                 desBranchID = null,
@@ -224,16 +230,18 @@ namespace ProjectGCL.Engine.Document
 
             docItemsList.Add(new CreateGIDocument.TReq.IssueItem
             {
-
                 skuCode = sku.Code,
                 quantity = reqVO.qty,
-                unitType = reqVO.unit,
+                baseQuantity = reqVO.qty,
+                unitType = StaticValue.UnitTypes.First(x => x.Code == reqVO.unit).Code,
+                baseunitType = StaticValue.UnitTypes.First(x => x.Code == reqVO.unit).Code,
                 batch = null,
                 lot = reqVO.lot,
                 orderNo = null,
-                refID = reqVO.doc_wms,
                 ref1 = reqVO.grade,
-                auditStatus = AdStatus,
+                ref2 = reqVO.doc_wms,
+                ref3 = reqVO.dock,
+                auditStatus = AdditStatus,
                 eventStatus = DocumentEventStatus.NEW,
                 options = optionsDocItems
 
@@ -246,7 +254,7 @@ namespace ProjectGCL.Engine.Document
 
         }
 
-        private ResConfirmResult AutoProcess(amt_Document Document, bool pickfull, string desLoc, TReq reqVO, VOCriteria buVO)
+        private ResConfirmResult AutoProcess(amt_Document Document, bool pickfull, TReq reqVO, VOCriteria buVO)
         {
             //var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(Document.ID.Value, this.BuVO);
 
@@ -273,6 +281,10 @@ namespace ProjectGCL.Engine.Document
             {
                 StorageObjectEventStatus.RECEIVED
             };
+            var auditStatusesProcess = new List<AuditStatus>()
+            {
+                AuditStatus.QUARANTINE
+            };
             var OrderByProcess = new List<SPInSTOProcessQueueCriteria.OrderByProcess>() {
                 new SPInSTOProcessQueueCriteria.OrderByProcess()
                 {
@@ -297,6 +309,7 @@ namespace ProjectGCL.Engine.Document
                         useFullPick = pickfull,
                         conditions = conditionsProcess,
                         eventStatuses = eventStatusesProcess,
+                        auditStatuses = auditStatusesProcess,
                         orderBys = OrderByProcess,
                         baseQty = docItem.BaseQuantity
                         //percentRandom = 100
@@ -307,9 +320,9 @@ namespace ProjectGCL.Engine.Document
 
             var wq = new ASRSProcessQueue.TReq()
             {
-                desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.ID == Document.Des_Warehouse_ID).Code,
-                desASRSAreaCode = StaticValue.AreaMasters.First(x => x.ID == Document.Des_AreaMaster_ID).Code,
-                desASRSLocationCode = desLoc,
+                desASRSWarehouseCode = StaticValue.Warehouses.First(x => x.Code == reqVO.warehouse).Code,
+                desASRSAreaCode = StaticValue.AreaMasters.First(x => x.Code == reqVO.staging).Code,
+                desASRSLocationCode = null,
                 processQueues = dataProcessWQ,
                 lockNotExistsRandom = false,
             };
