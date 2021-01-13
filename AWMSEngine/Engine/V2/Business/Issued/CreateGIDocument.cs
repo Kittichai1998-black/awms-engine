@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string options;
             public int? productOwnerID;
             public DocumentProcessTypeID documentProcessTypeID;
-
+            public DocumentTypeID documentTypeID;
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<IssueItem> issueItems;
@@ -153,7 +153,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
                     souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
-                    docTypeId = DocumentTypeID.PICKING,
+                    docTypeId = reqVO.documentTypeID,
                     desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
                     desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
                     desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
