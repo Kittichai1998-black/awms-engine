@@ -76,14 +76,14 @@ namespace ProjectGCL.Engine.Document
 
             var documentGRCheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("refID",reqVO.doc_wms, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("ref2",reqVO.doc_wms, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.GOODS_RECEIVE,SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",2,SQLOperatorType.NOTEQUALS)
                     }, this.BuVO).FirstOrDefault();
 
             var documentPACheck = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
                     new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("refID",reqVO.doc_wms, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("ref2",reqVO.doc_wms, SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("DocumentType_ID",DocumentTypeID.PUTAWAY,SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status",2,SQLOperatorType.NOTEQUALS)
                     }, this.BuVO).FirstOrDefault();
