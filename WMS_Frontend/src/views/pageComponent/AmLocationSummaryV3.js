@@ -32,6 +32,14 @@ import { editorListcolunm } from '../../components/table/AmGennarateFormForEdito
 import AmDialogs from '../../components/AmDialogs'
 import PageviewRoundedIcon from '@material-ui/icons/PageviewRounded';
 import IconButton from "@material-ui/core/IconButton";
+import Chip from '@material-ui/core/Chip';
+import Dns from '@material-ui/icons/Dns';
+import Dashboard from '@material-ui/icons/Dashboard';
+import ShoppingCart from '@material-ui/icons/ShoppingCart';
+import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
+import LayersClear from '@material-ui/icons/LayersClear';
+import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@material-ui/core/Paper'
 // import Aux from 'react-aux'
 
 const Axios = new apicall()
@@ -51,6 +59,22 @@ input {
     align-items: stretch;
     
   }
+`;
+const FormInline1 = styled.div`
+
+&::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em;
+   }
+ 
+   &::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,.1);
+    border-radius: 3px;
+ 
+    &:hover {
+     background: rgba(255,255,255,.2);
+    }
+   }
 `;
 
 const AmLocationSummary = props => {
@@ -138,11 +162,9 @@ const AmLocationSummary = props => {
             accessor: "warehouse_id",
             type: "findPopUp",
             required: true,
-            // fieldDataKey: "warehouse_id",
             fieldLabel: ["Code", "Name"],
             idddl: "warehouse_id",
             queryApi: table_Warehouse,
-            // defaultValue: 1,
             columsddl: columsFindPopupArea_Warehouse
         },
         {
@@ -150,13 +172,9 @@ const AmLocationSummary = props => {
             Header: "Area",
             accessor: "area_id",
             type: "findPopUp",
-            // search: "Code",
             queryApi: areaMaster,
             fieldLabel: ["Code", "Name"],
             columsddl: columsFindPopupArea_Warehouse,
-            // related: ["Name"],
-            // fieldDataKey: "area_id", // ref กับ accessor
-            // defaultValue: 1,
             required: true
         },
         { Header: "Level", accessor: "select", type: "inputNum", width: '300px' },
@@ -195,22 +213,26 @@ const AmLocationSummary = props => {
                 palletPer = (palletLen / palletAll * 100).toFixed(3),
                 groupSKUP = groupBy(pack.sort((a, b) => (a.skut_Code > b.skut_Code) ? 1 : ((b.skut_Code > a.skut_Code) ? -1 : 0)), "skut_Code"),
                 groupBankP = groupBy(dataAll.sort((a, b) => (a.Bank > b.Bank) ? 1 : ((b.Bank > a.Bank) ? -1 : 0)), "Bank"),
-                // groupBayP = groupBy(pack.sort((a, b) => (a.Bay > b.Bay) ? 1 : ((b.Bay > a.Bay) ? -1 : 0)), "Bay"),
-                // groupLvP = groupBy(pack.sort((a, b) => (a.Lv > b.Lv) ? 1 : ((b.Lv > a.Lv) ? -1 : 0)), "Lv"),
                 setFull = (
                     <Card style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
-                            {/* <div style={{ textAlign: "center" }}>
-                                    <b style={{ color: "red" }}>Location : {x[0].Code}</b>
-                                </div> */}
-                            <p style={{ margin: "0px" }}><b>Used Location</b></p>
+                        <CardContent style={{ padding: "5px", backgroundColor: "#cfd3ce" }}>
+                            <Chip
+                                icon={<Dns />}
+                                label="Used Location"
+                                style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                            />
+                            <br />
+
                             <p style={{ margin: "0px" }}>Pallet : {palletLen}/{palletAll} {`(${palletPer}%)`}</p>
                             <p style={{ margin: "0px" }}>Pack : {pack.length}</p>
-
                             {groupSKUP.length ? (
                                 <>
                                     <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>SKU Type</b></p>
+                                    <Chip
+                                        icon={<ShoppingCart />}
+                                        label="SKU Type"
+                                        style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                                    />
                                     {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
                                 </>
                             ) : null}
@@ -218,16 +240,13 @@ const AmLocationSummary = props => {
                             {pack.length ? (
                                 <>
                                     <hr style={{ margin: "5px 0" }} />
-                                    <p style={{ margin: "0px" }}><b>Bank</b></p>
+                                    <Chip
+                                        icon={<Dashboard />}
+                                        label="Bank"
+                                        style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                                    />
                                     {groupBankP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bank)} : {getUnique(x.filter(y => y.bsto_Code), "bsto_Code").length} Pallet  {x.filter(y => y.bsto_Code).length ? "(" + x.filter(y => y.bsto_Code).length + " Pack)" : null}</p>)}
 
-                                    {/* <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Bay</b></p>
-                                        {groupBayP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
-
-                                        <hr style={{ margin: "5px 0" }} />
-                                        <p style={{ margin: "0px" }}><b>Lv</b></p>
-                                        {groupLvP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Lv)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)} */}
                                 </>
                             ) : null}
                         </CardContent>
@@ -240,7 +259,6 @@ const AmLocationSummary = props => {
     useEffect(() => {
         if (dataDraw1) {
             let title, sort_Y
-            // eslint-disable-next-line default-case
             switch (editData.view) {
                 case 'top': setTitleBottom("Side view"); title = "Bank / Bay"; sort_Y = 'asc'; break;
                 case 'front': setTitleBottom("Top view"); title = "Lv / Bank"; sort_Y = 'desc'; break;
@@ -277,7 +295,6 @@ const AmLocationSummary = props => {
                                 else if (yi && xi) {
                                     dataFin && (percenLast += dataFin.Density_AVG)
                                     let row
-                                    // eslint-disable-next-line default-case
                                     switch (yi) {
                                         case 1:
                                             row = 25; break
@@ -296,14 +313,13 @@ const AmLocationSummary = props => {
                                                 border: "1px solid black"
                                             }}></td>
                                             {xi === pos_X_1.length - 1 ? <td>{percenLast ? (percenLast / pos_X_1.length - 1).toFixed(3) + "%" : null}</td> : null}
-                                            {xi === pos_X_1.length - 1 ? <td
+                                            {/* {xi === pos_X_1.length - 1 ? <td
                                                 style={{
                                                     backgroundColor: bgColor(row),
                                                     textAlign: 'left !important'
-                                                    // border: row?"1px solid black":null
                                                 }}
-                                            >{row && clickDesCription(row)}</td> : null}
-
+                                            // >{row && clickDesCription(row)}</td> : null}
+                                            >{row && clickDesCription(row)}</td> : null} */}
                                         </>
                                     )
                                 }
@@ -318,7 +334,6 @@ const AmLocationSummary = props => {
     useEffect(() => {
         if (dataDraw2) {
             let title, sort_Y, selectText
-            // eslint-disable-next-line default-case
             switch (editData.view) {
                 case 'top': setTitleBottom("Side view"); title = "Lv / Bay"; sort_Y = 'desc'; selectText = "Bank"; break;
                 case 'front': setTitleBottom("Top view"); title = "Bank / Bay"; sort_Y = 'asc'; selectText = "Lv"; break;
@@ -334,16 +349,12 @@ const AmLocationSummary = props => {
 
             pos_Y_2.sort((a, b) => sort_Y === "asc" ? ((a.Pos_Y > b.Pos_Y) ? 1 : -1) : ((a.Pos_Y < b.Pos_Y) ? 1 : -1)).unshift({})
 
-            let padding = "8px",
+            let padding = "5px",
                 dataB = pos_Y_2.map((y, yi) => {
                     return (
                         <tr key={yi}>{
                             pos_X_2.map((x, xi) => {
                                 let dataFin = dataDraw2[0].find(z => { return z.Pos_X === x.Pos_X && z.Pos_Y === y.Pos_Y && z.Density_AVG })
-                                // let dataFil = dataAll.filter(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank && z.bsto_Code })
-                                // let dataFin = dataAll.find(z => { return z.Lv === x.Lv && z.Bay === y.Bay && z.Bank === rowBank })
-                                // wid = 100 / (bay.length + 1) + "%"
-
                                 if (yi === 0 && xi) {
                                     return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{xi}</td>
                                 } else if (xi === 0 && yi) {
@@ -351,8 +362,6 @@ const AmLocationSummary = props => {
                                 } else if (xi === 0 && yi === 0) {
                                     return <td key={xi} style={{ fontSize: "8px", textAlign: "center" }}>{title}</td>
                                 } else {
-                                    // let color = dataFil.length ? "#993300" : null,
-                                    //     cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td
                                             className="HoverTable"
@@ -379,22 +388,37 @@ const AmLocationSummary = props => {
                 groupLv = groupBy(pack.sort((a, b) => (a.Lv > b.Lv) ? 1 : ((b.Lv > a.Lv) ? -1 : 0)), "Lv"),
                 setBank = pack.length ? (
                     <Card style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
-                            <p style={{ margin: "0px" }}><b>Bank {parseInt(dataDraw2[1])}</b></p>
+                        <CardContent style={{ padding: "5px", backgroundColor: "#cfd3ce" }}>
+                            <Chip
+                                label={"Bank " + parseInt(dataDraw2[1])}
+                                style={{ width: "100%", backgroundColor: "#c6b497" }}
+                            />
 
                             <hr style={{ margin: "5px 0" }} />
-                            <p style={{ margin: "0px" }}><b>SKU Type</b></p>
+                            <Chip
+                                icon={<ShoppingCart />}
+                                label="SKU Type"
+                                style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                            />
                             {groupSKUP.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{x[0].skut_Code} : {getUnique(x, "bsto_Code").length} Pallet {"(" + x.length + " Pack)"}</p>)}
 
                             <hr style={{ margin: "5px 0" }} />
-                            <p style={{ margin: "0px" }}><b>Bay</b></p>
+                            <Chip
+                                icon={<Dashboard />}
+                                label="Bay"
+                                style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                            />
                             {groupBay.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Bay)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
 
                             <hr style={{ margin: "5px 0" }} />
-                            <p style={{ margin: "0px" }}><b>Lv</b></p>
+                            <Chip
+                                icon={<Dashboard />}
+                                label="Level"
+                                style={{ backgroundColor: "#839b97", marginBottom: "10px" }}
+                            />
                             {groupLv.map((x, xi) => <p key={xi} style={{ margin: "0px" }}>{parseInt(x[0].Lv)} : {getUnique(x, "bsto_Code").length} Pallet  {"(" + x.length + " Pack)"}</p>)}
                         </CardContent>
-                    </Card>
+                    </Card >
                 ) : null
 
             setDataBank(setBank)
@@ -419,7 +443,6 @@ const AmLocationSummary = props => {
         if (bank_lv) {
             let viewB
             const _editData = { ...editData }
-            // eslint-disable-next-line default-case
             switch (editData.view) {
                 case 'top': viewB = 'side'; _editData.bank = bank_lv; delete _editData.select; break;
                 case 'front': viewB = 'top'; _editData.select = bank_lv; delete _editData.bank; break;
@@ -429,7 +452,6 @@ const AmLocationSummary = props => {
 
             if (topTr) {
                 topTr.classList.remove("active");
-                // topTr.removeAttribute("style")
             }
             sideTd.forEach(x => {
                 x.style.border = "1px solid black"
@@ -438,8 +460,6 @@ const AmLocationSummary = props => {
 
             setDataDetail([])
             mergeDatas.length = 0
-            // document.getElementById('divTableSideView').style
-            // e.currentTarget.setAttribute("style", "border: 2px solid yellow;");
             e.currentTarget.classList.add("active");
             topTr = e.currentTarget
 
@@ -465,8 +485,6 @@ const AmLocationSummary = props => {
         }
 
         let bank, bay, lv
-
-        // eslint-disable-next-line default-case
         switch (textSelectRow) {
             case "Bank": bank = bank_lv; bay = po_x; lv = po_y; break;
             case "Lv": bank = po_y; bay = po_x; lv = bank_lv; break;
@@ -484,12 +502,17 @@ const AmLocationSummary = props => {
         let dataD = mergeDatas.map((x, xi) => {
             if (x.length)
                 return (
-                    // <Grid  xs={12} sm={12} md={12} lg={12} xl={12} item >
                     <Card key={xi} style={{ margin: "5px" }}>
-                        <CardContent style={{ padding: "5px" }}>
+                        <CardContent style={{ padding: "5px", backgroundColor: "#cfd3ce" }}>
                             <div style={{ textAlign: "center" }}>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Location : {x[0].Code} </b></p>
-                                <p style={{ margin: "0px" }}><b style={{ color: "red" }}>Pallet : {x[0].bsto_Code}</b></p>
+                                <Chip
+                                    label={"Location : " + x[0].Code}
+                                    style={{ width: "100%", backgroundColor: "#c6b497", marginBottom: "2px" }}
+                                />
+                                <Chip
+                                    label={"Pallet : " + x[0].bsto_Code}
+                                    style={{ width: "100%", backgroundColor: "#c6b497", marginBottom: "5px" }}
+                                />
                             </div>
                             {
                                 x.map((y, yi) => {
@@ -497,7 +520,6 @@ const AmLocationSummary = props => {
                                         return (
                                             <>
                                                 {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
-                                                {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
                                                 <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
                                                 <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
                                                 <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
@@ -512,7 +534,6 @@ const AmLocationSummary = props => {
 
                                             <>
                                                 {yi > 0 ? <hr style={{ margin: "5px 0" }} /> : null}
-                                                {/* <p style={{ margin: "0px" }}><b>Pallet :</b> {y.bsto_Code}</p> */}
                                                 <p style={{ margin: "0px" }}><b>Pack Code :</b> {y.psto_Code}</p>
                                                 <p style={{ margin: "0px" }}><b>Pack Name :</b> {y.psto_Name}</p>
                                                 <p style={{ margin: "0px" }}><b>SKU Type :</b> {y.skut_Code}</p>
@@ -531,12 +552,29 @@ const AmLocationSummary = props => {
                             }
                         </CardContent>
                     </Card>
-                    // </Grid>
                 )
         })
 
         if (dataD.length) {
-            setBtnClear(<button className="btn btn-danger" style={{ padding: "1px", marginLeft: "10px" }} onClick={clickClear}>Clear</button>)
+            //setBtnClear(<button className="btn btn-danger" style={{ padding: "1px", marginLeft: "10px" }} onClick={clickClear}>Clear</button>)
+            setBtnClear(<Tooltip title="Clear">
+                <IconButton
+                    size="large"
+                    aria-label="info"
+                    style={{
+                        padding: "1px",
+                        marginRight: "2px",
+                        float: "right"
+
+                    }}
+                ><LayersClear
+                        fontSize="large"
+                        onClick={clickClear} />
+                </IconButton>
+            </Tooltip>
+            )
+
+
             setOpen({ bank: false, full: false, cell: true })
         } else {
             setBtnClear()
@@ -648,7 +686,7 @@ const AmLocationSummary = props => {
                         setdataDraw1(res.data.datas)
 
                         let ele = (
-                            <>
+                            <div style={{ marginTop: "8px" }}>
                                 {rowdata.warehouse_id && <label><b>{rowdata.warehouse_id_header} :</b> {rowdata.warehouse_id_show} </label>}
                                 {rowdata.area_id && <label><b>{rowdata.area_id_header} :</b> {rowdata.area_id_show} </label>}
                                 {rowdata.select && <label><b>{rowdata.select_header} :</b> {rowdata.select} </label>}
@@ -661,7 +699,7 @@ const AmLocationSummary = props => {
                                 {rowdata.toProductDate && <label><b>{rowdata.toProductDate_header} :</b> {rowdata.toProductDate} </label>}
                                 {rowdata.fromIncubationDay && <label><b>{rowdata.fromIncubationDay_header} :</b> {rowdata.fromIncubationDay} </label>}
                                 {rowdata.toIncubationDay && <label><b>{rowdata.toIncubationDay_header} :</b> {rowdata.toIncubationDay} </label>}
-                            </>
+                            </div>
                         )
                         setTextSearch(ele)
                     } else {
@@ -689,25 +727,120 @@ const AmLocationSummary = props => {
                 objColumnsAndFieldCheck={{ objColumn: columnEdit, fieldCheck: "accessor" }}
                 columns={editorListcolunm(columnEdit, ref, inputError, editData, onChangeEditor)}
             />
-            <Grid
-                container
-                spacing={1}
-                direction="row"
-                justify="center"
-                alignItems="flex-start">
+            <Grid container >
+                <Grid item xs={8} >
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container >
+                            <Grid item xs={1} style={{ textAlign: "center" }}>
+                                <Tooltip title="search">
+                                    <IconButton
+                                        size="large"
+                                        aria-label="info"
+                                        style={{
+                                            padding: "1px",
+                                            marginRight: "2px",
+                                        }}
+                                    ><PageviewRoundedIcon
+                                            fontSize="large"
+                                            onClick={() => setToggleModal(true)} />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                            <Grid item xs={11}>
+                                <div className="scrollbar" id="style-1" style={{ marginBottom: "5px" }}>
+                                    <Paper style={{
+                                        textAlign: "center",
+                                        overflow: "auto",
+                                        whiteSpace: "nowrap",
+                                        width: "100%", height: "40px",
+                                        textAlign: "center",
+                                        backgroundColor: "#c6b497"
+                                    }}>
+                                        {textSearch}
+                                    </Paper>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Tooltip title="<=25">
+                            <FiberManualRecord style={{ color: "#00ff00" }} />
+                        </Tooltip>
+                        <Tooltip title="<=50">
+                            <FiberManualRecord style={{ color: "yellow" }} />
+                        </Tooltip>
+                        <Tooltip title="<= 75">
+                            <FiberManualRecord style={{ color: "orange" }} />
+                        </Tooltip>
+                        <Tooltip title="> 75">
+                            <FiberManualRecord style={{ color: "red" }} />
+                        </Tooltip>
+                        <FormInline style={{ float: "right" }}>
+                            <Label>{"Select mode : "}</Label>
+                            <AmDropdown
+                                id={"view"}
+                                placeholder="Select"
+                                data={dataDD}
+                                width={120}
+                                ddlMinWidth={120}
+                                defaultValue="top"
+                                // returnDefaultValue={true}
+                                // valueData={valueText}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => {
+                                    let active = document.getElementsByClassName('HoverTable active')
+                                    active.length && active[0].classList.remove("active")
+                                    if (dataObject)
+                                        editData.view = dataObject.value
+                                    Axios.get(getUrlDrawGraph(editData)).then((res) => {
+                                        if (res.data._result.status && res.data.datas.length) {
+                                            setRefresh({})
+                                            setDataBottom()
+                                            setOpen({ bank: false, full: true, cell: false })
+                                            setBtnClear()
+                                            setTitleBottom2("")
+                                            setdataDraw1(res.data.datas)
+                                        }
+                                    })
+                                }}
+                            />
+                        </FormInline>
+                        <div id={"divTableTopView"} style={{ height: '50%', marginTop: "10px" }}>
+                            <table style={{
+                                marginLeft: "auto",
+                                marginRight: "auto"
+                            }}>
+                                <tbody >
+                                    {dataTop}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ marginTop: '5px' }}>
 
-                <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                        {/* <b style={{ fontSize: "20px" }}>{titleBottom + " " + titleBottom2}</b> */}
+                        <Chip
+                            label={titleBottom + " " + titleBottom2}
+                            style={{ fontSize: "16px", width: "100%", backgroundColor: "#c6b497" }}
+                        />
+                        {btnClear}
+                        <div id={"divTableSideView"} style={{ height: '50%', textAlign: "center" }}>
+                            <table style={{
+                                marginLeft: "auto",
+                                marginRight: "auto"
+                            }} >
+                                < tbody >
+                                    {dataBottom}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={4} style={{ backgroundColor: "#839b97" }}>
                     <List
                         component="nav"
                         aria-labelledby="nested-list-subheader"
-                        //                     subheader={
-                        //                         <ListSubheader component="div" id="nested-list-subheader">
-                        //                             Nested List Items
-                        // </ListSubheader>
-                        //                     }
                         className="list"
+
                     >
-                        <ListItem className="listitem" button onClick={() => setOpen({ bank: false, full: !open.full, cell: false })} >
+                        <ListItem style={{ backgroundColor: "#cfd3ce", fontWeight: "bold" }} className="listitem" button onClick={() => setOpen({ bank: false, full: !open.full, cell: false })} >
                             <ListItemText className="listitemtext" primary="Full" />
                             {open.full ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -717,7 +850,7 @@ const AmLocationSummary = props => {
                             </div>
                         </Collapse>
 
-                        <ListItem className="listitem" button onClick={() => setOpen({ full: false, bank: !open.bank, cell: false })}>
+                        <ListItem style={{ backgroundColor: "#cfd3ce" }} className="listitem" button onClick={() => setOpen({ full: false, bank: !open.bank, cell: false })}>
                             <ListItemText className="listitemtext" primary="Bank" />
                             {open.bank ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -727,7 +860,7 @@ const AmLocationSummary = props => {
                             </div>
                         </Collapse>
 
-                        <ListItem className="listitem" button onClick={() => setOpen({ bank: false, full: false, cell: !open.cell })}>
+                        <ListItem style={{ backgroundColor: "#cfd3ce" }} className="listitem" button onClick={() => setOpen({ bank: false, full: false, cell: !open.cell })}>
                             {/* <ListItemIcon>
                                     <InboxIcon />
                                 </ListItemIcon>*/}
@@ -741,116 +874,9 @@ const AmLocationSummary = props => {
                         </Collapse>
                     </List>
                 </Grid>
-                <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
-                    <FormInline>
-                        <AmDropdown
-                            id={"view"}
-                            placeholder="Select"
-                            data={dataDD}
-                            width={120}
-                            ddlMinWidth={120}
-                            defaultValue="top"
-                            // returnDefaultValue={true}
-                            // valueData={valueText}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => {
-                                let active = document.getElementsByClassName('HoverTable active')
-                                active.length && active[0].classList.remove("active")
-                                if (dataObject)
-                                    editData.view = dataObject.value
-                                Axios.get(getUrlDrawGraph(editData)).then((res) => {
-                                    if (res.data._result.status && res.data.datas.length) {
-                                        setRefresh({})
-                                        setDataBottom()
-                                        setOpen({ bank: false, full: true, cell: false })
-                                        setBtnClear()
-                                        setTitleBottom2("")
-
-                                        setdataDraw1(res.data.datas)
-                                    }
-                                })
-                            }}
-                        />
-                        <div style={{ overflow: "auto", whiteSpace: "nowrap", maxWidth: "77%", marginLeft: "10px" }}>{textSearch}</div>
-
-                        {/* <button className="btn btn-primary" 
-                                style={{ padding: "1px", float: "right",
-                                marginRight: "2px", position: "absolute", right: 2 }}
-                                onClick={() => setToggleModal(true)} >Search</button> */}
-                        <IconButton
-                            size="large"
-                            aria-label="info"
-                            style={{
-                                padding: "1px", float: "right",
-                                marginRight: "2px", position: "absolute", right: 2
-
-                            }}
-                        ><PageviewRoundedIcon
-                                fontSize="large"
-                                onClick={() => setToggleModal(true)} /></IconButton>
-                    </FormInline>
-                    {/* <Grid
-                        container
-                        spacing={1}
-                        direction="row"
-                        justify="space-between"
-                        alignItems="flex-start">
-                        <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                            <FormInline>
-                                <AmDropdown
-                                    id={"view"}
-                                    placeholder="Select"
-                                    data={dataDD}
-                                    width={120}
-                                    ddlMinWidth={120}
-                                    defaultValue="top"
-                                    // returnDefaultValue={true}
-                                    // valueData={valueText}
-                                    onChange={(value, dataObject, inputID, fieldDataKey) => {
-                                        let active = document.getElementsByClassName('HoverTable active')
-                                        active.length && active[0].classList.remove("active")
-                                        if (dataObject)
-                                            editData.view = dataObject.value
-                                        Axios.get(getUrlDrawGraph(editData)).then((res) => {
-                                            if (res.data._result.status && res.data.datas.length) {
-                                                setRefresh({})
-                                                setDataBottom()
-                                                setOpen({ bank: false, full: true, cell: false })
-                                                setBtnClear()
-                                                setTitleBottom2("")
-
-                                                setdataDraw1(res.data.datas)
-                                            }
-                                        })
-                                    }}
-                                />
-                            </FormInline>
-                        </Grid>
-                        <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
-                            <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px" }} onClick={() => setToggleModal(true)} >Search</button>
-                        </Grid>
-                    </Grid> */}
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <div id={"divTableTopView"} style={{ height: '50%', marginTop: "10px" }}>
-                            <table>
-                                <tbody>
-                                    {dataTop}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ marginTop: '5px' }}>
-                        <b style={{ fontSize: "20px" }}>{titleBottom + " " + titleBottom2}</b>
-                        {btnClear}
-                        <div id={"divTableSideView"} style={{ height: '50%' }}>
-                            <table>
-                                <tbody>
-                                    {dataBottom}
-                                </tbody>
-                            </table>
-                        </div>
-                    </Grid>
-                </Grid>
             </Grid>
+
+
         </>
     )
 }
