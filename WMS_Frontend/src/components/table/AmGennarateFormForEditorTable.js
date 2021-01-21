@@ -58,7 +58,6 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
         return (
             <FormInline>
                 <Label style={LabelStyle}>{Header} :</Label>
-
                 <InputDiv>
                     <AmInput style={style ? style : { width: width }}
                         required={required}
@@ -279,16 +278,18 @@ const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi,
             </FormInline>
         )
     } else if (type === "text") {
-        return (<FormInline>
-            <Label style={LabelStyle}>{Header} :</Label>
-            <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
-        </FormInline>
+        return (
+            <FormInline>
+                <Label style={LabelStyle}>{Header} :</Label>
+                <label ref={ref.current[index]}>{texts || editData[accessor]}</label >
+            </FormInline>
         )
     } else if (type === "itemNo") {
-        return (<FormInline>
-            <Label style={LabelStyle}> Item No :</Label>
-            <label>{editData[accessor] ? editData[accessor] : '-'}</label>
-        </FormInline>)
+        return (
+            <FormInline>
+                <Label style={LabelStyle}> Item No :</Label>
+                <label>{editData[accessor] ? editData[accessor] : '-'}</label>
+            </FormInline>)
     }
 }
 

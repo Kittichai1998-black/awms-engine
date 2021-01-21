@@ -429,6 +429,10 @@ const MonitorTest = Loadable({
   loader: () => import("../../views/page/Monitor/MonitorTest"),
   loading: Loading
 });
+const GR_Create_QRCode = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create_QRCode"),
+  loading: Loading
+});
 
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
@@ -504,6 +508,8 @@ let routes = [
   { path: "/setting/webpage", name: "base5", compoment: WebPage, exact: true },
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
+
+  { path: "/receive/createbyqrcode", name: "GR Create QRCode", compoment: GR_Create_QRCode, exact: true },
 
   //{ path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   //{ path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
