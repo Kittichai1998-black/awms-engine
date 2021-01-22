@@ -17,7 +17,15 @@ namespace AMWUtil.Exception
             var st_arr = ex.StackTrace.Split('\n');
             var st = st_arr[st_arr.Length - 2];
             this._SourceFile = st.Substring(0, st.LastIndexOf(' ')).Trim();
-            this._LineNumber = st.Substring(st.LastIndexOf(' ')).Trim().Get<int>();
+            try
+            {
+
+                this._LineNumber = st.Substring(st.LastIndexOf(' ')).Trim().Get<int>();
+            }
+            catch
+            {
+                this._LineNumber = -1;
+            }
         }
     }
 }
