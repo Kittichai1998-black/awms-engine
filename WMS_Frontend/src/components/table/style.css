@@ -67,7 +67,3 @@ div.-sort-asc div div::after {
   ::-webkit-scrollbar {
     height: 5px
   }
-  /* #style-1::-webkit-scrollbar-thumb
-{
-  height: 10px;
-} */

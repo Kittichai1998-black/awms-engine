@@ -40,6 +40,7 @@ import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import LayersClear from '@material-ui/icons/LayersClear';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper'
+
 // import Aux from 'react-aux'
 
 const Axios = new apicall()
@@ -274,7 +275,7 @@ const AmLocationSummary = props => {
             pos_Y_1.sort((a, b) => sort_Y === "asc" ? ((a.Pos_Y > b.Pos_Y) ? 1 : -1) : ((a.Pos_Y < b.Pos_Y) ? 1 : -1)).unshift({})
 
             let percenXHeader = (pos_X_1.length - 1) * 0.1,
-                padding = "5px",
+                padding = "8px",
                 dataT = pos_Y_1.map((y, yi) => {
                     let percenLast = 0
                     return (
@@ -307,10 +308,11 @@ const AmLocationSummary = props => {
                                     }
                                     return (
                                         <>
-                                            <td style={{
+                                            <td className={bgColor(dataFin.Density_AVG) !== null ? "backgroundPallet" : ""} style={{
                                                 padding: padding,
                                                 backgroundColor: dataFin ? bgColor(dataFin.Density_AVG) : "black",
-                                                border: "1px solid black"
+                                                border: "1px solid black",
+
                                             }}></td>
                                             {xi === pos_X_1.length - 1 ? <td>{percenLast ? (percenLast / pos_X_1.length - 1).toFixed(3) + "%" : null}</td> : null}
                                             {/* {xi === pos_X_1.length - 1 ? <td
@@ -349,7 +351,7 @@ const AmLocationSummary = props => {
 
             pos_Y_2.sort((a, b) => sort_Y === "asc" ? ((a.Pos_Y > b.Pos_Y) ? 1 : -1) : ((a.Pos_Y < b.Pos_Y) ? 1 : -1)).unshift({})
 
-            let padding = "5px",
+            let padding = "8px",
                 dataB = pos_Y_2.map((y, yi) => {
                     return (
                         <tr key={yi}>{
@@ -370,7 +372,9 @@ const AmLocationSummary = props => {
                                             style={{
                                                 padding: padding,
                                                 backgroundColor: dataFin ? "#993300" : null,
-                                                border: "1px solid black"
+                                                border: "1px solid black",
+                                                backgroundImage: dataFin ? "url(/assets/icons/pallet.png)" : null,
+                                                backgroundSize: "cover"
                                             }}></td>
                                     )
                                 }
