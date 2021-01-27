@@ -2,8 +2,6 @@ import React, { useState, useEffect ,useLayoutEffect} from "react";
 import * as signalR from '@aspnet/signalr';
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -11,32 +9,46 @@ import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
 import { red, green } from "@material-ui/core/colors";
 import CardHeader from "@material-ui/core/CardHeader";
-import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import Fullscreen from "react-full-screen";
 import Moment from "moment";
+import styled from 'styled-components';
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-// const useStyles = makeStyles((theme) => ({
-//   avatar: {
-//     backgroundColor: red[500],
-//     paddingTop: "1px",
-//     paddingLeft: "1px",
-//   },
-//   color: {
-//     backgroundColor: green[100],
-//   },
-//   formControl: {
-//     //margin: theme.spacing(0),
-//     minWidth: 150,
-//     // marginBottom: 5,
-//     // marginTop: 5,
-//   },
-// }));
+import AmDropdown from '../../components/AmDropdown';
+import { white } from "colorette";
+const FormInline = styled.div`
+
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 6px 6px 6px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+const LabelH = styled.label`
+font-weight: bold;
+  width: 50px;
+`;
+
+const Border = styled.div`
+  display: inline-block;
+  color: #e91e63;
+  font-size: 1.5em;
+  margin: 1em;
+  padding: 1em 1em;
+  border: 3px solid #e91e63;
+  border-radius: 4px;
+  display: block;
+`;
 const  styles = theme => ({
   avatar: {
     backgroundColor: red[500],
@@ -44,7 +56,7 @@ const  styles = theme => ({
     paddingLeft: "1px",
   },
   color: {
-    backgroundColor: green[100],
+    backgroundColor: white[400],
   },
   formControl: {
     //margin: theme.spacing(0),
@@ -54,25 +66,6 @@ const  styles = theme => ({
   },
 });
 
-
-var contacts2 = [
-  { name: "1111", desc: "12222", location: "10/10" },
-  { name: "2222", desc: "12222" ,location: "10/10" },
-  { name: "3333", desc: "12222", location: "10/10" },
-  { name: "4444", desc: "12222", location: "10/10" },
-  { name: "5555", desc: "12222", location: "10/10" },
-  { name: "6666", desc: "12222", location: "10/10" },
-  { name: "7777", desc: "12222", location: "10/10" },
-  { name: "8888", desc: "12222", location: "10/10" },
-  { name: "9999", desc: "12222", location: "10/10" },
- // { name: "Pizz10000", desc: "Brownie Points", location: "location10" }
-];
-let num = 0;
-var rowsLookup = contacts2.reduce((prev,row) => {
-  num ++;
-  prev[`G0`+ num ] = row
-  return prev
-},{})
 // const useWindowWidth = () => {
 //   const [width, setWidth] = useState(window.innerWidth);
 //   const [height, setHeight] = useState(window.innerHeight);
@@ -93,7 +86,6 @@ var rowsLookup = contacts2.reduce((prev,row) => {
 
 
 const MasterData = (props) => {
-  var dataLookup = {};
   const [date, setDate] = useState();
   const [data, setData] = useState([]);
   const [gridConfigs, setGridConfigs] = useState([]);
@@ -179,8 +171,9 @@ const MasterData = (props) => {
 
         connection.start()
             .then(() => {
-                connection.on("monitor", res => {
-                    var list = JSON.parse(res);
+                connection.on("WareHouse8", res => {
+                    let list = JSON.parse(res);
+                    console.log("xxxx",list)
                     setData([...list]); 
                 })
             })
@@ -213,17 +206,17 @@ const MasterData = (props) => {
       setGridConfigs(rowCut)
     } else {
       setGridConfigs([[
-        {gateCode:"G01", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G02", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G03", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G04", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G05", allQty:"0", lot:"", qty:"0"}],
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "}],
 
-        [{gateCode:"G06", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G07", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G08", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G09", allQty:"0", lot:"", qty:"0"},
-        {gateCode:"G10", allQty:"0", lot:"", qty:"0"}]
+        [{gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "},
+        {gateCode:" ", allQty:" ", lot:"", qty:" "}]
       ]);
     }
   }, [data])
@@ -245,6 +238,27 @@ const MasterData = (props) => {
     console.log("Age :>>>", store,data);
   };
 
+  const onHandleDDLChange = (value) => {
+    console.log(value)
+    if (value === 3) {
+        
+    } else {
+      
+    }
+};
+
+const AreaMaster = {
+  queryString: window.apipath + "/v2/SelectDataMstAPI/",
+  t: "AreaMaster",
+  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20}]',
+  f: "*",
+  g: "",
+  s: "[{'f':'ID','od':'asc'}]",
+  sk: 0,
+  l: 100,
+  all: ""
+};
+
   const SetGrid = () => {
     return gridConfigs.map((x, i) => {
       if (x.length) {
@@ -256,7 +270,7 @@ const MasterData = (props) => {
                   <Grid item key={col}>
                     <Card
                       style={{
-                        border: "2px solid red",
+                        border: "2px solid powderblue",
                         paddingLeft: isFullScreen ? "10px" : "10px",
                         width: isFullScreen ? `${(size.width / 5) - 15}px` : "200px",
                         height: isFullScreen ? `${(size.height / 2) - 40}px` : "200px",
@@ -271,16 +285,13 @@ const MasterData = (props) => {
                         }
                       />
                       <Typography>
-                        {/* ชื่อ:{LookupTypography(y.code).name} */}
                         SKU:{y.skuCode}
                       </Typography>
                       <Typography className="mb-5" >
-                        {/* รายละเอียด:{LookupTypography(y.code).desc} */}
                         LOT:{y.lot}
                       </Typography>
-                      <Typography variant="h5"  align="right">
-                        {/* location:{LookupTypography(y.code).location} */}
-                        count:{y.qty + "/"+ y.allQty}
+                      <Typography >                       
+                        count:{y.qty ? y.qty + "/"+ y.allQty : ''}
                       </Typography>
                     </Card>
                   </Grid>
@@ -317,29 +328,29 @@ const MasterData = (props) => {
               <h3>{date}</h3>
             </Grid>
             <Grid item xs={12} sm={2}>
-              <h3 style={{marginLeft: 100}}>คลัง</h3>
+              <h3>คลัง</h3>
+              {/* <LabelH>{"คลัง"} : </LabelH> */}
             </Grid>
             <Grid item xs={12} sm={2}>
-              <FormControl className={classes.formControl}>
-                <Select
-                  labelId="demo"
-                  id="demo-controlled-open-selectcxc "
-                  onChange={HandleChange}
-                  value={store}
-                  onClose={""}
-                  onOpen={""}
-                  disabled ={isFullScreen}
-                >
-                  <MenuItem value="1">คลัง1</MenuItem>
-                  <MenuItem value="2">คลัง2</MenuItem>
-                  <MenuItem value="3">คลัง3</MenuItem>
-                  <MenuItem value="4">คลัง4</MenuItem>
-                  <MenuItem value="5">คลัง5</MenuItem>
-                  <MenuItem value="6">คลัง6</MenuItem>
-                  <MenuItem value="7">คลัง7</MenuItem>
-                  <MenuItem value="8">คลัง8</MenuItem>
-                </Select>
-              </FormControl>
+              
+              <FormInline style={{ float: "right", marginRight: "50px", marginBottom: "20px" }}>
+              {" "}
+                <AmDropdown
+                    id={"ID"}
+                    placeholder={"กรุณาเลือกคลังสินค้า"}
+                    fieldDataKey={"ID"}
+                    fieldLabel={["Name"]}
+                    labelPattern=" : "
+                    width={200}
+                    ddlMinWidth={200}
+                    //returnDefaultValue={true}
+                    //defaultValue={3}
+                    zIndex={1000}
+                    queryApi={AreaMaster}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
+                    disabled ={isFullScreen}
+                />
+              </FormInline>
             </Grid>
             <Grid item xs={12} sm={2}>
               <IconButton

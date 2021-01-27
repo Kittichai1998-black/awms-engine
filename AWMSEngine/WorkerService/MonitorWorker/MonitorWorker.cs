@@ -1,7 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Logger;
 using AWMSEngine.HubService;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -32,18 +34,17 @@ namespace AWMSEngine.WorkerService.MonitorWorker
         protected override void ExecuteEngine(Dictionary<string, string> options, VOCriteria buVO)
         {
             var res = new List<TRes.GateDetail>();
-            for (var i = 1; i < 10; i++) {
-                res.Add(new TRes.GateDetail()
-                {
-                    allQty = 10,
-                    gateCode = "G0" + i,
-                    skuCode = i.ToString(),
-                    lot = i.ToString(),
-                    qty = i,
-                }) ;
+            var wh = ADO.WMSStaticValue.StaticValueManager.GetInstant().Warehouses.Find(x => x.Code == options["Code"]);
+            var al = ADO.WMSStaticValue.StaticValueManager.GetInstant().AreaMasters.FindAll(x => x.Warehouse_ID == wh.ID && x.AreaMasterType_ID == AreaMasterTypeID.MC_GATE);
+            var stos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] { 
+                new SQLConditionCriteria("AreaMaster_ID",string.Join(",",al.Select(x=>x.ID).ToArray()),SQLOperatorType.IN),
+                new SQLConditionCriteria("Status",EntityStatus.ACTIVE,SQLOperatorType.EQUALS)
 
-            }
-            this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res.Json());
+            },buVO ).ToList();
+            var res1 = stos.GroupBy(x => x.AreaMaster_ID).Select(x => new { AreaMaster_ID = x.Key, data = x.ToList() });
+
+
+            this.CommonMsgHub.Clients.All.SendAsync(options["_hubname"], res1.Json());
         }
     }
 }

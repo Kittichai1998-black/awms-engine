@@ -434,6 +434,10 @@ const GR_Create_QRCode = Loadable({
   loading: Loading
 });
 
+const MonitorLocation = Loadable({
+  loader: () => import("../../views/page/GCL/Monitor/Monitor_Location"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
@@ -545,6 +549,8 @@ let routes = [
   { path: "/warehouse/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
   { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true, child: true },
   { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true, child: true },
+  { path: "/monitor/monitorLocation", name: "monitor Location", compoment: MonitorLocation, exact: true, child: true },
+  
 ];
 
 export default routes;
