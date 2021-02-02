@@ -68,6 +68,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.ValidateObjectSizeLimit(sto);
             var docItem = GetDocumentItemAndDISTO(sto, reqVO);
             var desLocation = this.GetDesLocations(sto, reqVO);
+            if (desLocation == null)
+            {
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "ไม่สามารถนำพาเลทรับเข้าผ่าน Area นี้ได้");
+            }
             var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
             if (queueTrx.IOType == IOType.OUTPUT)
             {

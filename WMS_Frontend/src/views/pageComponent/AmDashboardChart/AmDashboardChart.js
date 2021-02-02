@@ -16,15 +16,26 @@ import Clone from "../../../components/function/Clone";
 import _ from 'lodash'
 import Moment from 'moment';
 import Axios from 'axios'
+// import Pdf from "react-to-pdf";
+import AmButton from "../../../components/AmButton";
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import classNames from 'classnames';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+const ref = React.createRef();
 
 const styles = theme => ({
     title: {
         fontSize: 16,
         fontWeight: 'bold',
     },
-    paddingGrid:{
+    paddingGrid: {
         paddingRight: '15px'
-    }
+    },
+    leftIcon: {
+        marginRight: theme.spacing(),
+    },
 });
 const useClock = (propsTime, t) => {
     const [date, setDate] = useState()
@@ -62,7 +73,11 @@ const useClock = (propsTime, t) => {
     }
     return time
 }
-
+const options = {
+    orientation: 'landscape',
+    unit: "cm",
+    format: [890, 720]  //3508 x 2480
+};
 const DashboardChartComponent = (props) => {
     const { t } = useTranslation()
     const timeDefault = {
@@ -127,7 +142,7 @@ const DashboardChartComponent = (props) => {
                 )
             } else {
                 return (
-                    <Grid container key={index}>
+                    <Grid container key={index} style={{ paddingTop: '10px' }}>
                         {row.map((x, col) => {
                             return (
                                 <Grid item md={6} key={col} className={classes.paddingGrid}>
@@ -174,33 +189,71 @@ const DashboardChartComponent = (props) => {
             setChartCreateShow(newChartCreateShow);
         }
     }, [chartConfigs]);
+
+    const printDocument = () => {
+        const input = document.getElementById('chartShow');
+        html2canvas(input)
+            .then((canvas) => {
+               
+                let canvaswidth = parseInt(canvas.width);
+                let canvasheight = parseInt(canvas.height);
+                // console.log(canvas)
+
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'pt',
+                    format: [canvaswidth, canvasheight]
+                });
+                pdf.addImage(imgData, 'JPEG', 20, 20);
+                pdf.save("Dashboard.pdf");
+            })
+            ;
+    }
+
+
     return (
         // <Fullscreen enabled={isFullScreen} onChange={isFull => setIsFullScreen(isFull)}>
-            // <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: 'inherit', width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
-                <>
-                <Grid container direction="row" justify="flex-start" alignItems="stretch" >
-                    <Grid item xs={12} sm={6} md={6} xl={6}>
-                        <Grid container direction="row" justify="flex-start" alignItems="center">
-                            <label style={{ marginTop: 7, marginBottom: 3, fontSize: 'calc(0.5em + 1.5vw)', fontWeight: 'bold' }}>{time_show}</label>
-                        </Grid>
+        // <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: 'inherit', width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+        <>
+            <Grid container direction="row" justify="flex-start" alignItems="stretch" >
+                <Grid item xs={12} sm={6} md={6} xl={6}>
+                    <Grid container direction="row" justify="flex-start" alignItems="center">
+                        <label style={{ marginTop: 7, marginBottom: 3, fontSize: 'calc(0.5em + 1.5vw)', fontWeight: 'bold' }}>{time_show}</label>
                     </Grid>
-                    {/* <Grid item xs={12} sm={6} md={6} xl={6}>
-                        <Grid container direction="row" justify="flex-end" alignItems="center" >
-                            <Grid item >
-                                <IconButton style={{ marginLeft: 5, padding: 4 }} onClick={isFullScreen ? goMin : goFull}>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} xl={6}>
+                    <Grid container direction="row" justify="flex-end" alignItems="center" >
+                        <Grid item >
+                            {/* <IconButton style={{ marginLeft: 5, padding: 4 }} onClick={isFullScreen ? goMin : goFull}>
                                     {isFullScreen ?
                                         <FullscreenExitIcon style={{ fontSize: 'calc(0.75em + 1.25vw)' }} />
                                         : <FullscreenIcon style={{ fontSize: 'calc(0.75em + 1.25vw)' }} />
                                     }
-                                </IconButton>
-                            </Grid>
+                                </IconButton> */}
+                            {/* <Pdf targetRef={ref} filename="code-example.pdf" options={options} x={1} y={.5} scale={1}>
+                                {({ toPdf }) =>
+                                    // <button onClick={toPdf}>Generate Pdf</button>
+                                    <AmButton styleType="default_clear"  onClick={toPdf}
+                                        startIcon={<PictureAsPdfIcon  />}>
+                                        {'Export PDF'}
+                                    </AmButton>
+                                }
+                            </Pdf> */}
+                            <AmButton styleType="default_clear" onClick={printDocument}
+                                startIcon={<PictureAsPdfIcon />}>
+                                {'Export PDF'}
+                            </AmButton>
                         </Grid>
-                    </Grid> */}
+                    </Grid>
+
                 </Grid>
-                <div style={{overflow: 'auto'}}>
+            </Grid>
+            <div ref={ref} id="chartShow" >
                 {chartCreateShow}
             </div>
-            </>
+        </>
         // </Fullscreen>
     );
 

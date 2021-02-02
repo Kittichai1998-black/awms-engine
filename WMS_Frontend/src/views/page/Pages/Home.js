@@ -52,7 +52,7 @@ const Home = (props) => {
       <div align="center">
 
         {ContentImg}
-        <br />
+        {/* <br />
         <IconButton
           size="Large"
           aria-label="info"
@@ -70,8 +70,8 @@ const Home = (props) => {
           textAlign: "center",
           marginTop: "10px"
         }}>
-          รายงานประจำวัน</label>
-      </div>
+          รายงานประจำวัน</label>*/}
+      </div> 
     </Container >
 
   );

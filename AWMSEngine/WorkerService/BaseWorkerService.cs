@@ -19,6 +19,7 @@ namespace AWMSEngine.WorkerService
         protected long WorkerServiceID { get; set; }
         protected AMWLogger Logger { get; set; }
         protected readonly IHubContext<CommonMessageHub> CommonMsgHub;
+        private IHubContext<CommonMessageHub> commonHub;
 
         protected abstract void ExecuteEngine(Dictionary<string,string> options, VOCriteria buVO);
 
@@ -27,6 +28,12 @@ namespace AWMSEngine.WorkerService
             this.CommonMsgHub = commonHub;
             this.WorkerServiceID = workerServiceID;
             this.Logger = logger;
+        }
+
+        protected BaseWorkerService(long workerServiceID, IHubContext<CommonMessageHub> commonHub)
+        {
+            WorkerServiceID = workerServiceID;
+            this.commonHub = commonHub;
         }
 
         public Task Execute()

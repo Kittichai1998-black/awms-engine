@@ -216,27 +216,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
             void updateSTO(StorageObjectCriteria sto)
-            {            
-                var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-                if (done_des_event_status == null || done_des_event_status.Length == 0)
+            {
+                if (sto.eventStatus == StorageObjectEventStatus.RECEIVING)
                 {
-                    sto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                }
-                else {
-                    StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
-                    sto.eventStatus = eventStatus;
-                    RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
+                    var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                    if (done_des_event_status == null || done_des_event_status.Length == 0)
+                    {
+                        sto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                    }
+                    else
+                    {
+                        StorageObjectEventStatus eventStatus = EnumUtil.GetValueEnum<StorageObjectEventStatus>(done_des_event_status);
+                        sto.eventStatus = eventStatus;
+                        RemoveOPTEventSTO(sto.id.Value, sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, this.BuVO);
 
+                    }
+                    //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
+                    //{
+                    //    sto.IsStock = true;
+                    //    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
+                    //       new KeyValuePair<string, object>[] {
+                    //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
+                    //       });
+                    //}
+                    ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 }
-                //if(sto.skuTypeID == SKUGroupType.ESP.GetValueInt())
-                //{
-                //    sto.IsStock = true;
-                //    ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(sto.parentID.Value, this.BuVO,
-                //       new KeyValuePair<string, object>[] {
-                //            new KeyValuePair<string, object>("IsStock", EntityStatus.ACTIVE)
-                //       });
-                //}
-                ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
             }
         }
         private void ManageDocumentOutput(TReq reqVO, amt_Document docs, SPworkQueue queueTrx, List<amt_DocumentItem> docItems, StorageObjectCriteria stos)

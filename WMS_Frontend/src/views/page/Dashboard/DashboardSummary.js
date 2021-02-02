@@ -6,36 +6,36 @@ const ChartJS = (props) => {
     [
       {
         type: 'bar',
-        title: "สถิติการรับเข้า-เบิกออก รายชั่วโมง",
+        title: "The Statistics of Receiving & Issue by Hourly",
         spname: 'DASHBOARD_CHART_RECEIVEISSUE_HOUR',
       },
       {
         type: 'bar',
-        title: "สถิติการรับเข้า-เบิกออก รายวัน",
+        title: "The Statistics of Receiving & Issue by Daily",
         spname: 'DASHBOARD_CHART_RECEIVEISSUE_DAY',
       },
     ],
     [
       {
         type: 'pie',
-        title: "สถิติการรับเข้าสินค้า",
+        title: "The Statistics of Receiving",
         spname: 'DASHBOARD_CHART_PIE_RECEIVE',
       },
       {
         type: 'pie',
-        title: "สถิติการเบิกออกสินค้า",
+        title: "The Statistics of Issue",
         spname: 'DASHBOARD_CHART_PIE_ISSUE',
       },
     ],
     [
       {
         type: 'bar',
-        title: "สถิติปริมาณงาน รายชั่วโมง",
+        title: "The Statistics of Throughtpu by Hourly",
         spname: 'DASHBOARD_CHART_THROUGHPUT_HOUR',
       },
       {
         type: 'bar',
-        title: "สถิติปริมาณงาน รายวัน",
+        title: "The Statistics of Throughtpu by Daily",
         spname: 'DASHBOARD_CHART_THROUGHPUT_DAY',
       }
     ]
