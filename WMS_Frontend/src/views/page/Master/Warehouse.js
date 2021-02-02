@@ -25,7 +25,7 @@ const Warehouse = props => {
       fixWidth: 162,
       sortable: false,
       filterType: "dropdown",
-      colStyle: { textAlign: "center" },
+      colStyle:{textAlign:"center"},
       filterConfig: {
         filterType: "dropdown",
         dataDropDown: EntityEventStatus,
@@ -162,6 +162,16 @@ const Warehouse = props => {
 
   return (
     <>
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"Warehouse"}
+        table={"ams_Warehouse"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}

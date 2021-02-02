@@ -1,7 +1,7 @@
 import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import { EntityEventStatus } from "../../../components/Models/EntityStatus";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const AreaMaster = props => {
@@ -34,12 +34,12 @@ const AreaMaster = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      filterType: "dropdown",
-      colStyle: { textAlign: "center" },
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: EntityEventStatus,
-        typeDropDown: "normal"
+      filterType:"dropdown",
+      colStyle:{textAlign:"center"},
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
       },
       Cell: e => getStatus(e.original)
     },

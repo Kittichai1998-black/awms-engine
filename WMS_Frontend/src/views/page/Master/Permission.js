@@ -189,13 +189,12 @@ const Permission = props => {
       const defaultValue = () => {
         return dataSou.filter(x=> x.RolePermissionID !== null && (x.Status !== 0 && x.Status !== 2 && x.Status !== null))
       }
-      
       return [
         {
           field: "ID",
           component: (data, cols, key) => {
             return (
-              <div key={key}>
+              <>
                 <AmTable
                   columns={permissionCols}
                   dataKey={"ID"}
@@ -225,7 +224,7 @@ const Permission = props => {
                   pageSize={500}
                   height={400}
                 />{" "}
-              </div>
+              </>
             );
           }
         }
@@ -274,7 +273,7 @@ const Permission = props => {
   }
 
   return (
-    <div>
+    <>
       {/* <AmSetUserPer
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -308,8 +307,9 @@ const Permission = props => {
         pageSize={25}
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        linkLog={"/masterlog/rolelog?id="}
       />
-    </div>
+    </>
   );
 };
 

@@ -11,7 +11,8 @@ import AmDropdown from '../../../components/AmDropdown';
 import AmDatePicker from '../../../components/AmDate';
 import styled from 'styled-components';
 import queryString from "query-string";
-
+import AmRedirectLog from "../../../components/AmRedirectLog";
+import AmImportMaster from '../../../components/AmImportMaster';
 import AmMasterEditorData from "./AmMasterEditorData";
 
 const Axios = new apicall()
@@ -59,7 +60,8 @@ const useQueryData = (queryObj) => {
 const viewQuery = (tableQuery, codeInclude, pageSize) => ({
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: tableQuery,
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    //q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q: '[]',
     f: "*",
     g: "",
     s: !codeInclude ? '[{"f":"ID","od":"asc"}]' : '[{"f":"Code","od":"asc"}]',
@@ -71,7 +73,8 @@ const viewQuery = (tableQuery, codeInclude, pageSize) => ({
 const mstQuery = (tableQuery, codeInclude, pageSize) => ({
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: tableQuery,
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    //q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q: '[]',
     f: "*",
     g: "",
     s: !codeInclude ? '[{"f":"ID","od":"asc"}]' : '[{"f":"Code","od":"asc"}]',
@@ -80,7 +83,7 @@ const mstQuery = (tableQuery, codeInclude, pageSize) => ({
     all: "",
 });
 
-const useColumns = (cols, customUpdateData) => {
+const useColumns = (cols, customUpdateData, linkLog) => {
     const [columns, setColumns] = useState(cols);
     const [editData, setEditData] = useState();
     const [removeData, setRemoveData] = useState();
@@ -144,7 +147,7 @@ const useColumns = (cols, customUpdateData) => {
             fixWidth: 63,
             colStyle: { zIndex: -1 },
             filterable: false,
-            Cell: (e) => <><IconButton
+            Cell: (e) => e.data.Status !== 2 ? <><IconButton
                 size="small"
                 aria-label="info"
                 style={{ marginLeft: "3px", position: "relative" }}
@@ -169,16 +172,31 @@ const useColumns = (cols, customUpdateData) => {
                         fontSize="small"
                         style={{ color: "#e74c3c" }} />
                 </IconButton>
-            </>,
+            </> : null,
             sortable: false,
         })
+        if (linkLog) {
+            iniCols.push({
+                width: 60,
+                accessor: "",
+                Header: "Log",
+                colStyle: { textAlign: "center" },
+                filterable: false,
+                Cell: e => getRedirectLog(linkLog, e.original)
+            })
+        }
+
         setColumns(iniCols);
     }, [])
 
     return { columns, editData, removeData };
 }
 
-
+const getRedirectLog = (linkLog, data) => {
+    return (
+        <AmRedirectLog api={linkLog + data.ID} title={"Log"} />
+    );
+};
 const AmMasterData = (props) => {
     const [queryObj, setQueryObj] = useState(() => {
         if (props.tableType === "master")
@@ -189,7 +207,7 @@ const AmMasterData = (props) => {
             return;
     });
 
-    const { columns, editData, removeData } = useColumns(props.columns);
+    const { columns, editData, removeData } = useColumns(props.columns, null, props.linkLog);
     const [updateData, setUpdateData] = useState();
     const [dialogState, setDialogState] = useState({});
     const [page, setPage] = useState(1);
@@ -199,6 +217,7 @@ const AmMasterData = (props) => {
     const [popupTitle, setPopupTitle] = useState();
     const [sort, setSort] = useState({});
     const [pageSize, setPageSize] = useState(20);
+
 
     useEffect(() => {
         if (queryObj.l !== pageSize) {
@@ -357,6 +376,12 @@ const AmMasterData = (props) => {
             customAction={genMenuAction()}
             tableConfig={true}
             customTopLeftControl={props.customTopLeft}
+            //Import
+            tableImport={props.tableImport}
+            tableImportName={props.table}
+            tableImportdataExample={props.dataExample}
+            tableImportColExample={props.columnsTemplate}
+            onSuccess={(x) => { if (x) setQueryObj({ ...queryObj }) }}
         />
     </>
 }

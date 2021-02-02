@@ -22,8 +22,6 @@ import AmDialogconfirm from './AmDialogConfirm'
 import queryString from "query-string";
 import LabelT from './AmLabelMultiLanguage'
 import AmTable from './AmTable/AmTableComponent'
-
-
 import moment from "moment";
 import "moment/locale/pt-br";
 
@@ -138,6 +136,8 @@ const AmCreateDocument = (props) => {
     const [UnitQurys, setUnitQurys] = useState(UnitTypeConvert);
     const [unitCon, setunitCon] = useState();
 
+    const [qryPallet, setQryPallet] = useState(props.addList ? props.addList.queryApi: null);
+
 
     // const [checkItem, setcheckItem] = useState(false);
     const rem = [
@@ -184,21 +184,19 @@ const AmCreateDocument = (props) => {
 
     useEffect(() => {
         if (skuID) {
-            setunitCon(UnitTypeConverts)
-        }
+            setunitCon(UnitTypeConverts)         
+        } 
     }, [skuID])
 
     useEffect(() => {
         if (unitCon) {
             getUnitTypeConvertQuery(skuID, UnitQurys)
         }
-    }, [unitCon])
+    }, [unitCon,skuID])
 
     useEffect(() => {
         setdataUnit(dataUnit)
     }, [dataUnit, skuID])
-
-
 
     useEffect(() => {
         setDataSource([])
@@ -215,7 +213,7 @@ const AmCreateDocument = (props) => {
         }
         //setcreateDocumentData({})
         getHeaderCreate()
-        let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {
+        let dataHead = props.headerCreate.reduce((arr, el) => arr.concat(el), []).filter(x => x.valueTexts || x.defaultValue).reduce((arr, el) => {          
             if (el.key === "documentProcessTypeID" && processType === undefined) {
                 createDocumentData["documentProcessTypeID"] = el.defaultValue
             } else {
@@ -232,7 +230,6 @@ const AmCreateDocument = (props) => {
 
 
     useEffect(() => {
-
         if (processType !== undefined) {
             if (processType === 1) {
                 createDocumentData["souSupplierID"] = null
@@ -262,9 +259,12 @@ const AmCreateDocument = (props) => {
     }, [props.addList, dataSource])
 
 
-    useEffect(() => {
-        console.log(editData)
-    }, [editData])
+    //useEffect(() => {
+    //    if (!dialog) {
+    //        setdataUnit();
+    //    }
+    //},[dialog])
+
 
     const UnitTypeConverts = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -278,20 +278,32 @@ const AmCreateDocument = (props) => {
         all: ""
     };
 
+    useEffect(() => {
+        if (props.addList) {
+            if (props.addList.queryApi) {
+                let qry = { ...props.addList.queryApi }
+                let jsonObj = JSON.parse(qry.q);
+                let find = jsonObj.find(x => x.f === "palletcode")
+                let palletList = dataSource.map(x => x.palletcode).filter(x => x !== null && x !== undefined);
+                if (find !== null && find !== undefined) {
+                    find.v = palletList.join(',')
+                    qry.q = JSON.stringify(jsonObj);
+                } else {
+                    let palletList = dataSource.map(x => x.palletcode).filter(x => x !== null && x !== undefined);
+                    if (palletList.length > 0) {
+                        jsonObj.push({ "f": "palletcode", "c": "not in", "v": palletList.join(',') })
+                        qry.q = JSON.stringify(jsonObj);
+                    }
+                }
+                setQryPallet(qry)
+            }
+        }
+    }, [dataSource])
 
-    const Addlist = (dataSou) => {
+
+    const Addlist = () => {
         if (props.addList !== undefined) {
-            setBtnAddLists(< BtnAddList
-                primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
-                headerCreate={props.headerCreate}
-                history={props.history}
-                queryApi={props.addList.queryApi}
-                columns={props.addList.columns}
-                search={props.addList.search}
-                textBtn="Add Pallet List"
-                onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
-                dataCheck={dataCheck}
-            />)
+            setBtnAddLists()
         }
     }
 
@@ -308,7 +320,7 @@ const AmCreateDocument = (props) => {
             setUnitQurys(unitCon)
             getDataUnitType(objQuery)
         }
-
+        
     }
 
 
@@ -380,6 +392,7 @@ const AmCreateDocument = (props) => {
     }
 
     const onChangeEditor = (field, data, required, row) => {
+
         if (data === "") {
             editData[field] = null
         }
@@ -387,12 +400,12 @@ const AmCreateDocument = (props) => {
         if (addData && Object.keys(editData).length === 0) {
             editData["ID"] = addDataID
         }
-   
+
         if (field === "Code" && data) {
             setskuID(data.ID);
-        } 
+        }
 
-  
+
         //if (props.itemNo && addData) {
         //    if (addDataID === -1) {
         //        let itemNos = props.defualItemNo
@@ -413,15 +426,11 @@ const AmCreateDocument = (props) => {
         //    }
         //}
 
+
         if (typeof data === "object" && data) {
-            if (field === 'unitType') {
-                editData[field] = data.label
-                editData['unitTypeCode'] = data.value
-            } else {
-   
-                editData[field] = data[field] ? data[field] : null
-            }
-        } else {
+            editData[field] = data[field] ? data[field] : data.value
+        }
+        else {
             if (data === "") {
                 editData[field] = null
             } else {
@@ -501,10 +510,9 @@ const AmCreateDocument = (props) => {
                 let chkEdit = dataSource.find(x => x.ID === rowdata.ID) //Edit
                 let chkPallet = dataSource.find(x => x.packID === rowdata.packID && x.ID !== rowdata.ID && x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType)
                 //let chkSkuNotPallet = dataSource.find(x => x.skuCode === rowdata.skuCode && x.batch === rowdata.batch && x.lot === rowdata.lot && !x.palletcode && x.ID !== rowdata.ID)
-                let chkSku = dataSource.find(
-                    x => x.Code === rowdata.Code &&
-                        x.BaseCode === rowdata.BaseCode &&
-                        x.unitTypeCode === rowdata.unitTypeCode
+                let chkSku = dataSource.find(x => x.Code === rowdata.Code && x.lot === rowdata.lot && rowdata.unitType === x.unitType
+                    && x.orderNo === rowdata.orderNo && x.auditStatus === rowdata.auditStatus && x.productionDate === rowdata.productionDate &&
+                    x.expireDate === rowdata.expireDate
 
                 )
 
@@ -560,7 +568,7 @@ const AmCreateDocument = (props) => {
                         }) : false
                         return <div key={key}>
 
-                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel, row.fieldDataKey,
+                            {getTypeEditor(row.type, row.Header, row.accessor, data, cols, row, row.idddl, row.queryApi, row.columsddl, row.fieldLabel,
                                 row.style, row.width, row.validate, row.placeholder, row.TextInputnum, row.texts, row.key, row.data, row.defaultValue, row.disabled, i, rowError, row.required)}
 
                         </div>
@@ -571,7 +579,7 @@ const AmCreateDocument = (props) => {
     }
 
 
-    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, fieldDataKey, style, width, validate,
+    const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate,
         placeholder, TextInputnum, texts, key, datas, defaultValue, disabled, index, rowError, required) => {
         if (type === "input") {
             return (
@@ -669,8 +677,8 @@ const AmCreateDocument = (props) => {
                             id={idddl}
                             DDref={ref.current[index]}
                             placeholder={placeholder ? placeholder : "Select"}
-                            fieldDataKey={fieldDataKey ? fieldDataKey : "UnitType_Code"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            fieldLabel={[fieldLabel ? fieldLabel :"UnitType_Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                            fieldDataKey={"UnitType_Code"}//ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            fieldLabel={["UnitType_Code"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                             labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                             width={width ? width : 300} //กำหนดความกว้างของช่อง input
                             ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
@@ -679,7 +687,8 @@ const AmCreateDocument = (props) => {
                             //queryApi={UnitTypeConqury}
                             data={dataUnit}
                             returnDefaultValue={true}
-                            defaultValue={editData[accessor] ? editData[accessor] : defaultValue ? defaultValue : ""}
+                            defaultValue={editData[accessor] ? editData[accessor] : editData['unitType'] ? editData['unitType'] :
+                            defaultValue ? defaultValue : ""}
                             onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject, required, row)}
                             ddlType={"search"} //รูปแบบ Dropdown 
                         />
@@ -904,7 +913,7 @@ const AmCreateDocument = (props) => {
                     valueData={dataDDLHead[idddls]} //ค่า value ที่เลือก
                     queryApi={queryApi}
                     //returnDefaultValue={true}
-                    defaultValue={ defaultValue ? defaultValue : ""}
+                    defaultValue={defaultValue ? defaultValue : ""}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeHeaderDDL(value, dataObject, inputID, fieldDataKey, key)}
                     ddlType={"search"} //รูปแบบ Dropdown 
                 />
@@ -1024,7 +1033,6 @@ const AmCreateDocument = (props) => {
             souSupplierCode: null,
             souSupplierID: null,
             souWarehouseCode: null,
-            productOwnerID:null,
             souWarehouseID: null,
             transportID: null
         }
@@ -1036,7 +1044,6 @@ const AmCreateDocument = (props) => {
             unitType: null,
             baseQuantity: null,
             baseunitType: null,
-            basecode:null,
             batch: null,
             lot: null,
             orderNo: null,
@@ -1054,6 +1061,7 @@ const AmCreateDocument = (props) => {
             expireDate: null,
             productionDate: null,
             shelfLifeDay: null,
+            eventStatus : 10,
             docItemStos: [],
             baseStos: []
         }
@@ -1127,8 +1135,7 @@ const AmCreateDocument = (props) => {
             } else if (qtyrd) {
                 qryStrOption["qtyrandom"] = qtyrd
             }
-            //console.log(qryStrOption)
-            //queryString.stringify(qryStrOption)
+
             return optn = queryString.stringify(qryStrOption)
 
         })
@@ -1169,7 +1176,6 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "issue") {
             doc.issuedOrderItem = dataSource.map((x, i) => {
-                x.unitType = x.unitTypeCode ? x.unitTypeCode : x.unitType
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
@@ -1180,7 +1186,6 @@ const AmCreateDocument = (props) => {
             })
         } else if (props.createDocType === "receive") {
             doc.receivedOrderItem = dataSource.map(x => {
-                x.unitType = x.unitTypeCode ? x.unitTypeCode : x.unitType
                 x.skuCode = x.Code ? x.Code : null
                 x.incubationDay = x.incubationDay != null ? parseInt(x.incubationDay) : null
                 x.shelfLifeDay = x.shelfLifeDay != null ? parseInt(x.shelfLifeDay) : null
@@ -1200,12 +1205,15 @@ const AmCreateDocument = (props) => {
                     if (doc.actionTime) {
                         CreateDocuments(doc)
                     } else {
+                        console.log(dataSource)
                         setMsgDialog('Actiomtime Not Found');
                         setStateDialogErr(true);
+                        console.log(dataSource)
+                        
                     }
                 } else {
                     //console.log(doc)
-                  CreateDocuments(doc)
+                    CreateDocuments(doc)
                 }
             }
         }
@@ -1287,9 +1295,17 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {props.addList ?
-                            BtnAddLists : null}
-
+                        {props.addList ? props.addList.queryApi ? <BtnAddList
+                            primaryKeyTable={props.addList.primaryKeyTable ? props.addList.primaryKeyTable : "ID"}
+                            headerCreate={props.headerCreate}
+                            history={props.history}
+                            queryApi={qryPallet}
+                            columns={props.addList.columns}
+                            search={props.addList.search}
+                            textBtn="Add Pallet List"
+                            onSubmit={(data) => { setDataSource(FormatDataSource(data)) }}
+                            dataCheck={dataCheck}
+                        /> : null : null}
                         {props.add === false ? null : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
                             if (props.singleItem && dataSource.length > 0) {
                                 setStateDialogErr(true)
@@ -1315,7 +1331,7 @@ const AmCreateDocument = (props) => {
             /> */}
             <AmTable
                 dataKey="ID"
-                columns={props.columnsModifi ? props.columnsModifi : columns}
+                columns={props.columnsModifi ? props.columnsModifi : columns}            
                 pageSize={1000}
                 //pagination={true}
                 //onPageSizeChange={(pg) => { setPageSize(pg) }}

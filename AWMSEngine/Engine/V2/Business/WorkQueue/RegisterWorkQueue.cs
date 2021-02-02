@@ -83,9 +83,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 packs.ForEach(pack => {
-                    if (pack.eventStatus == StorageObjectEventStatus.NEW ||
-                    pack.eventStatus == StorageObjectEventStatus.AUDITED ||
-                    pack.eventStatus == StorageObjectEventStatus.COUNTED)
+                    if (pack.eventStatus == StorageObjectEventStatus.NEW)
                     {
                         ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
                     }

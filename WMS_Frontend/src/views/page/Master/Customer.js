@@ -3,7 +3,6 @@ import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import { EntityEventStatus } from "../../../components/Models/EntityStatus";
-
 //======================================================================
 const Customer = props => {
 
@@ -25,7 +24,7 @@ const Customer = props => {
     },
     { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
-    { Header: "Description", accessor: "Description" },
+    { Header: "Remark", accessor: "Description" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -53,8 +52,8 @@ const Customer = props => {
     {
       field: "Description",
       type: "input",
-      name: "Description",
-      placeholder: "Description"
+      name: "Remark",
+      placeholder: "Remark"
     }
   ];
 
@@ -79,7 +78,7 @@ const Customer = props => {
       field: "Description",
       type: "input",
       name: "Description",
-      placeholder: "Description"
+      placeholder: "Remark"
     },
     {
       field: "Status",
@@ -140,7 +139,15 @@ const Customer = props => {
       return null;
     }
   };
-
+  const dataExample = [,
+    { Code: "XXXXX1", Name: "บริษัท automotion works จำกัด", Description: "บริษัท automotion works จำกัด" },
+    { Code: "XXXXX2", Name: "บริษัท XXXXX จำกัด", Description: "บริษัท XXXXX จำกัด" }
+  ];
+  const columnsTemplate = [
+    { Header: "Code", accessor: "Code" },
+    { Header: "Name", accessor: "Name" },
+    { Header: "Description", accessor: "Description" },
+  ];
   return (
     <>
       {/* <MasterData
@@ -166,6 +173,11 @@ const Customer = props => {
         height={500}
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        showLinkLog={true}
+        linkLog={"/masterlog/customerlog?id="}
+        tableImport={true}
+        dataExample={dataExample}
+        columnsTemplate={columnsTemplate}
       />
     </>
   );

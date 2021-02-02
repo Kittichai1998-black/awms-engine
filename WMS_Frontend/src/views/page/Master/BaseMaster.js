@@ -68,6 +68,7 @@ const BaseMaster = props => {
     { Header: "Size", accessor: "ObjectSize_Code", width: 200 },
     { Header: "Unit Type", accessor: "UnitType_Code", width: 100 },
     { Header: "WeightKG", accessor: "WeightKG", width: 100, type: "number" },
+    { Header: "Remark", accessor: "Description", width: 120 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -149,6 +150,12 @@ const BaseMaster = props => {
       placeholder: "Unit Type",
       fieldLabel: ["Code", "Name"],
       required: true
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
 
@@ -217,6 +224,12 @@ const BaseMaster = props => {
       name: "Status",
       dataDropDown: EntityEventStatus,
       placeholder: "Status"
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
   const primarySearch = [
@@ -347,6 +360,20 @@ const BaseMaster = props => {
 
   return (
     <>
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"BaseMaster"}
+        table={"ams_BaseMaster"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+        //======= MultyBase  ========
+        prefix={2}
+        baseLength={10}
+        checked={isLoad}
+      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -364,6 +391,7 @@ const BaseMaster = props => {
         selection={"checkbox"}
         selectionData={(sel) => { }}
         codeInclude={true}
+        linkLog={"/masterlog/palletlog?id="}
       />
     </>
   );

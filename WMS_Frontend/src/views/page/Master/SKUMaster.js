@@ -4,6 +4,7 @@ import AmEntityStatus from "../../../components/AmEntityStatus";
 
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import { EntityEventStatus } from "../../../components/Models/EntityStatus";
+import AmRediRectInfo from "../../../components/AmRedirectInfo";
 
 //======================================================================
 const SKUMaster = props => {
@@ -71,6 +72,7 @@ const SKUMaster = props => {
             type: "number"
         },
         { Header: "Base Unit", accessor: "UnitTypeCode", width: 100 },
+        { Header: "Remark", accessor: "Description", width: 120 },
         { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
         {
             Header: "Update Time",
@@ -78,7 +80,7 @@ const SKUMaster = props => {
             width: 130,
             type: "datetime",
             dateFormat: "DD/MM/YYYY HH:mm"
-        }
+        },
     ];
     const columns = [
         {
@@ -122,6 +124,12 @@ const SKUMaster = props => {
             placeholder: "Base Unit",
             fieldLabel: ["Code", "Name"],
             fieldValue: "ID",
+        },
+        {
+            field: "Description",
+            type: "input",
+            name: "Remark",
+            placeholder: "Remark",
         }
     ];
 
@@ -180,6 +188,12 @@ const SKUMaster = props => {
             name: "Status",
             dataDropDown: EntityEventStatus,
             placeholder: "Status"
+        },
+        {
+            field: "Description",
+            type: "input",
+            name: "Remark",
+            placeholder: "Remark",
         }
     ];
     const primarySearch = [
@@ -262,6 +276,7 @@ const SKUMaster = props => {
             placeholder: "Update Time To"
         }
     ];
+ 
     const getStatus = value => {
         if (value.Status) {
             return <AmEntityStatus statusCode={value.Status} />;
@@ -274,10 +289,6 @@ const SKUMaster = props => {
         if (e.original.ShelfLifePercent) {
             return e.original.ShelfLifePercent + '%'
         }
-    }
-
-    const customEdit = () => {
-        return <div>{'hhhhhh'}</div>
     }
 
     return (
@@ -296,6 +307,7 @@ const SKUMaster = props => {
                 pageSize={25}
                 updateURL={window.apipath + "/v2/InsUpdDataAPI"}
                 codeInclude={true}
+                linkLog={"/masterlog/skulog?id="}
             />
         </>
     );

@@ -46,9 +46,9 @@ namespace AWMSEngine.Engine.V2.Validation
                     if (!stdWei.HasValue)
                         throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ไม่ได้ config weight standard");
 
-                    var stdWeiRange = stdWei.Value * sto.objectSize.weiAccept.Value;
-                    var stdWeiStart = sto.weiKG.Value - stdWeiRange;
-                    var stdWeiEnd = sto.weiKG.Value + stdWeiRange;
+                    var stdWeiRange = stdWei.Value * (sto.objectSize.weiAccept.Value / 100.0m);
+                    var stdWeiStart = stdWei.Value - stdWeiRange;
+                    var stdWeiEnd = stdWei.Value + stdWeiRange;
                     if (!sto.weiKG.Value.IsBetween(stdWeiStart, stdWeiEnd))
                         throw new AMWException(this.Logger, AMWExceptionCode.V3002, "น้ำหนักสินค้าที่ยอมรับได้ต้องอยู่ระหว่าง '" + stdWeiStart.ToString("0.000") + "kg.' ถึง '" + stdWeiEnd.ToString("0.000") + "kg.' ");
 

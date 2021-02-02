@@ -4,7 +4,6 @@ import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
 import { EntityEventStatus } from "../../../components/Models/EntityStatus";
-
 //======================================================================
 const Supplier = props => {
   const iniCols = [
@@ -25,7 +24,7 @@ const Supplier = props => {
     },
     { Header: "Code", accessor: "Code", width: 120 },
     { Header: "Name", accessor: "Name", width: 250 },
-    { Header: "Description", accessor: "Description" },
+    { Header: "Remark", accessor: "Description" },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -53,8 +52,8 @@ const Supplier = props => {
     {
       field: "Description",
       type: "input",
-      name: "Description",
-      placeholder: "Description"
+      name: "Remark",
+      placeholder: "Remark"
     }
   ];
 
@@ -78,8 +77,8 @@ const Supplier = props => {
     {
       field: "Description",
       type: "input",
-      name: "Description",
-      placeholder: "Description"
+      name: "Remark",
+      placeholder: "Remark"
     },
     {
       field: "Status",
@@ -140,10 +139,30 @@ const Supplier = props => {
       return null;
     }
   };
-
+  const dataExample = [,
+    { Code: "XXXXX1", Name: "บริษัท automotion works จำกัด", Description: "บริษัท automotion works จำกัด" },
+    { Code: "XXXXX2", Name: "บริษัท XXXXX จำกัด", Description: "บริษัท XXXXX จำกัด" }
+  ];
+  const columnsTemplate = [
+    { Header: "Code", accessor: "Code" },
+    { Header: "Name", accessor: "Name" },
+    { Header: "Description", accessor: "Description" },
+  ];
   return (
     <>
-
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"Supplier"}
+        table={"ams_Supplier"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
+      {/* <AmImportMaster
+        table={"ams_Supplier"}
+      ></AmImportMaster> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -157,6 +176,10 @@ const Supplier = props => {
         height={500}
         pageSize={25}
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
+        linkLog={"/masterlog/supplierlog?id="}
+        tableImport={true}
+        dataExample={dataExample}
+        columnsTemplate={columnsTemplate}
       />
     </>
   );

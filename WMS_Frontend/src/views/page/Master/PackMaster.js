@@ -1,7 +1,7 @@
 import React from "react";
 import AmEntityStatus from "../../../components/AmEntityStatus";
 import AmMaster from "../../pageComponent/AmMasterData/AmMaster";
-import { EntityEventStatus } from "../../../components/Models/EntityStatus";
+import {EntityEventStatus} from "../../../components/Models/EntityStatus";
 
 //======================================================================
 const PackMaster = props => {
@@ -60,10 +60,10 @@ const PackMaster = props => {
       type: "findPopup",
       name: "SKU Code",
       findPopopQuery: SKUMasterQuery,
-      fieldValue: "ID",
+      fieldValue:"ID",
       placeholder: "SKU Code",
-      findPopupTitle: "SKU",
-      findPopupColumns: colsSKUMaster,
+      findPopupTitle:"SKU",
+      findPopupColumns:colsSKUMaster,
       fieldLabel: ["Code", "Name"]
     },
     {
@@ -79,20 +79,20 @@ const PackMaster = props => {
       name: "Pack Name",
       placeholder: "Name"
     },
-    // {
-    //   field: "PercentWeightAccept",
-    //   type: "input",
-    //   inputType: "number",
-    //   name: "% WeightAccept",
-    //   placeholder: "WeightPercent"
-    // },
-    // {
-    //   field: "Volume",
-    //   type: "input",
-    //   inputType: "number",
-    //   name: "Qty/Pallet",
-    //   placeholder: "Volume"
-    // },
+    {
+      field: "PercentWeightAccept",
+      type: "input",
+      inputType: "number",
+      name: "% WeightAccept",
+      placeholder: "WeightPercent"
+    },
+    {
+      field: "Volume",
+      type: "input",
+      inputType: "number",
+      name: "Qty/Pallet",
+      placeholder: "Volume"
+    },
     {
       field: "WeightKG",
       type: "input",
@@ -120,6 +120,12 @@ const PackMaster = props => {
       placeholder: "% Weight Verify",
       fieldLabel: ["Code", "Name"],
       required: true
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
 
@@ -129,10 +135,10 @@ const PackMaster = props => {
       type: "findPopup",
       name: "SKU Code",
       findPopopQuery: SKUMasterQuery,
-      fieldValue: "ID",
+      fieldValue:"ID",
       placeholder: "SKU Code",
-      findPopupTitle: "SKU",
-      findPopupColumns: colsSKUMaster,
+      findPopupTitle:"SKU",
+      findPopupColumns:colsSKUMaster,
       fieldLabel: ["Code", "Name"]
     },
     {
@@ -198,6 +204,12 @@ const PackMaster = props => {
       name: "Status",
       dataDropDown: EntityEventStatus,
       placeholder: "Status"
+    },
+    {
+        field: "Description",
+        type: "input",
+        name: "Remark",
+        placeholder: "Remark",
     }
   ];
   const primarySearch = [
@@ -292,12 +304,12 @@ const PackMaster = props => {
       fixed: "left",
       fixWidth: 162,
       sortable: false,
-      colStyle: { textAlign: "center" },
-      filterType: "dropdown",
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: EntityEventStatus,
-        typeDropDown: "normal"
+      colStyle:{textAlign:"center"},
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
       },
       Cell: e => getStatus(e.original)
     },
@@ -327,6 +339,7 @@ const PackMaster = props => {
     { Header: "Unit Type", accessor: "UnitTypeCode", width: 100 },
 
     { Header: "% Weight Verify", accessor: "ObjectSizeCode", width: 150 },
+    { Header: "Remark", accessor: "Description", width: 120 },
     { Header: "Update By", accessor: "LastUpdateBy", width: 100 },
     {
       Header: "Update Time",
@@ -350,6 +363,16 @@ const PackMaster = props => {
   };
   return (
     <>
+      {/* <MasterData
+        columnsFilterPrimary={primarySearch}
+        columnsFilter={columnsFilter}
+        tableQuery={"PackMaster"}
+        table={"ams_PackMaster"}
+        dataAdd={columns}
+        iniCols={iniCols}
+        dataEdit={columnsEdit}
+        history={props.history}
+      /> */}
       <AmMaster
         columnsFilterPrimary={primarySearch}
         columnsFilter={columnsFilter}
@@ -363,6 +386,7 @@ const PackMaster = props => {
         tableType="view"
         updateURL={window.apipath + "/v2/InsUpdDataAPI"}
         codeInclude={true}
+        linkLog={"/masterlog/skuconvertorlog?id="}
       />
     </>
   );

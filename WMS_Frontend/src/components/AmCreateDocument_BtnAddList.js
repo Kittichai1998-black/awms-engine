@@ -14,12 +14,13 @@ import Typography from "@material-ui/core/Typography";
 // import { useTranslation } from 'react-i18next'
 import { withStyles } from "@material-ui/core/styles";
 import { QueryGenerate } from './function/UtilFunction';
-
+import AmDropdown from './AmDropdown'
 import AmAux from "./AmAux";
 import AmButton from "./AmButton";
 import AmInput from "./AmInput";
+import AmDatePicker from "./AmDatePicker";
 // import AmTable from "./table/AmTable";
-import AmTable from "./AmTable/AmTableComponent";
+import AmTable from "./AmTable/AmTable";
 import { apicall, createQueryString, Clone } from "./function/CoreFunction";
 import Pagination from "./table/AmPagination";
 import queryString from "query-string";
@@ -39,6 +40,22 @@ const DialogActions = withStyles(theme => ({
         margin: 0
     }
 }))(MuiDialogActions);
+
+const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
 
 const SearchInput = withStyles(theme => ({
     root: {
@@ -152,7 +169,7 @@ const BtnAddList = props => {
     const [pageSize, setPageSize] = useState(20);
     const [page, setPage] = useState(1);
     const [query, setQuery] = useState();
-    const [data, setData] = useState([]);
+    const [dataSource, setDataSource] = useState([]);
     const [sort, setSort] = useState();
     const [iniQuery, setIniQuery] = useState(true);
     const [dataSelect, setDataSelect] = useState([]);
@@ -162,6 +179,72 @@ const BtnAddList = props => {
     const [totalSize, setTotalSize] = useState(0);
     const [status, setstatus] = useState(true);
     const [inputErr, setinputErr] = useState([]);
+    const [columns, setColumns] = useState();
+
+
+    useEffect(() => {
+        const iniCols = [...props.columns];
+        console.log(iniCols)
+        iniCols.forEach(col => {
+            let filterConfig = col.filterConfig;
+            if (filterConfig !== undefined) {
+                if (filterConfig.filterType === "dropdown") {
+                    col.Filter = (field, onChangeFilter) => {
+                        var checkType = Array.isArray(filterConfig.dataDropDown);
+                        if (checkType) {
+                            console.log(filterConfig.dataDropDown)
+                            return <AmDropdown
+                                id={field}
+                                placeholder={col.placeholder}
+                                fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                                fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                                labelPattern=" : "
+                                width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                                ddlMinWidth={200}
+
+                                defaultValue={(props.actionAuditStatus === true ? (field !== "auditStatus" ? null : "QUARANTINE") : null)}
+                      
+                                data={filterConfig.dataDropDown}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                            />
+                        }
+                        else {
+                            return <AmDropdown
+                                id={field}
+                                placeholder={col.placeholder}
+                                fieldDataKey={filterConfig.fieldDataKey === undefined ? "value" : filterConfig.fieldDataKey}
+                                fieldLabel={filterConfig.fieldLabel === undefined ? ["label"] : filterConfig.fieldLabel}
+                                labelPattern=" : "
+                                width={filterConfig.widthDD !== undefined ? filterConfig.widthDD : 150}
+                                ddlMinWidth={200}
+                                defaultValue={(props.actionAuditStatus === true ? (field !== "auditStatus" ? null : "QUARANTINE") : null)}
+                                zIndex={1000}
+                                queryApi={filterConfig.dataDropDown}
+                                onChange={(value, dataObject, inputID, fieldDataKey) => onChangeFilter(field, value)}
+                                ddlType={filterConfig.typeDropDown}
+                            />
+                        }
+                    }
+                } else if (filterConfig.filterType === "datetime") {
+                    col.width = 420;
+                    col.Filter = (field, onChangeFilter) => {
+                        return <FormInline>
+                            <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateFrom" }) }} TypeDate={"date"} fieldID="dateFrom" />
+                            <label>-</label>
+                            <AmDatePicker style={{ display: "inline-block" }} onBlur={(e) => { if (e !== undefined && e !== null) onChangeFilter(field, e.fieldDataObject, { ...col.customFilter, dataType: "datetime", dateField: "dateTo" }) }} TypeDate={"date"} fieldID="dateTo" />
+                        </FormInline>
+                    }
+                }
+            }
+        })
+        setColumns(iniCols);
+    }, [])
+
+
+
+
+
+
 
 
     useEffect(() => {
@@ -212,7 +295,7 @@ const BtnAddList = props => {
             });
         }
         setQuery(props.queryApi)
-    }, [props.queryApi, open]);
+    }, [props.queryApi]);
 
 
     useEffect(() => {
@@ -221,18 +304,22 @@ const BtnAddList = props => {
                 if (res.data.datas) {
                     SetFormaatdata(res.data.datas)
                     setTotalSize(res.data.counts);
-                    // setDefaultSelect([...props.dataCheck]);
+                   // setDefaultSelect([...props.dataCheck]);
                 }
             });
         }
-    }, [open, query]);
+    }, [query]);
+
 
     useEffect(() => {
-        console.log(data)
-    },[data])
+        if (typeof (page) === "number" && !iniQuery) {
+            const queryEdit = JSON.parse(JSON.stringify(query));
+            queryEdit.sk = page === 0 ? 0 : (page - 1) * parseInt(pageSize, 10);
+            setQuery(queryEdit)
+        }
+    }, [page])
 
-
-    const SetFormaatdata = (datas) => {
+   const SetFormaatdata = (datas) => {
         let dataSet = datas.map(x => {
             let query = queryString.parse(x.Options)
             let obj = {
@@ -241,24 +328,16 @@ const BtnAddList = props => {
                 lot: x.Lot,
                 expireDates: x.expireDate ? x.expireDate : null,
                 productionDates: x.productionDate ? x.productionDate : null,
-                eventstatus: 10,
-                ref1: x.Ref1,
-                ref2: x.Ref2,
-                ref3: x.Ref3,
-                ref4: x.Ref4,
-                unitTypeCode: x.unitType,
-                unitType : x.UnitTypeName,
+                eventstatus : 10,
                 //expireDate: x.expireDate ? moment(x.expireDate).format('DD/MM/YYYY') : null,
                 //productionDate: x.productionDate ? moment(x.productionDate).format('DD/MM/YYYY') : null,
                 auditStatus: x.AuditStatus.toString(),
                 ShelfLifePercent: x.ShelfLifeRemainPercent ? x.ShelfLifeRemainPercent + '%' : null,
-                remark: query.remark != null ? query.remark : null,
-                basecode: x.palletcode,
-                BaseCode: x.palletcode,
+                remark: query.remark != null ? query.remark : null
             }
             return obj
         })
-        setData(dataSet)
+        setDataSource(dataSet)
 
     }
 
@@ -294,6 +373,7 @@ const BtnAddList = props => {
         if (searchAction) {
             let newSel = props.queryApi.q ? JSON.parse(props.queryApi.q) : [];
             Object.keys(keySearch).map((x, idx) => {
+ 
                 if (keySearch[x]) {
                     newSel.push({
                         o: "and",
@@ -354,27 +434,33 @@ const BtnAddList = props => {
 
     const onSubmit = () => {
         if (dataSelect.length > 0 && props.dataCheck.length > 0) {
-            dataSelect.forEach((x, i) => {
-                let check = props.dataCheck.find(x => x.packID === dataSelect[i].packID);
-                if (!check) {
-                    let datasOnsub = []
-                    let datas = dataSelect.find(x => x.ID === undefined)
-                    console.log(datas)
-                    if (datas) {
-                        datasOnsub.push(datas)
-                        props.onSubmit(datasOnsub);
+            let datasOnsub = []
+            dataSelect.forEach((a, i) => {
+                let checks = props.dataCheck.find(b => b.ID === dataSelect[i].ID);
+                if (checks === undefined) {
+                  
+                    //console.log(check)
+                    //let datas = dataSelect.find(c => c.ID === undefined)
+                    //console.log(props.dataCheck)
+                    console.log(a)
+        
+                    //if (datas) {
+                    datasOnsub.push({ ...a })
+               
+                        setOpen(false);
+                    //}
+                    } else {
                         setOpen(false);
                     }
-                } else {
-                    setOpen(false);
-                }
-            })
-
-
+                })
+            props.onSubmit(datasOnsub);
+           
         } else {
+            console.log(dataSelect)
             props.onSubmit(dataSelect);
             setOpen(false);
         }
+
 
     }
 
@@ -418,6 +504,8 @@ const BtnAddList = props => {
                 aria-labelledby="customized-dialog-title"
                 open={open}
                 maxWidth="xl"
+                maxHight='xl'
+               
             >
                 <DialogTitle
                     id="customized-dialog-title"
@@ -430,11 +518,14 @@ const BtnAddList = props => {
 
                 <DialogContent>
                     <AmTable
+                        clearSelectionChangePage={false}
                         dataKey={props.primaryKeyTable}
-                        columns={props.columns}
+                        columns={columns}
+                        height={450}
                         filterable={true}
                         filterData={res => { onChangeFilterData(res) }}
                         pageSize={20}
+                        totalSize={totalSize}
                         pagination={true}
                         onPageSizeChange={(pg) => { setPageSize(pg) }}
                         onPageChange={p => {
@@ -443,9 +534,9 @@ const BtnAddList = props => {
                             else
                                 setIniQuery(false)
                         }}
-                        dataSource={data}
+                        dataSource={dataSource}
                         rowNumber={true}
-                        tableConfig={true}
+                        tableConfig={true}                                        
                         sortable
                         sortData={sort => setSort({ field: sort.id, order: sort.sortDirection })}
                         selectionDisabledCustom={(e) => { return selectionDisabledCustoms(e) }}

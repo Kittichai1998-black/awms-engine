@@ -418,8 +418,6 @@ const GR_PalletEmpByHH = Loadable({
   loader: () => import("../../views/page/ENGINE/GR/GR_PalletEmpByHH"),
   loading: Loading
 });
-
-
 const AddminPage = Loadable({
   loader: () => import("../../views/pageComponent/AddminPage"),
   loading: Loading
@@ -436,6 +434,43 @@ const GR_Create_QRCode = Loadable({
 
 const MonitorLocation = Loadable({
   loader: () => import("../../views/page/GCL/Monitor/Monitor_Location"),
+  loading: Loading
+});
+const SKUMasterLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SKUMasterLog"),
+  loading: Loading
+});
+const SKUConvertorLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SKUConvertorLog"),
+  loading: Loading
+});
+const BaseMasterLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/BaseMasterLog"),
+  loading: Loading
+});
+const PalletTypeLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/PalletTypeLog"),
+  loading: Loading
+});
+const SupplierLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/SupplierLog"),
+  loading: Loading
+});
+const CustomerLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/CustomerLog"),
+  loading: Loading
+});
+const AreaLocationConditionLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/LocationConditionLog"),
+  loading: Loading
+});
+const UserEventLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/UserLog"),
+  loading: Loading
+});
+
+const RoleEventLog = Loadable({
+  loader: () => import("../../views/page/LogMaster/RoleEventLog"),
   loading: Loading
 });
 let routes = [
@@ -550,7 +585,15 @@ let routes = [
   { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true, child: true },
   { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true, child: true },
   { path: "/monitor/monitorLocation", name: "monitor Location", compoment: MonitorLocation, exact: true, child: true },
-  
+  { path: "/masterlog/skulog", name: "SKU Master Log", compoment: SKUMasterLog, exact: true, child: true },
+  { path: "/masterlog/skuconvertorlog", name: "SKU Convertor Log", compoment: SKUConvertorLog, exact: true, child: true },
+  { path: "/masterlog/palletlog", name: "Pallet Master Log", compoment: BaseMasterLog, exact: true, child: true },
+  { path: "/masterlog/pallettypelog", name: "Pallet Type Log", compoment: PalletTypeLog, exact: true, child: true },
+  { path: "/masterlog/supplierlog", name: "supplier Log", compoment: SupplierLog, exact: true, child: true },
+  { path: "/masterlog/customerlog", name: "Customer Log", compoment: CustomerLog, exact: true, child: true },
+  { path: "/masterlog/locationconditionlog", name: "Area Location Condition Log", compoment: AreaLocationConditionLog, exact: true, child: true },
+  { path: "/masterlog/userlog", name: "User Log", compoment: UserEventLog, exact: true, child: true },
+  { path: "/masterlog/roleLog", name: "roleLog ", compoment: RoleEventLog, exact: true, child: true },
 ];
 
 export default routes;

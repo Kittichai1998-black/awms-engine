@@ -33,26 +33,26 @@ const AreaRoute = props => {
       accessor: "Status",
       fixWidth: 162,
       sortable: false,
-      filterType: "dropdown",
-      colStyle: { textAlign: "center" },
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: EntityEventStatus,
-        typeDropDown: "normal"
+      filterType:"dropdown",
+      colStyle:{textAlign:"center"},
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:EntityEventStatus,
+        typeDropDown:"normal"
       },
       Cell: e => getStatus(e.original)
     },
     {
-      Header: "IOType",
-      accessor: "IOTypeCode",
-      filterType: "dropdown",
-      filterConfig: {
-        filterType: "dropdown",
-        dataDropDown: IOTypeStatus,
-        typeDropDown: "normal"
+      Header: "IOType", 
+      accessor: "IOTypeCode", 
+      filterType:"dropdown",
+      filterConfig:{
+        filterType:"dropdown",
+        dataDropDown:IOTypeStatus,
+        typeDropDown:"normal"
       },
-      customFilter: { field: "IOType" },
-      fixWidth: 100
+      customFilter:{field:"IOType"},
+      fixWidth: 100 
     },
     { Header: "Sou Area", accessor: "AreaSou", width: 170 },
     { Header: "Des Area", accessor: "AreaDes" },
