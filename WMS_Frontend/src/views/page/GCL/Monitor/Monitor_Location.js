@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
+import * as signalR from "@aspnet/signalr";
 
-import {
-    apicall,
-    createQueryString
-} from "../../../../components/function/CoreFunction";
+// import Axios from 'axios'
+import queryString from "query-string";
+// import Moment from 'moment'
+import React, { useState, useEffect } from "react";
+// import { useTranslation } from 'react-i18next'
 
-const Axios = new apicall();
+// import AmPageDashboard from '../../../components/AmPageDashboard';
+// import { createQueryString } from '../../../components/function/CoreFunction'
+// import { useTranslation } from 'react-i18next'
+import MonitorCard from "../../../pageComponent/MonitorCard";
+// import MonitorCard from '../../views/pageComponent/MonitorCard';
+import Select from "@material-ui/core/Select";
+import FormControl from "@material-ui/core/FormControl";
 
-//======================================================================
-const Monitor_Location = props => {
-
-
-
-
-    return (
-        <>
-        fdfds
-           {console.log("dghfywgsyefh")}
-        </>
-    );
+const SetMonitorLocation = (props) => {
+  return (
+    <>
+      <MonitorCard/>
+    </>
+  );
 };
-
-export default Monitor_Location;
+export default SetMonitorLocation;

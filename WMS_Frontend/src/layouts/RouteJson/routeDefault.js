@@ -212,7 +212,7 @@ const TestCreateDocument = Loadable({
   loading: Loading
 });
 const LocationSummary = Loadable({
-  loader: () => import("../../views/pageComponent/AmLocationSummary"),
+  loader: () => import("../../views/pageComponent/AmLocationSummaryV3"),
   loading: Loading
 });
 const testMasterV2 = Loadable({
@@ -429,7 +429,15 @@ const MonitorTest = Loadable({
   loader: () => import("../../views/page/Monitor/MonitorTest"),
   loading: Loading
 });
+const GR_Create_QRCode = Loadable({
+  loader: () => import("../../views/page/ENGINE/GR/GR_Create_QRCode"),
+  loading: Loading
+});
 
+const MonitorLocation = Loadable({
+  loader: () => import("../../views/page/GCL/Monitor/Monitor_Location"),
+  loading: Loading
+});
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
   { path: "/setting/dev_info", name: "base5", compoment: DevInfo, exact: true },
@@ -505,6 +513,8 @@ let routes = [
   { path: "/testpanel", name: "base5", compoment: TestPanel, exact: true },
   { path: "/notify", name: "Notify", compoment: NotifyPage, exact: true },
 
+  { path: "/receive/createbyqrcode", name: "GR Create QRCode", compoment: GR_Create_QRCode, exact: true },
+
   //{ path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   //{ path: "/receive/detail", name: "GR View", compoment: GR_Detail, exact: true },
   //{ path: "/receive/search", name: "GR View", compoment: GR_Search, exact: true },
@@ -526,7 +536,7 @@ let routes = [
 
   { path: "/shipment/create", name: "SO Create", compoment: SO_Create, exact: true },
   { path: "/shipment/detail", name: "SO View", compoment: SO_Detail, exact: true },
-  { path: "/shipment/search", name: "SO Search", compoment: SO_Search, exact: true, child:true },
+  { path: "/shipment/search", name: "SO Search", compoment: SO_Search, exact: true, child: true },
 
   //{ path: "/counting/create", name: "AD Create", compoment: AD_Create, exact: true },
   //{ path: "/counting/detail", name: "AD View", compoment: AD_Detail, exact: true },
@@ -537,8 +547,10 @@ let routes = [
   { path: "/sto/rePackaging", name: "Re Packaging", compoment: RePackaging, exact: true },
   { path: "/warehouse/mtnplan", name: "Maintenance Plan", compoment: MaintenancePlan, exact: true },
   { path: "/warehouse/managemtnplan", name: "Manage Maintenance Plan", compoment: ManageMaintenancePlan, exact: true },
-  { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true , child: true },
-  { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true , child: true },
+  { path: "/monitor/monitortest", name: "monitor Test", compoment: MonitorTest, exact: true, child: true },
+  { path: "/monitor/Addminpage", name: "Addminpage", compoment: AddminPage, exact: true, child: true },
+  { path: "/monitor/monitorLocation", name: "monitor Location", compoment: MonitorLocation, exact: true, child: true },
+  
 ];
 
 export default routes;

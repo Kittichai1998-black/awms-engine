@@ -68,3 +68,12 @@
 .listitemtext {
   padding: 0 5px;
 }
+
+/* #divTableTopView table tbody tr td {
+  background-image: url("/assets/icons/pallet.png");
+  background-size: cover;
+} */
+.backgroundPallet {
+  background-image: url("/assets/icons/pallet.png");
+  background-size: cover;
+}

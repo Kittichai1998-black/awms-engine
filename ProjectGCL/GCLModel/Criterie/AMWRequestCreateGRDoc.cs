@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GCLModel.Criteria
 {
-    public class AMWRequestCreateDoc
+    public class AMWRequestCreateGRDoc
     {
 
         //[Required(ErrorMessage = "kor wor yor")]
@@ -22,8 +22,7 @@ namespace GCLModel.Criteria
             public decimal? qty_per_pallet;
             public string unit;
             public string status;
-            public string sou_warehouse;
-            public string des_warehouse;
+            public string warehouse; //Des
             public string discharge;
 
     }

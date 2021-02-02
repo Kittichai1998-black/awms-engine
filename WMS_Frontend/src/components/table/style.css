@@ -63,4 +63,7 @@ div.-sort-asc div div::after {
   .worked .rt-td {
     background: #63c2de !important;
   }
-
+  .scrollbar
+  ::-webkit-scrollbar {
+    height: 5px
+  }

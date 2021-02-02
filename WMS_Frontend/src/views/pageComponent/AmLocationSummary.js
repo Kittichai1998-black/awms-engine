@@ -30,6 +30,8 @@ import styled from 'styled-components'
 import Label from '../../components/AmLabelMultiLanguage'
 import { editorListcolunm } from '../../components/table/AmGennarateFormForEditorTable'
 import AmDialogs from '../../components/AmDialogs'
+import PageviewRoundedIcon from '@material-ui/icons/PageviewRounded';
+import IconButton from "@material-ui/core/IconButton";
 // import Aux from 'react-aux'
 
 const Axios = new apicall()
@@ -770,7 +772,21 @@ const AmLocationSummary = props => {
                         />
                         <div style={{ overflow: "auto", whiteSpace: "nowrap", maxWidth: "77%", marginLeft: "10px" }}>{textSearch}</div>
 
-                        <button className="btn btn-primary" style={{ padding: "1px", float: "right", marginRight: "2px", position: "absolute", right: 2 }} onClick={() => setToggleModal(true)} >Search</button>
+                        {/* <button className="btn btn-primary" 
+                                style={{ padding: "1px", float: "right",
+                                marginRight: "2px", position: "absolute", right: 2 }}
+                                onClick={() => setToggleModal(true)} >Search</button> */}
+                        <IconButton
+                            size="large"
+                            aria-label="info"
+                            style={{
+                                padding: "1px", float: "right",
+                                marginRight: "2px", position: "absolute", right: 2
+
+                            }}
+                        ><PageviewRoundedIcon
+                                fontSize="large"
+                                onClick={() => setToggleModal(true)} /></IconButton>
                     </FormInline>
                     {/* <Grid
                         container

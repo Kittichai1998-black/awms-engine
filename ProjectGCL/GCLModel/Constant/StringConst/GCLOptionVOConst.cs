@@ -9,7 +9,9 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_START_PALLET = "start_pallet";
         public const string OPT_END_PALLET= "start_pallet";
         public const string OPT_QTY_PER_PALLET = "qty_per_pallet";
-        public const string OPT_DISCHARGE = "discharge";  
+        public const string OPT_DISCHARGE = "discharge";
+        public const string OPT_STAGING = "staging";
+        public const string OPT_DOCK = "dock";
 
     }
 }
