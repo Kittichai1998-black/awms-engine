@@ -18,10 +18,10 @@ const GR_Search = Loadable({
   loading: Loading
 });
 
-<<<<<<< HEAD
 const GR_PalletByHH = Loadable({
   loader: () => import("../../views/page/GCL/Receive/MappingReceive_HH"),
-=======
+  loading: Loading
+});
 const PA_Create = Loadable({
   loader: () => import("../../views/page/GCL/Recive/PA_Create"),
   loading: Loading
@@ -45,17 +45,14 @@ const PK_Create = Loadable({
 });
 const PK_Search = Loadable({
   loader: () => import("../../views/page/GCL/Issue/PK_Search"),
->>>>>>> a96a1ffe5478bd1e5cc81b15cf6d4382b94baa23
   loading: Loading
 });
 const routes = [
 
   { path: "/monitor/location", name: "Monitor Location", compoment: Monitor_Location, exact: true, child: true },
-<<<<<<< HEAD
   { path: "/receive/mappingreceive", name: "GR HH", compoment: GR_PalletByHH, exact: true, child: true },
 
 
-=======
   { path: "/receive/create", name: "GR Create", compoment: GR_Create, exact: true },
   { path: "/receive/search", name: "GR Search", compoment: GR_Search, exact: true },
 
@@ -67,7 +64,6 @@ const routes = [
 
   { path: "/issue/pickingcreate", name: "PK Create", compoment: PK_Create, exact: true },
   { path: "/issue/pickingsearch", name: "PK Search", compoment: PK_Search, exact: true },
->>>>>>> a96a1ffe5478bd1e5cc81b15cf6d4382b94baa23
 ];
 
 export default routes;

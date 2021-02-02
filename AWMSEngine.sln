@@ -55,7 +55,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBOTHY", "ProjectBOTH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWCSModel", "AWCSModel\AWCSModel.csproj", "{8D359218-B257-4244-818C-3523AC92C978}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectGCL", "ProjectGCL\ProjectGCL.csproj", "{0F6FAB43-45C9-447B-B4E2-404E309B19BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectGCL", "ProjectGCL\ProjectGCL.csproj", "{0F6FAB43-45C9-447B-B4E2-404E309B19BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectSCN", "ProjectSCN\ProjectSCN.csproj", "{6D6C9882-3154-401F-AE50-737BDAFC6101}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,6 +153,10 @@ Global
 		{0F6FAB43-45C9-447B-B4E2-404E309B19BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F6FAB43-45C9-447B-B4E2-404E309B19BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F6FAB43-45C9-447B-B4E2-404E309B19BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6C9882-3154-401F-AE50-737BDAFC6101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6C9882-3154-401F-AE50-737BDAFC6101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6C9882-3154-401F-AE50-737BDAFC6101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6C9882-3154-401F-AE50-737BDAFC6101}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

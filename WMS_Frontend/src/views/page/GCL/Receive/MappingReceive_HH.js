@@ -246,7 +246,7 @@ const MappingReceive_HH = (props) => {
                     >
                         <SearchIcon
                             fontSize="small"
-                            onClick={() => { FindGate() }}
+                            // onClick={() => { FindGate() }}
                         />
                     </IconButton>
                 </div>;
@@ -350,7 +350,7 @@ const MappingReceive_HH = (props) => {
 
     return (
         <>
-            {DialogConfirm}
+            {DialogFindGate}
             {DialogAlert}
             <Paper className={classes.paperContainer}>
                 <Stepper

@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.DataAccess.Http;
+using AMWUtil.Logger;
 using AWMSEngine.HubService;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -40,6 +41,12 @@ namespace AWMSEngine.WorkerService
         {
             VOCriteria buVO = new VOCriteria();
             buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
+            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_FINAL_DB_LOG,
+                  new FinalDatabaseLogCriteria()
+                  {
+                      documentOptionMessages = new List<FinalDatabaseLogCriteria.DocumentOptionMessage>(),
+                      sendAPIEvents = new List<HttpResultModel>()
+                  });
             var job = ADO.WMSStaticValue.StaticValueManager.GetInstant().WorkerService.FirstOrDefault(x => x.ID == this.WorkerServiceID);
             string prefixLog = "[" + job.Code + "(" + job.ID + ")] ";
             var options = AMWUtil.Common.ObjectUtil.QryStrToDictionary(job.Options);
