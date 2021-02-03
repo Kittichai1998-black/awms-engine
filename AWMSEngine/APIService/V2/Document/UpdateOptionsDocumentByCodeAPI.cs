@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.V2.Document
         {
         }
         public class TReq {
-            public string code = "GR2101000008";
+            public string doc_wcs = "GR2101000008";
             public string pallet;
             public string lastPallet;
         }
