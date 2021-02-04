@@ -1,9 +1,9 @@
-﻿using AWMSModel.Entity;
+﻿using AMSModel.Entity;
 using System;
 using System.Linq;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
 using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.General

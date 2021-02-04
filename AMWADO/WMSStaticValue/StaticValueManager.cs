@@ -1,11 +1,11 @@
-﻿using AWMSModel.Constant.EnumConst;
-using AWMSModel.Entity;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System.Text.RegularExpressions;
 using AMWUtil.Exception;
 

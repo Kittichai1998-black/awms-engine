@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Common;
 using ADO.WMSStaticValue;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;

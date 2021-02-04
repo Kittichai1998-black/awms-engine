@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Entity
+namespace AMSModel.Entity
 {
     public class ams_Notify_User : BaseEntityCreateModify
     {

@@ -1,4 +1,4 @@
-﻿namespace AWMSModel.Entity
+﻿namespace AMSModel.Entity
 {
     public class ams_PackMaster : BaseEntitySTD
     {

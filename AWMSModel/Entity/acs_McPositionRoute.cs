@@ -1,5 +1,5 @@
 ﻿
-namespace AWMSModel.Entity
+namespace AMSModel.Entity
 {
     public class acs_McPositionRoute : BaseEntityCreateModify
     {

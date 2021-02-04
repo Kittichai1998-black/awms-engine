@@ -2,9 +2,9 @@
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.APIService.V2.Document;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

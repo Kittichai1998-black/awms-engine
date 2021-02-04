@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Exception;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +22,14 @@ namespace AWMSEngine.Engine.V2.Business
         protected override TRes ExecuteEngine(string reqVO)
         {
             var bSto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                new SQLConditionCriteria("Code", reqVO, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
+                new SQLConditionCriteria("Code", reqVO, AMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
             }, this.BuVO).OrderByDescending(x => x.ID).FirstOrDefault();
 
             if (bSto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO + " Not Found");
 
             var stos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                    new SQLConditionCriteria("ParentStorageObject_ID", bSto.ID, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
+                    new SQLConditionCriteria("ParentStorageObject_ID", bSto.ID, AMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
                 }, this.BuVO).OrderByDescending(x => x.ID).ToList();
 
             var mapStos = new List<TRes>();

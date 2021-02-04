@@ -2,7 +2,7 @@
 using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.Engine.V2.Business.Received;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

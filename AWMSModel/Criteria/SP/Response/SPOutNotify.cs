@@ -1,9 +1,9 @@
-﻿using AWMSModel.Entity;
+﻿using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.SP.Response
+namespace AMSModel.Criteria.SP.Response
 {
     public class SPOutNotify : amt_NotifyPost
     {

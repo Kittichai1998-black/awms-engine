@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (wave.WaveSeqs.First().End_StorageObject_EventStatus != StorageObjectEventStatus.ALLOCATED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Wave Seq(1) จะต้องมี end status 'Allocated' เท่านั้น");
 
-            var disto = ADO.WMSDB.DistoADO.GetInstant().Insert(new AWMSModel.Entity.amt_DocumentItemStorageObject
+            var disto = ADO.WMSDB.DistoADO.GetInstant().Insert(new AMSModel.Entity.amt_DocumentItemStorageObject
             {
                 ID =null,
                 WorkQueue_ID = null,

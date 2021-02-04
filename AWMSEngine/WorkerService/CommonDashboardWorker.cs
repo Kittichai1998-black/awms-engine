@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Logger;
 using AWMSEngine.HubService;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

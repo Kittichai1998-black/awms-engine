@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Logger;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSModel.Criteria.Attribute;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Criteria.Attribute;
+using AMSModel.Constant.EnumConst;
 using System.Text.RegularExpressions;
 
 namespace ADO.WCSDB

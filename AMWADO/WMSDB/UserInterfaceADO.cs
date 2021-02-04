@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Logger;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Data;

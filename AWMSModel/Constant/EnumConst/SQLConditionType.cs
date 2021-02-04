@@ -1,9 +1,9 @@
-﻿using AWMSModel.Criteria.Attribute;
+﻿using AMSModel.Criteria.Attribute;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Constant.EnumConst
+namespace AMSModel.Constant.EnumConst
 {
     public enum SQLConditionType
     {

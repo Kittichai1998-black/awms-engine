@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Entity
+namespace AMSModel.Entity
 {
     public class acs_McRegistry : BaseEntityID
     {

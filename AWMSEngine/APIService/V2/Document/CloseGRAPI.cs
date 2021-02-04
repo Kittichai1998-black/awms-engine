@@ -1,7 +1,7 @@
 ﻿using ADO.WMSDB;
 using AMWUtil.Common;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

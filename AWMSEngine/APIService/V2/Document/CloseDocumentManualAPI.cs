@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 using AWMSEngine.APIService;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using AMWUtil.Exception;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using ADO.WMSDB;
 using AMWUtil.Logger;
 

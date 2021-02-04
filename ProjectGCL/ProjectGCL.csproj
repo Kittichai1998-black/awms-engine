@@ -8,7 +8,7 @@
     <ProjectReference Include="..\AMWADO\ADO.csproj" />
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
     <ProjectReference Include="..\AWMSEngine\AWMSEngine.csproj" />
-    <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
+    <ProjectReference Include="..\AWMSModel\AMSModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

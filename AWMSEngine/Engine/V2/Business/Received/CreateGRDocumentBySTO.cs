@@ -3,10 +3,10 @@ using AMWUtil.Exception;
 
 using ADO.WMSStaticValue;
 using AWMSEngine.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

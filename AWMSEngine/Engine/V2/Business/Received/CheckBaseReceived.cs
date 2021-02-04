@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 
 namespace AWMSEngine.Engine.V2.Business.Received
 {

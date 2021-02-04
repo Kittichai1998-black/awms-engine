@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel
+namespace AMSModel
 {
     public interface IModel
     {
