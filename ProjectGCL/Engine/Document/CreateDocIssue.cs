@@ -109,7 +109,7 @@ namespace ProjectGCL.Engine.Document
             var area = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("Code",reqVO.staging,SQLOperatorType.EQUALS),
-                                    new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STO_STAGING, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.MC_GATE, SQLOperatorType.EQUALS),
                                     new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
@@ -410,13 +410,13 @@ namespace ProjectGCL.Engine.Document
             var areastaging = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",reqVO.staging,SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STO_STAGING, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.MC_GATE, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
             var area = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STO_STAGING, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.MC_GATE, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO);
 
