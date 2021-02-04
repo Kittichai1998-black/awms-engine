@@ -26,38 +26,42 @@ import { apicall } from '../../../../components/function/CoreFunction'
 import { editorListcolunm } from '../../../../components/table/AmGennarateFormForEditorTable'
 import ModalForm from '../../../../components/table/AmEditorTable'
 import styled from 'styled-components'
+import AmDialogConfirm from '../../../../components/AmDialogConfirm'
 // import useSwitch from '../../../../components/Hook/useSwitch'
 
 const axios = new apicall()
 
-// const FormInline = styled.div`
-// display: flex;
-// flex-flow: row wrap;
-// align-items: center;
-// label {
-//     margin: 5px 5px 5px 0;
-// }
-// input {
-//     vertical-align: middle;
-// }
-// // @media (max-width: 800px) {
-// //     flex-direction: column;
-// //     align-items: stretch;
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+// @media (max-width: 800px) {
+//     flex-direction: column;
+//     align-items: stretch;
 
-// //   }
-// `;
+//   }
+`;
 
 export default () => {
     const [qrcode, setqrcode] = useState()
     const [toggleModal, setToggleModal] = useState(false)
-    const [editData, setEditData] = useState({});
+    const [editData, setEditData] = useState([]);
     const [inputError, setInputError] = useState([])
     const [dialogError, setDialogError] = useState({ isOpen: false, text: "" })
+    const [dialogSuccess, setDialogSuccess] = useState({ isOpen: false, text: "" })
+    const [dialogConfirmClose, setDialogConfirmClose] = useState(false)
     // const [menuIsOpen, openMenu, closeMenu] = useSwitch()
     const [anchorEl, setAnchorEl] = useState()
     const [card, setCard] = useState([])
-    const [GRCode, setGRCode] = useState()
     const inputScan = useRef()
+    const [dataModal, setDataModal] = useState({})
+    const [GR, setGR] = useState()
 
     useEffect(() => {
         inputScan.current.focus()
@@ -67,37 +71,104 @@ export default () => {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Warehouse",
         q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID as warehouse_id,Name,Code",
+        f: "ID as warehouse_id,Name,Code as warehouse",
         g: "",
         s: "[{ 'f': 'ID', 'od': 'asc' }]",
         sk: 0,
         l: 100,
         all: ""
     }
+    const table_Customer = {
+        queryString: window.apipath + "/v2/SelectDataMstAPI/",
+        t: "Customer",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID as customer_id,Name,Code as customer",
+        g: "",
+        s: "[{ 'f': 'ID', 'od': 'asc' }]",
+        sk: 0,
+        l: 100,
+        all: ""
+    }
+    const view_SKUMaster = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "SKUMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID as sku_id,Name,Code as sku,UnitTypeCode as unit",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
-    const columsFindPopupArea_Warehouse = [
-        { Header: "Code", accessor: "Code", fixed: "left", width: 110, sortable: true },
+    const columsFindPopup_Customer = [
+        { Header: "Code", accessor: "customer", fixed: "left", width: 110, sortable: true },
         { Header: "Name", accessor: "Name", width: 250, sortable: true },
+    ];
+    const columsFindPopup_Warehouse = [
+        { Header: "Code", accessor: "warehouse", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+    ];
+    const columsFindPopup_SKU = [
+        { Header: "Code", accessor: "sku", fixed: "left", width: 110, sortable: true },
+        { Header: "Name", accessor: "Name", width: 250, sortable: true },
+        { Header: "Unit Type", accessor: "unit", width: 250, sortable: true },
     ];
 
     const columnEdit = [
+
+        { Header: "Bagging Order", accessor: "doc_wms", type: "input", width: '300px', required: true },
+        {
+            Header: "Customer",
+            accessor: "customer_id",
+            type: "findPopUp",
+            required: true,
+            // fieldDataKey: "warehouse",
+            fieldLabel: ["customer", "Name"],
+            idddl: "customer",
+            queryApi: table_Customer,
+            // defaultValue: 1,
+            columsddl: columsFindPopup_Customer,
+            related: ["customer"],
+            removeRelated: ["customer"]
+        },
+        {
+            Header: "SKU",
+            accessor: "sku_id",
+            type: "findPopUp",
+            required: true,
+            // fieldDataKey: "warehouse",
+            fieldLabel: ["sku", "Name"],
+            idddl: "sku",
+            queryApi: view_SKUMaster,
+            // defaultValue: 1,
+            columsddl: columsFindPopup_SKU,
+            related: ["unit", "sku"],
+            removeRelated: ["unit", "sku"]
+        },
+        { Header: "Unit Type", accessor: "unit", type: "text", width: '300px' },
+        { Header: "Grade", accessor: "grade", type: "input", width: '300px', required: true },
+        { Header: "Lot", accessor: "lot", type: "input", width: '300px', required: true },
+        { Header: "Start Pallet", accessor: "start_pallet", type: "inputNum", width: '300px', required: true },
+        { Header: "End Pallet", accessor: "end_pallet", type: "inputNum", width: '300px', required: true },
         {
             Header: "Warehouse",
             accessor: "warehouse_id",
             type: "findPopUp",
             required: true,
-            // fieldDataKey: "warehouse_id",
-            fieldLabel: ["Code", "Name"],
-            idddl: "warehouse_id",
+            // fieldDataKey: "warehouse",
+            fieldLabel: ["warehouse", "Name"],
+            idddl: "warehouse",
             queryApi: table_Warehouse,
-            // defaultValue: 1,
-            columsddl: columsFindPopupArea_Warehouse
+            defaultValue: 1,
+            columsddl: columsFindPopup_Warehouse,
+            related: ["warehouse"],
+            removeRelated: ["warehouse"]
         },
-        { Header: "SKU", accessor: "sku", type: "input", width: '300px' },
-        { Header: "Lot", accessor: "lot", type: "input", width: '300px' },
-        { Header: "Grade", accessor: "grade", type: "input", width: '300px' },
-        { Header: "Pallet No", accessor: "palletNo", type: "input", width: '300px' },
-        { Header: "Qty per pallet", accessor: "qtyPerPallet", type: "input", width: '300px' },
+        { Header: "Qty", accessor: "qty", type: "inputNum", width: '300px', required: true },
+        { Header: "Qty Per Pallet", accessor: "qty_per_pallet", type: "inputNum", width: '300px', required: true },
+        { Header: "Storage Status", accessor: "status", type: "input", width: '300px', required: true },
+
     ]
 
     const ref = useRef(columnEdit.map(() => createRef()))
@@ -112,75 +183,112 @@ export default () => {
         return result;
     }
 
-    const onScan = () => {
-        if (qrcode && qrcode.split("|").length === 11) {
-            // console.log(qrcode.split("|").length);
+    const onScan = (datas) => {
+        if (datas && datas.split("|").length === 11) {
             const _editData = {
-                doc_wms: qrcode.split("|")[0].trim(),
-                customer: qrcode.split("|")[1].trim(),
-                grade: qrcode.split("|")[2].trim(),
-                sku: qrcode.split("|")[3].trim(),
-                lot: qrcode.split("|")[4].trim(),
-                start_pallet: +qrcode.split("|")[5].substr(0, 4).trim(),
-                end_pallet: +qrcode.split("|")[5].substr(4, 4).trim(),
-                warehouse: qrcode.split("|")[6].trim(),
-                qty: qrcode.split("|")[7].trim(),
-                unit: qrcode.split("|")[8].trim(),
-                qty_per_pallet: qrcode.split("|")[9].trim(),
-                status: qrcode.split("|")[10].trim(),
+                doc_wms: datas.split("|")[0].trim(),
+                customer: datas.split("|")[1].trim(),
+                grade: datas.split("|")[2].trim(),
+                sku: datas.split("|")[3].trim(),
+                lot: datas.split("|")[4].trim(),
+                start_pallet: +datas.split("|")[5].substr(0, 4).trim(),
+                end_pallet: +datas.split("|")[5].substr(4, 4).trim(),
+                warehouse: datas.split("|")[6].trim(),
+                qty: datas.split("|")[7].trim(),
+                unit: datas.split("|")[8].trim(),
+                qty_per_pallet: datas.split("|")[9].trim(),
+                status: datas.split("|")[10].trim(),
                 api_ref: generateRandom(10)
             }
-            // const doc = {
-            //     desWarehouseCode: _editData.Warehouse,
-            //     forCustomerCode: _editData.Customer_Code,
-            //     lot: _editData.Lot,
-            //     receivedOrderItem: null,
-            // }
-            // doc.options = `bagging_order=${_editData.Bagging_Order}`
-            // doc.options += `&grade=${_editData.Grade}`
-            // doc.options += `&mat_code=${_editData.MAT_CODE}`
-            // doc.options += `&start_pallet=${_editData.Start_Pallet}`
-            // doc.options += `&end_pallet=${_editData.End_Pallet}`
-            // doc.options += `&qty=${_editData.QTY}`
-            // doc.options += `&uom=${_editData.UOM}`
-            // doc.options += `&qty_per_pallet=${_editData.QTY_PER_Pallet}`
-            // doc.options += `&storage_status=${_editData.Storage_Status}`
-            // console.log(doc);
+
             // axios.post(window.apipath + "/v2/revieve_order/", _editData).then(res => {
             //     console.log(res);
             // })
 
-            // console.log(_editData);
 
-            const res = {
-                doc_wcs: "GR00000001",
-                doc_wms: editData.doc_wms
-            }
+            _editData.doc_wcs = "GR" + Math.floor(Math.random() * 100)
+            editData.push(_editData)
+            console.log(editData);
 
-            const newDatas = Object.assign(_editData, res);
-            
+            // const newDatas = Object.assign(_editData, res);
 
-            generateCard(newDatas)
-            setEditData(newDatas)
-            setCard([...card, generateCard(newDatas)])
+
+            // generateCard(_editData)
+            // setEditData(newDatas)
+            setCard([...card, generateCard(_editData)])
 
         } else {
             setDialogError({ isOpen: true, text: "รูปแบบข้อมูลไม่ถูกต้อง" })
         }
     }
 
+    const onUpdate = () => {
+        let req = editData.find(x => x.doc_wcs === GR)
+        req.doc_wcs = "GR2101000008"
+        axios.post(window.apipath + "/v2/UpdateOptionsDocumentByCodeAPI/", req).then(res => {
+            if (res.data._result.status) {
+                setDialogSuccess({ isOpen: true, text: "แก้ไขข้อมูลเรียบร้อย" })
+            } else {
+                setDialogError({ isOpen: true, text: res.data._result.message })
+            }
+        })
+    }
+
+    const onConfirmClose = () => {
+        let req = editData.find(x => x.doc_wcs === GR)
+        req.doc_wcs = "GR2101000008"
+        axios.post(window.apipath + "/v2/CloseGRAPI/", req).then(res => {
+            if (res.data._result.status) {
+                setDialogSuccess({ isOpen: true, text: "แก้ไขข้อมูลเรียบร้อย" })
+            } else {
+                setDialogError({ isOpen: true, text: res.data._result.message })
+            }
+        })
+    }
+
+
+
     const onChangeEditor = (field, data, required, row) => {
         if (typeof data === "object" && data) {
-            editData[field] = data[field] ? data[field] : data.value
+            dataModal[field] = data[field] ? data[field] : data.value
         } else if (data) {
-            editData[field] = data
+            dataModal[field] = data
         } else {
-            delete editData[field]
+            delete dataModal[field]
+        }
+
+        if (row && row.related && row.related.length) {
+            let indexField = row.related.reduce((obj, x) => {
+                obj[x] = columnEdit.findIndex(y => y.accessor === x)
+                return obj
+            }, {})
+            for (let [key, index] of Object.entries(indexField)) {
+                if (data) {
+                    // if (key === "packID") {
+                    //     editData.packID_map_skuID = data.packID + "-" + data.skuID
+                    // }
+                    dataModal[key] = data[key]
+                } else {
+                    delete dataModal[key]
+                }
+
+                if (index !== -1) {
+                    if (data) {
+                        if (ref.current[index].current.value)
+                            ref.current[index].current.value = data[key]
+                    } else {
+                        //ref.current[index].current.value = ""
+                    }
+                }
+            }
+        }
+        if (row && row.removeRelated && row.removeRelated.length && dataModal.packID_map_skuID && (+dataModal.packID_map_skuID.split('-')[0] !== +dataModal.packID || +dataModal.packID_map_skuID.split('-')[1] !== +dataModal.skuID)) {
+            row.removeRelated.forEach(x => delete dataModal[x])
         }
 
         if (required) {
             // console.log(required);
-            if (!editData[field]) {
+            if (!dataModal[field]) {
                 const arrNew = [...new Set([...inputError, field])]
                 setInputError(arrNew)
             } else {
@@ -198,7 +306,20 @@ export default () => {
     const onHandleEditConfirm = (status, rowdata, inputErr) => {
         if (status) {
             if (!inputErr.length) {
-
+                const arr = []
+                arr.push(rowdata.doc_wms)
+                arr.push(rowdata.customer)
+                arr.push(rowdata.grade)
+                arr.push(rowdata.sku)
+                arr.push(rowdata.lot)
+                arr.push(("000" + rowdata.start_pallet).slice(-4) + ("000" + rowdata.end_pallet).slice(-4))
+                arr.push(rowdata.warehouse)
+                arr.push(rowdata.qty)
+                arr.push(rowdata.unit)
+                arr.push(rowdata.qty_per_pallet)
+                arr.push(rowdata.status)
+                onScan(arr.join("|"))
+                setToggleModal(false)
             } else {
                 setInputError(inputErr.map(x => x.accessor))
             }
@@ -230,14 +351,14 @@ export default () => {
 
             //     </Grid>
             // </Box>
-            <Card style={{ width: "97%" }}>
+            <Card style={{ width: "97%", marginTop: "10px" }}>
                 <CardHeader
                     title={datas.doc_wcs}
                     action={
                         <IconButton aria-label="settings">
                             <MoreVertIcon onClick={(e) => {
                                 setAnchorEl(e.currentTarget)
-                                setGRCode(datas.doc_wcs)
+                                setGR(datas.doc_wcs)
                             }
                             } />
                         </IconButton>
@@ -315,10 +436,8 @@ export default () => {
                                 // msgError="Error"
                                 // regExp={validate ? validate : ""}
                                 onChange={(value) => {
-                                    // const _editData = { ...editData }
-                                    console.log(editData);
-                                    // editData.pallet = value
-                                    // setEditData(_editData)
+                                    let _editData = editData.find(x => x.doc_wcs === datas.doc_wcs)
+                                    _editData.pallet = value
                                 }}
                             // onKeyPress={(value) => setqrcode(value)}
                             />
@@ -339,10 +458,8 @@ export default () => {
                                 // msgError="Error"
                                 // regExp={validate ? validate : ""}
                                 onChange={(value) => {
-                                    // const _editData = { ...editData }
-                                    console.log(editData);
-                                    // editData.lastPallet = value
-                                    // setEditData(_editData)
+                                    let _editData = editData.find(x => x.doc_wcs === datas.doc_wcs)
+                                    _editData.lastPallet = value
                                 }}
                             // onKeyPress={(value) => setqrcode(value)}
                             />
@@ -363,22 +480,23 @@ export default () => {
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl()}
             >
-                <MenuItem onClick={() => {
-                    console.log(GRCode);
-                    console.log(editData);
-                    const req = {
-                        pallet: editData.pallet,
-                        lastPallet: editData.lastPallet
-                    }
-                    axios.post(window.apipath + "/v2/UpdateOptionsDocumentByCodeAPI/", req).then(res => {
-                        console.log(res);
-                    })
-
-                    setAnchorEl()
-                }}>Update</MenuItem>
-                <MenuItem onClick={() => setAnchorEl()}>Close</MenuItem>
+                <MenuItem onClick={() => { onUpdate(); setAnchorEl(); }}>Update</MenuItem>
+                <MenuItem onClick={() => { setDialogConfirmClose(true); setAnchorEl() }}>Close</MenuItem>
                 <MenuItem onClick={() => setAnchorEl()}>Delete</MenuItem>
             </Menu>
+            <AmDialogConfirm
+                titleDialog={"Confirm Close"}
+                open={dialogConfirmClose}
+                close={e => setDialogConfirmClose(e)}
+                bodyDialog={<>
+                    {/* <label>Change  DesCustomer</label>
+                    <FormInline><label>Confirm Clare SKUItem</label></FormInline> */}
+                </>}
+                //styleDialog={{ width: "1500px", height: "500px" }}
+                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => { onConfirmClose() }}>OK</AmButton>}
+                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => setDialogConfirmClose(false)}>Cancel</AmButton>}
+            />
+            <AmDialogs typePopup={"success"} content={dialogSuccess.text} onAccept={(e) => { setDialogError({ ...dialogSuccess, isOpen: e }) }} open={dialogSuccess.isOpen}></AmDialogs >
             <AmDialogs typePopup={"eror"} content={dialogError.text} onAccept={(e) => { setDialogError({ ...dialogError, isOpen: e }) }} open={dialogError.isOpen}></AmDialogs >
             <ModalForm
                 style={{ width: "600px", height: "500px" }}
@@ -386,9 +504,9 @@ export default () => {
                 textConfirm="Add"
                 open={toggleModal}
                 onAccept={(status, rowdata, inputErr) => onHandleEditConfirm(status, rowdata, inputErr)}
-                data={editData}
+                data={dataModal}
                 objColumnsAndFieldCheck={{ objColumn: columnEdit, fieldCheck: "accessor" }}
-                columns={editorListcolunm(columnEdit, ref, inputError, editData, onChangeEditor)}
+                columns={editorListcolunm(columnEdit, ref, inputError, dataModal, onChangeEditor)}
             />
             {/* <Box
                 boxShadow={2}
@@ -422,7 +540,7 @@ export default () => {
                         // className="float-right"
                         styleType="add"
                         style={{ width: "100%" }}
-                        onClick={onScan} >
+                        onClick={() => onScan(qrcode)} >
                         Scan
                     </AmButton>
                 </Grid>
@@ -437,7 +555,6 @@ export default () => {
                 </Grid>
             </Grid>
             {/* </Box> */}
-            <br />
             <Grid
                 container
                 direction="row"
