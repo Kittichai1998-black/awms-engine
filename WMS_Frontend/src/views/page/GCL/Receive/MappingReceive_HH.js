@@ -36,8 +36,23 @@ import AmListSTORenderer from '../../../pageComponent/AmListSTORenderer';
 import classnames from 'classnames';
 import SearchIcon from "@material-ui/icons/Search";
 import IconButton from "@material-ui/core/IconButton";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
 const Axios = new apicall();
+
+
+const DialogSelectGate =withStyles(theme => ({
+
+
+}))(props=>{
+
+
+    return  (<>
+    
+    </>);
+});
+
 const styles = theme => ({
     root: {
         // maxWidth: '100%',
@@ -172,6 +187,12 @@ const styles = theme => ({
         fontWeight: 'bold',
         display: 'inline-block',
     },
+    addCircleIcon: {
+        color: green[800]
+    },
+    removeCircleIcon: {
+        color: red[700]
+    }
 });
 
 function GetAllGateinWHQuery() {
@@ -198,11 +219,12 @@ const MappingReceive_HH = (props) => {
 
     const [openAlert, setOpenAlert] = useState(false);
     const [settingAlert, setSettingAlert] = useState(null);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [settingConfirm, setSettingConfirm] = useState(null);
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectGateDialog, setSelectGateDialog] = useState(null);
 
 
-    const [inputList, setInputList] = useState([]);
+    const [inputList, setInputList] = useState([{ barcode: "" }]);
 
 
     //steps
@@ -219,7 +241,31 @@ const MappingReceive_HH = (props) => {
             { label: t('Confirm Receive Pallet'), value: null },
         ];
     };
+    // handle input change
+    const handleInputChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...inputList];
+        list[index][name] = value;
+        setInputList(list);
+    };
 
+    // handle click event of the Remove button
+    const handleRemoveClick = index => {
+        const list = [...inputList];
+        list.splice(index, 1);
+
+        setInputList(list);
+
+        let ele = document.getElementById("barcode" + index.toString());
+        if (ele)
+            ele.value = "";
+
+    };
+
+    // handle click event of the Add button
+    const handleAddClick = () => {
+        setInputList([...inputList, { barcode: "" }]);
+    };
     function getStepContent(step) {
         switch (step) {
             case 0:
@@ -246,12 +292,12 @@ const MappingReceive_HH = (props) => {
                     >
                         <SearchIcon
                             fontSize="small"
-                            // onClick={() => { FindGate() }}
+                        // onClick={() => { FindGate() }}
                         />
                     </IconButton>
                 </div>;
             case 1:
-                return <><p>ffff</p></>;
+                return <RenderAddBarCode data={inputList} />
             case 2:
                 return <><p>ffff</p></>;
             default:
@@ -260,6 +306,47 @@ const MappingReceive_HH = (props) => {
 
     }
 
+    const RenderAddBarCode = React.memo(({ data }) => {
+        return <div>
+            {data.map((x, i) => {
+                return (
+
+                    <div style={{ display: "flex" }}>
+                        <AmInput
+                            id={"barcode" + i.toString()}
+                            name={"barcode"}
+                            type="input"
+                            placeholder="Enter Barcode"
+                            defaultValue={x.barcode}
+                            style={{ width: "100%" }}
+                            onChange={(value, obj, element, event) => handleInputChange(event, i)}
+                        />
+
+                        {data.length !== 1 &&
+                            <IconButton size="small" >
+                                <RemoveCircleIcon
+                                    className={classes.removeCircleIcon}
+                                    fontSize="small"
+                                    onClick={() => { handleRemoveClick(i) }}
+                                />
+                            </IconButton>
+                        }
+                        {data.length - 1 === i &&
+                            <IconButton size="small" >
+                                <AddCircleIcon
+                                    fontSize="small"
+                                    className={classes.addCircleIcon}
+                                    onClick={handleAddClick}
+                                />
+                            </IconButton>
+                        }
+                    </div>
+                )
+            })}
+            {/* <div style={{ marginTop: 20 }}>{JSON.stringify(data)}</div> */}
+        </div>
+
+    });
     const handleNext = (index) => {
         console.log(valueInput)
         if (index === 0) {
@@ -270,7 +357,22 @@ const MappingReceive_HH = (props) => {
             }
         }
         if (index === 1) {
-            CheckBarcodeMappingDocument();
+            if(inputList.length > 0){
+                // const listBarcode = inputList.find(obj => { return obj.barcode !== ""}).barcode;
+                var listBarcode = []
+                inputList.map((x,i)=>{
+                    if((x.barcode !== undefined || x.barcode !== null) && x.barcode.length > 0){
+                        listBarcode.push(x.barcode);
+                    }
+                });
+                 
+                console.log(listBarcode)
+                if(listBarcode.length > 0){
+                    CheckBarcodeMappingDocument(listBarcode);
+                }else{
+                alertDialogRenderer("warning", t("Please Scan Barcode Product."))
+                }
+            }
         }
         if (index === 2) {
             ConfirmReceive();
@@ -280,6 +382,8 @@ const MappingReceive_HH = (props) => {
     const handleBack = (index) => {
         if (index === 1) {
             setValueInput({ ...valueInput, locationCode: null })
+            setInputList([{ barcode: "" }]);
+
         }
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
@@ -289,6 +393,8 @@ const MappingReceive_HH = (props) => {
         setValueInput({});
         setActiveStep(0);
         setDatas(null);
+        setInputList([{ barcode: "" }]);
+
         // ClearInput('bstoCode')
     };
 
@@ -296,8 +402,9 @@ const MappingReceive_HH = (props) => {
         valueInput[field] = value;
     };
 
-    
-    const CheckBarcodeMappingDocument = () => {
+
+    const CheckBarcodeMappingDocument = (listBarcode) => {
+        console.log(listBarcode)
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
         // return <></>
@@ -326,31 +433,33 @@ const MappingReceive_HH = (props) => {
             return null;
         }
     }
-    const onConfirm = (data) => {
+    const onConfirmSelect = (data) => {
         if (data) {
-            setOpenConfirm(false)
-            setSettingConfirm(null)
+            setOpenDialog(false)
+            setSelectGateDialog(null)
             //onClickPick(data)
         }
     }
     const onClose = (data) => {
-        setOpenConfirm(data)
+        setOpenDialog(data)
         if (data === false) {
-            setSettingConfirm(null)
+            setSelectGateDialog(null)
         }
     }
-    function FindGateDialog(open, data, onConfirm, onClose) {
+    function FindGateDialog(open, data, onConfirmSelect, onClose) {
         if (open && data) {
         } else {
             return null;
         }
     }
     const DialogAlert = useMemo(() => AlertDialog(openAlert, settingAlert, onAccept), [openAlert, settingAlert])
-    const DialogFindGate = useMemo(() => FindGateDialog(openConfirm, settingConfirm, onConfirm, onClose), [openConfirm, settingConfirm])
+    const DialogFindGate = useMemo(() => FindGateDialog(openDialog, selectGateDialog, onConfirmSelect, onClose), [openDialog, selectGateDialog])
+
+
 
     return (
         <>
-            {DialogFindGate}
+            {/* {DialogFindGate} */}
             {DialogAlert}
             <Paper className={classes.paperContainer}>
                 <Stepper
@@ -362,7 +471,7 @@ const MappingReceive_HH = (props) => {
                         <Step key={row.label}>
                             <StepLabel>
                                 <Typography variant="h6">{t(row.label)}
-                                    {row.value ? <label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}> : {row.value}</label> : null}
+                                    {row.value ? <label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}>{row.value}</label> : null}
                                 </Typography>
                             </StepLabel>
                             <StepContent>
@@ -402,6 +511,7 @@ const MappingReceive_HH = (props) => {
         </>
     );
 }
+
 
 
 MappingReceive_HH.propTypes = {
