@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWCSEngine.McEngine
+namespace AWCSEngine.Engine
 {
-    public class McRGV : BaseMcEngine
+    public class McRGV : BaseEngine
     {
         public McRGV(int mcObject) : base(mcObject)
         {

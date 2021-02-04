@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AWCSEngine.McEngine
+namespace AWCSEngine.Engine
 {
-    public abstract class BaseMcEngine
+    public abstract class BaseEngine
     {
         protected abstract void Execute(acs_McMaster mcMst, act_McObject mcObj);
         protected int LogDay { get; set; }
@@ -24,7 +24,7 @@ namespace AWCSEngine.McEngine
         public int McObjectID { get; private set; }
         //public McObjectStatus McEngineStatus { get; private set; }
 
-        public BaseMcEngine(int mcObjectID)
+        public BaseEngine(int mcObjectID)
         {
             this.McObjectID = mcObjectID;
             this.BuVO = new VOCriteria();
