@@ -47,9 +47,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ADO.WMSDB.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
-                            StorageObjectEventStatus.NEW,
+                            StorageObjectEventStatus.PACK_NEW,
                             null,
-                            StorageObjectEventStatus.RECEIVED,
+                            StorageObjectEventStatus.PACK_RECEIVED,
                             this.BuVO);
                 }
                 else
@@ -57,9 +57,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     ADO.WMSDB.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
-                            StorageObjectEventStatus.NEW,
+                            StorageObjectEventStatus.PACK_NEW,
                             null,
-                            StorageObjectEventStatus.REMOVED,
+                            StorageObjectEventStatus.PACK_REMOVED,
                             this.BuVO);
                 }
             }

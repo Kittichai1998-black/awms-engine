@@ -179,7 +179,7 @@ namespace AMSModel.Criteria
                 },
                 
                 mapstos = new List<StorageObjectCriteria>(),
-                eventStatus = StorageObjectEventStatus.NEW,
+                eventStatus = StorageObjectEventStatus.PACK_NEW,
                 isFocus = stoType == StorageObjectType.PACK ? true : false,
 
             };

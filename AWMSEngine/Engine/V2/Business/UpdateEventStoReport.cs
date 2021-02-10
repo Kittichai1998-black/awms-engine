@@ -48,7 +48,7 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
-                        if(sto.eventStatus == StorageObjectEventStatus.RECEIVED )
+                        if(sto.eventStatus == StorageObjectEventStatus.PACK_RECEIVED )
                         {
                             this.UpdateHoldStatus(this.Logger, sto, reqVO.remark, reqVO.IsHold, this.BuVO);
                             var bsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(sto.parentID.Value, StorageObjectType.PACK, false, true, this.BuVO);
@@ -85,7 +85,7 @@ namespace AWMSEngine.Engine.Business
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_OLD_AUDIT_STATUS, aditStatus);
 
-            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PACK_RECEIVED);
             if (!checkStatus)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 
@@ -99,7 +99,7 @@ namespace AWMSEngine.Engine.Business
             sto.IsHold = IsHold;
             sto.options = AMWUtil.Common.ObjectUtil.QryStrSetValue(sto.options, OptionVOConst.OPT_REMARK, remark);
 
-            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            var checkStatus = sto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PACK_RECEIVED);
             if (!checkStatus)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Status ไม่ถูกต้อง");
 

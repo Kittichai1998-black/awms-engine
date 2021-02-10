@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 {
                     ItemsSto.ForEach(x =>
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                         var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                          new SQLConditionCriteria[] {

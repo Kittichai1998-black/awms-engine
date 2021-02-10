@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (stoBase.id != null)
                     {
-                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.CANCELED))
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.PACK_NEW, StorageObjectEventStatus.PACK_RECEIVING, StorageObjectEventStatus.PACK_CANCELED))
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'เพิ่ม'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น " + stoBase.eventStatus);
 
                     }
@@ -214,7 +214,7 @@ namespace AWMSEngine.Engine.V2.Business
 
                     if (stoBase.id != null)
                     {
-                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.CANCELED))
+                        if (!stoBase.eventStatus.In(StorageObjectEventStatus.PACK_NEW, StorageObjectEventStatus.PACK_RECEIVING, StorageObjectEventStatus.PACK_CANCELED))
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ'ลบ'สินค้าในพาเลทได้เนื่องจาก EventStatus เป็น" + stoBase.eventStatus);
                     }
                     this.ActionRemove(reqVO, mapsto);
@@ -395,17 +395,17 @@ namespace AWMSEngine.Engine.V2.Business
         {
             var msf = GetMapStoLastFocus(mapsto); //กรณี root เป็น area จะลบpallet ไม่ได้
             if (msf.type != StorageObjectType.LOCATION)
-                if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.eventStatus != StorageObjectEventStatus.NEW)
+                if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.eventStatus != StorageObjectEventStatus.PACK_NEW)
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
             if (reqVo.scanCode == mapsto.code)
             {
                 var checkMapsto = mapsto.ToTreeList();
 
-                if (mapsto.eventStatus != StorageObjectEventStatus.NEW || !checkMapsto.Any(x => x.eventStatus == StorageObjectEventStatus.NEW))
+                if (mapsto.eventStatus != StorageObjectEventStatus.PACK_NEW || !checkMapsto.Any(x => x.eventStatus == StorageObjectEventStatus.PACK_NEW))
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                 // msf.eventStatus = StorageObjectEventStatus.REMOVED;
                 // msf.areaID = msf.areaID.Value;
@@ -413,7 +413,7 @@ namespace AWMSEngine.Engine.V2.Business
             }
             else
             {
-                var msfPack = msf.mapstos.FirstOrDefault(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW);
+                var msfPack = msf.mapstos.FirstOrDefault(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.PACK_NEW);
                 if (msfPack == null)
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
                 else if (msfPack.qty < reqVo.amount)
@@ -433,10 +433,10 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else
                 {
-                    if (rmItem.mapstos.Count() > 0 && !rmItem.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.NEW)))
+                    if (rmItem.mapstos.Count() > 0 && !rmItem.mapstos.Any(x => x.eventStatus.In(StorageObjectEventStatus.PACK_NEW)))
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
 
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(rmItem.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
                     /* rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
                      rmItem.areaID = msf.areaID.Value;
                      ADOSto.PutV2(rmItem, this.BuVO);

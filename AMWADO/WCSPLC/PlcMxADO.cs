@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -48,5 +49,35 @@ namespace ADO.WCSPLC
             throw new NotImplementedException();
         }
 
+
+        public void SetDevicelString(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDevicelShot(string key, short value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDevicelInt(string key, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDevicelLong(string key, long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDevicelFloat(string key, float value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDevicelDouble(string key, double value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

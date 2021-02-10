@@ -1,14 +1,13 @@
-﻿using AMSModel.Criteria;
-using AMSModel.Entity;
+﻿using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AWCSEngine.Engine
 {
-    public class McRGV : BaseMcEngine
+    public class McGeneral : BaseMcEngine
     {
-        public McRGV(acs_McMaster mcMst) : base(mcMst)
+        public McGeneral(acs_McMaster mcMst) : base(mcMst)
         {
         }
 

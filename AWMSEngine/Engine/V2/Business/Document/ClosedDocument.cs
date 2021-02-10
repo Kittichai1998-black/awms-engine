@@ -95,9 +95,9 @@ namespace AWMSEngine.Engine.V2.Business.Document
                                             var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, false, false, BuVO);
                                             if (stosPack != null)
                                             {
-                                                if (stosPack.eventStatus == StorageObjectEventStatus.COUNTED)
+                                                if (stosPack.eventStatus == StorageObjectEventStatus.PACK_COUNTED)
                                                 {
-                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(stosPack.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(stosPack.id.Value, null, null, StorageObjectEventStatus.PACK_RECEIVED, this.BuVO);
                                                 }
                                             }
                                         });

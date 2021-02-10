@@ -34,11 +34,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             StorageObjectEventStatus stoNextEventStatus;
 
             if (docs.First().DocumentType_ID == DocumentTypeID.PICKING)
-                stoNextEventStatus = StorageObjectEventStatus.PICKING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_PICKING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
-                stoNextEventStatus = StorageObjectEventStatus.COUNTING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_COUNTING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
-                stoNextEventStatus = StorageObjectEventStatus.AUDITING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_AUDITING;
             else
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not " + docs.First().DocumentType_ID + " not Support");
 

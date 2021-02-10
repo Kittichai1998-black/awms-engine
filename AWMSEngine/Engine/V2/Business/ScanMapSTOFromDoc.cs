@@ -168,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business
                         parentID = idBaseSto,
                         parentType = StorageObjectType.BASE,
                         code = pack.Code,
-                        eventStatus = StorageObjectEventStatus.NEW,
+                        eventStatus = StorageObjectEventStatus.PACK_NEW,
                         forCustomerID = getDoc.For_Customer_ID,
                         name = pack.Name,
                         qty = x.Quantity,

@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             {
                                 var stosPack = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
 
-                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.RECEIVED, BuVO);
+                                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(disto.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.PACK_RECEIVED, BuVO);
                             //update Audit status, Hold status
 
                             //set_status_base(stosPack.parentID.Value, stosPack.parentType.Value);

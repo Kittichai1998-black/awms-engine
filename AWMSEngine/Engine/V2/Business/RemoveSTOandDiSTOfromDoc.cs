@@ -31,9 +31,9 @@ namespace AWMSEngine.Engine.V2.Business
             var stoLists = getSto.ToTreeList();
             var stoPack = stoLists.Find(x => x.id == getDiSTO.Sou_StorageObject_ID);
 
-            stoPack.eventStatus = StorageObjectEventStatus.REMOVED;
+            stoPack.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
 
-            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(getDiSTO.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(getDiSTO.Sou_StorageObject_ID, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
             if (stoPack.parentID.HasValue)
                 remove_parent_empty(stoPack.parentID.Value, stoPack.parentType.Value);
@@ -41,12 +41,12 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 if (parent_type != StorageObjectType.LOCATION)
                 {
-                    if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                    if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PACK_REMOVED))
                     {
                         var parentRemove = stoLists.Find(x => x.id == parent_id);
 
-                        parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        parentRemove.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
                         if (parentRemove.parentID.HasValue)
                             remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
                     }

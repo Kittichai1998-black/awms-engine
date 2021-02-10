@@ -39,7 +39,7 @@ namespace AWMSEngine.Engine.Business
 
             mapsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.bstoCode, null, null, false, true, this.BuVO);
 
-            var ckEventStatus = mapsto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVED);
+            var ckEventStatus = mapsto.mapstos.TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PACK_RECEIVED);
             
             if(ckEventStatus == false)
                 throw new AMWException(Logger, AMWExceptionCode.V1001, "สถานะของสินค้าต้องเป็น RECEIVED เท่านั้น");

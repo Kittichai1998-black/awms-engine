@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
             wave.EventStatus = WaveEventStatus.WORKING;
             ADO.WMSDB.WaveADO.GetInstant().Put(wave, this.BuVO);
 
-            var waveSeq = wave.WaveSeqs.Find(x => x.Start_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATING);
+            var waveSeq = wave.WaveSeqs.Find(x => x.Start_StorageObject_EventStatus == StorageObjectEventStatus.PACK_ALLOCATING);
             if (waveSeq.EventStatus != WaveEventStatus.NEW)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Wave Sequence ต้องอยู่ในสถานะ NEW เท่านั้น");
 

@@ -297,7 +297,7 @@ namespace ProjectGCL.Engine.Document
                  };
             var eventStatusesProcess = new List<StorageObjectEventStatus>()
             {
-                StorageObjectEventStatus.RECEIVED
+                StorageObjectEventStatus.PACK_RECEIVED
             };
             var auditStatusesProcess = new List<AuditStatus>()
             {

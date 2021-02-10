@@ -125,7 +125,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         {
                             id = null,
                             code = Item.Code,
-                            eventStatus = StorageObjectEventStatus.NEW,
+                            eventStatus = StorageObjectEventStatus.PACK_NEW,
                             name = Item.Code,
                             parentID = res.id,
                             parentType = StorageObjectType.BASE,

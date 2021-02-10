@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.V2.General
                 StorageObjectCriteria baseSto = new StorageObjectCriteria()
                 {
                     code = reqVO.baseCode,
-                    eventStatus = reqVO.isEmptyPallet ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.isEmptyPallet ? StorageObjectEventStatus.PACK_RECEIVED : StorageObjectEventStatus.PACK_NEW,
                     name = reqVO.isEmptyPallet ? "Empty Pallet" : "Pallet",
                     qty = 1,
                     unitCode = _unitType.Code,

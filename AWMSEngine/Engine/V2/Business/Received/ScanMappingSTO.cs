@@ -122,7 +122,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             var _unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == checkBaseMaster.UnitType_ID);
                             mapsto = new StorageObjectCriteria() {
                                 code = reqVO.bstoCode,
-                                eventStatus = StorageObjectEventStatus.ACTIVE,
+                                eventStatus = StorageObjectEventStatus.BASE_ACTIVE,
                                 name = "Pallet",
                                 parentID = reqVO.areaID,
                                 parentType = StorageObjectType.LOCATION,
@@ -200,7 +200,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 var mapsto = new StorageObjectCriteria()
                 {
                     code = reqVO.bstoCode,
-                    eventStatus = StorageObjectEventStatus.ACTIVE,
+                    eventStatus = StorageObjectEventStatus.BASE_ACTIVE,
                     name = "Pallet",
                     parentID = reqVO.areaID,
                     parentType = StorageObjectType.LOCATION,
@@ -270,7 +270,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     type = StorageObjectType.PACK,
                     mstID = pack.ID.Value,
                     areaID = reqVO.areaID,
-                    eventStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? StorageObjectEventStatus.NEW : StorageObjectEventStatus.NEW,
+                    eventStatus = reqVO.processType == DocumentProcessTypeID.ESP_TRANSFER_WM ? StorageObjectEventStatus.PACK_NEW : StorageObjectEventStatus.PACK_NEW,
                     parentID = idBase,
                     parentType = StorageObjectType.BASE,
                     forCustomerID = psto.forCustomerID,
@@ -323,7 +323,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                             if (oldPsto.qty == 0)
                             {
-                                oldPsto.eventStatus = StorageObjectEventStatus.REMOVED;
+                                oldPsto.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                             }
                             resStopack = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(oldPsto, BuVO);
 
@@ -355,12 +355,12 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     if (parent_type != StorageObjectType.LOCATION)
                     {
                         //var stoLists = res.bsto.ToTreeList();
-                        if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED))
+                        if (stoLists.FindAll(x => x.parentID == parent_id && x.parentType == parent_type).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PACK_REMOVED))
                         {
                             var parentRemove = stoLists.Find(x => x.id == parent_id);
 
-                            parentRemove.eventStatus = StorageObjectEventStatus.REMOVED;
-                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                            parentRemove.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
+                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(parentRemove.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
                             if (parentRemove.parentID.HasValue)
                                 remove_parent_empty(parentRemove.parentID.Value, parentRemove.parentType.Value);
                         }

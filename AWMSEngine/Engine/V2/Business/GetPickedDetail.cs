@@ -79,7 +79,7 @@ namespace AWMSEngine.Engine.V2.Business
                     var optTag = AMWUtil.Common.ObjectUtil.QryStrSetValue(
                                           null, new KeyValuePair<string, object>(OptionVOConst.OPT_TAG_NO, tag[i]));
                     var packpicked = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PACK_PICKED, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("RefID", docitemPutaway.RefID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Options", "%"+optTag+"%", SQLOperatorType.LIKE)
                     }, new SQLOrderByCriteria[] { 

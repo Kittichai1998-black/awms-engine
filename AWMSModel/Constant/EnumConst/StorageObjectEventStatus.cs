@@ -11,47 +11,47 @@ namespace AMSModel.Constant.EnumConst
     public enum StorageObjectEventStatus
     {
         //-------------------Pallet
-        INACTIVE = 0,
-        ACTIVE = 1,
-        REMOVE = 2,
-        DONE = 3,
+        BASE_INACTIVE = 0,
+        BASE_ACTIVE = 1,
+        BASE_REMOVE = 2,
+        BASE_DONE = 3,
 
         //-------------------Pack Inbound
-        NEW = 10,
-        RECEIVING = 11,
+        PACK_NEW = 10,
+        PACK_RECEIVING = 11,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        RECEIVED = 12,
+        PACK_RECEIVED = 12,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        AUDITING = 13,
+        PACK_AUDITING = 13,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        AUDITED = 14,
+        PACK_AUDITED = 14,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        COUNTING = 15,
+        PACK_COUNTING = 15,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        COUNTED = 16,
+        PACK_COUNTED = 16,
 
 
         //-------------------Pack Remove
-        REMOVING = 21,
-        REMOVED = 22,
-        CANCELING = 25,
+        PACK_REMOVING = 21,
+        PACK_REMOVED = 22,
+        PACK_CANCELING = 25,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        CANCELED = 26,
+        PACK_CANCELED = 26,
 
-        REJECTING = 23,
-        REJECTED = 24,
+        PACK_REJECTING = 23,
+        PACK_REJECTED = 24,
 
 
         //-------------------Pack Outbound
-        ALLOCATING = 31,
-        ALLOCATED = 32,
-        PICKING = 33,
-        PICKED = 34,
-        CONSOLIDATING = 35,
+        PACK_ALLOCATING = 31,
+        PACK_ALLOCATED = 32,
+        PACK_PICKING = 33,
+        PACK_PICKED = 34,
+        PACK_CONSOLIDATING = 35,
         [StorageObjectEventStatusAttr(IsPutawayBypassASRS = true)]
-        CONSOLIDATED = 36,
-        COMPLETING = 37,
-        COMPLETED = 38,
+        PACK_CONSOLIDATED = 36,
+        PACK_COMPLETING = 37,
+        PACK_COMPLETED = 38,
 
 
 

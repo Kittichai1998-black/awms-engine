@@ -76,11 +76,11 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             if (getSto == null)
                 return null;
 
-            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.AUDITING).ToList();
+            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PACK_AUDITING).ToList();
             if (packsList.Count == 0)
                 return null;
 
-            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(getSto.code, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT, this.BuVO);
+            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(getSto.code, StorageObjectEventStatus.PACK_AUDITING, DocumentTypeID.AUDIT, this.BuVO);
             if (listDocs.Count > 0)
             {
                 var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_QUALITY_CONTROL_WM  || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_QUALITY_CONTROL_WM).ToList();

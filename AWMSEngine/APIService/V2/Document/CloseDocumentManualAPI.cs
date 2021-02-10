@@ -394,11 +394,11 @@ namespace AWMSEngine.APIService.V2.Document
                 if (pallet != null)
                 {
                     var ckPallet = pallet.mapstos.TrueForAll(x =>
-                        x.eventStatus == StorageObjectEventStatus.NEW
-                       || x.eventStatus == StorageObjectEventStatus.RECEIVED
-                       || x.eventStatus == StorageObjectEventStatus.PICKED
-                       || x.eventStatus == StorageObjectEventStatus.AUDITED
-                       || x.eventStatus == StorageObjectEventStatus.COUNTED);
+                        x.eventStatus == StorageObjectEventStatus.PACK_NEW
+                       || x.eventStatus == StorageObjectEventStatus.PACK_RECEIVED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_PICKED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_AUDITED
+                       || x.eventStatus == StorageObjectEventStatus.PACK_COUNTED);
 
                     if (ckPallet == false)
                         throw new AMWException(Logger, AMWExceptionCode.V2002, x.rootCode + " กำลังทำงาน");
@@ -415,9 +415,9 @@ namespace AWMSEngine.APIService.V2.Document
                             var packsto = ADO.WMSDB.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, BuVO);
                             if (packsto != null)
                             {
-                                if (packsto.eventStatus == StorageObjectEventStatus.NEW)
+                                if (packsto.eventStatus == StorageObjectEventStatus.PACK_NEW)
                                 {
-                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(packsto.parentID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(packsto.parentID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                                     disto.Status = EntityStatus.REMOVE;
                                     DistoADO.GetInstant().Update(disto, this.BuVO);
