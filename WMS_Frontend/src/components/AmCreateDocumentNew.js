@@ -522,7 +522,6 @@ const AmCreateDocument = (props) => {
                     return
                 }
 
-
                 if (chkEdit) {
                     for (let key of Object.keys(chkEdit))
                         delete chkEdit[key]
@@ -547,13 +546,11 @@ const AmCreateDocument = (props) => {
                 setInputError(inputError.map(x => x.accessor))
             }
         } else {
-
             setInputError([])
             setEditData({})
             setDialog(false)
             setDialogItem(false)
         }
-
     }
 
 
@@ -895,10 +892,8 @@ const AmCreateDocument = (props) => {
                 />
             )
         } else if (type === "labeltext") {
-            //getTextsValue(key, valueTexts)
-            return <label>{texts}</label>
 
-
+           return <label>{texts}</label>
 
         } else if (type === "dropdown") {
             return (
@@ -1205,11 +1200,8 @@ const AmCreateDocument = (props) => {
                     if (doc.actionTime) {
                         CreateDocuments(doc)
                     } else {
-                        console.log(dataSource)
                         setMsgDialog('Actiomtime Not Found');
                         setStateDialogErr(true);
-                        console.log(dataSource)
-                        
                     }
                 } else {
                     //console.log(doc)

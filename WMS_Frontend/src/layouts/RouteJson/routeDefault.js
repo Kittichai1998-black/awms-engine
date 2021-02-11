@@ -212,7 +212,7 @@ const TestCreateDocument = Loadable({
   loading: Loading
 });
 const LocationSummary = Loadable({
-  loader: () => import("../../views/pageComponent/AmLocationSummaryV3"),
+  loader: () => import("../../views/pageComponent/AmLocationSummary"),
   loading: Loading
 });
 const testMasterV2 = Loadable({

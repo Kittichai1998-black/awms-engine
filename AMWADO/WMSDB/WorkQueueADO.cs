@@ -73,6 +73,7 @@ namespace ADO.WMSDB
             param.Add("IOType", obj.IOType);
             param.Add("Parent_WorkQueue_ID", obj.Parent_WorkQueue_ID);
             param.Add("StorageObject_ID", obj.StorageObject_ID);
+            param.Add("ProductOwner_ID", obj.ProductOwner_ID); 
             param.Add("Sou_Warehouse_ID", obj.Sou_Warehouse_ID);
             param.Add("Sou_AreaMaster_ID", obj.Sou_AreaMaster_ID);
             param.Add("Sou_AreaLocationMaster_ID", obj.Sou_AreaLocationMaster_ID);

@@ -14,7 +14,7 @@ namespace AMSModel.Criteria.SP.Request
         public int Seq;
         public string RefID;
         public long? Parent_WorkQueue_ID;
-
+        public long? ProductOwner_ID;
 
         public long? StorageObject_ID;
         public string StorageObject_Code;

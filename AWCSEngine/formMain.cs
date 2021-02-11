@@ -1,7 +1,5 @@
 ﻿using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
-using AWCSModel.Constant.StringConst;
-using AWCSModel.Criteria;
 using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
