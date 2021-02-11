@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.V2.ASRS
@@ -40,8 +40,8 @@ namespace AWMSEngine.APIService.V2.ASRS
             var desWH = ADO.WMSStaticValue.StaticValueManager.GetInstant().Warehouses.First(x => x.Code == req.desWarehouseCode);
             var desAM = ADO.WMSStaticValue.StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == req.desAreaCode && x.Warehouse_ID == desWH.ID.Value);
             var desALM = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new SQLConditionCriteria[] {
-                new SQLConditionCriteria("AreaMaster_ID",desAM.ID.Value, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("Code",req.desLocationCode, AWMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
+                new SQLConditionCriteria("AreaMaster_ID",desAM.ID.Value, AMSModel.Constant.EnumConst.SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("Code",req.desLocationCode, AMSModel.Constant.EnumConst.SQLOperatorType.EQUALS)
             }, this.BuVO).FirstOrDefault();
             ADO.WMSDB.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, desALM.ID.Value, this.BuVO);
 

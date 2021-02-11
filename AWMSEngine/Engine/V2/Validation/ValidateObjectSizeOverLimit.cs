@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Exception;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;

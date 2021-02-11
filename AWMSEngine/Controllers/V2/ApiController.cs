@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.HubService;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

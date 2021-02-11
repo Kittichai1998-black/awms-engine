@@ -1,6 +1,6 @@
 ﻿using AWMSEngine.Controllers.V2;
 using AWMSEngine.Engine.V2.PDFGenerator;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.SP.Response
+namespace AMSModel.Criteria.SP.Response
 {
     public class SPOutCountStoInDocItem
     {

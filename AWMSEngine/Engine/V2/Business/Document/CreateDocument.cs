@@ -2,9 +2,9 @@
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
 using AWMSEngine.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

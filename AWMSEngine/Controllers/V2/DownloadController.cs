@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 using AMWUtil.PropertyFile;
 using System.Net.Http;
 using System.Net.Http.Headers;

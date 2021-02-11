@@ -5,10 +5,10 @@ using AMWUtil.Logger;
 using ADO.WMSStaticValue;
 using ADO.WMSDB;
 using AWMSEngine.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.V2.Business.Document
                 {
                     ItemsSto.ForEach(x =>
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                         var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                          new SQLConditionCriteria[] {

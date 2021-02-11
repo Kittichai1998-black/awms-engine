@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +60,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
             if (bstos == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าที่ต้องการตรวจสอบคุณภาพ");
             var packsList = bstos.ToTreeList().Find(x => x.type == StorageObjectType.PACK
-            && x.eventStatus == StorageObjectEventStatus.AUDITED
+            && x.eventStatus == StorageObjectEventStatus.PACK_AUDITED
             && x.refID == newPackCheckSum && x.AuditStatus == reqVO.auditStatus);
             if (packsList != null)
             { //มีsto เดิมที่ข้อมูลตรงกัน
@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                         //จะ sto, distoตัวตั้งต้นออก 
                         pstos.qty = 0;
                         pstos.baseQty = 0;
-                        pstos.eventStatus = StorageObjectEventStatus.REMOVED;
+                        pstos.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                         ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
                         ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.REMOVE, BuVO);
 
@@ -127,7 +127,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
 
                 if (updSto.qty == 0) { //audit all เปลี่ยนสถานะ 500
                     pstos.AuditStatus = reqVO.auditStatus;
-                    pstos.eventStatus = StorageObjectEventStatus.AUDITED;
+                    pstos.eventStatus = StorageObjectEventStatus.PACK_AUDITED;
                     ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(pstos, this.BuVO);
 
                     ADO.WMSDB.DistoADO.GetInstant().Update(reqVO.distoID, pstos.id.Value, pstos.qty, pstos.baseQty, EntityStatus.DONE, BuVO);
@@ -146,7 +146,7 @@ namespace AWMSEngine.Engine.V2.Business.Auditor
                     auditSto.baseQty = qtyConvertaudit.newQty;
 
                     auditSto.AuditStatus = reqVO.auditStatus;
-                    auditSto.eventStatus = StorageObjectEventStatus.AUDITED;
+                    auditSto.eventStatus = StorageObjectEventStatus.PACK_AUDITED;
                     var newauditSto = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(auditSto, this.BuVO);
 
                     var newDisto = disto.Clone();

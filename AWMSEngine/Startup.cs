@@ -7,7 +7,7 @@ using AMWUtil.Common;
 using AMWUtil.PropertyFile;
 using AWMSEngine.HubService;
 using AWMSEngine.WorkerService;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

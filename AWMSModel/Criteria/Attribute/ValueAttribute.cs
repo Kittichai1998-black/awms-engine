@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.Attribute
+namespace AMSModel.Criteria.Attribute
 {
     public class ValueAttribute : System.Attribute
     {

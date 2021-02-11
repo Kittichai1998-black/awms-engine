@@ -1,11 +1,11 @@
 ﻿using ADO.WCSAPI;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business.Issued;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,11 +34,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             StorageObjectEventStatus stoNextEventStatus;
 
             if (docs.First().DocumentType_ID == DocumentTypeID.PICKING)
-                stoNextEventStatus = StorageObjectEventStatus.PICKING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_PICKING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.PHYSICAL_COUNT)
-                stoNextEventStatus = StorageObjectEventStatus.COUNTING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_COUNTING;
             else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
-                stoNextEventStatus = StorageObjectEventStatus.AUDITING;
+                stoNextEventStatus = StorageObjectEventStatus.PACK_AUDITING;
             else
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not " + docs.First().DocumentType_ID + " not Support");
 

@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if(area.AreaMasterType_ID != AreaMasterTypeID.STA_PICK)
                 throw new AMWException(Logger, AMWExceptionCode.V2002, "ไม่สามารถหยิบจ่ายสินค้า เนื่องจากพาเลทนี้ไม่ได้อยู่บนคลังพื้น");
 
-            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PICKING).ToList();
+            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PACK_PICKING).ToList();
             if (packsList !=null && packsList.Count > 0)
             {
                 var docItems = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packsList.Select(x => x.id.Value).ToList(), DocumentTypeID.PICKING, BuVO);

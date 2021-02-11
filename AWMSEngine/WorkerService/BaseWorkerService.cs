@@ -1,9 +1,9 @@
 ﻿using AMWUtil.DataAccess.Http;
 using AMWUtil.Logger;
 using AWMSEngine.HubService;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,8 +40,8 @@ namespace AWMSEngine.WorkerService
         public Task Execute()
         {
             VOCriteria buVO = new VOCriteria();
-            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
-            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_FINAL_DB_LOG,
+            buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_LOGGER, this.Logger);
+            buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_FINAL_DB_LOG,
                   new FinalDatabaseLogCriteria()
                   {
                       documentOptionMessages = new List<FinalDatabaseLogCriteria.DocumentOptionMessage>(),

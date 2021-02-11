@@ -2,10 +2,10 @@
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,7 +168,7 @@ namespace AWMSEngine.Engine.V2.Business
                         parentID = idBaseSto,
                         parentType = StorageObjectType.BASE,
                         code = pack.Code,
-                        eventStatus = StorageObjectEventStatus.NEW,
+                        eventStatus = StorageObjectEventStatus.PACK_NEW,
                         forCustomerID = getDoc.For_Customer_ID,
                         name = pack.Name,
                         qty = x.Quantity,

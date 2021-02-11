@@ -2,9 +2,9 @@
 using ADO.WMSDB;
 using AWMSEngine.Engine.V2.Business.Document;
 using AWMSEngine.HubService;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using iTextSharp.text;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Logger;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 
 namespace AWMSEngine.WorkerService.DocumentClosed
 {
@@ -37,7 +37,7 @@ namespace AWMSEngine.WorkerService.DocumentClosed
             {
                 if(docs.Count > 0)
                 {
-                    buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_DB_CONNECTION, DataADO.GetInstant().CreateConnection());
+                    buVO.Set(AMSModel.Constant.StringConst.BusinessVOConst.KEY_DB_CONNECTION, DataADO.GetInstant().CreateConnection());
                     buVO.SqlTransaction_Begin();
                     var docIDs = docs.Select(doc => doc.ID.Value).ToList();
 

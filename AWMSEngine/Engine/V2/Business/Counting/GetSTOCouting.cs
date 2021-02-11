@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,11 +79,11 @@ namespace AWMSEngine.Engine.V2.Business.Counting
             if (getSto == null)
                 return null;
 
-            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.COUNTING).ToList();
+            var packsList = getSto.ToTreeList().Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.PACK_COUNTING).ToList();
             if (packsList.Count == 0)
                 return null;
 
-            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
+            var listDocs = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO.bstoCode, StorageObjectEventStatus.PACK_COUNTING, DocumentTypeID.PHYSICAL_COUNT, this.BuVO);
             if (listDocs.Count > 0)
             {
                 //var newDocs = listDocs.Where(x => x.DocumentProcessType_ID == DocumentProcessTypeID.PM_PHYSICAL_COUNT_WM || x.DocumentProcessType_ID == DocumentProcessTypeID.FG_PHYSICAL_COUNT_WM).ToList();

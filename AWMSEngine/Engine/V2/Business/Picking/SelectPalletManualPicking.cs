@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,7 +133,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         private List<docItem> getDocumentPickingList(TReq reqVO)
         {
             List<docItem> docItemList = new List<docItem>();
-            var docCanMap = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanMapV2(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
+            var docCanMap = ADO.WMSDB.DocumentADO.GetInstant().ListDocumentCanMapV2(reqVO.palletCode, StorageObjectEventStatus.PACK_PICKING, this.BuVO);
             if (docCanMap.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีเอกสารสำหรับ Picking");
 

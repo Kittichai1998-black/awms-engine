@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 
 namespace AWMSEngine.Engine.V2.General
 {

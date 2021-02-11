@@ -1,10 +1,10 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,10 +110,10 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     desBsto = MapBase(req.baseCode, location.AreaMaster_ID, location.ID);
                 }
 
-                if(waveSeq.End_StorageObject_EventStatus == StorageObjectEventStatus.ALLOCATED)
+                if(waveSeq.End_StorageObject_EventStatus == StorageObjectEventStatus.PACK_ALLOCATED)
                 {
                     ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
-                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, StorageObjectEventStatus.ALLOCATING, null, StorageObjectEventStatus.ALLOCATED, this.BuVO);
+                    ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(souBsto.id.Value, StorageObjectEventStatus.PACK_ALLOCATING, null, StorageObjectEventStatus.PACK_ALLOCATED, this.BuVO);
                     disto.Status = EntityStatus.ACTIVE;
                 }
                 else
@@ -185,7 +185,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     var findBase = bsto.ToTreeList().Find(y => y.type == StorageObjectType.BASE && y.id == findSto.parentID);
                     if (findBase.eventStatus == waveSeq.Start_StorageObject_EventStatus)
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(findBase.id.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.PACK_RECEIVED, this.BuVO);
                     }
                 }
             });
@@ -274,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 souPsto.qty -= convertQty.newQty;
                 if (souPsto.baseQty == 0)
                 {
-                    souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
+                    souPsto.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                 }
 
                 ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
@@ -310,7 +310,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                 souPsto.qty -= convertQty.newQty;
                 if (souPsto.baseQty == 0)
                 {
-                    souPsto.eventStatus = StorageObjectEventStatus.REMOVED;
+                    souPsto.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                 }
                 ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(souPsto, this.BuVO);
 
@@ -345,8 +345,8 @@ namespace AWMSEngine.Engine.V2.Business.Wave
 
             if(canPick == 0)
             {
-                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                souPsto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(souPsto.parentID.Value, waveSeq.Start_StorageObject_EventStatus, null, StorageObjectEventStatus.PACK_RECEIVED, this.BuVO);
+                souPsto.eventStatus = StorageObjectEventStatus.PACK_RECEIVED;
                 ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, disto.Sou_StorageObject_ID, 0, 0, EntityStatus.DONE, this.BuVO);
                 return souPsto;
             }
@@ -446,7 +446,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                     StorageObjectCriteria baseSto = new StorageObjectCriteria()
                     {
                         code = baseCode,
-                        eventStatus = StorageObjectEventStatus.NEW,
+                        eventStatus = StorageObjectEventStatus.PACK_NEW,
                         name = "Pallet",
                         qty = 1,
                         unitCode = _unitType.Code,
@@ -478,7 +478,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         StorageObjectCriteria baseSto = new StorageObjectCriteria()
                         {
                             code = baseCode,
-                            eventStatus = StorageObjectEventStatus.NEW,
+                            eventStatus = StorageObjectEventStatus.PACK_NEW,
                             name = "Pallet",
                             qty = 1,
                             unitCode = _unitType.Code,
@@ -524,7 +524,7 @@ namespace AWMSEngine.Engine.V2.Business.Wave
                         StorageObjectCriteria baseSto = new StorageObjectCriteria()
                         {
                             code = baseCode,
-                            eventStatus = StorageObjectEventStatus.NEW,
+                            eventStatus = StorageObjectEventStatus.PACK_NEW,
                             name = "Pallet",
                             qty = 1,
                             unitCode = _unitType.Code,

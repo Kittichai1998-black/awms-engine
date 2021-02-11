@@ -1,9 +1,9 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.SP.Request
+namespace AMSModel.Criteria.SP.Request
 {
     public class SPInSTOProcessQueueCriteria
     {

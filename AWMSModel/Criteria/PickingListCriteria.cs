@@ -1,9 +1,9 @@
-﻿using AWMSModel.Criteria.SP.Response;
+﻿using AMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria
+namespace AMSModel.Criteria
 {
     public class PickingListCriteria : SPOutDocTargetCriteria
     {
