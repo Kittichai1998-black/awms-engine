@@ -13,9 +13,9 @@ namespace AWCSEngine
     public partial class formSimulation : Form
     {
         public VOCriteria BuVO { get; set; }
-        public List<acs_McPosition> McPositions { get; set; }
+        public List<acs_Location> McPositions { get; set; }
         public List<acv_McPositionRouteVisible> McPositionRoutes { get; set; }
-        public List<act_McObject> McObjects { get; set; }
+        public List<act_McWork> McObjects { get; set; }
 
         public Font drawFont { get; set; }
         public StringFormat drawFormat { get; set; }
@@ -40,7 +40,7 @@ namespace AWCSEngine
 
         private void Reload_Form()
         {
-            this.McPositions = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McPosition>(
+            this.McPositions = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_Location>(
                 new SQLConditionCriteria[] { 
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DrawVisible",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)}, BuVO);
@@ -48,7 +48,7 @@ namespace AWCSEngine
             this.McPositionRoutes = ADO.WCSDB.DataADO.GetInstant().SelectBy<acv_McPositionRouteVisible>(
                 new SQLConditionCriteria("Status", "1", SQLOperatorType.IN), BuVO);
 
-            this.McObjects = ADO.WCSDB.DataADO.GetInstant().SelectBy<act_McObject>(
+            this.McObjects = ADO.WCSDB.DataADO.GetInstant().SelectBy<act_McWork>(
                 new SQLConditionCriteria("Status", "1", SQLOperatorType.IN), BuVO);
 
 
@@ -72,7 +72,7 @@ namespace AWCSEngine
             {
                 g.FillRectangle(Brushes.Red, new Rectangle(mcPos.DrawPosX, mcPos.DrawPosY, PropertySimulation.block_w, PropertySimulation.block_h));
                 g.FillRectangle(
-                    this.McObjects.Any(x=>x.McPosition_ID == mcPos.ID)?
+                    this.McObjects.Any(x=>x.Location_ID == mcPos.ID)?
                         Brushes.DarkBlue:Brushes.Black, 
                     new Rectangle(
                         mcPos.DrawPosX + PropertySimulation.block_border,
@@ -160,9 +160,9 @@ namespace AWCSEngine
                 pen.StartCap = System.Drawing.Drawing2D.LineCap.Flat;
                 foreach (var mcObj in this.McObjects)
                 {
-                    string txtObj = mcObj.Code + " : " + mcObj.Status;
-                    string txtWQ = mcObj.Code + " : " + mcObj.Status;
-                    var mcPos = this.McPositions.Find(x => x.ID == mcObj.McPosition_ID);
+                    string txtObj = "";//mcObj.Code + " : " + mcObj.Status;
+                    string txtWQ = "";//mcObj.Code + " : " + mcObj.Status;
+                    var mcPos = this.McPositions.Find(x => x.ID == mcObj.Location_ID);
                     g.DrawLine(pen,
                         new Point(mcPos.DrawPosX + (PropertySimulation.block_w + PropertySimulation.block_border * 2), mcPos.DrawPosY + (PropertySimulation.block_h + PropertySimulation.block_border * 2)),
                         new Point(mcPos.DrawPosX + (PropertySimulation.block_w), mcPos.DrawPosY + (PropertySimulation.block_h)));

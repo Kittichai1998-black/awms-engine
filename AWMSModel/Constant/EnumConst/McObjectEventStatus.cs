@@ -6,6 +6,7 @@ namespace AMSModel.Constant.EnumConst
 {
     public enum McObjectEventStatus
     {
+        PLC_DISCONNECT = 0,
         IDEL = 10,
         WORK = 11,
         DONE = 32,

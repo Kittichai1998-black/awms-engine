@@ -14,19 +14,23 @@ namespace ADO.WCSStaticValue
     {
         public string GetConfigValue(string key)
         {
-            return this._Configs.First(x => x.DataKey == key).DataValue;
+            return this.Configs.First(x => x.DataKey == key).DataValue;
         }
         public acs_Config GetConfig(string key)
         {
-            return this._Configs.FirstOrDefault(x => x.DataKey == key);
+            return this.Configs.FirstOrDefault(x => x.DataKey == key);
         }
         public acs_McMaster GetMcMaster(string code)
         {
-            return this._McMasters.FirstOrDefault(x => x.Code == code);
+            return this.McMasters.FirstOrDefault(x => x.Code == code);
         }
         public acs_McRegistry GetMcRegistry(string key)
         {
-            return this._McRegistrys.FirstOrDefault(x => x.DataKey == key);
+            return this.McRegistrys.FirstOrDefault(x => x.DataKey == key);
+        }
+        public acs_Location GetLocation(long id)
+        {
+            return this.Location.FirstOrDefault(x => x.ID == id);
         }
     }
 }

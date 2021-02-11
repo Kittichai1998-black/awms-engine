@@ -32,11 +32,11 @@ namespace AWCSEngine.Worker
         {
             ADO.WCSStaticValue.StaticValueManager.GetInstant().McMasters.ForEach(x=>
             {
-                this.AddMcMst2McThread(x.ThreadCoreIndex, x);
+                this.AddMcMst2McThread(x.ThreadIndex, x);
             });
         }
 
-        public void WakeUp()
+        public void WakeUpAll()
         {
             List<string> wakeUpNames = new List<string>();
             foreach (var tCore in this.McThreads)
@@ -49,7 +49,10 @@ namespace AWCSEngine.Worker
         {
             McThread mcCore = this.McThreads.FirstOrDefault(x => x.Index == index);
             if (mcCore == null)
+            {
                 mcCore = new McThread(index);
+                this.McThreads.Add(mcCore);
+            }
 
             mcCore.AddMc(mcMst);
         }

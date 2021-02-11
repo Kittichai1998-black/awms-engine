@@ -7,7 +7,7 @@ namespace AWCSEngine.Worker
 {
     public class ThreadWakeUpWorker
     {
-        private static object lockWait;
+        private static object lockWait=new object();
         private static ThreadWakeUpWorker instant;
         public static ThreadWakeUpWorker GetInitial()
         {
@@ -35,19 +35,14 @@ namespace AWCSEngine.Worker
         }
         private void Run()
         {
-            lock (lockWait)
+            while (true)
             {
-                int removeCount = this.ThreadWakeUps.RemoveAll(x => !x.IsAlive);
-                for (int i = 0; i < removeCount; i++)
+                lock (lockWait)
                 {
-                    var t = new Thread(Run);
-                    this.ThreadWakeUps.Add(t);
-                    t.Start();
+                    ThreadCoreWorker.GetInstant().WakeUpAll();
+
+                    Thread.Sleep(5000);
                 }
-
-                ThreadCoreWorker.GetInstant().WakeUp();
-
-                Thread.Sleep(5000);
             }
         }
     }

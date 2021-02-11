@@ -22,5 +22,15 @@ namespace ADO.WCSStaticValue
         {
             return this._McRegistrys = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_McRegistry>("status", 1, buVO ?? new VOCriteria());
         }
+        public List<acs_Location> LoadLocation(VOCriteria buVO = null)
+        {
+            return this._Location = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_Location>("status", 1, buVO ?? new VOCriteria());
+        }
+        public List<acs_LocationRoute> LoadLocationRoute(VOCriteria buVO = null)
+        {
+            return this._LocationRoute = ADO.WCSDB.DataADO.GetInstant().SelectBy<acs_LocationRoute>("status", 1, buVO ?? new VOCriteria());
+        }
+
+        
     }
 }

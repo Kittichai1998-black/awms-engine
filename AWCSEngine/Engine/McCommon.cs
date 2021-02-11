@@ -1,20 +1,20 @@
-﻿using AMSModel.Criteria;
-using AMSModel.Entity;
+﻿using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AWCSEngine.Engine
 {
-    public class McRGV : BaseMcEngine
+    public class McCommon : BaseMcEngine
     {
-        public McRGV(acs_McMaster mcMst) : base(mcMst)
+        public McCommon(acs_McMaster mcMst) : base(mcMst)
         {
         }
 
         protected override void ExecuteChild(act_McWork mcObj)
         {
-            throw new NotImplementedException();
+
+
         }
     }
 }

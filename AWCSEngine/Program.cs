@@ -32,7 +32,7 @@ namespace AWCSEngine
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new formSimulation(new VOCriteria()));
+            Application.Run(new formAdminConsole(new VOCriteria()));
         }
     }
 }

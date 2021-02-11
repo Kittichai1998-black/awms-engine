@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AMSModel.Entity
 {
-    public class acv_McPositionRouteVisible : acs_McPositionRoute
+    public class acv_McPositionRouteVisible : acs_LocationRoute
     {
     }
 }

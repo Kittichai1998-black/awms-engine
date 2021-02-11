@@ -4,9 +4,9 @@ using System.Text;
 
 namespace AMSModel.Constant.EnumConst
 {
-    public enum McPositionGroupType
+    public enum McCommand
     {
-        MachineWay = 11,
-        StorageLocation = 21,
+        Move = 1,
+        Keep = 2,
     }
 }

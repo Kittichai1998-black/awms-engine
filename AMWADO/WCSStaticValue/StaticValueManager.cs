@@ -19,6 +19,10 @@ namespace ADO.WCSStaticValue
         public List<acs_McRegistry> McRegistrys { get => this._McRegistrys ?? this.LoadMcRegistry(); }
         private List<acs_McMaster> _McMasters;
         public List<acs_McMaster> McMasters { get => this._McMasters ?? this.LoadMcMaster(); }
+        private List<acs_Location> _Location;
+        public List<acs_Location> Location { get => this._Location ?? this.LoadLocation(); }
+        private List<acs_LocationRoute> _LocationRoute;
+        public List<acs_LocationRoute> LocationRoute { get => this._LocationRoute ?? this.LoadLocationRoute(); }
 
         private static StaticValueManager instant;
 
