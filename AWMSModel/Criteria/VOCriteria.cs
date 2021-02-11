@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.DataAccess.Http;
 using AMWUtil.Logger;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Entity;
+using AMSModel.Constant.StringConst;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +10,7 @@ using System.Data.SqlClient;
 using System.Text;
 using Z.Expressions;
 
-namespace AWMSModel.Criteria
+namespace AMSModel.Criteria
 {
     public class VOCriteria
     {

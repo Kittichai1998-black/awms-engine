@@ -95,6 +95,15 @@ namespace AMWUtil.Common
             return t;
         }
 
+        public static T Get<T>(this object o)
+        {
+            return o.ToString().Get<T>();
+        }
+        public static T? GetTry<T>(this object o)
+            where T : struct
+        {
+            return o.ToString().GetTry<T>();
+        }
         public static T Get<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
@@ -104,6 +113,7 @@ namespace AMWUtil.Common
             if (typeof(T) == typeof(double)) return (T)(object)double.Parse(s);
             if (typeof(T) == typeof(float)) return (T)(object)float.Parse(s);
             if (typeof(T) == typeof(long)) return (T)(object)long.Parse(s);
+            if (typeof(T) == typeof(short)) return (T)(object)short.Parse(s);
             if (typeof(T) == typeof(DateTime))
             {
                 if(s.Contains("\\") || s.Contains("-"))

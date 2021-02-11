@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             {
                 var stos = ADO.WMSDB.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.BASE, false, true, this.BuVO);
                 var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PACK_PICKING, this.BuVO);
                 stoList.ForEach(stosList =>
                 {
                     var distos = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
@@ -64,7 +64,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                             new KeyValuePair<string, object>("Des_StorageObject_ID", disto.Sou_StorageObject_ID)
                                             }, this.BuVO);
 
-                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PACK_PICKED, this.BuVO);
 
                             ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,
                                 null, null,
@@ -78,11 +78,11 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             updSto = stosList.Clone();
                             updSto.baseQty -= disto.BaseQuantity.Value;
                             updSto.qty -= disto.Quantity.Value;
-                            updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                            updSto.eventStatus = StorageObjectEventStatus.PACK_RECEIVED;
 
                             if (updSto.baseQty == 0)
                             {
-                                updSto.eventStatus = StorageObjectEventStatus.PICKED;
+                                updSto.eventStatus = StorageObjectEventStatus.PACK_PICKED;
 
                             }
                             else
@@ -94,7 +94,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 issuedSto.qty = disto.Quantity.Value;
                                 issuedSto.parentID = null;
                                 issuedSto.mapstos = null;
-                                issuedSto.eventStatus = StorageObjectEventStatus.PICKED;
+                                issuedSto.eventStatus = StorageObjectEventStatus.PACK_PICKED;
 
                                 var stoIDIssued = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
 
@@ -103,7 +103,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_StorageObject>(stos.id.Value, this.BuVO,
                             new KeyValuePair<string, object>[]
                             {
-                                    new KeyValuePair<string, object>("EventStatus",StorageObjectEventStatus.RECEIVED)
+                                    new KeyValuePair<string, object>("EventStatus",StorageObjectEventStatus.PACK_RECEIVED)
                             });
                             var stoIDUpdated = ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
                             ADO.WMSDB.DistoADO.GetInstant().Update(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);

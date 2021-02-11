@@ -1,8 +1,8 @@
-﻿using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
 using AMWUtil.Logger;
-using AWMSModel.Constant.StringConst;
+using AMSModel.Constant.StringConst;
 using ADO.WMSStaticValue;
 using AWMSEngine.Engine.V2.General;
 using AWMSEngine.Engine.V2.Business.Received;
@@ -77,15 +77,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null,
                 StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus),
-                StorageObjectEventStatus.PICKING, this.BuVO);
+                StorageObjectEventStatus.PACK_PICKING, this.BuVO);
             }
             else
             {
                 var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 packs.ForEach(pack => {
-                    if (pack.eventStatus == StorageObjectEventStatus.NEW)
+                    if (pack.eventStatus == StorageObjectEventStatus.PACK_NEW)
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatus(pack.id.Value, null, null, StorageObjectEventStatus.PACK_RECEIVING, this.BuVO);
                     }
                 });
 
@@ -190,7 +190,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var stopacks = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
                     if (stopacks == null || stopacks.Count == 0)
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.PACK_NEW, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                         sto = this.CreateSto(reqVO);
                     }
@@ -309,7 +309,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 { 
 
                     //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, 
-                    if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.NEW))
+                    if (packs.TrueForAll(pack => pack.eventStatus == StorageObjectEventStatus.PACK_NEW))
                     {
                         //get Document
                         var docItemLists = ADO.WMSDB.DocumentADO.GetInstant().ListItemBySTO(packs.Select(x => x.id.Value).ToList(),

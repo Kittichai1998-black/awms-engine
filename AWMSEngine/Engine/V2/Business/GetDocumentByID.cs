@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;

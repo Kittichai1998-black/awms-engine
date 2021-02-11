@@ -1,7 +1,7 @@
 ﻿
 using ADO.WMSDB;
 using AWMSEngine.HubService;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;

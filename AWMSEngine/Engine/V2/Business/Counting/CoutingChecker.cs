@@ -1,9 +1,9 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business.Counting
                       new KeyValuePair<string, object>[] {
                            new KeyValuePair<string, object>(OptionVOConst.OPT_REMARK, reqVO.remark)
                       });
-            updSto.eventStatus = StorageObjectEventStatus.COUNTED;
+            updSto.eventStatus = StorageObjectEventStatus.PACK_COUNTED;
             ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
 
             disto.Des_StorageObject_ID = updSto.id;

@@ -1,11 +1,11 @@
-﻿using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Entity;
+﻿using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria.SP.Response;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.SP.Request
+namespace AMSModel.Criteria.SP.Request
 {
     public class SPworkQueue
     {
@@ -14,7 +14,7 @@ namespace AWMSModel.Criteria.SP.Request
         public int Seq;
         public string RefID;
         public long? Parent_WorkQueue_ID;
-
+        public long? ProductOwner_ID;
 
         public long? StorageObject_ID;
         public string StorageObject_Code;

@@ -1,6 +1,6 @@
 ﻿using AMWUtil.Logger;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;

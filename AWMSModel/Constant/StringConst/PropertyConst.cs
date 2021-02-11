@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Constant.StringConst
+namespace AMSModel.Constant.StringConst
 {
     public static class PropertyConst
     {

@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Exception;
 using ADO.WMSStaticValue;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace ADO.WMSDB
 {
     public class MasterADO : BaseWMSDB<MasterADO>
     {
-        public AWMSModel.Entity.ams_PackMaster GetAreaLocationMaster(long locationID, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetAreaLocationMaster(long locationID, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
             {
@@ -21,7 +21,7 @@ namespace ADO.WMSDB
             }, buVO).FirstOrDefault();
             return packMst;
         }
-        public AWMSModel.Entity.ams_AreaLocationMaster GetAreaLocationMaster(string locationCode,long areaID, VOCriteria buVO)
+        public AMSModel.Entity.ams_AreaLocationMaster GetAreaLocationMaster(string locationCode,long areaID, VOCriteria buVO)
         {
             var mst = DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(new KeyValuePair<string, object>[]
             {
@@ -31,7 +31,7 @@ namespace ADO.WMSDB
             }, buVO).FirstOrDefault();
             return mst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
             {
@@ -40,7 +40,7 @@ namespace ADO.WMSDB
             }, buVO).FirstOrDefault();
             return packMst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, string unitTypeCode, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, string unitTypeCode, VOCriteria buVO)
         {
             var unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK && x.Code == unitTypeCode);
             if (unitType == null)
@@ -53,7 +53,7 @@ namespace ADO.WMSDB
             }, buVO).FirstOrDefault();
             return packMst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(string skuCode, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetPackMasterBySKU(string skuCode, VOCriteria buVO)
         {
             var skuMst = DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuCode, buVO);
             if (skuMst == null)
@@ -61,7 +61,7 @@ namespace ADO.WMSDB
             var packMst = GetPackMasterBySKU(skuMst.ID.Value, buVO); ;
             return packMst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, string unitTypeCode, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, string unitTypeCode, VOCriteria buVO)
         {
             var unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK && x.Code == unitTypeCode);
             if (unitType == null)
@@ -74,7 +74,7 @@ namespace ADO.WMSDB
             }, buVO).FirstOrDefault();
             return packMst;
         }
-        public AWMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, VOCriteria buVO)
+        public AMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
             {
@@ -85,13 +85,13 @@ namespace ADO.WMSDB
         }
 
 
-        public AWMSModel.Entity.ams_SKUMaster GetSKUMaster(long packID, VOCriteria buVO)
+        public AMSModel.Entity.ams_SKUMaster GetSKUMaster(long packID, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectByID<ams_PackMaster>(packID, buVO);
             var skuMst = DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, buVO);
             return skuMst;
         }
-        public AWMSModel.Entity.ams_SKUMaster GetSKUMasterByCode(string skuCode, VOCriteria buVO)
+        public AMSModel.Entity.ams_SKUMaster GetSKUMasterByCode(string skuCode, VOCriteria buVO)
         {
             var skuMst = DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuCode, buVO);
             return skuMst;

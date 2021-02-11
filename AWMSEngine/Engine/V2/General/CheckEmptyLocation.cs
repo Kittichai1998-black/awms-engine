@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using ADO.WMSStaticValue;
-using AWMSModel.Criteria.SP.Response;
+using AMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;

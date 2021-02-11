@@ -1,8 +1,8 @@
 ﻿using ADO.WMSStaticValue;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,7 +125,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         {
                             id = null,
                             code = Item.Code,
-                            eventStatus = StorageObjectEventStatus.NEW,
+                            eventStatus = StorageObjectEventStatus.PACK_NEW,
                             name = Item.Code,
                             parentID = res.id,
                             parentType = StorageObjectType.BASE,

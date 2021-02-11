@@ -2,7 +2,7 @@
 using AMWUtil.PropertyFile;
 using AWCSModel.Constant.StringConst;
 using AWCSModel.Criteria;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

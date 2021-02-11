@@ -1,10 +1,10 @@
 ﻿using AMWUtil.Exception;
 using AMWUtil.Common;
 using AWMSEngine.APIService.V2.ASRS;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.StringConst;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

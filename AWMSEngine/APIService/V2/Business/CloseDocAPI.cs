@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.Document;
-using AWMSModel.Constant.EnumConst;
+using AMSModel.Constant.EnumConst;
 using AWMSEngine.APIService;
-using AWMSModel.Entity;
+using AMSModel.Entity;
 using AMWUtil.Exception;
 
 namespace AWMSEngine.APIService.V2.Business
@@ -37,7 +37,7 @@ namespace AWMSEngine.APIService.V2.Business
                     if (docs.EventStatus == DocumentEventStatus.NEW)
                     {
                         //เอา error ไปเก็บไว้ใน options
-                        BuVO.FinalLogDocMessage.Add(new AWMSModel.Criteria.FinalDatabaseLogCriteria.DocumentOptionMessage(
+                        BuVO.FinalLogDocMessage.Add(new AMSModel.Criteria.FinalDatabaseLogCriteria.DocumentOptionMessage(
                             docs.ID.Value, null, null, "Document Eventstatus is NEW"
                         ));
                     }

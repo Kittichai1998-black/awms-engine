@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSModel.Criteria;
+using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

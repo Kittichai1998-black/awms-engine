@@ -1,8 +1,8 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +14,12 @@ namespace AWMSEngine.Engine.V2.Validation
     {
         protected override NullCriteria ExecuteEngine(StorageObjectCriteria reqVO)
         {
-            this.ValidateLimit(reqVO, true, true, true);
+            this.ValidateLimit(reqVO, true, true, true, reqVO);
             return null;
         }
 
 
-        protected void ValidateLimit(StorageObjectCriteria sto, bool chkLow, bool chkOver , bool chkRange = false)
+        protected void ValidateLimit(StorageObjectCriteria sto, bool chkLow, bool chkOver , bool chkRange = false, StorageObjectCriteria reqVO = null)
         {
             this.Logger.LogInfo("Validate StoCode:" + sto.code + " -> Inner Weight:" + sto.innerWeiKG + "kg" + " -> Volume:" + sto.volume+"unit");
             if (chkLow)
@@ -44,19 +44,25 @@ namespace AWMSEngine.Engine.V2.Validation
                 if (sto.objectSize.weiAccept.HasValue && sto.weiKG.HasValue)
                 {
                     if (!stdWei.HasValue)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ไม่ได้ config weight standard");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3002, "บางรายการสินค้าไม่ได้กำหนด Weight มาตราฐาน");
 
                     var stdWeiRange = stdWei.Value * (sto.objectSize.weiAccept.Value / 100.0m);
                     var stdWeiStart = stdWei.Value - stdWeiRange;
                     var stdWeiEnd = stdWei.Value + stdWeiRange;
                     if (!sto.weiKG.Value.IsBetween(stdWeiStart, stdWeiEnd))
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3002, "น้ำหนักสินค้าที่ยอมรับได้ต้องอยู่ระหว่าง '" + stdWeiStart.ToString("0.000") + "kg.' ถึง '" + stdWeiEnd.ToString("0.000") + "kg.' ");
+                    {
+                        var stoBase = reqVO.ToTreeList().First(x => x.type == StorageObjectType.BASE && x.id == sto.parentID);
+                        if (stoBase is null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ไม่พบข้อมูล Base Master");
 
-                }
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3002,
+                            "น้ำหนักพาเลทรวมสินค้าที่ชั่งได้จริง '" + stoBase.weiKG.Value + " Kg.' " +
+                            "โดยที่น้ำหนักของสินค้า '" + sto.code + "' ที่ยอมรับได้ต้องอยู่ระหว่าง '" + stdWeiStart.ToString("0.000") + "kg.' ถึง '" + stdWeiEnd.ToString("0.000") + "kg.' ");
+                    }
             }
 
             if (sto.mapstos != null)
-                sto.mapstos.ForEach(x => this.ValidateLimit(x, chkLow, chkOver, chkRange));
+                sto.mapstos.ForEach(x => this.ValidateLimit(x, chkLow, chkOver, chkRange, reqVO));
         }
 
 

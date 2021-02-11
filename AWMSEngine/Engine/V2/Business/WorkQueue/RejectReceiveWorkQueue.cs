@@ -1,10 +1,10 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AWMSModel.Constant.EnumConst;
-using AWMSModel.Constant.StringConst;
-using AWMSModel.Criteria;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Constant.StringConst;
+using AMSModel.Criteria;
+using AMSModel.Criteria.SP.Request;
+using AMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,7 +100,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     if (string.IsNullOrEmpty(getOldEvent))
                     {
-                        stoPack.eventStatus = StorageObjectEventStatus.REMOVED;
+                        stoPack.eventStatus = StorageObjectEventStatus.PACK_REMOVED;
                     }
                     else
                     {
@@ -111,13 +111,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             });
 
-            if (stoPacks.TrueForAll(stoPack => stoPack.eventStatus == StorageObjectEventStatus.REMOVED))
+            if (stoPacks.TrueForAll(stoPack => stoPack.eventStatus == StorageObjectEventStatus.PACK_REMOVED))
             {
-                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
             }
             else
             {
-                sto.eventStatus = StorageObjectEventStatus.NEW;
+                sto.eventStatus = StorageObjectEventStatus.PACK_NEW;
                 sto.areaID = wq.Sou_AreaMaster_ID;
                 sto.parentID = wq.Sou_AreaLocationMaster_ID;
                 ADO.WMSDB.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
