@@ -43,6 +43,7 @@ namespace ProjectGCL.Engine.Document
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             amt_Document document = new amt_Document();
+            amt_Document documentPK = new amt_Document();
             ResConfirmResult dataProcessQ = new ResConfirmResult();
             this.Chacknull(this.Logger, reqVO, this.BuVO);
             var staging =  this.genStaging(this.Logger, reqVO, this.BuVO);
@@ -123,8 +124,8 @@ namespace ProjectGCL.Engine.Document
                         ADO.WMSDB.DocumentADO.GetInstant().UpdateStatusToChild(documentPKCheck.ID.Value, DocumentEventStatus.NEW, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
                     }
                     document = this.CreateDocGI(this.Logger, reqVO, warehouse, staging,area, customer, sku, pack, this.BuVO);
-                    this.CreateDocPK(this.Logger, reqVO, warehouse, staging, area, customer, sku, pack, document, this.BuVO);
-                    //dataProcessQ = this.AutoProcess(document, true,staging, reqVO, this.BuVO);
+                    documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse, staging, area, customer, sku, pack, document, this.BuVO);
+                    //dataProcessQ = this.AutoProcess(documentPK, true,staging, reqVO, this.BuVO);
 
 
                 }
@@ -137,8 +138,8 @@ namespace ProjectGCL.Engine.Document
             else
             {
                 document = this.CreateDocGI(this.Logger, reqVO, warehouse,staging,area, customer, sku, pack, this.BuVO);
-                this.CreateDocPK(this.Logger, reqVO, warehouse,staging, area, customer, sku, pack, document, this.BuVO);
-                //dataProcessQ = this.AutoProcess(document, true, staging, reqVO, this.BuVO);
+                documentPK = this.CreateDocPK(this.Logger, reqVO, warehouse,staging, area, customer, sku, pack, document, this.BuVO);
+                //dataProcessQ = this.AutoProcess(documentPK, true, staging, reqVO, this.BuVO);
             }
 
             if (dataProcessQ == null)
@@ -306,7 +307,7 @@ namespace ProjectGCL.Engine.Document
             var OrderByProcess = new List<SPInSTOProcessQueueCriteria.OrderByProcess>() {
                 new SPInSTOProcessQueueCriteria.OrderByProcess()
                 {
-                     fieldName ="psto.lot,psto.createtime",
+                     fieldName ="psto.createtime",
                      orderByType = 0
                 }
 
@@ -315,6 +316,7 @@ namespace ProjectGCL.Engine.Document
             var dataProcessWQ = new List<ProcessQueueCriteria>()
                  { new ProcessQueueCriteria()
                      {
+                        
                         docID = docItem.Document_ID,
                         docItemID = docItem.ID.Value,
                         locationCode = null,
@@ -355,7 +357,7 @@ namespace ProjectGCL.Engine.Document
                     if (resItems.pickStos.Count == 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + reqVO.sku + " ในคลัง");
 
-                    if (resItems.pickStos.Count < reqVO.qty)
+                    if (resItems.pickStos.Sum(x=>x.pickQty) < reqVO.qty)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สินค้า " + reqVO.sku + " มีไม่พอสำหรับการเบิก");
 
                     resItems.pickStos.ForEach(y =>
@@ -410,13 +412,13 @@ namespace ProjectGCL.Engine.Document
             var areastaging = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
                         new SQLConditionCriteria("Code",reqVO.staging,SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.MC_GATE, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STA_CONSO, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
 
             var area = ADO.WMSDB.DataADO.GetInstant().SelectBy<ams_AreaMaster>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.MC_GATE, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("AreaMasterType_ID",AreaMasterTypeID.STA_CONSO, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status",1,SQLOperatorType.EQUALS)
                     }, this.BuVO);
 

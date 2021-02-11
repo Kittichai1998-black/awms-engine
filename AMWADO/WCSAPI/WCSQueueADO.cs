@@ -78,9 +78,9 @@ namespace ADO.WCSAPI
 
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
-            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
-            var res = this.SendJson<TRes>("WCS.WCS_SEND_QUEUE", datas, null, buVO);
-            return res;
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            //var res = this.SendJson<TRes>("WCS.WCS_SEND_QUEUE", datas, null, buVO);
+            //return res;
         }
 
 
