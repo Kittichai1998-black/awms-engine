@@ -19,9 +19,9 @@ namespace AWMSEngine.Engine.V2.Validation
         }
 
 
-        protected void ValidateLimit(StorageObjectCriteria sto, bool chkLow, bool chkOver , bool chkRange = false, StorageObjectCriteria reqVO = null)
+        protected void ValidateLimit(StorageObjectCriteria sto, bool chkLow, bool chkOver, bool chkRange = false, StorageObjectCriteria reqVO = null)
         {
-            this.Logger.LogInfo("Validate StoCode:" + sto.code + " -> Inner Weight:" + sto.innerWeiKG + "kg" + " -> Volume:" + sto.volume+"unit");
+            this.Logger.LogInfo("Validate StoCode:" + sto.code + " -> Inner Weight:" + sto.innerWeiKG + "kg" + " -> Volume:" + sto.volume + "unit");
             if (chkLow)
             {
                 if (sto.objectSize.minInnerWeiKG.HasValue && (sto.innerWeiKG ?? 0) < sto.objectSize.minInnerWeiKG.Value)
@@ -59,10 +59,11 @@ namespace AWMSEngine.Engine.V2.Validation
                             "น้ำหนักพาเลทรวมสินค้าที่ชั่งได้จริง '" + stoBase.weiKG.Value + " Kg.' " +
                             "โดยที่น้ำหนักของสินค้า '" + sto.code + "' ที่ยอมรับได้ต้องอยู่ระหว่าง '" + stdWeiStart.ToString("0.000") + "kg.' ถึง '" + stdWeiEnd.ToString("0.000") + "kg.' ");
                     }
-            }
+                }
 
-            if (sto.mapstos != null)
-                sto.mapstos.ForEach(x => this.ValidateLimit(x, chkLow, chkOver, chkRange, reqVO));
+                if (sto.mapstos != null)
+                    sto.mapstos.ForEach(x => this.ValidateLimit(x, chkLow, chkOver, chkRange, reqVO));
+            }
         }
 
 

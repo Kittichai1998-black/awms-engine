@@ -2,8 +2,6 @@
 using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +9,16 @@ using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSEngine.Common;
 using AMWUtil.Common;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;
 using GCLModel.Criteria;
 using AWMSEngine.Engine.V2.Business.Received;
 using AWMSEngine.Engine.V2.Business.Issued;
 using static AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue.TReq;
 using System.Text.RegularExpressions;
+using AMSModel.Entity;
+using AMSModel.Constant.EnumConst;
+using AMSModel.Criteria;
+using AMSModel.Constant.StringConst;
 
 namespace ProjectGCL.Engine.Document
 {

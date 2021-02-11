@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
-    <ProjectReference Include="..\AWCSModel\AWCSModel.csproj" />
     <ProjectReference Include="..\AWMSModel\AMSModel.csproj" />
   </ItemGroup>
 

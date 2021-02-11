@@ -2,8 +2,6 @@
 using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
-using AWMSModel.Criteria;
-using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +9,6 @@ using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AWMSEngine.Common;
 using AMWUtil.Common;
-using AWMSModel.Criteria.SP.Request;
-using AWMSModel.Criteria.SP.Response;
-using AWMSModel.Constant.StringConst;
 using AWMSEngine.Engine.V2.Business.Document;
 using GCLModel.Criteria;
 using AWMSEngine.Engine.V2.Business.Received;
@@ -21,6 +16,9 @@ using AWMSEngine.Engine.V2.Business.Issued;
 using static AWMSEngine.Engine.V2.Business.WorkQueue.ASRSProcessQueue.TReq;
 using System.Text.RegularExpressions;
 using ADO.WMSDB;
+using AMSModel.Entity;
+using AMSModel.Criteria;
+using AMSModel.Constant.EnumConst;
 
 namespace ProjectGCL.Engine.Document
 {
@@ -92,7 +90,7 @@ namespace ProjectGCL.Engine.Document
                 {
                     ItemsSto.ForEach(x =>
                     {
-                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                        ADO.WMSDB.StorageObjectADO.GetInstant().UpdateStatusToChild(x.ParentStorageObject_ID.Value, null, null, StorageObjectEventStatus.PACK_REMOVED, this.BuVO);
 
                         var disto = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                          new SQLConditionCriteria[] {

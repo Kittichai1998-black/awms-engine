@@ -133,10 +133,8 @@ namespace ADO.WMSStaticValue
         }
         public string GetConfigValue(string code)
         {
-            string _namespace = code.LastIndexOf('.') > 0 ? code.Substring(0, code.LastIndexOf('.')) : string.Empty;
-            string _datakey = code.LastIndexOf('.') > 0 ? code.Substring(code.LastIndexOf('.')+1) : code;
 
-            var config = this.Configs.FirstOrDefault(x => x.DataKey == _datakey && (x.Namespace ?? string.Empty) == _namespace);
+            var config = this.Configs.FirstOrDefault(x => x.DataKey == code);
             if (config == null)
                 return string.Empty;
             return config.DataValue.Get<string>();

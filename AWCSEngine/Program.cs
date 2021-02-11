@@ -1,5 +1,4 @@
 using AMWUtil.PropertyFile;
-using AWCSModel.Constant.StringConst;
 using AMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AWCSEngine.Worker;
+using AMSModel.Constant.StringConst;
 
 namespace AWCSEngine
 {
