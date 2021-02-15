@@ -1,4 +1,5 @@
 ﻿using AMSModel.Constant.EnumConst;
+using AMWUtil.Exception;
 using AWCSEngine.Engine;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace AWCSEngine.Controller
 
         public void Command(string mcCode, McCommand command, string locCode)
         {
-            //this.GetMcObject(mcCode).
+            this.GetMcObject(mcCode).Command(command, locCode);
         }
     }
 }

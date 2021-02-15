@@ -51,6 +51,21 @@ namespace AMWUtil.Common
             return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
         }
 
+        public static bool CompareFields<T>(this T model1,T model2)
+        {
+            foreach (var f1 in model1.GetType().GetFields())
+            {
+                if (f1.GetValue(model1) != f1.GetValue(model2))
+                    return false;
+            }
+            foreach (var f1 in model1.GetType().GetProperties())
+            {
+                if (f1.GetValue(model1) != f1.GetValue(model2))
+                    return false;
+            }
+            return true;
+        }
+
         public static T ConvertTextFormatToModel<T>(string txt,string format)
             where T : class, new()
         {
@@ -429,8 +444,16 @@ namespace AMWUtil.Common
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
         }
 
-        public static List<KeyValuePair<string, object>> FieldKeyValuePairs<T>(this T obj)
+        public static List<KeyValuePair<string, object>> PropertieFieldKeyValuePairs<T>(this T obj)
             where T : class
+        {
+            var res = obj.PropertieKeyValuePairs();
+            res.AddRange(obj.FieldKeyValuePairs());
+            return res;
+        }
+
+        public static List<KeyValuePair<string, object>> FieldKeyValuePairs<T>(this T obj)
+        where T : class
         {
             List<KeyValuePair<string, object>> res = new List<KeyValuePair<string, object>>();
             var fs = typeof(T).GetFields();
