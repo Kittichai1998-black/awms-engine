@@ -17,6 +17,13 @@ import styled from 'styled-components';
 import FullscreenExitIcon from "@material-ui/icons/FullscreenExit";
 import AmDropdown from '../../components/AmDropdown';
 import { white } from "colorette";
+import _ from "lodash";
+import {
+  apicall,
+  createQueryString
+} from "../../components/function/CoreFunction";
+const Axios = new apicall();
+
 const FormInline = styled.div`
 
 display: flex;
@@ -36,7 +43,6 @@ input {
 `;
 const LabelH = styled.label`
 font-weight: bold;
-  width: 50px;
 `;
 
 const Border = styled.div`
@@ -86,6 +92,7 @@ const  styles = theme => ({
 
 
 const MasterData = (props) => {
+  const [pathMonitor, setPathMonitor] = useState("");
   const [date, setDate] = useState();
   const [data, setData] = useState([]);
   const [gridConfigs, setGridConfigs] = useState([]);
@@ -94,6 +101,9 @@ const MasterData = (props) => {
   const [store, setStore] = useState(1);
   const { classes } = props;
   const [size, setSize] = useState({ width: 0, height: 0 });
+
+  const [areaData, setAreaData] = useState([]);
+
   const width_height = useWindowSize(isFullScreen);
     function useWindowSize(full) {
         
@@ -120,6 +130,12 @@ const MasterData = (props) => {
             setIsFullScreen(false)
         }
     }, [document.fullscreenElement])
+
+    useEffect(() => {
+      Axios.get(createQueryString(AreaMaster)).then(res => {
+        setAreaData(res.data.datas)
+      });
+  }, [])
 
     function openFullscreen() {
       if (document.documentElement.requestFullscreen) {
@@ -156,7 +172,7 @@ const MasterData = (props) => {
   };
 
   useEffect(() => {
-    // console.log(dashboard)
+    console.log("startWeb soket")
 
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
@@ -171,14 +187,27 @@ const MasterData = (props) => {
 
         connection.start()
             .then(() => {
-                connection.on("WareHouse8", res => {
+                connection.on(pathMonitor, res => {
                     let list = JSON.parse(res);
-                    console.log("xxxx",list)
-                    setData([...list]); 
+                    let list2 = []
+                    let list3 = []
+                    if (list[0].data.length) {
+                       list2 =list[0].data.filter(x => x.ObjectType === 1) 
+                       list3 =list[0].data.filter(x => x.ObjectType === 2) 
+                    }
+                   
+                    list2 = list2.map(x=>{
+                      return {
+                        BaseCodeID : x.ID,
+                        BaseCode : x.Code,
+                        rows: list3.filter(r=> x.ID === r.ParentStorageObject_ID)
+                      }
+                    })
+                    setData([...list2]); 
                 })
             })
             .catch((err) => {
-                //console.log(err);
+                console.log(err);
                 setTimeout(() => signalrStart(), 5000);
             })
     };
@@ -194,7 +223,7 @@ const MasterData = (props) => {
         connection.stop()
     }
 
-  },[localStorage.getItem('Lang')])
+  },[pathMonitor])
 
   useEffect(() => {
     if(data.length){
@@ -206,17 +235,17 @@ const MasterData = (props) => {
       setGridConfigs(rowCut)
     } else {
       setGridConfigs([[
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "}],
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "}],
 
-        [{gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "},
-        {gateCode:" ", allQty:" ", lot:"", qty:" "}]
+        [{BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "},
+        {BaseCode:" ", Quantity:" ", Lot:"", BaseQuantity:" "}]
       ]);
     }
   }, [data])
@@ -240,17 +269,17 @@ const MasterData = (props) => {
 
   const onHandleDDLChange = (value) => {
     console.log(value)
-    if (value === 3) {
-        
+    if (value === 1) {
+      setPathMonitor("WareHouse8");
     } else {
-      
+      // TODO
     }
 };
 
 const AreaMaster = {
   queryString: window.apipath + "/v2/SelectDataMstAPI/",
-  t: "AreaMaster",
-  q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "AreaMasterType_ID", "c":"=", "v": 20}]',
+  t: "Warehouse",
+  q: '[{ "f": "Status", "c":"=", "v": 1}]',
   f: "*",
   g: "",
   s: "[{'f':'ID','od':'asc'}]",
@@ -270,6 +299,7 @@ const AreaMaster = {
                   <Grid item key={col}>
                     <Card
                       style={{
+                        overflowY: "auto",
                         border: "2px solid powderblue",
                         paddingLeft: isFullScreen ? "10px" : "10px",
                         width: isFullScreen ? `${(size.width / 5) - 15}px` : "200px",
@@ -279,20 +309,27 @@ const AreaMaster = {
                     >
                       <CardHeader
                         title={
-                          <Typography variant="h4" align="center">
-                            {y.gateCode}
+                          <Typography variant="h5" align="center">
+                            {y.BaseCode}
                           </Typography>
                         }
                       />
-                      <Typography>
-                        SKU:{y.skuCode}
-                      </Typography>
-                      <Typography className="mb-5" >
-                        LOT:{y.lot}
-                      </Typography>
-                      <Typography >                       
-                        count:{y.qty ? y.qty + "/"+ y.allQty : ''}
-                      </Typography>
+                      {console.log("ROWS",y.rows)}
+                      {y.rows ? y.rows.map((r,idx) => {
+                        return <>
+                                       
+                          <Typography >
+                               SKU:{r.Name} {r.SKUMaster_ID} 
+                          </Typography>
+                          <Typography>
+                            LOT: {r.Lot ? r.Lot : ''} 
+                          </Typography>
+                          <Typography >                       
+                            count: {r.Quantity ? r.Quantity + "/"+ r.BaseQuantity : ''}
+                          </Typography>
+                          <hr style={{ border: "1px solid red",}}/>
+                        </>
+                      }) : null}
                     </Card>
                   </Grid>
                 );
@@ -325,7 +362,7 @@ const AreaMaster = {
         >
           <Grid container>
             <Grid item xs={12} sm={6}>
-              <h3>{date}</h3>
+              <h3 style={{ fontWeight: 'bold'}}>{date}</h3>
             </Grid>
             <Grid item xs={12} sm={2}>
               <h3>คลัง</h3>
@@ -341,12 +378,13 @@ const AreaMaster = {
                     fieldDataKey={"ID"}
                     fieldLabel={["Name"]}
                     labelPattern=" : "
-                    width={200}
+                    width={300}
                     ddlMinWidth={200}
                     //returnDefaultValue={true}
-                    //defaultValue={3}
+                    defaultValue={1}
                     zIndex={1000}
-                    queryApi={AreaMaster}
+                    data={areaData}
+                    returnDefaultValue={true}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value)}
                     disabled ={isFullScreen}
                 />
