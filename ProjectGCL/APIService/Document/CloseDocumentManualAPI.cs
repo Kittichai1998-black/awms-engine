@@ -12,7 +12,7 @@ using AMSModel.Criteria;
 using ADO.WMSDB;
 using AMWUtil.Logger;
 
-namespace AWMSEngine.APIService.V2.Document
+namespace ProjectGCL.APIService.Document
 {
 
     public class CloseDocumentManualAPI : BaseAPIService
@@ -23,24 +23,25 @@ namespace AWMSEngine.APIService.V2.Document
 
         public class TReq
         {
-            public List<long> docIDs;
-            public string remark;
+
+            public string documentCode;
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             List<long> docLists = new List<long>();
 
-            TReq reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
-            reqDoc.docIDs.ForEach(doc =>
-            {
-                var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
-                ADO.WMSDB.DataADO.GetInstant().UpdateByID<amt_Document>(doc, this.BuVO,
-                    new KeyValuePair<string, object>[]
-                    {
-                        new KeyValuePair<string, object>("remark",reqDoc.remark)
-                    });
+            TReq treqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
 
+            var reqDoc = ADO.WMSDB.DataADO.GetInstant().SelectBy<amt_Document>(
+                     new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Code",treqDoc.documentCode, SQLOperatorType.EQUALS)
+                     }, this.BuVO);
+
+            reqDoc.ForEach(d =>
+            {
+                var doc = d.ID.Value;
+                var docs = ADO.WMSDB.DocumentADO.GetInstant().Get(doc, this.BuVO);
 
                 if (docs != null)
                 {
@@ -180,7 +181,7 @@ namespace AWMSEngine.APIService.V2.Document
 
                             }
                             else
-                            {
+                            { 
 
                                 foreach (var listChild in listChilds)
                                 {
